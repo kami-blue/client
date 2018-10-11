@@ -67,7 +67,7 @@ dependencies {
     }
     compile "com.github.ZeroMemes:Alpine:1.5"
     compile group: 'net.jodah', name: 'typetools', version: '0.5.0'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.19'
+    compile 'com.github.cabaletta:baritone:v0.0.7'
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
@@ -100,7 +100,6 @@ shadowJar {
         include(dependency('org.spongepowered:mixin'))
         include(dependency('com.github.ZeroMemes:Alpine'))
         include(dependency('net.jodah:typetools'))
-        include(dependency('org.yaml:snakeyaml'))
         include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
     }
