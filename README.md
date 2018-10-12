@@ -74,3 +74,5 @@ In `build/libs` you will find a file `KAMI-<minecraftVersion>-<kamiVersion>-full
 [ronmamo](https://github.com/ronmamo/) for [Reflections](https://github.com/ronmamo/reflections)
 
 The [minecraft forge team](https://github.com/MinecraftForge) for [forge](https://files.minecraftforge.net/)
+
+[cabaletta](https://github.com/cabaletta) for [baritone](https://github.com/cabaletta/baritone)
