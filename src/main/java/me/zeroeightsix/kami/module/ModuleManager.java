@@ -55,9 +55,9 @@ public class ModuleManager {
     }
 
     public static void onWorldRender(RenderWorldLastEvent event) {
-        Minecraft.getMinecraft().mcProfiler.startSection("kami");
+        Minecraft.getMinecraft().profiler.startSection("kami");
 
-        Minecraft.getMinecraft().mcProfiler.startSection("setup");
+        Minecraft.getMinecraft().profiler.startSection("setup");
 //        GlStateManager.pushMatrix();
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
@@ -71,15 +71,15 @@ public class ModuleManager {
 
         RenderEvent e = new RenderEvent(KamiTessellator.INSTANCE, renderPos);
         e.resetTranslation();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getMinecraft().profiler.endSection();
 
         modules.stream().filter(module -> module.alwaysListening || module.isEnabled()).forEach(module -> {
-            Minecraft.getMinecraft().mcProfiler.startSection(module.getName());
+            Minecraft.getMinecraft().profiler.startSection(module.getName());
             module.onWorldRender(e);
-            Minecraft.getMinecraft().mcProfiler.endSection();
+            Minecraft.getMinecraft().profiler.endSection();
         });
 
-        Minecraft.getMinecraft().mcProfiler.startSection("release");
+        Minecraft.getMinecraft().profiler.startSection("release");
         GlStateManager.glLineWidth(1f);
 
         GlStateManager.shadeModel(GL11.GL_FLAT);
@@ -90,9 +90,9 @@ public class ModuleManager {
         GlStateManager.enableCull();
 //        GlStateManager.popMatrix();
         KamiTessellator.releaseGL();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getMinecraft().profiler.endSection();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getMinecraft().profiler.endSection();
     }
 
     public static void onBind(int eventKey) {

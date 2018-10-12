@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render;
 
+import baritone.api.BaritoneAPI;
+import baritone.api.pathing.goals.GoalXZ;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
@@ -7,15 +9,15 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
-import net.minecraft.pathfinding.*;
+import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -30,23 +32,30 @@ public class Pathfind extends Module {
     static PathPoint to = null;
 
     public static boolean createPath(PathPoint end) {
-        to = end;
-        WalkNodeProcessor walkNodeProcessor = new AnchoredWalkNodeProcessor(new PathPoint((int)mc.player.posX, (int)mc.player.posY, (int)mc.player.posZ));
-        EntityZombie zombie = new EntityZombie(mc.world);
-        zombie.setPathPriority(PathNodeType.WATER, 16f);
-        zombie.posX = mc.player.posX;
-        zombie.posY = mc.player.posY;
-        zombie.posZ = mc.player.posZ;
+//        to = end;
+//        WalkNodeProcessor walkNodeProcessor = new AnchoredWalkNodeProcessor(new PathPoint((int)mc.player.posX, (int)mc.player.posY, (int)mc.player.posZ));
+//        EntityZombie zombie = new EntityZombie(mc.world);
+//        zombie.setPathPriority(PathNodeType.WATER, 16f);
+//        zombie.posX = mc.player.posX;
+//        zombie.posY = mc.player.posY;
+//        zombie.posZ = mc.player.posZ;
+//
+//        PathFinder finder = new PathFinder(walkNodeProcessor);
+//        Path path = finder.findPath(mc.world, zombie, new BlockPos(end.x, end.y, end.z), Float.MAX_VALUE);
+//        zombie.setPathPriority(PathNodeType.WATER, 0);
+//        if (path == null) {
+//            Command.sendChatMessage("Failed to create path!");
+//            return false;
+//        }
+//        points = new ArrayList<>(Arrays.asList(path.points));
+//        return points.get(points.size()-1).distanceTo(end)<=1; // Return whether or not the last path location is our end destination
 
-        PathFinder finder = new PathFinder(walkNodeProcessor);
-        Path path = finder.findPath(mc.world, zombie, new BlockPos(end.x, end.y, end.z), Float.MAX_VALUE);
-        zombie.setPathPriority(PathNodeType.WATER, 0);
-        if (path == null) {
-            Command.sendChatMessage("Failed to create path!");
-            return false;
-        }
-        points = new ArrayList<>(Arrays.asList(path.points));
-        return points.get(points.size()-1).distanceTo(end)<=1; // Return whether or not the last path location is our end destination
+        BaritoneAPI.getSettings().allowSprint.value = true;
+        BaritoneAPI.getSettings().pathTimeoutMS.value = 2000L;
+
+        BaritoneAPI.getPathingBehavior().setGoal(new GoalXZ(10000, 20000));
+        BaritoneAPI.getPathingBehavior().path();
+        return true;
     }
 
     @Override

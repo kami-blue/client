@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BlockSoulSand.class)
 public class MixinBlockSoulSand {
 
-    @Inject(method = "onEntityCollidedWithBlock", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn, CallbackInfo info) {
         // If noslowdown is on, just don't do anything else in this method (slow the player)
         if (ModuleManager.isModuleEnabled("NoSlowDown")) info.cancel();

@@ -279,7 +279,7 @@ public class TrajectoryCalculator {
          */
         private void setThrowableHeading(Vec3d motion, float velocity) {
             // Divide the current motion by the length of the vector
-            this.motion = div(motion, (float) motion.lengthVector());
+            this.motion = div(motion, (float) motion.length());
             // Multiply by the velocity
             this.motion = mult(this.motion, velocity);
         }

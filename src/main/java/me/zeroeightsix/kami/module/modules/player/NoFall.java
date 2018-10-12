@@ -36,7 +36,7 @@ public class NoFall extends Module {
     public void onUpdate() {
         if (bucket && mc.player.fallDistance >= distance && !EntityUtil.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
             Vec3d posVec = mc.player.getPositionVector();
-            RayTraceResult result = mc.world.rayTraceBlocks(posVec, posVec.addVector(0,-5.33f,0), true, true, false);
+            RayTraceResult result = mc.world.rayTraceBlocks(posVec, posVec.add(0,-5.33f,0), true, true, false);
             if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 EnumHand hand = EnumHand.MAIN_HAND;
                 if (mc.player.getHeldItemOffhand().getItem() == Items.WATER_BUCKET) hand = EnumHand.OFF_HAND;

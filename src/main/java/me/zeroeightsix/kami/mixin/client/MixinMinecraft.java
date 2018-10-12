@@ -37,7 +37,7 @@ public class MixinMinecraft {
     @Shadow
     boolean skipRenderWorld;
     @Shadow
-    SoundHandler mcSoundHandler;
+    SoundHandler soundHandler;
 
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
@@ -95,7 +95,7 @@ public class MixinMinecraft {
         }
         else
         {
-            this.mcSoundHandler.resumeSounds();
+            this.soundHandler.resumeSounds();
             Minecraft.getMinecraft().setIngameFocus();
         }
 
