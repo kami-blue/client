@@ -2,9 +2,6 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
-import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.setting.SettingsPool;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -20,9 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by 086 on 17/11/2017.
@@ -106,19 +100,6 @@ public class MixinMinecraft {
         }
 
         info.cancel();
-    }
-
-    @Inject(method = "shutdown", at = @At("HEAD"))
-    public void shutdown(CallbackInfo info) {
-        try {
-            File f = new File("kami.settings");
-            if (!f.exists())
-                f.createNewFile();
-            SettingsPool.save(f);
-            ModuleManager.getModules().forEach(Module::destroy);
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -67,3 +67,10 @@ gradlew.bat build
 cd build/libs
 ```
 In `build/libs` you will find a file `KAMI-<minecraftVersion>-<kamiVersion>-full.jar` which you can copy to the `mods` folder of a minecraft instance that has forge installed.
+
+## Thank you
+[ZeroMemes](https://github.com/ZeroMemes) for [Alpine](https://github.com/ZeroMemes/Alpine)
+
+[ronmamo](https://github.com/ronmamo/) for [Reflections](https://github.com/ronmamo/reflections)
+
+The [minecraft forge team](https://github.com/MinecraftForge) for [forge](https://files.minecraftforge.net/)
