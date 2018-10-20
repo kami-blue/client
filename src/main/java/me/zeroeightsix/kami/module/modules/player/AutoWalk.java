@@ -3,8 +3,6 @@ package me.zeroeightsix.kami.module.modules.player;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.render.Pathfind;
 import me.zeroeightsix.kami.setting.Setting;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraftforge.client.event.InputUpdateEvent;
@@ -28,15 +26,6 @@ public class AutoWalk extends Module {
             case BACKWARDS:
                 event.getMovementInput().moveForward=-1;
                 break;
-            case PATH:
-                if (Pathfind.points.isEmpty()) return;
-                event.getMovementInput().moveForward=1;
-                if (mc.player.isInWater() || mc.player.isInLava()) mc.player.movementInput.jump = true;
-                else if (mc.player.collidedHorizontally && mc.player.onGround) mc.player.jump();
-                if (!ModuleManager.isModuleEnabled("Pathfind") || Pathfind.points.isEmpty()) return;
-                PathPoint next = Pathfind.points.get(0);
-                lookAt(next);
-                break;
         }
     });
 
@@ -48,6 +37,6 @@ public class AutoWalk extends Module {
     }
 
     private static enum AutoWalkMode {
-        FORWARD, BACKWARDS, PATH
+        FORWARD, BACKWARDS
     }
 }

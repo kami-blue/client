@@ -132,6 +132,7 @@ public class KamiGuiChat extends GuiChat {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor3f(0.8f, 0.1f, 0f);
+        GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES); {
             GL11.glVertex2f(this.inputField.x-2, this.inputField.y-2);
             GL11.glVertex2f(this.inputField.x+this.inputField.getWidth()-2, this.inputField.y-2);
