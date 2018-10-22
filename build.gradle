@@ -103,7 +103,8 @@ shadowJar {
         include(dependency('net.jodah:typetools'))
         include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
-        include(dependency(group: 'cabaletta', name: 'baritone-api', version: '1.0.0'))    }
+        include(dependency(group: 'cabaletta', name: 'baritone-api', version: '1.0.0'))
+    }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
     classifier = 'release'
