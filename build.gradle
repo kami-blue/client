@@ -67,7 +67,8 @@ dependencies {
     }
     compile "com.github.ZeroMemes:Alpine:1.5"
     compile group: 'net.jodah', name: 'typetools', version: '0.5.0'
-    compile 'com.github.cabaletta:baritone:v1.0.0-hotfix-2'
+    compile 'com.github.cabaletta:baritone:v1.0.0'
+    compile group: 'cabaletta', name: 'baritone-api', version: '1.0.0'
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
@@ -102,7 +103,7 @@ shadowJar {
         include(dependency('net.jodah:typetools'))
         include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
-        include(dependency('com.github.cabaletta:baritone'))
+        include(dependency(group: 'cabaletta', name: 'baritone-api', version: '1.0.0'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
