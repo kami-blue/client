@@ -73,7 +73,7 @@ public class RadarUI extends AbstractComponentUI<Radar> {
 
         GL11.glLineWidth(1.8f);
 //        glColor4f(1,1,1,1f);
-        glColor3f(.59f,.05f,.11f);
+        glColor3f(.60f,.56f,1.00f);
         GL11.glEnable(GL_LINE_SMOOTH);
         RenderHelper.drawCircleOutline(0,0,radius);
         GL11.glDisable(GL_LINE_SMOOTH);

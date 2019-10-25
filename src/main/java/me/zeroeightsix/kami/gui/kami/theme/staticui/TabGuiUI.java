@@ -82,7 +82,7 @@ public class TabGuiUI extends AbstractComponentUI<TabGUI> {
             if (updatelerp)
                 tab.lerpSelectY = tab.lerpSelectY + ((tab.selected*10)-tab.lerpSelectY) * difference * .02f;
 
-            glColor3f(.59f,.05f,.11f);
+            glColor3f(.60f,.56f,1.00f);
             GL11.glBegin(GL11.GL_QUADS);
             {
                 GL11.glVertex2d(0,tab.lerpSelectY);
