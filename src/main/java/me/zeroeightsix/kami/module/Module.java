@@ -41,7 +41,10 @@ public class Module {
     }
 
     private Info getAnnotation() {
-        return getClass().isAnnotationPresent(Info.class) ? getClass().getAnnotation(Info.class) : Sprint.class.getAnnotation(Info.class); // dummy annotation
+        if (getClass().isAnnotationPresent(Info.class)) {
+            return getClass().getAnnotation(Info.class);
+        }
+        throw new IllegalStateException("No Annotation on class " + this.getClass().getCanonicalName() + "!");
     }
 
     public void onUpdate() {}
