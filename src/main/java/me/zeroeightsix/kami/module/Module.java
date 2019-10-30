@@ -76,6 +76,7 @@ public class Module {
         MISC("Misc", false),
         PLAYER("Player", false),
         MOVEMENT("Movement", false),
+        EXPERIMENTAL("Experimental", false),
         HIDDEN("Hidden", true);
 
         boolean hidden;

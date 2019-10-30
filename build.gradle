@@ -84,6 +84,7 @@ repositories {
         url = "https://jitpack.io"
     }
     mavenCentral()
+	jcenter()
 }
 
 dependencies {
@@ -102,7 +103,9 @@ dependencies {
     }
     // https://mvnrepository.com/artifact/club.minnced/discord-rpc-release
     // discord rpc
-	compile group: 'club.minnced', name: 'discord-rpc-release', version: 'v3.3.0'
+	//compile group: 'club.minnced', name: 'discord-rpc-release', version: 'v3.3.0'
+	compile 'club.minnced:java-discord-rpc:2.0.2'
+	//compile 'club.minnced:java-discord-rpc:%VERSION%'
     
 }
 

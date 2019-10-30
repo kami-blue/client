@@ -143,8 +143,8 @@ public class Auto32k extends Module {
                 if (Friends.isFriend(entity.getName())) {
                     continue;
                 }
-                useRangeSorting = true;
                 if (isAreaPlaceable(placeTargetTest)) {
+                    useRangeSorting = true;
                     double distanceToEntity = entity.getDistance(placeTargetTest.x, placeTargetTest.y, placeTargetTest.z);
                     // Add distance to Map Value of placeTarget Key
                     placeTargetMap.put(placeTargetTest, placeTargetMap.containsKey(placeTargetTest) ? placeTargetMap.get(placeTargetTest) + distanceToEntity : distanceToEntity);
