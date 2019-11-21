@@ -4,7 +4,6 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.modules.combat.Aura;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.init.Items;
@@ -17,8 +16,8 @@ import net.minecraft.init.Items;
 public class FastExp extends Module {
 
     private Setting<Boolean> autoThrow = register(Settings.b("Auto Throw", true));
-    private Setting<SwitchMode> switchMode = register(Settings.e("Auto Switch", SwitchMode.ON));
-    private Setting<Boolean> autoDisable = register(Settings.booleanBuilder("Auto Disable").withValue(false).withVisibility(o -> switchMode.getValue().equals(SwitchMode.ON)).build());
+    private Setting<Boolean> autoSwitch = register(Settings.b("Auto Switch", true));
+    private Setting<Boolean> autoDisable = register(Settings.booleanBuilder("Auto Disable").withValue(false).withVisibility(o -> autoSwitch.getValue()).build());
 
     private int initHotbarSlot = -1;
 
@@ -37,7 +36,7 @@ public class FastExp extends Module {
             return;
         }
 
-        if (switchMode.getValue().equals(SwitchMode.ON)) {
+        if (autoSwitch.getValue()) {
             initHotbarSlot = mc.player.inventory.currentItem;
         }
 
@@ -50,7 +49,7 @@ public class FastExp extends Module {
             return;
         }
 
-        if (switchMode.getValue().equals(SwitchMode.ON)) {
+        if (autoSwitch.getValue()) {
             if (initHotbarSlot != -1 && initHotbarSlot != mc.player.inventory.currentItem) {
                 mc.player.inventory.currentItem = initHotbarSlot;
             }
@@ -65,7 +64,7 @@ public class FastExp extends Module {
             return;
         }
 
-        if (switchMode.getValue().equals(SwitchMode.ON) && (mc.player.getHeldItemMainhand().getItem() != Items.EXPERIENCE_BOTTLE)) {
+        if (autoSwitch.getValue() && (mc.player.getHeldItemMainhand().getItem() != Items.EXPERIENCE_BOTTLE)) {
             int xpSlot = findXpPots();
             if (xpSlot == -1) {
                 if (autoDisable.getValue()) {
@@ -91,10 +90,6 @@ public class FastExp extends Module {
             }
         }
         return slot;
-    }
-
-    private enum SwitchMode {
-        ON, OFF
     }
 
 }
