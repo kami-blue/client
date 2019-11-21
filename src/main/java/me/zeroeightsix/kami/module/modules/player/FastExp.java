@@ -60,7 +60,7 @@ public class FastExp extends Module {
     @Override
     public void onUpdate() {
 
-        if (isDisabled() || mc.player == null) {
+        if (mc.player == null) {
             return;
         }
 
