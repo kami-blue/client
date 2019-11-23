@@ -25,6 +25,10 @@ public class HoleESP
 
     //private Setting<Integer> range = register(Settings.i("Range", 15));
     private Setting<Distance> distance = register(Settings.e("Distance", Distance.CLOSE));
+    private Setting<Integer> red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(150));
+    private Setting<Integer> green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255));
+    private Setting<Integer> blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255));
+    private Setting<Integer> alpha = register(Settings.integerBuilder("Opacity").withRange(0, 255).withValue(50));
 //    private Setting<Distance> color = register(Settings.e("Color", Color.KAMI));
 
 
@@ -83,6 +87,10 @@ public class HoleESP
 
 
     public void onWorldRender(RenderEvent event) {
+        int redS = red.getValue();
+        int greenS = green.getValue();
+        int blueS = blue.getValue();
+        int alphaS = alpha.getValue();
 //        int realColor = 0;
 //        if (color.getValue().equals(Color.WHITE)) {
 //            realColor = 0x33ffffff;
@@ -92,7 +100,7 @@ public class HoleESP
 //        }
 //        int finalRealColor = realColor;
         KamiTessellator.prepare(GL11.GL_QUADS);
-        this.holes.forEach(blockPos -> KamiTessellator.drawBox((BlockPos) blockPos, 0x339B90FF, GeometryMasks.Quad.ALL));
+        this.holes.forEach(blockPos -> KamiTessellator.drawBox((BlockPos) blockPos, redS, greenS, blueS, alphaS, GeometryMasks.Quad.ALL));
         KamiTessellator.release();
     }
 }
