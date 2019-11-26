@@ -30,6 +30,14 @@ public abstract class Command {
 	public static void sendChatMessage(String message){
 		sendRawChatMessage("&7[&a" + KamiMod.KAMI_KANJI + "&7] &r" + message);
 	}
+	
+	public static void sendErrorMessage(String message){
+		sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+	}
+
+	public static void sendWarningMessage(String message){
+		sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+	}
 
 	public static void sendStringChatMessage(String[] messages) {
 		sendChatMessage("");
