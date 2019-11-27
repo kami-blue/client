@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtil;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
@@ -16,6 +17,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 14/12/2017.
+ * Updated by d1gress/Qther on 27/11/2019.
  */
 @Module.Info(name = "ESP", category = Module.Category.RENDER)
 public class ESP extends Module {
@@ -26,11 +28,14 @@ public class ESP extends Module {
     private Setting<Boolean> mobs = register(Settings.b("Mobs", false));
 
     public enum ESPMode {
-        RECTANGLE
+        RECTANGLE,
+        GLOW
     }
 
     @Override
     public void onWorldRender(RenderEvent event) {
+
+
         if (Wrapper.getMinecraft().getRenderManager().options == null) return;
         switch (mode.getValue()) {
             case RECTANGLE:
@@ -90,6 +95,40 @@ public class ESP extends Module {
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onUpdate() {
+        if (mode.getValue().equals(ESPMode.GLOW)) {
+            for (Entity e : mc.world.loadedEntityList) {
+                if (e == null || e.isDead) return;
+                if (e instanceof EntityPlayer && players.getValue() && !e.isGlowing()) {
+                    e.setGlowing(true);
+                } else if (e instanceof EntityPlayer && !players.getValue() && e.isGlowing()) {
+                    e.setGlowing(false);
+                }
+                if (EntityUtil.isHostileMob(e) && mobs.getValue() && !e.isGlowing()) {
+                    e.setGlowing(true);
+                } else if (EntityUtil.isHostileMob(e) && !mobs.getValue() && e.isGlowing()) {
+                    e.setGlowing(false);
+                }
+                if (EntityUtil.isPassive(e) && animals.getValue() && !e.isGlowing()) {
+                    e.setGlowing(true);
+                } else if (EntityUtil.isPassive(e) && !animals.getValue() && e.isGlowing()) {
+                    e.setGlowing(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        if (mode.getValue().equals(ESPMode.GLOW)) {
+            for (Entity e : mc.world.loadedEntityList) {
+                e.setGlowing(false);
+            }
+            mc.player.setGlowing(false);
         }
     }
 }
