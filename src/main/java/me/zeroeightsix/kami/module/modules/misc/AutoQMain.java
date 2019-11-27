@@ -25,7 +25,7 @@ public class AutoQMain extends Module {
             return;
         }
         if (Minecraft.getMinecraft().getCurrentServerData() == null || (Minecraft.getMinecraft().getCurrentServerData() !=null && !Minecraft.getMinecraft().getCurrentServerData().serverIP.equalsIgnoreCase("2b2t.org"))) {
-            Command.sendChatMessage("[&l&eWarning&r]: You are not connected to 2b2t.org, so AutoQMain will not function on this server.");
+            Command.sendWarningMessage("&cYou are not connected to 2b2t.org, so AutoQMain will not function on this server.");
             startTime = 0;
         } else {
             if (startTime == 0 || startTime <= System.currentTimeMillis() - 427000) startTime = System.currentTimeMillis();
