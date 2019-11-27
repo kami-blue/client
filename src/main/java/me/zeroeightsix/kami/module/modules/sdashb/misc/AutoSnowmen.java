@@ -34,7 +34,7 @@ import static me.zeroeightsix.kami.module.modules.player.Scaffold.faceVectorPack
  * @author hub/blockparole
  * Created by @S-B99 on 25/11/19
  */
-@Module.Info(name = "AutoSnowGolem", category = Module.Category.MISC, description = "Automatically creates snowmen")
+@Module.Info(name = "AutoSnowGolem", category = Module.Category.MISC, description = "Automatically creates snowgolems")
 public class AutoSnowGolem extends Module {
 
     private static final List<Block> blackList = Arrays.asList(
