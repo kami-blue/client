@@ -34,8 +34,8 @@ import static me.zeroeightsix.kami.module.modules.player.Scaffold.faceVectorPack
  * @author hub/blockparole
  * Created by @S-B99 on 25/11/19
  */
-@Module.Info(name = "AutoSnowMan", category = Module.Category.MISC, description = "Automatically creates snowmen")
-public class AutoSnowman extends Module {
+@Module.Info(name = "AutoSnowGolem", category = Module.Category.MISC, description = "Automatically creates snowmen")
+public class AutoSnowGolem extends Module {
 
     private static final List<Block> blackList = Arrays.asList(
             Blocks.ENDER_CHEST,
@@ -93,7 +93,7 @@ public class AutoSnowman extends Module {
 
         if (isDisabled() || mc.player == null || ModuleManager.isModuleEnabled("Freecam")) {
             this.disable();
-            Command.sendChatMessage("[AutoSnowman] Freecam enabled, disabling");
+            Command.sendChatMessage("[AutoSnowGolem] Freecam enabled, disabling");
             return;
         }
 
@@ -123,7 +123,7 @@ public class AutoSnowman extends Module {
 
         if (snowSlot == -1) {
             if (debugMsgs.getValue().equals(DebugMsgs.IMPORTANT)) {
-                Command.sendChatMessage("[AutoSnowMan] Snow missing, disabling.");
+                Command.sendChatMessage("[AutoSnowGolem] Snow missing, disabling.");
             }
             this.disable();
             return;
@@ -131,7 +131,7 @@ public class AutoSnowman extends Module {
 
         if (pumpkinSlot == -1) {
             if (debugMsgs.getValue().equals(DebugMsgs.IMPORTANT)) {
-                Command.sendChatMessage("[AutoSnowMan] Pumpkin missing, disabling.");
+                Command.sendChatMessage("[AutoSnowGolem] Pumpkin missing, disabling.");
             }
             this.disable();
             return;
@@ -193,13 +193,13 @@ public class AutoSnowman extends Module {
 
             if (placeCloseToEnemy.getValue()) {
                 if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
-                    Command.sendChatMessage("[AutoSnowMan] Placing close to Enemy");
+                    Command.sendChatMessage("[AutoSnowGolem] Placing close to Enemy");
                 }
                 // Get Key with lowest Value (closest to enemies)
                 placeTarget = Collections.min(placeTargetMap.entrySet(), Map.Entry.comparingByValue()).getKey();
             } else {
                 if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
-                    Command.sendChatMessage("[AutoSnowMan] Placing far from Enemy");
+                    Command.sendChatMessage("[AutoSnowGolem] Placing far from Enemy");
                 }
                 // Get Key with highest Value (furthest away from enemies)
                 placeTarget = Collections.max(placeTargetMap.entrySet(), Map.Entry.comparingByValue()).getKey();
@@ -208,7 +208,7 @@ public class AutoSnowman extends Module {
         } else {
 
             if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
-                Command.sendChatMessage("[AutoSnowMan] No enemy nearby, placing at first valid position.");
+                Command.sendChatMessage("[AutoSnowGolem] No enemy nearby, placing at first valid position.");
             }
 
             // Use any place target position if no enemies are around
@@ -223,14 +223,14 @@ public class AutoSnowman extends Module {
 
         if (placeTarget == null) {
             if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
-                Command.sendChatMessage("[AutoSnowMan] No valid position in range to place!");
+                Command.sendChatMessage("[AutoSnowGolem] No valid position in range to place!");
             }
             this.disable();
             return;
         }
 
         if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
-            Command.sendChatMessage("[AutoSnowMan] Place Target: " + placeTarget.x + " " + placeTarget.y + " " + placeTarget.z + " Distance: " + df.format(mc.player.getPositionVector().distanceTo(new Vec3d(placeTarget))));
+            Command.sendChatMessage("[AutoSnowGolem] Place Target: " + placeTarget.x + " " + placeTarget.y + " " + placeTarget.z + " Distance: " + df.format(mc.player.getPositionVector().distanceTo(new Vec3d(placeTarget))));
         }
 
         if (placeMode.getValue().equals(PlaceMode.AUTO)) {
