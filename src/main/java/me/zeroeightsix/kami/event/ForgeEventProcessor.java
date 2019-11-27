@@ -105,8 +105,12 @@ public class ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (Keyboard.getEventKeyState())
+        if (!Keyboard.getEventKeyState()) return;
+        if (("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix())) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
+        } else {
             ModuleManager.onBind(Keyboard.getEventKey());
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
