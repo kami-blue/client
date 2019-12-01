@@ -13,13 +13,14 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.ClickType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -36,6 +37,7 @@ import static me.zeroeightsix.kami.module.modules.player.Scaffold.faceVectorPack
 /**
  * @author hub/blockparole
  * Created by @S-B99 on 25/11/19
+ * Updated by cats on 1/12/19
  */
 @Module.Info(name = "AutoWither", category = Module.Category.MISC, description = "Automatically creates withers")
 public class AutoWither extends Module {
@@ -74,10 +76,11 @@ public class AutoWither extends Module {
 
     private static final DecimalFormat df = new DecimalFormat("#.#");
 
-    private Setting<Double> placeRange = this.register(Settings.doubleBuilder("Place range").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build());
+    private Setting<Double> placeRange = register(Settings.doubleBuilder("Place range").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build());
     private Setting<Boolean> placeCloseToEnemy = register(Settings.b("Place close to enemy", false));
     private Setting<Boolean> fastMode = register(Settings.b("Disable after placing", true));
     private Setting<Boolean> debugMessages = register(Settings.b("Debug Messages", true));
+    private Setting<Boolean> nametag = register(Settings.b("Name Wither", false));
 
     private int swordSlot;
     private static boolean isSneaking;
@@ -256,7 +259,9 @@ public class AutoWither extends Module {
         }
         mc.player.inventory.currentItem = swordSlot;
 
-        if (fastMode.getValue()) {
+        if (nametag.getValue()) {
+            return;
+        } else if (fastMode.getValue()) {
             this.disable();
             return;
         }
@@ -264,6 +269,43 @@ public class AutoWither extends Module {
 
     @Override
     public void onUpdate() {
+        if (nametag.getValue()) {
+            int tagslot = -1;
+            for (int i = 0; i < 9; i++) {
+                ItemStack stack = mc.player.inventory.getStackInSlot(i);
+
+                if (stack == ItemStack.EMPTY || stack.getItem() instanceof ItemBlock) {
+                    continue;
+                }
+
+                Item tag = stack.getItem();
+
+                if (tag instanceof ItemNameTag) {
+                    tagslot = i;
+                }
+            }
+            if (tagslot == -1 && fastMode.getValue()) {
+                Command.sendChatMessage("[AutoWither] Error: No nametags in inventory, disabling module");
+                this.disable();
+                return;
+            }
+            for (Entity w : mc.world.getLoadedEntityList()) {
+                if (w instanceof EntityWither) {
+                    final EntityWither wither = (EntityWither) w;
+                    if (mc.player.getDistance(wither) <= placeRange.getValue()) {
+                        if (debugMessages.getValue()) {Command.sendChatMessage("Registered Wither");}
+                        if (tagslot != -1) {
+                            mc.player.inventory.currentItem = tagslot;
+                            mc.playerController.interactWithEntity(mc.player, wither, EnumHand.MAIN_HAND);
+                            if (fastMode.getValue()) {
+                                this.disable();
+                            }
+                        }
+                    }
+                }
+            }
+            mc.player.inventory.currentItem = swordSlot;
+        }
 
         if (isDisabled() || mc.player == null || ModuleManager.isModuleEnabled("Freecam")) {
             return;
