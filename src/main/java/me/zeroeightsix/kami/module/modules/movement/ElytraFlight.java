@@ -8,6 +8,7 @@ import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by 086 on 11/04/2018.
+ * Updated by Itistheend on 11/30/19.
  */
 @Module.Info(name = "ElytraFlight", description = "Allows infinite elytra flying", category = Module.Category.MOVEMENT)
 public class ElytraFlight extends Module {
@@ -16,6 +17,16 @@ public class ElytraFlight extends Module {
 
     @Override
     public void onUpdate() {
+
+        if(mc.player.capabilities.isFlying){
+            mc.player.setVelocity(0, -.003, 0);
+            mc.player.capabilities.setFlySpeed(.915f);
+        }
+
+        if (mc.player.onGround){
+            mc.player.capabilities.allowFlying = false;
+        }
+
         if (!mc.player.isElytraFlying()) return;
         switch (mode.getValue()) {
             case BOOST:
@@ -45,14 +56,21 @@ public class ElytraFlight extends Module {
                 }
                 break;
             case FLY:
+                mc.player.capabilities.setFlySpeed(.915f);
                 mc.player.capabilities.isFlying = true;
+
+                if (mc.player.capabilities.isCreativeMode) return;
+                mc.player.capabilities.allowFlying = true;
+                break;
         }
     }
 
     @Override
     protected void onDisable() {
-        if (mc.player.capabilities.isCreativeMode) return;
         mc.player.capabilities.isFlying = false;
+        mc.player.capabilities.setFlySpeed(0.05f);
+        if (mc.player.capabilities.isCreativeMode) return;
+        mc.player.capabilities.allowFlying = false;
     }
 
     private enum ElytraFlightMode {
