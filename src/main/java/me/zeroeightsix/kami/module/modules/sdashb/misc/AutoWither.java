@@ -259,7 +259,9 @@ public class AutoWither extends Module {
         }
         mc.player.inventory.currentItem = swordSlot;
 
-        if (fastMode.getValue() && !nametag.getValue()) {
+        if (nametag.getValue()) {
+            return;
+        } else if (fastMode.getValue()) {
             this.disable();
             return;
         }
