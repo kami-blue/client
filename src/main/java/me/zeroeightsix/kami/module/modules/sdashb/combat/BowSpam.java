@@ -9,7 +9,8 @@ import net.minecraft.network.play.client.CPacketPlayerDigging.Action;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * @author Jamie
+ * @author Seppukudevelopment
+ * https://github.com/seppukudevelopment/seppuku
  */
 @Module.Info(name = "BowSpam", description = "Makes you spam arrows", category = Module.Category.COMBAT)
 public class BowSpam extends Module {

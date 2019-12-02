@@ -63,15 +63,19 @@ public class SettingsPanel extends OrganisedContainer {
                     NumberSetting numberSetting = (NumberSetting) setting;
                     boolean isBound = numberSetting.isBound();
 
+                    // Terrible terrible bug fix.
+                    // I know, these parseDoubles look awful, but any conversions I tried here would end up with weird floating point conversion errors.
+                    // This is really the easiest solution..
+                    double value = Double.parseDouble(numberSetting.getValue().toString());
                     if (!isBound) {
-                        UnboundSlider slider = new UnboundSlider(numberSetting.getValue().doubleValue(), name, setting instanceof IntegerSetting);
+                        UnboundSlider slider = new UnboundSlider(value, name, setting instanceof IntegerSetting);
                         slider.addPoof(new Slider.SliderPoof<UnboundSlider, Slider.SliderPoof.SliderPoofInfo>() {
                             @Override
                             public void execute(UnboundSlider component, SliderPoofInfo info) {
                                 if (setting instanceof IntegerSetting)
-                                    setting.setValue(new Integer((int) info.getNewValue()));
+                                    setting.setValue((int) info.getNewValue());
                                 else if (setting instanceof FloatSetting)
-                                    setting.setValue(new Float(info.getNewValue()));
+                                    setting.setValue((float) info.getNewValue());
                                 else if (setting instanceof DoubleSetting)
                                     setting.setValue(info.getNewValue());
                                 setModule(module);
@@ -81,17 +85,22 @@ public class SettingsPanel extends OrganisedContainer {
                         if (numberSetting.getMin() != null) slider.setMin(numberSetting.getMin().doubleValue());
                         addChild(slider);
                     } else {
-                        Slider slider = new Slider(numberSetting.getValue().doubleValue(), numberSetting.getMin().doubleValue(), numberSetting.getMax().doubleValue(), Slider.getDefaultStep(numberSetting.getMin().doubleValue(), numberSetting.getMax().doubleValue()), name, setting instanceof IntegerSetting);
+                        double min = Double.parseDouble(numberSetting.getMin().toString());
+                        double max = Double.parseDouble(numberSetting.getMax().toString());
+                        Slider slider = new Slider(
+                                value, min, max,
+                                Slider.getDefaultStep(min, max),
+                                name,
+                                setting instanceof IntegerSetting);
                         slider.addPoof(new Slider.SliderPoof<Slider, Slider.SliderPoof.SliderPoofInfo>() {
                             @Override
                             public void execute(Slider component, SliderPoofInfo info) {
                                 if (setting instanceof IntegerSetting)
-                                    setting.setValue(new Integer((int) info.getNewValue()));
+                                    setting.setValue((int) info.getNewValue());
                                 else if (setting instanceof FloatSetting)
-                                    setting.setValue(new Float(info.getNewValue()));
+                                    setting.setValue((float) info.getNewValue());
                                 else if (setting instanceof DoubleSetting)
                                     setting.setValue(info.getNewValue());
-                                setModule(module);
                             }
                         });
                         addChild(slider);

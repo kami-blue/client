@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import com.sun.management.OperatingSystemMXBean;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
@@ -34,6 +35,7 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
+//import java.lang.management.ManagementFactory;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by 086 on 25/06/2017.
+ * Updated by S-B99 on 01/12/19
  */
 public class KamiGUI extends GUI {
 
@@ -48,6 +51,8 @@ public class KamiGUI extends GUI {
     public Theme theme;
 
     public static ColourHolder primaryColour = new ColourHolder(29, 29, 29);
+
+    //public static OperatingSystemMXBean bean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     public KamiGUI() {
         super(new KamiTheme());
@@ -208,6 +213,13 @@ public class KamiGUI extends GUI {
             information.addLine("\u00A7b" + KamiMod.KAMI_KANJI + "\u00A73 " + KamiMod.MODVER);
             information.addLine("\u00A7b" + Math.round(LagCompensator.INSTANCE.getTickRate()) + Command.SECTIONSIGN() + "3 tps");
             information.addLine("\u00A7b" + Wrapper.getMinecraft().debugFPS + Command.SECTIONSIGN() + "3 fps");
+            //information.addLine("\u00A7b" + Runtime.getRuntime().availableProcessors() + Command.SECTIONSIGN() + "3 cores");
+            information.addLine("\u00A7b" + (Runtime.getRuntime().freeMemory() / 1000000) + Command.SECTIONSIGN() + "3mB free");
+            //information.addLine("\u00A7b" + Wrapper.getPlayer().getDistance() + Command.SECTIONSIGN() + "3 fps");
+
+            //OperatingSystemMXBean.getSystemLoadAverage() / OperatingSystemMXBean.getAvailableProcessors()
+//            information.addLine("\u00A7b" + (Wrapper.getMinecraft().getVersion()) + Command.SECTIONSIGN() + "3% used");
+//            information.addLine("\u00A7b" + (Runtime.getRuntime().totalMemory() / 1000000) + Command.SECTIONSIGN() + "3MB used");
 
 //            information.addLine("[&3" + Sprint.getSpeed() + "km/h&r]");
 

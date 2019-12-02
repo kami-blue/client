@@ -102,7 +102,8 @@ public class Slider extends AbstractComponent {
     public void setValue(double value) {
         SliderPoof.SliderPoofInfo info = new SliderPoof.SliderPoofInfo(this.value, value);
         callPoof(SliderPoof.class, info);
-        this.value = integer ? (int) info.getNewValue() : info.getNewValue();
+        double newValue = info.getNewValue();
+        this.value = integer ? (int) newValue : newValue;
     }
 
     public static abstract class SliderPoof<T extends Component, S extends SliderPoof.SliderPoofInfo> extends Poof<T,S> {

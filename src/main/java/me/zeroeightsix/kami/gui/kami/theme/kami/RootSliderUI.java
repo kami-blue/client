@@ -21,7 +21,8 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
         glColor4f(1,0.33f,0.33f,component.getOpacity());
         glLineWidth(2.5f);
         int height = component.getHeight();
-        double w = component.getWidth() * (component.getValue() / component.getMaximum());
+        double value = component.getValue();
+        double w = component.getWidth() * ((value - component.getMinimum()) / (component.getMaximum() - component.getMinimum()));
         float downscale = 1.1f;
         glBegin(GL_LINES);
         {
@@ -37,11 +38,7 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
         glColor3f(1,0.33f,0.33f);
         RenderHelper.drawCircle((int)w,height/downscale,2f);
 
-        String s = "";
-        if (Math.floor(component.getValue())==component.getValue())
-            s += (int) component.getValue();
-        else
-            s += component.getValue();
+        String s = value + "";
         if (component.isPressed()){
             w -= smallFontRenderer.getStringWidth(s)/2;
             w = Math.max(0,Math.min(w, component.getWidth()-smallFontRenderer.getStringWidth(s)));
