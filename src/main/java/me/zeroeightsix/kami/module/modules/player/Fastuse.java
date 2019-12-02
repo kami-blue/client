@@ -31,9 +31,9 @@ public class Fastuse extends Module {
 
 		if (mc.player != null)
 		{
-			if (!all.getValue() && (mc.player.getHeldItemMainhand().getItem() == Items.EXPERIENCE_BOTTLE || mc.player.getHeldItemOffhand().getItem() == Items.EXPERIENCE_BOTTLE) && exp.getValue())  mc.rightClickDelayTimer = delay.getValue();;
-			if (!all.getValue() && (mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL || mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) && crystal.getValue())  mc.rightClickDelayTimer = delay.getValue();;
-			if (all.getValue())  mc.rightClickDelayTimer = delay.getValue();;
+			if (!all.getValue() && (mc.player.getHeldItemMainhand().getItem() == Items.EXPERIENCE_BOTTLE || mc.player.getHeldItemOffhand().getItem() == Items.EXPERIENCE_BOTTLE) && exp.getValue())  mc.rightClickDelayTimer = delay.getValue();
+			if (!all.getValue() && (mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL || mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) && crystal.getValue())  mc.rightClickDelayTimer = delay.getValue();
+			if (all.getValue())  mc.rightClickDelayTimer = delay.getValue();
 		}
 	});
 }
