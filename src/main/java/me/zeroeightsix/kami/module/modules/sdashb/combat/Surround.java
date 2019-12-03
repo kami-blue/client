@@ -258,7 +258,7 @@ public class Surround extends Module {
                     return;
                 }
 
-                if (debugMsgs.getValue().equals(DebugMsgs.IMPORTANT)) {
+                if (debugMsgs.getValue().equals(DebugMsgs.ALL)) {
                     Command.sendChatMessage("[Surround] Distance > 4.25 blocks!");
                 }
             }
