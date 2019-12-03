@@ -17,9 +17,12 @@ import net.minecraft.network.play.server.SPacketChunkData;
  * @author Fums
  * @coauthor S-B99
  * Updated by S-B99 on 01/12/19
- * Updated by cats on 02/12/19
  */
-
+/***
+* Packet mode
+* @author cats
+ * Updated by cats on 02/12/19
+*/
 public class AntiChunkBan extends Module {
 
     private static long startTime = 0;
