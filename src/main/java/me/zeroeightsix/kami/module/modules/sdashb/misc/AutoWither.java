@@ -82,7 +82,7 @@ public class AutoWither extends Module {
     private Setting<Boolean> placeCloseToEnemy = register(Settings.b("Place close to enemy", false));
     private Setting<Boolean> fastMode = register(Settings.b("Disable after placing", true));
     private Setting<Boolean> debugMessages = register(Settings.b("Debug Messages", true));
-    private Setting<Boolean> nametag = register(Settings.b("Name Wither", false));
+    private Setting<Boolean> nametag = register(Settings.b("Name Wither", true));
 
     private int swordSlot;
     private static boolean isSneaking;
