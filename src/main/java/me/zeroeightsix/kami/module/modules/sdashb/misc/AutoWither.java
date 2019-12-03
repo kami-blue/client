@@ -74,6 +74,8 @@ public class AutoWither extends Module {
             Blocks.BLACK_SHULKER_BOX
     );
 
+    private long startTime = 0;
+
     private static final DecimalFormat df = new DecimalFormat("#.#");
 
     private Setting<Double> placeRange = register(Settings.doubleBuilder("Place range").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build());
@@ -299,12 +301,20 @@ public class AutoWither extends Module {
                             mc.playerController.interactWithEntity(mc.player, wither, EnumHand.MAIN_HAND);
                             if (fastMode.getValue()) {
                                 this.disable();
+                                return;
                             }
                         }
                     }
                 }
             }
             mc.player.inventory.currentItem = swordSlot;
+
+            if (startTime == 0) startTime = System.currentTimeMillis();
+            if (startTime + 500 <= System.currentTimeMillis()) {
+                this.disable();
+                startTime = System.currentTimeMillis();
+                return;
+            }
         }
 
         if (isDisabled() || mc.player == null || ModuleManager.isModuleEnabled("Freecam")) {
