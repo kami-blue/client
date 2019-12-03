@@ -17,26 +17,25 @@ import net.minecraft.network.play.server.SPacketChunkData;
  * @author Fums
  * @coauthor S-B99
  * Updated by S-B99 on 01/12/19
+ * Updated by cats on 02/12/19
  */
-/***
- * Packet mode
- *  * Author Seth
- *  * 6/2/2019 @ 1:30 PM.
- *  https://github.com/seppukudevelopment/seppuku
- */
+
 public class AntiChunkBan extends Module {
 
     private static long startTime = 0;
-    private Setting<Boolean> noPacket = register(Settings.b("No Chunk Packet",false));
-    private Setting<Boolean> kill = register(Settings.b("/kill", false));
+    private Setting<ModeThing> modeThing = register(Settings.e("Mode", ModeThing.PACKET));
     private Setting<Float> delayTime = register(Settings.f("Kill Delay", 10));
     private Setting<Boolean> disable = register(Settings.b("Disable After Kill", false));
+
+    private enum ModeThing {
+        PACKET, KILL, BOTH
+    }
 
     @Override
     public void onUpdate() {
         if (mc.player == null) return;
 
-        if (kill.getValue()) {
+        if (modeThing.getValue().equals(ModeThing.KILL) || modeThing.getValue().equals(ModeThing.BOTH)) {
             if (Minecraft.getMinecraft().getCurrentServerData() != null) {
                 if (startTime == 0) startTime = System.currentTimeMillis();
                 if (startTime + delayTime.getValue() <= System.currentTimeMillis()) {
@@ -58,7 +57,7 @@ public class AntiChunkBan extends Module {
 
     @EventHandler
     Listener<PacketEvent.Receive> receiveListener = new Listener<>(event -> {
-        if (noPacket.getValue()) {
+        if (modeThing.getValue().equals(ModeThing.PACKET) || modeThing.getValue().equals(ModeThing.BOTH)) {
             if (mc.player == null) return;
             if (event.getPacket() instanceof SPacketChunkData) {
                 event.cancel();
