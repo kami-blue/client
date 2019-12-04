@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.CPacketChatMessage;
  * Updated by @S-B99 on 29/11/19
  * Updated by d1gress/Qther on 5/12/2019
  */
-@Module.Info(name = "AutoQMain", description = "Automatically does \"/queue main\" every 7.1 minutes.", category = Module.Category.MISC)
+@Module.Info(name = "AutoQMain", description = "Automatically does \"/queue main\" every X minutes.", category = Module.Category.MISC)
 public class AutoQMain extends Module {
 
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
