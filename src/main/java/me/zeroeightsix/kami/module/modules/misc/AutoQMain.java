@@ -10,9 +10,9 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 /***
  * @author S-B99
  * Updated by @S-B99 on 29/11/19
- * Updated by d1gress/Qther on 4/12/19
+ * Updated by d1gress/Qther on 5/12/2019
  */
-@Module.Info(name = "AutoQMain", description = "Automatically does \"/queue main\" every X minutes.", category = Module.Category.MISC)
+@Module.Info(name = "AutoQMain", description = "Automatically does \"/queue main\" every 7.1 minutes.", category = Module.Category.MISC)
 public class AutoQMain extends Module {
 
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
@@ -20,9 +20,13 @@ public class AutoQMain extends Module {
     private Setting<Double> delay = this.register(Settings.doubleBuilder("Wait time").withMinimum(0.2).withValue(7.1).withMaximum(10.0).build());
 
     private double delayTime;
+    private double oldDelay = 0;
 
     @Override
     public void onUpdate() {
+        if (oldDelay == 0) oldDelay = delay.getValue();
+        else if (oldDelay != delay.getValue()) delayTime = delay.getValue();
+            
         if (delayTime <= 0) {
             delayTime = (int) (delay.getValue() * 3000);
         }
