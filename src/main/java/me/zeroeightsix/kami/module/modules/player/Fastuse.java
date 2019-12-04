@@ -12,21 +12,30 @@ import net.minecraft.item.ItemExpBottle;
  * @author S-B99
  * Updated by d1gress/Qther on 2/12/2019
  * Updated by S-B99 on 03/12/19
+ * Updated by d1gress/Qther on 4/12/19
  */
 @Module.Info(category = Module.Category.PLAYER, description = "Changes delay when holding right click", name = "FastUse")
 public class Fastuse extends Module {
 
 
-//	private Setting<Integer> delay = register(Settings.i("Delay", 0));
-	private Setting<Double> delay = register(Settings.doubleBuilder("Delay").withMinimum(0.0).withValue(0.0).withMaximum(10.0).build());
+	private Setting<Integer> delay = register(Settings.i("Delay", 0);
 	private Setting<Mode> mode = register(Settings.e("Mode", Mode.BOTH));
 	private static long time = 0;
-//	private int modeCase;
 	private enum Mode {
 		ALL, BOTH, EXP, CRYSTAL
 	}
+	
 	@Override
 	public void onUpdate() {
+		if (!(delay.getValue() <= 0)) {
+			if (time <= 0) time = delay.getValue();
+			else if (time > 0) {
+				return;
+				time--:
+			}
+		}
+		
+		if (mc.player == null) return;
 		Item itemMain = mc.player.getHeldItemMainhand().getItem();
 		Item itemOff = mc.player.getHeldItemOffhand().getItem();
 		boolean doExpMain = itemMain instanceof ItemExpBottle;
@@ -34,42 +43,22 @@ public class Fastuse extends Module {
 		boolean doCrystalMain = itemMain instanceof ItemEndCrystal;
 		boolean doCrystalOff = itemOff instanceof ItemEndCrystal;
 
-		if (mc.player != null && delay.getValue() <= 0) {
-			switch(mode.getValue()){
-				case ALL:
+		switch(mode.getValue()){
+			case ALL:
+				mc.rightClickDelayTimer = 0;
+			case BOTH:
+				if (doExpMain || doExpOff || doCrystalMain || doCrystalOff) {
 					mc.rightClickDelayTimer = 0;
-				case BOTH:
-					if (doExpMain || doExpOff || doCrystalMain || doCrystalOff) {
-						mc.rightClickDelayTimer = 0;
-					}
-				case EXP:
-					if (doExpMain || doExpOff) {
-						mc.rightClickDelayTimer = 0;
-					}
-				case CRYSTAL:
-					if (doCrystalMain || doCrystalOff) {
-						mc.rightClickDelayTimer = 0;
-					}
-			}
-		}
-		else if (mc.player != null && time == 0 || time + delay.getValue() * 50 <= System.currentTimeMillis()) { //scales weird
-			switch(mode.getValue()){
-				case ALL:
+				}
+			case EXP:
+				if (doExpMain || doExpOff) {
 					mc.rightClickDelayTimer = 0;
-				case BOTH:
-					if (doExpMain || doExpOff || doCrystalMain || doCrystalOff) {
-						mc.rightClickDelayTimer = 0;
-					}
-				case EXP:
-					if (doExpMain || doExpOff) {
-						mc.rightClickDelayTimer = 0;
-					}
-				case CRYSTAL:
-					if (doCrystalMain || doCrystalOff) {
-						mc.rightClickDelayTimer = 0;
-					}
+				}
+			case CRYSTAL:
+				if (doCrystalMain || doCrystalOff) {
+					mc.rightClickDelayTimer = 0;
+				}
 			}
-			time = System.currentTimeMillis();
 		}
 	}
 }
