@@ -17,19 +17,25 @@ import net.minecraft.item.ItemExpBottle;
 public class Fastuse extends Module {
 
 
-	private Setting<Integer> delay = register(Settings.i("Delay", 0));
+	private Setting<Integer> delay = this.register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(40).withValue(0).build());
 	private Setting<Mode> mode = register(Settings.e("Mode", Mode.BOTH));
 	private static long time = 0;
 	private enum Mode {
 		ALL, BOTH, EXP, CRYSTAL
 	}
-	
+
+	@Override
+	public void onDisable() {
+		mc.rightClickDelayTimer = 4;
+	}
+
 	@Override
 	public void onUpdate() {
 		if (!(delay.getValue() <= 0)) {
-			if (time <= 0) time = delay.getValue();
-			else if (time > 0) {
+			if (time <= 0) time = (int) Math.round((2*(Math.round((float) delay.getValue() / 2))));
+			else {
 				time--;
+				mc.rightClickDelayTimer = 1;
 				return;
 			}
 		}
