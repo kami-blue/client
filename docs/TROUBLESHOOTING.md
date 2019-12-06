@@ -13,6 +13,11 @@ What `.jar` are you using in your `mods` folder? Make sure to use the one that e
 ###### Just doesn't work when using runClient
 Don't use that, try building and running forge normally
 
+###### Crashes before game starts with spongepowered error
+Make sure your workspace is clean and run
+./gradlew setupDecompWorkspace
+./gradlew build mkdir rmOld copy
+
 ## Crashes in-game
 
 **Please make sure you're on the latest version of forge before proceeding!**
@@ -21,3 +26,5 @@ Don't use that, try building and running forge normally
 Crashes in game but it worked fine / errors link to files you haven't changed
 
 Delete your .gradle or gradle cache or whatever it's called on windows
+
+
