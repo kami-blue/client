@@ -31,6 +31,7 @@ public class Module {
     private final Category category = getAnnotation().category();
     private Setting<Bind> bind = register(Settings.custom("Bind", Bind.none(), new BindConverter()).build());
     private Setting<Boolean> enabled = register(Settings.booleanBuilder("Enabled").withVisibility(aBoolean -> false).withValue(false).build());
+    private Setting<Boolean> drawn = true;
     public boolean alwaysListening;
     protected static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -127,6 +128,15 @@ public class Module {
 
     public void toggle() {
         setEnabled(!isEnabled());
+    }
+
+    public Bind getDrawn() {
+        return drawn;
+    }
+
+    public Bind toggleDrawn() {
+        drawn = !drawn;
+        return drawn;
     }
 
     public void enable() {
