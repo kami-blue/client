@@ -89,6 +89,13 @@ public class MixinGuiScreen {
             }
         }
     }
+    //i need perm uwu
+    @Inject(method = { "Lnet/minecraft/client/gui/GuiScreen;drawWorldBackground(I)V" }, at = { @At("HEAD") }, cancellable = true)
+    private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
+        if (this.mc.world != null && ModuleManager.isModuleEnabled("CleanGUI")) {
+            ci.cancel();
+        }
+    }
 
     private void drawGradientRectP(int left, int top, int right, int bottom, int startColor, int endColor) {
         float f = (float) (startColor >> 24 & 255) / 255.0F;
