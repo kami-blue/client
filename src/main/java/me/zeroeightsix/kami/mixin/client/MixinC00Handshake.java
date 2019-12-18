@@ -27,7 +27,7 @@ public class MixinC00Handshake {
 
     @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
     public void writePacketData(PacketBuffer buf, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled("FakeVanilla")) {
+        if (ModuleManager.isModuleEnabled("FakeVanillaClient")) {
             info.cancel();
             buf.writeVarInt(protocolVersion);
             buf.writeString(ip);

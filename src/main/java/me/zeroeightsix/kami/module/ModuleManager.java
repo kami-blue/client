@@ -121,14 +121,7 @@ public class ModuleManager {
     public static Module getModuleByName(String name) {
         Integer index = lookup.get(name.toLowerCase());
         if (index == null) {
-            // just in case?
-            for (Module module : modules) {
-                if (module.getOriginalName().equalsIgnoreCase(name)) {
-                    return module;
-                }
-            }
-            // TODO redo modulemanager so this shit doesn't happen xd
-            throw new IllegalArgumentException("getModuleByName() failed. Are you calling this too early? Is the module spelled correctly");
+            throw new IllegalArgumentException("getModuleByName() failed. Are you calling this too early? Is the module spelled correctly? Please check!!!!");
         }
         return modules.get(index);
     }
