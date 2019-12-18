@@ -24,6 +24,7 @@ sdashb.modules
 
 # MCP
 
+assets/mcp-1.12.2-srg.zip
 assets/*.csv
 mcp/
 src/minecraft/

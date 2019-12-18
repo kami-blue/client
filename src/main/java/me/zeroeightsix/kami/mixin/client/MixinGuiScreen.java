@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiScreen.class)
 public class MixinGuiScreen {
 
+    @Shadow public Minecraft mc;
     RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
     FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
@@ -87,6 +89,13 @@ public class MixinGuiScreen {
                     GlStateManager.enableRescaleNormal();
                 }
             }
+        }
+    }
+
+    @Inject(method = "Lnet/minecraft/client/gui/GuiScreen;drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
+    private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
+        if (this.mc.world != null && ModuleManager.isModuleEnabled("CleanGUI")) {
+            ci.cancel();
         }
     }
 
