@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.module.modules.bewwawho.gui.CleanGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -94,7 +95,7 @@ public class MixinGuiScreen {
 
     @Inject(method = "Lnet/minecraft/client/gui/GuiScreen;drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
-        if (this.mc.world != null && ModuleManager.isModuleEnabled("CleanGUI")) {
+        if (this.mc.world != null && ModuleManager.isModuleEnabled("CleanGUI") && (((CleanGUI) ModuleManager.getModuleByName("CleanGUI")).inventoryGlobal.getValue())) {
             ci.cancel();
         }
     }

@@ -23,6 +23,7 @@
     "MixinRenderLiving",
     "MixinRenderPlayer",
     "MixinStateImplementation",
-    "MixinAbstractClientPlayer"
+    "MixinAbstractClientPlayer",
+    "MixinGuiNewChat"
   ]
 }
