@@ -5,6 +5,10 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 
+/***
+ * @author S-B99
+ * Updated by S-B99 on 27/12/19
+ */
 @Module.Info(name = "CleanGUI", category = Module.Category.GUI, showOnArray = Module.ShowOnArray.OFF)
 public class CleanGUI extends Module {
     public Setting<Boolean> inventoryGlobal = register(Settings.b("Inventory", true));
