@@ -33,6 +33,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
@@ -205,6 +206,7 @@ public class KamiGUI extends GUI {
         frame.setPinneable(true);
         frames.add(frame);
 
+
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Info");
         frame.setCloseable(false);
         frame.setPinneable(true);
@@ -257,6 +259,20 @@ public class KamiGUI extends GUI {
         });
         frame.addChild(information);
         information.setFontRenderer(fontRenderer);
+        frames.add(frame);
+
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "True Durability");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label durability = new Label("");
+        durability.setShadow(true);
+        durability.addTickListener(() -> {
+            ItemStack itemStack = Wrapper.getMinecraft().player.getHeldItemMainhand();
+            int itemDurability = itemStack.getMaxDamage() - itemStack.getItemDamage();
+            durability.setText(String.valueOf(itemDurability));
+        });
+        frame.addChild(durability);
+        durability.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
