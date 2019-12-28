@@ -21,10 +21,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.bewwawho.gui.InfoOverlay;
 import me.zeroeightsix.kami.util.bewwawho.CalcPing;
-import me.zeroeightsix.kami.util.zeroeightysix.ColourHolder;
-import me.zeroeightsix.kami.util.zeroeightysix.LagCompensator;
-import me.zeroeightsix.kami.util.zeroeightysix.Pair;
-import me.zeroeightsix.kami.util.zeroeightysix.Wrapper;
+import me.zeroeightsix.kami.util.zeroeightysix.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -273,6 +270,21 @@ public class KamiGUI extends GUI {
         });
         frame.addChild(durability);
         durability.setFontRenderer(fontRenderer);
+        frames.add(frame);
+
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Friends");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label friends = new Label("");
+        friends.setShadow(true);
+        friends.addTickListener(() -> {
+            friends.setText("");
+            Friends.friends.getValue().forEach(friend -> {
+                friends.addLine(friend.getUsername());
+            });
+        });
+        frame.addChild(friends);
+        friends.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
