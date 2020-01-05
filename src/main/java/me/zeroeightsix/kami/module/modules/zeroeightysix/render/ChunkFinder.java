@@ -156,6 +156,16 @@ public class ChunkFinder extends Module {
         return logWriter;
     }
 
+
+    private void logWriterClose() {
+        if (logWriter != null) {
+            logWriter.close();
+            logWriter = null;
+            this.lastSetting = new LastSetting(); // what if the settings stay the same?
+        }
+
+    }
+
     private void logWriterOpen() {
         String filepath = getPath().toString();
         try {
@@ -296,13 +306,6 @@ public class ChunkFinder extends Module {
             return false;
         }
         return true;
-    }
-
-    private void logWriterClose() {
-        if (logWriter != null) {
-            logWriter.close();
-            logWriter = null;
-        }
     }
 
     private void saveNewChunk(PrintWriter log, String data) {
