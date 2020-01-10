@@ -105,31 +105,27 @@ public class KamiMod {
     public void postInit(FMLPostInitializationEvent event) {
         if (RichPresence.INSTANCE.customUsers != null) {
             for (RichPresence.CustomUser user : RichPresence.INSTANCE.customUsers) {
-                if (user.type.equalsIgnoreCase("0")) {
+                if (user.type.equalsIgnoreCase("0") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "donator1";
                     DiscordPresence.presence.smallImageText = "donator <3";
-                }
-                else if (user.type.equalsIgnoreCase("1")) {
+                } else if (user.type.equalsIgnoreCase("1") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "inviter";
                     DiscordPresence.presence.smallImageText = "inviter uwu";
-                }
-                else if (user.type.equalsIgnoreCase("2")) {
+                } else if (user.type.equalsIgnoreCase("2") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "giveaway";
                     DiscordPresence.presence.smallImageText = "giveaway winner";
-                }
-                else if (user.type.equalsIgnoreCase("3")) {
+                } else if (user.type.equalsIgnoreCase("3") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "contest";
                     DiscordPresence.presence.smallImageText = "contest winner";
-                }
-                else if (user.type.equalsIgnoreCase("4")) {
+                } else if (user.type.equalsIgnoreCase("4") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "nine";
                     DiscordPresence.presence.smallImageText = "900th member uwu";
-                }
-                else {
+                } else {
                     DiscordPresence.presence.smallImageKey = "donator2";
                     DiscordPresence.presence.smallImageText = "donator <3";
                     System.out.println("[KAMI Blue] Discord RPC failed. type: " + user.type);
-                } break;
+                }
+                break;
                 // for some reason doing this in a case statement doesn't work
                 // if anybody can help me with that i'd appreciate it
 //                if (user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
