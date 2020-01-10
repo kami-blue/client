@@ -10,25 +10,26 @@ import java.net.URL;
 /***
  * @author S-B99
  */
-public class Donator {
+public class RichPresence {
 
-    public static Donator INSTANCE;
-    public DonatorUser[] donatorUsers;
+    public static RichPresence INSTANCE;
+    public CustomUser[] customUsers;
 
-    public class DonatorUser {
+    public class CustomUser {
         public String uuid;
+        public String type;
     }
 
-    public Donator() {
+    public RichPresence() {
         INSTANCE = this;
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(KamiMod.DONATORS_JSON).openConnection();
             connection.connect();
-            this.donatorUsers = new Gson().fromJson(new InputStreamReader(connection.getInputStream()), DonatorUser[].class);
+            this.customUsers = new Gson().fromJson(new InputStreamReader(connection.getInputStream()), CustomUser[].class);
             connection.disconnect();
         } catch (Exception e) {
             KamiMod.log.error("Failed to load donators");
-//            e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }
