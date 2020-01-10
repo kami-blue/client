@@ -46,6 +46,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -105,6 +106,15 @@ public class KamiMod {
     public void postInit(FMLPostInitializationEvent event) {
         if (RichPresence.INSTANCE.customUsers != null) {
             for (RichPresence.CustomUser user : RichPresence.INSTANCE.customUsers) {
+                Objects.requireNonNull(user.type);
+                Objects.requireNonNull(user.uuid);
+                Objects.requireNonNull(Minecraft.getMinecraft());
+                Objects.requireNonNull(Minecraft.getMinecraft().session);
+                Objects.requireNonNull(Minecraft.getMinecraft().session.getProfile());
+                Objects.requireNonNull(Minecraft.getMinecraft().session.getProfile().getId());
+                Objects.requireNonNull(Minecraft.getMinecraft().session.getProfile().getId().toString());
+                Objects.requireNonNull(DiscordPresence.presence);
+
                 if (user.type.equalsIgnoreCase("0") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "donator1";
                     DiscordPresence.presence.smallImageText = "donator <3";
@@ -120,7 +130,7 @@ public class KamiMod {
                 } else if (user.type.equalsIgnoreCase("4") && user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     DiscordPresence.presence.smallImageKey = "nine";
                     DiscordPresence.presence.smallImageText = "900th member uwu";
-                } else {
+                } else if (user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())){
                     DiscordPresence.presence.smallImageKey = "donator2";
                     DiscordPresence.presence.smallImageText = "donator <3";
                     System.out.println("[KAMI Blue] Discord RPC failed. type: " + user.type);
