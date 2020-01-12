@@ -109,13 +109,13 @@ public class KamiMod {
                 if (user.uuid.equalsIgnoreCase(Minecraft.getMinecraft().session.getProfile().getId().toString())) {
                     switch (Integer.parseInt(user.type)) {
                         case 0: {
-                            DiscordPresence.presence.smallImageKey = "donator2";
+                            DiscordPresence.presence.smallImageKey = "booster";
                             DiscordPresence.presence.smallImageText = "donator uwu";
                             break;
                         }
                         case 1: {
                             DiscordPresence.presence.smallImageKey = "inviter";
-                            DiscordPresence.presence.smallImageText = "inviter <3";
+                            DiscordPresence.presence.smallImageText = "inviter owo";
                             break;
                         }
                         case 2: {
@@ -125,7 +125,7 @@ public class KamiMod {
                         }
                         default: {
                             DiscordPresence.presence.smallImageKey = "donator2";
-                            DiscordPresence.presence.smallImageText = "rpc load failed";
+                            DiscordPresence.presence.smallImageText = "donator <3";
                             System.out.println("oof rpc failed. type: " + user.type.getClass().getSimpleName());
                             break;
                         }
