@@ -123,6 +123,14 @@ public class KamiMod {
                             DiscordPresence.presence.smallImageText = "giveaway winner";
                             break;
                         }
+                        case 3: {
+                            DiscordPresence.presence.smallImageKey = "contest";
+                            DiscordPresence.presence.smallImageText = "contest winner";
+                        }
+                        case 4: {
+                            DiscordPresence.presence.smallImageKey = "nine";
+                            DiscordPresence.presence.smallImageText = "900th member";
+                        }
                         default: {
                             DiscordPresence.presence.smallImageKey = "donator2";
                             DiscordPresence.presence.smallImageText = "donator <3";
