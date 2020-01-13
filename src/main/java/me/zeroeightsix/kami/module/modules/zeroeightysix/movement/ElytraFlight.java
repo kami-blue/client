@@ -18,9 +18,7 @@ public class ElytraFlight extends Module {
     private Setting<ElytraFlightMode> mode = register(Settings.e("Mode", ElytraFlightMode.FLY));
     private Setting<Boolean> highway = register(Settings.b("Highway Mode", false));
     private Setting<Float> speed = register(Settings.f("Speed", 1.8f));
-    private Setting<Float> fallspeed = register(Settings.f("Fall Speed", .000050000002f));
-
-//    private Float fallspeed = .000050000002f;
+    private Setting<Float> fallspeed = register(Settings.f("Fall Speed", 0.000050000002f));
 
     @Override
     public void onUpdate() {
@@ -32,7 +30,7 @@ public class ElytraFlight extends Module {
         if (mc.player.capabilities.isFlying) {
             if (highway.getValue()) {
                 mc.player.setVelocity(0, 0, 0);
-                mc.player.setPosition(mc.player.posX, mc.player.posY - fallspeed.getValue(), mc.player.posZ);
+                mc.player.setPosition(mc.player.posX, mc.player.posY - 0.000050000002f, mc.player.posZ);
                 mc.player.capabilities.setFlySpeed(speed.getValue());
                 mc.player.setSprinting(false);
             }
