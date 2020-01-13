@@ -7,6 +7,8 @@ import net.minecraft.entity.passive.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by d1gress/Qther on 25/11/2017.
@@ -20,7 +22,8 @@ public class EntityStatsCommand extends Command {
     Minecraft mc = Minecraft.getMinecraft();
     
     public EntityStatsCommand() {
-        super("estats", null);
+        super("entitystats", null, "estats", "estat", "entitystat", "horsestats", "horsestats");
+        setDescription("Gives you the stats of the entity you're riding");
     }
 
     public static double round(double value, int places) {

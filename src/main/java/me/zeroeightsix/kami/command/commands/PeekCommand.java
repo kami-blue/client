@@ -16,7 +16,7 @@ public class PeekCommand extends Command {
     public static TileEntityShulkerBox sb;
 
     public PeekCommand() {
-        super("peek", SyntaxChunk.EMPTY);
+        super("peek", SyntaxChunk.EMPTY, "shulkerpeek");
         setDescription("Look inside the contents of a shulker box without opening it");
     }
 

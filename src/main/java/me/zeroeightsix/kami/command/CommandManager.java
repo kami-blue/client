@@ -47,6 +47,12 @@ public class CommandManager {
 				c.call(parts);
 				return;
 			}
+			else for (int i = 0; i < c.getAliases().size(); i++) {
+				if (c.getAliases().get(i).equalsIgnoreCase(label)) {
+					c.call(parts);
+					return;
+				}
+			}
 		}
 		
 		Command.sendChatMessage("Unknown command. try 'commands' for a list of commands.");

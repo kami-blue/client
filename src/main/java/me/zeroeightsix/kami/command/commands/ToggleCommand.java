@@ -14,7 +14,7 @@ public class ToggleCommand extends Command {
     public ToggleCommand() {
         super("toggle", new ChunkBuilder()
                 .append("module", true, new ModuleParser())
-                .build());
+                .build(), "t");
         setDescription("Quickly toggle a module on and off");
     }
 

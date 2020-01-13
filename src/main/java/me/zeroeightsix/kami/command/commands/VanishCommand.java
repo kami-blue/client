@@ -13,7 +13,8 @@ public class VanishCommand extends Command {
     private static Entity vehicle;
     Minecraft mc = Minecraft.getMinecraft();
     public VanishCommand() {
-        super("vanish", null);
+        super("vanish", null, "entitydesync", "edesync", "entityvanish", "evanish", "ev");
+        setDescription("Allows you to vanish using an entity");
     }
 
     @Override

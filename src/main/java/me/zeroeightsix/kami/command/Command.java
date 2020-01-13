@@ -5,30 +5,61 @@ import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Wrapper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentBase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static net.minecraft.launchwrapper.LogWrapper.log;
 
 public abstract class Command {
 	
 	protected String label;
 	protected String syntax;
 	protected String description;
+	protected ArrayList<String> aliases;
 
 	protected SyntaxChunk[] syntaxChunks;
 
 	public static Setting<String> commandPrefix = Settings.s("commandPrefix", ".");
 
+	public Command(String label, SyntaxChunk[] syntaxChunks, ArrayList<String> aliases) {
+		this.label = label;
+		this.syntaxChunks = syntaxChunks;
+		this.description = "Descriptionless";
+		this.aliases = aliases;
+	}
+
+	public Command(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
+		this.label = label;
+		this.syntaxChunks = syntaxChunks;
+		this.description = "Descriptionless";
+		this.aliases = new ArrayList<String>(){{ this.addAll(Arrays.asList(aliases)); }};
+	}
+
 	public Command(String label, SyntaxChunk[] syntaxChunks) {
 		this.label = label;
 		this.syntaxChunks = syntaxChunks;
 		this.description = "Descriptionless";
+		this.aliases = new ArrayList<String>();
 	}
 
 	public static void sendChatMessage(String message){
 		sendRawChatMessage("&7[&a" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+	}
+	
+	public static void sendErrorMessage(String message){
+		sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+	}
+
+	public static void sendWarningMessage(String message){
+		sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
 	}
 
 	public static void sendStringChatMessage(String[] messages) {
@@ -37,7 +68,21 @@ public abstract class Command {
     }
 
 	public static void sendRawChatMessage(String message){
-		Wrapper.getPlayer().sendMessage(new ChatMessage(message));
+		if (isSendable()) {
+			Wrapper.getPlayer().sendMessage(new ChatMessage(message));
+		}
+		else {
+			log.info("KAMI Blue: Avoided NPE by logging to file instead of chat\n" + message);
+		}
+	}
+
+	public static boolean isSendable(){
+		if (Minecraft.getMinecraft().player == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 
 	protected void setDescription(String description) {
@@ -51,9 +96,13 @@ public abstract class Command {
 	public static String getCommandPrefix() {
 		return commandPrefix.getValue();
 	}
-	
+
 	public String getLabel() {
 		return label;
+	}
+
+	public ArrayList<String> getAliases() {
+		return aliases;
 	}
 	
 	public abstract void call(String[] args);

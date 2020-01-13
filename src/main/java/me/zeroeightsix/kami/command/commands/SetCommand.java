@@ -21,7 +21,7 @@ public class SetCommand extends Command {
                 .append("module", true, new ModuleParser())
                 .append("setting", true)
                 .append("value", true)
-                .build());
+                .build(), "setsetting");
         setDescription("Change the setting of a certain module");
     }
 
