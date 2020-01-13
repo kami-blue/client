@@ -16,7 +16,8 @@ public class InfoOverlay extends Module {
     public Setting<Boolean> globalInfoTps = register(Settings.b("TPS", true));
     public Setting<Boolean> globalInfoFps = register(Settings.b("FPS", true));
     public Setting<Boolean> globalInfoPin = register(Settings.b("Ping", true));
-    public Setting<Boolean> globalInfoMem = register(Settings.b("Memory", true));
+    public Setting<Boolean> globalInfoDur = register(Settings.b("Durability", true));
+    public Setting<Boolean> globalInfoMem = register(Settings.b("Memory", false));
 
     public void onDisable() {
         this.enable();

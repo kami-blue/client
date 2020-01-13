@@ -21,10 +21,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.bewwawho.gui.InfoOverlay;
 import me.zeroeightsix.kami.util.bewwawho.CalcPing;
-import me.zeroeightsix.kami.util.zeroeightysix.ColourHolder;
-import me.zeroeightsix.kami.util.zeroeightysix.LagCompensator;
-import me.zeroeightsix.kami.util.zeroeightysix.Pair;
-import me.zeroeightsix.kami.util.zeroeightysix.Wrapper;
+import me.zeroeightsix.kami.util.zeroeightysix.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
@@ -205,6 +203,7 @@ public class KamiGUI extends GUI {
         frame.setPinneable(true);
         frames.add(frame);
 
+
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Info");
         frame.setCloseable(false);
         frame.setPinneable(true);
@@ -215,7 +214,9 @@ public class KamiGUI extends GUI {
             boolean privateInfoTps = (((InfoOverlay) ModuleManager.getModuleByName("InfoOverlay")).globalInfoTps.getValue());
             boolean privateInfoFps = (((InfoOverlay) ModuleManager.getModuleByName("InfoOverlay")).globalInfoFps.getValue());
             boolean privateInfoPin = (((InfoOverlay) ModuleManager.getModuleByName("InfoOverlay")).globalInfoPin.getValue());
+            boolean privateInfoDur = (((InfoOverlay) ModuleManager.getModuleByName("InfoOverlay")).globalInfoDur.getValue());
             boolean privateInfoMem = (((InfoOverlay) ModuleManager.getModuleByName("InfoOverlay")).globalInfoMem.getValue());
+
             int privatePingValue = CalcPing.globalInfoPingValue();
             String privateDisplayN = Wrapper.getMinecraft().player.getName();
 
@@ -235,13 +236,17 @@ public class KamiGUI extends GUI {
                 if (privateInfoPin) {
                     information.addLine("\u00A7b" + privatePingValue + Command.SECTION_SIGN + "3 ms");
                 }
+                if (privateInfoDur) {
+                    ItemStack itemStack = Wrapper.getMinecraft().player.getHeldItemMainhand();
+                    int itemDurability = itemStack.getMaxDamage() - itemStack.getItemDamage();
+                    information.addLine("\u00A7b" + Integer.toString(itemDurability) + "\u00A73 dura");
+                }
                 if (privateInfoMem) {
                     information.addLine("\u00A7b" + (Runtime.getRuntime().freeMemory() / 1000000) + Command.SECTION_SIGN + "3mB free");
                 }
             } else {
                 information.setText("");
                 information.addLine("\u00A7b" + KamiMod.KAMI_KANJI + "\u00A73 " + KamiMod.MODVER);
-                information.addLine(Command.SECTION_SIGN + "EEnable InfoOverlay!");
             }
 
 
@@ -257,6 +262,21 @@ public class KamiGUI extends GUI {
         });
         frame.addChild(information);
         information.setFontRenderer(fontRenderer);
+        frames.add(frame);
+
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Friends");
+        frame.setCloseable(false);
+        frame.setPinneable(true);
+        Label friends = new Label("");
+        friends.setShadow(true);
+        friends.addTickListener(() -> {
+            friends.setText("");
+            Friends.friends.getValue().forEach(friend -> {
+                friends.addLine(friend.getUsername());
+            });
+        });
+        frame.addChild(friends);
+        friends.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");

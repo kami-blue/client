@@ -10,7 +10,8 @@ import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 
 /**
- * Made by FINZ0
+ * Created 13 August 2019 by hub
+ * Updated 14 November 2019 by hub
  * Updated by S-B99 on 14/12/19
  */
 

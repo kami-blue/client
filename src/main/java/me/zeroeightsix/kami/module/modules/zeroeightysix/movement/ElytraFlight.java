@@ -8,19 +8,38 @@ import net.minecraft.util.math.MathHelper;
 
 /**
  * Created by 086 on 11/04/2018.
- * Updated by Itistheend on 11/30/19.
+ * Updated by Itistheend on 28/12/19.
+ * Updated by S-B99 on 11/01/20
  */
+
 @Module.Info(name = "ElytraFlight", description = "Allows infinite elytra flying", category = Module.Category.MOVEMENT)
 public class ElytraFlight extends Module {
 
-    private Setting<ElytraFlightMode> mode = register(Settings.e("Mode", ElytraFlightMode.BOOST));
+    private Setting<ElytraFlightMode> mode = register(Settings.e("Mode", ElytraFlightMode.FLY));
+    private Setting<Float> speed = register(Settings.f("Speed", 1.8f));
+    private Setting<Boolean> highway = register(Settings.b("Highway Mode", false));
+    private Setting<Float> fallspeed = register(Settings.f("Fall Speed", .000050000002f));
+
+//    private Float fallspeed = .000050000002f;
 
     @Override
     public void onUpdate() {
 
+        if (highway.getValue()) {
+            mode.setValue(ElytraFlightMode.FLY);
+        }
+
         if (mc.player.capabilities.isFlying) {
-            mc.player.setVelocity(0, -.003, 0);
-            mc.player.capabilities.setFlySpeed(.915f);
+            if (highway.getValue()) {
+                mc.player.setVelocity(0, 0, 0);
+                mc.player.setPosition(mc.player.posX, mc.player.posY - fallspeed.getValue(), mc.player.posZ);
+                mc.player.capabilities.setFlySpeed(speed.getValue());
+                mc.player.setSprinting(false);
+            }
+            else {
+                mc.player.setVelocity(0, -.003, 0);
+                mc.player.capabilities.setFlySpeed(.915f);
+            }
         }
 
         if (mc.player.onGround) {
@@ -73,7 +92,7 @@ public class ElytraFlight extends Module {
     }
 
     private enum ElytraFlightMode {
-        BOOST, FLY,
+        BOOST, FLY
     }
 
 }

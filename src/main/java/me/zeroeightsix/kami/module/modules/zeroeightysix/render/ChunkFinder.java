@@ -29,8 +29,6 @@ import static org.lwjgl.opengl.GL11.*;
  */
 @Module.Info(name = "ChunkFinder", description = "Highlights newly generated chunks", category = Module.Category.RENDER)
 public class ChunkFinder extends Module {
-
-    private Setting<Boolean> disable = register(Settings.b("Disable", true));
     private Setting<Integer> yOffset = register(Settings.i("Y Offset", 0));
     private Setting<Boolean> relative = register(Settings.b("Relative", true));
     private Setting<Boolean> saveNewChunks = register(Settings.b("Save New Chunks", false));
@@ -46,19 +44,6 @@ public class ChunkFinder extends Module {
 
     private static boolean dirty = true;
     private int list = GL11.glGenLists(1);
-
-    @Override
-    public void onEnable() {
-        if (mc.player == null) return;
-        if (ModuleManager.getModuleByName("HoleESP").isEnabled() && disable.getValue()) {
-            Command.sendChatMessage("[ChunkFinder] HoleESP is not compatible, disabling");
-            this.disable();
-        }
-        if (ModuleManager.getModuleByName("StorageESP").isEnabled() && disable.getValue()) {
-            Command.sendChatMessage("[ChunkFinder] StorageESP is not compatible, disabling");
-            this.disable();
-        }
-    }
 
     @Override
     public void onWorldRender(RenderEvent event) {
@@ -154,6 +139,16 @@ public class ChunkFinder extends Module {
             logWriterOpen();
         }
         return logWriter;
+    }
+
+
+    private void logWriterClose() {
+        if (logWriter != null) {
+            logWriter.close();
+            logWriter = null;
+            this.lastSetting = new LastSetting(); // what if the settings stay the same?
+        }
+
     }
 
     private void logWriterOpen() {
@@ -296,13 +291,6 @@ public class ChunkFinder extends Module {
             return false;
         }
         return true;
-    }
-
-    private void logWriterClose() {
-        if (logWriter != null) {
-            logWriter.close();
-            logWriter = null;
-        }
     }
 
     private void saveNewChunk(PrintWriter log, String data) {

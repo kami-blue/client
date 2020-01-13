@@ -49,11 +49,12 @@ import static me.zeroeightsix.kami.module.modules.bewwawho.lllllllliiiliiilllli.
  * Created by 086 on 8/04/2018.
  * Updated by S-B99 on 12/11/19
  */
-@Module.Info(name = "CustomChat", category = Module.Category.MISC, description = "Chat ending. Now has modes!")
+@Module.Info(name = "CustomChat", category = Module.Category.MISC, description = "Chat ending. Now has modes!", showOnArray = Module.ShowOnArray.OFF)
 public class CustomChat extends Module {
 
-    private Setting<TextMode> textMode = register(Settings.e("Text", TextMode.WEBSITE));
-    private Setting<DecoMode> decoMode = register(Settings.e("Decoration", DecoMode.CLASSIC));
+    public Setting<Boolean> startupGlobal = register(Settings.b("Enable Automatically", true));
+    private Setting<TextMode> textMode = register(Settings.e("Text", TextMode.ONTOP));
+    private Setting<DecoMode> decoMode = register(Settings.e("Decoration", DecoMode.NONE));
     private Setting<Boolean> commands = register(Settings.b("Commands", false));
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
 
