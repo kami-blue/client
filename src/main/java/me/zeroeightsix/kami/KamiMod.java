@@ -110,7 +110,7 @@ public class KamiMod {
                     switch (Integer.parseInt(user.type)) {
                         case 0: {
                             DiscordPresence.presence.smallImageKey = "booster";
-                            DiscordPresence.presence.smallImageText = "donator uwu";
+                            DiscordPresence.presence.smallImageText = "booster uwu";
                             break;
                         }
                         case 1: {
