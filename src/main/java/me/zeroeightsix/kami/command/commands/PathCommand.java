@@ -10,7 +10,7 @@ import net.minecraft.pathfinding.PathPoint;
  */
 public class PathCommand extends Command {
     public PathCommand() {
-        super("path", new ChunkBuilder().append("x").append("y").append("z").build());
+        super("path", new ChunkBuilder().append("x").append("y").append("z").build(), "pathfind");
         setDescription("Pathfinding for AutoWalk");
     }
 

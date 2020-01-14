@@ -22,7 +22,7 @@ import io.netty.buffer.Unpooled;
 public class SignBookCommand extends Command {
 
     public SignBookCommand() {
-        super("signbook", new ChunkBuilder().append("name").build());
+        super("signbook", new ChunkBuilder().append("name").build(), "book", "sign");
         setDescription("Colored book names. #n for a new line and & for color codes");
     }
 
