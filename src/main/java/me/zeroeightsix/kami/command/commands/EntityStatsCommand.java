@@ -15,7 +15,7 @@ import java.math.RoundingMode;
 public class EntityStatsCommand extends Command {
 
     public EntityStatsCommand() {
-        super("entitystats", null);
+        super("entitystats", null, "estats", "horestats", "hstats", "vehiclestats");
         setDescription("Print the statistics of the entity you're currently riding");
     }
 

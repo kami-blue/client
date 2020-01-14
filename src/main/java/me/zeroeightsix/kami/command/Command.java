@@ -10,6 +10,8 @@ import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentBase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +20,7 @@ public abstract class Command {
     protected String label;
     protected String syntax;
     protected String description;
+    protected ArrayList<String> aliases;
 
     public final Minecraft mc = Minecraft.getMinecraft();
 
@@ -26,10 +29,18 @@ public abstract class Command {
     public static Setting<String> commandPrefix = Settings.s("commandPrefix", ".");
     public static final char SECTION_SIGN = '\u00A7';
 
-    public Command(String label, SyntaxChunk[] syntaxChunks) {
+    public Command(String label, SyntaxChunk[] syntaxChunks, ArrayList<String> aliases) {
         this.label = label;
         this.syntaxChunks = syntaxChunks;
         this.description = "Descriptionless";
+        this.aliases = aliases;
+    }
+
+    public Command(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
+        this.label = label;
+        this.syntaxChunks = syntaxChunks;
+        this.description = "Descriptionless";
+        this.aliases = new ArrayList<String>(Arrays.asList(aliases));
     }
 
     public static void sendChatMessage(String message) {
@@ -79,6 +90,10 @@ public abstract class Command {
 
     public String getLabel() {
         return label;
+    }
+
+    public ArrayList<String> getAliases() {
+        return aliases;
     }
 
     public abstract void call(String[] args);

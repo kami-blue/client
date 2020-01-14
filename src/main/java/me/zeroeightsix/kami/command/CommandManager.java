@@ -44,8 +44,17 @@ public class CommandManager {
 
         for (Command c : commands) {
             if (c.getLabel().equalsIgnoreCase(label)) {
+                if (!c.getAliases().isEmpty()) {
+                    Command.sendChatMessage("This command has aliases!\n" + String.join(", ", c.getAliases()));
+                }
                 c.call(parts);
                 return;
+            }
+            else for (int i = 0; i < c.getAliases().size(); i++) {
+                if (c.getAliases().get(i).equalsIgnoreCase(label)) {
+                    c.call(parts);
+                    return;
+                }
             }
         }
 
