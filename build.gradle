@@ -3,7 +3,7 @@
 task mkdir {
     group = "kami"
     doLast {
-        mkdir System.getProperty("user.home") + "/.minecraft/mods/1.12.2/"
+        mkdir System.getProperty("user.home") + "/AppData/Roaming/.minecraft/mods/1.12.2/"
     }
 }
 
@@ -11,7 +11,7 @@ task mkdir {
 
 task rmOld(type: Delete) {
     group = "kami"
-    delete fileTree(System.getProperty("user.home") + "/.minecraft/mods/1.12.2/").matching {
+    delete fileTree(System.getProperty("user.home") + "/AppData/Roaming/.minecraft/mods/1.12.2/").matching {
         include "KAMI-*-release.jar"
     }
 }
@@ -22,7 +22,7 @@ task copy(type: Copy) {
     group = "kami"
     from file("build/libs/")
     include 'KAMI-*-release.jar'
-    into file(System.getProperty("user.home") + "/.minecraft/mods/1.12.2/")
+    into file(System.getProperty("user.home") + "/AppData/Roaming/.minecraft/mods/1.12.2/")
 }
 
 // forge's stuff 
