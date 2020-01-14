@@ -58,7 +58,7 @@ public class CommandManager {
             }
         }
 
-        Command.sendChatMessage("Unknown command. try 'commands' for a list of commands.");
+        Command.sendChatMessage("Unknown command. try 'cmds' for a list of commands.");
     }
 
     public static String[] removeElement(String[] input, int indexToDelete) {
