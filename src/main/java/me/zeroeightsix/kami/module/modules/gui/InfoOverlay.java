@@ -91,9 +91,9 @@ public class InfoOverlay extends Module {
         return InfoCalculator.time(dateFormatter(timeUnitSetting.getValue())).replace(":", formatted);
     }
 
-//    public String formatChatTime() {
-//        return textColour(secondColour.getValue()) + InfoCalculator.time(dateFormatter(timeUnitSetting.getValue())) + TextFormatting.RESET;
-//    }
+    public String formatChatTime() {
+        return textColour(secondColour.getValue()) + InfoCalculator.time(dateFormatter(timeUnitSetting.getValue())) + TextFormatting.RESET;
+    }
 
     private String formatTimerSpeed() {
         String formatted = textColour(secondColour.getValue()) + "." + textColour(firstColour.getValue());
