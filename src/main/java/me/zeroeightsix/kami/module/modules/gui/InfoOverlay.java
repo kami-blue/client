@@ -5,52 +5,41 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.movement.TimerSpeed;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.ColourUtils;
 import me.zeroeightsix.kami.util.InfoCalculator;
+import me.zeroeightsix.kami.util.TimeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
+
+import static me.zeroeightsix.kami.util.ColourUtils.getStringColour;
 
 /**
  * @author S-B99
  * Created by S-B99 on 04/12/19
- * Updated by S-B99 on 28/01/20
+ * Updated by S-B99 on 06/02/20
  */
 @Module.Info(name = "InfoOverlay", category = Module.Category.GUI, description = "Configures game information overlay", showOnArray = Module.ShowOnArray.OFF)
 public class InfoOverlay extends Module {
-
-    public Setting<Boolean> version = register(Settings.b("Version", true));
-    public Setting<Boolean> username = register(Settings.b("Username", true));
-    public Setting<Boolean> time = register(Settings.b("Time", true));
-    public Setting<Boolean> tps = register(Settings.b("Ticks Per Second", false));
-    public Setting<Boolean> fps = register(Settings.b("Frames Per Second", true));
-    public Setting<Boolean> speed = register(Settings.b("Speed", true));
-    public Setting<Boolean> timerSpeed = register(Settings.b("Timer Speed", false));
-    public Setting<Boolean> ping = register(Settings.b("Latency", false));
-    public Setting<Boolean> durability = register(Settings.b("Item Damage", false));
-    public Setting<Boolean> memory = register(Settings.b("Memory Used", false));
+    private Setting<Boolean> version = register(Settings.b("Version", true));
+    private Setting<Boolean> username = register(Settings.b("Username", true));
+    private Setting<Boolean> time = register(Settings.b("Time", true));
+    private Setting<Boolean> tps = register(Settings.b("Ticks Per Second", false));
+    private Setting<Boolean> fps = register(Settings.b("Frames Per Second", true));
+    private Setting<Boolean> speed = register(Settings.b("Speed", true));
+    private Setting<Boolean> timerSpeed = register(Settings.b("Timer Speed", false));
+    private Setting<Boolean> ping = register(Settings.b("Latency", false));
+    private Setting<Boolean> durability = register(Settings.b("Item Damage", false));
+    private Setting<Boolean> memory = register(Settings.b("Memory Used", false));
     private Setting<SpeedUnit> speedUnit = register(Settings.e("Speed Unit", SpeedUnit.KmH));
-    public Setting<ColourCode> firstColour = register(Settings.e("First Colour", ColourCode.WHITE));
-    public Setting<ColourCode> secondColour = register(Settings.e("Second Colour", ColourCode.BLUE));
-    private Setting<TimeType> timeTypeSetting = register(Settings.e("Time Format", TimeType.HHMMSS));
-    public Setting<TimeUnit> timeUnitSetting = register(Settings.e("Time Unit", TimeUnit.h12));
+    private Setting<ColourUtils.ColourCode> firstColour = register(Settings.e("First Colour", ColourUtils.ColourCode.WHITE));
+    private Setting<ColourUtils.ColourCode> secondColour = register(Settings.e("Second Colour", ColourUtils.ColourCode.BLUE));
+    private Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.e("Time Format", TimeUtil.TimeType.HHMMSS));
+    private Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.e("Time Unit", TimeUtil.TimeUnit.h12));
 
     private enum SpeedUnit {
         MpS, KmH
-    }
-
-    private enum TimeType {
-        HHMM, HHMMSS, HH
-    }
-
-    public enum TimeUnit {
-        h24, h12
-    }
-
-    public enum ColourCode {
-        BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GREY, DARK_GREY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
     }
 
     public boolean useUnitKmH() {
@@ -65,61 +54,15 @@ public class InfoOverlay extends Module {
         }
     }
 
-    public SimpleDateFormat dateFormatter(TimeUnit timeUnit) {
-        SimpleDateFormat formatter;
-        switch (timeUnit) {
-            case h12:
-                formatter = new SimpleDateFormat("HH" + formatTimeString(timeTypeSetting.getValue()), Locale.UK); break;
-            case h24:
-                formatter = new SimpleDateFormat("hh" + formatTimeString(timeTypeSetting.getValue()), Locale.UK); break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + timeUnit);
-        }
-        return formatter;
-    }
 
-    private static String formatTimeString(TimeType timeType) {
-        switch (timeType) {
-            case HHMM: return ":mm";
-            case HHMMSS: return ":mm:ss";
-            default: return "";
-        }
-    }
-
-    private String formatTimeColour() {
-        String formatted = textColour(secondColour.getValue()) + ":" + textColour(firstColour.getValue());
-        return InfoCalculator.time(dateFormatter(timeUnitSetting.getValue())).replace(":", formatted);
-    }
-
-    public String formatChatTime() {
-        return textColour(secondColour.getValue()) + InfoCalculator.time(dateFormatter(timeUnitSetting.getValue())) + TextFormatting.RESET;
-    }
 
     private String formatTimerSpeed() {
         String formatted = textColour(secondColour.getValue()) + "." + textColour(firstColour.getValue());
         return TimerSpeed.returnGui().replace(".", formatted);
     }
 
-    public String textColour(ColourCode c) {
-        switch (c) {
-            case BLACK: return TextFormatting.BLACK.toString();
-            case DARK_BLUE: return TextFormatting.DARK_BLUE.toString();
-            case DARK_GREEN: return TextFormatting.DARK_GREEN.toString();
-            case DARK_AQUA: return TextFormatting.DARK_AQUA.toString();
-            case DARK_RED: return TextFormatting.DARK_RED.toString();
-            case DARK_PURPLE: return TextFormatting.DARK_PURPLE.toString();
-            case GOLD: return TextFormatting.GOLD.toString();
-            case GREY: return TextFormatting.GRAY.toString();
-            case DARK_GREY: return TextFormatting.DARK_GRAY.toString();
-            case BLUE: return TextFormatting.BLUE.toString();
-            case GREEN: return TextFormatting.GREEN.toString();
-            case AQUA: return TextFormatting.AQUA.toString();
-            case RED: return TextFormatting.RED.toString();
-            case LIGHT_PURPLE: return TextFormatting.LIGHT_PURPLE.toString();
-            case YELLOW: return TextFormatting.YELLOW.toString();
-            case WHITE: return TextFormatting.WHITE.toString();
-            default: return "";
-        }
+    public String textColour(ColourUtils.ColourCode c) {
+        return getStringColour(c);
     }
 
     public ArrayList<String> infoContents() {
@@ -131,7 +74,7 @@ public class InfoOverlay extends Module {
             infoContents.add(textColour(firstColour.getValue()) + "Welcome" + textColour(secondColour.getValue()) + " " + mc.player.getName() + "!");
         }
         if (time.getValue()) {
-            infoContents.add(textColour(firstColour.getValue()) + formatTimeColour() + TextFormatting.RESET);
+            infoContents.add(textColour(firstColour.getValue()) + TimeUtil.getFinalTime(secondColour.getValue(), firstColour.getValue(), timeUnitSetting.getValue(), timeTypeSetting.getValue()) + TextFormatting.RESET);
         }
         if (tps.getValue()) {
             infoContents.add(textColour(firstColour.getValue()) + InfoCalculator.tps() + textColour(secondColour.getValue()) + " tps");

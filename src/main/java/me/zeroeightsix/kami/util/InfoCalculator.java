@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  * @author S-B99
  * Created by S-B99 on 18/01/20
- * Updated by S-B99 on 26/01/20
+ * Updated by S-B99 on 06/02/20
  *
  * Speed:
  * @author S-B99
@@ -88,13 +88,6 @@ public class InfoCalculator extends Module {
         return "" + Math.round(LagCompensator.INSTANCE.getTickRate());
     }
     /* End of ticks Per Second */
-
-    /* Time */
-    public static String time(SimpleDateFormat format) {
-        Date date = new Date(System.currentTimeMillis());
-        return format.format(date);
-    }
-    /* End of time */
 
     /* Round */
     public static double round(double value, int places) {

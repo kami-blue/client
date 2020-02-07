@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util;
 
+import net.minecraft.util.text.TextFormatting;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -318,6 +320,35 @@ public class ColourUtils {
         public final static int LIGHT_PURPLE = toRGBA(255, 85, 255, 255);
         public final static int YELLOW = toRGBA(255, 255, 85, 255);
         public final static int WHITE = toRGBA(255, 255, 255, 255);
+    }
+
+    /**
+     * @author S-B99 06/02/20
+     * Tool for getting Minecraft Textformatting Colors
+     */
+    public enum ColourCode {
+        BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GREY, DARK_GREY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
+    }
+    public static String getStringColour(ColourCode c) {
+        switch (c) {
+            case BLACK: return TextFormatting.BLACK.toString();
+            case DARK_BLUE: return TextFormatting.DARK_BLUE.toString();
+            case DARK_GREEN: return TextFormatting.DARK_GREEN.toString();
+            case DARK_AQUA: return TextFormatting.DARK_AQUA.toString();
+            case DARK_RED: return TextFormatting.DARK_RED.toString();
+            case DARK_PURPLE: return TextFormatting.DARK_PURPLE.toString();
+            case GOLD: return TextFormatting.GOLD.toString();
+            case GREY: return TextFormatting.GRAY.toString();
+            case DARK_GREY: return TextFormatting.DARK_GRAY.toString();
+            case BLUE: return TextFormatting.BLUE.toString();
+            case GREEN: return TextFormatting.GREEN.toString();
+            case AQUA: return TextFormatting.AQUA.toString();
+            case RED: return TextFormatting.RED.toString();
+            case LIGHT_PURPLE: return TextFormatting.LIGHT_PURPLE.toString();
+            case YELLOW: return TextFormatting.YELLOW.toString();
+            case WHITE: return TextFormatting.WHITE.toString();
+            default: return "";
+        }
     }
 
     public static final int changeAlpha(int origColor, int userInputedAlpha) {
