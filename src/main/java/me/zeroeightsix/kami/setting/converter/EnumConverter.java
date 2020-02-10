@@ -22,6 +22,14 @@ public class EnumConverter extends Converter<Enum, JsonElement> {
 
     @Override
     protected Enum doBackward(JsonElement jsonElement) {
-        return Enum.valueOf(clazz, jsonElement.getAsString());
+        Enum[] enums = clazz.getEnumConstants();
+        if (Arrays.toString(clazz.getEnumConstants()).contains(jsonElement.getAsString()))
+        {
+            return Enum.valueOf(clazz, jsonElement.getAsString());
+        }
+        else
+        {
+            return Enum.valueOf(clazz,enums[0].toString());
+        }
     }
 }
