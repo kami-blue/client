@@ -315,13 +315,11 @@ public class KamiGUI extends GUI {
 
             Map<String, Integer> players = new HashMap<>();
             for (Entity e : entityList) {
-                if (e.getName().equals(mc.player.getName())) continue;
+                //if (e.getName().equals(mc.player.getName())) continue;
                 String posString = (e.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (e.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
                 String strengthfactor = "";
                 EntityPlayer eplayer = (EntityPlayer) e;
-                if (eplayer.isPotionActive(MobEffects.STRENGTH) & ModuleManager.isModuleEnabled("StrengthDetect")){
-                    strengthfactor = "S ";
-                }
+                if (eplayer.isPotionActive(MobEffects.STRENGTH) & ModuleManager.isModuleEnabled("StrengthDetect")) strengthfactor = "S ";
                 float hpRaw = ((EntityLivingBase) e).getHealth() + ((EntityLivingBase) e).getAbsorptionAmount();
                 String hp = dfHealth.format(hpRaw);
                 healthSB.append(KamiMod.colour);
@@ -335,7 +333,7 @@ public class KamiGUI extends GUI {
                     healthSB.append("c");
                 }
                 healthSB.append(hp);
-                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.RED +  strengthfactor  + ChatFormatting.GRAY + e.getName(), (int) mc.player.getDistance(e));
+                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.RED + strengthfactor + ChatFormatting.GRAY + e.getName(), (int) mc.player.getDistance(e));
                 healthSB.setLength(0);
             }
 
