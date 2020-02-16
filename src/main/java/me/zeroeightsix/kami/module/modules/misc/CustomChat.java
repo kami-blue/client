@@ -8,6 +8,8 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.network.play.client.CPacketChatMessage;
 
+import java.util.Random;
+
 import static me.zeroeightsix.kami.KamiMod.*;
 
 /**
@@ -23,7 +25,7 @@ public class CustomChat extends Module {
     private Setting<Boolean> commands = register(Settings.b("Commands", false));
 
     private enum TextMode {
-        NAME, ONTOP, WEBSITE, JAPANESE;
+        NAME, ONTOP, WEBSITE, JAPANESE, RANDOM
     }
 
     private enum DecoMode {
@@ -36,6 +38,10 @@ public class CustomChat extends Module {
             case ONTOP: return KAMI_ONTOP;
             case WEBSITE: return KAMI_WEBSITE;
             case JAPANESE: return KAMI_JAPANESE_ONTOP;
+            case RANDOM:
+                String[] stringlist = {KAMI_BLUE, KAMI_ONTOP, KAMI_WEBSITE, KAMI_JAPANESE_ONTOP};
+                Random r = new Random();
+                return stringlist[r.nextInt(stringlist.length)];
             default: return "";
         }
     }
