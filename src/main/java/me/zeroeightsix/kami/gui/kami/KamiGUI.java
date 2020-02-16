@@ -315,7 +315,7 @@ public class KamiGUI extends GUI {
 
             Map<String, Integer> players = new HashMap<>();
             for (Entity e : entityList) {
-                //if (e.getName().equals(mc.player.getName())) continue;
+                if (e.getName().equals(mc.player.getName())) continue;
                 String posString = (e.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (e.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
                 String strengthfactor = "";
                 EntityPlayer eplayer = (EntityPlayer) e;
