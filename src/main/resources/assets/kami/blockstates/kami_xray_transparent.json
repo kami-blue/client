@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "normal": [
+            {
+                "model": "kami:kami_xray_transparent"
+            }
+        ]
+    }
+}
+

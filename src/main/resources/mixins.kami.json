@@ -28,6 +28,7 @@
     "MixinLayerArmorBase",
     "MixinNettyCompressionDecoder"
     "MixinFrustum",
-    "MixinVisGraph"
+    "MixinVisGraph",
+    "MixinChunkCache"
   ]
 }
