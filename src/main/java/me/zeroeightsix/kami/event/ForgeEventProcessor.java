@@ -107,14 +107,11 @@ public class ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (!Keyboard.getEventKeyState()) return;
-        if (ModuleManager.isModuleEnabled("PrefixChat")) {
-            if (("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix())) {
-                if (!Minecraft.getMinecraft().player.isSneaking() && (boolean) ModuleManager.getModuleByName("PrefixChat").getSettingByName("disableOnSneak").getValue()) {
-                    Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
-                }
-            } else {
-                ModuleManager.onBind(Keyboard.getEventKey());
-            }
+        if (ModuleManager.isModuleEnabled("PrefixChat") && ("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix()) && !(Minecraft.getMinecraft().player.isSneaking() && (boolean) ModuleManager.getModuleByName("PrefixChat").getSettingByName("disableOnSneak").getValue())) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
+            return;
+        } else {
+            ModuleManager.onBind(Keyboard.getEventKey());
         }
     }
 
