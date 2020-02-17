@@ -65,7 +65,7 @@ import java.util.Optional;
 )
 public class KamiMod {
 
-    static final String MODID = "kamiblue";
+    public static final String MODID = "kamiblue";
     static final String MODNAME = "KAMI Blue";
     public static final String MODVER = "v1.1.2";
     public static final String APP_ID = "638403216278683661";
