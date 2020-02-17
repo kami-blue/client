@@ -54,6 +54,10 @@ public class Freecam extends Module {
             mc.player.capabilities.isFlying = true;
             mc.player.capabilities.setFlySpeed(speed.getValue() / 100f);
             mc.player.noClip = true;
+            // WebringOfTheDamned
+            // This is needed for some reason, as is the converse in onDisable.
+            mc.renderChunksMany = false;
+            mc.renderGlobal.loadRenderers();
         }
     }
 
@@ -74,6 +78,10 @@ public class Freecam extends Module {
             if (isRidingEntity) {
                 mc.player.startRiding(ridingEntity, true);
             }
+            // WebringOfTheDamned
+            // This is needed for some reason, as is the converse in onEnable.
+            mc.renderChunksMany = true;
+            mc.renderGlobal.loadRenderers();
         }
     }
 

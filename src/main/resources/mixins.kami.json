@@ -27,5 +27,7 @@
     "MixinGuiNewChat",
     "MixinLayerArmorBase",
     "MixinNettyCompressionDecoder"
+    "MixinFrustum",
+    "MixinVisGraph"
   ]
 }

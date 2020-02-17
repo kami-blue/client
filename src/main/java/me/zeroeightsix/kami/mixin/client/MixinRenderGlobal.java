@@ -1,14 +1,22 @@
 package me.zeroeightsix.kami.mixin.client;
 
+import java.util.Deque;
+import me.zeroeightsix.kami.module.ModuleManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ChunkRenderContainer;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.chunk.RenderChunk;
+import net.minecraft.client.renderer.ViewFrustum;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.BlockRenderLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Created by 086 on 11/04/2018.
@@ -21,9 +29,9 @@ public class MixinRenderGlobal {
     @Shadow
     public ChunkRenderContainer renderContainer;
 
-    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;)V", at = @At("HEAD"), cancellable = true)
-    public void renderBlockLayer(BlockRenderLayer blockLayerIn, CallbackInfo callbackInfo) {
-        callbackInfo.cancel();
+//    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;)V", at = @At("HEAD"), cancellable = true)
+//    public void renderBlockLayer(BlockRenderLayer blockLayerIn, CallbackInfo callbackInfo) {
+//        callbackInfo.cancel();
 
 //        this.mc.entityRenderer.enableLightmap();
 //
@@ -65,6 +73,6 @@ public class MixinRenderGlobal {
 //        }
 //
 //        this.mc.entityRenderer.disableLightmap();
-    }
+//    }
 
 }

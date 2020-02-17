@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.modules.render.Brightness;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -78,6 +79,15 @@ public class MixinEntityRenderer {
             return new ArrayList<>();
         else
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
+    }
+
+    @Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;isSpectator()Z"))
+    public boolean noclipIsSpectator(AbstractClientPlayer acp) {
+        // [WebringOfTheDamned]
+        // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
+        if (ModuleManager.isModuleEnabled("Freecam"))
+            return true;
+        return acp.isSpectator();
     }
 
 }
