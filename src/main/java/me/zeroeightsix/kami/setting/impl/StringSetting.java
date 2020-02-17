@@ -22,4 +22,13 @@ public class StringSetting extends Setting<String> {
         return converter;
     }
 
+    @Override
+    public String getValueAsString() {
+        return getValue();
+    }
+
+    @Override
+    public void setValueFromString(String s) {
+        setValue(s);
+    }
 }
