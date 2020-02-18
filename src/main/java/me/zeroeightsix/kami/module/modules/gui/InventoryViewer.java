@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -14,15 +15,27 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.List;
 
 /***
- * Updated by S-B99 on 18/01/20
- * GUI method written by S-B99
+ * Updated by S-B99 on 18/02/20
+ * Everything except somethingRender() methods was written by S-B99
  */
 @Module.Info(name = "InventoryViewer", category = Module.Category.GUI, description = "View your inventory on screen", showOnArray = Module.ShowOnArray.OFF)
 public class InventoryViewer extends Module {
-    private Setting<ViewMode> viewMode = register(Settings.e("Appearance", ViewMode.ICONLARGE));
+    private Setting<ViewSize> viewSizeSetting = register(Settings.e("Icon Size", ViewSize.MEDIUM));
+    private Setting<Boolean> showIcon = register(Settings.b("Show Icon", true));
+    private Setting<Boolean> colorBackground = register(Settings.b("Colored Background", true));
+    private Setting<Integer> a = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).build());
+    private Setting<Integer> r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).build());
+    private Setting<Integer> g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).build());
+    private Setting<Integer> b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).build());
+
+    private boolean isLeft = false;
+    private boolean isRight = false;
+    private boolean isTop = false;
+    private boolean isBottom = false;
 
     KamiGUI kamiGUI = KamiMod.getInstance().getGuiManager();
     private int invPos(int i) {
@@ -37,7 +50,7 @@ public class InventoryViewer extends Module {
                     case 1:
                         return frame.getY();
                     case 3:
-                        if (frame.isPinned()) return 1;
+                        if (frame.isPinned()) return 1; // wow this is fucking horrendous
                         else return 0;
                     default:
                         return 0;
@@ -47,34 +60,79 @@ public class InventoryViewer extends Module {
         }
         return 0;
     }
-    private enum ViewMode {
-        ICONLARGEBG, ICONLARGE, MC, ICON, ICONBACK, CLEAR, SOLID, SOLIDCLEAR
+
+    private int invMoveHorizontal() {
+        if (isLeft) return 45;
+        if (isRight) return -45;
+        return 0;
     }
 
+    private int invMoveVertical() {
+        if (isTop) return 10;
+        if (isBottom) return -10;
+        return 0;
+    }
+
+    private void updatePos() {
+        kamiGUI = KamiMod.getInstance().getGuiManager();
+        if (kamiGUI != null) {
+            List<Frame> frames = ContainerHelper.getAllChildren(Frame.class, kamiGUI);
+            for (Frame frame : frames) {
+                if (!frame.getTitle().equalsIgnoreCase("inventory viewer")) continue;
+                isTop = frame.getDocking().isTop();
+                isLeft = frame.getDocking().isLeft();
+                isRight = frame.getDocking().isRight();
+                isBottom = frame.getDocking().isBottom();
+            }
+        }
+    }
     private ResourceLocation getBox() {
-        if (viewMode.getValue().equals(ViewMode.CLEAR)) {
-            return new ResourceLocation("textures/gui/container/invpreview.png");
+        if (!showIcon.getValue()) {
+            return new ResourceLocation("kamiblue/clear.png");
+        } else if (viewSizeSetting.getValue().equals(ViewSize.LARGE)) {
+            return new ResourceLocation("kamiblue/large.png");
+        } else if (viewSizeSetting.getValue().equals(ViewSize.SMALL)) {
+            return new ResourceLocation("kamiblue/small.png");
+        } else {
+            return new ResourceLocation("kamiblue/medium.png");
         }
-        else if (viewMode.getValue().equals(ViewMode.ICONBACK)) {
-            return new ResourceLocation("textures/gui/container/one.png");
+    }
+
+    private enum ViewSize {
+        LARGE, MEDIUM, SMALL
+    }
+
+    private void boxRender(final int x, final int y) {
+        preBoxRender();
+        if (colorBackground.getValue()) { // 1 == 2 px in game
+            KamiTessellator.prepare(GL11.GL_QUADS);
+            KamiTessellator.drawRectangle((x + 162), (y + 54), x, y, new Color(r.getValue(), g.getValue(), b.getValue(), a.getValue()).getRGB());
+            KamiTessellator.release();
         }
-        else if (viewMode.getValue().equals(ViewMode.SOLID)) {
-            return new ResourceLocation("textures/gui/container/two.png");
+        ResourceLocation box = getBox();
+        mc.renderEngine.bindTexture(box);
+        updatePos();
+        mc.ingameGUI.drawTexturedModalRect(x, y, invMoveHorizontal() + 7, invMoveVertical() + 17, 162, 54); // 164 56 // width and height of inventory
+        postBoxRender();
+    }
+
+    @Override
+    public void onRender() {
+        if (invPos(3) == 1) {
+            final NonNullList<ItemStack> items = InventoryViewer.mc.player.inventory.mainInventory;
+            boxRender(invPos(0), invPos(1));
+            itemRender(items, invPos(0), invPos(1));
         }
-        else if (viewMode.getValue().equals(ViewMode.SOLIDCLEAR)) {
-            return new ResourceLocation("textures/gui/container/three.png");
-        }
-        else if (viewMode.getValue().equals(ViewMode.ICON)) {
-            return new ResourceLocation("textures/gui/container/four.png");
-        }
-        else if (viewMode.getValue().equals(ViewMode.ICONLARGE)) {
-            return new ResourceLocation("textures/gui/container/five.png");
-        }
-        else if (viewMode.getValue().equals(ViewMode.ICONLARGEBG)) {
-            return new ResourceLocation("textures/gui/container/six.png");
-        }
-        else {
-            return new ResourceLocation("textures/gui/container/generic_54.png");
+    }
+
+    private void itemRender(final NonNullList<ItemStack> items, final int x, final int y) {
+        for (int size = items.size(), item = 9; item < size; ++item) {
+            final int slotX = x + 1 + item % 9 * 18;
+            final int slotY = y + 1 + (item / 9 - 1) * 18;
+            preItemRender();
+            mc.getRenderItem().renderItemAndEffectIntoGUI(items.get(item), slotX, slotY);
+            mc.getRenderItem().renderItemOverlays(mc.fontRenderer, items.get(item), slotX, slotY);
+            postItemRender();
         }
     }
 
@@ -117,34 +175,6 @@ public class InventoryViewer extends Module {
         GlStateManager.enableDepth();
         GlStateManager.scale(2.0f, 2.0f, 2.0f);
         GL11.glPopMatrix();
-    }
-
-    @Override
-    public void onRender() {
-        if (invPos(3) == 1) {
-            final NonNullList<ItemStack> items = InventoryViewer.mc.player.inventory.mainInventory;
-            boxRender(invPos(0), invPos(1));
-            itemRender(items, invPos(0), invPos(1));
-        }
-    }
-
-    private void boxRender(final int x, final int y) {
-        preBoxRender();
-        ResourceLocation box = getBox();
-        mc.renderEngine.bindTexture(box);
-        mc.ingameGUI.drawTexturedModalRect(x, y, 7, 17, 162, 54); // 168 56 // width and height of inventory
-        postBoxRender();
-    }
-
-    private void itemRender(final NonNullList<ItemStack> items, final int x, final int y) {
-        for (int size = items.size(), item = 9; item < size; ++item) {
-            final int slotX = x + 1 + item % 9 * 18;
-            final int slotY = y + 1 + (item / 9 - 1) * 18;
-            preItemRender();
-            mc.getRenderItem().renderItemAndEffectIntoGUI(items.get(item), slotX, slotY);
-            mc.getRenderItem().renderItemOverlays(mc.fontRenderer, items.get(item), slotX, slotY);
-            postItemRender();
-        }
     }
 
     @Override

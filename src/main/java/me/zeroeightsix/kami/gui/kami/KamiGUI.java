@@ -255,12 +255,12 @@ public class KamiGUI extends GUI {
         frame.setPinnable(true);
         frame.setPinned(true);
         Label inventory = new Label("");
+        inventory.setShadow(false);
         inventory.addTickListener(() -> { // 1 == 2 px in game
             inventory.setWidth(151);
             inventory.setHeight(40);
             inventory.setOpacity(0.1f); // why does this not do anything
         });
-        inventory.setShadow(false);
         frame.addChild(inventory);
         inventory.setFontRenderer(fontRenderer);
         frames.add(frame);

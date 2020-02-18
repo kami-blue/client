@@ -10,6 +10,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 9/07/2017.
+ * Updated by S-B99 on 18/02/20
  */
 public class KamiTessellator extends Tessellator {
 
@@ -188,6 +189,26 @@ public class KamiTessellator extends Tessellator {
             buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
             buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
         }
+    }
+
+    public static void drawRectangle(float x, float y, float w, float h, int color) {
+        float r = (float) (color >> 16 & 255) / 255.0F;
+        float g = (float) (color >> 8 & 255) / 255.0F;
+        float b = (float) (color & 255) / 255.0F;
+        float a = (float) (color >> 24 & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos(x, h, 0.0D).color(r, g, b, a).endVertex();
+        bufferbuilder.pos(w, h, 0.0D).color(r, g, b, a).endVertex();
+        bufferbuilder.pos(w, y, 0.0D).color(r, g, b, a).endVertex();
+        bufferbuilder.pos(x, y, 0.0D).color(r, g, b, a).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
 }
