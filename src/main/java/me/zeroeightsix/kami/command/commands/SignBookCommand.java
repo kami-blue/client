@@ -21,7 +21,7 @@ public class SignBookCommand extends Command {
 
     public SignBookCommand() {
         super("signbook", new ChunkBuilder().append("name").build(), "book", "sign");
-        setDescription("Colored book names. #n for a new line and & for colour codes");
+        setDescription("Colored book names. &7#n&8 for a new line and &7&&8 for colour codes");
     }
 
     @Override

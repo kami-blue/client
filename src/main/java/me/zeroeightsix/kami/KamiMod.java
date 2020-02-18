@@ -55,7 +55,7 @@ import java.util.Optional;
 
 /**
  * Created by 086 on 7/11/2017.
- * Updated by S-B99 on 07/02/19
+ * Updated by S-B99 on 17/02/19
  */
 @Mod(
         modid = KamiMod.MODID,
@@ -65,8 +65,8 @@ import java.util.Optional;
 )
 public class KamiMod {
 
-    static final String MODID = "kamiblue";
     static final String MODNAME = "KAMI Blue";
+    public static final String MODID = "kamiblue";
     public static final String MODVER = "v1.1.2";
     public static final String APP_ID = "638403216278683661";
 
