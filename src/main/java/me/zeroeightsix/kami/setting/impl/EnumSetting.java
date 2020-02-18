@@ -17,7 +17,7 @@ public class EnumSetting<T extends Enum> extends Setting<T> {
 
     public EnumSetting(T value, Predicate<T> restriction, BiConsumer<T, T> consumer, String name, Predicate<T> visibilityPredicate, Class<? extends Enum> clazz) {
         super(value, restriction, consumer, name, visibilityPredicate);
-        this.converter = new EnumConverter(clazz);
+        this.converter = new EnumConverter(clazz, value);
         this.clazz = clazz;
     }
 
