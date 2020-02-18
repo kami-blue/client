@@ -36,14 +36,6 @@ public class Module {
 
     public List<Setting> settingList = new ArrayList<>();
 
-    public Setting getSettingByName(String name) {
-        Integer index = settingList.indexOf(name);
-        if (index == null) {
-            throw new IllegalArgumentException("getModuleBySetting() failed. Are you calling this too early? Is the setting spelled correctly? Please check!!!!");
-        }
-        return settingList.get(index);
-    }
-
     public Module() {
         alwaysListening = getAnnotation().alwaysListening();
         registerAll(bind, enabled, showOnArray);

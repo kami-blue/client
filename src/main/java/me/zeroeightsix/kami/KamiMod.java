@@ -19,6 +19,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.capes.Capes;
 import me.zeroeightsix.kami.module.modules.gui.CleanGUI;
+import me.zeroeightsix.kami.module.modules.gui.PrefixChat;
 import me.zeroeightsix.kami.module.modules.misc.CustomChat;
 import me.zeroeightsix.kami.module.modules.misc.DiscordSettings;
 import me.zeroeightsix.kami.module.modules.player.AntiCompressionBan;
@@ -209,6 +210,9 @@ public class KamiMod {
             }
             if (((CleanGUI) ModuleManager.getModuleByName("CleanGUI")).startupGlobal.getValue()) {
                 ModuleManager.getModuleByName("CleanGUI").setEnabled(true);
+            }
+            if (((PrefixChat) ModuleManager.getModuleByName("PrefixChat")).startupGlobal.getValue()) {
+                ModuleManager.getModuleByName("PrefixChat").setEnabled(true);
             }
         }
         catch (NullPointerException e) {
