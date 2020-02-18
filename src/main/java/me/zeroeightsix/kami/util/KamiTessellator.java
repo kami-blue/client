@@ -207,6 +207,7 @@ public class KamiTessellator extends Tessellator {
         bufferbuilder.pos(w, y, 0.0D).color(r, g, b, a).endVertex();
         bufferbuilder.pos(x, y, 0.0D).color(r, g, b, a).endVertex();
         tessellator.draw();
+        GlStateManager.disableBlend();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }

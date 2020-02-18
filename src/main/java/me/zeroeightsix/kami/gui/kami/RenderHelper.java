@@ -68,6 +68,20 @@ public class RenderHelper {
         glEnd();
     }
 
+    public static void drawRectanglePos(float x, float y, float width, float height) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glBegin(GL_LINE_LOOP);
+        {
+            glVertex2d(width, y);
+            glVertex2d(x, y);
+            glVertex2d(x, height);
+            glVertex2d(width, height);
+        }
+        glEnd();
+    }
+
     public static void drawFilledRectangle(float x, float y, float width, float height) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
