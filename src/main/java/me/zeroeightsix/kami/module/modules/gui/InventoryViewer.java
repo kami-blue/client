@@ -18,8 +18,6 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.*;
-
 /***
  * Updated by S-B99 on 18/02/20
  * Everything except somethingRender() methods was written by S-B99
@@ -104,17 +102,13 @@ public class InventoryViewer extends Module {
         LARGE, MEDIUM, SMALL
     }
 
-    private void colourRender(final int x, final int y) {
+    private void boxRender(final int x, final int y) {
+        preBoxRender();
         if (colorBackground.getValue()) { // 1 == 2 px in game
-//            glAttrib(GL_ALL_ATTRIB_BITS);
             KamiTessellator.prepare(GL11.GL_QUADS);
             KamiTessellator.drawRectangle((x + 162), (y + 54), x, y, new Color(r.getValue(), g.getValue(), b.getValue(), a.getValue()).getRGB());
             KamiTessellator.release();
-//            glPopAttrib();
         }
-    }
-    private void boxRender(final int x, final int y) {
-        preBoxRender();
         ResourceLocation box = getBox();
         mc.renderEngine.bindTexture(box);
         updatePos();
@@ -126,7 +120,6 @@ public class InventoryViewer extends Module {
     public void onRender() {
         if (invPos(3) == 1) {
             final NonNullList<ItemStack> items = InventoryViewer.mc.player.inventory.mainInventory;
-            colourRender(invPos(0), invPos(1));
             boxRender(invPos(0), invPos(1));
             itemRender(items, invPos(0), invPos(1));
         }
@@ -144,41 +137,44 @@ public class InventoryViewer extends Module {
     }
 
     private static void preBoxRender() {
-//        GL11.glPushMatrix();
+        GL11.glPushMatrix();
         GlStateManager.pushMatrix();
         GlStateManager.disableAlpha();
-        GlStateManager.clear(GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(256);
         GlStateManager.enableBlend();
     }
 
     private static void postBoxRender() {
         GlStateManager.disableBlend();
+        GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.enableDepth();
         GlStateManager.enableAlpha();
         GlStateManager.popMatrix();
-//        GL11.glPopMatrix();
+        GL11.glPopMatrix();
     }
 
     private static void preItemRender() {
-//        GL11.glPushMatrix();
-        GlStateManager.pushMatrix();
-        GlStateManager.depthMask(true);
-        GlStateManager.clear(GL_DEPTH_BUFFER_BIT);
+        GL11.glPushMatrix();
+        GL11.glDepthMask(true);
+        GlStateManager.clear(256);
+        GlStateManager.disableDepth();
         GlStateManager.enableDepth();
         RenderHelper.enableStandardItemLighting();
         GlStateManager.scale(1.0f, 1.0f, 0.01f);
     }
 
     private static void postItemRender() {
+        GlStateManager.scale(1.0f, 1.0f, 1.0f);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.enableAlpha();
         GlStateManager.disableBlend();
         GlStateManager.disableLighting();
+        GlStateManager.scale(0.5, 0.5, 0.5);
+        GlStateManager.disableDepth();
         GlStateManager.enableDepth();
         GlStateManager.scale(2.0f, 2.0f, 2.0f);
-        GlStateManager.popMatrix();
-//        GL11.glPopMatrix();
+        GL11.glPopMatrix();
     }
 
     @Override
