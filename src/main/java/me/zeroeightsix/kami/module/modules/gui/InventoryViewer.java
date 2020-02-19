@@ -20,6 +20,7 @@ import java.util.List;
 
 /***
  * Updated by S-B99 on 18/02/20
+ * Slight updates by 20kdc, 19/02/20
  * Everything except somethingRender() methods was written by S-B99
  */
 @Module.Info(name = "InventoryViewer", category = Module.Category.GUI, description = "View your inventory on screen", showOnArray = Module.ShowOnArray.OFF)
@@ -38,27 +39,17 @@ public class InventoryViewer extends Module {
     private boolean isBottom = false;
 
     KamiGUI kamiGUI = KamiMod.getInstance().getGuiManager();
-    private int invPos(int i) {
-        kamiGUI = KamiMod.getInstance().getGuiManager();
-        if (kamiGUI != null) {
-            List<Frame> frames = ContainerHelper.getAllChildren(Frame.class, kamiGUI);
-            for (Frame frame : frames) {
-                if (!frame.getTitle().equalsIgnoreCase("inventory viewer")) continue;
-                switch (i) {
-                    case 0:
-                        return frame.getX();
-                    case 1:
-                        return frame.getY();
-                    case 3:
-                        if (frame.isPinned()) return 1; // wow this is fucking horrendous
-                        else return 0;
-                    default:
-                        return 0;
 
-                }
-            }
-        }
-        return 0;
+    // This is bad, but without a rearchitecture, it's probably staying... - 20kdc
+    private Frame getInventoryViewer() {
+        kamiGUI = KamiMod.getInstance().getGuiManager();
+        if (kamiGUI == null)
+            return null;
+        List<Frame> frames = ContainerHelper.getAllChildren(Frame.class, kamiGUI);
+        for (Frame frame : frames)
+            if (frame.getTitle().equalsIgnoreCase("inventory viewer"))
+                return frame;
+        return null;
     }
 
     private int invMoveHorizontal() {
@@ -74,17 +65,13 @@ public class InventoryViewer extends Module {
     }
 
     private void updatePos() {
-        kamiGUI = KamiMod.getInstance().getGuiManager();
-        if (kamiGUI != null) {
-            List<Frame> frames = ContainerHelper.getAllChildren(Frame.class, kamiGUI);
-            for (Frame frame : frames) {
-                if (!frame.getTitle().equalsIgnoreCase("inventory viewer")) continue;
-                isTop = frame.getDocking().isTop();
-                isLeft = frame.getDocking().isLeft();
-                isRight = frame.getDocking().isRight();
-                isBottom = frame.getDocking().isBottom();
-            }
-        }
+        Frame frame = getInventoryViewer();
+        if (frame == null)
+            return;
+        isTop = frame.getDocking().isTop();
+        isLeft = frame.getDocking().isLeft();
+        isRight = frame.getDocking().isRight();
+        isBottom = frame.getDocking().isBottom();
     }
     private ResourceLocation getBox() {
         if (!showIcon.getValue()) {
@@ -103,29 +90,46 @@ public class InventoryViewer extends Module {
     }
 
     private void boxRender(final int x, final int y) {
-        preBoxRender();
+        // SET UNRELIABLE DEFAULTS (Don't restore these) {
+        GlStateManager.enableAlpha();
+        GlStateManager.disableBlend();
+        // }
+
+        // ENABLE LOCAL CHANGES {
+        GlStateManager.disableDepth();
+        // }
         if (colorBackground.getValue()) { // 1 == 2 px in game
-            KamiTessellator.prepare(GL11.GL_QUADS);
-            KamiTessellator.drawRectangle((x + 162), (y + 54), x, y, new Color(r.getValue(), g.getValue(), b.getValue(), a.getValue()).getRGB());
-            KamiTessellator.release();
+            int colour = 0;
+            colour |= (r.getValue() << 16);
+            colour |= (g.getValue() << 8);
+            colour |= (b.getValue() << 0);
+            colour |= (a.getValue() << 24);
+            mc.ingameGUI.drawRect(x, y, x + 162, y + 54, colour);
         }
         ResourceLocation box = getBox();
         mc.renderEngine.bindTexture(box);
         updatePos();
+        GlStateManager.color(1, 1, 1, 1);
         mc.ingameGUI.drawTexturedModalRect(x, y, invMoveHorizontal() + 7, invMoveVertical() + 17, 162, 54); // 164 56 // width and height of inventory
-        postBoxRender();
+        // DISABLE LOCAL CHANGES {
+        GlStateManager.enableDepth();
+        // }
     }
 
     @Override
     public void onRender() {
-        if (invPos(3) == 1) {
+        Frame frame = getInventoryViewer();
+        if (frame == null)
+            return;
+        if (frame.isPinned()) {
             final NonNullList<ItemStack> items = InventoryViewer.mc.player.inventory.mainInventory;
-            boxRender(invPos(0), invPos(1));
-            itemRender(items, invPos(0), invPos(1));
+            boxRender(frame.getX(), frame.getY());
+            itemRender(items, frame.getX(), frame.getY());
         }
     }
 
     private void itemRender(final NonNullList<ItemStack> items, final int x, final int y) {
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         for (int size = items.size(), item = 9; item < size; ++item) {
             final int slotX = x + 1 + item % 9 * 18;
             final int slotY = y + 1 + (item / 9 - 1) * 18;
@@ -136,45 +140,23 @@ public class InventoryViewer extends Module {
         }
     }
 
-    private static void preBoxRender() {
-        GL11.glPushMatrix();
-        GlStateManager.pushMatrix();
-        GlStateManager.disableAlpha();
-        GlStateManager.clear(256);
-        GlStateManager.enableBlend();
-    }
-
-    private static void postBoxRender() {
-        GlStateManager.disableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.disableLighting();
-        GlStateManager.enableDepth();
-        GlStateManager.enableAlpha();
-        GlStateManager.popMatrix();
-        GL11.glPopMatrix();
-    }
+    // These methods should apply and clean up in pairs.
+    // That means that if a pre* has to disableAlpha, the post* function should enableAlpha.
+    //  - 20kdc
 
     private static void preItemRender() {
-        GL11.glPushMatrix();
-        GL11.glDepthMask(true);
-        GlStateManager.clear(256);
-        GlStateManager.disableDepth();
+        GlStateManager.pushMatrix();
         GlStateManager.enableDepth();
-        RenderHelper.enableStandardItemLighting();
-        GlStateManager.scale(1.0f, 1.0f, 0.01f);
+        GlStateManager.depthMask(true);
+        // Yes, this is meant to be paired with disableStandardItemLighting - 20kdc
+        RenderHelper.enableGUIStandardItemLighting();
     }
 
     private static void postItemRender() {
-        GlStateManager.scale(1.0f, 1.0f, 1.0f);
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.enableAlpha();
-        GlStateManager.disableBlend();
-        GlStateManager.disableLighting();
-        GlStateManager.scale(0.5, 0.5, 0.5);
+        GlStateManager.depthMask(false);
         GlStateManager.disableDepth();
-        GlStateManager.enableDepth();
-        GlStateManager.scale(2.0f, 2.0f, 2.0f);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     @Override
