@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  * Created 19 November 2019 by hub
  * Updated 12 January 2020 by hub
  * Updated by S-B99 on 18/01/20
+ * Updated 19 Febuary 2020 by aUniqueUser
  */
 @Module.Info(name = "AntiSpam", category = Module.Category.CHAT, description = "Removes spam and advertising from the chat", showOnArray = Module.ShowOnArray.OFF)
 public class AntiSpam extends Module {
@@ -28,6 +29,7 @@ public class AntiSpam extends Module {
     private Setting<Boolean> spammers = register(Settings.b("Spammers", true));
     private Setting<Boolean> insulters = register(Settings.b("Insulters", true));
     private Setting<Boolean> greeters = register(Settings.b("Greeters", true));
+    private Setting<Boolean> hypixelShills = register(Settings.b("Hypixel Shills", true));
     private Setting<Boolean> tradeChat = register(Settings.b("Trade Chat", true));
     private Setting<Boolean> ips = register(Settings.b("Server Ips", true));
     private Setting<Boolean> ipsAgr = register(Settings.b("Ips Aggressive", false));
@@ -147,6 +149,13 @@ public class AntiSpam extends Module {
         if (greeters.getValue() && findPatterns(FilterPatterns.GREETER, message)) {
             if (showBlocked.getValue()) {
                 Command.sendChatMessage("[AntiSpam] Greeter: " + message);
+            }
+            return true;
+        }
+
+        if (hypixelShills.getValue() && findPatterns(FilterPatterns.HYPIXEL_SHILLS, message)) {
+            if (showBlocked.getValue()) {
+                Command.sendChatMessage("[AntiSpam] Hypixel Shills: ");
             }
             return true;
         }
@@ -294,6 +303,14 @@ public class AntiSpam extends Module {
                         "Bye, Bye .+",
                         "Farwell, .+",
                         // incomplete
+                };
+
+        private static final String[] HYPIXEL_SHILLS =
+                {
+                        "/p join",
+                        "/party join",
+                        "road to",
+                        "private games"
                 };
 
         private static final String[] DISCORD =
