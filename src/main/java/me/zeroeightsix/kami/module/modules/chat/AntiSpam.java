@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Created 19 November 2019 by hub
  * Updated 12 January 2020 by hub
  * Updated by S-B99 on 18/01/20
- * Updated 19 Febuary 2020 by aUniqueUser
+ * Updated 19 February 2020 by aUniqueUser
  */
 @Module.Info(name = "AntiSpam", category = Module.Category.CHAT, description = "Removes spam and advertising from the chat", showOnArray = Module.ShowOnArray.OFF)
 public class AntiSpam extends Module {
