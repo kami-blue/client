@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -15,23 +14,23 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.List;
 
-/***
- * Updated by S-B99 on 18/02/20
+/**
+ * Updated by S-B99 on 21/02/20
  * Slight updates by 20kdc, 19/02/20
  * Everything except somethingRender() methods was written by S-B99
  */
 @Module.Info(name = "InventoryViewer", category = Module.Category.GUI, description = "View your inventory on screen", showOnArray = Module.ShowOnArray.OFF)
 public class InventoryViewer extends Module {
-    private Setting<ViewSize> viewSizeSetting = register(Settings.e("Icon Size", ViewSize.MEDIUM));
-    private Setting<Boolean> showIcon = register(Settings.b("Show Icon", true));
-    private Setting<Boolean> colorBackground = register(Settings.b("Colored Background", true));
-    private Setting<Integer> a = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).build());
-    private Setting<Integer> r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).build());
-    private Setting<Integer> g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).build());
-    private Setting<Integer> b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).build());
+    private Setting<Boolean> mcTexture = register(Settings.b("Use ResourcePack", false));
+    private Setting<ViewSize> viewSizeSetting = register(Settings.enumBuilder(ViewSize.class).withName("Icon Size").withValue(ViewSize.LARGE).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Boolean> showIcon = register(Settings.booleanBuilder("Show Icon").withValue(true).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Boolean> colorBackground = register(Settings.booleanBuilder("Colored Background").withValue(true).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Integer> a = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Integer> r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Integer> g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility(v -> !mcTexture.getValue()).build());
+    private Setting<Integer> b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility(v -> !mcTexture.getValue()).build());
 
     private boolean isLeft = false;
     private boolean isRight = false;
@@ -73,15 +72,20 @@ public class InventoryViewer extends Module {
         isRight = frame.getDocking().isRight();
         isBottom = frame.getDocking().isBottom();
     }
+
     private ResourceLocation getBox() {
-        if (!showIcon.getValue()) {
+        if (mcTexture.getValue()) {
+            return new ResourceLocation("textures/gui/container/generic_54.png");
+        } else if (!showIcon.getValue()) {
             return new ResourceLocation("kamiblue/clear.png");
         } else if (viewSizeSetting.getValue().equals(ViewSize.LARGE)) {
             return new ResourceLocation("kamiblue/large.png");
         } else if (viewSizeSetting.getValue().equals(ViewSize.SMALL)) {
             return new ResourceLocation("kamiblue/small.png");
-        } else {
+        } else if (viewSizeSetting.getValue().equals(ViewSize.MEDIUM)) {
             return new ResourceLocation("kamiblue/medium.png");
+        } else {
+            return new ResourceLocation("null");
         }
     }
 
