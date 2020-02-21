@@ -1,0 +1,73 @@
+package me.zeroeightsix.kami.module.modules.experimental;
+
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.event.events.PacketEvent;
+import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.setting.Setting;
+import me.zeroeightsix.kami.setting.Settings;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
+
+@Module.Info(name = "Offhand Gap", category = Module.Category.EXPERIMENTAL, description = "Replaces your offhand with a god apple if you hold right click")
+
+public class OffhandGap extends Module {
+	private Setting<Double> minHealth = register(Settings.d("Disable At", 6.0));
+	private Setting<switchMode> mode = register(Settings.e("Switch When Holding", switchMode.SWORD));
+	
+	int gaps = -1;
+	boolean wasEnabled = false;
+	boolean usingItem = false;
+	
+	private enum switchMode {
+		SWORD,
+		GAPS,
+		BOTH
+	}
+	
+	void moveToOffhand(int slot) {
+		if (mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE) {
+			mc.playerController.windowClick(0, slot < 9 ? slot + 36 : slot, 0, ClickType.PICKUP, mc.player);
+			mc.playerController.windowClick(0, 45, 0, ClickType.PICKUP, mc.player);
+		}
+	}
+	void moveFromOffhand(int slot) {
+		if (mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE) {
+			mc.playerController.windowClick(0, 45, 0, ClickType.PICKUP, mc.player);
+			mc.playerController.windowClick(0, slot, 0, ClickType.PICKUP, mc.player);
+		}
+	}
+	
+	@EventHandler
+	private Listener<PacketEvent.Send> sendListener = new Listener<>(e ->{
+		if (e.getPacket() instanceof CPacketPlayerTryUseItem) {
+			usingItem = true;
+			Command.sendChatMessage("[OffhandGap] client is sending tryUseItem packet. usingItem = true.");
+		} 
+	});
+	
+	@Override
+	public void onUpdate() {
+		if (mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE) {	
+			for (int i = 0; i < 45; i++)
+		 		if (mc.player.inventory.getStackInSlot(i).getItem() == Items.GOLDEN_APPLE) {
+	                gaps = i;
+	                break;
+	            }
+		}	
+		if (mc.player.getHeldItemMainhand().getItem() == Items.DIAMOND_SWORD && usingItem == true) {
+			if (ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHealth() >= minHealth.getValue()) {
+				wasEnabled = true;
+				ModuleManager.getModuleByName("AutoTotem").disable();
+			}
+			moveToOffhand(gaps);
+		} else if (wasEnabled = true && !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE && usingItem == false) { 	
+			moveFromOffhand(gaps);
+			ModuleManager.getModuleByName("AutoTotem").enable();
+		}
+		
+	}
+}
