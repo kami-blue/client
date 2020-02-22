@@ -16,7 +16,6 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 
 public class OffhandGap extends Module {
 	private Setting<Double> minHealth = register(Settings.d("Disable At", 6.0));
-	private Setting<switchMode> mode = register(Settings.e("Switch When Holding", switchMode.SWORD));
 	
 	int gaps = -1;
 	boolean wasEnabled = false;
@@ -44,9 +43,18 @@ public class OffhandGap extends Module {
 	@EventHandler
 	private Listener<PacketEvent.Send> sendListener = new Listener<>(e ->{
 		if (e.getPacket() instanceof CPacketPlayerTryUseItem) {
-			usingItem = true;
-			Command.sendChatMessage("[OffhandGap] client is sending tryUseItem packet. usingItem = true.");
-		} 
+			if (mc.player.getHeldItemMainhand().getItem() == Items.DIAMOND_SWORD) {
+				if (ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHealth() >= minHealth.getValue()) {
+					wasEnabled = true;
+					ModuleManager.getModuleByName("AutoTotem").disable();
+				}
+				moveToOffhand(gaps);
+			} 
+		}
+		if (wasEnabled = true && !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemMainhand().getItem() != Items.DIAMOND_SWORD && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE) {
+			moveFromOffhand(gaps);
+			ModuleManager.getModuleByName("AutoTotem").enable();
+		}
 	});
 	
 	@Override
@@ -58,16 +66,5 @@ public class OffhandGap extends Module {
 	                break;
 	            }
 		}	
-		if (mc.player.getHeldItemMainhand().getItem() == Items.DIAMOND_SWORD && usingItem == true) {
-			if (ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHealth() >= minHealth.getValue()) {
-				wasEnabled = true;
-				ModuleManager.getModuleByName("AutoTotem").disable();
-			}
-			moveToOffhand(gaps);
-		} else if (wasEnabled = true && !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE && usingItem == false) { 	
-			moveFromOffhand(gaps);
-			ModuleManager.getModuleByName("AutoTotem").enable();
-		}
-		
-	}
+	}	
 }
