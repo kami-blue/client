@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.modules.experimental;
+package me.zeroeightsix.kami.module.modules.combat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -16,7 +16,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
  * Created by polymer on 21/02/20
  * Update by S-B99 on 21/02/20
  */
-@Module.Info(name = "OffhandGap", category = Module.Category.EXPERIMENTAL, description = "Holds a God apple when right clicking your sword!")
+@Module.Info(name = "OffhandGap", category = Module.Category.COMBAT, description = "Holds a God apple when right clicking your sword!")
 public class OffhandGap extends Module {
 	private Setting<Double> minHealth = register(Settings.doubleBuilder("Disable health").withMinimum(0.0).withValue(6.0).withMaximum(20.0).build());
 	
