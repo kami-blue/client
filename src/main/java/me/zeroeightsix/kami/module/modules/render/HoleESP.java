@@ -3,14 +3,25 @@ package me.zeroeightsix.kami.module.modules.render;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.module.modules.combat.AutoHoleFill;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
+import me.zeroeightsix.kami.module.modules.combat.Surround;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.KamiTessellator;
+import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockObsidian;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -58,7 +69,7 @@ public class HoleESP extends Module {
 
     @Override
     public void onUpdate() {
-
+    	boolean surrounded = false;
         if (safeHoles == null) {
             safeHoles = new ConcurrentHashMap<>();
         } else {
@@ -104,6 +115,16 @@ public class HoleESP extends Module {
             if (isSafe) {
                 safeHoles.put(pos, isBedrock);
             }
+            if (mc.player.getPosition() == pos) {
+            	surrounded = true;
+            }
+            if (ModuleManager.isModuleEnabled("Auto Hole Fill") && mc.player != null) {
+            	double distanceFromPlayer = mc.player.getPosition().distanceSq(pos.getX(), pos.getY(), pos.getZ());
+            	if (distanceFromPlayer > 4.5 && surrounded == true) {
+            		mc.player.connection.sendPacket(new CPacketAnimation(mc.player.getActiveHand()));
+            		placeBlock(pos);
+            	}
+            }
 
         }
 
@@ -145,7 +166,22 @@ public class HoleESP extends Module {
             });
         KamiTessellator.release();
     }
-
+    
+    private int findObiInHotbar() {
+        int slot = -1;
+        for (int i = 0; i < 9; ++i) {
+            ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
+            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemBlock) {
+                Block block = ((ItemBlock) stack.getItem()).getBlock();
+                if (block instanceof BlockObsidian) {
+                    slot = i;
+                    break;
+                }
+            }
+        }
+        return slot;
+    }
+    
     private void drawBox(BlockPos blockPos, int r, int g, int b) {
         Color color = new Color(r, g, b, a0.getValue());
         if (renderModeSetting.getValue().equals(RenderMode.DOWN)) {
@@ -154,5 +190,20 @@ public class HoleESP extends Module {
             KamiTessellator.drawBox(blockPos, color.getRGB(), GeometryMasks.Quad.ALL);
         }
     }
-
+    public void placeBlock(BlockPos pos) {
+    	Vec3d eyesPos = new Vec3d(Wrapper.getPlayer().posX, Wrapper.getPlayer().posY + (double) Wrapper.getPlayer().getEyeHeight(), Wrapper.getPlayer().posZ);
+        EnumFacing[] var3 = EnumFacing.values();
+        for (EnumFacing side : var3) {
+            BlockPos neighbor = pos.offset(side);
+            EnumFacing side2 = side.getOpposite();
+            Vec3d hitVec = (new Vec3d(neighbor)).add(0.5D, 0.5D, 0.5D).add((new Vec3d(side2.getDirectionVec())).scale(0.5D));
+            int obiSlot = findObiInHotbar();
+            if (obiSlot == -1) {
+            	return;
+            }
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(obiSlot));
+            mc.playerController.processRightClickBlock(Wrapper.getPlayer(), mc.world, neighbor, side2, hitVec, EnumHand.MAIN_HAND);
+            mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+        }
+    }
 }
