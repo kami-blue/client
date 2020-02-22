@@ -22,13 +22,6 @@ public class OffhandGap extends Module {
 	
 	int gaps = -1;
 	boolean wasEnabled = false;
-	boolean usingItem = false;
-	
-	private enum switchMode {
-		SWORD,
-		GAPS,
-		BOTH
-	}
 	
 	void moveToOffhand(int slot) {
 		if (mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE) {
