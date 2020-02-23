@@ -6,8 +6,10 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Friends;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.play.client.CPacketChatMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,10 @@ import java.util.List;
 public class VisualRange extends Module {
 
     private Setting<Boolean> leaving = register(Settings.b("Leaving", false));
+    private Setting<Boolean> uwuAura = register(Settings.b("uwu Aura", false));
 
     private List<String> knownPlayers;
-
+    
     @Override
     public void onUpdate() {
 
@@ -54,6 +57,9 @@ public class VisualRange extends Module {
                     } else {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " entered the Battlefield!");
                     }
+                    if (uwuAura.getValue()) {
+                    	 Minecraft.getMinecraft().playerController.connection.sendPacket(new CPacketChatMessage("/w "+ playerName + "hi uwu"));
+                    }
 
                     return;
 
@@ -75,6 +81,9 @@ public class VisualRange extends Module {
                         } else {
                             sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " left the Battlefield!");
                         }
+                        if (uwuAura.getValue()) {
+                       	 Minecraft.getMinecraft().playerController.connection.sendPacket(new CPacketChatMessage("/w "+ playerName + "bye uwu"));
+                       }
                     }
 
                     return;
@@ -93,5 +102,5 @@ public class VisualRange extends Module {
     public void onEnable() {
         this.knownPlayers = new ArrayList<>();
     }
-
+    
 }
