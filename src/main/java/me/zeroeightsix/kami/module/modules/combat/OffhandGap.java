@@ -14,7 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 /**
  * @author polymer
  * Created by polymer on 21/02/20
- * Update by S-B99 on 21/02/20
+ * Update by S-B99 on 22/02/20
  */
 @Module.Info(name = "OffhandGap", category = Module.Category.COMBAT, description = "Holds a God apple when right clicking your sword!")
 public class OffhandGap extends Module {
@@ -51,7 +51,11 @@ public class OffhandGap extends Module {
 			if (wasEnabled = !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemMainhand().getItem() != Items.DIAMOND_SWORD && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE) {
 				moveFromOffhand(gaps);
 				ModuleManager.getModuleByName("AutoTotem").enable();
+			} else if (!mc.player.isHandActive() && mc.player.getHeldItem(mc.player.getActiveHand()).getItem().equals(Items.GOLDEN_APPLE)) {
+				moveFromOffhand(gaps);
+				ModuleManager.getModuleByName("AutoTotem").enable();
 			}
+
 		}
 		catch (NullPointerException npe) {
 			npe.printStackTrace();
@@ -62,11 +66,12 @@ public class OffhandGap extends Module {
 	public void onUpdate() {
 		if (mc.player == null) return;
 		if (mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE) {	
-			for (int i = 0; i < 45; i++)
-		 		if (mc.player.inventory.getStackInSlot(i).getItem() == Items.GOLDEN_APPLE) {
-	                gaps = i;
-	                break;
-	            }
+			for (int i = 0; i < 45; i++) {
+				if (mc.player.inventory.getStackInSlot(i).getItem() == Items.GOLDEN_APPLE) {
+					gaps = i;
+					break;
+				}
+			}
 		}	
 	}	
 }
