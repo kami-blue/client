@@ -52,10 +52,11 @@ public class OffhandGap extends Module {
 			if (wasEnabled = !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemMainhand().getItem() != Items.DIAMOND_SWORD && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE) {
 				moveFromOffhand(gaps);
 				ModuleManager.getModuleByName("AutoTotem").enable();
-			} else if (!net.minecraftforge.event.ForgeEventFactory.onUseItemStop(mc.player.entity, mc.player.getActiveItemStack(), 1)) {
-				moveFromOffhand(gaps);
-				ModuleManager.getModuleByName("AutoTotem").enable();
 			}
+//			else if (!net.minecraftforge.event.ForgeEventFactory.onUseItemStop(mc.player.entity, mc.player.getActiveItemStack(), 1)) {
+//				moveFromOffhand(gaps);
+//				ModuleManager.getModuleByName("AutoTotem").enable();
+//			}
 
 		}
 		catch (NullPointerException npe) {
