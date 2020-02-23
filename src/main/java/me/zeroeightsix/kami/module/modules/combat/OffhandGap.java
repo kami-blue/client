@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
@@ -14,7 +15,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 /**
  * @author polymer
  * Created by polymer on 21/02/20
- * Update by S-B99 on 22/02/20
+ * Updated by S-B99 on 22/02/20
  */
 @Module.Info(name = "OffhandGap", category = Module.Category.COMBAT, description = "Holds a God apple when right clicking your sword!")
 public class OffhandGap extends Module {
@@ -51,7 +52,7 @@ public class OffhandGap extends Module {
 			if (wasEnabled = !ModuleManager.isModuleEnabled("AutoTotem") && mc.player.getHeldItemMainhand().getItem() != Items.DIAMOND_SWORD && mc.player.getHeldItemOffhand().getItem() == Items.GOLDEN_APPLE) {
 				moveFromOffhand(gaps);
 				ModuleManager.getModuleByName("AutoTotem").enable();
-			} else if (!mc.player.isHandActive() && mc.player.getHeldItem(mc.player.getActiveHand()).getItem().equals(Items.GOLDEN_APPLE)) {
+			} else if (!net.minecraftforge.event.ForgeEventFactory.onUseItemStop(mc.player.entity, mc.player.getActiveItemStack(), 1)) {
 				moveFromOffhand(gaps);
 				ModuleManager.getModuleByName("AutoTotem").enable();
 			}
@@ -72,6 +73,6 @@ public class OffhandGap extends Module {
 					break;
 				}
 			}
-		}	
+		}
 	}	
 }
