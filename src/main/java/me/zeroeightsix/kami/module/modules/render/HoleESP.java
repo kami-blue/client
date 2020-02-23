@@ -3,9 +3,7 @@ package me.zeroeightsix.kami.module.modules.render;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.combat.AutoHoleFill;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
-import me.zeroeightsix.kami.module.modules.combat.Surround;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.GeometryMasks;
@@ -29,11 +27,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static me.zeroeightsix.kami.module.modules.combat.CrystalAura.getPlayerPos;
+import static me.zeroeightsix.kami.util.BlockInteractionHelper.findObiInHotbar;
 
 
 /**
  * Created 16 November 2019 by hub
  * Updated by S-B99 on 15/12/19
+ * Updated by polymer on 22/02/20
  */
 @Module.Info(name = "HoleESP", category = Module.Category.RENDER, description = "Show safe holes for crystal pvp")
 public class HoleESP extends Module {
@@ -69,7 +69,7 @@ public class HoleESP extends Module {
 
     @Override
     public void onUpdate() {
-    	boolean surrounded = false;
+    	boolean surrounded = false; // if you change this to false on update and declare it it won't work @polymer
         if (safeHoles == null) {
             safeHoles = new ConcurrentHashMap<>();
         } else {
@@ -84,19 +84,13 @@ public class HoleESP extends Module {
         for (BlockPos pos : blockPosList) {
 
             // block gotta be air
-            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) {
-                continue;
-            }
+            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) continue;
 
             // block 1 above gotta be air
-            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) {
-                continue;
-            }
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) continue;
 
             // block 2 above gotta be air
-            if (!mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) {
-                continue;
-            }
+            if (!mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) continue;
 
             boolean isSafe = true;
             boolean isBedrock = true;
@@ -112,15 +106,12 @@ public class HoleESP extends Module {
                 }
             }
 
-            if (isSafe) {
-                safeHoles.put(pos, isBedrock);
-            }
-            if (mc.player.getPosition() == pos) {
-            	surrounded = true;
-            }
-            if (ModuleManager.isModuleEnabled("Auto Hole Fill") && mc.player != null) {
+            if (isSafe) safeHoles.put(pos, isBedrock);
+            if (mc.player.getPosition() == pos) surrounded = true;
+
+            if (ModuleManager.isModuleEnabled("HoleFill") && mc.player != null) {
             	double distanceFromPlayer = mc.player.getPosition().distanceSq(pos.getX(), pos.getY(), pos.getZ());
-            	if (distanceFromPlayer > 4.5 && surrounded == true) {
+            	if (distanceFromPlayer > 4.5 && surrounded) {
             		mc.player.connection.sendPacket(new CPacketAnimation(mc.player.getActiveHand()));
             		placeBlock(pos);
             	}
@@ -167,21 +158,6 @@ public class HoleESP extends Module {
         KamiTessellator.release();
     }
     
-    private int findObiInHotbar() {
-        int slot = -1;
-        for (int i = 0; i < 9; ++i) {
-            ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
-            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) stack.getItem()).getBlock();
-                if (block instanceof BlockObsidian) {
-                    slot = i;
-                    break;
-                }
-            }
-        }
-        return slot;
-    }
-    
     private void drawBox(BlockPos blockPos, int r, int g, int b) {
         Color color = new Color(r, g, b, a0.getValue());
         if (renderModeSetting.getValue().equals(RenderMode.DOWN)) {
@@ -190,7 +166,9 @@ public class HoleESP extends Module {
             KamiTessellator.drawBox(blockPos, color.getRGB(), GeometryMasks.Quad.ALL);
         }
     }
+
     public void placeBlock(BlockPos pos) {
+        // eyePos isn't used?
     	Vec3d eyesPos = new Vec3d(Wrapper.getPlayer().posX, Wrapper.getPlayer().posY + (double) Wrapper.getPlayer().getEyeHeight(), Wrapper.getPlayer().posZ);
         EnumFacing[] var3 = EnumFacing.values();
         for (EnumFacing side : var3) {
@@ -198,9 +176,7 @@ public class HoleESP extends Module {
             EnumFacing side2 = side.getOpposite();
             Vec3d hitVec = (new Vec3d(neighbor)).add(0.5D, 0.5D, 0.5D).add((new Vec3d(side2.getDirectionVec())).scale(0.5D));
             int obiSlot = findObiInHotbar();
-            if (obiSlot == -1) {
-            	return;
-            }
+            if (obiSlot == -1) return;
             mc.player.connection.sendPacket(new CPacketHeldItemChange(obiSlot));
             mc.playerController.processRightClickBlock(Wrapper.getPlayer(), mc.world, neighbor, side2, hitVec, EnumHand.MAIN_HAND);
             mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));

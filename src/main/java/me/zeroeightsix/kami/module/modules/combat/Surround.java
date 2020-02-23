@@ -22,12 +22,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import static me.zeroeightsix.kami.util.BlockInteractionHelper.findObiInHotbar;
+
 
 /**
  * @author hub
  * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
  * Updated by Polymer on 09/01/20
- * Updated by S-B99 on 28/01/20
+ * Updated by S-B99 on 22/02/20
  */
 @Module.Info(name = "Surround", category = Module.Category.COMBAT, description = "Surrounds you with obsidian to take less damage")
 public class Surround extends Module {
@@ -199,21 +201,6 @@ public class Surround extends Module {
         if (ModuleManager.getModuleByName("NoBreakAnimation").isEnabled()) {
             ((NoBreakAnimation) ModuleManager.getModuleByName("NoBreakAnimation")).resetMining();
         }
-    }
-
-    private int findObiInHotbar() {
-        int slot = -1;
-        for (int i = 0; i < 9; ++i) {
-            ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
-            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) stack.getItem()).getBlock();
-                if (block instanceof BlockObsidian) {
-                    slot = i;
-                    break;
-                }
-            }
-        }
-        return slot;
     }
 
     public void placeBlockExecute(BlockPos pos) {

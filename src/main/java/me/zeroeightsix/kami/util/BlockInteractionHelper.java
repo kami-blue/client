@@ -1,10 +1,13 @@
 package me.zeroeightsix.kami.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockObsidian;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -18,6 +21,7 @@ import java.util.List;
 /**
  * Created by hub on 15 June 2019
  * Last Updated 12 January 2019 by hub
+ * Updated by S-B99 on 22/02/20
  */
 public class BlockInteractionHelper {
 
@@ -168,4 +172,18 @@ public class BlockInteractionHelper {
         return false;
     }
 
+    public static int findObiInHotbar() {
+        int slot = -1;
+        for (int i = 0; i < 9; ++i) {
+            ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
+            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemBlock) {
+                Block block = ((ItemBlock) stack.getItem()).getBlock();
+                if (block instanceof BlockObsidian) {
+                    slot = i;
+                    break;
+                }
+            }
+        }
+        return slot;
+    }
 }
