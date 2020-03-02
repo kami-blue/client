@@ -5,8 +5,8 @@
 
 ## A Minecraft utility mod for anarchy servers.
 
-Forge 1.12.2 (currently `master`) is in slowed development. 
-Fabric 1.14.4 (currently `fabric-1.14`) is in active development. 
+The Forge 1.12.2 version is in slowed development. 
+You can go to the `fabric-1.14` branch to see an actively developed Fabric version. 
 
 Please note Baritone is not included in 1.12.2 Forge. Get it [from here](https://github.com/cabaletta/baritone/releases).
 
@@ -25,7 +25,7 @@ Please note Baritone is not included in 1.12.2 Forge. Get it [from here](https:/
 
 ## Installing
 
-The `master` branch of KAMI is a 1.12.2 Forge mod. Start by downloading the latest version of [1.12.2 Forge](https://files.minecraftforge.net/).
+The 1.12.2 version of KAMI is a Forge mod. Start by downloading the latest version of [1.12.2 Forge](https://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html).
 1. Install Forge
 2. Navigate to your `.minecraft` directory.
    * **Linux**: `~/.minecraft`
