@@ -19,7 +19,7 @@ import org.lwjgl.input.Mouse;
  * Updated by Indrit on 02/03/20
  */
 
-@Module.Info(name = "MidClickFriends", category = Module.Category.MISC, description = "Middle click payers to friend them")
+@Module.Info(name = "MidClickFriends", category = Module.Category.MISC, description = "Middle click payers to friend/unfriend them")
 public class MidClickFriends extends Module {
     private int delay = 0;
 
@@ -32,9 +32,8 @@ public class MidClickFriends extends Module {
 
     @EventHandler
     public Listener<InputEvent.MouseInputEvent> mouseListener = new Listener<>(event -> {
-        KamiMod.log.info(Mouse.getEventButton());
         if (delay == 0) {
-            if(Mouse.getEventButton() == 2) { // Caus 2 is middle click on mouse???
+            if(Mouse.getEventButton() == 2) { // Because 2 is middle click on mouse, wtf???
                 if (Minecraft.getMinecraft().objectMouseOver.typeOfHit.equals(RayTraceResult.Type.ENTITY)) {
                     Entity uwu = Minecraft.getMinecraft().objectMouseOver.entityHit;
                     if (!(uwu instanceof EntityOtherPlayerMP)) {
