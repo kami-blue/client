@@ -12,7 +12,7 @@ task mkdir {
 task rmOld(type: Delete) {
     group = "kami"
     delete fileTree(System.getProperty("user.home") + "/.minecraft/mods/1.12.2/").matching {
-        include "*-release.jar"
+        include "KAMI*-release.jar"
     }
 }
 
@@ -21,7 +21,7 @@ task rmOld(type: Delete) {
 task copy(type: Copy) {
     group = "kami"
     from file("build/libs/")
-    include '*-release.jar'
+    include 'KAMI*-release.jar'
     into file(System.getProperty("user.home") + "/.minecraft/mods/1.12.2/")
 }
 
