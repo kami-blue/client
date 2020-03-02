@@ -46,7 +46,6 @@ public class FriendCommand extends Command {
         } else {
             if (args[1] == null) {
                 Command.sendChatMessage(String.format(Friends.isFriend(args[0]) ? "Yes, %s is your friend." : "No, %s isn't a friend of yours.", args[0]));
-                Command.sendChatMessage(String.format(Friends.isFriend(args[0]) ? "Yes, %s is your friend." : "No, %s isn't a friend of yours.", args[0]));
                 return;
             }
 
@@ -85,7 +84,7 @@ public class FriendCommand extends Command {
         }
     }
 
-    private Friends.Friend getFriendByName(String input) {
+    public Friends.Friend getFriendByName(String input) {
         ArrayList<NetworkPlayerInfo> infoMap = new ArrayList<NetworkPlayerInfo>(Minecraft.getMinecraft().getConnection().getPlayerInfoMap());
         NetworkPlayerInfo profile = infoMap.stream().filter(networkPlayerInfo -> networkPlayerInfo.getGameProfile().getName().equalsIgnoreCase(input)).findFirst().orElse(null);
         if (profile == null) {
@@ -144,7 +143,7 @@ public class FriendCommand extends Command {
         }
     }
 
-    private static String convertStreamToString(java.io.InputStream is) {
+    private static String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         String r = s.hasNext() ? s.next() : "/";
         return r;

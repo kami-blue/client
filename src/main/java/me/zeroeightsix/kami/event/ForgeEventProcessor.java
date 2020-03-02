@@ -145,12 +145,17 @@ public class ForgeEventProcessor {
         KamiMod.EVENT_BUS.post(event);
     }
 
-    @SubscribeEvent()
+    @SubscribeEvent
     public void onChunkLoaded(ChunkEvent.Load event) {
         KamiMod.EVENT_BUS.post(event);
     }
 
-    @SubscribeEvent()
+    @SubscribeEvent
+    public void onEventMouse(InputEvent.MouseInputEvent event) {
+        KamiMod.EVENT_BUS.post(event);
+    }
+
+    @SubscribeEvent
     public void onChunkLoaded(ChunkEvent.Unload event) {
         KamiMod.EVENT_BUS.post(event);
     }
