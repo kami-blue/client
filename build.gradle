@@ -41,8 +41,8 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
     }
 }
 
@@ -84,21 +84,21 @@ repositories {
         url = "https://jitpack.io"
     }
     mavenCentral()
-	jcenter()
+    jcenter()
 }
 
 dependencies {
     //mixin needs to be distributed with the mod, very important
-    compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {
+    compile("org.spongepowered:mixin:0.8.1-SNAPSHOT") {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
-    compile "com.github.ZeroMemes:Alpine:1.5"
+    compile "com.github.ZeroMemes:Alpine:1.7"
     compile group: 'net.jodah', name: 'typetools', version: '0.5.0'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.19'
-    compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+    compile(group: 'org.reflections', name: 'reflections', version: '0.9.12') {
         exclude group: 'com.google.guava', module: 'guava'
     }
     compile 'club.minnced:java-discord-rpc:v2.0.1'
