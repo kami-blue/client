@@ -72,6 +72,50 @@ public class DiscordPresence {
         DiscordPresence.hasStarted = false;
     }
 
+    public static DiscordRichPresence getPresence() {
+        return presence;
+    }
+
+    public static void setPresence(DiscordRichPresence presence) {
+        DiscordPresence.presence = presence;
+    }
+
+    public static boolean isHasStarted() {
+        return hasStarted;
+    }
+
+    public static void setHasStarted(boolean hasStarted) {
+        DiscordPresence.hasStarted = hasStarted;
+    }
+
+    public static DiscordRPC getRpc() {
+        return rpc;
+    }
+
+    public static String getDetails() {
+        return details;
+    }
+
+    public static void setDetails(String details) {
+        DiscordPresence.details = details;
+    }
+
+    public static String getState() {
+        return state;
+    }
+
+    public static void setState(String state) {
+        DiscordPresence.state = state;
+    }
+
+    public static DiscordSettings getDiscordSettings() {
+        return discordSettings;
+    }
+
+    public static void setDiscordSettings(DiscordSettings discordSettings) {
+        DiscordPresence.discordSettings = discordSettings;
+    }
+
     /* I have no idea how to disconnect rpc properly atm */
 //    private static /* synthetic */ void lambdastart1() {
 //        setRpcSettings();
