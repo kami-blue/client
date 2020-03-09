@@ -2,7 +2,21 @@ package me.zeroeightsix.kami.module.modules.player;
 
 import me.zeroeightsix.kami.module.Module;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemEgg;
+import net.minecraft.item.ItemEnderEye;
+import net.minecraft.item.ItemEnderPearl;
+import net.minecraft.item.ItemExpBottle;
+import net.minecraft.item.ItemFishingRod;
+import net.minecraft.item.ItemFlintAndSteel;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemShield;
+import net.minecraft.item.ItemSnowball;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.FoodStats;
@@ -12,14 +26,20 @@ import net.minecraft.util.FoodStats;
  */
 @Module.Info(name = "AutoEat", description = "Automatically eat when hungry", category = Module.Category.PLAYER)
 public class AutoEat extends Module {
-
+	
     private int lastSlot = -1;
     private boolean eating = false;
 
     private boolean isValid(ItemStack stack, int food) {
         return stack.getItem() instanceof ItemFood && (20 - food) >= ((ItemFood) stack.getItem()).getHealAmount(stack);
     }
-
+    private boolean passItemCheck() {
+			Item item = mc.player.getHeldItemMainhand().getItem();
+			if (item == Items.ROTTEN_FLESH) return false;
+			if (item == Items.SPIDER_EYE) return false;
+		return true;
+	}
+    
     @Override
     public void onUpdate() {
         if (eating && !mc.player.isHandActive()) {
@@ -34,14 +54,14 @@ public class AutoEat extends Module {
         if (eating) return;
 
         FoodStats stats = mc.player.getFoodStats();
-        if (isValid(mc.player.getHeldItemOffhand(), stats.getFoodLevel())) {
+        if (isValid(mc.player.getHeldItemOffhand(), stats.getFoodLevel()) && passItemCheck() == true) {
             mc.player.setActiveHand(EnumHand.OFF_HAND);
             eating = true;
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.getKeyCode(), true);
             mc.rightClickMouse();
         } else {
             for (int i = 0; i < 9; i++) {
-                if (isValid(mc.player.inventory.getStackInSlot(i), stats.getFoodLevel())) {
+                if (isValid(mc.player.inventory.getStackInSlot(i), stats.getFoodLevel()) && passItemCheck() == true) {
                     lastSlot = mc.player.inventory.currentItem;
                     mc.player.inventory.currentItem = i;
                     eating = true;
