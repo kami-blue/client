@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.chat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
@@ -22,24 +23,38 @@ import java.util.stream.Collectors;
 @Module.Info(name = "AntiSpam", category = Module.Category.CHAT, description = "Removes spam and advertising from the chat", showOnArray = Module.ShowOnArray.OFF)
 public class AntiSpam extends Module {
 
-    private Setting<Boolean> greenText = register(Settings.b("Green Text", false));
-    private Setting<Boolean> discordLinks = register(Settings.b("Discord Links", true));
-    private Setting<Boolean> webLinks = register(Settings.b("Web Links", false));
-    private Setting<Boolean> announcers = register(Settings.b("Announcers", true));
-    private Setting<Boolean> spammers = register(Settings.b("Spammers", true));
-    private Setting<Boolean> insulters = register(Settings.b("Insulters", true));
-    private Setting<Boolean> greeters = register(Settings.b("Greeters", true));
-    private Setting<Boolean> hypixelShills = register(Settings.b("Hypixel Shills", true));
-    private Setting<Boolean> tradeChat = register(Settings.b("Trade Chat", true));
-    private Setting<Boolean> ips = register(Settings.b("Server Ips", true));
-    private Setting<Boolean> ipsAgr = register(Settings.b("Ips Aggressive", false));
-    private Setting<Boolean> numberSuffix = register(Settings.b("Number Suffix", true));
-    private Setting<Boolean> duplicates = register(Settings.b("Duplicates", true));
-    private Setting<Integer> duplicatesTimeout = register(Settings.integerBuilder("Duplicates Timeout").withMinimum(1).withValue(30).withMaximum(600).build());
-    private Setting<Boolean> filterOwn = register(Settings.b("Filter Own", false));
-    private Setting<Boolean> showBlocked = register(Settings.b("Show Blocked", false));
+    private Setting<Page> p = register(Settings.e("Page", Page.ONE));
+    /* Page One */
+    private Setting<Boolean> discordLinks = register(Settings.booleanBuilder("Discord Links").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> announcers = register(Settings.booleanBuilder("Announcers").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> spammers = register(Settings.booleanBuilder("Spammers").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> insulters = register(Settings.booleanBuilder("Insulters").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> greeters = register(Settings.booleanBuilder("Greeters").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> ips = register(Settings.booleanBuilder("Server Ips").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> wordsLongerThen = register(Settings.booleanBuilder("11+ long words").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> specialCharEnding= register(Settings.booleanBuilder("Special Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> specialCharBegin = register(Settings.booleanBuilder("Special Begin").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> iJustThanksTo = register(Settings.booleanBuilder("I just...thanks to").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    /* I can't get settings to work in non static context for filter */
+//    private Setting<Integer> characters = register(Settings.integerBuilder("Characters").withValue(15).withVisibility(v -> wordsLongerThen.getValue() && p.getValue().equals(Page.ONE)).build());
+
+    /* Page Two */
+    private Setting<Boolean> ownsMeAndAll = register(Settings.booleanBuilder("Owns Me And All").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> greenText = register(Settings.booleanBuilder("Green Text").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> numberSuffix = register(Settings.booleanBuilder("Number Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> numberPrefix = register(Settings.booleanBuilder("Number Begin").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> tradeChat = register(Settings.booleanBuilder("Trade Chat").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> hypixelShills = register(Settings.booleanBuilder("Hypixel Shills").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> ipsAgr = register(Settings.booleanBuilder("Ips Aggressive").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Integer> duplicatesTimeout = register(Settings.integerBuilder("Duplicates Timeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility(v -> duplicates.getValue() && p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> webLinks = register(Settings.booleanBuilder("Web Links").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> filterOwn = register(Settings.booleanBuilder("Filter Own").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<ShowBlocked> showBlocked = register(Settings.enumBuilder(ShowBlocked.class).withName("Show Blocked").withValue(ShowBlocked.LOG_FILE).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
 
     private ConcurrentHashMap<String, Long> messageHistory;
+    private enum Page { ONE, TWO }
+    private enum ShowBlocked { NONE, LOG_FILE, CHAT }
 
     @EventHandler
     public Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
@@ -53,17 +68,17 @@ public class AntiSpam extends Module {
             return;
         }*/
 
-        // leijurv's sexy lambda to remove older entries in messageHistory
+        /* leijurv's sexy lambda to remove older entries in messageHistory */
         messageHistory.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() < System.currentTimeMillis() - 10 * 60 * 1000) // 10 is delay in minutes
                 .collect(Collectors.toList())
                 .forEach(entry -> messageHistory.remove(entry.getKey()));
 
-        if (detectSpam(sPacketChat.getChatComponent().getUnformattedText())) {
-            event.cancel();
-        }
+        if (detectSpam(removeUsername(sPacketChat.getChatComponent().getUnformattedText()))) event.cancel();
     });
+
+    private String removeUsername(String username) { return username.replaceAll("<[^>]*> ", ""); }
 
     @Override
     public void onEnable() { messageHistory = new ConcurrentHashMap<>(); }
@@ -72,107 +87,54 @@ public class AntiSpam extends Module {
     public void onDisable() { messageHistory = null; }
 
     private boolean detectSpam(String message) {
-        if (!filterOwn.getValue() && findPatterns(FilterPatterns.OWN_MESSAGE, message)) {
-            return false;
-        }
+        if (!filterOwn.getValue() && findPatterns(FilterPatterns.OWN_MESSAGE, message)) return false;
 
-        if (greenText.getValue() && findPatterns(FilterPatterns.GREEN_TEXT, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Green Text: " + message);
-            }
-            return true;
-        }
+        if (wordsLongerThen.getValue() && findPatterns(FilterPatterns.LONG_WORD, message)) return sendResult(wordsLongerThen.getName(), message);
 
-        if (discordLinks.getValue() && findPatterns(FilterPatterns.DISCORD, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Discord Link: " + message);
-            }
-            return true;
-        }
+        if (greenText.getValue() && findPatterns(FilterPatterns.GREEN_TEXT, message)) return sendResult(greenText.getName(), message);
 
-        if (webLinks.getValue() && findPatterns(FilterPatterns.WEB_LINK, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Web Link: " + message);
-            }
-            return true;
-        }
+        if (specialCharBegin.getValue() && findPatterns(FilterPatterns.SPECIAL_BEGINNING, message)) return sendResult(specialCharBegin.getName(), message);
 
-        if (ips.getValue() && findPatterns(FilterPatterns.IP_ADDR, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "IP Address: " + message);
-            }
-            return true;
-        }
+        if (specialCharEnding.getValue() && findPatterns(FilterPatterns.SPECIAL_ENDING, message)) return sendResult(specialCharEnding.getName(), message);
 
-        if (ipsAgr.getValue() && findPatterns(FilterPatterns.IP_ADDR_AGR, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "IP Aggressive: " + message);
-            }
-            return true;
-        }
+        if (ownsMeAndAll.getValue() && findPatterns(FilterPatterns.OWNS_ME_AND_ALL, message)) return sendResult(ownsMeAndAll.getName(), message);
 
-        if (tradeChat.getValue() && findPatterns(FilterPatterns.TRADE_CHAT, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Trade Chat: " + message);
-            }
-            return true;
-        }
+        if (iJustThanksTo.getValue() && findPatterns(FilterPatterns.I_JUST_THANKS_TO, message)) return sendResult(iJustThanksTo.getName(), message);
 
-        if (numberSuffix.getValue() && findPatterns(FilterPatterns.NUMBER_SUFFIX, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Number Suffix: " + message);
-            }
-            return true;
-        }
+        if (numberSuffix.getValue() && findPatterns(FilterPatterns.NUMBER_SUFFIX, message)) return sendResult(numberSuffix.getName(), message);
 
-        if (announcers.getValue() && findPatterns(FilterPatterns.ANNOUNCER, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Announcer: " + message);
-            }
-            return true;
-        }
+        if (numberPrefix.getValue() && findPatterns(FilterPatterns.NUMBER_PREFIX, message)) return sendResult(numberPrefix.getName(), message);
 
-        if (spammers.getValue() && findPatterns(FilterPatterns.SPAMMER, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Spammers: " + message);
-            }
-            return true;
-        }
+        if (discordLinks.getValue() && findPatterns(FilterPatterns.DISCORD, message)) return sendResult(discordLinks.getName(), message);
 
-        if (insulters.getValue() && findPatterns(FilterPatterns.INSULTER, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Insulter: " + message);
-            }
-            return true;
-        }
+        if (webLinks.getValue() && findPatterns(FilterPatterns.WEB_LINK, message)) return sendResult(webLinks.getName(), message);
 
-        if (greeters.getValue() && findPatterns(FilterPatterns.GREETER, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Greeter: " + message);
-            }
-            return true;
-        }
+        if (ips.getValue() && findPatterns(FilterPatterns.IP_ADDR, message)) return sendResult(ips.getName(), message);
 
-        if (hypixelShills.getValue() && findPatterns(FilterPatterns.HYPIXEL_SHILLS, message)) {
-            if (showBlocked.getValue()) {
-                Command.sendChatMessage(this.getChatName() + "Hypixel Shills: ");
-            }
-            return true;
-        }
+        if (ipsAgr.getValue() && findPatterns(FilterPatterns.IP_ADDR_AGR, message)) return sendResult(ipsAgr.getName(), message);
+
+        if (announcers.getValue() && findPatterns(FilterPatterns.ANNOUNCER, message)) return sendResult(announcers.getName(), message);
+
+        if (spammers.getValue() && findPatterns(FilterPatterns.SPAMMER, message)) return sendResult(spammers.getName(), message);
+
+        if (insulters.getValue() && findPatterns(FilterPatterns.INSULTER, message)) return sendResult(insulters.getName(), message);
+
+        if (greeters.getValue() && findPatterns(FilterPatterns.GREETER, message)) return sendResult(greeters.getName(), message);
+
+        if (hypixelShills.getValue() && findPatterns(FilterPatterns.HYPIXEL_SHILLS, message)) return sendResult(hypixelShills.getName(), message);
+
+        if (tradeChat.getValue() && findPatterns(FilterPatterns.TRADE_CHAT, message)) return sendResult(tradeChat.getName(), message);
 
         if (duplicates.getValue()) {
-            if (messageHistory == null) {
-                messageHistory = new ConcurrentHashMap<>();
-            }
+            if (messageHistory == null) messageHistory = new ConcurrentHashMap<>();
             boolean isDuplicate = false;
-            if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory.get(message)) / 1000 < duplicatesTimeout.getValue()) {
-                isDuplicate = true;
-            }
+
+            if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory.get(message)) / 1000 < duplicatesTimeout.getValue()) isDuplicate = true;
+
             messageHistory.put(message, System.currentTimeMillis());
             if (isDuplicate) {
-                if (showBlocked.getValue()) {
-                    Command.sendChatMessage(this.getChatName() + "Duplicate: " + message);
-                }
+                if (showBlocked.getValue().equals(ShowBlocked.CHAT)) Command.sendChatMessage(this.getChatName() + "Duplicate: " + message);
+                else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(this.getChatName() + "Duplicate: " + message);
                 return true;
             }
         }
@@ -180,8 +142,9 @@ public class AntiSpam extends Module {
     }
 
     private boolean findPatterns(String[] patterns, String string) {
+        string = string.replaceAll("<[^>]*> ", ""); // remove username first
         for (String pattern : patterns) {
-            if (Pattern.compile(pattern).matcher(string).find()) {
+            if (Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(string).find()) {
                 return true;
             }
         }
@@ -189,178 +152,212 @@ public class AntiSpam extends Module {
     }
 
     private static class FilterPatterns {
-        private static final String[] ANNOUNCER =
-                {
-                        // RusherHack b8
-                        "I just walked .+ feet!",
-                        "I just placed a .+!",
-                        "I just attacked .+ with a .+!",
-                        "I just dropped a .+!",
-                        "I just opened chat!",
-                        "I just opened my console!",
-                        "I just opened my GUI!",
-                        "I just went into full screen mode!",
-                        "I just paused my game!",
-                        "I just opened my inventory!",
-                        "I just looked at the player list!",
-                        "I just took a screen shot!",
-                        "I just swaped hands!",
-                        "I just ducked!",
-                        "I just changed perspectives!",
-                        "I just jumped!",
-                        "I just ate a .+!",
-                        "I just crafted .+ .+!",
-                        "I just picked up a .+!",
-                        "I just smelted .+ .+!",
-                        "I just respawned!",
-                        // RusherHack b11
-                        "I just attacked .+ with my hands",
-                        "I just broke a .+!",
-                        // WWE
-                        "I recently walked .+ blocks",
-                        "I just droped a .+ called, .+!",
-                        "I just placed a block called, .+!",
-                        "Im currently breaking a block called, .+!",
-                        "I just broke a block called, .+!",
-                        "I just opened chat!",
-                        "I just opened chat and typed a slash!",
-                        "I just paused my game!",
-                        "I just opened my inventory!",
-                        "I just looked at the player list!",
-                        "I just changed perspectives, now im in .+!",
-                        "I just crouched!",
-                        "I just jumped!",
-                        "I just attacked a entity called, .+ with a .+",
-                        "Im currently eatting a peice of food called, .+!",
-                        "Im currently using a item called, .+!",
-                        "I just toggled full screen mode!",
-                        "I just took a screen shot!",
-                        "I just swaped hands and now theres a .+ in my main hand and a .+ in my off hand!",
-                        "I just used pick block on a block called, .+!",
-                        "Ra just completed his blazing ark",
-                        "Its a new day yes it is",
-                        // DotGod.CC
-                        "I just placed .+ thanks to (http:\\/\\/)?DotGod\\.CC!",
-                        "I just flew .+ meters like a butterfly thanks to (http:\\/\\/)?DotGod\\.CC!",
-                };
+        private static final String[] ANNOUNCER = {
+                // RusherHack b8
+                "I just walked .+ feet!",
+                "I just placed a .+!",
+                "I just attacked .+ with a .+!",
+                "I just dropped a .+!",
+                "I just opened chat!",
+                "I just opened my console!",
+                "I just opened my GUI!",
+                "I just went into full screen mode!",
+                "I just paused my game!",
+                "I just opened my inventory!",
+                "I just looked at the player list!",
+                "I just took a screen shot!",
+                "I just swaped hands!",
+                "I just ducked!",
+                "I just changed perspectives!",
+                "I just jumped!",
+                "I just ate a .+!",
+                "I just crafted .+ .+!",
+                "I just picked up a .+!",
+                "I just smelted .+ .+!",
+                "I just respawned!",
+                // RusherHack b11
+                "I just attacked .+ with my hands",
+                "I just broke a .+!",
+                // WWE
+                "I recently walked .+ blocks",
+                "I just droped a .+ called, .+!",
+                "I just placed a block called, .+!",
+                "Im currently breaking a block called, .+!",
+                "I just broke a block called, .+!",
+                "I just opened chat!",
+                "I just opened chat and typed a slash!",
+                "I just paused my game!",
+                "I just opened my inventory!",
+                "I just looked at the player list!",
+                "I just changed perspectives, now im in .+!",
+                "I just crouched!",
+                "I just jumped!",
+                "I just attacked a entity called, .+ with a .+",
+                "Im currently eatting a peice of food called, .+!",
+                "Im currently using a item called, .+!",
+                "I just toggled full screen mode!",
+                "I just took a screen shot!",
+                "I just swaped hands and now theres a .+ in my main hand and a .+ in my off hand!",
+                "I just used pick block on a block called, .+!",
+                "Ra just completed his blazing ark",
+                "Its a new day yes it is",
+                // DotGod.CC
+                "I just placed .+ thanks to (http:\\/\\/)?DotGod\\.CC!",
+                "I just flew .+ meters like a butterfly thanks to (http:\\/\\/)?DotGod\\.CC!",
+        };
 
-        private static final String[] SPAMMER =
-                {
-                        //WWE
-                        "WWE Client's spammer",
-                        "Lol get gud",
-                        "Future client is bad",
-                        "WWE > Future",
-                        "WWE > Impact",
-                        "Default Message",
-                        "IKnowImEZ is a god",
-                        "THEREALWWEFAN231 is a god",
-                        "WWE Client made by IKnowImEZ/THEREALWWEFAN231",
-                        "WWE Client was the first public client to have Path Finder/New Chunks",
-                        "WWE Client was the first public client to have color signs",
-                        "WWE Client was the first client to have Teleport Finder",
-                        "WWE Client was the first client to have Tunneller & Tunneller Back Fill",
-                };
+        private static final String[] SPAMMER = {
+                //WWE
+                "WWE Client's spammer",
+                "Lol get gud",
+                "Future client is bad",
+                "WWE > Future",
+                "WWE > Impact",
+                "Default Message",
+                "IKnowImEZ is a god",
+                "THEREALWWEFAN231 is a god",
+                "WWE Client made by IKnowImEZ/THEREALWWEFAN231",
+                "WWE Client was the first public client to have Path Finder/New Chunks",
+                "WWE Client was the first public client to have color signs",
+                "WWE Client was the first client to have Teleport Finder",
+                "WWE Client was the first client to have Tunneller & Tunneller Back Fill",
+        };
 
-        private static final String[] INSULTER =
-                {
-                        // WWE
-                        ".+ Download WWE utility mod, Its free!",
-                        ".+ 4b4t is da best mintscreft serber",
-                        ".+ dont abouse",
-                        ".+ you cuck",
-                        ".+ https://www.youtube.com/channel/UCJGCNPEjvsCn0FKw3zso0TA",
-                        ".+ is my step dad",
-                        ".+ again daddy!",
-                        "dont worry .+ it happens to every one",
-                        ".+ dont buy future it's crap, compared to WWE!",
-                        "What are you, fucking gay, .+?",
-                        "Did you know? .+ hates you, .+",
-                        "You are literally 10, .+",
-                        ".+ finally lost their virginity, sadly they lost it to .+... yeah, that's unfortunate.",
-                        ".+, don't be upset, it's not like anyone cares about you, fag.",
-                        ".+, see that rubbish bin over there? Get your ass in it, or I'll get .+ to whoop your ass.",
-                        ".+, may I borrow that dirt block? that guy named .+ needs it...",
-                        "Yo, .+, btfo you virgin",
-                        "Hey .+ want to play some High School RP with me and .+?",
-                        ".+ is an Archon player. Why is he on here? Fucking factions player.",
-                        "Did you know? .+ just joined The Vortex Coalition!",
-                        ".+ has successfully conducted the cactus dupe and duped a itemhand!",
-                        ".+, are you even human? You act like my dog, holy shit.",
-                        ".+, you were never loved by your family.",
-                        "Come on .+, you hurt .+'s feelings. You meany.",
-                        "Stop trying to meme .+, you can't do that. kek",
-                        ".+, .+ is gay. Don't go near him.",
-                        "Whoa .+ didn't mean to offend you, .+.",
-                        ".+ im not pvping .+, im WWE'ing .+.",
-                        "Did you know? .+ just joined The Vortex Coalition!",
-                        ".+, are you even human? You act like my dog, holy shit.",
-                };
+        private static final String[] INSULTER = {
+                // WWE
+                ".+ Download WWE utility mod, Its free!",
+                ".+ 4b4t is da best mintscreft serber",
+                ".+ dont abouse",
+                ".+ you cuck",
+                ".+ https://www.youtube.com/channel/UCJGCNPEjvsCn0FKw3zso0TA",
+                ".+ is my step dad",
+                ".+ again daddy!",
+                "dont worry .+ it happens to every one",
+                ".+ dont buy future it's crap, compared to WWE!",
+                "What are you, fucking gay, .+?",
+                "Did you know? .+ hates you, .+",
+                "You are literally 10, .+",
+                ".+ finally lost their virginity, sadly they lost it to .+... yeah, that's unfortunate.",
+                ".+, don't be upset, it's not like anyone cares about you, fag.",
+                ".+, see that rubbish bin over there? Get your ass in it, or I'll get .+ to whoop your ass.",
+                ".+, may I borrow that dirt block? that guy named .+ needs it...",
+                "Yo, .+, btfo you virgin",
+                "Hey .+ want to play some High School RP with me and .+?",
+                ".+ is an Archon player. Why is he on here? Fucking factions player.",
+                "Did you know? .+ just joined The Vortex Coalition!",
+                ".+ has successfully conducted the cactus dupe and duped a itemhand!",
+                ".+, are you even human? You act like my dog, holy shit.",
+                ".+, you were never loved by your family.",
+                "Come on .+, you hurt .+'s feelings. You meany.",
+                "Stop trying to meme .+, you can't do that. kek",
+                ".+, .+ is gay. Don't go near him.",
+                "Whoa .+ didn't mean to offend you, .+.",
+                ".+ im not pvping .+, im WWE'ing .+.",
+                "Did you know? .+ just joined The Vortex Coalition!",
+                ".+, are you even human? You act like my dog, holy shit.",
+        };
 
-        private static final String[] GREETER =
-                {
-                        // WWE
-                        "Bye, Bye .+",
-                        "Farwell, .+",
-                        // incomplete
-                };
+        private static final String[] GREETER = {
+                // WWE
+                "Bye, Bye .+",
+                "Farwell, .+",
+                // Others(?)
+                "See you next time, .+",
+                "Catch ya later, .+",
+                "Bye, .+",
+                "Welcome, .+",
+                "Hey, .+",
+                // Vanilla MC / Essentials MC
+                ".+ joined the game",
+                ".+ has joined",
+                ".+ joined the lobby",
+                "Welcome .+",
+                ".+ left the game",
+        };
 
-        private static final String[] HYPIXEL_SHILLS =
-                {
-                        "/p join",
-                        "/party join",
-                        "road to",
-                        "private games"
-                };
+        private static final String[] HYPIXEL_SHILLS = {
+                "/p join",
+                "/party join",
+                "road to",
+                "private games"
+        };
 
-        private static final String[] DISCORD =
-                {
-                        "discord.gg",
-                        "discordapp.com",
-                        "discord.io",
-                        "invite.gg",
-                };
+        private static final String[] DISCORD = {
+                "discord.gg",
+                "discordapp.com",
+                "discord.io",
+                "invite.gg",
+        };
 
-        private static final String[] NUMBER_SUFFIX =
-                {
-                        ".+\\d{3,}$",
-                };
+        private static final String[] NUMBER_SUFFIX = {
+                ".+\\d{3,}$",
+        };
 
-        private static final String[] GREEN_TEXT =
-                {
-                        "^<.+> >",
-                };
+        private static final String[] NUMBER_PREFIX= {
+                "\\d{3,}.*$",
+        };
 
-        private static final String[] TRADE_CHAT =
-                {
-                        "buy",
-                        "sell",
-                };
+        private static final String[] GREEN_TEXT = {
+                "^<.+> >",
+        };
 
-        private static final String[] WEB_LINK =
-                {
-                        "http:\\/\\/",
-                        "https:\\/\\/",
-                        "www.",
-                };
+        private static final String[] TRADE_CHAT = {
+                "buy",
+                "sell",
+        };
 
-        private static final String[] IP_ADDR =
-                {
-                        "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,5}\\b",
-                        "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}",
-                        "^(?:http(?:s)?:\\/\\/)?(?:[^\\.]+\\.)?.*\\..*\\..*$",
-                        ".*\\..*\\:\\d{1,5}$",
-                };
+        private static final String[] WEB_LINK = {
+                "http:\\/\\/",
+                "https:\\/\\/",
+                "www.",
+        };
 
-        private static final String[] IP_ADDR_AGR =
-                {
-                        ".*\\..*$",
-                };
+        private static final String[] IP_ADDR = {
+                "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,5}\\b",
+                "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}",
+                "^(?:http(?:s)?:\\/\\/)?(?:[^\\.]+\\.)?.*\\..*\\..*$",
+                ".*\\..*\\:\\d{1,5}$",
+        };
 
-        private static final String[] OWN_MESSAGE =
-                {
+        private static final String[] IP_ADDR_AGR = {
+                ".*\\..*$",
+        };
+
+        private static final String[] LONG_WORD = {
+//                "\\b\\w{" + getCharacters() + ",256}\\b",
+                "\\b\\w{11,256}\\b",
+        };
+
+        private static final String[] OWNS_ME_AND_ALL = {
+                "owns me and all",
+        };
+
+        private static final String[] I_JUST_THANKS_TO = {
+                "i just.*thanks to",
+        };
+
+        private static final String[] SPECIAL_BEGINNING = {
+                "[.?!()\\[\\]{}\\-+=\\\\]+",
+        };
+
+        private static final String[] SPECIAL_ENDING = {
+                "[/*()\\[\\]{}\\-+=\\\\]*$",
+        };
+
+        private static final String[] OWN_MESSAGE = {
                         "^<" + mc.player.getName() + "> ",
                         "^To .+: ",
-                };
+        };
+    }
+
+//    private static Integer getCharacters() {
+//        AntiSpam antiSpam = ((AntiSpam) ModuleManager.getModuleByName("AntiSpam"));
+//        return antiSpam.characters.getValue();
+//    }
+
+    private boolean sendResult(String name, String message) {
+        if (showBlocked.getValue().equals(ShowBlocked.CHAT)) Command.sendChatMessage(this.getChatName() + name + ": " + message);
+        else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(this.getChatName() + name + ": " +message);
+        return true;
     }
 }
