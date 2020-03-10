@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 public class AutoWalter extends Module {
 	private Setting<Mode> mode = register(Settings.e("Mode", Mode.ONTOP));
 	boolean hasKilledEntity = false;
+	EntityPlayerMP e;
 	
 	enum Mode {
 		OVER_EVERYTHING, ONTOP, EZD, EZ_HYPIXEL, NAENAE
@@ -39,17 +40,21 @@ public class AutoWalter extends Module {
 	@EventHandler public Listener<ClientPlayerAttackEvent> livingDeathEventListener = new Listener<>(event -> {
 		if (event.getTargetEntity() instanceof EntityPlayerMP) {
 			if (((EntityLivingBase) event.getTargetEntity()).getHealth() >= 0) {
-				Command.sendChatMessage( "[Client] You just attacked" + event.getTargetEntity());
+				Command.sendChatMessage( "[Client] You just attacked" + event.getTargetEntity().getName());
 				hasKilledEntity = false;
 			}
 			else if (((EntityLivingBase) event.getTargetEntity()).getHealth() <= 0) {
+				e = (EntityPlayerMP) event.getTargetEntity();
 				hasKilledEntity = true;
-			}
-			if (hasKilledEntity = true && getText(mode.getValue()) != null) {
-				mc.player.sendChatMessage(getText(mode.getValue()) +  event.getTargetEntity() );
-				hasKilledEntity = false;
 			}
 		} 
 	});
 	
+	@Override
+	public void onUpdate() {
+		if (hasKilledEntity = true && getText(mode.getValue()) != null) {
+			mc.player.sendChatMessage(getText(mode.getValue()) +  e.getName());
+			hasKilledEntity = false;
+		}
+	}
 }
