@@ -32,7 +32,7 @@ public class AntiSpam extends Module {
     private Setting<Boolean> greeters = register(Settings.booleanBuilder("Greeters").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> ips = register(Settings.booleanBuilder("Server Ips").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> wordsLongerThen = register(Settings.booleanBuilder("11+ long words").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
-    private Setting<Boolean> specialCharEnding= register(Settings.booleanBuilder("Special Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> specialCharEnding = register(Settings.booleanBuilder("Special Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> specialCharBegin = register(Settings.booleanBuilder("Special Begin").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> iJustThanksTo = register(Settings.booleanBuilder("I just...thanks to").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     /* I can't get settings to work in non static context for filter */
@@ -293,7 +293,7 @@ public class AntiSpam extends Module {
                 ".+\\d{3,}$",
         };
 
-        private static final String[] NUMBER_PREFIX= {
+        private static final String[] NUMBER_PREFIX = {
                 "\\d{3,}.*$",
         };
 
@@ -337,7 +337,7 @@ public class AntiSpam extends Module {
         };
 
         private static final String[] SPECIAL_BEGINNING = {
-                "^[.,/?!()\\[\\]{}<>«»⏐|\\-+=\\\\]", // <> don't filter as the player name is removed when matching
+                "^[.,/?!()\\[\\]{}<>«»⏐|\\-+=\\\\]", // the <> don't filter as the player name is removed when matching
         };
 
         private static final String[] SPECIAL_ENDING = {
@@ -357,7 +357,7 @@ public class AntiSpam extends Module {
 
     private boolean sendResult(String name, String message) {
         if (showBlocked.getValue().equals(ShowBlocked.CHAT)) Command.sendChatMessage(this.getChatName() + name + ": " + message);
-        else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(this.getChatName() + name + ": " +message);
+        else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(this.getChatName() + name + ": " + message);
         return true;
     }
 }
