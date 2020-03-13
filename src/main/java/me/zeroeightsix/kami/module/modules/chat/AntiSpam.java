@@ -87,12 +87,19 @@ public class AntiSpam extends Module {
     public void onDisable() { messageHistory = null; }
 
     private boolean isSpam(String message) {
-        if (!filterOwn.getValue() && findPatterns(FilterPatterns.OWN_MESSAGE, message, false)) {
+        /* Quick bandaid fix for mc.player being null when the module is being registered, so don't register it with the map */
+        final String[] OWN_MESSAGE = {
+                "^<" + mc.player.getName() + "> ",
+                "^To .+: ",
+        };
+        if (!filterOwn.getValue() && findPatterns(OWN_MESSAGE, message, false)) {
             return false;
         } else {
             return detectSpam(removeUsername(message));
         }
     }
+
+
 
     private String removeUsername(String username) { return username.replaceAll("<[^>]*> ", ""); }
 
@@ -302,7 +309,7 @@ public class AntiSpam extends Module {
         };
 
         private static final String[] GREEN_TEXT = {
-                "^<.+> >",
+                "^>.+$",
         };
 
         private static final String[] TRADE_CHAT = {
@@ -346,11 +353,6 @@ public class AntiSpam extends Module {
 
         private static final String[] SPECIAL_ENDING = {
                 "[/@#^()\\[\\]{}<>|\\-+=\\\\]",
-        };
-
-        private static final String[] OWN_MESSAGE = {
-                "^<" + mc.player.getName() + "> ",
-                "^To .+: ",
         };
     }
 
