@@ -17,10 +17,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * @author hub
+ * @author S-B99
  * Created 19 November 2019 by hub
  * Updated 12 January 2020 by hub
- * Updated by S-B99 on 18/01/20
  * Updated 19 February 2020 by aUniqueUser
+ * Updated by S-B99 on 13/03/20
  */
 @Module.Info(name = "AntiSpam", category = Module.Category.CHAT, description = "Removes spam and advertising from the chat", showOnArray = Module.ShowOnArray.OFF)
 public class AntiSpam extends Module {
