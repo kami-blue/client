@@ -10,6 +10,8 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.network.play.server.SPacketChat;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -95,41 +97,13 @@ public class AntiSpam extends Module {
     private String removeUsername(String username) { return username.replaceAll("<[^>]*> ", ""); }
 
     private boolean detectSpam(String message) {
-        if (wordsLongerThen.getValue() && findPatterns(FilterPatterns.LONG_WORD, message, true)) { sendResult(wordsLongerThen.getName(), message); return true; }
-
-        if (greenText.getValue() && findPatterns(FilterPatterns.GREEN_TEXT, message, true)) { sendResult(greenText.getName(), message); return true; }
-
-        if (specialCharBegin.getValue() && findPatterns(FilterPatterns.SPECIAL_BEGINNING, message, true)) { sendResult(specialCharBegin.getName(), message); return true; }
-
-        if (specialCharEnding.getValue() && findPatterns(FilterPatterns.SPECIAL_ENDING, message, true)) { sendResult(specialCharEnding.getName(), message); return true; }
-
-        if (ownsMeAndAll.getValue() && findPatterns(FilterPatterns.OWNS_ME_AND_ALL, message, true)) { sendResult(ownsMeAndAll.getName(), message); return true; }
-
-        if (iJustThanksTo.getValue() && findPatterns(FilterPatterns.I_JUST_THANKS_TO, message, true)) { sendResult(iJustThanksTo.getName(), message); return true; }
-
-        if (numberSuffix.getValue() && findPatterns(FilterPatterns.NUMBER_SUFFIX, message, true)) { sendResult(numberSuffix.getName(), message); return true; }
-
-        if (numberPrefix.getValue() && findPatterns(FilterPatterns.NUMBER_PREFIX, message, true)) { sendResult(numberPrefix.getName(), message); return true; }
-
-        if (discordLinks.getValue() && findPatterns(FilterPatterns.DISCORD, message, true)) { sendResult(discordLinks.getName(), message); return true; }
-
-        if (webLinks.getValue() && findPatterns(FilterPatterns.WEB_LINK, message, true)) { sendResult(webLinks.getName(), message); return true; }
-
-        if (ips.getValue() && findPatterns(FilterPatterns.IP_ADDR, message, true)) { sendResult(ips.getName(), message); return true; }
-
-        if (ipsAgr.getValue() && findPatterns(FilterPatterns.IP_ADDR_AGR, message, true)) { sendResult(ipsAgr.getName(), message); return true; }
-
-        if (announcers.getValue() && findPatterns(FilterPatterns.ANNOUNCER, message, true)) { sendResult(announcers.getName(), message); return true; }
-
-        if (spammers.getValue() && findPatterns(FilterPatterns.SPAMMER, message, true)) { sendResult(spammers.getName(), message); return true; }
-
-        if (insulters.getValue() && findPatterns(FilterPatterns.INSULTER, message, true)) { sendResult(insulters.getName(), message); return true; }
-
-        if (greeters.getValue() && findPatterns(FilterPatterns.GREETER, message, true)) { sendResult(greeters.getName(), message); return true; }
-
-        if (hypixelShills.getValue() && findPatterns(FilterPatterns.HYPIXEL_SHILLS, message, true)) { sendResult(hypixelShills.getName(), message); return true; }
-
-        if (tradeChat.getValue() && findPatterns(FilterPatterns.TRADE_CHAT, message, true)) { sendResult(tradeChat.getName(), message); return true; }
+        
+        for (Map.Entry<Setting<Boolean>, String[]> entry : settingMap.entrySet()) {
+            if (entry.getKey().getValue() && findPatterns(entry.getValue(), message, true)) {
+                sendResult(entry.getKey().getName(), message);
+                return true;
+            }
+        }
 
         if (duplicates.getValue()) {
             if (messageHistory == null) messageHistory = new ConcurrentHashMap<>();
@@ -158,6 +132,28 @@ public class AntiSpam extends Module {
         }
         return false;
     }
+
+    private Map<Setting<Boolean>, String[]> settingMap = new HashMap<Setting<Boolean>, String[]>(){{
+        put(wordsLongerThen, FilterPatterns.LONG_WORD);
+        put(greenText, FilterPatterns.GREEN_TEXT);
+        put(specialCharBegin, FilterPatterns.SPECIAL_BEGINNING);
+        put(specialCharEnding, FilterPatterns.SPECIAL_ENDING);
+        put(specialCharBegin, FilterPatterns.SPECIAL_BEGINNING);
+        put(ownsMeAndAll, FilterPatterns.OWNS_ME_AND_ALL);
+        put(iJustThanksTo, FilterPatterns.I_JUST_THANKS_TO);
+        put(numberSuffix, FilterPatterns.NUMBER_SUFFIX);
+        put(numberPrefix, FilterPatterns.NUMBER_PREFIX);
+        put(discordLinks, FilterPatterns.DISCORD);
+        put(webLinks, FilterPatterns.WEB_LINK);
+        put(ips, FilterPatterns.IP_ADDR);
+        put(ipsAgr, FilterPatterns.IP_ADDR_AGR);
+        put(announcers, FilterPatterns.ANNOUNCER);
+        put(spammers, FilterPatterns.SPAMMER);
+        put(insulters, FilterPatterns.INSULTER);
+        put(greeters, FilterPatterns.GREETER);
+        put(hypixelShills, FilterPatterns.HYPIXEL_SHILLS);
+        put(tradeChat, FilterPatterns.TRADE_CHAT);
+    }};
 
     private static class FilterPatterns {
         private static final String[] ANNOUNCER = {
