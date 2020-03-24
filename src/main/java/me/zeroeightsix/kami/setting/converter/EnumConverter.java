@@ -21,16 +21,30 @@ public class EnumConverter extends Converter<Enum, JsonElement> {
 
     @Override
     protected JsonElement doForward(Enum anEnum) {
-        return new JsonPrimitive(anEnum.toString());
+        return new JsonPrimitive(anEnum.name());
     }
 
     @Override
-    protected Enum doBackward(JsonElement jsonElement) {
+    protected Enum doBackward(JsonElement jsonElement) { /* The try catch is really hacky workaround to get TextFormatting enums to work, see #595 */
         if (Arrays.toString(clazz.getEnumConstants()).contains(jsonElement.getAsString())) {
-            return Enum.valueOf(clazz, jsonElement.getAsString());
+            try {
+                return Enum.valueOf(clazz, jsonElement.getAsString());
+            } catch (IllegalArgumentException e) {
+                for (Enum enumConstant : clazz.getEnumConstants()) {
+                    if (enumConstant.name().equalsIgnoreCase(jsonElement.getAsString())) return enumConstant;
+                }
+                return Enum.valueOf(clazz, "null");
+            }
         }
         else {
-            return Enum.valueOf(clazz, value.toString());
+            try {
+                return Enum.valueOf(clazz, value.toString());
+            } catch (IllegalArgumentException e) {
+                for (Enum enumConstant : clazz.getEnumConstants()) {
+                    if (enumConstant.name().equalsIgnoreCase(jsonElement.getAsString())) return enumConstant;
+                }
+                return Enum.valueOf(clazz, "null");
+            }
         }
     }
 }

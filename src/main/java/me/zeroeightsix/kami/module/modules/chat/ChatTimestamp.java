@@ -19,8 +19,8 @@ import net.minecraft.util.text.TextFormatting;
  */
 @Module.Info(name = "ChatTimestamp", category = Module.Category.CHAT, description = "Shows the time a message was sent beside the message", showOnArray = Module.ShowOnArray.OFF)
 public class ChatTimestamp extends Module {
-    private Setting<TextFormatting> firstColour = register(Settings.e("First Colour", TextFormatting.GRAY));
-    private Setting<TextFormatting> secondColour = register(Settings.e("Second Colour", TextFormatting.WHITE));
+    private Setting<TextFormatting> firstColour = register(Settings.e("First Colour", TextFormatting.valueOf("GRAY")));
+    private Setting<TextFormatting> secondColour = register(Settings.e("Second Colour", TextFormatting.valueOf("WHITE")));
     private Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.e("Time Format", TimeUtil.TimeType.HHMM));
     private Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.e("Time Unit", TimeUtil.TimeUnit.H12));
     private Setting<Boolean> doLocale = register(Settings.b("Show AMPM", true));
