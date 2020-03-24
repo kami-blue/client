@@ -14,13 +14,12 @@ import org.apache.logging.log4j.Logger;
 	updateJSON = KamiMod.UPDATE_JSON
 )
 public class KamiMod {
-	// private constants
-	private static final Logger log = LogManager.getLogger("KAMI Blue");
-	private static final String UPDATE_JSON = "https://raw.githubusercontent.com/S-B99/kamiblue/assets/assets/updateChecker.json";
-	private static final String MODNAME = "KAMI Blue";
-	private static final String MODID = "kamiblue";
-	private static final String MODVER = "v1.1.2-beta";
-	// public constants
+	// constants
+	public static final Logger log = LogManager.getLogger("KAMI Blue");
+	public static final String UPDATE_JSON = "https://raw.githubusercontent.com/S-B99/kamiblue/assets/assets/updateChecker.json";
+	public static final String MODNAME = "KAMI Blue";
+	public static final String MODID = "kamiblue";
+	public static final String MODVER = "v1.1.2-beta";
 	public static final String APP_ID = "638403216278683661";
 
 	// static instance
