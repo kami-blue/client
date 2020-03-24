@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static me.zeroeightsix.kami.module.modules.gui.InfoOverlay.getStringColour;
+
 /**
  * @author S-B99
  * Updated by S-B99 on 06/02/20
@@ -49,7 +51,7 @@ public class TimeUtil {
     }
 
     public static String getFinalTime(TextFormatting colourCode2, TextFormatting colourCode1, TimeUnit timeUnit, TimeType timeType, Boolean doLocale) {
-        String formatted = ColourUtils.getStringColour(colourCode2) + ":" + ColourUtils.getStringColour(colourCode1);
+        String formatted = getStringColour(colourCode2) + ":" + getStringColour(colourCode1);
         String locale = "";
         String time = time(TimeUtil.dateFormatter(TimeUnit.H24, TimeType.HH));
         if (timeUnit == TimeUnit.H12 && doLocale) {
@@ -59,6 +61,6 @@ public class TimeUtil {
                 locale = "am";
             }
         }
-        return ColourUtils.getStringColour(colourCode1) + time(dateFormatter(timeUnit, timeType)).replace(":", formatted) + ColourUtils.getStringColour(colourCode2) + locale;
+        return getStringColour(colourCode1) + time(dateFormatter(timeUnit, timeType)).replace(":", formatted) + getStringColour(colourCode2) + locale;
     }
 }
