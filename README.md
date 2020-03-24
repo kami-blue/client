@@ -18,11 +18,6 @@
 [![Discord Mine](https://img.shields.io/discord/573954110454366214?label=chat&logo=discord&logoColor=white)](https://discord.gg/KfpqwZB)
 [![Commits Mine](https://img.shields.io/github/commits-since/S-B99/kamiblue/v1.0.1/feature/master?color=light-green&label=commits&logo=git&logoColor=white)](https://github.com/S-B99/kamiblue/releases)
 
-[![Paypal](https://img.shields.io/badge/paypal-donate-red?color=169bd7&logo=paypal)](https://paypal.me/bellawhotwo) 
-[![BTC](https://img.shields.io/badge/btc-clickme-red?color=f08b16&logo=bitcoin)](https://www.blockchain.com/btc/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7)
-[![BCH](https://img.shields.io/badge/bch-clickme-red?color=2db300&logo=cash-app)](https://www.blockchain.com/bch/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7) 
-
-Please consider donating to help continue this project and get a unique cape in game. 
 
 ***
 
