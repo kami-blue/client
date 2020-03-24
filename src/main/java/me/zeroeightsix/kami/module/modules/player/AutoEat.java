@@ -15,6 +15,7 @@ import net.minecraft.util.FoodStats;
  * Created by 086 on 8/04/2018.
  * Updated by polymer on 09/03/20
  * Updated by S-B99 on 20/03/20
+ * Updated by An-En on 24/03/20
  */
 @Module.Info(name = "AutoEat", description = "Automatically eat when hungry", category = Module.Category.PLAYER)
 public class AutoEat extends Module {
@@ -30,6 +31,7 @@ public class AutoEat extends Module {
     private boolean passItemCheck(Item item) {
         if (item == Items.ROTTEN_FLESH) return false;
         if (item == Items.SPIDER_EYE) return false;
+        if (item == Items.POISONOUS_POTATO) return false;
         if (item == Items.FISH && new ItemStack(Items.FISH).getItemDamage() == 3) return false;
 		return true;
 	}
