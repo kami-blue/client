@@ -90,7 +90,12 @@ public class KamiGuiChat extends GuiChat {
         Command alphaCommand = map.firstEntry().getValue();
 
         AtomicBoolean isAlias = new AtomicBoolean(false);
-        currentFillinLine = alphaCommand.getAliases().stream().filter(alias -> alias.startsWith(args[0])).findFirst().map(s -> { isAlias.set(true); return s.substring(args[0].length()); }).orElseGet(() -> alphaCommand.getLabel().substring(args[0].length()));
+        currentFillinLine = alphaCommand.getAliases().stream().filter(alias ->
+                alias.startsWith(args[0])).findFirst().map(s -> {
+                    isAlias.set(true);
+                    return s.substring(args[0].length());
+                }).orElseGet(() ->
+                alphaCommand.getLabel().substring(args[0].length()));
 
         if (alphaCommand.getSyntaxChunks() == null || alphaCommand.getSyntaxChunks().length == 0)
             return;
@@ -111,11 +116,7 @@ public class KamiGuiChat extends GuiChat {
             currentFillinLine += result + (result == "" ? "" : " ") + "";
         }
 
-        if (cutSpace)
-            currentFillinLine = currentFillinLine.substring(1);
-
-        if(isAlias.get() && args.length > 1)
-            currentFillinLine = currentFillinLine.substring(currentFillinLine.indexOf(" ")).substring(1);
+        if (cutSpace) currentFillinLine = currentFillinLine.substring(1);
     }
 
     @Override
