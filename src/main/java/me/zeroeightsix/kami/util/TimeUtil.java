@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util;
 
+import net.minecraft.util.text.TextFormatting;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -46,7 +48,7 @@ public class TimeUtil {
         return formatter;
     }
 
-    public static String getFinalTime(ColourUtils.ColourCode colourCode2, ColourUtils.ColourCode colourCode1, TimeUnit timeUnit, TimeType timeType, Boolean doLocale) {
+    public static String getFinalTime(TextFormatting colourCode2, TextFormatting colourCode1, TimeUnit timeUnit, TimeType timeType, Boolean doLocale) {
         String formatted = ColourUtils.getStringColour(colourCode2) + ":" + ColourUtils.getStringColour(colourCode1);
         String locale = "";
         String time = time(TimeUtil.dateFormatter(TimeUnit.H24, TimeType.HH));

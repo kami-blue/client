@@ -329,7 +329,7 @@ public class ColourUtils {
     public enum ColourCode {
         BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE
     }
-    public static String getStringColour(ColourCode c) {
+    public static String getStringColour(TextFormatting c) {
         switch (c) {
             case BLACK: return TextFormatting.BLACK.toString();
             case DARK_BLUE: return TextFormatting.DARK_BLUE.toString();
