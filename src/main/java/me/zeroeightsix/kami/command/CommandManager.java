@@ -43,16 +43,13 @@ public class CommandManager {
         }
 
         for (Command c : commands) {
-            if (
-                    c.getLabel().equalsIgnoreCase(label) ||
-                    c.getAliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(label))
-            ) {
+            if (c.getLabel().equalsIgnoreCase(label) || c.getAliases().stream().anyMatch(alias -> alias.equalsIgnoreCase(label))) {
                 c.call(parts);
                 return;
             }
         }
 
-        Command.sendChatMessage("Unknown command. try 'commands' for a list of commands.");
+        Command.sendChatMessage("&7Unknown command. try '&f" + Command.getCommandPrefix() + "commands&7' for a list of commands.");
     }
 
     public static String[] removeElement(String[] input, int indexToDelete) {
