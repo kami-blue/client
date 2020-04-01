@@ -28,6 +28,8 @@ public class AntiHunger extends Module {
     public void toggle()
     {
         super.toggle();
+
+        // Check incompatibility with Elytrafly
         if (isEnabled() && MODULE_MANAGER.isModuleEnabled(ElytraFlight.class) && cancelMovementState.getValue())
         {
             sendChatMessage("You just enabled AntiHunger with 'Cancel Movement State', you cannot elytrafly with it.");
