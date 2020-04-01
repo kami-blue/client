@@ -9,6 +9,8 @@ import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+import static me.zeroeightsix.kami.command.Command.sendChatMessage;
 import static net.minecraft.network.play.client.CPacketEntityAction.Action.START_SPRINTING;
 import static net.minecraft.network.play.client.CPacketEntityAction.Action.STOP_SPRINTING;
 
@@ -20,6 +22,16 @@ import static net.minecraft.network.play.client.CPacketEntityAction.Action.STOP_
 @Module.Info(name = "AntiHunger", category = Module.Category.MOVEMENT, description = "Reduces hunger lost when moving around")
 public class AntiHunger extends Module {
     private Setting<Boolean> cancelMovementState = register(Settings.b("Cancel Movement State", true));
+
+    @Override
+    public void toggle()
+    {
+        super.toggle();
+        if (isEnabled() && MODULE_MANAGER.isModuleEnabled(ElytraFlight.class) && cancelMovementState.getValue())
+        {
+            sendChatMessage("You just enabled AntiHunger with 'Cancel Movement State', you cannot elytrafly with it.");
+        }
+    }
 
     @EventHandler
     public Listener<PacketEvent.Send> packetListener = new Listener<>(event -> {
