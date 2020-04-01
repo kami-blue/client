@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.gui.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
@@ -221,7 +221,7 @@ public class CrystalAura extends Module {
                     explode(crystal);
                 }
                 if (sneakEnable.getValue() && mc.player.isSneaking() && holeBlocks != 5) {
-                    KamiMod.MODULE_MANAGER.getModule(Surround.class).enable();
+                    MODULE_MANAGER.getModule(Surround.class).enable();
                 }
                 return;
             }

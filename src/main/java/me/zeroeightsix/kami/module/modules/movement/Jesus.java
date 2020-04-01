@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.movement;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEvent;
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent;
 import me.zeroeightsix.kami.event.events.PacketEvent;
@@ -18,6 +17,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+
 /**
  * Created by 086 on 11/12/2017.
  */
@@ -28,7 +29,7 @@ public class Jesus extends Module {
 
     @Override
     public void onUpdate() {
-        if (!KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam.class)) {
+        if (!MODULE_MANAGER.isModuleEnabled(Freecam.class)) {
             if (EntityUtil.isInWater(mc.player) && !mc.player.isSneaking()) {
                 mc.player.motionY = 0.1;
                 if (mc.player.getRidingEntity() != null && !(mc.player.getRidingEntity() instanceof EntityBoat)) {

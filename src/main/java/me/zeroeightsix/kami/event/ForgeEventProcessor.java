@@ -31,6 +31,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+
 /**
  * Created by 086 on 11/11/2017.
  * Updated by Qther on 18/02/20
@@ -70,19 +72,19 @@ public class ForgeEventProcessor {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (Wrapper.getPlayer() == null) return;
-        KamiMod.MODULE_MANAGER.onUpdate();
+        MODULE_MANAGER.onUpdate();
         KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager());
     }
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         if (event.isCanceled()) return;
-        KamiMod.MODULE_MANAGER.onWorldRender(event);
+        MODULE_MANAGER.onWorldRender(event);
     }
 
     @SubscribeEvent
     public void onRenderPre(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && KamiMod.MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
             event.setCanceled(true);
         }
     }
@@ -96,12 +98,12 @@ public class ForgeEventProcessor {
             target = RenderGameOverlayEvent.ElementType.HEALTHMOUNT;
 
         if (event.getType() == target) {
-            KamiMod.MODULE_MANAGER.onRender();
+            MODULE_MANAGER.onRender();
             GL11.glPushMatrix();
             UIRenderer.renderAndUpdateFrames();
             GL11.glPopMatrix();
             KamiTessellator.releaseGL();
-        } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && KamiMod.MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
+        } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
             BossStack.render(event);
         }
     }
@@ -109,14 +111,14 @@ public class ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (!Keyboard.getEventKeyState()) return;
-        CommandConfig commandConfig = (CommandConfig) KamiMod.MODULE_MANAGER.getModule(CommandConfig.class);
+        CommandConfig commandConfig = (CommandConfig) MODULE_MANAGER.getModule(CommandConfig.class);
         if (    commandConfig.isEnabled()
                 && (commandConfig.prefixChat.getValue())
                 && ("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix())
                 && !(Minecraft.getMinecraft().player.isSneaking())) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
         } else {
-            KamiMod.MODULE_MANAGER.onBind(Keyboard.getEventKey());
+            MODULE_MANAGER.onBind(Keyboard.getEventKey());
         }
     }
 

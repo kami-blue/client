@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.render;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
@@ -17,6 +16,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.combat.CrystalAura.getPlayerPos;
 
 
@@ -76,7 +76,7 @@ public class HoleESP extends Module {
 
         int range = (int) Math.ceil(renderDistance.getValue());
 
-        CrystalAura crystalAura = (CrystalAura) KamiMod.MODULE_MANAGER.getModule(CrystalAura.class);
+        CrystalAura crystalAura = (CrystalAura) MODULE_MANAGER.getModule(CrystalAura.class);
         List<BlockPos> blockPosList = crystalAura.getSphere(getPlayerPos(), range, range, false, true, 0);
 
         for (BlockPos pos : blockPosList) {

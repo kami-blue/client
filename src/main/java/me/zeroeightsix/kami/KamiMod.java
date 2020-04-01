@@ -184,7 +184,7 @@ public class KamiMod {
         log.info("Settings loaded");
 
         // custom names aren't known at compile-time
-        //KamiMod.MODULE_MANAGER.updateLookup(); // generate the lookup table after settings are loaded to make custom module names work
+        //MODULE_MANAGER.updateLookup(); // generate the lookup table after settings are loaded to make custom module names work
 
         new RichPresence();
         log.info("Rich Presence Users init!\n");
@@ -278,7 +278,7 @@ public class KamiMod {
         if (!Files.exists(outputFile))
             Files.createFile(outputFile);
         Configuration.saveConfiguration(outputFile);
-        KamiMod.MODULE_MANAGER.getModules().forEach(Module::destroy);
+        MODULE_MANAGER.getModules().forEach(Module::destroy);
     }
 
     public static boolean isFilenameValid(String file) {

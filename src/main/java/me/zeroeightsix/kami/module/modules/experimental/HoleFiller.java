@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.experimental;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.combat.CrystalAura.getPlayerPos;
 import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 
@@ -93,7 +93,7 @@ public class HoleFiller extends Module {
 
         entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         int range = (int) Math.ceil(distance.getValue());
-        CrystalAura ca = (CrystalAura) KamiMod.MODULE_MANAGER.getModule(CrystalAura.class);
+        CrystalAura ca = (CrystalAura) MODULE_MANAGER.getModule(CrystalAura.class);
         blockPosList = ca.getSphere(getPlayerPos(), range, range, false, true, 0);
         for (Entity p : entities) {
             List<BlockPos> maybe = ca.getSphere(p.getPosition(), range, range, false, true, 0);
@@ -159,8 +159,8 @@ public class HoleFiller extends Module {
                 mc.player.connection.sendPacket(new CPacketHeldItemChange(obiSlot));
                 lookAtPacket(p.x, p.y, p.z, mc.player);
                 BlockInteractionHelper.placeBlockScaffold(p);
-                if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation.class)) {
-                    ((NoBreakAnimation) KamiMod.MODULE_MANAGER.getModule(NoBreakAnimation.class)).resetMining();
+                if (MODULE_MANAGER.isModuleEnabled(NoBreakAnimation.class)) {
+                    ((NoBreakAnimation) MODULE_MANAGER.getModule(NoBreakAnimation.class)).resetMining();
                 }
                 resetRotation();
                 mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));

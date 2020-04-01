@@ -40,7 +40,8 @@ public class AutoEZ extends Module {
 		return m.text;
 	}
 	
-	@EventHandler public Listener<AttackEntityEvent> livingDeathEventListener = new Listener<>(event -> {
+	@EventHandler
+	public Listener<AttackEntityEvent> livingDeathEventListener = new Listener<>(event -> {
 		if (event.getTarget() instanceof EntityPlayer) {
 			focus = (EntityPlayer) event.getTarget();
 			if (event.getEntityPlayer().getUniqueID() == mc.player.getUniqueID()) {

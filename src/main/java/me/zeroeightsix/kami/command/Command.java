@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+
 public abstract class Command {
 
     protected String label;
@@ -58,8 +60,8 @@ public abstract class Command {
     }
 
     public static void sendDisableMessage(Class clazz) {
-        sendErrorMessage("Error: The " + KamiMod.MODULE_MANAGER.getModule(clazz).getName() + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element");
-        KamiMod.MODULE_MANAGER.getModule(clazz).enable();
+        sendErrorMessage("Error: The " + MODULE_MANAGER.getModule(clazz).getName() + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element");
+        MODULE_MANAGER.getModule(clazz).enable();
     }
 
     public static void sendRawChatMessage(String message) {

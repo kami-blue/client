@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.CustomChat;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author S-B99
@@ -17,7 +18,7 @@ public class CustomChatCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        CustomChat cC = (CustomChat) KamiMod.MODULE_MANAGER.getModule(CustomChat.class);
+        CustomChat cC = (CustomChat) MODULE_MANAGER.getModule(CustomChat.class);
         if (cC == null) {
             Command.sendErrorMessage("&cThe CustomChat module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!");
             return;

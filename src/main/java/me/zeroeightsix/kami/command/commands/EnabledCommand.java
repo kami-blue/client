@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.Module;
@@ -11,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author S-B99
@@ -25,7 +26,7 @@ public class EnabledCommand extends Command {
     @Override
     public void call(String[] args) {
         AtomicReference<String> enabled = new AtomicReference<>("");
-        List<Module> mods = new ArrayList<>(KamiMod.MODULE_MANAGER.getModules());
+        List<Module> mods = new ArrayList<>(MODULE_MANAGER.getModules());
 
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";

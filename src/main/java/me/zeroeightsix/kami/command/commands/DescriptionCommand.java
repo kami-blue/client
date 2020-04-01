@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.Module;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author S-B99
@@ -20,7 +21,7 @@ public class DescriptionCommand extends Command {
         for (String s : args) {
             if (s == null)
                 continue;
-            Module module = KamiMod.MODULE_MANAGER.getModule(s);
+            Module module = MODULE_MANAGER.getModule(s);
             Command.sendChatMessage(module.getChatName() + "Description: &7" + module.getDescription());
         }
     }

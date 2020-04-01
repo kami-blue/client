@@ -7,6 +7,8 @@ import me.zeroeightsix.kami.module.Module;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+
 /**
  * @author S-B99
  * Updated by S-B99 on 18/03/20
@@ -23,7 +25,7 @@ public class GenerateWebsiteCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        List<Module> mods = new ArrayList<>(KamiMod.MODULE_MANAGER.getModules());
+        List<Module> mods = new ArrayList<>(MODULE_MANAGER.getModules());
         String[] modCategories = new String[]{"Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render", "Utils"};
         List<String> modCategoriesList = new ArrayList<>(java.util.Arrays.asList(modCategories));
 

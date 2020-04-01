@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author hub
@@ -60,7 +60,7 @@ public class Surround extends Module {
     }
 
     public void onUpdate() {
-        if (!this.isDisabled() && mc.player != null && !KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam.class)) {
+        if (mc.player != null && !MODULE_MANAGER.isModuleEnabled(Freecam.class)) {
             if (offsetStep == 0) {
                 basePos = (new BlockPos(mc.player.getPositionVector())).down();
                 playerHotbarSlot = mc.player.inventory.currentItem;
@@ -200,8 +200,8 @@ public class Surround extends Module {
             if (placeAnimation.getValue()) mc.player.connection.sendPacket(new CPacketAnimation(mc.player.getActiveHand()));
             placeBlockExecute(blockPos);
         }
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation.class)) {
-            ((NoBreakAnimation) KamiMod.MODULE_MANAGER.getModule(NoBreakAnimation.class)).resetMining();
+        if (MODULE_MANAGER.isModuleEnabled(NoBreakAnimation.class)) {
+            ((NoBreakAnimation) MODULE_MANAGER.getModule(NoBreakAnimation.class)).resetMining();
         }
     }
 

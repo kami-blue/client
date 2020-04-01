@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
@@ -29,6 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.List;
 import java.util.Random;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.BlockInteractionHelper.*;
 
 /**
@@ -392,7 +392,7 @@ public class AutoSpawner extends Module {
                 return;
             }
 
-            CrystalAura crystalAura = (CrystalAura) KamiMod.MODULE_MANAGER.getModule(CrystalAura.class);
+            CrystalAura crystalAura = (CrystalAura) MODULE_MANAGER.getModule(CrystalAura.class);
             List<BlockPos> blockPosList = crystalAura.getSphere(mc.player.getPosition().down(), placeRange.getValue(), placeRange.getValue().intValue(), false, true, 0);
 
             boolean noPositionInArea = true;

@@ -6,6 +6,7 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import me.zeroeightsix.kami.module.modules.misc.DiscordSettings;
 
 import static me.zeroeightsix.kami.KamiMod.APP_ID;
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author S-B99
@@ -41,7 +42,7 @@ public class DiscordPresence {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 DiscordPresence.rpc.Discord_RunCallbacks();
-                discordSettings = ((DiscordSettings) KamiMod.MODULE_MANAGER.getModule(DiscordSettings.class));
+                discordSettings = ((DiscordSettings) MODULE_MANAGER.getModule(DiscordSettings.class));
                 String separator = " | ";
                 details = discordSettings.getLine(discordSettings.line1Setting.getValue()) + separator + discordSettings.getLine(discordSettings.line3Setting.getValue());
                 state = discordSettings.getLine(discordSettings.line2Setting.getValue()) + separator + discordSettings.getLine(discordSettings.line4Setting.getValue());
@@ -55,7 +56,7 @@ public class DiscordPresence {
         }
     }
     private static void setRpcFromSettings() {
-        discordSettings = ((DiscordSettings) KamiMod.MODULE_MANAGER.getModule(DiscordSettings.class));
+        discordSettings = ((DiscordSettings) MODULE_MANAGER.getModule(DiscordSettings.class));
         details = discordSettings.getLine(discordSettings.line1Setting.getValue()) + " " + discordSettings.getLine(discordSettings.line3Setting.getValue());
         state = discordSettings.getLine(discordSettings.line2Setting.getValue()) + " " + discordSettings.getLine(discordSettings.line4Setting.getValue());
         DiscordPresence.presence.details = details;

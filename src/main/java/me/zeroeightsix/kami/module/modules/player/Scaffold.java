@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.player;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.InputUpdateEvent;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.BlockInteractionHelper.*;
 
 /**
@@ -68,7 +68,7 @@ public class Scaffold extends Module {
 
     @Override
     public void onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam.class)) return;
+        if (mc.player == null || MODULE_MANAGER.isModuleEnabled(Freecam.class)) return;
         shouldSlow = false;
 
         Vec3d vec3d = EntityUtil.getInterpolatedPos(mc.player, ticks.getValue());

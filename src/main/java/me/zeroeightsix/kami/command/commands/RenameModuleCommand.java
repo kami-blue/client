@@ -1,11 +1,12 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 public class RenameModuleCommand extends Command {
 
@@ -22,7 +23,7 @@ public class RenameModuleCommand extends Command {
         }
 
         try {
-            Module module = KamiMod.MODULE_MANAGER.getModule(args[0]);
+            Module module = MODULE_MANAGER.getModule(args[0]);
             String name = args.length == 1 ? module.getOriginalName() : args[1];
 
             if (!(name.matches("[a-zA-Z]+"))) {

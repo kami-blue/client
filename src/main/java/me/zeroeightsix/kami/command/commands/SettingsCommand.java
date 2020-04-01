@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
@@ -10,6 +9,8 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.impl.EnumSetting;
 
 import java.util.List;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * Created by 086 on 11/12/2017.
@@ -30,7 +31,7 @@ public class SettingsCommand extends Command {
         }
 
         try {
-            Module m = KamiMod.MODULE_MANAGER.getModule(args[0]);
+            Module m = MODULE_MANAGER.getModule(args[0]);
             List<Setting> settings = m.settingList;
             String[] result = new String[settings.size()];
             for (int i = 0; i < settings.size(); i++) {

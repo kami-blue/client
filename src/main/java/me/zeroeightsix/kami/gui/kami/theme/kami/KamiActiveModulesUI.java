@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.glDisable;
@@ -31,14 +32,14 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         FontRenderer renderer = Wrapper.getFontRenderer();
-        List<Module> mods = KamiMod.MODULE_MANAGER.getModules().stream()
+        List<Module> mods = MODULE_MANAGER.getModules().stream()
                 .filter(Module::isEnabled)
                 .filter(Module::isOnArray)
                 .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
         final int[] y = {2};
-        activeMods = (ActiveModules) KamiMod.MODULE_MANAGER.getModule(ActiveModules.class);
+        activeMods = (ActiveModules) MODULE_MANAGER.getModule(ActiveModules.class);
 
         if (component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
             y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());

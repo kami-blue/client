@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.gui;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.command.Command.sendErrorMessage;
 
 /**
@@ -17,7 +17,7 @@ public class CommandConfig extends Module {
     public void onDisable() { sendDisableMessage(this.getClass()); }
 
     private void sendDisableMessage(Class clazz) {
-        sendErrorMessage("Error: The " + KamiMod.MODULE_MANAGER.getModule(clazz).getName() + " module is only for configuring command options, disabling it doesn't do anything.");
-        KamiMod.MODULE_MANAGER.getModule(clazz).enable();
+        sendErrorMessage("Error: The " + MODULE_MANAGER.getModule(clazz).getName() + " module is only for configuring command options, disabling it doesn't do anything.");
+        MODULE_MANAGER.getModule(clazz).enable();
     }
 }

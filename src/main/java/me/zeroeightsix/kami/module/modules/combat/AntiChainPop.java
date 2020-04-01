@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
@@ -11,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.gui.InfoOverlay.getItems;
 
 /**
@@ -50,7 +50,7 @@ public class AntiChainPop extends Module {
     private void itemMode() {
         int old = totems;
         if (getItems(Items.TOTEM_OF_UNDYING) < old) {
-            Surround surround = (Surround) KamiMod.MODULE_MANAGER.getModule(Surround.class);
+            Surround surround = (Surround) MODULE_MANAGER.getModule(Surround.class);
             surround.autoDisable.setValue(true);
             surround.enable();
         }
@@ -58,7 +58,7 @@ public class AntiChainPop extends Module {
     }
 
     private void packetMode() {
-        Surround surround = (Surround) KamiMod.MODULE_MANAGER.getModule(Surround.class);
+        Surround surround = (Surround) MODULE_MANAGER.getModule(Surround.class);
         surround.autoDisable.setValue(true);
         surround.enable();
     }

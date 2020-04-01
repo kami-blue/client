@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.misc.AutoTool;
@@ -21,6 +20,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Iterator;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * Created by 086 on 12/12/2017.
@@ -142,7 +143,7 @@ public class Aura extends Module {
                     // We want to skip this if switchTo32k.getValue() is true,
                     // because it only accounts for tools and weapons.
                     // Maybe someone could refactor this later? :3
-                    if ((!switchMode.getValue().equals(SwitchMode.ONLY32K) || switchMode.getValue().equals(SwitchMode.ALL)) && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoTool.class)) {
+                    if ((!switchMode.getValue().equals(SwitchMode.ONLY32K) || switchMode.getValue().equals(SwitchMode.ALL)) && MODULE_MANAGER.isModuleEnabled(AutoTool.class)) {
                         AutoTool.equipBestWeapon();
                     }
                     attack(target);

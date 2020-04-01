@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.gui;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -9,6 +8,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.command.Command.sendDisableMessage;
 import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourTextFormatting.colourEnumMap;
@@ -76,7 +76,7 @@ public class ActiveModules extends Module {
     }
 
     private TextFormatting infoGetSetting(boolean isOne) {
-        InfoOverlay infoOverlay = (InfoOverlay) KamiMod.MODULE_MANAGER.getModule(InfoOverlay.class);
+        InfoOverlay infoOverlay = (InfoOverlay) MODULE_MANAGER.getModule(InfoOverlay.class);
         if (isOne) return setToText(infoOverlay.firstColour.getValue());
         else return setToText(infoOverlay.secondColour.getValue());
 

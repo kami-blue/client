@@ -23,6 +23,7 @@ import net.minecraft.network.play.server.SPacketChat;
 import java.util.regex.Pattern;
 
 import static me.zeroeightsix.kami.KamiMod.EVENT_BUS;
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author S-B99
@@ -141,8 +142,8 @@ public class DiscordNotifs extends Module {
     }
 
     private String getTime() {
-        if (!time.getValue() || KamiMod.MODULE_MANAGER.isModuleEnabled(ChatTimestamp.class)) return "";
-        InfoOverlay info = (InfoOverlay) KamiMod.MODULE_MANAGER.getModule(InfoOverlay.class);
+        if (!time.getValue() || MODULE_MANAGER.isModuleEnabled(ChatTimestamp.class)) return "";
+        InfoOverlay info = (InfoOverlay) MODULE_MANAGER.getModule(InfoOverlay.class);
         return "[" + TimeUtil.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
     }
 

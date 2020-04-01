@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.modules.ClickGUI;
 
 import java.util.Arrays;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.KamiMod.WEBSITE_LINK;
 
 /**
@@ -46,7 +47,7 @@ public class HelpCommand extends Command {
         if (args[0] == null) {
             Command.sendStringChatMessage(new String[]{
                     "KAMI Blue " + KamiMod.MODVER,
-                    "&7Press &r" + KamiMod.MODULE_MANAGER.getModule(ClickGUI.class).getBindName() + "&7 to open GUI",
+                    "&7Press &r" + MODULE_MANAGER.getModule(ClickGUI.class).getBindName() + "&7 to open GUI",
                     "&7see &b" + WEBSITE_LINK + "&7 for a full version of the faq",
                     commandPrefix + "description&7 to see the description of a module",
                     commandPrefix + "commands&7 to view all available commands",

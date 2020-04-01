@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.syntax.parsers;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
@@ -8,6 +7,8 @@ import me.zeroeightsix.kami.setting.Setting;
 
 import java.util.HashMap;
 import java.util.TreeMap;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 public class ValueParser extends AbstractParser {
 
@@ -21,7 +22,7 @@ public class ValueParser extends AbstractParser {
         if (moduleIndex > values.length - 1 || chunkValue == null) return getDefaultChunk(thisChunk);
         String module = values[moduleIndex];
         try {
-            Module m = KamiMod.MODULE_MANAGER.getModule(module);
+            Module m = MODULE_MANAGER.getModule(module);
             HashMap<String, Setting<?>> possibilities = new HashMap<>();
 
             for (Setting<?> v : m.settingList) {

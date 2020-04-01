@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.movement;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.render.Pathfind;
 import me.zeroeightsix.kami.setting.Setting;
@@ -10,6 +9,7 @@ import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraftforge.client.event.InputUpdateEvent;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 
 /**
@@ -34,7 +34,7 @@ public class AutoWalk extends Module {
                 event.getMovementInput().moveForward = 1;
                 if (mc.player.isInWater() || mc.player.isInLava()) mc.player.movementInput.jump = true;
                 else if (mc.player.collidedHorizontally && mc.player.onGround) mc.player.jump();
-                if (!KamiMod.MODULE_MANAGER.isModuleEnabled(Pathfind.class) || Pathfind.points.isEmpty()) return;
+                if (!MODULE_MANAGER.isModuleEnabled(Pathfind.class) || Pathfind.points.isEmpty()) return;
                 PathPoint next = Pathfind.points.get(0);
                 lookAt(next);
                 break;
@@ -47,7 +47,7 @@ public class AutoWalk extends Module {
         mc.player.rotationPitch = (float) v[1];
     }
 
-    private static enum AutoWalkMode {
+    private enum AutoWalkMode {
         FORWARD, BACKWARDS, PATH
     }
 }

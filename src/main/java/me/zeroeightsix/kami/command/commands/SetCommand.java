@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
@@ -10,6 +9,8 @@ import me.zeroeightsix.kami.setting.Setting;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * Created by 086 on 18/11/2017.
@@ -33,7 +34,7 @@ public class SetCommand extends Command {
             return;
         }
 
-        Module m = KamiMod.MODULE_MANAGER.getModule(args[0]);
+        Module m = MODULE_MANAGER.getModule(args[0]);
         if (m == null) {
             Command.sendChatMessage("Unknown module &b" + args[0] + "&r!");
             return;
