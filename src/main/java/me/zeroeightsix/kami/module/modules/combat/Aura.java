@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.misc.AutoTool;
@@ -8,24 +9,34 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtil;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.LagCompensator;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 /**
  * Created by 086 on 12/12/2017.
  * Updated by hub on 31 October 2019
  * Updated by S-B99 on 10/04/20
  * Updated by bot-debug on 10/04/20
+ * Updated by noblesix on 11/04/20
  */
 @Module.Info(name = "Aura", category = Module.Category.COMBAT, description = "Hits entities around you")
 public class Aura extends Module {
     private Setting<WaitMode> delayMode = register(Settings.e("Mode", WaitMode.DELAY));
+	private Setting<Priority> priority = register(Settings.e("Priority", Priority.NONE));
     private Setting<Boolean> autoSpamDelay = register(Settings.booleanBuilder("Auto Spam Delay").withValue(true).withVisibility(v -> delayMode.getValue().equals(WaitMode.SPAM)).build());
     private Setting<Double> waitTick = register(Settings.doubleBuilder("Spam Delay").withMinimum(0.1).withValue(2.0).withMaximum(20.0).withVisibility(v -> !autoSpamDelay.getValue() && delayMode.getValue().equals(WaitMode.SPAM)).build());
     private Setting<Boolean> eat = register(Settings.b("While Eating", true));
@@ -40,7 +51,10 @@ public class Aura extends Module {
     private Setting<Boolean> sync = register(Settings.b("TPS Sync", false));
 
     private int waitCounter;
-
+	
+	public double armorvalue;
+	public double armorvaluerate;
+	private enum Priority { DISTANCE, HEALTH, NONE }
     public enum HitMode { SWORD, AXE, NONE }
     private enum WaitMode { DELAY, SPAM }
 
@@ -89,34 +103,129 @@ public class Aura extends Module {
                 }
             }
         }
+	
+		if (priority.getValue().equals(Priority.NONE)){
+			for (Entity target : mc.world.loadedEntityList) {
+				if (!EntityUtil.isLiving(target))
+					continue;
+				if (target == mc.player)
+					continue;
+				if (mc.player.getDistance(target) > hitRange.getValue())
+					continue;
+				if (((EntityLivingBase) target).getHealth() <= 0)
+					continue;
+				if (delayMode.getValue().equals(WaitMode.DELAY) && ((EntityLivingBase) target).hurtTime != 0)
+					continue;
+				if (!ignoreWalls.getValue() && (!mc.player.canEntityBeSeen(target) && !canEntityFeetBeSeen(target)))
+					continue; // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
 
-        for (Entity target : mc.world.loadedEntityList) {
-            if (!EntityUtil.isLiving(target))
-                continue;
-            if (target == mc.player)
-                continue;
-            if (mc.player.getDistance(target) > hitRange.getValue())
-                continue;
-            if (((EntityLivingBase) target).getHealth() <= 0)
-                continue;
-            if (delayMode.getValue().equals(WaitMode.DELAY) && ((EntityLivingBase) target).hurtTime != 0)
-                continue;
-            if (!ignoreWalls.getValue() && (!mc.player.canEntityBeSeen(target) && !canEntityFeetBeSeen(target)))
-                continue; // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
-
-            if (attackPlayers.getValue() && target instanceof EntityPlayer && !Friends.isFriend(target.getName())) {
-                if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());
-                attack(target);
-                if (!multi.getValue()) return;
-            } else {
-                if (EntityUtil.isPassive(target) ? attackAnimals.getValue() : (EntityUtil.isMobAggressive(target) && attackMobs.getValue())) {
-                    if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());
-                    attack(target);
-                    if (!multi.getValue()) return;
-                }
-            }
-        }
+				if (attackPlayers.getValue() && target instanceof EntityPlayer && !Friends.isFriend(target.getName())) {
+					if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());
+					attack(target);
+					if (!multi.getValue()) return;
+				} else {
+					if (EntityUtil.isPassive(target) ? attackAnimals.getValue() : (EntityUtil.isMobAggressive(target) && attackMobs.getValue())) {
+						if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());
+						attack(target);
+						if (!multi.getValue()) return;
+					}
+				}
+			}
+		}else {
+			Entity target2 =null;
+				List<Entity> entities2 = new ArrayList<Entity>(mc.world.loadedEntityList); // get Entity list to find the best target
+				Iterator<Entity> ite = (new ArrayList<Entity>(entities2)).iterator();
+				while (ite.hasNext()) {
+					Entity ite2 = (Entity) ite.next();
+					if (!EntityUtil.isLiving((Entity)ite2) || ((EntityLivingBase) ite2).getHealth() <= 0) {
+						entities2.remove(ite2);//remove dead entity
+					}
+					if (mc.player.getDistance(ite2) > hitRange.getValue()){
+						entities2.remove(ite2);//remove over range
+					}
+					if (ite2 == mc.player) {
+						entities2.remove(ite2);//remove yourself
+					}
+				}
+				if(priority.getValue().equals(Priority.DISTANCE)){
+					entities2.sort((entities3, entities4) -> {
+						return Double.compare(entities3.getDistance(mc.player), entities4.getDistance(mc.player));
+					});
+					if (entities2.size() != 0){ //do not use && it will get(0),if you do when list is none the client will crash
+						if (((Entity) entities2.get(0)).getDistance(mc.player) <= hitRange.getValue()) {
+							target2 = (Entity) entities2.get(0);//set the target to the closest entity
+						}
+					}
+				}
+				else if(priority.getValue().equals(Priority.HEALTH)){
+					entities2.sort((entities5, entities6) -> {
+						return Double.compare(calculateDamage(entities5), calculateDamage(entities6));
+					});
+					if (entities2.size() != 0){
+						if (((Entity) entities2.get(0)).getDistance(mc.player) <= hitRange.getValue()) {
+							target2 = (Entity) entities2.get(0);//set the target to the best entity
+						}
+					}
+				}
+			
+				//attack target
+				if (target2 != null || mc.player.isDead){
+					if (attackPlayers.getValue() && target2 instanceof EntityPlayer && !Friends.isFriend(target2.getName())) {
+						if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());//auto tool
+						attack(target2);
+						if (!multi.getValue()) return;
+					} else {
+						if (EntityUtil.isPassive(target2) ? attackAnimals.getValue() : (EntityUtil.isMobAggressive(target2) && attackMobs.getValue())) {
+							if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());
+							attack(target2);
+							if (!multi.getValue()) return;
+						}
+					}
+				}
+			
+		}
     }
+	
+	private double getarmor(EntityPlayer g){
+		armorvalue = g.getTotalArmorValue();
+		armorvaluerate = 1 - (armorvalue * 4 / 100); //get armor value,but do not calculate enchantment offset,if somebody have time to make it,pls finish this to make this module better.
+		return armorvaluerate;
+	}
+	
+	
+	private double calculateDamage(Entity f) {
+		//the dagame that the player can make
+		double damage = 0;
+		double finaloutput = 0;
+		double targethealth = 0;
+		int currentItemslot=mc.player.inventory.currentItem;
+		ItemStack onhand = mc.player.inventory.getStackInSlot(currentItemslot);
+		//hum this part is from AutoTool 
+		
+		if (onhand != null){
+			if (onhand.getItem() instanceof ItemSword && (prefer.equals(Aura.HitMode.SWORD) || prefer.equals(Aura.HitMode.NONE))) {
+				damage = (((ItemSword) onhand.getItem()).getAttackDamage() + (double) EnchantmentHelper.getModifierForCreature((ItemStack)onhand, EnumCreatureAttribute.UNDEFINED));
+			} else if (onhand.getItem() instanceof ItemAxe && (prefer.equals(Aura.HitMode.AXE) || prefer.equals(Aura.HitMode.NONE))) {
+				damage = (((ItemTool) onhand.getItem()).attackDamage + (double) EnchantmentHelper.getModifierForCreature((ItemStack)onhand, EnumCreatureAttribute.UNDEFINED));
+			} else if (onhand.getItem() instanceof ItemTool) {
+				damage = (((ItemTool) onhand.getItem()).attackDamage + (double) EnchantmentHelper.getModifierForCreature((ItemStack)onhand, EnumCreatureAttribute.UNDEFINED));
+			} else { 
+				damage = 1;
+			}
+		} else damage = 1;
+		
+		//get target health
+		targethealth = ((EntityLivingBase) f).getHealth() + ((EntityLivingBase) f).getAbsorptionAmount();
+		
+		//output
+		if (f instanceof EntityPlayer){
+			finaloutput = targethealth - (damage * getarmor((EntityPlayer)f));
+		} else {
+			finaloutput = targethealth - damage;
+		}
+		KamiMod.log.error(String.valueOf(finaloutput));
+		return finaloutput;
+	}
 
     private void attack(Entity e) {
         mc.playerController.attackEntity(mc.player, e);
