@@ -169,7 +169,7 @@ public class Aura extends Module {
 				}
 			
 				//attack target
-				if (target2 != null || mc.player.isDead){
+				if (target2 != null && !mc.player.isDead){
 					if (attackPlayers.getValue() && target2 instanceof EntityPlayer && !Friends.isFriend(target2.getName())) {
 						if ((autoTool.getValue())) AutoTool.equipBestWeapon(prefer.getValue());//auto tool
 						attack(target2);
