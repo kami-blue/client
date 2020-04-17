@@ -37,7 +37,7 @@ public class WebUtils {
         new Thread(() -> {
             try {
                 // connect to https://api.github.com/repos/kami-blue/client/contributors
-                HttpsURLConnection connection = (HttpsURLConnection) new URL(KamiMod.CAPES_JSON).openConnection();
+                HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.github.com/repos/kami-blue/client/contributors").openConnection();
                 connection.connect();
 
                 // then parse it
