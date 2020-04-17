@@ -12,7 +12,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
 
 public class ListCoordsCommand extends Command {
     public ListCoordsCommand() {
-        super("listcoords", new ChunkBuilder()
+        super("listpos", new ChunkBuilder()
                 .append("searchterm", false)
                 .append("showDateTime", false)
                 .build());
