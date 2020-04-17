@@ -11,9 +11,10 @@ import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
 public class Button extends AbstractComponent {
 
     private String name;
+    private String description;
 
-    public Button(String name) {
-        this(name, 0, 0);
+    public Button(String name, String description) {
+        this(name, description, 0, 0);
         addMouseListener(new MouseListener() {
             @Override
             public void onMouseDown(MouseButtonEvent event) {
@@ -42,8 +43,9 @@ public class Button extends AbstractComponent {
         });
     }
 
-    public Button(String name, int x, int y) {
+    public Button(String name, String description, int x, int y) {
         this.name = name;
+        this.description = description;
         setX(x);
         setY(y);
     }
@@ -54,6 +56,18 @@ public class Button extends AbstractComponent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean hasDescription() {
+        return description != null;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     // Nothing to wipe.

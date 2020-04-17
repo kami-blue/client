@@ -80,12 +80,13 @@ public class KamiGUI extends GUI {
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
             Scrollpane scrollpane = pair.getKey();
-            CheckButton checkButton = new CheckButton(module.getName());
+            CheckButton checkButton = new CheckButton(module.getName(), module.getDescription());
             checkButton.setToggled(module.isEnabled());
 
             checkButton.addTickListener(() -> { // dear god
                 checkButton.setToggled(module.isEnabled());
                 checkButton.setName(module.getName());
+                checkButton.setDescription(module.getDescription());
             });
 
             checkButton.addMouseListener(new MouseListener() {

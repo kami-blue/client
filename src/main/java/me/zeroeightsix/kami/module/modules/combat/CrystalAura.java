@@ -130,7 +130,7 @@ public class CrystalAura extends Module {
 
             defaultSetting.setValue(false);
             sendChatMessage(getChatName() + "Set to defaults!");
-            sendChatMessage(getChatName() + "Close and reopen the " + getName() + " settings menu to see changes");
+            closeSettings();
         }
 
         if (mc.player == null) {

@@ -12,8 +12,8 @@ public class EnumButton extends Button {
     String[] modes;
     int index;
 
-    public EnumButton(String name, String[] modes) {
-        super(name);
+    public EnumButton(String name, String description, String[] modes) {
+        super(name, description);
         this.modes = modes;
         this.index = 0;
 

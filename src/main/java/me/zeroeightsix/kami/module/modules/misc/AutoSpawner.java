@@ -20,6 +20,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameType;
 
 import java.util.List;
 import java.util.Random;
@@ -31,6 +32,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 /**
  * Created 26 November 2019 by hub
  * Updated 27 November 2019 by hub
+ * Updated by S-B99 on 16/04/20
  */
 @Module.Info(name = "AutoSpawner", category = Module.Category.MISC, description = "Automatically spawns Withers, Iron Golems and Snowmen")
 public class AutoSpawner extends Module {
@@ -106,6 +108,10 @@ public class AutoSpawner extends Module {
         delayStep = 1;
     }
 
+    private boolean isCreativeAndMoreThenOne(int stack) {
+        return mc.player.inventory.getStackInSlot(stack).stackSize >= 1 && mc.playerController.currentGameType.equals(GameType.CREATIVE);
+    }
+
     private boolean checkBlocksInHotbar() {
         headSlot = -1;
         bodySlot = -1;
@@ -120,7 +126,7 @@ public class AutoSpawner extends Module {
             if (entityMode.getValue().equals(EntityMode.WITHER)) {
 
                 if (stack.getItem() == Items.SKULL && stack.getItemDamage() == 1) {
-                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 3) {
+                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 3 || isCreativeAndMoreThenOne(i)) {
                         headSlot = i;
                     }
                     continue;
@@ -130,7 +136,7 @@ public class AutoSpawner extends Module {
 
                 Block block = ((ItemBlock) stack.getItem()).getBlock();
                 if (block instanceof BlockSoulSand) {
-                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 4) {
+                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 4 || isCreativeAndMoreThenOne(i)) {
                         bodySlot = i;
                     }
                 }
@@ -148,7 +154,7 @@ public class AutoSpawner extends Module {
                 }
 
                 if (block == Blocks.IRON_BLOCK) {
-                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 4) {
+                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 4 || isCreativeAndMoreThenOne(i)) {
                         bodySlot = i;
                     }
                 }
@@ -166,7 +172,7 @@ public class AutoSpawner extends Module {
                 }
 
                 if (block == Blocks.SNOW) {
-                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 2) {
+                    if (mc.player.inventory.getStackInSlot(i).stackSize >= 2 || isCreativeAndMoreThenOne(i)) {
                         bodySlot = i;
                     }
                 }

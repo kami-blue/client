@@ -56,7 +56,7 @@ public class SettingsPanel extends OrganisedContainer {
                 boolean isEnum = setting instanceof EnumSetting;
 
                 if (setting.getValue() instanceof Bind) {
-                    addChild(new BindButton("Bind", module));
+                    addChild(new BindButton("Bind", null, module));
                 }
 
                 if (isNumber) {
@@ -106,7 +106,7 @@ public class SettingsPanel extends OrganisedContainer {
                         addChild(slider);
                     }
                 } else if (isBoolean) {
-                    CheckButton checkButton = new CheckButton(name);
+                    CheckButton checkButton = new CheckButton(name, null);
                     checkButton.setToggled(((BooleanSetting) setting).getValue());
                     checkButton.addPoof(new CheckButton.CheckButtonPoof<CheckButton, CheckButton.CheckButtonPoof.CheckButtonPoofInfo>() {
                         @Override
@@ -122,7 +122,7 @@ public class SettingsPanel extends OrganisedContainer {
                     Class<? extends Enum> type = ((EnumSetting) setting).clazz;
                     Object[] con = type.getEnumConstants();
                     String[] modes = Arrays.stream(con).map(o -> o.toString().toUpperCase()).toArray(String[]::new);
-                    EnumButton enumbutton = new EnumButton(name, modes);
+                    EnumButton enumbutton = new EnumButton(name, null, modes);
                     enumbutton.addPoof(new EnumButton.EnumbuttonIndexPoof<EnumButton, EnumButton.EnumbuttonIndexPoof.EnumbuttonInfo>() {
                         @Override
                         public void execute(EnumButton component, EnumbuttonInfo info) {

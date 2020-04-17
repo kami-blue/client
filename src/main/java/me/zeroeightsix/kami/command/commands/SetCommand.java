@@ -74,6 +74,7 @@ public class SetCommand extends Command {
             }
             setting.setValueFromString(arg2); /* PLEASE MAKE SURE TO USE PROPER NAMING WHEN USING ENUMS */ /* if you use improper lowercase letters it will *not* work with this command ~S-B99 */
             sendChatMessage("Set &b" + setting.getName() + "&r to &3" + arg2 + "&r.");
+            Module.closeSettings();
         } catch (Exception e) {
             e.printStackTrace();
             sendChatMessage("Unable to set value! &6" + e.getMessage());

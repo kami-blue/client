@@ -3,11 +3,8 @@ package me.zeroeightsix.kami.module.modules.hidden;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.capes.Capes;
 import me.zeroeightsix.kami.module.modules.chat.CustomChat;
-import me.zeroeightsix.kami.module.modules.client.ActiveModules;
-import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
-import me.zeroeightsix.kami.module.modules.client.InventoryViewer;
-import me.zeroeightsix.kami.module.modules.misc.DiscordSettings;
+import me.zeroeightsix.kami.module.modules.client.*;
+import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.module.modules.render.TabFriends;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -21,10 +18,11 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 @Module.Info(name = "RunConfig", category = Module.Category.HIDDEN, showOnArray = Module.ShowOnArray.OFF, description = "Default manager for first runs")
 public class RunConfig extends Module {
     private Setting<Boolean> hasRunCapes = register(Settings.b("Capes", false));
-    private Setting<Boolean> hasRunDiscordSettings = register(Settings.b("DiscordSettings", false));
+    private Setting<Boolean> hasRunDiscordSettings = register(Settings.b("DiscordRPC", false));
     private Setting<Boolean> hasRunFixGui = register(Settings.b("FixGui", false));
     private Setting<Boolean> hasRunTabFriends = register(Settings.b("TabFriends", false));
     private Setting<Boolean> hasRunCustomChat = register(Settings.b("CustomChat", false));
+    private Setting<Boolean> hasRunTooltips = register(Settings.b("Tooltips", false));
 
     public void onEnable() {
         MODULE_MANAGER.getModule(ActiveModules.class).enable();
@@ -37,7 +35,7 @@ public class RunConfig extends Module {
             hasRunCapes.setValue(true);
         }
         if (!hasRunDiscordSettings.getValue()) {
-            MODULE_MANAGER.getModule(DiscordSettings.class).enable();
+            MODULE_MANAGER.getModule(DiscordRPC.class).enable();
             hasRunDiscordSettings.setValue(true);
         }
         if (!hasRunFixGui.getValue()) {
@@ -52,6 +50,11 @@ public class RunConfig extends Module {
             MODULE_MANAGER.getModule(CustomChat.class).enable();
             hasRunCustomChat.setValue(true);
         }
+        if (!hasRunTooltips.getValue()) {
+            MODULE_MANAGER.getModule(Tooltips.class).enable();
+            hasRunTooltips.setValue(true);
+        }
+
         disable();
     }
 }

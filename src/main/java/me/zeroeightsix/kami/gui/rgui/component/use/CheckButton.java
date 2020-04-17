@@ -10,12 +10,12 @@ import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
 public class CheckButton extends Button {
     boolean toggled;
 
-    public CheckButton(String name) {
-        this(name, 0, 0);
+    public CheckButton(String name, String description) {
+        this(name, description, 0, 0);
     }
 
-    public CheckButton(String name, int x, int y) {
-        super(name, x, y);
+    public CheckButton(String name, String description, int x, int y) {
+        super(name, description, x, y);
         addMouseListener(new MouseListener() {
             @Override
             public void onMouseDown(MouseButtonEvent event) {

@@ -9,6 +9,8 @@ import org.lwjgl.opengl.Display;
 
 import java.util.List;
 
+import static me.zeroeightsix.kami.gui.kami.DisplayGuiScreen.getScale;
+
 /**
  * @author S-B99
  * Created by S-B99 on 24/03/20
@@ -42,8 +44,7 @@ public class GuiFrameUtil {
         if (kamiGUI == null || mc.player == null) return;
         List<Frame> frames = ContainerHelper.getAllChildren(Frame.class, kamiGUI);
         for (Frame frame : frames) {
-            int divider = mc.gameSettings.guiScale;
-            if (divider == 0) divider = 3;
+            int divider = getScale();
             if (frame.getX() > (Display.getWidth() / divider)) {
                 frame.setX((Display.getWidth() / divider) - frame.getWidth());
             }

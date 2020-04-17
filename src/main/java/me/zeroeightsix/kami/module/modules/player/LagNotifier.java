@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Wrapper;
 
+import static me.zeroeightsix.kami.gui.kami.DisplayGuiScreen.getScale;
 import static me.zeroeightsix.kami.util.InfoCalculator.round;
 
 /**
@@ -26,8 +27,8 @@ public class LagNotifier extends Module {
         String text = "Server Not Responding! " + timeDifference() + "s";
         FontRenderer renderer = Wrapper.getFontRenderer();
 
-        int divider = mc.gameSettings.guiScale;
-        if (divider == 0) divider = 3; /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
+        int divider = getScale();
+        /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 217, 255, 85, 85, text);
     }
 

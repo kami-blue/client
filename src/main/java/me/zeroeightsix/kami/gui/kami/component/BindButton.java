@@ -18,8 +18,8 @@ public class BindButton extends EnumButton {
 
     boolean ctrl = false, shift = false, alt = false;
 
-    public BindButton(String name, Module m) {
-        super(name, none);
+    public BindButton(String name, String description, Module m) {
+        super(name, description, none);
         this.m = m;
 
         Bind bind = m.getBind();

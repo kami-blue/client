@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
+import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
+import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
@@ -19,7 +21,7 @@ import java.util.List;
 
 /**
  * Created by 086 on 23/08/2017.
- * Updated by S-B99 on 15/12/19
+ * Updated by S-B99 on 15/04/20
  */
 public class Module {
 
@@ -187,6 +189,16 @@ public class Module {
      * Cleanup method in case this module wants to do something when the client closes down
      */
     public void destroy() {
+    }
+
+    /* If you change a setting with ;set or eg a defaults button the GUI doesn't update, so call this */
+    public static void closeSettings() {
+        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
+        for (SettingsPanel settingsPanel : panels) {
+            if (settingsPanel.isVisible()) {
+                settingsPanel.setModule(null);
+            }
+        }
     }
 
     protected void registerAll(Setting... settings) {

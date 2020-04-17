@@ -28,14 +28,14 @@ public class ElytraFlight extends Module {
     private Setting<ElytraFlightMode> mode = register(Settings.e("Mode", ElytraFlightMode.HIGHWAY));
     private Setting<Boolean> defaultSetting = register(Settings.b("Defaults", false));
     private Setting<Boolean> easyTakeOff = register(Settings.booleanBuilder("Easy Takeoff H").withValue(true).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
-    private Setting<Boolean> hoverControl = register(Settings.booleanBuilder("Hover").withValue(false).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
+    private Setting<Boolean> hoverControl = register(Settings.booleanBuilder("Hover").withValue(true).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Boolean> easyTakeOffControl = register(Settings.booleanBuilder("Easy Takeoff C").withValue(false).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Boolean> timerControl = register(Settings.booleanBuilder("Takeoff Timer").withValue(false).withVisibility(v -> easyTakeOffControl.getValue() && mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<TakeoffMode> takeOffMode = register(Settings.enumBuilder(TakeoffMode.class).withName("Takeoff Mode").withValue(TakeoffMode.PACKET).withVisibility(v -> easyTakeOff.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Boolean> overrideMaxSpeed = register(Settings.booleanBuilder("Over Max Speed").withValue(false).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> speedHighway = register(Settings.floatBuilder("Speed H").withValue(1.8f).withMaximum(1.8f).withVisibility(v -> !overrideMaxSpeed.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
-    private Setting<Float> speedControl = register(Settings.floatBuilder("Speed C").withValue(1.8f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> speedHighwayOverride = register(Settings.floatBuilder("Speed H O").withValue(1.8f).withVisibility(v -> overrideMaxSpeed.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
+    private Setting<Float> speedControl = register(Settings.floatBuilder("Speed C").withValue(1.8f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> fallSpeedHighway = register(Settings.floatBuilder("Fall Speed H").withValue(0.000050000002f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.001f).withMaximum(0.3f).withMinimum(0.0f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> fallSpeed = register(Settings.floatBuilder("Fall Speed").withValue(-.003f).withVisibility(v -> !mode.getValue().equals(ElytraFlightMode.CONTROL) && !mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
@@ -256,17 +256,23 @@ public class ElytraFlight extends Module {
 
     private void defaults() {
         easyTakeOff.setValue(true);
+        hoverControl.setValue(true);
+        easyTakeOffControl.setValue(false);
+        timerControl.setValue(false);
         takeOffMode.setValue(TakeoffMode.PACKET);
         overrideMaxSpeed.setValue(false);
         speedHighway.setValue(1.8f);
         speedHighwayOverride.setValue(1.8f);
+        speedControl.setValue(1.8f);
         fallSpeedHighway.setValue(.000050000002f);
+        fallSpeedControl.setValue(0.001f);
         fallSpeed.setValue(-.003f);
         upSpeedBoost.setValue(0.08f);
         downSpeedBoost.setValue(0.04f);
+        downSpeedControl.setValue(2.0);
         defaultSetting.setValue(false);
         sendChatMessage(getChatName() + "Set to defaults!");
-        sendChatMessage(getChatName() + "Close and reopen the " + getName() + " settings menu to see changes");
+        closeSettings();
     }
 
     private float getHighwaySpeed() {

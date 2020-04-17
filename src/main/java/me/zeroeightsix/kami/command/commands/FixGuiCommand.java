@@ -18,14 +18,7 @@ public class FixGuiCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        FixGui fixGui = MODULE_MANAGER.getModuleT(FixGui.class);
-        if (fixGui.isEnabled()) {
-            fixGui.disable();
-            sendChatMessage("[" + getLabel() + "] Disabled");
-        }
-        else {
-            fixGui.enable();
-            sendChatMessage("[" + getLabel() + "] Enabled");
-        }
+        MODULE_MANAGER.getModuleT(FixGui.class).enable();
+        sendChatMessage(getChatLabel() + "Ran");
     }
 }

@@ -15,6 +15,8 @@ import net.minecraft.item.ItemPickaxe;
 import net.minecraft.network.play.server.SPacketBlockBreakAnim;
 import net.minecraft.util.math.BlockPos;
 
+import static me.zeroeightsix.kami.gui.kami.DisplayGuiScreen.getScale;
+
 /**
  * @author Antonio32A
  * Updated by S-B99 on 31/03/20
@@ -70,8 +72,7 @@ public class BreakingWarning extends Module {
         String text = playerName + " is breaking blocks near you!";
         FontRenderer renderer = Wrapper.getFontRenderer();
 
-        int divider = mc.gameSettings.guiScale;
-        if (divider == 0) divider = 3;
+        int divider = getScale();
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 16, 240, 87, 70, text);
     }
 
