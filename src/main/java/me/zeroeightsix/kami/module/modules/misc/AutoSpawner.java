@@ -42,7 +42,7 @@ public class AutoSpawner extends Module {
     private Setting<Boolean> partyWithers = register(Settings.booleanBuilder("Withers").withValue(false).withVisibility(v -> party.getValue()).build());
     private Setting<EntityMode> entityMode = register(Settings.enumBuilder(EntityMode.class).withName("Entity Mode").withValue(EntityMode.SNOW).withVisibility(v -> !party.getValue()).build());
     private Setting<Float> placeRange = register(Settings.floatBuilder("Place Range").withMinimum(2.0f).withValue(3.5f).withMaximum(10.0f).build());
-    private Setting<Integer> delay = register(Settings.integerBuilder("Delay").withMinimum(12).withValue(20).withMaximum(100).build());
+    private Setting<Integer> delay = register(Settings.integerBuilder("Delay").withMinimum(12).withValue(20).withMaximum(100).withVisibility(v -> useMode.getValue().equals(UseMode.SPAM)).build());
     private Setting<Boolean> rotate = register(Settings.b("Rotate", true));
     private Setting<Boolean> debug = register(Settings.b("Debug", false));
 

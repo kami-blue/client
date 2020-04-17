@@ -25,7 +25,7 @@ public class AntiHunger extends Module {
 
     @EventHandler
     public Listener<PacketEvent.Send> packetListener = new Listener<>(event -> {
-        if (mc.player == null || mc.player.isElytraFlying()) return;
+        if (mc.player == null) return;
 
         if (cancelMovementState.getValue() && event.getPacket() instanceof CPacketEntityAction) {
             CPacketEntityAction packet = (CPacketEntityAction) event.getPacket();
@@ -35,7 +35,8 @@ public class AntiHunger extends Module {
         }
 
         if (event.getPacket() instanceof CPacketPlayer) {
-            ((CPacketPlayer) event.getPacket()).onGround = mc.player.fallDistance > 0 || mc.playerController.isHittingBlock;
+            // Trick the game to think that tha player is flying even if he is on ground. Also check if the player is flying with the Elytra.
+            ((CPacketPlayer) event.getPacket()).onGround = (mc.player.fallDistance > 0 || mc.playerController.isHittingBlock) && mc.player.isElytraFlying();
         }
     });
 
