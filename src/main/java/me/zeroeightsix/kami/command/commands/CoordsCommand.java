@@ -3,16 +3,19 @@ package me.zeroeightsix.kami.command.commands;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.util.Coord;
+import me.zeroeightsix.kami.util.LogUtil;
 
 import java.util.Objects;
 
 import static me.zeroeightsix.kami.util.LogUtil.coordsLogToArray;
+import static me.zeroeightsix.kami.util.LogUtil.writePlayerCoords;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
 
-public class ListCoordsCommand extends Command {
-    public ListCoordsCommand() {
-        super("listpos", new ChunkBuilder()
+public class CoordsCommand extends Command {
+    public CoordsCommand() {
+        super("pos", new ChunkBuilder()
+                .append("save/list", true)
                 .append("searchterm", false)
                 .append("showDateTime", false)
                 .build());
@@ -20,13 +23,23 @@ public class ListCoordsCommand extends Command {
     }
     public void call(String[] args) {
         if (args[0] != null) {
-            if (args[1] == null) {
-                searchCoords(args[0], false);
+            if (args[0].equals("save")) {
+                if (args[1] != null) {
+                    confirm(args[1], writePlayerCoords(args[1], Boolean.parseBoolean(args[2])));
+                } else {
+                    confirm("Unnamed", writePlayerCoords("Unnamed", false));
+                }
+            } else if (args[0].equals("list")) {
+                if (args[1] != null) {
+                    searchCoords(args[1], Boolean.parseBoolean(args[2]));
+                } else {
+                    listCoords(false);
+                }
             } else {
-                searchCoords(args[0], Boolean.parseBoolean(args[1]));
+                sendChatMessage("Please use a valid command (list or save)");
             }
         } else {
-            listCoords(false);
+            sendChatMessage("Please choose a command (list or save)");
         }
     }
     private void listCoords(boolean showDateTime) {
@@ -60,5 +73,8 @@ public class ListCoordsCommand extends Command {
             message += " made at " + coord.time + " on " + coord.date;
         }
         return message;
+    }
+    private void confirm(String name, int[] xyz) {
+        sendChatMessage("Added coordinate " + xyz[0] + " " + xyz[1] + " " + xyz[2] + " with name " + name + ".");
     }
 }
