@@ -4,6 +4,8 @@ import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.util.Coord;
 
+import java.util.Objects;
+
 import static me.zeroeightsix.kami.util.LogUtil.coordsLogToArray;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
@@ -23,7 +25,7 @@ public class ListCoordsCommand extends Command {
     private void listCoords() {
         sendChatMessage("List of logged coordinates:");
         Coord[] coords = coordsLogToArray();
-        for (Coord coord : coords) {
+        for (Coord coord : Objects.requireNonNull(coords)) {
             String message = "   " + coord.name + " (" + coord.x + " " + coord.y + " " + coord.z + ") made at " + coord.time + " on " + coord.date;
             sendRawChatMessage(message);
         }
