@@ -2,10 +2,13 @@ package me.zeroeightsix.kami.util;
 
 import net.minecraft.client.Minecraft;
 
+import me.zeroeightsix.kami.util.Coord;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
  * @author S-B99
@@ -45,7 +48,7 @@ public class LogUtil {
         String time = sdf.format(new Date());
         return "x: " + x + ", y: " + y + ", z: " + z + ", chunk: " + chunk + ", name: \"" + locationName + "\", date: \"" + time + "\"\n";
     }
-    public static Coord[] coordsLogToArray() throws IOException {
+    public static Coord[] coordsLogToArray() {
         Coord[] coordsArray = new Coord[lineCount(coordsLogFilename)];
         try {
             File coordsFile = new File(coordsLogFilename);
@@ -53,22 +56,27 @@ public class LogUtil {
             int line = 0;
             while (coordsReader.hasNextLine()) {
                 String coordsRaw = coordsReader.nextLine();
-                String[] split1 = coordsRaw.split("x: ")[1].split(", y: ");
-                String[] split2 = split1[1].split(", z: ");
-                String[] split3 = split2[1].split(", chunk: ");
-                String[] split4 = split3[1].split(", name: ");
-                String[] split5 = split4[1].split(", date: ");
-                String[] split6 = split5[1].split("\n");
-                Coord lineCoord = new Coord();
-                lineCoord.x = Integer.parseInt(split1[0]);
-                lineCoord.y = Integer.parseInt(split2[0]);
-                lineCoord.z = Integer.parseInt(split3[0]);
-                lineCoord.chunk = Boolean.parseBoolean(split3[0]);
-                lineCoord.name = split5[0];
-                lineCoord.time = split6[0];
-                lineCoord.date = split6[1];
-                coordsArray[line] = lineCoord;
-                line++;
+                if (coordsRaw.length() > 0) {
+                    String[] split1 = coordsRaw.split("x: ")[1].split(", y: ");
+                    String[] split2 = split1[1].split(", z: ");
+                    String[] split3 = split2[1].split(", chunk: ");
+                    String[] split4 = split3[1].split(", name: ");
+                    String[] split5 = split4[1].split(", date: ");
+                    String[] split6 = split5[1].split("\n");
+                    String[] split7 = split6[0].split(" ");
+                    Coord lineCoord = new Coord();
+                    lineCoord.x = Integer.parseInt(split1[0]);
+                    lineCoord.y = Integer.parseInt(split2[0]);
+                    lineCoord.z = Integer.parseInt(split3[0]);
+                    lineCoord.chunk = Boolean.parseBoolean(split3[0]);
+                    lineCoord.name = split5[0].replaceAll("[^a-zA-Z0-9]", "");
+                    lineCoord.time = split7[0].replaceAll("[^a-zA-Z0-9]", "");
+                    lineCoord.date = split7[1].replaceAll("[^a-zA-Z0-9]", "");
+                    coordsArray[line] = lineCoord;
+                    line++;
+                } else {
+                    coordsArray[line] = null;
+                }
             }
             coordsReader.close();
             return coordsArray;
@@ -78,29 +86,19 @@ public class LogUtil {
             return null;
         }
     }
-    public static int lineCount(String filename) throws IOException {
+    public static int lineCount(String filename) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("file.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
             int lines = 0;
             while (reader.readLine() != null) lines++;
             reader.close();
             return lines;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
             return 0;
         }
     }
-}
-
-class Coord {
-    int x;
-    int y;
-    int z;
-    boolean chunk;
-    String name;
-    String time;
-    String date;
 }
 
 
