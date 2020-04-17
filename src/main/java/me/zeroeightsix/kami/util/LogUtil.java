@@ -69,9 +69,9 @@ public class LogUtil {
                     lineCoord.y = Integer.parseInt(split2[0]);
                     lineCoord.z = Integer.parseInt(split3[0]);
                     lineCoord.chunk = Boolean.parseBoolean(split3[0]);
-                    lineCoord.name = split5[0].replaceAll("[^a-zA-Z0-9]", "");
-                    lineCoord.time = split7[0].replaceAll("[^a-zA-Z0-9]", "");
-                    lineCoord.date = split7[1].replaceAll("[^a-zA-Z0-9]", "");
+                    lineCoord.name = split5[0];
+                    lineCoord.time = split7[0].replaceAll("[\"]", "");
+                    lineCoord.date = split7[1].replaceAll("[\"]", "");
                     coordsArray[line] = lineCoord;
                     line++;
                 } else {
