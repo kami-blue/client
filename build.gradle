@@ -117,7 +117,7 @@ shadowJar {
         include(dependency('org.javassist:javassist'))
         include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
         include(dependency('com.github.kevinsawicki:http-request'))
-        include(dependency(group: 'cabaletta', name: 'baritone-api', version: '1.2.13'))
+        include(dependency('com.github.cabaletta:baritone'))
     }
     exclude 'dummyThing' // can someone explain why this is here
     classifier = 'release'
