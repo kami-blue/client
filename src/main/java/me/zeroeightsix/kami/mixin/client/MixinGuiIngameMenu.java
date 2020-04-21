@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.mc.KamiGuiAntiDisconnect;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
+import me.zeroeightsix.kami.module.modules.movement.BaritoneWalk;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -17,11 +18,17 @@ public class MixinGuiIngameMenu {
 
     @Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
     public void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
+        if (KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).isEnabled()) {
+            if (button.id == 1) {
+                KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).disable();
+            }
+        }
+
         if (KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).isEnabled()) {
-            switch (button.id) {
-                case 1:
-                    Wrapper.getMinecraft().displayGuiScreen(new KamiGuiAntiDisconnect());
-                    callbackInfo.cancel();
+            if (button.id == 1) {
+                Wrapper.getMinecraft().displayGuiScreen(new KamiGuiAntiDisconnect());
+
+                callbackInfo.cancel();
             }
         }
     }

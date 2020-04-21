@@ -17,17 +17,15 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
  */
 @Module.Info(name = "BaritoneWalk", description = "AutoWalk with Baritone pathfinding.", category = Module.Category.MOVEMENT)
 public class BaritoneWalk extends Module {
-    private Setting<Boolean> sprint = register(Settings.booleanBuilder("Allow Sprinting").withValue(true));
-    private Setting<Boolean> parkour = register(Settings.booleanBuilder("Allow Parkour").withValue(true).withVisibility(v -> sprint.getValue().equals(true)));
-    private Setting<Boolean> lockView = register(Settings.booleanBuilder("Lock View").withValue(false));
+    private Setting<Boolean> sprint = register(Settings.booleanBuilder("Allow Sprinting").withValue(true).build());
+    private Setting<Boolean> parkour = register(Settings.booleanBuilder("Allow Parkour").withValue(true).withVisibility(v -> sprint.getValue().equals(true)).build());
+    private Setting<Boolean> lockView = register(Settings.booleanBuilder("Lock View").withValue(false).build());
 
     private String direction;
 
     // Very shittily done, but this check is not that taxing on performance cos it is NOT performed every tick.
     @Override
     protected void onEnable() {
-
-
         if (normalizeAngle(mc.player.rotationYaw) >= -22.5 && normalizeAngle(mc.player.rotationYaw) <= 22.5) { // +Z
             BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalXZ((int) mc.player.posX, (int) mc.player.posZ + 1068));
 
@@ -88,11 +86,9 @@ public class BaritoneWalk extends Module {
     }
 
     @EventHandler
-    private Listener<ServerDisconnectedEvent> disconnectedEventListener = new Listener<>(event -> {
-        System.out.println("bBBBB");
-
-        if (KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).isEnabled()) {
-            KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).destroy();
+    public Listener<ServerDisconnectedEvent> kickListener = new Listener<>(event -> {
+        if (isEnabled()) {
+            disable();
         }
     });
 }
