@@ -80,7 +80,7 @@ public class BaritoneWalk extends Module {
 
     @Override
     protected void onDisable() {
-        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().forceCancel();
+        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
 
         BaritoneAPI.getSettings().freeLook.reset();
         BaritoneAPI.getSettings().allowParkour.reset();
