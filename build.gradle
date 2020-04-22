@@ -1,7 +1,6 @@
 // forge's stuff
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
     repositories {
         jcenter()
         maven {
@@ -17,12 +16,10 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'kotlin'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -80,7 +77,6 @@ dependencies {
     compile 'club.minnced:java-discord-rpc:2.0.2'
     compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
     compile 'com.github.kevinsawicki:http-request:http-request-6.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 processResources {
@@ -116,7 +112,6 @@ shadowJar {
         include(dependency('org.javassist:javassist'))
         include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
         include(dependency('com.github.kevinsawicki:http-request'))
-        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version'))
     }
     exclude 'dummyThing' // can someone explain why this is here
     classifier = 'release'
@@ -149,13 +144,3 @@ jar {
 }
 
 build.dependsOn(shadowJar)
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
