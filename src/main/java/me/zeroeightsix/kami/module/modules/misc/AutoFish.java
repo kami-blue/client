@@ -22,9 +22,14 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 /**
  * Created by 086 on 22/03/2018.
  * Updated by Qther on 05/03/20
- * Updated by S-B99 on 30/03/20
+ * Updated by dominikaaaa on 30/03/20
  */
-@Module.Info(name = "AutoFish", category = Module.Category.MISC, description = "Automatically catch fish", alwaysListening = true)
+@Module.Info(
+        name = "AutoFish",
+        category = Module.Category.MISC,
+        description = "Automatically catch fish",
+        alwaysListening = true
+)
 public class AutoFish extends Module {
     private boolean recastHide = false;
     private static ServerData cServer;

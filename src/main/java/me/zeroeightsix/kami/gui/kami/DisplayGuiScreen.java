@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.gui.kami.component.BindButton;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
@@ -20,7 +21,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 /**
  * Created by 086 on 3/08/2017.
- * Updated by S-B99 on 13/12/19
+ * Updated by dominikaaaa on 13/12/19
  */
 public class DisplayGuiScreen extends GuiScreen {
 
@@ -96,7 +97,7 @@ public class DisplayGuiScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (MODULE_MANAGER.getModule(ClickGUI.class).getBind().isDown(keyCode) || keyCode == Keyboard.KEY_ESCAPE) {
+        if ((MODULE_MANAGER.getModule(ClickGUI.class).getBind().isDown(keyCode) || keyCode == Keyboard.KEY_ESCAPE) && !BindButton.waiting) {
             mc.displayGuiScreen(lastScreen);
         } else {
             gui.handleKeyDown(keyCode);

@@ -10,13 +10,18 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 
 import java.util.Random;
 
-import static me.zeroeightsix.kami.util.InfoCalculator.isNumberEven;
+import static me.zeroeightsix.kami.util.MathsUtils.isNumberEven;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 12/03/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 12/03/20
  */
-@Module.Info(name = "FancyChat", category = Module.Category.CHAT, description = "Makes messages you send fancy", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "FancyChat",
+        category = Module.Category.CHAT,
+        description = "Makes messages you send fancy",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class FancyChat extends Module {
     private Setting<Boolean> uwu = register(Settings.b("uwu", true));
     private Setting<Boolean> leet = register(Settings.b("1337", false));

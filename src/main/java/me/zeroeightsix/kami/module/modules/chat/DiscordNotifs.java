@@ -26,11 +26,17 @@ import static me.zeroeightsix.kami.util.MessageDetectionHelper.*;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 
 /**
- * @author S-B99
- * Created by S-B99 on 26/03/20
- * Updated by S-B99 on 28/03/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 26/03/20
+ * Updated by dominikaaaa on 28/03/20
  */
-@Module.Info(name = "DiscordNotifs", category = Module.Category.CHAT, description = "Sends your chat to a set Discord channel", alwaysListening = true)
+@Module.Info(
+        name = "DiscordNotifs",
+        category = Module.Category.CHAT,
+        description = "Sends your chat to a set Discord channel",
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysListening = true
+)
 public class DiscordNotifs extends Module {
     private Setting<Boolean> timeout = register(Settings.b("Timeout", true));
     private Setting<Integer> timeoutTime = register(Settings.integerBuilder().withName("Seconds").withMinimum(0).withMaximum(120).withValue(10).withVisibility(v -> timeout.getValue()).build());
@@ -106,7 +112,7 @@ public class DiscordNotifs extends Module {
     }
 
     private String getTime() {
-        if (!time.getValue() || MODULE_MANAGER.isModuleEnabled(ChatTimestamp.class)) return "";
+        if (!time.getValue()) return "";
         InfoOverlay info = MODULE_MANAGER.getModuleT(InfoOverlay.class);
         return "[" + TimeUtil.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
     }

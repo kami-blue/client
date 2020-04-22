@@ -1,22 +1,12 @@
 package me.zeroeightsix.kami.command;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.launchwrapper.LogWrapper;
-import net.minecraft.network.play.client.CPacketChatMessage;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentBase;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 public abstract class Command {
 

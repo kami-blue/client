@@ -25,7 +25,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 4/08/2017.
- * Tooltips added by S-B99 on 13/04/20
+ * Tooltips added by dominikaaaa on 13/04/20
  */
 public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
     @Override

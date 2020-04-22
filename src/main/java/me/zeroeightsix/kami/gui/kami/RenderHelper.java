@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.kami;
 
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -156,5 +157,26 @@ public class RenderHelper {
         glEnable(GL_TEXTURE_2D);
         KamiGUI.fontRenderer.drawString(x, y, color, text);
         glDisable(GL_TEXTURE_2D);
+    }
+
+    public static void enableAlpha(float alpha) {
+        GlStateManager.enableBlend();
+
+        if (alpha == 1f) {
+            return;
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    public static void disableAlpha(float alpha) {
+        GlStateManager.disableBlend();
+
+        if (alpha == 1f) {
+            return;
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

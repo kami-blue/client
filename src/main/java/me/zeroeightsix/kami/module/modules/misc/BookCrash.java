@@ -23,7 +23,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * Created by d1gress/Qther on 25/11/2019.
  * Updated by d1gress/Qther on 26/11/2019.
  */
-@Module.Info(name = "BookCrash", category = Module.Category.MISC, description = "Crashes servers by sending large packets")
+@Module.Info(
+        name = "BookCrash",
+        category = Module.Category.MISC,
+        description = "Crashes servers by sending large packets"
+)
 public class BookCrash extends Module {
 
     private int currDelay;

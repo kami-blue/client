@@ -18,7 +18,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * Created by 086 on 16/12/2017.
- * Updated by S-B99 on 17/03/20
+ * Updated by dominikaaaa on 17/03/20
  */
 @Mixin(BlockLiquid.class)
 public class MixinBlockLiquid {

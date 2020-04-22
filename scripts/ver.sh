@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Created by S-B99 on 19/02/20
+# Created by dominikaaaa on 19/02/20
 # echo "Usage: ./ver.sh"
 
 CUR_VER="$(cat ./scripts/curVer)"

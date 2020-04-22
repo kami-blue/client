@@ -15,7 +15,12 @@ import net.minecraft.world.GameType;
 /**
  * Created by 086 on 24/01/2018.
  */
-@Module.Info(name = "ArmourHUD", category = Module.Category.RENDER, showOnArray = Module.ShowOnArray.OFF, description = "Displays your armour and it's durability on screen")
+@Module.Info(
+        name = "ArmourHUD",
+        category = Module.Category.RENDER,
+        showOnArray = Module.ShowOnArray.OFF,
+        description = "Displays your armour and it's durability on screen"
+)
 public class ArmourHUD extends Module {
 
     private static RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();

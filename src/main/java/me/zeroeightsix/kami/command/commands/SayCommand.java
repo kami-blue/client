@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
 
 /**
- * @author S-B99
- * Created by S-B99 on 12/03/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 12/03/20
  */
 public class SayCommand extends Command {
     public SayCommand() {

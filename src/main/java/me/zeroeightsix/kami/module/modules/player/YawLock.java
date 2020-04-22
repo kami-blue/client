@@ -8,7 +8,11 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by 086 on 16/12/2017.
  */
-@Module.Info(name = "YawLock", category = Module.Category.PLAYER, description = "Locks your camera yaw")
+@Module.Info(
+        name = "YawLock",
+        category = Module.Category.PLAYER,
+        description = "Locks your camera yaw"
+)
 public class YawLock extends Module {
     private Setting<Boolean> auto = register(Settings.b("Auto", true));
     private Setting<Float> yaw = register(Settings.f("Yaw", 180));

@@ -19,9 +19,13 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 /**
  * Created by 086 on 2/10/2018.
- * Updated by S-B99 on 06/04/20
+ * Updated by dominikaaaa on 06/04/20
  */
-@Module.Info(name = "AutoTool", description = "Automatically switch to the best tools when mining or attacking", category = Module.Category.MISC)
+@Module.Info(
+        name = "AutoTool",
+        description = "Automatically switch to the best tools when mining or attacking",
+        category = Module.Category.MISC
+)
 public class AutoTool extends Module {
     private Setting<Aura.HitMode> preferTool = register(Settings.e("Prefer", Aura.HitMode.NONE));
 

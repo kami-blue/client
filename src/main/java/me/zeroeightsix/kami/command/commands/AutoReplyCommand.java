@@ -8,8 +8,8 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.*;
 
 /**
- * @author S-B99
- * Created by S-B99 on 17/02/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 17/02/20
  */
 public class AutoReplyCommand extends Command {
     public AutoReplyCommand() {

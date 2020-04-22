@@ -13,8 +13,8 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 05/04/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 05/04/20
  */
 public class ActiveModulesCommand extends Command {
     public ActiveModulesCommand() {

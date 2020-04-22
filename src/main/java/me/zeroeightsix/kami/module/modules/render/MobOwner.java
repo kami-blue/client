@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static me.zeroeightsix.kami.command.commands.EntityStatsCommand.round;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
@@ -19,11 +20,18 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * @author cookiedragon234
  * Taken from Backdoored 1.8.2 source
  *
- * UUID to username method and caching methods added by S-B99
+ * UUID to username method and caching methods added by dominikaaaa
  */
-@Module.Info(name = "MobOwner", description = "Displays the owner of tamed mobs", category = Module.Category.RENDER)
+@Module.Info(
+        name = "MobOwner",
+        description = "Displays the owner of tamed mobs",
+        category = Module.Category.RENDER
+)
 public class MobOwner extends Module {
 
+    private Setting<Boolean> speed = register(Settings.b("Speed", true));
+    private Setting<Boolean> jump = register(Settings.b("Jump", true));
+    private Setting<Boolean> hp = register(Settings.b("Health", true));
     private Setting<Integer> requestTime = register(Settings.integerBuilder("Cache Reset").withMinimum(10).withValue(20).build());
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
 
@@ -33,7 +41,7 @@ public class MobOwner extends Module {
     private String invalidText = "Offline or invalid UUID!";
 
     /**
-     * @author S-B99
+     * @author dominikaaaa
      */
     private String getUsername(String uuid) {
         for (Map.Entry<String, String> entries : cachedUUIDs.entrySet()) {
@@ -42,12 +50,16 @@ public class MobOwner extends Module {
             }
         }
         try {
-            if (apiRequests > 10) {
-                return "Too many API requests";
+            try {
+                if (apiRequests > 10) {
+                    return "Too many API requests";
+                }
+                cachedUUIDs.put(uuid, Objects.requireNonNull(EntityUtil.getNameFromUUID(uuid)).replace("\"", ""));
+                apiRequests++;
+            } catch (IllegalStateException illegal) { /* this means the json parsing failed meaning the UUID is invalid */
+                cachedUUIDs.put(uuid, invalidText);
             }
-            cachedUUIDs.put(uuid, Objects.requireNonNull(EntityUtil.getNameFromUUID(uuid)).replace("\"", ""));
-            apiRequests++;
-        } catch (IllegalStateException illegal) { /* this means the json parsing failed meaning the UUID is invalid or you're offline */
+        } catch (NullPointerException e) { /* this means the json parsing failed meaning you're offline */
             cachedUUIDs.put(uuid, invalidText);
         }
         /* Run this again to reduce the amount of requests made to the Mojang API */
@@ -88,6 +100,26 @@ public class MobOwner extends Module {
         }
     }
 
+    private String getSpeed(AbstractHorse horse) {
+        if (!speed.getValue()) return "";
+        return " S: " + round(43.17 * horse.getAIMoveSpeed(), 2);
+    }
+
+    private String getJump(AbstractHorse horse) {
+        if (!jump.getValue()) return "";
+        return " J: " + round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 2);
+    }
+
+    private String getHealth(AbstractHorse horse) {
+        if (!hp.getValue()) return "";
+        return " HP: " + round(horse.getHealth(), 2);
+    }
+
+    private String getHealth(EntityTameable tameable) {
+        if (!hp.getValue()) return "";
+        return " HP: " + round(tameable.getHealth(), 2);
+    }
+
     public void onUpdate() {
         resetRequests();
         resetCache();
@@ -97,7 +129,7 @@ public class MobOwner extends Module {
                 final EntityTameable entityTameable = (EntityTameable) entity;
                 if (entityTameable.isTamed() && entityTameable.getOwner() != null) {
                     entityTameable.setAlwaysRenderNameTag(true);
-                    entityTameable.setCustomNameTag("Owner: " + entityTameable.getOwner().getDisplayName().getFormattedText());
+                    entityTameable.setCustomNameTag("Owner: " + entityTameable.getOwner().getDisplayName().getFormattedText() + getHealth(entityTameable));
                 }
             }
             if (entity instanceof AbstractHorse) {
@@ -106,7 +138,7 @@ public class MobOwner extends Module {
                     continue;
                 }
                 abstractHorse.setAlwaysRenderNameTag(true);
-                abstractHorse.setCustomNameTag("Owner: " + getUsername(abstractHorse.getOwnerUniqueId().toString()));
+                abstractHorse.setCustomNameTag("Owner: " + getUsername(abstractHorse.getOwnerUniqueId().toString()) + getSpeed(abstractHorse) + getJump(abstractHorse) + getHealth(abstractHorse));
             }
         }
     }

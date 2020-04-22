@@ -33,7 +33,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * @author hub
  * @since 2019-8-13
  */
-@Module.Info(name = "AutoFeetPlace", category = Module.Category.COMBAT, description = "Continually places obsidian around your feet")
+@Module.Info(
+        name = "AutoFeetPlace",
+        category = Module.Category.COMBAT,
+        description = "Continually places obsidian around your feet"
+)
 public class AutoFeetPlace extends Module {
 
     private Setting<Mode> mode = register(Settings.e("Mode", Mode.FULL));

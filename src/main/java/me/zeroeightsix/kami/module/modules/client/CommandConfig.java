@@ -8,9 +8,14 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 
 /**
- * @author S-B99
+ * @author dominikaaaa
  */
-@Module.Info(name = "CommandConfig", category = Module.Category.CLIENT, description = "Configures PrefixChat and Alias options", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "CommandConfig",
+        category = Module.Category.CLIENT,
+        description = "Configures PrefixChat and Alias options",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class CommandConfig extends Module {
     public Setting<Boolean> aliasInfo = register(Settings.b("Alias Info", true));
     public Setting<Boolean> prefixChat = register(Settings.b("PrefixChat", true));

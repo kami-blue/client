@@ -9,14 +9,17 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Created by S-B99 on 23/10/2019
- * @author S-B99
- * Updated by S-B99 on 03/12/19
+ * Created by dominikaaaa on 23/10/2019
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 03/12/19
  * Updated by d1gress/Qther on 4/12/19
  * 
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
-@Module.Info(category = Module.Category.COMBAT, description = "Use items faster", name = "FastUse")
+@Module.Info(
+        category = Module.Category.COMBAT,
+        description = "Use items faster", name = "FastUse"
+)
 public class Fastuse extends Module {
 
     private Setting<Integer> delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build());

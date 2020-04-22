@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 04/03/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 04/03/20
  */
 public class ColourConverter {
     public static float toF(int i) { return i / 255f; }

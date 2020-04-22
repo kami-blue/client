@@ -19,7 +19,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
  * Updated 12 January 2020 by hub
  * Updated by polymer on 23/02/20
  */
-@Module.Info(name = "VisualRange", description = "Shows players who enter and leave range in chat", category = Module.Category.COMBAT)
+@Module.Info(
+        name = "VisualRange",
+        description = "Shows players who enter and leave range in chat",
+        category = Module.Category.COMBAT
+)
 public class VisualRange extends Module {
     private Setting<Boolean> leaving = register(Settings.b("Leaving", false));
     private Setting<Boolean> uwuAura = register(Settings.b("UwU Aura", false));

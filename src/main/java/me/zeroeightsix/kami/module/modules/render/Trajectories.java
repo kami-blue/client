@@ -16,7 +16,11 @@ import java.util.ArrayList;
 /**
  * Created by 086 on 28/12/2017.
  */
-@Module.Info(name = "Trajectories", category = Module.Category.RENDER, description = "Draws lines to where trajectories are going to fall")
+@Module.Info(
+        name = "Trajectories",
+        category = Module.Category.RENDER,
+        description = "Draws lines to where trajectories are going to fall"
+)
 public class Trajectories extends Module {
     ArrayList<Vec3d> positions = new ArrayList<>();
     HueCycler cycler = new HueCycler(100);

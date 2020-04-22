@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Created by 086 on 23/08/2017.
- * Updated by S-B99 on 15/04/20
+ * Updated by dominikaaaa on 15/04/20
  */
 public class Module {
 

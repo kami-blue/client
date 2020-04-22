@@ -14,7 +14,11 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
  * Created by Dewy on the 4th of April, 2020
  */
 // The code here is terrible. Not proud of it. TODO: Make this not suck.
-@Module.Info(name = "ElytraReplace", description = "Automatically swap and replace your chestplate and elytra. Not an AFK tool, be warned.", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "ElytraReplace",
+        description = "Automatically swap and replace your chestplate and elytra. Not an AFK tool, be warned.",
+        category = Module.Category.MOVEMENT
+)
 public class ElytraReplace extends Module {
     private Setting<InventoryMode> inventoryMode = register(Settings.e("Inventoryable", InventoryMode.ON));
     private Setting<Boolean> elytraFlightCheck = register(Settings.b("ElytraFlight Check", true));

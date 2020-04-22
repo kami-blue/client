@@ -18,7 +18,11 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 /**
  * Created by 086 on 9/04/2018.
  */
-@Module.Info(name = "AutoLog", description = "Automatically log when in danger or on low health", category = Module.Category.COMBAT)
+@Module.Info(
+        name = "AutoLog",
+        description = "Automatically log when in danger or on low health",
+        category = Module.Category.COMBAT
+)
 public class AutoLog extends Module {
 
     private Setting<Integer> health = register(Settings.integerBuilder("Health").withRange(0, 36).withValue(6).build());

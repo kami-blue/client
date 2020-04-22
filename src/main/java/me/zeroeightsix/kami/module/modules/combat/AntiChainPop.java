@@ -14,13 +14,17 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 
 /**
- * @author S-B99
- * Created by S-B99 on 25/03/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 25/03/20
  *
  * Event / Packet mode taken from CliNet
  * https://github.com/DarkiBoi/CliNet/blob/fd225a5c8cc373974b0c9a3457acbeed206e8cca/src/main/java/me/zeroeightsix/kami/module/modules/combat/TotemPopCounter.java
  */
-@Module.Info(name = "AntiChainPop", description = "Enables Surround when popping a totem", category = Module.Category.COMBAT)
+@Module.Info(
+        name = "AntiChainPop",
+        description = "Enables Surround when popping a totem",
+        category = Module.Category.COMBAT
+)
 public class AntiChainPop extends Module {
     private Setting<Mode> mode = register(Settings.e("Mode", Mode.PACKET));
     private int totems = 0;

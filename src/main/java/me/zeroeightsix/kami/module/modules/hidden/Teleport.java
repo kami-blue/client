@@ -10,7 +10,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
  * Created by d1gress/Qther on 26/11/2019.
  */
 
-@Module.Info(name = "Teleport", description = "Library for teleport command", category = Module.Category.HIDDEN)
+@Module.Info(
+        name = "Teleport",
+        description = "Library for teleport command",
+        category = Module.Category.HIDDEN
+)
 public class Teleport extends Module {
 
     private long lastTp;

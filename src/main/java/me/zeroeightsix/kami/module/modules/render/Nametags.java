@@ -34,7 +34,11 @@ import static org.lwjgl.opengl.GL11.*;
  * Created by 086 on 19/12/2017.
  * Updated by snowmii on 12/12/19
  */
-@Module.Info(name = "Nametags", description = "Draws descriptive nametags above entities", category = Module.Category.RENDER)
+@Module.Info(
+        name = "Nametags",
+        description = "Draws descriptive nametags above entities",
+        category = Module.Category.RENDER
+)
 public class Nametags extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));

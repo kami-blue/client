@@ -19,7 +19,11 @@ import static net.minecraft.network.play.client.CPacketEntityAction.Action.STOP_
  * Movement taken from Seppuku
  * https://github.com/seppukudevelopment/seppuku/blob/005e2da/src/main/java/me/rigamortis/seppuku/impl/module/player/NoHungerModule.java
  */
-@Module.Info(name = "AntiHunger", category = Module.Category.MOVEMENT, description = "Reduces hunger lost when moving around")
+@Module.Info(
+        name = "AntiHunger",
+        category = Module.Category.MOVEMENT,
+        description = "Reduces hunger lost when moving around"
+)
 public class AntiHunger extends Module {
     private Setting<Boolean> cancelMovementState = register(Settings.b("Cancel Movement State", true));
 
@@ -36,7 +40,7 @@ public class AntiHunger extends Module {
 
         if (event.getPacket() instanceof CPacketPlayer) {
             // Trick the game to think that tha player is flying even if he is on ground. Also check if the player is flying with the Elytra.
-            ((CPacketPlayer) event.getPacket()).onGround = (mc.player.fallDistance > 0 || mc.playerController.isHittingBlock) && mc.player.isElytraFlying();
+            ((CPacketPlayer) event.getPacket()).onGround = (mc.player.fallDistance <= 0 || mc.playerController.isHittingBlock) && mc.player.isElytraFlying();
         }
     });
 

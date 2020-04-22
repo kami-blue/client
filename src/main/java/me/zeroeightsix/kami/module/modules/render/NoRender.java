@@ -15,11 +15,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Created by 086 on 4/02/2018.
- * Updated by S-B99 on 14/04/20
+ * Updated by dominikaaaa on 14/04/20
  *
  * Skylight Updates taken from https://github.com/fr1kin/ForgeHax/blob/1a4f98d/src/main/java/com/matt/forgehax/mods/NoSkylightUpdates.java
  */
-@Module.Info(name = "NoRender", category = Module.Category.RENDER, description = "Ignore entity spawn packets")
+@Module.Info(
+        name = "NoRender",
+        category = Module.Category.RENDER,
+        description = "Ignore entity spawn packets"
+)
 public class NoRender extends Module {
 
     private Setting<Boolean> mob = register(Settings.b("Mob", false));

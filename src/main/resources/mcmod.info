@@ -2,12 +2,12 @@
   {
     "modid": "kamiblue",
     "name": "KAMI Blue\n",
-    "description": "カミブル \nA Minecraft utility mod for anarchy servers \nWritten by 086 and continued by S-B99\n",
+    "description": "カミブル \nA Minecraft utility mod for anarchy servers \nWritten by 086 and continued by dominikaaaa\n",
     "version": "1.1.4-beta",
     "mcversion": "1.12.2",
     "logoFile": "kami.png",
     "url": "https://github.com/kami-blue/client",
-    "authorList": ["086", "S-B99"],
+    "authorList": ["086", "dominikaaaa"],
     "credits": "Thank you 086 for the original KAMI\nThanks to all contributors for your help and time <3\n"
   }
 ]

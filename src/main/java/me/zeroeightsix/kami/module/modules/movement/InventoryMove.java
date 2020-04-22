@@ -7,11 +7,15 @@ import net.minecraft.client.gui.GuiChat;
 import org.lwjgl.input.Keyboard;
 
 /**
- * @author S-B99
- * Created by S-B99 on 06/04/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 06/04/20
  * @see me.zeroeightsix.kami.mixin.client.MixinMovementInputFromOptions
  */
-@Module.Info(name = "InventoryMove", description = "Allows you to walk around with GUIs opened", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "InventoryMove",
+        description = "Allows you to walk around with GUIs opened",
+        category = Module.Category.MOVEMENT
+)
 public class InventoryMove extends Module {
     private Setting<Integer> speed = register(Settings.i("Look speed", 10));
     public Setting<Boolean> sneak = register(Settings.b("Sneak", false));

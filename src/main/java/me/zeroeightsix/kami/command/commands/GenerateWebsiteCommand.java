@@ -13,8 +13,8 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 18/03/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 18/03/20
  *
  * Horribly designed command for uh, generating the modules page on the website. This was the easiest way I could do it, but maybe not the most efficient.
  */

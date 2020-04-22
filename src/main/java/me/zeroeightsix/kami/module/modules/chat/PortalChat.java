@@ -7,6 +7,11 @@ import me.zeroeightsix.kami.module.Module;
  *
  * @see me.zeroeightsix.kami.mixin.client.MixinEntityPlayerSP
  */
-@Module.Info(name = "PortalChat", category = Module.Category.CHAT, description = "Allows you to open GUIs in portals", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "PortalChat",
+        category = Module.Category.CHAT,
+        description = "Allows you to open GUIs in portals",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class PortalChat extends Module {
 }

@@ -22,7 +22,11 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 /**
  * Created by 086 on 11/12/2017.
  */
-@Module.Info(name = "Jesus", description = "Allows you to walk on water", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "Jesus",
+        description = "Allows you to walk on water",
+        category = Module.Category.MOVEMENT
+)
 public class Jesus extends Module {
 
     private static final AxisAlignedBB WATER_WALK_AA = new AxisAlignedBB(0.D, 0.D, 0.D, 1.D, 0.99D, 1.D);

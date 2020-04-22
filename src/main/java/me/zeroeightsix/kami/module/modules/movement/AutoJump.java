@@ -7,7 +7,11 @@ import me.zeroeightsix.kami.setting.Settings;
 /**
  * Created by 086 on 24/12/2017.
  */
-@Module.Info(name = "AutoJump", category = Module.Category.MOVEMENT, description = "Automatically jumps if possible")
+@Module.Info(
+        name = "AutoJump",
+        category = Module.Category.MOVEMENT,
+        description = "Automatically jumps if possible"
+)
 public class AutoJump extends Module {
     private Setting<Integer> delay = register(Settings.integerBuilder("Tick Delay").withValue(10).build());
 

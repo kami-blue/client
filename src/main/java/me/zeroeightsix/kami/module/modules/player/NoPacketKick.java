@@ -8,6 +8,11 @@ import me.zeroeightsix.kami.module.Module;
  *
  * Fixed by 0x2E | PretendingToCode 4/10/2020
  */
-@Module.Info(name = "NoPacketKick", category = Module.Category.PLAYER, description = "Suppress network exceptions and prevent getting kicked", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "NoPacketKick",
+        category = Module.Category.PLAYER,
+        description = "Suppress network exceptions and prevent getting kicked",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class NoPacketKick extends Module {
 }

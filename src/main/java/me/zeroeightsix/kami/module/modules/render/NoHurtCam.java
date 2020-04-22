@@ -5,7 +5,11 @@ import me.zeroeightsix.kami.module.Module;
 /**
  * @author 086
  */
-@Module.Info(name = "NoHurtCam", category = Module.Category.RENDER, description = "Disables the 'hurt' camera effect")
+@Module.Info(
+        name = "NoHurtCam",
+        category = Module.Category.RENDER,
+        description = "Disables the 'hurt' camera effect"
+)
 public class NoHurtCam extends Module {
 
     private static NoHurtCam INSTANCE;

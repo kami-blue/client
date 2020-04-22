@@ -10,7 +10,10 @@ import net.minecraft.network.play.client.CPacketPlayer;
 /**
  * Created by 086 on 25/08/2017.
  */
-@Module.Info(category = Module.Category.MOVEMENT, description = "Makes the player fly", name = "Flight")
+@Module.Info(
+        category = Module.Category.MOVEMENT,
+        description = "Makes the player fly", name = "Flight"
+)
 public class Flight extends Module {
 
     private Setting<Float> speed = register(Settings.f("Speed", 10));

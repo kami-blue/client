@@ -13,7 +13,13 @@ import net.minecraft.client.multiplayer.ServerData;
 /**
  * Created by 086 on 9/04/2018.
  */
-@Module.Info(name = "AutoReconnect", description = "Automatically reconnects after being disconnected", category = Module.Category.MISC, alwaysListening = true, showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "AutoReconnect",
+        description = "Automatically reconnects after being disconnected",
+        category = Module.Category.MISC,
+        alwaysListening = true,
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class AutoReconnect extends Module {
 
     private Setting<Integer> seconds = register(Settings.integerBuilder("Seconds").withValue(5).withMinimum(0).build());

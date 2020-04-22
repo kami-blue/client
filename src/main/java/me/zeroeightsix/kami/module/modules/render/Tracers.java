@@ -22,7 +22,11 @@ import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
  * <p>
  * Kurisu Makise is best girl
  */
-@Module.Info(name = "Tracers", description = "Draws lines to other living entities", category = Module.Category.RENDER)
+@Module.Info(
+        name = "Tracers",
+        description = "Draws lines to other living entities",
+        category = Module.Category.RENDER
+)
 public class Tracers extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));

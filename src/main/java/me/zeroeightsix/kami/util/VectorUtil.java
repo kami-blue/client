@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -10,7 +12,7 @@ import java.util.List;
  * Utilities for managing and transforming blockPos positions
  *
  * @author Qther / Vonr
- * Updated by S-B99 on 31/03/20
+ * Updated by dominikaaaa on 21/04/20
  */
 public class VectorUtil {
 
@@ -100,12 +102,31 @@ public class VectorUtil {
         return getBlockPos(minX, maxX, minY, maxY, minZ, maxZ);
     }
 
-    private static List<BlockPos> getBlockPos(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
-        ArrayList<BlockPos> returnList = new ArrayList<>((maxX - minX) * (maxY - minY) * (maxZ - minZ));
+    /**
+     * Get a block pos with the Y level as the highest terrain level
+     *
+     * @param pos blockPos
+     * @return blockPos with highest Y level terrain
+     */
+    public static BlockPos getHighestTerrainPos(BlockPos pos) {
+        for (int i = pos.y ; i >= 0 ; i--) {
+            Block block = Wrapper.getWorld().getBlockState(new BlockPos(pos.getX(), i, pos.getZ())).getBlock();
+            boolean replaceable = Wrapper.getWorld().getBlockState(new BlockPos(pos.getX(), i, pos.getZ())).getMaterial().isReplaceable();
+            if (!(block instanceof BlockAir) && !replaceable) {
+                return new BlockPos(pos.getX(), i, pos.getZ());
+            }
+        }
+        return new BlockPos(pos.getX(), 0, pos.getZ());
+    }
 
-        for (int x = minX; x < maxX; x++) {
-            for (int y = minY; y < maxY; y++) {
-                for (int z = minZ; z < maxZ; z++) { returnList.add(new BlockPos(x, y, z)); }
+    private static List<BlockPos> getBlockPos(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+        ArrayList<BlockPos> returnList = new ArrayList<>();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = minY; y <= maxY; y++) {
+                    returnList.add(new BlockPos(x, y, z));
+                }
             }
         }
 

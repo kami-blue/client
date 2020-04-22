@@ -12,11 +12,16 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
 /**
- * @author S-B99
+ * @author dominikaaaa
  * Updated by d1gress/Qther on 5/12/2019
- * Updated by S-B99 on 26/03/20
+ * Updated by dominikaaaa on 26/03/20
  */
-@Module.Info(name = "AutoQMain", description = "Automatically does '/queue main' on servers", category = Module.Category.CHAT, showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "AutoQMain",
+        description = "Automatically does '/queue main' on servers",
+        category = Module.Category.CHAT,
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class AutoQMain extends Module {
 
     private Setting<Boolean> showWarns = register(Settings.b("Show Warnings", true));

@@ -14,18 +14,23 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
 /**
  * Created by 086 on 8/04/2018.
- * Updated by S-B99 on 12/03/20
+ * Updated by dominikaaaa on 12/03/20
  */
-@Module.Info(name = "CustomChat", category = Module.Category.CHAT, description = "Add a custom suffix to the end of your message!", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "CustomChat",
+        category = Module.Category.CHAT,
+        description = "Add a custom suffix to the end of your message!",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class CustomChat extends Module {
-    public Setting<TextMode> textMode = register(Settings.e("Message", TextMode.ON_TOP));
+    public Setting<TextMode> textMode = register(Settings.e("Message", TextMode.JAPANESE));
     private Setting<DecoMode> decoMode = register(Settings.e("Separator", DecoMode.NONE));
     private Setting<Boolean> commands = register(Settings.b("Commands", false));
     public Setting<String> customText = register(Settings.stringBuilder("Custom Text").withValue("unchanged").withConsumer((old, value) -> {}).build());
 
     private enum DecoMode { SEPARATOR, CLASSIC, NONE }
     public enum TextMode { NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM }
-    public static String[] cmdCheck = new String[]{"/", ",", ".", "-", ";", "?", "*", "^", "&", Command.getCommandPrefix()};
+    public static String[] cmdCheck = new String[]{"/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$", Command.getCommandPrefix(), ChatEncryption.delimiterValue.getValue()};
 
     private String getText(TextMode t) {
         switch (t) {

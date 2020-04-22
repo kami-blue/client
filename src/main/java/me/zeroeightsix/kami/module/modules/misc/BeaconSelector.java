@@ -12,7 +12,11 @@ import net.minecraft.network.play.client.CPacketCustomPayload;
 /**
  * Created by 0x2E | PretendingToCode
  */
-@Module.Info(name = "BeaconSelector", category = Module.Category.MISC, description = "Choose any of the 5 beacon effects regardless of beacon base height")
+@Module.Info(
+        name = "BeaconSelector",
+        category = Module.Category.MISC,
+        description = "Choose any of the 5 beacon effects regardless of beacon base height"
+)
 public class BeaconSelector extends Module {
     public static int effect = -1;
     private boolean doCancelPacket = true;

@@ -15,9 +15,12 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * Created by 086 on 19/11/2017.
- * Updated by S-B99 on 05/03/20
+ * Updated by dominikaaaa on 05/03/20
  */
-@Module.Info(category = Module.Category.PLAYER, description = "Prevents fall damage", name = "NoFall")
+@Module.Info(
+        category = Module.Category.PLAYER,
+        description = "Prevents fall damage", name = "NoFall"
+)
 public class NoFall extends Module {
 
     private Setting<FallMode> fallMode = register(Settings.e("Mode", FallMode.PACKET));

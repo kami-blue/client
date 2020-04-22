@@ -8,7 +8,12 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 /**
  * Created by TBM on 30/12/2019.
  */
-@Module.Info(name = "ArmourHide", category = Module.Category.RENDER, description = "Hides the armour on selected entities", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "ArmourHide",
+        category = Module.Category.RENDER,
+        description = "Hides the armour on selected entities",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class ArmourHide extends Module {
     public Setting<Boolean> player = register(Settings.b("Players", false));
     public Setting<Boolean> armourstand = register(Settings.b("Armour Stands", true));

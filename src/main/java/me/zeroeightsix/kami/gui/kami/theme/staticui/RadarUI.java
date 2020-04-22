@@ -9,7 +9,6 @@ import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;

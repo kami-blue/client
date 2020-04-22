@@ -8,7 +8,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
- * @author S-B99
+ * @author dominikaaaa
  */
 public class FixGuiCommand extends Command {
     public FixGuiCommand() {

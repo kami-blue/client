@@ -15,7 +15,11 @@ import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
 /**
  * Created by 086 on 16/12/2017.
  */
-@Module.Info(name = "AutoWalk", category = Module.Category.MOVEMENT, description = "Automatically walks forward")
+@Module.Info(
+        name = "AutoWalk",
+        category = Module.Category.MOVEMENT,
+        description = "Automatically walks forward"
+)
 public class AutoWalk extends Module {
 
     private Setting<AutoWalkMode> mode = register(Settings.e("Mode", AutoWalkMode.FORWARD));

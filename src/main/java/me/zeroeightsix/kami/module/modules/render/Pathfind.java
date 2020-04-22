@@ -24,7 +24,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * Created by 086 on 25/01/2018.
  */
 
-@Module.Info(name = "Pathfind", category = Module.Category.MISC, description = "A path finder for AutoWalk")
+@Module.Info(
+        name = "Pathfind",
+        category = Module.Category.MISC,
+        description = "A path finder for AutoWalk"
+)
 public class Pathfind extends Module {
 
     public static ArrayList<PathPoint> points = new ArrayList<>();

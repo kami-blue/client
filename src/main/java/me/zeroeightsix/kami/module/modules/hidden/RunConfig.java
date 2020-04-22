@@ -12,10 +12,15 @@ import me.zeroeightsix.kami.setting.Settings;
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
- * @author S-B99
+ * @author dominikaaaa
  * Horribly designed class for uh, running things only once.
  */
-@Module.Info(name = "RunConfig", category = Module.Category.HIDDEN, showOnArray = Module.ShowOnArray.OFF, description = "Default manager for first runs")
+@Module.Info(
+        name = "RunConfig",
+        category = Module.Category.HIDDEN,
+        showOnArray = Module.ShowOnArray.OFF,
+        description = "Default manager for first runs"
+)
 public class RunConfig extends Module {
     private Setting<Boolean> hasRunCapes = register(Settings.b("Capes", false));
     private Setting<Boolean> hasRunDiscordSettings = register(Settings.b("DiscordRPC", false));
@@ -54,7 +59,6 @@ public class RunConfig extends Module {
             MODULE_MANAGER.getModule(Tooltips.class).enable();
             hasRunTooltips.setValue(true);
         }
-
         disable();
     }
 }

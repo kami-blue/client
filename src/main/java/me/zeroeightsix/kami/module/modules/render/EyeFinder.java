@@ -19,7 +19,11 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author 086
  */
-@Module.Info(name = "EyeFinder", description = "Draw lines from entity's heads to where they are looking", category = Module.Category.RENDER)
+@Module.Info(
+        name = "EyeFinder",
+        description = "Draw lines from entity's heads to where they are looking",
+        category = Module.Category.RENDER
+)
 public class EyeFinder extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));

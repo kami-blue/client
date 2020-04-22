@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.modules.hidden.Teleport;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.Vec3d;
 
 import java.text.DecimalFormat;

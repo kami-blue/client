@@ -16,7 +16,12 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
  * Permission (and ForgeHax is MIT licensed):
  * https://discordapp.com/channels/573954110454366214/634010802403409931/693919755647844352
  */
-@Module.Info(name = "AntiBookKick", category = Module.Category.MISC, description = "Prevents being kicked by clicking on books", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "AntiBookKick",
+        category = Module.Category.MISC,
+        description = "Prevents being kicked by clicking on books",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class AntiBookKick extends Module {
     @EventHandler
     public Listener<PacketEvent.Receive> listener = new Listener<>(event -> {

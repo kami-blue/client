@@ -11,8 +11,8 @@ import java.util.Scanner;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
- * @author S-B99
- * Created by S-B99 on 18/02/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 18/02/20
  * Updated by wnuke on 14/04/20
  */
 public class LogUtil {

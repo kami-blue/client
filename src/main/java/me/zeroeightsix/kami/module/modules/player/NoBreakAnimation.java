@@ -19,7 +19,11 @@ import static net.minecraft.network.play.client.CPacketPlayerDigging.Action.STOP
  * Created 14 November 2019 by hub
  * Updated 29 November 2019 by hub
  */
-@Module.Info(name = "NoBreakAnimation", category = Module.Category.PLAYER, description = "Prevents block break animation server side")
+@Module.Info(
+        name = "NoBreakAnimation",
+        category = Module.Category.PLAYER,
+        description = "Prevents block break animation server side"
+)
 public class NoBreakAnimation extends Module {
 
     private boolean isMining = false;

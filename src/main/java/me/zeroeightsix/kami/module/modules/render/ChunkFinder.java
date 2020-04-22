@@ -26,7 +26,11 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * @author 086 and IronException
  */
-@Module.Info(name = "ChunkFinder", description = "Highlights newly generated chunks", category = Module.Category.RENDER)
+@Module.Info(
+        name = "ChunkFinder",
+        description = "Highlights newly generated chunks",
+        category = Module.Category.RENDER
+)
 public class ChunkFinder extends Module {
     private Setting<Integer> yOffset = register(Settings.i("Y Offset", 0));
     private Setting<Boolean> relative = register(Settings.b("Relative", true));

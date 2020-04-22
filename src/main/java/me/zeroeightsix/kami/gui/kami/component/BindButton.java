@@ -13,7 +13,7 @@ public class BindButton extends EnumButton {
 
     static String[] lookingFor = new String[]{"_"};
     static String[] none = new String[]{"NONE"};
-    boolean waiting = false;
+    public static boolean waiting = false;
     Module m;
 
     boolean ctrl = false, shift = false, alt = false;
@@ -40,7 +40,7 @@ public class BindButton extends EnumButton {
                 } else if (isAlt(key)) {
                     alt = true;
                     modes = new String[]{(ctrl ? "Ctrl+" : "") + "Alt+" + (shift ? "Shift+" : "")};
-                } else if (key == Keyboard.KEY_BACK) {
+                } else if (key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE || key == Keyboard.KEY_ESCAPE) {
                     m.getBind().setCtrl(false);
                     m.getBind().setShift(false);
                     m.getBind().setAlt(false);

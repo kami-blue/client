@@ -17,11 +17,15 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 
 /**
- * @author S-B99
- * Created by S-B99 on this commit: 83387d6c2243c2a70dc864c9fbef96a77b9a9735
- * Updated by S-B99 on 05/04/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on this commit: 83387d6c2243c2a70dc864c9fbef96a77b9a9735
+ * Updated by dominikaaaa on 05/04/20
  */
-@Module.Info(name = "AutoNametag", description = "Automatically nametags entities", category = Module.Category.MISC)
+@Module.Info(
+        name = "AutoNametag",
+        description = "Automatically nametags entities",
+        category = Module.Category.MISC
+)
 public class AutoNametag extends Module {
     private Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.ANY));
     private Setting<Float> range = register(Settings.floatBuilder("Range").withMinimum(2.0f).withValue(3.5f).withMaximum(10.0f).build());

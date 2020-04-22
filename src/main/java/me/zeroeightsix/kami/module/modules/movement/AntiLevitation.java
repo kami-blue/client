@@ -6,7 +6,11 @@ import net.minecraft.potion.Potion;
 /**
  * Created by 0x2E | PretendingToCode
  */
-@Module.Info(name = "AntiLevitation", description = "Removes levitation potion effect", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "AntiLevitation",
+        description = "Removes levitation potion effect",
+        category = Module.Category.MOVEMENT
+)
 public class AntiLevitation extends Module {
 
     @Override

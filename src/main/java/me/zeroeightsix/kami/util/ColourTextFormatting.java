@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 25/03/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 25/03/20
  */
 public class ColourTextFormatting {
     public enum ColourEnum {

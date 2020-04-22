@@ -16,7 +16,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendStringChatMessage;
 
 /**
  * Created by 086 on 18/11/2017.
- * Updated by S-B99 on 24/02/20
+ * Updated by dominikaaaa on 24/02/20
  */
 public class SetCommand extends Command {
 
@@ -72,7 +72,7 @@ public class SetCommand extends Command {
             if (setting.getClass().getSimpleName().equals("EnumSetting")) {
                 arg2 = arg2.toUpperCase();
             }
-            setting.setValueFromString(arg2); /* PLEASE MAKE SURE TO USE PROPER NAMING WHEN USING ENUMS */ /* if you use improper lowercase letters it will *not* work with this command ~S-B99 */
+            setting.setValueFromString(arg2); /* PLEASE MAKE SURE TO USE PROPER NAMING WHEN USING ENUMS */ /* if you use improper lowercase letters it will *not* work with this command ~dominikaaaa */
             sendChatMessage("Set &b" + setting.getName() + "&r to &3" + arg2 + "&r.");
             Module.closeSettings();
         } catch (Exception e) {

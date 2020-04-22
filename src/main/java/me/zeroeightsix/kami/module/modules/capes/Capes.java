@@ -23,11 +23,16 @@ import java.util.Map;
 
 /**
  * @author Crystallinqq
- * Updated by S-B99 on 20/12/19
+ * Updated by dominikaaaa on 20/12/19
  * Updated by 20kdc on 17/02/20 - changed implementation method, made a module again, made async
  * Updated by 20kdc on 21/02/20 - unbroke things, sorry!
  */
-@Module.Info(name = "Capes", category = Module.Category.CLIENT, description = "Controls the display of KAMI Blue capes", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "Capes",
+        category = Module.Category.CLIENT,
+        description = "Controls the display of KAMI Blue capes",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class Capes extends Module {
 
     // This allows controlling if other capes (Mojang, OptiFine) should override the KAMI Blue cape.

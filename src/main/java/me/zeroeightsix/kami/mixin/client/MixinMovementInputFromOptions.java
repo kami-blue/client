@@ -12,12 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
  * @author Finz0
  * Used with LGPLv3 license permission
- * https://github.com/S-B99/osiris/blob/master/src/main/java/me/finz0/osiris/mixin/mixins/MixinMovementInputFromOptions.java
+ * https://github.com/dominikaaaa/osiris/blob/master/src/main/java/me/finz0/osiris/mixin/mixins/MixinMovementInputFromOptions.java
  *
  * @see InventoryMove
  */

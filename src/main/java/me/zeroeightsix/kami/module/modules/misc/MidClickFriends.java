@@ -18,7 +18,12 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * @author Indrit
  * Updated by Indrit on 02/03/20
  */
-@Module.Info(name = "MidClickFriends", category = Module.Category.MISC, description = "Middle click players to friend or unfriend them", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "MidClickFriends",
+        category = Module.Category.MISC,
+        description = "Middle click players to friend or unfriend them",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class MidClickFriends extends Module {
     private int delay = 0;
 

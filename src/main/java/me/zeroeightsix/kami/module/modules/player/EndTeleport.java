@@ -18,7 +18,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 /**
  * Created by 0x2E | PretendingToCode
  */
-@Module.Info(name = "EndTeleport", category = Module.Category.PLAYER, description = "Allows for teleportation when going through end portals")
+@Module.Info(
+        name = "EndTeleport",
+        category = Module.Category.PLAYER,
+        description = "Allows for teleportation when going through end portals"
+)
 public class EndTeleport extends Module {
     private Setting<Boolean> confirmed = register(Settings.b("Confirm", true));
 

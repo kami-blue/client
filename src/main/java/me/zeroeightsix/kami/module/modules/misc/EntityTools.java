@@ -19,7 +19,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  *
  * TODO: Fix delay timer because that shit broken
  */
-@Module.Info(name = "EntityTools", category = Module.Category.MISC, description = "Right click entities to perform actions on them")
+@Module.Info(
+        name = "EntityTools",
+        category = Module.Category.MISC,
+        description = "Right click entities to perform actions on them"
+)
 public class EntityTools extends Module {
     private Setting<Mode> mode = register(Settings.e("Mode", Mode.DELETE));
     private int delay = 0;

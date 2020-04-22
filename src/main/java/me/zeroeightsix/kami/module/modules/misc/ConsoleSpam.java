@@ -16,7 +16,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * Created on 16 December by 0x2E | PretendingToCode
  */
 
-@Module.Info(name = "ConsoleSpam", description = "Spams Spigot consoles by sending invalid UpdateSign packets", category = Module.Category.MISC)
+@Module.Info(
+        name = "ConsoleSpam",
+        description = "Spams Spigot consoles by sending invalid UpdateSign packets",
+        category = Module.Category.MISC
+)
 public class ConsoleSpam extends Module {
 
     @Override

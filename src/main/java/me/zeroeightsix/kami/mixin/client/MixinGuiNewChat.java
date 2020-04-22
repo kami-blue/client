@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * @author 3arthqu4ke
- * Updated by S-B99 on 27/12/19
+ * Updated by dominikaaaa on 27/12/19
  */
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat {

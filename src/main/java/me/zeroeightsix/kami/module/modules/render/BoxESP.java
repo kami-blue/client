@@ -20,9 +20,13 @@ import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 
 /**
  * @author polymer
- * Updated by S-B99 on 30/03/20
+ * Updated by dominikaaaa on 30/03/20
  */
-@Module.Info(name = "BoxESP", description = "Draws a box around small entities", category = Module.Category.RENDER)
+@Module.Info(
+        name = "BoxESP",
+        description = "Draws a box around small entities",
+        category = Module.Category.RENDER
+)
 public class BoxESP extends Module {
     private Setting<Boolean> experience = register(Settings.b("Experience", true));
     private Setting<Boolean> arrows = register(Settings.b("Arrows", true));

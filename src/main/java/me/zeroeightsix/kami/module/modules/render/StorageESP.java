@@ -21,9 +21,13 @@ import java.util.ArrayList;
 
 /**
  * Created by 086 on 10/12/2017.
- * Updated by S-B99 on 14/12/19
+ * Updated by dominikaaaa on 14/12/19
  */
-@Module.Info(name = "StorageESP", description = "Draws nice little lines around storage items", category = Module.Category.RENDER)
+@Module.Info(
+        name = "StorageESP",
+        description = "Draws nice little lines around storage items",
+        category = Module.Category.RENDER
+)
 public class StorageESP extends Module {
 
     private Setting<Boolean> chest = register(Settings.b("Chest", true));

@@ -17,7 +17,11 @@ import java.util.Map;
 /**
  * Created on 29 November 2019 by hub
  */
-@Module.Info(name = "AutoReplenish", category = Module.Category.COMBAT, description = "Refills items in your hotbar")
+@Module.Info(
+        name = "AutoReplenish",
+        category = Module.Category.COMBAT,
+        description = "Refills items in your hotbar"
+)
 public class AutoReplenish extends Module {
 
     private Setting<Integer> threshold = register(Settings.integerBuilder("Refill at").withMinimum(1).withValue(32).withMaximum(63).build());

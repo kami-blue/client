@@ -15,7 +15,11 @@ import java.util.Queue;
  * Created by 086 on 24/01/2018.
  * Edited by Cuhnt on 30/7/2019
  */
-@Module.Info(name = "Blink", category = Module.Category.PLAYER, description = "Cancels server side packets")
+@Module.Info(
+        name = "Blink",
+        category = Module.Category.PLAYER,
+        description = "Cancels server side packets"
+)
 public class Blink extends Module {
 
     Queue<CPacketPlayer> packets = new LinkedList<>();

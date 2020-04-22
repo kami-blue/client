@@ -21,9 +21,13 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 /**
  * Created by 086 on 11/04/2018.
  * Updated by Itistheend on 28/12/19.
- * Updated by S-B99 on 15/04/20
+ * Updated by dominikaaaa on 15/04/20
  */
-@Module.Info(name = "ElytraFlight", description = "Modifies elytras to fly at custom velocities and fall speeds", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "ElytraFlight",
+        description = "Modifies elytras to fly at custom velocities and fall speeds",
+        category = Module.Category.MOVEMENT
+)
 public class ElytraFlight extends Module {
     private Setting<ElytraFlightMode> mode = register(Settings.e("Mode", ElytraFlightMode.HIGHWAY));
     private Setting<Boolean> defaultSetting = register(Settings.b("Defaults", false));
@@ -37,7 +41,7 @@ public class ElytraFlight extends Module {
     private Setting<Float> speedHighwayOverride = register(Settings.floatBuilder("Speed H O").withValue(1.8f).withVisibility(v -> overrideMaxSpeed.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> speedControl = register(Settings.floatBuilder("Speed C").withValue(1.8f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> fallSpeedHighway = register(Settings.floatBuilder("Fall Speed H").withValue(0.000050000002f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
-    private Setting<Float> fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.001f).withMaximum(0.3f).withMinimum(0.0f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
+    private Setting<Float> fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.000050000002f).withMaximum(0.3f).withMinimum(0.0f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> fallSpeed = register(Settings.floatBuilder("Fall Speed").withValue(-.003f).withVisibility(v -> !mode.getValue().equals(ElytraFlightMode.CONTROL) && !mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> upSpeedBoost = register(Settings.floatBuilder("Up Speed B").withValue(0.08f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.BOOST)).build());
     private Setting<Float> downSpeedBoost = register(Settings.floatBuilder("Down Speed B").withValue(0.04f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.BOOST)).build());

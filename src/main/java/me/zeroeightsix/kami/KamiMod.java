@@ -18,6 +18,7 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -54,7 +55,7 @@ import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
 
 /**
  * Created by 086 on 7/11/2017.
- * Updated by S-B99 on 25/03/19
+ * Updated by dominikaaaa on 25/03/19
  * Updated by Dewy on 09/04/2020
  */
 @Mod(
@@ -66,7 +67,7 @@ public class KamiMod {
 
     public static final String MODNAME = "KAMI Blue";
     public static final String MODID = "kamiblue";
-    public static final String MODVER = "v1.1.4-beta"; // this is changed to v1.1.2-commit for debugging during travis releases
+    public static final String MODVER = "v1.1.4-dev"; // this is changed to v1.x.x-commit for debugging during travis releases
     public static final String MODVERSMALL = "v1.1.4-beta"; // shown to the user
     public static final String MODVERBROAD = "v1.1.3"; // used for update checking
 
@@ -142,6 +143,7 @@ public class KamiMod {
 
         Friends.initFriends();
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
+        SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
         loadConfiguration();
         log.info("Settings loaded");
 

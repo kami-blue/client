@@ -3,11 +3,10 @@ package me.zeroeightsix.kami.module.modules.chat;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import net.minecraft.network.play.server.SPacketChat;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,20 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageDetectionHelper.isDirect;
 import static me.zeroeightsix.kami.util.MessageDetectionHelper.isDirectOther;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
  * @author hub
- * @author S-B99
+ * @author dominikaaaa
  * Created 19 November 2019 by hub
  * Updated 12 January 2020 by hub
  * Updated 19 February 2020 by aUniqueUser
- * Updated by S-B99 on 13/03/20
+ * Updated by dominikaaaa on 19/04/20
  */
-@Module.Info(name = "AntiSpam", category = Module.Category.CHAT, description = "Removes spam and advertising from the chat", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "AntiSpam",
+        category = Module.Category.CHAT,
+        description = "Removes spam and advertising from the chat",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class AntiSpam extends Module {
 
     private Setting<Page> p = register(Settings.e("Page", Page.ONE));
@@ -39,7 +42,6 @@ public class AntiSpam extends Module {
     private Setting<Boolean> insulters = register(Settings.booleanBuilder("Insulters").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> greeters = register(Settings.booleanBuilder("Greeters").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> ips = register(Settings.booleanBuilder("Server Ips").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
-    private Setting<Boolean> wordsLongerThen = register(Settings.booleanBuilder("11+ long words").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> specialCharEnding = register(Settings.booleanBuilder("Special Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> specialCharBegin = register(Settings.booleanBuilder("Special Begin").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> iJustThanksTo = register(Settings.booleanBuilder("I just...thanks to").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
@@ -49,11 +51,8 @@ public class AntiSpam extends Module {
     /* Page Two */
     private Setting<Boolean> ownsMeAndAll = register(Settings.booleanBuilder("Owns Me And All").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
     private Setting<Boolean> greenText = register(Settings.booleanBuilder("Green Text").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> numberSuffix = register(Settings.booleanBuilder("Number Ending").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> numberSuffix = register(Settings.booleanBuilder("Number Ending").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
     private Setting<Boolean> numberPrefix = register(Settings.booleanBuilder("Number Begin").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> tradeChat = register(Settings.booleanBuilder("Trade Chat").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> hypixelShills = register(Settings.booleanBuilder("Hypixel Shills").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> ipsAgr = register(Settings.booleanBuilder("Ips Aggressive").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
     private Setting<Boolean> duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
     private Setting<Integer> duplicatesTimeout = register(Settings.integerBuilder("Duplicates Timeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility(v -> duplicates.getValue() && p.getValue().equals(Page.TWO)).build());
     private Setting<Boolean> webLinks = register(Settings.booleanBuilder("Web Links").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
@@ -66,16 +65,8 @@ public class AntiSpam extends Module {
     private enum ShowBlocked { NONE, LOG_FILE, CHAT }
 
     @EventHandler
-    public Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
-        if (mc.player == null || isDisabled()) return;
-        if (!(event.getPacket() instanceof SPacketChat)) return;
-
-        SPacketChat sPacketChat = (SPacketChat) event.getPacket();
-
-        // servers i test on did not send ChatType.CHAT for chat messages >:(
-        /*if (!sPacketChat.getType().equals(ChatType.CHAT)) {
-            return;
-        }*/
+    public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
+        if (mc.player == null) return;
 
         /* leijurv's sexy lambda to remove older entries in messageHistory */
         messageHistory.entrySet()
@@ -84,26 +75,25 @@ public class AntiSpam extends Module {
                 .collect(Collectors.toList())
                 .forEach(entry -> messageHistory.remove(entry.getKey()));
 
-        if (isSpam(sPacketChat.getChatComponent().getUnformattedText())) event.cancel();
+        if (isSpam(event.getMessage().getUnformattedText())) {
+            event.setCanceled(true);
+        }
     });
 
     @Override
-    public void onEnable() { messageHistory = new ConcurrentHashMap<>(); }
+    public void onEnable() {
+        messageHistory = new ConcurrentHashMap<>();
+    }
 
     @Override
-    public void onDisable() { messageHistory = null; }
+    public void onDisable() {
+        messageHistory = null;
+    }
 
     private boolean isSpam(String message) {
-        ChatTimestamp chatTimestamp = MODULE_MANAGER.getModuleT(ChatTimestamp.class);
-        if (chatTimestamp.isEnabled()) {
-            message = message.substring(chatTimestamp.returnFormatted().length() + 1);
-        }
         /* Quick bandaid fix for mc.player being null when the module is being registered, so don't register it with the map */
-        final String[] OWN_MESSAGE = {
-                "^<" + mc.player.getName() + "> ",
-                "^To .+: ",
-        };
-        if ((!filterOwn.getValue() && findPatterns(OWN_MESSAGE, message, false)) || isDirect(filterDMs.getValue(), message) || isDirectOther(filterDMs.getValue(), message)) {
+        final String OWN_MESSAGE = "^<" + mc.player.getName() + "> ";
+        if ((!filterOwn.getValue() && isOwn(OWN_MESSAGE, message)) || isDirect(filterDMs.getValue(), message) || isDirectOther(filterDMs.getValue(), message)) {
             return false;
         } else {
             return detectSpam(removeUsername(message));
@@ -111,13 +101,14 @@ public class AntiSpam extends Module {
     }
 
 
-
-    private String removeUsername(String username) { return username.replaceAll("<[^>]*> ", ""); }
+    private String removeUsername(String username) {
+        return username.replaceAll("<[^>]*> ", "");
+    }
 
     private boolean detectSpam(String message) {
-        
+
         for (Map.Entry<Setting<Boolean>, String[]> entry : settingMap.entrySet()) {
-            if (entry.getKey().getValue() && findPatterns(entry.getValue(), message, true)) {
+            if (entry.getKey().getValue() && findPatterns(entry.getValue(), message)) {
                 sendResult(entry.getKey().getName(), message);
                 return true;
             }
@@ -127,22 +118,27 @@ public class AntiSpam extends Module {
             if (messageHistory == null) messageHistory = new ConcurrentHashMap<>();
             boolean isDuplicate = false;
 
-            if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory.get(message)) / 1000 < duplicatesTimeout.getValue()) isDuplicate = true;
+            if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory.get(message)) / 1000 < duplicatesTimeout.getValue())
+                isDuplicate = true;
 
             messageHistory.put(message, System.currentTimeMillis());
             if (isDuplicate) {
-                if (showBlocked.getValue().equals(ShowBlocked.CHAT)) sendChatMessage(getChatName() + "Duplicate: " + message);
-                else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(getChatName() + "Duplicate: " + message);
+                if (showBlocked.getValue().equals(ShowBlocked.CHAT))
+                    sendChatMessage(getChatName() + "Duplicate: " + message);
+                else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE))
+                    KamiMod.log.info(getChatName() + "Duplicate: " + message);
             }
         }
 
         return false;
     }
 
-    private boolean findPatterns(String[] patterns, String string, boolean removeUsername) {
-        if (removeUsername) {
-            string = string.replaceAll("<[^>]*> ", ""); // remove username first
-        }
+    private boolean isOwn(String ownFilter, String message) {
+        return Pattern.compile(ownFilter, Pattern.CASE_INSENSITIVE).matcher(message).find();
+    }
+
+    private boolean findPatterns(String[] patterns, String string) {
+        string = string.replaceAll("<[^>]*> ", ""); // remove username first
         for (String pattern : patterns) {
             if (Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(string).find()) {
                 return true;
@@ -151,8 +147,7 @@ public class AntiSpam extends Module {
         return false;
     }
 
-    private Map<Setting<Boolean>, String[]> settingMap = new HashMap<Setting<Boolean>, String[]>(){{
-        put(wordsLongerThen, FilterPatterns.LONG_WORD);
+    private Map<Setting<Boolean>, String[]> settingMap = new HashMap<Setting<Boolean>, String[]>() {{
         put(greenText, FilterPatterns.GREEN_TEXT);
         put(specialCharBegin, FilterPatterns.SPECIAL_BEGINNING);
         put(specialCharEnding, FilterPatterns.SPECIAL_ENDING);
@@ -164,13 +159,10 @@ public class AntiSpam extends Module {
         put(discordLinks, FilterPatterns.DISCORD);
         put(webLinks, FilterPatterns.WEB_LINK);
         put(ips, FilterPatterns.IP_ADDR);
-        put(ipsAgr, FilterPatterns.IP_ADDR_AGR);
         put(announcers, FilterPatterns.ANNOUNCER);
         put(spammers, FilterPatterns.SPAMMER);
         put(insulters, FilterPatterns.INSULTER);
         put(greeters, FilterPatterns.GREETER);
-        put(hypixelShills, FilterPatterns.HYPIXEL_SHILLS);
-        put(tradeChat, FilterPatterns.TRADE_CHAT);
     }};
 
     private static class FilterPatterns {
@@ -297,13 +289,6 @@ public class AntiSpam extends Module {
                 ".+ left the game",
         };
 
-        private static final String[] HYPIXEL_SHILLS = {
-                "/p join",
-                "/party join",
-                "road to",
-                "private games"
-        };
-
         private static final String[] DISCORD = {
                 "discord.gg",
                 "discordapp.com",
@@ -323,11 +308,6 @@ public class AntiSpam extends Module {
                 "^>.+$",
         };
 
-        private static final String[] TRADE_CHAT = {
-                "buy",
-                "sell",
-        };
-
         private static final String[] WEB_LINK = {
                 "http:\\/\\/",
                 "https:\\/\\/",
@@ -339,15 +319,6 @@ public class AntiSpam extends Module {
                 "\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}",
                 "^(?:http(?:s)?:\\/\\/)?(?:[^\\.]+\\.)?.*\\..*\\..*$",
                 ".*\\..*\\:\\d{1,5}$",
-        };
-
-        private static final String[] IP_ADDR_AGR = {
-                ".*\\..*$",
-        };
-
-        private static final String[] LONG_WORD = {
-//                "\\b\\w{" + getCharacters() + ",256}\\b",
-                "\\b\\w{11,256}\\b",
         };
 
         private static final String[] OWNS_ME_AND_ALL = {
@@ -364,17 +335,13 @@ public class AntiSpam extends Module {
         };
 
         private static final String[] SPECIAL_ENDING = {
-                "[/@#^()\\[\\]{}<>|\\-+=\\\\]",
+                "[/@#^()\\[\\]{}<>|\\-+=\\\\]$",
         };
     }
 
-//    private static Integer getCharacters() {
-//        AntiSpam antiSpam = ((AntiSpam) ModuleManager.getModuleByName("AntiSpam"));
-//        return antiSpam.characters.getValue();
-//    }
-
     private void sendResult(String name, String message) {
         if (showBlocked.getValue().equals(ShowBlocked.CHAT)) sendChatMessage(getChatName() + name + ": " + message);
-        else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE)) KamiMod.log.info(getChatName() + name + ": " + message);
+        else if (showBlocked.getValue().equals(ShowBlocked.LOG_FILE))
+            KamiMod.log.info(getChatName() + name + ": " + message);
     }
 }

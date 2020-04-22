@@ -11,7 +11,12 @@ import net.minecraft.entity.Entity;
 /**
  * @author Sasha
  */
-@Module.Info(name = "AntiFriendHit", description = "Don't hit your friends", category = Module.Category.COMBAT, alwaysListening = true)
+@Module.Info(
+        name = "AntiFriendHit",
+        description = "Don't hit your friends",
+        category = Module.Category.COMBAT,
+        alwaysListening = true
+)
 public class AntiFriendHit extends Module {
     @EventHandler
     Listener<ClientPlayerAttackEvent> listener = new Listener<>(event -> {

@@ -15,10 +15,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 
+import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
+
 /**
  * Created by Dewy on the 16th of April, 2020
  */
-@Module.Info(name = "AimBot", description = "Automatically aims at entities for you.", category = Module.Category.COMBAT)
+@Module.Info(
+        name = "AimBot",
+        description = "Automatically aims at entities for you.",
+        category = Module.Category.COMBAT
+)
 public class AimBot extends Module {
 
     private Setting<Integer> range = register(Settings.integerBuilder("Range").withMinimum(4).withMaximum(24).withValue(16));
@@ -38,7 +44,7 @@ public class AimBot extends Module {
         }
 
         if (useBow.getValue()) {
-            int bowSlot = -1;
+            int bowSlot = 0;
 
             for (int i = 0; i < 9; i++) {
                 ItemStack potentialBow = mc.player.inventory.getStackInSlot(i);
@@ -103,17 +109,5 @@ public class AimBot extends Module {
         float pitch = (float) normalizeAngle((-Math.atan2(diffY, xz) * 180.0 / Math.PI));
 
         mc.player.setPositionAndRotation(mc.player.posX, mc.player.posY, mc.player.posZ, yaw, -pitch);
-    }
-
-    private double normalizeAngle(double angleIn) {
-        while (angleIn <= -180.0) {
-            angleIn += 360.0;
-        }
-
-        while (angleIn > 180.0) {
-            angleIn -= 360.0;
-        }
-
-        return angleIn;
     }
 }

@@ -21,11 +21,15 @@ import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 
 /**
  * @author polymer (main listener switch function xd)
- * @author S-B99 (made epic and smooth and cleaned up code <3) (why did i rewrite this 4 times)
+ * @author dominikaaaa (made epic and smooth and cleaned up code <3) (why did i rewrite this 4 times)
  * Created by polymer on 21/02/20
- * Updated by S-B99 on 07/03/20
+ * Updated by dominikaaaa on 07/03/20
  */
-@Module.Info(name = "OffhandGap", category = Module.Category.COMBAT, description = "Holds a God apple when right clicking your sword!")
+@Module.Info(
+        name = "OffhandGap",
+        category = Module.Category.COMBAT,
+        description = "Holds a God apple when right clicking your sword!"
+)
 public class OffhandGap extends Module {
 	private Setting<Double> disableHealth = register(Settings.doubleBuilder("Disable Health").withMinimum(0.0).withValue(4.0).withMaximum(20.0).build());
 	private Setting<Boolean> eatWhileAttacking = register(Settings.b("Eat While Attacking", false));

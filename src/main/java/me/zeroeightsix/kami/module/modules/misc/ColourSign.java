@@ -15,7 +15,11 @@ import java.io.IOException;
 /**
  * Created by 086 on 8/04/2018.
  */
-@Module.Info(name = "ColourSign", description = "Allows ingame colouring of text on signs", category = Module.Category.MISC)
+@Module.Info(
+        name = "ColourSign",
+        description = "Allows ingame colouring of text on signs",
+        category = Module.Category.MISC
+)
 public class ColourSign extends Module {
 
     @EventHandler

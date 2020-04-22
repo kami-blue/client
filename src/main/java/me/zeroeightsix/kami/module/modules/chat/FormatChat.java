@@ -15,7 +15,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
  * Created on 16 December by 0x2E | PretendingToCode
  */
 
-@Module.Info(name = "FormatChat", description = "Add colour and linebreak support to upstream chat packets", category = Module.Category.CHAT)
+@Module.Info(
+        name = "FormatChat",
+        description = "Add colour and linebreak support to upstream chat packets",
+        category = Module.Category.CHAT
+)
 public class FormatChat extends Module {
 
     @Override

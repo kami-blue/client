@@ -44,7 +44,7 @@ import static me.zeroeightsix.kami.util.InfoCalculator.cardinalToAxis;
 
 /**
  * Created by 086 on 25/06/2017.
- * Updated by S-B99 on 28/01/20
+ * Updated by dominikaaaa on 28/01/20
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {

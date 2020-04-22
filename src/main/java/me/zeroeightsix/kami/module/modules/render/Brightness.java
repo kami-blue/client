@@ -12,7 +12,11 @@ import java.util.function.Function;
  *
  * @see me.zeroeightsix.kami.mixin.client.MixinEntityRenderer
  */
-@Module.Info(name = "FullBright", description = "Makes everything brighter!", category = Module.Category.RENDER)
+@Module.Info(
+        name = "FullBright",
+        description = "Makes everything brighter!",
+        category = Module.Category.RENDER
+)
 public class Brightness extends Module {
 
     private Setting<Boolean> transition = register(Settings.b("Transition", true));

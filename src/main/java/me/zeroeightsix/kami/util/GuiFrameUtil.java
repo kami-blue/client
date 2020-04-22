@@ -12,11 +12,11 @@ import java.util.List;
 import static me.zeroeightsix.kami.gui.kami.DisplayGuiScreen.getScale;
 
 /**
- * @author S-B99
- * Created by S-B99 on 24/03/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 24/03/20
  */
 public class GuiFrameUtil {
-    // This is bad, but without a rearchitecture, it's probably staying... - 20kdc and S-B99
+    // This is bad, but without a rearchitecture, it's probably staying... - 20kdc and dominikaaaa
     public static Frame getFrameByName(String name) {
         KamiGUI kamiGUI = KamiMod.getInstance().getGuiManager();
         if (kamiGUI == null)

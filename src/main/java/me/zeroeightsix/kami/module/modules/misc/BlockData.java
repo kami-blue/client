@@ -21,7 +21,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  *
  * TODO: Fix delay timer because that shit broken
  */
-@Module.Info(name = "BlockData", category = Module.Category.MISC, description = "Right click blocks to display their data")
+@Module.Info(
+        name = "BlockData",
+        category = Module.Category.MISC,
+        description = "Right click blocks to display their data"
+)
 public class BlockData extends Module {
     private int delay = 0;
 

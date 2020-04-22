@@ -8,7 +8,11 @@ import me.zeroeightsix.kami.gui.UIRenderer;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.BossStack;
+import me.zeroeightsix.kami.module.modules.render.HungerOverlay;
+import me.zeroeightsix.kami.util.HungerOverlayRenderHelper;
+import me.zeroeightsix.kami.util.HungerOverlayUtils;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
@@ -16,6 +20,11 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiShulkerBox;
 import net.minecraft.entity.passive.AbstractHorse;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.FoodStats;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -37,12 +46,18 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 /**
  * Created by 086 on 11/11/2017.
  * Updated by Qther on 18/02/20
- * Updated by S-B99 on 18/02/20
+ * Updated by dominikaaaa on 18/02/20
  */
 public class ForgeEventProcessor {
 
     private int displayWidth;
     private int displayHeight;
+
+    private float flashAlpha = 0f;
+    private byte alphaDir = 1;
+    protected int foodIconsOffset;
+
+    public static final ResourceLocation icons = new ResourceLocation(KamiMod.MODID, "textures/hungeroverlay.png");
 
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -72,6 +87,25 @@ public class ForgeEventProcessor {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+
+        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
+
+            flashAlpha += alphaDir * 0.125F;
+
+            if (flashAlpha >= 1.5F) {
+                flashAlpha = 1F;
+                alphaDir = -1;
+            } else if (flashAlpha <= -0.5F) {
+                flashAlpha = 0F;
+                alphaDir = 1;
+            }
+        }
+
+        GuiIngameForge.renderPortal = !MODULE_MANAGER.getModuleT(AntiOverlay.class).isEnabled() || !MODULE_MANAGER.getModuleT(AntiOverlay.class).portals.getValue();
+
         if (Wrapper.getPlayer() == null) return;
         MODULE_MANAGER.onUpdate();
         KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager());
@@ -87,6 +121,32 @@ public class ForgeEventProcessor {
     public void onRenderPre(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
             event.setCanceled(true);
+        }
+
+        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+            if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
+                return;
+            }
+
+            foodIconsOffset = GuiIngameForge.right_height;
+
+            if (event.isCanceled()) {
+                return;
+            }
+
+            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodExhaustionOverlay.getValue()) {
+                return;
+            }
+
+            Minecraft mc = Minecraft.getMinecraft();
+            EntityPlayer player = mc.player;
+
+            ScaledResolution scale = event.getResolution();
+
+            int left = scale.getScaledWidth() / 2 + 91;
+            int top = scale.getScaledHeight() - foodIconsOffset;
+
+            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(player), mc, left, top, 1f);
         }
     }
 
@@ -106,6 +166,52 @@ public class ForgeEventProcessor {
             KamiTessellator.releaseGL();
         } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
             BossStack.render(event);
+        }
+
+        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+            if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
+                return;
+            }
+
+            if (event.isCanceled()) {
+                return;
+            }
+
+            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() && !MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+                return;
+            }
+
+            Minecraft mc = Minecraft.getMinecraft();
+            EntityPlayer player = mc.player;
+            ItemStack heldItem = player.getHeldItemMainhand();
+            FoodStats stats = player.getFoodStats();
+
+            ScaledResolution scale = event.getResolution();
+
+            int left = scale.getScaledWidth() / 2 + 91;
+            int top = scale.getScaledHeight() - foodIconsOffset;
+
+            if (MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+                HungerOverlayRenderHelper.drawSaturationOverlay(0, stats.getSaturationLevel(), mc, left, top, 1f);
+            }
+
+            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
+                flashAlpha = 0;
+                alphaDir = 1;
+
+                return;
+            }
+
+            HungerOverlayUtils.BasicFoodValues foodValues = HungerOverlayUtils.getDefaultFoodValues(heldItem);
+
+            HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.getFoodLevel(), mc, left, top, flashAlpha);
+
+            if (MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+                int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
+                float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
+
+                HungerOverlayRenderHelper.drawSaturationOverlay(newSaturationValue > newFoodValue ? newFoodValue - stats.getSaturationLevel() : foodValues.getSaturationIncrement(), stats.getSaturationLevel(), mc, left, top, flashAlpha);
+            }
         }
     }
 
@@ -204,4 +310,8 @@ public class ForgeEventProcessor {
         KamiMod.EVENT_BUS.post(event);
     }
 
+    @SubscribeEvent
+    public void onClientChat(ClientChatReceivedEvent event) {
+        KamiMod.EVENT_BUS.post(event);
+    }
 }

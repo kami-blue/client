@@ -10,11 +10,15 @@ import static me.zeroeightsix.kami.util.InfoCalculator.playerDimension;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 13/01/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 13/01/20
  * Updated (slightly) by Dewy on 3rd April 2020
  */
-@Module.Info(name = "DiscordRPC", category = Module.Category.MISC, description = "Discord Rich Presence")
+@Module.Info(
+        name = "DiscordRPC",
+        category = Module.Category.MISC,
+        description = "Discord Rich Presence"
+)
 public class DiscordRPC extends Module {
     private Setting<Boolean> coordsConfirm = register(Settings.b("Coords Confirm", false));
     public Setting<LineInfo> line1Setting = register(Settings.e("Line 1 Left", LineInfo.VERSION)); // details left

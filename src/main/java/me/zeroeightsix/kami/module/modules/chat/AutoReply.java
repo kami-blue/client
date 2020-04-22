@@ -5,18 +5,24 @@ import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.modules.misc.AntiAFK;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.network.play.server.SPacketChat;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
 /**
  * @author Diamarald
- * Updated by S-B99 on 03/03/20
+ * Updated by dominikaaaa on 03/03/20
  */
-@Module.Info(name = "AutoReply", description = "Automatically replies to messages", category = Module.Category.CHAT)
+@Module.Info(
+        name = "AutoReply",
+        description = "Automatically replies to messages",
+        category = Module.Category.CHAT
+)
 public class AutoReply extends Module {
     public Setting<Boolean> customMessage = register(Settings.b("Custom Message", false));
     public Setting<String> message = register(Settings.stringBuilder("Custom Text").withValue("Use &7" + Command.getCommandPrefix() + "autoreply&r to modify this").withConsumer((old, value) -> {}).withVisibility(v -> customMessage.getValue()).build());
@@ -29,19 +35,16 @@ public class AutoReply extends Module {
     private String replyCommandDefault = "r";
 
     @EventHandler
-    public Listener<PacketEvent.Receive> receiveListener;
-
-    public AutoReply() {
-        receiveListener = new Listener<>(event -> {
-            if (event.getPacket() instanceof SPacketChat && ((SPacketChat) event.getPacket()).getChatComponent().getUnformattedText().contains(listenerDefault) && !((SPacketChat) event.getPacket()).getChatComponent().getUnformattedText().contains(mc.player.getName())) {
-                if (customMessage.getValue()) {
-                    Wrapper.getPlayer().sendChatMessage("/" + replyCommandDefault + " " + message.getValue());
-                } else {
-                    Wrapper.getPlayer().sendChatMessage("/" + replyCommandDefault + " I am currently afk, thanks to KAMI Blue's AutoReply module!");
-                }
+    public Listener<PacketEvent.Receive> receiveListener = new Listener<>(event -> {
+        if (MODULE_MANAGER.isModuleEnabled(AntiAFK.class) && MODULE_MANAGER.getModuleT(AntiAFK.class).autoReply.getValue()) return;
+        if (event.getPacket() instanceof SPacketChat && ((SPacketChat) event.getPacket()).getChatComponent().getUnformattedText().contains(listenerDefault) && !((SPacketChat) event.getPacket()).getChatComponent().getUnformattedText().contains(mc.player.getName())) {
+            if (customMessage.getValue()) {
+               sendServerMessage("/" + replyCommandDefault + " " + message.getValue());
+            } else {
+                sendServerMessage("/" + replyCommandDefault + " I just automatically replied, thanks to KAMI Blue's AutoReply module!");
             }
-        });
-    }
+        }
+    });
 
     private static long startTime = 0;
     @Override

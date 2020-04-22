@@ -11,11 +11,15 @@ import net.minecraftforge.client.event.InputUpdateEvent;
 
 /**
  * Created by 086 on 15/12/2017.
- * Updated by S-B99 on 31/03/20
+ * Updated by dominikaaaa on 31/03/20
  * @see me.zeroeightsix.kami.mixin.client.MixinBlockSoulSand
  * @see net.minecraft.client.entity.EntityPlayerSP#onLivingUpdate()
  */
-@Module.Info(name = "NoSlowDown", category = Module.Category.MOVEMENT, description = "Prevents being slowed down when using an item or going through cobwebs")
+@Module.Info(
+        name = "NoSlowDown",
+        category = Module.Category.MOVEMENT,
+        description = "Prevents being slowed down when using an item or going through cobwebs"
+)
 public class NoSlowDown extends Module {
     public Setting<Boolean> soulSand = register(Settings.b("Soul Sand", true));
     public Setting<Boolean> cobweb = register(Settings.b("Cobweb", true));

@@ -7,6 +7,7 @@ import net.minecraft.entity.passive.AbstractHorse;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
@@ -27,7 +28,6 @@ public class EntityStatsCommand extends Command {
 
         if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() instanceof AbstractHorse) {
             AbstractHorse horse = (AbstractHorse) mc.player.getRidingEntity();
-            // TODO: Function that resolves UUID's to Minecraft usernames. @bella
             float maxHealth = horse.getMaxHealth();
             double speed = round(43.17 * horse.getAIMoveSpeed(), 2);
             double jump = round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 4);
@@ -36,7 +36,7 @@ public class EntityStatsCommand extends Command {
             String builder = "&6Entity Statistics:" + "\n&cMax Health: " + maxHealth +
                       "\n&cSpeed: " + speed +
                       "\n&cJump: " + jump +
-                      "\n&cOwner: " + EntityUtil.getNameFromUUID(ownerId).replace("\"", "");
+                      "\n&cOwner: " + Objects.requireNonNull(EntityUtil.getNameFromUUID(ownerId)).replace("\"", "");
             sendChatMessage(builder);
         } else if (mc.player.getRidingEntity() instanceof EntityLivingBase) {
             EntityLivingBase entity = (EntityLivingBase) mc.player.getRidingEntity();

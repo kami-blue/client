@@ -24,11 +24,15 @@ import java.util.Set;
 
 /**
  * Created by 20kdc on 15/02/2020.
- * Updated by S-B99 on 17/02/20
+ * Updated by dominikaaaa on 17/02/20
  * Note for anybody using this in a development environment: THIS DOES NOT WORK. It will lag and the texture will break
  */
-@Module.Info(name = "XRay", category = Module.Category.RENDER, description = "See through common blocks!")
-@EventBusSubscriber(modid = KamiMod.MODID)
+@Module.Info(
+        name = "XRay",
+        category = Module.Category.RENDER,
+        description = "See through common blocks!")
+@EventBusSubscriber(modid = KamiMod.MODID
+)
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.
     private static final String DEFAULT_XRAY_CONFIG = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone";

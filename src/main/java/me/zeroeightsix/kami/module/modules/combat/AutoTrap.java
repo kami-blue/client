@@ -42,7 +42,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * @author hub
  * @since 2019-8-6
  */
-@Module.Info(name = "AutoTrap", category = Module.Category.COMBAT, description = "Traps your enemies in obsidian")
+@Module.Info(
+        name = "AutoTrap",
+        category = Module.Category.COMBAT,
+        description = "Traps your enemies in obsidian"
+)
 public class AutoTrap extends Module {
 
     private Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(3.5).withValue(5.5).withMaximum(10.0).build());

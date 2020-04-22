@@ -9,9 +9,13 @@ import me.zeroeightsix.kami.setting.Settings;
  * See BowSpam for example. It's just one thing. Anybody can write it the exact same way on accident.
  * There is nothing to credit here.
  * This message is here because clowns decided to argue with me that they should be credited even though they did not come up with the code.
- * Updated by S-B99 on 01/03/20
+ * Updated by dominikaaaa on 01/03/20
  */
-@Module.Info(name = "Timer", category = Module.Category.PLAYER, description = "Changes your client tick speed")
+@Module.Info(
+        name = "Timer",
+        category = Module.Category.PLAYER,
+        description = "Changes your client tick speed"
+)
 public class Timer extends Module {
     private Setting<Boolean> slow = register(Settings.b("Slow Mode", false));
     private Setting<Float> tickNormal = register(Settings.floatBuilder("Tick N").withMinimum(1f).withMaximum(10f).withValue(2.0f).withVisibility(v -> !slow.getValue()).build());

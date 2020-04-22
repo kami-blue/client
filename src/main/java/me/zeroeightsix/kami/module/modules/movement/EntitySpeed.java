@@ -15,7 +15,11 @@ import net.minecraft.world.chunk.EmptyChunk;
 /**
  * Created by 086 on 16/12/2017.
  */
-@Module.Info(name = "EntitySpeed", category = Module.Category.MOVEMENT, description = "Abuse client-sided movement to shape sound barrier breaking rideables")
+@Module.Info(
+        name = "EntitySpeed",
+        category = Module.Category.MOVEMENT,
+        description = "Abuse client-sided movement to shape sound barrier breaking rideables"
+)
 public class EntitySpeed extends Module {
 
     private Setting<Float> speed = register(Settings.f("Speed", 1));

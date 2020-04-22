@@ -7,7 +7,11 @@ import me.zeroeightsix.kami.setting.Settings;
 /**
  * Created by 086 on 8/04/2018.
  */
-@Module.Info(name = "NoEntityTrace", category = Module.Category.PLAYER, description = "Blocks entities from stopping you from mining")
+@Module.Info(
+        name = "NoEntityTrace",
+        category = Module.Category.PLAYER,
+        description = "Blocks entities from stopping you from mining"
+)
 public class NoEntityTrace extends Module {
 
     private Setting<TraceMode> mode = register(Settings.e("Mode", TraceMode.DYNAMIC));

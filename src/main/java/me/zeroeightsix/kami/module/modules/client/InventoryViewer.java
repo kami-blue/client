@@ -17,11 +17,16 @@ import static me.zeroeightsix.kami.util.GuiFrameUtil.getFrameByName;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 
 /**
- * Updated by S-B99 on 21/02/20
+ * Updated by dominikaaaa on 21/02/20
  * Slight updates by 20kdc, 19/02/20
- * Everything except somethingRender() methods was written by S-B99
+ * Everything except somethingRender() methods was written by dominikaaaa
  */
-@Module.Info(name = "InventoryViewer", category = Module.Category.CLIENT, description = "Configures Inventory Viewer's options", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "InventoryViewer",
+        category = Module.Category.CLIENT,
+        description = "Configures Inventory Viewer's options",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class InventoryViewer extends Module {
     private Setting<Boolean> mcTexture = register(Settings.b("Use ResourcePack", false));
     private Setting<Boolean> showIcon = register(Settings.booleanBuilder("Show Icon").withValue(true).withVisibility(v -> !mcTexture.getValue()).build());

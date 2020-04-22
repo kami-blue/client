@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.kami.theme.kami;
 import java.awt.*;
 
 /**
- * @author S-B99
+ * @author dominikaaaa
  * Class for all the main GUI colours used by the default kami theme
  * mfw I make it easier for skids to customize kami
  */

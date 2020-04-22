@@ -9,14 +9,18 @@ import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.util.EnumHand;
 
 /**
- * @author S-B99
- * Created by S-B99 on 05/04/20
- * Updated by S-B99 on 07/04/20
+ * @author dominikaaaa
+ * Created by dominikaaaa on 05/04/20
+ * Updated by dominikaaaa on 07/04/20
  */
-@Module.Info(name = "AutoRemount", description = "Automatically remounts your horse", category = Module.Category.MOVEMENT)
+@Module.Info(
+        name = "AutoRemount",
+        description = "Automatically remounts your horse",
+        category = Module.Category.MOVEMENT
+)
 public class AutoRemount extends Module {
     private Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.HORSE));
-    private Setting<Float> range = register(Settings.floatBuilder("Range").withMinimum(1.0f).withValue(1.5f).withMaximum(10.0f).build());
+    private Setting<Float> range = register(Settings.floatBuilder("Range").withMinimum(1.0f).withValue(2.0f).withMaximum(10.0f).build());
 
     private enum Mode { HORSE, DONKEY }
 
@@ -31,6 +35,7 @@ public class AutoRemount extends Module {
                         }
                     }
                 }
+                break;
             case DONKEY:
                 for (Entity e : mc.world.getLoadedEntityList()) {
                     if (e instanceof EntityDonkey && !(mc.player.isRidingHorse())) {
@@ -40,6 +45,7 @@ public class AutoRemount extends Module {
                         }
                     }
                 }
+                break;
         }
 
     }

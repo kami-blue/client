@@ -9,8 +9,8 @@ import java.util.Locale;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getStringColour;
 
 /**
- * @author S-B99
- * Updated by S-B99 on 06/02/20
+ * @author dominikaaaa
+ * Updated by dominikaaaa on 06/02/20
  */
 public class TimeUtil {
     /*

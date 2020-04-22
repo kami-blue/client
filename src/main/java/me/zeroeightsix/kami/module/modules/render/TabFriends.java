@@ -6,7 +6,12 @@ import me.zeroeightsix.kami.util.Friends;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 
-@Module.Info(name = "TabFriends", description = "Highlights friends in the tab menu", category = Module.Category.RENDER, showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "TabFriends",
+        description = "Highlights friends in the tab menu",
+        category = Module.Category.RENDER,
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class TabFriends extends Module {
 
     public static TabFriends INSTANCE;

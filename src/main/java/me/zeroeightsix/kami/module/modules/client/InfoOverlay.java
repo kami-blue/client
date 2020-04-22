@@ -17,15 +17,21 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 
 import static me.zeroeightsix.kami.util.ColourTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.InfoCalculator.speed;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 
 /**
- * @author S-B99
- * Created by S-B99 on 04/12/19
+ * @author dominikaaaa
+ * Created by dominikaaaa on 04/12/19
  * PVP Information by Polymer on 04/03/20
- * Updated by S-B99 on 25/03/20
+ * Updated by dominikaaaa on 25/03/20
  */
-@Module.Info(name = "InfoOverlay", category = Module.Category.CLIENT, description = "Configures the game information overlay", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "InfoOverlay",
+        category = Module.Category.CLIENT,
+        description = "Configures the game information overlay",
+        showOnArray = Module.ShowOnArray.OFF
+)
 public class InfoOverlay extends Module {
     /* This is so horrible but there's no other way */
     private Setting<Page> page = register(Settings.enumBuilder(Page.class).withName("Page").withValue(Page.ONE).build());
@@ -74,7 +80,7 @@ public class InfoOverlay extends Module {
         } if (fps.getValue()) {
             infoContents.add(getStringColour(setToText(firstColour.getValue())) + Minecraft.debugFPS + getStringColour(setToText(secondColour.getValue())) + " fps");
         } if (speed.getValue()) {
-            infoContents.add(getStringColour(setToText(firstColour.getValue())) + InfoCalculator.speed(useUnitKmH(), mc) + getStringColour(setToText(secondColour.getValue())) + " " + unitType(speedUnit.getValue()));
+            infoContents.add(getStringColour(setToText(firstColour.getValue())) + speed(useUnitKmH(), mc) + getStringColour(setToText(secondColour.getValue())) + " " + unitType(speedUnit.getValue()));
         } if (timerSpeed.getValue()) {
             infoContents.add(getStringColour(setToText(firstColour.getValue())) + TimerSpeed.returnGui() + getStringColour(setToText(secondColour.getValue())) + "t");
         } if (ping.getValue()) {

@@ -8,7 +8,11 @@ import net.minecraft.util.math.MathHelper;
 /**
  * Created by 086 on 16/12/2017.
  */
-@Module.Info(name = "PitchLock", category = Module.Category.PLAYER, description = "Locks your camera pitch")
+@Module.Info(
+        name = "PitchLock",
+        category = Module.Category.PLAYER,
+        description = "Locks your camera pitch"
+)
 public class PitchLock extends Module {
     private Setting<Boolean> auto = register(Settings.b("Auto", true));
     private Setting<Float> pitch = register(Settings.f("Pitch", 180));

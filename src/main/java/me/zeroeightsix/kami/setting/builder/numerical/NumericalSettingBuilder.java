@@ -46,14 +46,14 @@ public abstract class NumericalSettingBuilder<T extends Number> extends SettingB
 
     @Override
     public NumericalSettingBuilder<T> withValue(T value) {
-        return (NumericalSettingBuilder) super.withValue(value);
+        return (NumericalSettingBuilder<T>) super.withValue(value);
     }
 
     @Override
-    public NumericalSettingBuilder withName(String name) {
-        return (NumericalSettingBuilder) super.withName(name);
+    public NumericalSettingBuilder<T> withName(String name) {
+        return (NumericalSettingBuilder<T>) super.withName(name);
     }
 
-    public abstract NumberSetting build();
+    public abstract NumberSetting<T> build();
 
 }
