@@ -122,7 +122,7 @@ public class KamiMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         setCustomIcons();
-        if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
+        if (MODULE_MANAGER.getModuleT(CommandConfig.class).windowTitle.getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + MODVERSMALL);
         }
     }
