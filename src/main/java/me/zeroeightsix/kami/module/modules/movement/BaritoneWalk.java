@@ -17,7 +17,7 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
  */
 @Module.Info(name = "BaritoneWalk", description = "AutoWalk with Baritone pathfinding.", category = Module.Category.MOVEMENT)
 public class BaritoneWalk extends Module {
-    private String direction;
+    public static String direction;
 
     // Very shittily done, but this check is not that taxing on performance cos it is NOT performed every tick.
     @Override

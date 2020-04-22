@@ -6,6 +6,9 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.MessageSendHelper;
 
+/**
+ * Created by Dewy on the 21st of April, 2020
+ */
 @Module.Info(
           name = "Baritone",
           category = Module.Category.CLIENT,
@@ -34,6 +37,7 @@ public class Baritone extends Module {
         enable();
     }
 
+    // ._.
     @Override
     public void onUpdate() {
         BaritoneAPI.getSettings().allowBreak.value = allowBreak.getValue();
