@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.player
+package me.zeroeightsix.kami.module.modules.player;
 
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.Module;
 
 /**
  * @author 086
@@ -14,4 +14,5 @@ import me.zeroeightsix.kami.module.Module
         description = "Suppress network exceptions and prevent getting kicked",
         showOnArray = Module.ShowOnArray.OFF
 )
-class NoPacketKick : Module()
+public class NoPacketKick extends Module {
+}
