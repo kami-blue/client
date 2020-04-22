@@ -16,6 +16,8 @@ public class Baritone extends Module {
     public Setting<Boolean> allowSprint = register(Settings.b("Allow Sprint", true));
     public Setting<Boolean> allowPlace = register(Settings.b("Allow Place", true));
     public Setting<Boolean> allowInventory = register(Settings.b("Allow Inventory", true));
+    public Setting<Boolean> freeLook = register(Settings.b("Free Look", true));
+    public Setting<Boolean> allowDownwardTunneling = register(Settings.b("Downward Tunneling", true));
 
     public Setting<Boolean> allowParkour = register(Settings.b("Allow Parkour", true));
     public Setting<Boolean> allowParkourPlace = register(Settings.b("Allow Parkour Place", true));

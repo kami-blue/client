@@ -17,11 +17,6 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
  */
 @Module.Info(name = "BaritoneWalk", description = "AutoWalk with Baritone pathfinding.", category = Module.Category.MOVEMENT)
 public class BaritoneWalk extends Module {
-    private Setting<Boolean> sprint = register(Settings.booleanBuilder("Allow Sprinting").withValue(true).build());
-    private Setting<Boolean> parkour = register(Settings.booleanBuilder("Allow Parkour").withValue(true).withVisibility(v -> sprint.getValue().equals(true)).build());
-    private Setting<Boolean> lockView = register(Settings.booleanBuilder("Lock View").withValue(false).build());
-    private Setting<Boolean> tunnelingDownwards = register(Settings.booleanBuilder("Tunneling Downwards").withValue(false).build());
-
     private String direction;
 
     // Very shittily done, but this check is not that taxing on performance cos it is NOT performed every tick.
@@ -63,17 +58,6 @@ public class BaritoneWalk extends Module {
     }
 
     @Override
-    public void onUpdate() {
-        BaritoneAPI.getSettings().allowSprint.value = sprint.getValue();
-        BaritoneAPI.getSettings().freeLook.value = !lockView.getValue();
-        BaritoneAPI.getSettings().allowDownward.value = tunnelingDownwards.getValue();
-
-        if (sprint.getValue()) {
-            BaritoneAPI.getSettings().allowParkour.value = parkour.getValue();
-        }
-    }
-
-    @Override
     public String getHudInfo() {
         return direction;
     }
@@ -81,11 +65,6 @@ public class BaritoneWalk extends Module {
     @Override
     protected void onDisable() {
         BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
-
-        BaritoneAPI.getSettings().freeLook.reset();
-        BaritoneAPI.getSettings().allowParkour.reset();
-        BaritoneAPI.getSettings().allowSprint.reset();
-        BaritoneAPI.getSettings().allowDownward.reset();
     }
 
     @EventHandler
