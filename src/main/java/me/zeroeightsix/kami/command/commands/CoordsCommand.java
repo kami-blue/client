@@ -15,9 +15,9 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
 public class CoordsCommand extends Command {
     public CoordsCommand() {
         super("pos", new ChunkBuilder()
-                .append("save/list", true)
-                .append("searchterm", false)
-                .append("showDateTime", false)
+                .append("save|list", true)
+                .append("name|searchterm", false)
+                .append("chunk|showDateTime", false)
                 .build());
         setDescription("Log the current coordinates.");
     }
