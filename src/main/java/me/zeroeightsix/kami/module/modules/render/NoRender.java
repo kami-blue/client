@@ -30,6 +30,7 @@ public class NoRender extends Module {
     private Setting<Boolean> sand = register(Settings.b("Sand", false));
     private Setting<Boolean> gentity = register(Settings.b("GEntity", false));
     private Setting<Boolean> object = register(Settings.b("Object", false));
+    public Setting<Boolean> items = register(Settings.b("Items", false));
     private Setting<Boolean> xp = register(Settings.b("XP", false));
     private Setting<Boolean> paint = register(Settings.b("Paintings", false));
     private Setting<Boolean> fire = register(Settings.b("Fire", true));

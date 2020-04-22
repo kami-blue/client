@@ -19,6 +19,7 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
+import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -121,7 +122,9 @@ public class KamiMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         setCustomIcons();
-        Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + MODVERSMALL);
+        if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
+            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + MODVERSMALL);
+        }
     }
 
     @Mod.EventHandler

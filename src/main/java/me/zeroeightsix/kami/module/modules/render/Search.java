@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPortal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,6 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourUtils.toRGBA;
 import static me.zeroeightsix.kami.util.LogUtil.getCurrentCoord;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
@@ -229,6 +231,9 @@ public class Search extends Module {
 
     private Tuple<Integer, Integer> getTuple(int side, Block block) {
         int c = block.blockMapColor.colorValue;
+        if (block instanceof BlockPortal) {
+            c = rgbToInt(82, 49, 153);
+        }
         int[] cia = {c >> 16, c >> 8 & 255, c & 255};
         int blockColor = toRGBA(cia[0], cia[1], cia[2], alpha.getValue());
         return new Tuple<>(blockColor, side);

@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.client;
+package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.Module
 
 /**
  * @author dominikaaaa
@@ -12,5 +12,4 @@ import me.zeroeightsix.kami.module.Module;
         category = Module.Category.CLIENT,
         showOnArray = Module.ShowOnArray.OFF
 )
-public class Tooltips extends Module {
-}
+class Tooltips : Module()

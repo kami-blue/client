@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.BossStack;
 import me.zeroeightsix.kami.module.modules.render.HungerOverlay;
+import me.zeroeightsix.kami.module.modules.render.NoRender;
 import me.zeroeightsix.kami.util.HungerOverlayRenderHelper;
 import me.zeroeightsix.kami.util.HungerOverlayUtils;
 import me.zeroeightsix.kami.util.KamiTessellator;
@@ -19,6 +20,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiShulkerBox;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -87,6 +90,15 @@ public class ForgeEventProcessor {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+        if (Wrapper.getMinecraft().world != null || Wrapper.getMinecraft().player != null) {
+            if (MODULE_MANAGER.getModuleT(NoRender.class).isEnabled() && MODULE_MANAGER.getModuleT(NoRender.class).items.getValue() && event.phase == TickEvent.Phase.START) {
+                for (Entity potentialItem : Wrapper.getMinecraft().world.getLoadedEntityList()) {
+                    if (potentialItem instanceof EntityItem) {
+                        potentialItem.setDead();
+                    }
+                }
+            }
+        }
 
         if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
             if (event.phase != TickEvent.Phase.END) {

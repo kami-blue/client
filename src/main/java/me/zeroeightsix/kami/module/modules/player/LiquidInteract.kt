@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.player;
+package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.Module
 
 /**
  * @author THEREALWWEFAN231
@@ -12,5 +12,4 @@ import me.zeroeightsix.kami.module.Module;
         category = Module.Category.PLAYER,
         description = "Place blocks on liquid!"
 )
-public class LiquidInteract extends Module {
-}
+class LiquidInteract : Module()
