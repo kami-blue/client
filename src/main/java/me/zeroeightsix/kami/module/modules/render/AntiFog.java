@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.setting.Settings;
 )
 public class AntiFog extends Module {
 
-    public static Setting<VisionMode> mode = Settings.e("Mode", VisionMode.NOFOG);
+    public static Setting<VisionMode> mode = Settings.e("Mode", VisionMode.NO_FOG);
     private static AntiFog INSTANCE = new AntiFog();
 
     public AntiFog() {
@@ -27,7 +27,7 @@ public class AntiFog extends Module {
     }
 
     public enum VisionMode {
-        NOFOG, AIR
+        NO_FOG, AIR
     }
 
 }
