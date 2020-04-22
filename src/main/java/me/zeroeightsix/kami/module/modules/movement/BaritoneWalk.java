@@ -19,8 +19,6 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
 public class BaritoneWalk extends Module {
     public static String direction;
 
-    // Very shittily done, but this check is not that taxing on performance cos it is NOT performed every tick.
-    @Override
     protected void onEnable() {
         if (normalizeAngle(mc.player.rotationYaw) >= -22.5 && normalizeAngle(mc.player.rotationYaw) <= 22.5) { // +Z
             BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalXZ((int) mc.player.posX, (int) mc.player.posZ + 1068));
@@ -57,12 +55,10 @@ public class BaritoneWalk extends Module {
         }
     }
 
-    @Override
     public String getHudInfo() {
         return direction;
     }
-
-    @Override
+    
     protected void onDisable() {
         BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
     }

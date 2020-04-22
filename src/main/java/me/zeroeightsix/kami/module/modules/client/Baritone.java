@@ -31,14 +31,12 @@ public class Baritone extends Module {
 
     public Setting<Boolean> renderGoal = register(Settings.b("Render Goals", true));
 
-    @Override
     public void onDisable() {
         MessageSendHelper.sendErrorMessage("Error: The Baritone module is for configuring Baritone integration, not toggling it.");
         enable();
     }
 
     // ._.
-    @Override
     public void onUpdate() {
         BaritoneAPI.getSettings().allowBreak.value = allowBreak.getValue();
         BaritoneAPI.getSettings().allowSprint.value = allowSprint.getValue();
