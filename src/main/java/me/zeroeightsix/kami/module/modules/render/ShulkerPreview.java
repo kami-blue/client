@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.render
+package me.zeroeightsix.kami.module.modules.render;
 
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.Module;
 
 /**
  * Created by 086 on 24/12/2017.
@@ -12,4 +12,5 @@ import me.zeroeightsix.kami.module.Module
         category = Module.Category.RENDER,
         description = "Previews shulkers in the game GUI"
 )
-class ShulkerPreview : Module()
+public class ShulkerPreview extends Module {
+}
