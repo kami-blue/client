@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client;
 
+import baritone.api.BaritoneAPI;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -28,10 +29,26 @@ public class Baritone extends Module {
     public Setting<Boolean> renderGoal = register(Settings.b("Render Goals", true));
 
     @Override
-    protected void onDisable() {
+    public void onDisable() {
         MessageSendHelper.sendErrorMessage("Error: The Baritone module is for configuring Baritone integration, not toggling it.");
         enable();
     }
 
+    @Override
+    public void onUpdate() {
+        BaritoneAPI.getSettings().allowBreak.value = allowBreak.getValue();
+        BaritoneAPI.getSettings().allowSprint.value = allowSprint.getValue();
+        BaritoneAPI.getSettings().allowPlace.value = allowPlace.getValue();
+        BaritoneAPI.getSettings().allowInventory.value = allowInventory.getValue();
+        BaritoneAPI.getSettings().freeLook.value = freeLook.getValue();
+        BaritoneAPI.getSettings().allowDownward.value = allowDownwardTunneling.getValue();
 
+        BaritoneAPI.getSettings().allowParkour.value = allowParkour.getValue();
+        BaritoneAPI.getSettings().allowParkourPlace.value = allowParkourPlace.getValue();
+
+        BaritoneAPI.getSettings().enterPortal.value = !avoidPortals.getValue();
+        BaritoneAPI.getSettings().mapArtMode.value = mapArtMode.getValue();
+
+        BaritoneAPI.getSettings().renderGoal.value = renderGoal.getValue();
+    }
 }
