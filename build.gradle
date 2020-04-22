@@ -56,6 +56,10 @@ repositories {
         name = "jitpack.io"
         url = "https://jitpack.io"
     }
+    maven {
+        name = "forgelin-repo"
+        url "http://maven.shadowfacts.net/"
+    }
     mavenCentral()
     jcenter()
 }
@@ -77,6 +81,7 @@ dependencies {
     compile 'club.minnced:java-discord-rpc:2.0.2'
     compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
     compile 'com.github.kevinsawicki:http-request:http-request-6.0'
+    compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.4"
 }
 
 processResources {
