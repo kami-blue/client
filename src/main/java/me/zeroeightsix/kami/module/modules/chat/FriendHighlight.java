@@ -29,16 +29,26 @@ public class FriendHighlight extends Module {
             sendErrorMessage(getChatName() + "Your friends list is bigger then 100, disabling as it would cause too much of a performance impact.");
             disable();
         }
+        noFriendsCheck();
     }
 
     @EventHandler
     public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
-        if (mc.player == null) return;
+        if (mc.player == null || noFriendsCheck()) return;
         final String[] converted = {""};
         Friends.friends.getValue().forEach(friend -> converted[0] = event.getMessage().getFormattedText().replaceAll("(?i)" + friend.getUsername(), colour() + bold() + friend.getUsername() + TextFormatting.RESET.toString()));
         TextComponentString message = new TextComponentString(converted[0]);
         event.setMessage(message);
     });
+
+    private boolean noFriendsCheck() {
+        if (Friends.friends.getValue().size() == 0) {
+            sendErrorMessage(getChatName() + "You don't have any friends added, silly! Go add some friends before using the module");
+            disable();
+            return true;
+        }
+        return false;
+    }
 
     private String bold() {
         if (!bold.getValue()) return "";

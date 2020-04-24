@@ -59,7 +59,7 @@ public class MixinEntityRenderer {
 
     @Inject(method = "setupFog", at = @At(value = "HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo callbackInfo) {
-        if (AntiFog.enabled() && AntiFog.mode.getValue() == AntiFog.VisionMode.NOFOG)
+        if (AntiFog.enabled() && AntiFog.mode.getValue() == AntiFog.VisionMode.NO_FOG)
             callbackInfo.cancel();
     }
 
