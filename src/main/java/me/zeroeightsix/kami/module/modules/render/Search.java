@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourUtils.toRGBA;
-import static me.zeroeightsix.kami.util.LogUtil.getCurrentCoord;
+import static me.zeroeightsix.kami.util.CoordUtil.getCurrentCoord;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
