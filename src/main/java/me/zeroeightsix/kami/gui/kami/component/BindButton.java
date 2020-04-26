@@ -40,7 +40,7 @@ public class BindButton extends EnumButton {
                 } else if (isAlt(key)) {
                     alt = true;
                     modes = new String[]{(ctrl ? "Ctrl+" : "") + "Alt+" + (shift ? "Shift+" : "")};
-                } else if (key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE || key == Keyboard.KEY_ESCAPE) {
+                } else if (key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE) {
                     m.getBind().setCtrl(false);
                     m.getBind().setShift(false);
                     m.getBind().setAlt(false);

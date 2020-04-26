@@ -5,8 +5,10 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.Friends;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,8 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
         category = Module.Category.COMBAT
 )
 public class VisualRange extends Module {
-    private Setting<Boolean> leaving = register(Settings.b("Leaving", false));
+    private Setting<Boolean> playSound = register(Settings.b("Play Sound", false));
+    private Setting<Boolean> leaving = register(Settings.b("Count Leaving", false));
     private Setting<Boolean> uwuAura = register(Settings.b("UwU Aura", false));
 
     private List<String> knownPlayers;
@@ -48,9 +51,9 @@ public class VisualRange extends Module {
                     knownPlayers.add(playerName);
 
                     if (Friends.isFriend(playerName)) {
-                        sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " entered the Battlefield!");
+                        sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " joined!");
                     } else {
-                        sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " entered the Battlefield!");
+                        sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!");
                     }
                     if (uwuAura.getValue()) sendServerMessage("/w "+ playerName + " hi uwu");
 
@@ -66,9 +69,9 @@ public class VisualRange extends Module {
 
                     if (leaving.getValue()) {
                         if (Friends.isFriend(playerName)) {
-                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " left the Battlefield!");
+                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " left!");
                         } else {
-                            sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " left the Battlefield!");
+                            sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " left!");
                         }
                         if (uwuAura.getValue()) sendServerMessage(("/w "+ playerName + " bye uwu"));
                     }
@@ -81,6 +84,9 @@ public class VisualRange extends Module {
     }
 
     private void sendNotification(String s) {
+        if (playSound.getValue()) {
+            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f));
+        }
         sendChatMessage(s);
     }
 

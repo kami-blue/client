@@ -115,7 +115,7 @@ public class Search extends Module {
 
     @Override
     public void onEnable() {
-        if (!overrideWarning.getValue() && GlStateManager.glGetString(7936).contains("Intel")) {
+        if (!overrideWarning.getValue() && GlStateManager.glGetString(GL11.GL_VENDOR).contains("Intel")) {
             sendErrorMessage(getChatName() + "Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.");
             sendWarningMessage(getChatName() + "If you're sure you want to try, run the &7" + Command.getCommandPrefix() + "search override&f command");
             disable();

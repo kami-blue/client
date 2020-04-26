@@ -8,7 +8,12 @@ import me.zeroeightsix.kami.setting.Settings
  * Created by dominikaaaa on 20/12/19
  * Updated by dominikaaaa on 22/12/19
  */
-@Module.Info(name = "Zoom", category = Module.Category.RENDER, description = "Configures FOV", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "Zoom",
+        category = Module.Category.RENDER,
+        description = "Configures FOV",
+        showOnArray = Module.ShowOnArray.OFF
+)
 class Zoom : Module() {
     private var fov = 0f
     private var sensi = 0f

@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
+import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import net.minecraft.client.Minecraft;
@@ -54,5 +55,15 @@ public class GuiFrameUtil {
             if (frame.getX() < 0) frame.setX(0);
             if (frame.getY() < 0) frame.setY(0);
         }
+    }
+
+    public static boolean areSettingsOpen() {
+        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
+        for (SettingsPanel settingsPanel : panels) {
+            if (settingsPanel.isVisible()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
