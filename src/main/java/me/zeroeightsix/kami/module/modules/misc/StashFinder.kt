@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import kotlin.math.roundToInt
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CoordUtil
