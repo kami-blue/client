@@ -4,20 +4,15 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent.Receive
-import me.zeroeightsix.kami.event.events.WorldCheckLightForEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.server.*
-import net.minecraft.world.EnumSkyBlock
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
  * Created by 086 on 4/02/2018.
  * Updated by dominikaaaa on 14/04/20
- *
- * Skylight Updates taken from https://github.com/fr1kin/ForgeHax/blob/1a4f98d/src/main/java/com/matt/forgehax/mods/NoSkylightUpdates.java
  */
 @Module.Info(
         name = "NoRender",
@@ -37,7 +32,6 @@ class NoRender : Module() {
     private val explosion = register(Settings.b("Explosions", true))
     @JvmField
     var beacon: Setting<Boolean> = register(Settings.b("Beacon Beams", false))
-    private val skylight = register(Settings.b("Skylight Updates", false))
 
     @EventHandler
     var receiveListener = Listener(EventHook { event: Receive ->
@@ -53,11 +47,4 @@ class NoRender : Module() {
 
     @EventHandler
     var blockOverlayEventListener = Listener(EventHook { event: RenderBlockOverlayEvent -> if (fire.value && event.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE) event.isCanceled = true })
-
-    @SubscribeEvent
-    fun onLightingUpdate(event: WorldCheckLightForEvent) {
-        if (skylight.value && event.enumSkyBlock == EnumSkyBlock.SKY) {
-            event.isCanceled = true
-        }
-    }
 }
