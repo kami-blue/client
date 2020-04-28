@@ -4,6 +4,7 @@ import kotlin.math.roundToInt
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CoordUtil
+import me.zeroeightsix.kami.util.CoordUtil.coordsLogFilename
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
@@ -51,6 +52,11 @@ class StashFinder : Module() {
             return intArrayOf(x, y, z)
         }
 
+        fun getBlockPos(): BlockPos {
+            val xyz = this.getPosition()
+            return BlockPos(xyz[0], xyz[1], xyz[2])
+        }
+
         override fun toString(): String {
             return "($chests chests, $shulkers shulkers)"
         }
@@ -90,7 +96,7 @@ class StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            CoordUtil.writeCoords(chunkStats.getPosition(), chunkStats.toString(), "false", "KAMIBlueStashFinder.txt");
+            CoordUtil.writeCoords(chunkStats.getBlockPos(), chunkStats.toString(), coordsLogFilename)
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

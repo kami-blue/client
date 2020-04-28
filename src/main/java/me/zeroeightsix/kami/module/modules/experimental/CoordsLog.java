@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.module.modules.experimental;
 
-import me.zeroeightsix.kami.util.CoordUtil;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import me.zeroeightsix.kami.util.CoordUtil;
+import net.minecraft.util.math.BlockPos;
 
-import net.minecraft.client.Minecraft;
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 @Module.Info(name = "CoordsLog", description = "Automatically writes the coordinates of the player to a file with a user defined delay between logs.", category = Module.Category.EXPERIMENTAL, showOnArray = Module.ShowOnArray.ON)
 public class CoordsLog extends Module {
@@ -15,9 +15,8 @@ public class CoordsLog extends Module {
     private Setting<Boolean> autoLog = register(Settings.b("onDelay", false));
     private Setting<Double> delay = register(Settings.doubleBuilder("delay").withMinimum(1.0).withValue(15.0).withMaximum(60.0).build());
     private Setting<Boolean> checkDuplicates = register(Settings.b("avoidDuplicates", true));
-    private Setting<Boolean> useChunkCoord = register(Settings.b("useChunk", false));
 
-    private int previousCoord;
+    private String previousCoord;
 
     private boolean playerIsDead = false;
 
@@ -32,9 +31,9 @@ public class CoordsLog extends Module {
             playerIsDead = false;
         }
         if (!playerIsDead && 0 >= mc.player.getHealth() && forceLogOnDeath.getValue()) {
-            int[] deathPoint = logCoordinates("deathPoint");
+            BlockPos deathPoint = logCoordinates("deathPoint");
             if (deathInChat.getValue()) {
-                sendChatMessage("Player died at " + deathPoint[0] + " " + deathPoint[1] + " " + deathPoint[2]);
+                sendChatMessage("Player died at " + deathPoint.x + " " + deathPoint.y + " " + deathPoint.z);
                 playerIsDead = true;
             } else {
                 playerIsDead = true;
@@ -49,10 +48,10 @@ public class CoordsLog extends Module {
             startTime = System.currentTimeMillis();
         if (startTime + (delay.getValue() * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
             startTime = System.currentTimeMillis();
-            int[] cCArray = CoordUtil.getCurrentCoord(useChunkCoord.getValue());
-            int currentCoord = cCArray[0]*3 + cCArray[1]*32 + cCArray[2]/2;
+            BlockPos pos = CoordUtil.getCurrentCoord();
+            String currentCoord = pos.toString();
             if (checkDuplicates.getValue()) {
-                if (currentCoord != previousCoord) {
+                if (!currentCoord.equals(previousCoord)) {
                     logCoordinates("autoLogger");
                     previousCoord = currentCoord;
                 }
@@ -63,8 +62,8 @@ public class CoordsLog extends Module {
         }
     }
 
-    private int[] logCoordinates(String name) {
-        return CoordUtil.writePlayerCoords(name, useChunkCoord.getValue());
+    private BlockPos logCoordinates(String name) {
+        return CoordUtil.writePlayerCoords(name);
     }
 
     public void onDisable() {

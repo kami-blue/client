@@ -183,7 +183,7 @@ public class Search extends Module {
     });
 
     private void reloadChunks() {
-        int[] pcoords = getCurrentCoord(false);
+        BlockPos pcoords = getCurrentCoord();
         int renderdist = mc.gameSettings.renderDistanceChunks;
         if (renderdist > 8) {
             renderdist = 8;
@@ -191,7 +191,7 @@ public class Search extends Module {
         ChunkProviderClient providerClient = mc.world.getChunkProvider();
         for (int x = -renderdist; x < renderdist; x++) {
             for (int z = -renderdist; z < renderdist; z++) {
-                Chunk chunk = providerClient.getLoadedChunk((pcoords[0] >> 4) + x, (pcoords[2] >> 4) + z);
+                Chunk chunk = providerClient.getLoadedChunk((pcoords.x >> 4) + x, (pcoords.z >> 4) + z);
                 if (chunk != null)
                     exec.execute(() ->
                             loadChunk(chunk)

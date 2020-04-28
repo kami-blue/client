@@ -1,102 +1,72 @@
 package me.zeroeightsix.kami.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
 
-import me.zeroeightsix.kami.util.Coord;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
-
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
  * @author dominikaaaa
  * Created by dominikaaaa on 18/02/20
- * Updated by wnuke on 14/04/20 and 26/04/20
+ * Updated by wnuke on 14/04/20
+ * Renamed by wnuke on 26/04/20 from LogUtil.java to CoordUtil.java
  */
 public class CoordUtil {
-    public static final String coordsLogFilename = "KAMIBlueCoords.txt";
-    public static int[] getCurrentCoord(boolean chunk) {
+    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+    public static final String coordsLogFilename = "KAMIBlueCoords.json";
+    private static Gson gson = new GsonBuilder().create();
+    public static BlockPos getCurrentCoord() {
         Minecraft mc = Minecraft.getMinecraft();
-        int[] currentCoords = {(int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ};
-        if (chunk) {
-            return new int[] {currentCoords[0]/16, currentCoords[1]/16, currentCoords[2]/16};
-        } else {
-            return currentCoords;
-        }
+        return new BlockPos((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ);
     }
 
-    public static int[] writePlayerCoords(String locationName, boolean chunk) {
-        int[] coords = getCurrentCoord(chunk);
-        writeCoords(coords, locationName, Boolean.toString(chunk), coordsLogFilename);
+    public static BlockPos writePlayerCoords(String locationName) {
+        BlockPos coords = getCurrentCoord();
+        writeCoords(coords, locationName, coordsLogFilename);
         return coords;
     }
 
-    public static void writeCoords(int[] xyz, String locationName, String chunk, String filename) {
+    public static void writeCoords(BlockPos xyz, String locationName, String filename) {
         try {
-            FileWriter fW = new FileWriter(filename, true);
-            fW.write(formatter(xyz[0], xyz[1], xyz[2], locationName, chunk));
-            fW.close();
+            ArrayList<CoordinateInfo> coords = readCoords(filename);
+            coords.add(formatter(xyz, locationName));
+            FileWriter writer = new FileWriter(filename);
+            gson.toJson(coords, writer);
+            writer.flush();
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static String formatter(int x, int y, int z, String locationName, String chunk) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+    private static CoordinateInfo formatter(BlockPos xyz, String locationName) {
         String time = sdf.format(new Date());
-        return "x: " + x + ", y: " + y + ", z: " + z + ", chunk: " + chunk + ", name: \"" + locationName + "\", date: \"" + time + "\"\n";
+        return new CoordinateInfo(xyz, locationName, time);
     }
-    public static Coord[] coordsLogToArray() {
-        Coord[] coordsArray = new Coord[lineCount(coordsLogFilename)];
+    public static ArrayList<CoordinateInfo> readCoords(String filename) {
         try {
-            File coordsFile = new File(coordsLogFilename);
-            Scanner coordsReader = new Scanner(coordsFile);
-            int line = 0;
-            while (coordsReader.hasNextLine()) {
-                String coordsRaw = coordsReader.nextLine();
-                if (coordsRaw.length() > 0) {
-                    String[] split1 = coordsRaw.split("x: ")[1].split(", y: ");
-                    String[] split2 = split1[1].split(", z: ");
-                    String[] split3 = split2[1].split(", chunk: ");
-                    String[] split4 = split3[1].split(", name: ");
-                    String[] split5 = split4[1].split(", date: ");
-                    String[] split6 = split5[1].split("\n");
-                    String[] split7 = split6[0].split(" ");
-                    Coord lineCoord = new Coord();
-                    lineCoord.x = Integer.parseInt(split1[0]);
-                    lineCoord.y = Integer.parseInt(split2[0]);
-                    lineCoord.z = Integer.parseInt(split3[0]);
-                    lineCoord.chunk = Boolean.parseBoolean(split3[0]);
-                    lineCoord.name = split5[0];
-                    lineCoord.time = split7[0].replaceAll("[\"]", "");
-                    lineCoord.date = split7[1].replaceAll("[\"]", "");
-                    coordsArray[line] = lineCoord;
-                    line++;
-                } else {
-                    coordsArray[line] = null;
-                }
+            ArrayList<CoordinateInfo> coords;
+            coords = gson.fromJson(new FileReader(filename), new TypeToken<ArrayList<CoordinateInfo>>(){}.getType());
+            if (coords != null) {
+                return coords;
+            } else {
+                return new ArrayList<>();
             }
-            coordsReader.close();
-            return coordsArray;
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
             e.printStackTrace();
-            return null;
-        }
-    }
-    public static int lineCount(String filename) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
-            int lines = 0;
-            while (reader.readLine() != null) lines++;
-            reader.close();
-            return lines;
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-            return 0;
+            try {
+                File file = new File(filename);
+                file.createNewFile();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return new ArrayList<>();
         }
     }
 }

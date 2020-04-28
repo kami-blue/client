@@ -2,12 +2,13 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
-import me.zeroeightsix.kami.util.Coord;
+import me.zeroeightsix.kami.util.CoordinateInfo;
+import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
-import static me.zeroeightsix.kami.util.CoordUtil.coordsLogToArray;
-import static me.zeroeightsix.kami.util.CoordUtil.writePlayerCoords;
+import static me.zeroeightsix.kami.util.CoordUtil.*;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
 
@@ -19,46 +20,63 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage;
 public class CoordsCommand extends Command {
     public CoordsCommand() {
         super("pos", new ChunkBuilder()
-                .append("save|list", true)
+                .append("save|list|stashes", true)
                 .append("name|searchterm", false)
-                .append("chunk|showDateTime", false)
+                .append("showDateTime", false)
                 .build());
         setDescription("Log the current coordinates.");
     }
 
     public void call(String[] args) {
         if (args[0] != null) {
-            if (args[0].equals("save")) {
-                if (args[1] != null) {
-                    confirm(args[1], writePlayerCoords(args[1], Boolean.parseBoolean(args[2])));
-                } else {
-                    confirm("Unnamed", writePlayerCoords("Unnamed", false));
-                }
-            } else if (args[0].equals("list")) {
-                if (args[1] != null) {
-                    searchCoords(args[1], Boolean.parseBoolean(args[2]));
-                } else {
-                    listCoords(false);
-                }
-            } else {
-                sendChatMessage("Please use a valid command (list or save)");
+            switch (args[0]) {
+                case "save":
+                    if (args[1] != null) {
+                        confirm(args[1], writePlayerCoords(args[1]));
+                    } else {
+                        confirm("Unnamed", writePlayerCoords("Unnamed"));
+                    }
+                    break;
+                case "list":
+                    if (args[1] != null) {
+                        searchCoords(args[1], Boolean.parseBoolean(args[2]));
+                    } else {
+                        listCoords(false, false);
+                    }
+                    break;
+                case "stashes":
+                    listCoords(false, true);
+                    break;
+                default:
+                    sendChatMessage("Please use a valid command (list or save)");
+                    break;
             }
         } else {
             sendChatMessage("Please choose a command (list or save)");
         }
     }
-    private void listCoords(boolean showDateTime) {
+
+    private void listCoords(boolean showDateTime, boolean stashes) {
         sendChatMessage("List of logged coordinates:");
-        Coord[] coords = coordsLogToArray();
-        for (Coord coord : Objects.requireNonNull(coords)) {
-            sendRawChatMessage(format(coord, showDateTime));
-        }
+        String stashRegex = "(\\(.*chests, .* shulkers\\))";
+        ArrayList<CoordinateInfo> coords = readCoords(coordsLogFilename);
+        Objects.requireNonNull(coords).forEach(coord -> {
+            if (stashes) {
+                if (coord.name.matches(stashRegex)) {
+                    sendRawChatMessage(format(coord, showDateTime));
+                }
+            } else {
+                if (!coord.name.matches(stashRegex)) {
+                    sendRawChatMessage(format(coord, showDateTime));
+                }
+            }
+        });
     }
     private void searchCoords(String searchterm, boolean showDateTime) {
         boolean hasfound = false;
         boolean firstfind = true;
-        Coord[] coords = coordsLogToArray();
-        for (Coord coord : Objects.requireNonNull(coords)) {
+        ArrayList<CoordinateInfo> coords = readCoords(coordsLogFilename);
+        for (CoordinateInfo coord : Objects.requireNonNull(coords)) {
             if (coord.name.contains(searchterm)) {
                 if (firstfind) {
                     sendChatMessage("Result of search for " + searchterm + ": ");
@@ -72,14 +90,14 @@ public class CoordsCommand extends Command {
             sendChatMessage("No results for " + searchterm);
         }
     }
-    private String format(Coord coord, boolean showDateTime) {
-        String message = "   " + coord.name + " (" + coord.x + " " + coord.y + " " + coord.z + ")";
+    private String format(CoordinateInfo coord, boolean showDateTime) {
+        String message = "   " + coord.name + " (" + coord.xyz.x + " " + coord.xyz.y + " " + coord.xyz.z + ")";
         if (showDateTime) {
             message += " made at " + coord.time + " on " + coord.date;
         }
         return message;
     }
-    private void confirm(String name, int[] xyz) {
-        sendChatMessage("Added coordinate " + xyz[0] + " " + xyz[1] + " " + xyz[2] + " with name " + name + ".");
+    private void confirm(String name, BlockPos xyz) {
+        sendChatMessage("Added coordinate " + xyz.x + " " + xyz.y + " " + xyz.z + " with name " + name + ".");
     }
 }
