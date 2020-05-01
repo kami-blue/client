@@ -12,7 +12,7 @@ import net.minecraftforge.client.event.RenderBlockOverlayEvent
 
 /**
  * Created by 086 on 4/02/2018.
- * Updated by dominikaaaa on 14/04/20
+ * Updated by dominikaaaa on 27/04/20
  */
 @Module.Info(
         name = "NoRender",
@@ -32,6 +32,7 @@ class NoRender : Module() {
     private val explosion = register(Settings.b("Explosions", true))
     @JvmField
     var beacon: Setting<Boolean> = register(Settings.b("Beacon Beams", false))
+    var skylight: Setting<Boolean> = register(Settings.b("SkyLight Updates", true))
 
     @EventHandler
     var receiveListener = Listener(EventHook { event: Receive ->

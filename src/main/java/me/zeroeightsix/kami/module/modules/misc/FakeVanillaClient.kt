@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.misc;
+package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.Module
 
 /**
  * Created by 086 on 9/04/2018.
@@ -10,5 +10,4 @@ import me.zeroeightsix.kami.module.Module;
         description = "Fakes a modless client when connecting",
         category = Module.Category.MISC
 )
-public class FakeVanillaClient extends Module {
-}
+class FakeVanillaClient : Module()

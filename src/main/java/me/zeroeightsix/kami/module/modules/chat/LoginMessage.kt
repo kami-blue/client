@@ -13,7 +13,12 @@ import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
 
-@Module.Info(name = "LoginMessage", description = "Sends a given message to public chat on login.", category = Module.Category.CHAT, showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "LoginMessage",
+        description = "Sends a given message to public chat on login.",
+        category = Module.Category.CHAT,
+        showOnArray = Module.ShowOnArray.OFF
+)
 class LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false

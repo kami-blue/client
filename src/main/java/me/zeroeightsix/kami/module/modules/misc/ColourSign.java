@@ -29,17 +29,7 @@ public class ColourSign extends Module {
         }
     });
 
-//    @EventHandler
-//    public Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
-//        if (event.getPacket() instanceof CPacketUpdateSign) {
-//            String[] lines = ((CPacketUpdateSign) event.getPacket()).lines;
-//            for (int i = 0; i < 4; i++) {
-//                lines[i] = lines[i].replace(KamiMod.colour + "", KamiMod.colour + KamiMod.colour + "rr");
-//            }
-//        }
-//    });
-
-    private class KamiGuiEditSign extends GuiEditSign {
+    private static class KamiGuiEditSign extends GuiEditSign {
 
 
         public KamiGuiEditSign(TileEntitySign teSign) {

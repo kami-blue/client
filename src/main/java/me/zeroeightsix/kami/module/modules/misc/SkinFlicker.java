@@ -60,8 +60,14 @@ public class SkinFlicker extends Module {
         }
     }
 
-    public static enum FlickerMode {
+    public enum FlickerMode {
         HORIZONTAL, VERTICAL, RANDOM
+    }
+
+    public void onDisable() {
+        for (int i = 0 ; i < EnumPlayerModelParts.values().length ; i++) {
+            mc.gameSettings.setModelPartEnabled(PARTS_VERTICAL[i], true);
+        }
     }
 
 }

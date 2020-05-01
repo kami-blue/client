@@ -30,42 +30,12 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 public class InventoryViewer extends Module {
     private Setting<Boolean> mcTexture = register(Settings.b("Use ResourcePack", false));
     private Setting<Boolean> showIcon = register(Settings.booleanBuilder("Show Icon").withValue(true).withVisibility(v -> !mcTexture.getValue()).build());
-    private Setting<Boolean> docking = register(Settings.booleanBuilder("Automatic Docking").withValue(true).withVisibility(v -> showIcon.getValue() && !mcTexture.getValue()).build());
     private Setting<ViewSize> viewSizeSetting = register(Settings.enumBuilder(ViewSize.class).withName("Icon Size").withValue(ViewSize.LARGE).withVisibility(v -> showIcon.getValue() && !mcTexture.getValue()).build());
     private Setting<Boolean> coloredBackground = register(Settings.booleanBuilder("Colored Background").withValue(true).withVisibility(v -> !mcTexture.getValue()).build());
     private Setting<Integer> a = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).withVisibility(v -> coloredBackground.getValue() && !mcTexture.getValue()).build());
     private Setting<Integer> r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility(v -> coloredBackground.getValue() && !mcTexture.getValue()).build());
     private Setting<Integer> g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility(v -> coloredBackground.getValue() && !mcTexture.getValue()).build());
     private Setting<Integer> b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility(v -> coloredBackground.getValue() && !mcTexture.getValue()).build());
-
-    private boolean isLeft = false;
-    private boolean isRight = false;
-    private boolean isTop = false;
-    private boolean isBottom = false;
-
-    private int invMoveHorizontal() {
-        if (!docking.getValue() || mcTexture.getValue()) return 0;
-        if (isLeft) return 45;
-        if (isRight) return -45;
-        return 0;
-    }
-
-    private int invMoveVertical() {
-        if (!docking.getValue() || mcTexture.getValue()) return 0;
-        if (isTop) return 10;
-        if (isBottom) return -10;
-        return 0;
-    }
-
-    private void updatePos() {
-        Frame frame = getFrameByName("inventory viewer");
-        if (frame == null)
-            return;
-        isTop = frame.getDocking().isTop();
-        isLeft = frame.getDocking().isLeft();
-        isRight = frame.getDocking().isRight();
-        isBottom = frame.getDocking().isBottom();
-    }
 
     private ResourceLocation getBox() {
         if (mcTexture.getValue()) {
@@ -101,9 +71,8 @@ public class InventoryViewer extends Module {
         }
         ResourceLocation box = getBox();
         mc.renderEngine.bindTexture(box);
-        updatePos();
         GlStateManager.color(1, 1, 1, 1);
-        mc.ingameGUI.drawTexturedModalRect(x, y, invMoveHorizontal() + 7, invMoveVertical() + 17, 162, 54); // 164 56 // width and height of inventory
+        mc.ingameGUI.drawTexturedModalRect(x, y, 7, 17, 162, 54); // 164 56 // width and height of inventory
         // DISABLE LOCAL CHANGES {
         GlStateManager.enableDepth();
         // }

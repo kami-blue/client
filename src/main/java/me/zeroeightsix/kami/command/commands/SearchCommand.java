@@ -10,7 +10,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.*;
 
 /**
  * Created by 20kdc on 17/02/2020.
- * Updated by S-B99 on 17/02/20
+ * Updated by dominikaaaa on 17/02/20
  * Modified for use with search module by wnuke on 20/04/2020
  */
 public class SearchCommand extends Command {

@@ -269,7 +269,7 @@ public class ElytraFlight extends Module {
         speedHighwayOverride.setValue(1.8f);
         speedControl.setValue(1.8f);
         fallSpeedHighway.setValue(.000050000002f);
-        fallSpeedControl.setValue(0.001f);
+        fallSpeedControl.setValue(.000050000002f);
         fallSpeed.setValue(-.003f);
         upSpeedBoost.setValue(0.08f);
         downSpeedBoost.setValue(0.04f);

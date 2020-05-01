@@ -22,11 +22,12 @@ import net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent
 @Module.Info(
         name = "Freecam",
         category = Module.Category.PLAYER,
-        description = "Leave your body and trascend into the realm of the gods"
+        description = "Leave your body and transcend into the realm of the gods"
 )
 class Freecam : Module() {
     private val speed = register(Settings.i("Speed", 5)) // /100 in practice
     private val packetCancel = register(Settings.b("Packet Cancel", false))
+
     private var posX = 0.0
     private var posY = 0.0
     private var posZ = 0.0
@@ -35,6 +36,7 @@ class Freecam : Module() {
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var isRidingEntity = false
     private var ridingEntity: Entity? = null
+
     override fun onEnable() {
         if (mc.player != null) {
             isRidingEntity = mc.player.getRidingEntity() != null
@@ -46,15 +48,18 @@ class Freecam : Module() {
                 ridingEntity = mc.player.getRidingEntity()
                 mc.player.dismountRidingEntity()
             }
+
             pitch = mc.player.rotationPitch
             yaw = mc.player.rotationYaw
             clonedPlayer = EntityOtherPlayerMP(mc.world, mc.getSession().profile)
             clonedPlayer!!.copyLocationAndAnglesFrom(mc.player)
             clonedPlayer!!.rotationYawHead = mc.player.rotationYawHead
+
             mc.world.addEntityToWorld(-100, clonedPlayer)
             mc.player.capabilities.isFlying = true
             mc.player.capabilities.flySpeed = speed.value / 100f
             mc.player.noClip = true
+
             // WebringOfTheDamned
             // This is needed for some reason, as is the converse in onDisable.
             mc.renderChunksMany = false
@@ -67,21 +72,25 @@ class Freecam : Module() {
         if (localPlayer != null) {
             mc.player.setPositionAndRotation(posX, posY, posZ, yaw, pitch)
             mc.world.removeEntityFromWorld(-100)
+
             clonedPlayer = null
             posZ = 0.0
             posY = posZ
             posX = posY
             yaw = 0f
             pitch = yaw
+
             mc.player.capabilities.isFlying = false //getModManager().getMod("ElytraFlight").isEnabled();
             mc.player.capabilities.flySpeed = 0.05f
             mc.player.noClip = false
             mc.player.motionZ = 0.0
             mc.player.motionY = mc.player.motionZ
             mc.player.motionX = mc.player.motionY
+
             if (isRidingEntity) {
                 mc.player.startRiding(ridingEntity, true)
             }
+
             // WebringOfTheDamned
             // This is needed for some reason, as is the converse in onEnable.
             mc.renderChunksMany = true

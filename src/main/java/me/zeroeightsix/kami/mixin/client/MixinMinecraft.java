@@ -96,9 +96,11 @@ public class MixinMinecraft {
         info.cancel();
     }
 
-    @Redirect(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V"))
-    public void displayCrashReport(Minecraft minecraft, CrashReport crashReport) {
-        save();
+    @Inject(method = "run", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
+    public void displayCrashReport(CallbackInfo _info) {
+       save();
+       DiscordPresence.end();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))

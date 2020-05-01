@@ -44,9 +44,12 @@ public class Spammer extends Module {
         } catch (FileNotFoundException exception) {
             sendErrorMessage(getChatName() + "Couldn't find a file called '&7spammer.txt&f' inside your '&7.minecraft&f' folder, disabling");
             disable();
+            return;
         } catch (IOException exception) {
             sendErrorMessage(exception.toString());
+            return;
         }
+        sendChatMessage(getChatName() + "Found '&7spammer.txt&f'!");
 
     }
 

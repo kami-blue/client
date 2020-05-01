@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.module.Module;
@@ -41,7 +42,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         final int[] y = {2};
         activeMods = MODULE_MANAGER.getModuleT(ActiveModules.class);
 
-        if (component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
+        if (activeMods.potion.getValue() && component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
             y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
 
         final float[] hue = {(System.currentTimeMillis() % (360 * activeMods.getRainbowSpeed())) / (360f * activeMods.getRainbowSpeed())};
@@ -82,7 +83,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             }
 
             String hudInfo = module.getHudInfo();
-            String text = activeMods.fHax() + module.getName() + (hudInfo == null ? "" : " " + KamiMod.colour + "7" + hudInfo);
+            String text = activeMods.getAlignedText(module.getName(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "f"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
             int textWidth = renderer.getStringWidth(text);
             int textHeight = renderer.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;

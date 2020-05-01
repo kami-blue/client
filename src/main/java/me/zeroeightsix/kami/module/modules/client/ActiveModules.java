@@ -29,6 +29,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 )
 public class ActiveModules extends Module {
     private Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
+    public Setting<Boolean> potion = register(Settings.b("Potions Move", false));
     public Setting<Mode> mode = register(Settings.e("Mode", Mode.RAINBOW));
     private Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("Speed R").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
     public Setting<Integer> saturationR = register(Settings.integerBuilder().withName("Saturation R").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
@@ -110,9 +111,21 @@ public class ActiveModules extends Module {
         else return rSpeed;
     }
 
-    public String fHax() {
-        if (forgeHax.getValue()) return ">";
-        else return "";
+    public String getAlignedText(String name, String hudInfo, boolean right) {
+        String aligned;
+        if (right) {
+            aligned = hudInfo + " " + name;
+        } else {
+            aligned = name + " " + hudInfo;
+        }
+
+        if (!forgeHax.getValue()) {
+            return aligned;
+        } else if (right) {
+            return aligned + "<";
+        } else {
+            return ">" + aligned;
+        }
     }
 
     public enum Mode { RAINBOW, CUSTOM, CATEGORY, INFO_OVERLAY }
