@@ -83,7 +83,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             }
 
             String hudInfo = module.getHudInfo();
-            String text = activeMods.getAlignedText(module.getName(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "f"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
+            String text = activeMods.getAlignedText(module.getName(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
             int textWidth = renderer.getStringWidth(text);
             int textHeight = renderer.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;
