@@ -27,16 +27,16 @@ class InventoryMove : Module() {
 
         // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
         if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-            mc.player.rotationYaw = mc.player.rotationYaw - speed.value;
+            mc.player.rotationYaw = mc.player.rotationYaw - speed.value
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-            mc.player.rotationYaw = mc.player.rotationYaw + speed.value;
+            mc.player.rotationYaw = mc.player.rotationYaw + speed.value
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            mc.player.rotationPitch = (mc.player.rotationPitch - speed.value).coerceAtLeast(-90f);
+            mc.player.rotationPitch = (mc.player.rotationPitch - speed.value).coerceAtLeast(-90f)
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            mc.player.rotationPitch = (mc.player.rotationPitch + speed.value).coerceAtMost(90f);
+            mc.player.rotationPitch = (mc.player.rotationPitch + speed.value).coerceAtMost(90f)
         }
     }
 }
