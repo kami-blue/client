@@ -24,8 +24,13 @@ export COMMIT_LAST_FULL="$(git log --format=%H -1)"
 
 git fetch kamiblue master
 git fetch origin master
+
+sleep 0.5
+
 git reset --hard kamiblue/master
 git push --force origin HEAD:master
+
+sleep 1
 
 export COMMIT_TRIM="$(git log --format=%h -1)"
 
@@ -36,5 +41,7 @@ fi
 rm -rf build/libs
 
 ./scripts/preHook.sh
+sleep 1
 ./gradlew build
+sleep 2
 ./scripts/hook.sh
