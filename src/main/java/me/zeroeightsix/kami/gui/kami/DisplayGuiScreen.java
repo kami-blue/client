@@ -109,6 +109,11 @@ public class DisplayGuiScreen extends GuiScreen {
         }
     }
 
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
     public static int getScale() {
         int scaleFactor = 0;
         int scale = Wrapper.getMinecraft().gameSettings.guiScale;
