@@ -23,7 +23,7 @@ import java.util.Comparator;
 )
 public class AutoRemount extends Module
 {
-    private Setting<Boolean> boat = register(Settings.b("Horses", true));
+    private Setting<Boolean> boat = register(Settings.b("Boats", true));
     private Setting<Boolean> horse = register(Settings.b("Horse", true));
     private Setting<Boolean> skeletonHorse = register(Settings.b("SkeletonHorse", true));
     private Setting<Boolean> donkey = register(Settings.b("Donkey", true));
