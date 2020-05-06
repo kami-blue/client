@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.Coordinate;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.block.Block;
@@ -183,7 +184,7 @@ public class Search extends Module {
     });
 
     private void reloadChunks() {
-        BlockPos pcoords = getCurrentCoord();
+        Coordinate pcoords = getCurrentCoord();
         int renderdist = mc.gameSettings.renderDistanceChunks;
         if (renderdist > 8) {
             renderdist = 8;

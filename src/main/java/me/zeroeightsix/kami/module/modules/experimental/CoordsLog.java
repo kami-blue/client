@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.CoordUtil;
-import net.minecraft.util.math.BlockPos;
+import me.zeroeightsix.kami.util.Coordinate;
 
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
@@ -31,7 +31,7 @@ public class CoordsLog extends Module {
             playerIsDead = false;
         }
         if (!playerIsDead && 0 >= mc.player.getHealth() && forceLogOnDeath.getValue()) {
-            BlockPos deathPoint = logCoordinates("deathPoint");
+            Coordinate deathPoint = logCoordinates("deathPoint");
             if (deathInChat.getValue()) {
                 sendChatMessage("Player died at " + deathPoint.x + " " + deathPoint.y + " " + deathPoint.z);
                 playerIsDead = true;
@@ -48,7 +48,7 @@ public class CoordsLog extends Module {
             startTime = System.currentTimeMillis();
         if (startTime + (delay.getValue() * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
             startTime = System.currentTimeMillis();
-            BlockPos pos = CoordUtil.getCurrentCoord();
+            Coordinate pos = CoordUtil.getCurrentCoord();
             String currentCoord = pos.toString();
             if (checkDuplicates.getValue()) {
                 if (!currentCoord.equals(previousCoord)) {
@@ -62,7 +62,7 @@ public class CoordsLog extends Module {
         }
     }
 
-    private BlockPos logCoordinates(String name) {
+    private Coordinate logCoordinates(String name) {
         return CoordUtil.writePlayerCoords(name);
     }
 

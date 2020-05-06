@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -21,18 +20,19 @@ public class CoordUtil {
     private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
     public static final String coordsLogFilename = "KAMIBlueCoords.json";
     private static Gson gson = new GsonBuilder().create();
-    public static BlockPos getCurrentCoord() {
+
+    public static Coordinate getCurrentCoord() {
         Minecraft mc = Minecraft.getMinecraft();
-        return new BlockPos((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ);
+        return new Coordinate((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ);
     }
 
-    public static BlockPos writePlayerCoords(String locationName) {
-        BlockPos coords = getCurrentCoord();
+    public static Coordinate writePlayerCoords(String locationName) {
+        Coordinate coords = getCurrentCoord();
         writeCoords(coords, locationName, coordsLogFilename);
         return coords;
     }
 
-    public static void writeCoords(BlockPos xyz, String locationName, String filename) {
+    public static void writeCoords(Coordinate xyz, String locationName, String filename) {
         try {
             ArrayList<CoordinateInfo> coords = readCoords(filename);
             coords.add(formatter(xyz, locationName));
@@ -45,7 +45,7 @@ public class CoordUtil {
         }
     }
 
-    private static CoordinateInfo formatter(BlockPos xyz, String locationName) {
+    private static CoordinateInfo formatter(Coordinate xyz, String locationName) {
         String time = sdf.format(new Date());
         return new CoordinateInfo(xyz, locationName, time);
     }

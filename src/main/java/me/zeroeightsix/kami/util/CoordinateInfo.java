@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util;
 
-import net.minecraft.util.math.BlockPos;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author wnuke
@@ -8,24 +8,28 @@ import net.minecraft.util.math.BlockPos;
  */
 
 public class CoordinateInfo {
-    public BlockPos xyz;
+    @SerializedName("position")
+    public Coordinate xyz;
+    @SerializedName("name")
     public String name;
+    @SerializedName("time")
     public String time;
+    @SerializedName("date")
     public String date;
 
     public CoordinateInfo(int x, int y, int z, String nameSet, String timeSet) {
-        xyz = new BlockPos(x, y, z);
+        xyz = new Coordinate(x, y, z);
         name = nameSet;
         time = timeSet;
     }
 
-    public CoordinateInfo(BlockPos pos, String nameSet, String timeSet) {
+    public CoordinateInfo(Coordinate pos, String nameSet, String timeSet) {
         xyz = pos;
         name = nameSet;
         time = timeSet;
     }
 
-    public BlockPos getPos() {
+    public Coordinate getPos() {
         return xyz;
     }
 

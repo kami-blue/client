@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.util.Coordinate;
 import me.zeroeightsix.kami.util.CoordinateInfo;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -97,7 +97,7 @@ public class CoordsCommand extends Command {
         }
         return message;
     }
-    private void confirm(String name, BlockPos xyz) {
+    private void confirm(String name, Coordinate xyz) {
         sendChatMessage("Added coordinate " + xyz.x + " " + xyz.y + " " + xyz.z + " with name " + name + ".");
     }
 }
