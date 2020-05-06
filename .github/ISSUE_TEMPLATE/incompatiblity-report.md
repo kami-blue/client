@@ -1,7 +1,7 @@
 ---
 name: Incompatibility Report
 about: Incompatible with another module
-labels: -incompatible
+labels: !incompatible
 
 ---
 

@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.gui.kami.component.BindButton;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
+import me.zeroeightsix.kami.module.modules.movement.InventoryMove;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -109,7 +109,7 @@ public class DisplayGuiScreen extends GuiScreen {
             gui.handleKeyUp(keyCode);
         }
     }
-
+    
     public static int getScale() {
         int scaleFactor = 0;
         int scale = Wrapper.getMinecraft().gameSettings.guiScale;

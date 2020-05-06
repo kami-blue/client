@@ -75,8 +75,16 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
     }
 
     @Override
-    public void setValueFromString(String value) {
+    public void setValueFromString(String value, boolean isBoolean) {
         JsonParser jp = new JsonParser();
+        if (isBoolean && value.equalsIgnoreCase("toggle") && this.getValue().equals(true)) {
+            setValue(this.converter().reverse().convert(jp.parse("false")));
+            return;
+        }
+        else if (isBoolean && value.equalsIgnoreCase("toggle")) {
+            setValue(this.converter().reverse().convert(jp.parse("true")));
+            return;
+        }
         setValue(this.converter().reverse().convert(jp.parse(value)));
     }
 

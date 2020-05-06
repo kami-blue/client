@@ -28,7 +28,7 @@ public class StringSetting extends Setting<String> {
     }
 
     @Override
-    public void setValueFromString(String s) {
+    public void setValueFromString(String s, boolean isBoolean) {
         setValue(s);
     }
 }

@@ -35,6 +35,10 @@ public class Wrapper {
         return Keyboard.getKeyIndex(keyname.toUpperCase());
     }
 
+    public static String getKeyName(int keycode) {
+        return Keyboard.getKeyName(keycode);
+    }
+
     public static FontRenderer getFontRenderer() {
         return fontRenderer;
     }

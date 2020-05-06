@@ -28,7 +28,7 @@ public class ModuleManager {
     private Map<Class<? extends Module>, Module> modules = new LinkedHashMap<>();
 
     /**
-     * Registers modules, and then calls updateLookup() for indexing.
+     * Registers modules
      */
     public void register() {
         KamiMod.log.info("Registering modules...");

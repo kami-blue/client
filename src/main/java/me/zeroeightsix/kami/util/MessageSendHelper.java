@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.command.Command;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -25,9 +26,21 @@ public class MessageSendHelper {
         sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
     }
 
-    public static void sendCustomMessage(String message, String colour) {
-        sendRawChatMessage("&7[" + colour + KamiMod.KAMI_KANJI + "&7] &r" + message);
+    public static void sendKamiCommand(String command, boolean addToHistory) {
+        try {
+            if (addToHistory) {
+                Wrapper.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(command);
+            }
+            if (command.length() > 1)
+                KamiMod.getInstance().commandManager.callCommand(command.substring(Command.getCommandPrefix().length() - 1));
+            else
+                sendChatMessage("Please enter a command!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendChatMessage("Error occurred while running command! (" + e.getMessage() + "), check the log for info!");
+        }
     }
+
 
     public static void sendStringChatMessage(String[] messages) {
         sendChatMessage("");

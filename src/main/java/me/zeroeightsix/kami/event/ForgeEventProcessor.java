@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent;
 import me.zeroeightsix.kami.gui.UIRenderer;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
+import me.zeroeightsix.kami.module.MacroManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.BossStack;
@@ -235,6 +236,7 @@ public class ForgeEventProcessor {
             Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
         } else {
             MODULE_MANAGER.onBind(Keyboard.getEventKey());
+            MacroManager.INSTANCE.sendMacro(Keyboard.getEventKey());
         }
     }
 
@@ -248,10 +250,10 @@ public class ForgeEventProcessor {
                 if (event.getMessage().length() > 1)
                     KamiMod.getInstance().commandManager.callCommand(event.getMessage().substring(Command.getCommandPrefix().length() - 1));
                 else
-                    sendChatMessage("Please enter a command.");
+                    sendChatMessage("Please enter a command!");
             } catch (Exception e) {
                 e.printStackTrace();
-                sendChatMessage("Error occured while running command! (" + e.getMessage() + ")");
+                sendChatMessage("Error occured while running command! (" + e.getMessage() + "), check the log for info!");
             }
             event.setMessage("");
         }

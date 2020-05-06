@@ -45,11 +45,11 @@ public class InfoCalculator {
     // Speed {
     private static DecimalFormat formatter = new DecimalFormat("#.#");
 
-    public static String speed(boolean useUnitKmH, Minecraft mc) {
+    public static String speed(boolean useUnitKmH, Minecraft mc, int places) {
         float currentTps = mc.timer.tickLength / 1000.0f;
         double multiply = 1.0;
         if (useUnitKmH) multiply = 3.6; // convert mps to kmh
-        return formatter.format(((MathHelper.sqrt(Math.pow(coordsDiff('x', mc), 2) + Math.pow(coordsDiff('z', mc), 2)) / currentTps)) * multiply);
+        return "" + MathsUtils.round(((MathHelper.sqrt(Math.pow(coordsDiff('x', mc), 2) + Math.pow(coordsDiff('z', mc), 2)) / currentTps)) * multiply, places);
     }
 
     private static double coordsDiff(char s, Minecraft mc) {

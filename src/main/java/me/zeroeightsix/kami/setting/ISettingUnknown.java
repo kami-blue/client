@@ -28,5 +28,5 @@ public interface ISettingUnknown {
      * Convert & set for .set & other "generic" setter cases.
      * Will throw if unconvertable.
      */
-    void setValueFromString(String value);
+    void setValueFromString(String value, boolean isBoolean);
 }

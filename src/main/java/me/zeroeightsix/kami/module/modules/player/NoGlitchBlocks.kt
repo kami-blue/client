@@ -17,11 +17,12 @@ import net.minecraft.util.math.BlockPos
  *
  * You can view the source code here:
  * https://github.com/gbl/AntiGhost/
+ * TODO: fix kicks from this
  */
 @Module.Info(
         name = "NoGlitchBlocks",
-        description = "Prevents blocks desyncing and creating ghost blocks",
-        category = Module.Category.PLAYER
+        description = "Prevents blocks desyncing and creating ghost blocks (e: kicks)",
+        category = Module.Category.EXPERIMENTAL
 )
 class NoGlitchBlocks : Module() {
     private val range = register(Settings.integerBuilder("Range").withRange(1, 5).withValue(4).build())
