@@ -23,9 +23,9 @@ import net.minecraft.util.math.RayTraceResult
 )
 class NoFall : Module() {
     private val fallMode = register(Settings.e<FallMode>("Mode", FallMode.PACKET))
-    private val pickup = register(Settings.booleanBuilder("Pickup").withValue(true).withVisibility { v: Boolean? -> fallMode.value == FallMode.BUCKET }.build())
-    private val distance = register(Settings.integerBuilder("Distance").withValue(3).withMinimum(1).withMaximum(10).withVisibility { v: Int? -> fallMode.value == FallMode.BUCKET }.build())
-    private val pickupDelay = register(Settings.integerBuilder("Pickup Delay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { v: Int? -> fallMode.value == FallMode.BUCKET && pickup.value }.build())
+    private val pickup = register(Settings.booleanBuilder("Pickup").withValue(true).withVisibility { fallMode.value == FallMode.BUCKET }.build())
+    private val distance = register(Settings.integerBuilder("Distance").withValue(3).withMinimum(1).withMaximum(10).withVisibility { fallMode.value == FallMode.BUCKET }.build())
+    private val pickupDelay = register(Settings.integerBuilder("Pickup Delay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { fallMode.value == FallMode.BUCKET && pickup.value }.build())
     private var last: Long = 0
 
     @EventHandler

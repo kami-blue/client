@@ -31,9 +31,9 @@ class Tracers : Module() {
     private val renderInvis = register(Settings.b("Invisible", false))
     private val customColours = register(Settings.booleanBuilder("Custom Colours").withValue(true).build())
     private val opacity = register(Settings.floatBuilder("Opacity").withRange(0f, 1f).withValue(1f).build())
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { v: Int? -> customColours.value }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { v: Int? -> customColours.value }.build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { v: Int? -> customColours.value }.build())
+    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { customColours.value }.build())
+    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { customColours.value }.build())
+    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { customColours.value }.build())
     private var cycler = HueCycler(3600)
     override fun onWorldRender(event: RenderEvent) {
         GlStateManager.pushMatrix()

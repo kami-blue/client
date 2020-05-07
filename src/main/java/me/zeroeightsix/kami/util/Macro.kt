@@ -12,7 +12,7 @@ import java.util.*
  * Created by dominikaaaa on 04/05/20
  */
 object Macro {
-    private val gson = GsonBuilder().create()
+    private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val configName = "KAMIBlueMacros.json"
     private val file = File(configName)
 

@@ -29,10 +29,10 @@ class NoSlowDown : Module() {
     var cobweb: Setting<Boolean> = register(Settings.b("Cobweb", true))
     private val slime = register(Settings.b("Slime", true))
     private val allItems = register(Settings.b("All Items", false))
-    private val food = register(Settings.booleanBuilder().withName("Food").withValue(true).withVisibility { v: Boolean? -> !allItems.value }.build())
-    private val bow = register(Settings.booleanBuilder().withName("Bows").withValue(true).withVisibility { v: Boolean? -> !allItems.value }.build())
-    private val potion = register(Settings.booleanBuilder().withName("Potions").withValue(true).withVisibility { v: Boolean? -> !allItems.value }.build())
-    private val shield = register(Settings.booleanBuilder().withName("Shield").withValue(true).withVisibility { v: Boolean? -> !allItems.value }.build())
+    private val food = register(Settings.booleanBuilder().withName("Food").withValue(true).withVisibility { !allItems.value }.build())
+    private val bow = register(Settings.booleanBuilder().withName("Bows").withValue(true).withVisibility { !allItems.value }.build())
+    private val potion = register(Settings.booleanBuilder().withName("Potions").withValue(true).withVisibility { !allItems.value }.build())
+    private val shield = register(Settings.booleanBuilder().withName("Shield").withValue(true).withVisibility { !allItems.value }.build())
 
     /*
      * InputUpdateEvent is called just before the player is slowed down @see EntityPlayerSP.onLivingUpdate)

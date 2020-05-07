@@ -143,7 +143,7 @@ public class AutoTrap extends Module {
 
         findClosestTarget();
 
-        if (closestTarget == null) {
+        if (closestTarget == null || lastTargetName == null) {
             return;
         }
 

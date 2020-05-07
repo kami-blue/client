@@ -17,8 +17,8 @@ import me.zeroeightsix.kami.setting.Settings
 )
 class Timer : Module() {
     private val slow = register(Settings.b("Slow Mode", false))
-    private val tickNormal = register(Settings.floatBuilder("Tick N").withMinimum(1f).withMaximum(10f).withValue(2.0f).withVisibility { v: Float? -> !slow.value }.build())
-    private val tickSlow = register(Settings.floatBuilder("Tick S").withMinimum(1f).withMaximum(10f).withValue(8f).withVisibility { v: Float? -> slow.value }.build())
+    private val tickNormal = register(Settings.floatBuilder("Tick N").withMinimum(1f).withMaximum(10f).withValue(2.0f).withVisibility { !slow.value }.build())
+    private val tickSlow = register(Settings.floatBuilder("Tick S").withMinimum(1f).withMaximum(10f).withValue(8f).withVisibility { slow.value }.build())
     public override fun onDisable() {
         mc.timer.tickLength = 50.0f
     }

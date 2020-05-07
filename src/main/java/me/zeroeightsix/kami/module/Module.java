@@ -146,11 +146,14 @@ public class Module {
 
     protected void onDisable() {}
 
+    protected void onToggle() {}
+
     public void toggle() { setEnabled(!isEnabled()); }
 
     public void enable() {
         enabled.setValue(true);
         onEnable();
+        onToggle();
         if (!alwaysListening)
             KamiMod.EVENT_BUS.subscribe(this);
     }
@@ -158,6 +161,7 @@ public class Module {
     public void disable() {
         enabled.setValue(false);
         onDisable();
+        onToggle();
         if (!alwaysListening)
             KamiMod.EVENT_BUS.unsubscribe(this);
     }
