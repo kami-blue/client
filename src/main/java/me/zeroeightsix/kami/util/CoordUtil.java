@@ -19,7 +19,7 @@ import java.util.Date;
 public class CoordUtil {
     private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
     public static final String coordsLogFilename = "KAMIBlueCoords.json";
-    private static Gson gson = new GsonBuilder().create();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static Coordinate getCurrentCoord() {
         Minecraft mc = Minecraft.getMinecraft();
