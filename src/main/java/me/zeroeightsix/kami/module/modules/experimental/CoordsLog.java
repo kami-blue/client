@@ -33,7 +33,7 @@ public class CoordsLog extends Module {
         if (!playerIsDead && 0 >= mc.player.getHealth() && forceLogOnDeath.getValue()) {
             Coordinate deathPoint = logCoordinates("deathPoint");
             if (deathInChat.getValue()) {
-                sendChatMessage("Player died at " + deathPoint.x + " " + deathPoint.y + " " + deathPoint.z);
+                sendChatMessage("You died at " + deathPoint.x + " " + deathPoint.y + " " + deathPoint.z);
                 playerIsDead = true;
             } else {
                 playerIsDead = true;

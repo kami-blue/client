@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.module.modules.render.Search;
 import net.minecraft.block.Block;
 
@@ -15,7 +16,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.*;
  */
 public class SearchCommand extends Command {
     public SearchCommand() {
-        super("search", new ChunkBuilder().append("help").append("+block|-block|=block").append("list|defaults|clear").build());
+        super("search", new ChunkBuilder().append("command", true, new EnumParser(new String[]{"help", "+", "-", "=", "list", "defaults", "clear"})).build());
         setDescription("Allows you to add or remove blocks from the &fSearch &7module");
     }
 
@@ -38,12 +39,12 @@ public class SearchCommand extends Command {
                 continue;
             if (s.equalsIgnoreCase("help")) {
                 sendChatMessage("Available options: \n" +
-                        "+block: Adds a block to the list\n" +
-                        "-block: Removes a block from the list\n" +
-                        "=block: Changes the list to only that block\n" +
-                        "list: Prints the list of selected blocks\n" +
-                        "defaults: Resets the list to the default list\n" +
-                        "clear: Removes all blocks from the " + search.getName() + " block list");
+                        "  +block: Adds block to the list\n" +
+                        "  -block: Removes block from the list\n" +
+                        "  =block: Changes the list to only contain block\n" +
+                        "  list: Prints the list of selected blocks\n" +
+                        "  defaults: Resets the list to the default list\n" +
+                        "  clear: Removes all blocks from the " + search.getName() + " block list");
             } else if (s.equalsIgnoreCase("override")) {
                 search.overrideWarning.setValue(true);
                 sendWarningMessage(search.getChatName() + "Override for Intel Integrated GPUs enabled!");
