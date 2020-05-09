@@ -19,12 +19,17 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent
  * Updated by polymer 10 March 2020
  * Updated by dominikaaaa on 12/04/20
  */
-@Module.Info(name = "AutoEZ", category = Module.Category.COMBAT, description = "Sends an insult in chat after killing someone")
+@Module.Info(
+        name = "AutoEZ",
+        category = Module.Category.COMBAT,
+        description = "Sends an insult in chat after killing someone"
+)
 class AutoEZ : Module() {
     @JvmField
 	var mode: Setting<Mode> = register(Settings.e("Mode", Mode.ONTOP))
     @JvmField
 	var customText: Setting<String> = register(Settings.stringBuilder("Custom Text").withValue("unchanged").withConsumer { _: String?, _: String? -> }.build())
+
     private var focus: EntityPlayer? = null
     private var hasBeenCombat = 0
 

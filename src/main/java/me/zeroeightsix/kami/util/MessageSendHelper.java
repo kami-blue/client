@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -15,15 +16,30 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 public class MessageSendHelper {
     public static void sendChatMessage(String message) {
-        sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL)) {
+            sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        } else {
+            KamiMod.log.info("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        }
     }
 
     public static void sendWarningMessage(String message) {
-        sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN)) {
+            sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        } else {
+            KamiMod.log.warn("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        }
     }
 
     public static void sendErrorMessage(String message) {
-        sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ERROR)) {
+            sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+        } else {
+            KamiMod.log.error("&7[&4\" + KamiMod.KAMI_KANJI + \"&7] &r" + message);
+        }
     }
 
     public static void sendKamiCommand(String command, boolean addToHistory) {

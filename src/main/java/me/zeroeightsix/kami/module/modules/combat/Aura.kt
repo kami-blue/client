@@ -19,7 +19,11 @@ import net.minecraft.util.math.Vec3d
  * Updated by dominikaaaa on 10/04/20
  * Updated by bot-debug on 10/04/20
  */
-@Module.Info(name = "Aura", category = Module.Category.COMBAT, description = "Hits entities around you")
+@Module.Info(
+        name = "Aura",
+        category = Module.Category.COMBAT,
+        description = "Hits entities around you"
+)
 class Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
     private val autoSpamDelay = register(Settings.booleanBuilder("Auto Spam Delay").withValue(true).withVisibility { delayMode.value == WaitMode.SPAM }.build())

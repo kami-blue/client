@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
+import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
@@ -18,6 +19,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by 086 on 23/08/2017.
@@ -146,7 +150,11 @@ public class Module {
 
     protected void onDisable() {}
 
-    protected void onToggle() {}
+    protected void onToggle() {
+        if (!name.getValue().equals("clickGUI") && MODULE_MANAGER.getModuleT(CommandConfig.class).toggleMessages.getValue()) {
+            sendChatMessage(name.getValue() + (enabled.getValue() ? " &aenabled" : " &cdisabled"));
+        }
+    }
 
     public void toggle() { setEnabled(!isEnabled()); }
 

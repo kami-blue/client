@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.module.modules.chat;
+package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.Module
 
 /**
  * Created by 086 on 12/12/2017.
@@ -13,5 +13,4 @@ import me.zeroeightsix.kami.module.Module;
         description = "Allows you to open GUIs in portals",
         showOnArray = Module.ShowOnArray.OFF
 )
-public class PortalChat extends Module {
-}
+class PortalChat : Module()

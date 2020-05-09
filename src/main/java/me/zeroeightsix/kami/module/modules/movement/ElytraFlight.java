@@ -40,8 +40,8 @@ public class ElytraFlight extends Module {
     private Setting<Float> speedHighway = register(Settings.floatBuilder("Speed H").withValue(1.8f).withMaximum(1.8f).withVisibility(v -> !overrideMaxSpeed.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> speedHighwayOverride = register(Settings.floatBuilder("Speed H O").withValue(1.8f).withVisibility(v -> overrideMaxSpeed.getValue() && mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> speedControl = register(Settings.floatBuilder("Speed C").withValue(1.8f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
-    private Setting<Float> fallSpeedHighway = register(Settings.floatBuilder("Fall Speed H").withValue(0.000050000002f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
-    private Setting<Float> fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.000050000002f).withMaximum(0.3f).withMinimum(0.0f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
+    private Setting<Float> fallSpeedHighway = register(Settings.floatBuilder("Fall Speed H").withValue(0.000100000002f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
+    private Setting<Float> fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.000100000002f).withMaximum(0.3f).withMinimum(0.0f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.CONTROL)).build());
     private Setting<Float> fallSpeed = register(Settings.floatBuilder("Fall Speed").withValue(-.003f).withVisibility(v -> !mode.getValue().equals(ElytraFlightMode.CONTROL) && !mode.getValue().equals(ElytraFlightMode.HIGHWAY)).build());
     private Setting<Float> upSpeedBoost = register(Settings.floatBuilder("Up Speed B").withValue(0.08f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.BOOST)).build());
     private Setting<Float> downSpeedBoost = register(Settings.floatBuilder("Down Speed B").withValue(0.04f).withVisibility(v -> mode.getValue().equals(ElytraFlightMode.BOOST)).build());
@@ -268,8 +268,8 @@ public class ElytraFlight extends Module {
         speedHighway.setValue(1.8f);
         speedHighwayOverride.setValue(1.8f);
         speedControl.setValue(1.8f);
-        fallSpeedHighway.setValue(.000050000002f);
-        fallSpeedControl.setValue(.000050000002f);
+        fallSpeedHighway.setValue(0.000100000002f);
+        fallSpeedControl.setValue(0.000100000002f);
         fallSpeed.setValue(-.003f);
         upSpeedBoost.setValue(0.08f);
         downSpeedBoost.setValue(0.04f);

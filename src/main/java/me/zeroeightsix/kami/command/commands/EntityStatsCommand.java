@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 
 /**
  * Created by d1gress/Qther on 25/11/2017, updated on 16/12/2019
@@ -42,7 +43,7 @@ public class EntityStatsCommand extends Command {
             EntityLivingBase entity = (EntityLivingBase) mc.player.getRidingEntity();
             sendChatMessage("&6Entity Stats:\n&cMax Health: &b" + entity.getMaxHealth() + " &2HP" + "\n&cSpeed: &b" + round(43.17 * entity.getAIMoveSpeed(), 2) + " &2m/s");
         } else {
-            sendChatMessage("&4&lError: &cNot riding a compatible entity.");
+            sendErrorMessage("&4&lError: &cNot riding a compatible entity.");
         }
     }
 

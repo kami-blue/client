@@ -25,6 +25,10 @@ public class MessageDetectionHelper {
         return directSent && Pattern.compile("^to ([0-9A-z_])+:.*").matcher(message).find();
     }
 
+    public static boolean isTPA(boolean tpa, String message) {
+        return tpa && Pattern.compile("^([0-9A-z_])+ has requested to teleport to you\\..*").matcher(message).find();
+    }
+
     public static boolean isQueue(boolean queue, String message) {
         if (queue && message.contains("Position in queue:")) return true;
         else return queue && message.contains("2b2t is full");

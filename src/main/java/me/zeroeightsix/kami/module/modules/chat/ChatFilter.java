@@ -38,7 +38,6 @@ public class ChatFilter extends Module {
     private static List<String> tempLines = new ArrayList<>();
     private static String[] chatFilter;
 
-
     @EventHandler
     public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
         if (mc.player == null) return;
@@ -78,7 +77,7 @@ public class ChatFilter extends Module {
             String line;
             tempLines.clear();
             while ((line = bufferedReader.readLine()) != null) {
-                while (customMatch("[ ]$", line)) { /* remove trailing spaces */
+                while (customMatch("[ ]$", line) || customMatch("^[ ]", line)) { /* remove trailing spaces */
                     line = line.substring(0, line.length() - 1);
                 }
                 tempLines.add(line);
@@ -92,6 +91,8 @@ public class ChatFilter extends Module {
             sendErrorMessage(exception.toString());
         }
         if (isDisabled()) return;
+
+        sendChatMessage(getChatName() + "Found '&7chat_filter.txt&f'!");
 
         if (!hasRunInfo.getValue()) {
             sendChatMessage(getChatName() + "Tip: this supports &lregex&r if you know how to use those. This also uses &lword boundaries&r meaning it will match whole words, not part of a word. Eg if your filter has 'hell' then 'hello' will not be filtered.");

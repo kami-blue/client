@@ -12,16 +12,24 @@ import me.zeroeightsix.kami.util.MessageSendHelper
 @Module.Info(
         name = "CommandConfig",
         category = Module.Category.CLIENT,
-        description = "Configures PrefixChat and Alias options",
+        description = "Configures client chat related stuff",
         showOnArray = Module.ShowOnArray.OFF
 )
 class CommandConfig : Module() {
     @JvmField
     var aliasInfo: Setting<Boolean> = register(Settings.b("Alias Info", true))
     @JvmField
-    var prefixChat: Setting<Boolean> = register(Settings.b("PrefixChat", true))
+    var prefixChat: Setting<Boolean> = register(Settings.b("Prefix Chat", true))
+    @JvmField
+    var toggleMessages: Setting<Boolean> = register(Settings.b("Toggle Messages", false))
+    @JvmField
+    var logLevel: Setting<LogLevel> = register(Settings.e("Log Level", LogLevel.ALL))
     @JvmField
     var customTitle: Setting<Boolean> = register(Settings.b("Window Title", true))
+
+    enum class LogLevel {
+        NONE, ERROR, WARN, ALL
+    }
 
     public override fun onDisable() {
         sendDisableMessage()
