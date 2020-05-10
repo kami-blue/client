@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.CoordUtil
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -14,6 +15,7 @@ import java.util.*
  * Created on 26 October 2019 by hub
  * Updated 12 January 2020 by hub
  * Updated by polymer on 23/02/20
+ * Updated by Sorzon on 10/05/20
  */
 @Module.Info(
         name = "VisualRange",
@@ -24,6 +26,7 @@ class VisualRange : Module() {
     private val playSound = register(Settings.b("Play Sound", false))
     private val leaving = register(Settings.b("Count Leaving", false))
     private val uwuAura = register(Settings.b("UwU Aura", false))
+    private val logToFile = register(Settings.b("Log To File", false))
 
     private var knownPlayers: MutableList<String>? = null
 
@@ -46,6 +49,10 @@ class VisualRange : Module() {
                     } else {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
+                    if (logToFile.value) {
+                        CoordUtil.writePlayerCoords(playerName + " spotted!");
+                     }
+
                     if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
                     return
                 }
