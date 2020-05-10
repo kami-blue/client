@@ -218,7 +218,7 @@ public class Search extends Module {
         try {
             for (BlockPos blockPos : blocks) {
                 int side = GeometryMasks.Quad.ALL;
-                Block block = mc.world.getBlockState(blockPos).getBlock();
+                Block block = chunk.getBlockState(blockPos).getBlock();
                 if (blocksToFind.contains(block)) {
                     Tuple<Integer, Integer> tuple = getTuple(side, block);
                     foundBlocks.put(blockPos, tuple);
