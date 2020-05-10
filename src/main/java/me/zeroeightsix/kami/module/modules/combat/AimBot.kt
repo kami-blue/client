@@ -24,15 +24,15 @@ import kotlin.math.atan2
         category = Module.Category.COMBAT
 )
 class AimBot : Module() {
-    private val range = register(Settings.integerBuilder("Range").withMinimum(4).withMaximum(24).withValue(16))
-    private val useBow = register(Settings.booleanBuilder("Use Bow").withValue(true))
-    private val ignoreWalls = register(Settings.booleanBuilder("Ignore Walls").withValue(true))
-    private val targetPlayers = register(Settings.booleanBuilder("Target Players").withValue(true))
-    private val targetFriends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { targetPlayers.value == true })
-    private val targetSleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { targetPlayers.value == true })
-    private val targetMobs = register(Settings.booleanBuilder("Target Mobs").withValue(false))
-    private val targetHostileMobs = register(Settings.booleanBuilder("Hostile").withValue(true).withVisibility { targetMobs.value == true })
-    private val targetPassiveMobs = register(Settings.booleanBuilder("Passive").withValue(false).withVisibility { targetMobs.value == true })
+    private val range = register(Settings.integerBuilder("Range").withMinimum(4).withMaximum(24).withValue(16).build())
+    private val useBow = register(Settings.booleanBuilder("Use Bow").withValue(true).build())
+    private val ignoreWalls = register(Settings.booleanBuilder("Ignore Walls").withValue(true).build())
+    private val targetPlayers = register(Settings.booleanBuilder("Target Players").withValue(true).build())
+    private val targetFriends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { targetPlayers.value == true }.build())
+    private val targetSleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { targetPlayers.value == true }.build())
+    private val targetMobs = register(Settings.booleanBuilder("Target Mobs").withValue(false).build())
+    private val targetHostileMobs = register(Settings.booleanBuilder("Hostile").withValue(true).withVisibility { targetMobs.value == true }.build())
+    private val targetPassiveMobs = register(Settings.booleanBuilder("Passive").withValue(false).withVisibility { targetMobs.value == true }.build())
 
     override fun onUpdate() {
         if (KamiMod.MODULE_MANAGER.getModuleT(Aura::class.java).isEnabled) {

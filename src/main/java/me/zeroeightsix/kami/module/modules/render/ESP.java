@@ -29,7 +29,7 @@ import static org.lwjgl.opengl.GL11.*;
 )
 public class ESP extends Module {
     private Setting<ESPMode> mode = register(Settings.e("Mode", ESPMode.RECTANGLE));
-    private Setting<Integer> radiusValue = register(Settings.integerBuilder("Width").withMinimum(1).withMaximum(100).withValue(25).withVisibility(v -> mode.getValue().equals(ESPMode.GLOW)));
+    private Setting<Integer> radiusValue = register(Settings.integerBuilder("Width").withMinimum(1).withMaximum(100).withValue(25).withVisibility(v -> mode.getValue().equals(ESPMode.GLOW)).build());
     private Setting<Boolean> players = register(Settings.b("Players", true));
     private Setting<Boolean> animals = register(Settings.b("Animals", false));
     private Setting<Boolean> mobs = register(Settings.b("Mobs", false));

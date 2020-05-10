@@ -25,10 +25,10 @@ import net.minecraft.util.math.ChunkPos
 )
 class StashFinder : Module() {
     private val logChests = register(Settings.b("Chests"))
-    private val chestDensity = register(Settings.integerBuilder("Min Chests").withMinimum(1).withMaximum(20).withValue(5))
+    private val chestDensity = register(Settings.integerBuilder("Min Chests").withMinimum(1).withMaximum(20).withValue(5).build())
 
     private val logShulkers = register(Settings.b("Shulkers"))
-    private val shulkerDensity = register(Settings.integerBuilder("Min Shulkers").withMinimum(1).withMaximum(20).withValue(1))
+    private val shulkerDensity = register(Settings.integerBuilder("Min Shulkers").withMinimum(1).withMaximum(20).withValue(1).build())
 
     private val logToChat = register(Settings.b("Log To Chat"))
     private val playSound = register(Settings.b("Play Sound"))

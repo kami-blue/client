@@ -18,11 +18,11 @@ import net.minecraft.network.play.client.*
 )
 class PacketCancel : Module() {
     private val all = register(Settings.b("All", false))
-    private val packetInput = register(Settings.booleanBuilder("CPacketInput").withValue(true).withVisibility { !all.value })
-    private val packetPlayer = register(Settings.booleanBuilder("CPacketPlayer").withValue(true).withVisibility { !all.value })
-    private val packetEntityAction = register(Settings.booleanBuilder("CPacketEntityAction").withValue(true).withVisibility { !all.value })
-    private val packetUseEntity = register(Settings.booleanBuilder("CPacketUseEntity").withValue(true).withVisibility { !all.value })
-    private val packetVehicleMove = register(Settings.booleanBuilder("CPacketVehicleMove").withValue(true).withVisibility { !all.value })
+    private val packetInput = register(Settings.booleanBuilder("CPacketInput").withValue(true).withVisibility { !all.value }.build())
+    private val packetPlayer = register(Settings.booleanBuilder("CPacketPlayer").withValue(true).withVisibility { !all.value }.build())
+    private val packetEntityAction = register(Settings.booleanBuilder("CPacketEntityAction").withValue(true).withVisibility { !all.value }.build())
+    private val packetUseEntity = register(Settings.booleanBuilder("CPacketUseEntity").withValue(true).withVisibility { !all.value }.build())
+    private val packetVehicleMove = register(Settings.booleanBuilder("CPacketVehicleMove").withValue(true).withVisibility { !all.value }.build())
     private var numPackets = 0
 
     @EventHandler

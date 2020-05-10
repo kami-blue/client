@@ -33,7 +33,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 public class ChatFilter extends Module {
     private Setting<Boolean> filterOwn = register(Settings.b("Filter Own", false));
     private Setting<Boolean> filterDMs = register(Settings.b("Filter DMs", false));
-    private Setting<Boolean> hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility(v -> false));
+    private Setting<Boolean> hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility(v -> false).build());
 
     private static List<String> tempLines = new ArrayList<>();
     private static String[] chatFilter;
