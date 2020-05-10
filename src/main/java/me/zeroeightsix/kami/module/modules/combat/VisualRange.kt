@@ -50,9 +50,8 @@ class VisualRange : Module() {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
                     if (logToFile.value) {
-                        CoordUtil.writePlayerCoords(playerName + " spotted!");
-                     }
-
+                        CoordUtil.writePlayerCoords("$playerName spotted!")
+                    }
                     if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
                     return
                 }
