@@ -78,13 +78,13 @@ public class CoordsCommand extends Command {
     private void listCoords(boolean stashes) {
         ArrayList<CoordinateInfo> coords = readCoords(coordsLogFilename);
         if (coords.isEmpty()) {
-            if (stashes) {
+            if (!stashes) {
                 sendChatMessage("No coordinates have been logged.");
             } else {
                 sendChatMessage("No stashes have been logged.");
             }
         } else {
-            if (stashes) {
+            if (!stashes) {
                 sendChatMessage("List of logged coordinates:");
             } else {
                 sendChatMessage("List of logged stashes:");
