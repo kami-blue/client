@@ -27,7 +27,7 @@ class ChatTimestamp : Module() {
     private val secondColour = register(Settings.e<ColourCode>("Second Colour", ColourCode.GRAY))
     private val timeTypeSetting = register(Settings.e<TimeUtil.TimeType>("Time Format", TimeUtil.TimeType.HHMM))
     private val timeUnitSetting = register(Settings.e<TimeUtil.TimeUnit>("Time Unit", TimeUtil.TimeUnit.H24))
-    private val doLocale = register(Settings.b("Show AMPM", true))
+    private val doLocale = register(Settings.booleanBuilder("Show AM/PM").withValue(true).withVisibility { timeUnitSetting.value == TimeUtil.TimeUnit.H12 }.build())
 
     @EventHandler
     var listener = Listener(EventHook { event: ClientChatReceivedEvent ->
