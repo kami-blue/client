@@ -12,6 +12,8 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.tileentity.TileEntityShulkerBox
+import net.minecraft.tileentity.TileEntityDropper
+import net.minecraft.tileentity.TileEntityDispenser
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 
@@ -21,7 +23,7 @@ import net.minecraft.util.math.ChunkPos
 @Module.Info(
         name = "StashFinder",
         category = Module.Category.MISC,
-        description = "Logs chests and shulkers around you."
+        description = "Logs chests, shulkers, droppers and dispensers around you."
 )
 class StashFinder : Module() {
     private val logChests = register(Settings.b("Chests"))
@@ -30,16 +32,24 @@ class StashFinder : Module() {
     private val logShulkers = register(Settings.b("Shulkers"))
     private val shulkerDensity = register(Settings.integerBuilder("Min Shulkers").withMinimum(1).withMaximum(20).withValue(1).build())
 
+    private val logDroppers = register(Settings.b("Droppers", false))
+    private val dropperDensity = register(Settings.integerBuilder("Min Droppers").withMinimum(1).withMaximum(20).withValue(5).build())
+
+    private val logDispensers = register(Settings.b("Dispensers", false))
+    private val dispenserDensity = register(Settings.integerBuilder("Min Dispensers").withMinimum(1).withMaximum(20).withValue(5).build())
+
     private val logToChat = register(Settings.b("Log To Chat"))
     private val playSound = register(Settings.b("Play Sound"))
 
-    private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var hot: Boolean = false) {
+    private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hot: Boolean = false) {
         val tileEntities = mutableListOf<TileEntity>()
 
         fun add(tileEntity: TileEntity) {
             when (tileEntity) {
                 is TileEntityChest -> chests++
                 is TileEntityShulkerBox -> shulkers++
+                is TileEntityDropper -> droppers++
+                is TileEntityDispenser -> dispensers++
             }
 
             tileEntities.add(tileEntity)
@@ -59,7 +69,7 @@ class StashFinder : Module() {
         }
 
         override fun toString(): String {
-            return "($chests chests, $shulkers shulkers)"
+            return "($chests chests, $shulkers shulkers, $droppers droppers, $dispensers dispensers)"
         }
     }
 
@@ -81,7 +91,7 @@ class StashFinder : Module() {
         val chunkStats = chunkData.getOrPut(chunk, { ChunkStats() })
 
         chunkStats.add(tileEntity)
-        if (chunkStats.chests >= chestDensity.value || chunkStats.shulkers >= shulkerDensity.value) {
+        if (chunkStats.chests >= chestDensity.value || chunkStats.shulkers >= shulkerDensity.value || chunkStats.droppers >= dropperDensity.value || chunkStats.dispensers >= dispenserDensity.value) {
             chunkStats.hot = true
         }
     }
@@ -90,7 +100,7 @@ class StashFinder : Module() {
         super.onUpdate()
 
         mc.world.loadedTileEntityList
-                .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) }
+                .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) }
                 .forEach { logTileEntity(it) }
 
         chunkData.values.filter { it.hot }.forEach { chunkStats ->
