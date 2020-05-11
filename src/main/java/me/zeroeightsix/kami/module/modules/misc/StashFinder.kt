@@ -23,7 +23,7 @@ import net.minecraft.util.math.ChunkPos
 @Module.Info(
         name = "StashFinder",
         category = Module.Category.MISC,
-        description = "Logs chests, shulkers, droppers and dispensers around you."
+        description = "Logs storage units in render distance."
 )
 class StashFinder : Module() {
     private val logChests = register(Settings.b("Chests"))
