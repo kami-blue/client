@@ -56,7 +56,7 @@ public class InfoOverlay extends Module {
     private Setting<Boolean> time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
     public Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.enumBuilder(TimeUtil.TimeType.class).withName("Time Format").withValue(TimeUtil.TimeType.HHMMSS).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
     public Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.enumBuilder(TimeUtil.TimeUnit.class).withName("Time Unit").withValue(TimeUtil.TimeUnit.H12).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
-    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("Time Show AMPM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
+    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("Time Show AM/PM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue() && timeUnitSetting.getValue().equals(TimeUtil.TimeUnit.H12)).build());
     public Setting<ColourTextFormatting.ColourCode> firstColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("First Colour").withValue(ColourTextFormatting.ColourCode.WHITE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
     public Setting<ColourTextFormatting.ColourCode> secondColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("Second Colour").withValue(ColourTextFormatting.ColourCode.BLUE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
 
