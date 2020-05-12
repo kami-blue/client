@@ -22,7 +22,7 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
         description = "Pathfinding in a specific direction."
 )
 public class AutoWalk extends Module {
-    public Setting<AutoWalkMode> mode = register(Settings.e("Mode", AutoWalkMode.FORWARD));
+    public Setting<AutoWalkMode> mode = register(Settings.e("Mode", AutoWalkMode.BARITONE));
     public static String direction;
 
     @EventHandler
