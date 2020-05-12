@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.mc;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
-import me.zeroeightsix.kami.module.modules.movement.BaritoneWalk;
+import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMultiplayer;
@@ -42,9 +42,9 @@ public class KamiGuiAntiDisconnect extends GuiScreen {
                 boolean single = mc.isIntegratedServerRunning();
                 boolean connectedToRealms = mc.isConnectedToRealms();
 
-                if (KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).isEnabled()) {
+                if (KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
                     if (button.id == 1) {
-                        KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).disable();
+                        KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).disable();
                     }
                 }
 

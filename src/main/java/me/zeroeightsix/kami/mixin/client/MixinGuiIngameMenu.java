@@ -3,9 +3,8 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.mc.KamiGuiAntiDisconnect;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
-import me.zeroeightsix.kami.module.modules.movement.BaritoneWalk;
+import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Wrapper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,8 +24,8 @@ public class MixinGuiIngameMenu {
                 callbackInfo.cancel();
             }
 
-            if (!KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).isEnabled()) {
-                KamiMod.MODULE_MANAGER.getModuleT(BaritoneWalk.class).disable();
+            if (!KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).disable();
             }
         }
     }

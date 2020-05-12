@@ -19,7 +19,7 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
-import me.zeroeightsix.kami.module.modules.movement.BaritoneWalk;
+import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Pair;
@@ -310,8 +310,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
 
             if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal() != null) {
-                if (MODULE_MANAGER.getModule(BaritoneWalk.class).isEnabled()) {
-                    processes.addLine("Current Process: AutoWalk (" + BaritoneWalk.direction + ")");
+                if (MODULE_MANAGER.getModule(AutoWalk.class).isEnabled() && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                    processes.addLine("Current Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
                     processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal().toString());
                 }

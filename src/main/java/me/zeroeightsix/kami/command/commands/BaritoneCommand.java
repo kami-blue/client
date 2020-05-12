@@ -11,11 +11,11 @@ public class BaritoneCommand extends Command {
 
     public BaritoneCommand() {
         super("baritone", null);
-        setDescription("Configure baritone using it's own command system. Try typing '#help'.");
+        setDescription("Configure baritone using the Baritone module in the client category or by using its command system. Try '#help'.");
     }
 
     @Override
     public void call(String[] args) {
-        sendChatMessage("KAMI Blue has Baritone integration. To configure Baritone, use Baritone's own command system. Try #help for a command list.");
+        sendChatMessage("KAMI Blue has Baritone integration. To configure Baritone, use the Baritone module or Baritone's own command system. Try #help for a command list.");
     }
 }
