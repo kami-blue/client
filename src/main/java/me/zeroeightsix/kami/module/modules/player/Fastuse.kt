@@ -24,6 +24,7 @@ class Fastuse : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build())
     private val all = register(Settings.b("All", false))
     private val bow = register(Settings.booleanBuilder().withName("Bow").withValue(true).withVisibility { !all.value }.build())
+    private val chargeState = register(Settings.integerBuilder("Fire bow on charge state").withMinimum(0).withMaximum(20).withValue(3).build())
     private val expBottles = register(Settings.booleanBuilder().withName("Exp Bottles").withValue(true).withVisibility { !all.value }.build())
     private val endCrystals = register(Settings.booleanBuilder().withName("End Crystals").withValue(true).withVisibility { !all.value }.build())
     private val fireworks = register(Settings.booleanBuilder().withName("Fireworks").withValue(false).withVisibility { !all.value }.build())
@@ -35,7 +36,7 @@ class Fastuse : Module() {
     override fun onUpdate() {
         if (mc.player == null || mc.player.isSpectator) return
 
-        if ((all.value || bow.value) && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= 3) {
+        if ((all.value || bow.value) && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= chargeState.value) {
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
             mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
             mc.player.stopActiveHand()
