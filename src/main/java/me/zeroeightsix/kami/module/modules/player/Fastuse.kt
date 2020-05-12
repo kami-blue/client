@@ -33,9 +33,9 @@ class Fastuse : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null) return
+        if (mc.player == null || mc.player.isSpectator) return
 
-        if (!mc.player.isSpectator && (all.value || bow.value && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= 3)) {
+        if ((all.value || bow.value) && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= 3) {
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
             mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
             mc.player.stopActiveHand()
