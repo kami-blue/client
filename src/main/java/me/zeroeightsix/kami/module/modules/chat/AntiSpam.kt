@@ -54,6 +54,7 @@ class AntiSpam : Module() {
     private val webLinks = register(Settings.booleanBuilder("Web Links").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val filterOwn = register(Settings.booleanBuilder("Filter Own").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val filterDMs = register(Settings.booleanBuilder("Filter DMs").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val filterServer = register(Settings.booleanBuilder("Filter server").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("Show Blocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.TWO }.build())
     private var messageHistory: ConcurrentHashMap<String, Long>? = null
 
@@ -91,7 +92,7 @@ class AntiSpam : Module() {
     private fun isSpam(message: String): Boolean {
         /* Quick bandaid fix for mc.player being null when the module is being registered, so don't register it with the map */
         val ownMessage = "^<" + mc.player.name + "> "
-        return if (!filterOwn.value && isOwn(ownMessage, message) || MessageDetectionHelper.isDirect(!filterDMs.value, message) || MessageDetectionHelper.isDirectOther(!filterDMs.value, message)) {
+        return if (!filterOwn.value && isOwn(ownMessage, message) || MessageDetectionHelper.isDirect(!filterDMs.value, message) || MessageDetectionHelper.isDirectOther(!filterDMs.value, message) || MessageDetectionHelper.isQueue(!filterServer.value, message) || MessageDetectionHelper.isRestart(!filterServer.value, message)) {
             false
         } else {
             detectSpam(removeUsername(message))
