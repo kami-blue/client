@@ -292,7 +292,7 @@ class AntiSpam : Module() {
                 "i just.*thanks to",
                 "i just.*using")
         val SPECIAL_BEGINNING = arrayOf(
-                "^[.,/?!()\\[\\]{}<>|\\-+=\\\\]")
+                "^[.,/?!()\\[\\]{}<|\\-+=\\\\]")
         val SPECIAL_ENDING = arrayOf(
                 "[/@#^()\\[\\]{}<>|\\-+=\\\\]$")
     }
