@@ -9,7 +9,8 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 /**
  * @author dominikaaaa
  * Updated by domikaaaa on 19/04/20
+ * Updated by suretic on 13/05/20
  */
 @Module.Info(
         name = "ChatFilter",
@@ -73,7 +75,7 @@ public class ChatFilter extends Module {
         BufferedReader bufferedReader;
         try {
             sendChatMessage(getChatName() + "Trying to find '&7chat_filter.txt&f'");
-            bufferedReader = new BufferedReader(new FileReader("chat_filter.txt"));
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("chat_filter.txt"), "UTF-8"));
             String line;
             tempLines.clear();
             while ((line = bufferedReader.readLine()) != null) {
