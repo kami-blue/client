@@ -91,7 +91,7 @@ class AntiSpam : Module() {
     private fun isSpam(message: String): Boolean {
         /* Quick bandaid fix for mc.player being null when the module is being registered, so don't register it with the map */
         val ownMessage = "^<" + mc.player.name + "> "
-        return if (!filterOwn.value && isOwn(ownMessage, message) || MessageDetectionHelper.isDirect(filterDMs.value, message) || MessageDetectionHelper.isDirectOther(filterDMs.value, message)) {
+        return if (!filterOwn.value && isOwn(ownMessage, message) || MessageDetectionHelper.isDirect(!filterDMs.value, message) || MessageDetectionHelper.isDirectOther(!filterDMs.value, message)) {
             false
         } else {
             detectSpam(removeUsername(message))
