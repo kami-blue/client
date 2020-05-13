@@ -10,7 +10,8 @@ import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 import java.io.BufferedReader
 import java.io.FileNotFoundException
-import java.io.FileReader
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.io.IOException
 
 @Module.Info(
@@ -28,7 +29,7 @@ class LoginMessage : Module() {
 
         try {
             MessageSendHelper.sendChatMessage(chatName + "Finding login message from loginmsg.txt...")
-            reader = BufferedReader(FileReader("loginmsg.txt"))
+            reader = BufferedReader(InputStreamReader(FileInputStream("loginmsg.txt"), "UTF-8"))
 
             loginMessage = reader.readLine()
 
