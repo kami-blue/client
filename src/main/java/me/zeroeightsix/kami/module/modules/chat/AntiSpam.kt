@@ -144,7 +144,6 @@ class AntiSpam : Module() {
             put(greenText, FilterPatterns.GREEN_TEXT)
             put(specialCharBegin, FilterPatterns.SPECIAL_BEGINNING)
             put(specialCharEnding, FilterPatterns.SPECIAL_ENDING)
-            put(specialCharBegin, FilterPatterns.SPECIAL_BEGINNING)
             put(ownsMeAndAll, FilterPatterns.OWNS_ME_AND_ALL)
             put(iJustThanksTo, FilterPatterns.I_JUST_THANKS_TO)
             put(numberSuffix, FilterPatterns.NUMBER_SUFFIX)
