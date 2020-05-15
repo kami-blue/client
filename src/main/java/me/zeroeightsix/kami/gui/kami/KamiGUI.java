@@ -310,7 +310,7 @@ public class KamiGUI extends GUI {
             processes.setText("");
 
             if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal() != null) {
-                if (MODULE_MANAGER.getModule(AutoWalk.class).isEnabled() && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                if (MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
                     processes.addLine("Current Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
                     processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal().toString());

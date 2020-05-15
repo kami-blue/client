@@ -18,13 +18,13 @@ public class MixinGuiIngameMenu {
     @Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
     public void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
         if (button.id == 1) {
-            if (KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).isEnabled()) {
+            if (KamiMod.MODULE_MANAGER.isModuleEnabled(AntiDisconnect.class)) {
                 Wrapper.getMinecraft().displayGuiScreen(new KamiGuiAntiDisconnect());
 
                 callbackInfo.cancel();
             }
 
-            if (!KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+            if (!KamiMod.MODULE_MANAGER.isModuleEnabled(AntiDisconnect.class) && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
                 KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).disable();
             }
         }

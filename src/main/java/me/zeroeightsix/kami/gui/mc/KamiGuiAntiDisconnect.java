@@ -42,7 +42,7 @@ public class KamiGuiAntiDisconnect extends GuiScreen {
                 boolean single = mc.isIntegratedServerRunning();
                 boolean connectedToRealms = mc.isConnectedToRealms();
 
-                if (KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).isEnabled() && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                if (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
                     if (button.id == 1) {
                         KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).disable();
                     }
