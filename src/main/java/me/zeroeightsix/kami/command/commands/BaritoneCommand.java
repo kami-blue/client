@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper;
  */
 public class BaritoneCommand extends Command {
 
-    public BaritoneCommand() { // TODO: add autocompletion
+    public BaritoneCommand() {
         super("baritone", new ChunkBuilder().append("arg", true, new BaritoneParser()).build(), "b");
         setDescription("Runs baritone commands!");
     }
