@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper;
 @Module.Info(
           name = "Baritone",
           category = Module.Category.CLIENT,
-          description = "Configure KAMI Blue's Baritone integration.",
+          description = "Configures Baritone settings",
           showOnArray = Module.ShowOnArray.OFF
 )
 public class Baritone extends Module {
