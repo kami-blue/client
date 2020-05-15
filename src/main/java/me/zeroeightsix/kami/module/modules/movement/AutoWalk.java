@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.event.events.ServerDisconnectedEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.MessageSendHelper;
 import net.minecraftforge.client.event.InputUpdateEvent;
 
 import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
@@ -22,17 +23,23 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
         description = "Automatically walks somewhere"
 )
 public class AutoWalk extends Module {
-    public Setting<AutoWalkMode> mode = register(Settings.e("Mode", AutoWalkMode.BARITONE));
+    public Setting<AutoWalkMode> mode = register(Settings.e("Direction", AutoWalkMode.BARITONE));
     public static String direction;
+    private boolean disableBaritone = false;
 
     @EventHandler
     private Listener<InputUpdateEvent> inputUpdateEventListener = new Listener<>(event -> {
         switch (mode.getValue()) {
             case FORWARD:
+                disableBaritone = false;
                 event.getMovementInput().moveForward = 1;
                 break;
             case BACKWARDS:
+                disableBaritone = false;
                 event.getMovementInput().moveForward = -1;
+                break;
+            case BARITONE:
+                disableBaritone = true;
                 break;
         }
     });
@@ -82,11 +89,24 @@ public class AutoWalk extends Module {
     }
 
     public String getHudInfo() {
-        return direction;
+        if (BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal() != null) {
+            return direction;
+        } else {
+            switch (mode.getValue()) {
+                case BARITONE:
+                    return "NONE";
+                case FORWARD:
+                    return "FORWARD";
+                case BACKWARDS:
+                    return "BACKWARDS";
+                default:
+                    return "";
+            }
+        }
     }
 
     public void onDisable() {
-        if (mode.getValue().equals(AutoWalkMode.BARITONE)) {
+        if (disableBaritone) {
             BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
         }
     }
