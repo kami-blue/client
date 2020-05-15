@@ -1,28 +1,22 @@
 package me.zeroeightsix.kami.command.commands;
 
-import baritone.Baritone;
-import baritone.api.BaritoneAPI;
 import me.zeroeightsix.kami.command.Command;
-
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import me.zeroeightsix.kami.util.MessageSendHelper;
 
 /**
- * Created by Dewy on the 17th of April, 2020
+ * @author dominikaaaa
  */
 public class BaritoneCommand extends Command {
 
-    public BaritoneCommand() {
+    public BaritoneCommand() { // TODO: add autocompletion
         super("baritone", null, "b");
         setDescription("Runs baritone commands!");
     }
 
     @Override
-    public void call(String[] args) {
-        StringBuilder command = new StringBuilder();
-        for (String arg : args) {
-            command.append(" ").append(arg);
-        }
-        // TODO: leij dms 
-//        BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute()
+    public void call(String[] args) { // the last arg is null in kami commands, so instead make a new String[] that's 1 smaller
+        String[] newArgs = new String[ args.length - 1];
+        if (args.length - 1 >= 0) System.arraycopy(args, 0, newArgs, 0, args.length - 1);
+        MessageSendHelper.sendBaritoneCommand(newArgs);
     }
 }

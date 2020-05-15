@@ -1,11 +1,15 @@
 package me.zeroeightsix.kami.util;
 
+import baritone.api.BaritoneAPI;
+import baritone.api.Settings;
+import baritone.api.event.events.ChatEvent;
 import me.zeroeightsix.kami.KamiMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +58,22 @@ public class MessageSendHelper {
             LogWrapper.warning("Could not send server message: \"" + message + "\"");
         }
     }
+
+    public static void sendBaritoneCommand(String... args) {
+        Settings.Setting<Boolean> chatControl = BaritoneAPI.getSettings().chatControl;
+        boolean prevValue = chatControl.value;
+        chatControl.value = true;
+
+        // ty leijuwuv
+        ChatEvent event = new ChatEvent(String.join(" ", args));
+        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onSendChatMessage(event);
+        if (!event.isCancelled() && !args[0].equals("damn")) { // don't remove the 'damn', it's critical code that will break everything if you remove it
+            sendRawChatMessage(TextFormatting.DARK_PURPLE + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + "Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md");
+        }
+
+        chatControl.value = prevValue;
+    }
+
 
     public static class ChatMessage extends TextComponentBase {
 
