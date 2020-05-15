@@ -19,7 +19,7 @@ import static me.zeroeightsix.kami.util.MathsUtils.normalizeAngle;
 @Module.Info(
         name = "AutoWalk",
         category = Module.Category.MOVEMENT,
-        description = "Pathfinding in a specific direction."
+        description = "Automatically walks somewhere"
 )
 public class AutoWalk extends Module {
     public Setting<AutoWalkMode> mode = register(Settings.e("Mode", AutoWalkMode.BARITONE));
@@ -39,12 +39,13 @@ public class AutoWalk extends Module {
 
     @EventHandler
     public Listener<ServerDisconnectedEvent> kickListener = new Listener<>(event -> {
-        if(mode.getValue().equals(AutoWalkMode.BARITONE) && isEnabled()) {
+        if (mode.getValue().equals(AutoWalkMode.BARITONE) && isEnabled()) {
             disable();
         }
     });
 
     public void onEnable() {
+        if (!mode.getValue().equals(AutoWalkMode.BARITONE)) return;
         if (normalizeAngle(mc.player.rotationYaw) >= -22.5 && normalizeAngle(mc.player.rotationYaw) <= 22.5) { // +Z
             BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalXZ((int) mc.player.posX, (int) mc.player.posZ + Integer.MAX_VALUE));
 

@@ -300,7 +300,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setMinimumWidth(75);
+        frame.setMinimumWidth(70);
         Label processes = new Label("");
         processes.setShadow(true);
 
@@ -315,8 +315,6 @@ public class KamiGUI extends GUI {
                 } else {
                     processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal().toString());
                 }
-            } else {
-                processes.setWidth(70);
             }
         });
 
