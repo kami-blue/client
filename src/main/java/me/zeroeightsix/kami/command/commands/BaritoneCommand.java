@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.command.syntax.parsers.BaritoneParser;
 import me.zeroeightsix.kami.util.MessageSendHelper;
 
 /**
@@ -9,7 +11,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper;
 public class BaritoneCommand extends Command {
 
     public BaritoneCommand() { // TODO: add autocompletion
-        super("baritone", null, "b");
+        super("baritone", new ChunkBuilder().append("arg", true, new BaritoneParser()).build(), "b");
         setDescription("Runs baritone commands!");
     }
 
