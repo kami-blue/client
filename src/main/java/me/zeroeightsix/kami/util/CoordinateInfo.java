@@ -16,17 +16,21 @@ public class CoordinateInfo {
     public String time;
     @SerializedName("date")
     public String date;
+    @SerializedName("id")
+    public int id;
 
     public CoordinateInfo(int x, int y, int z, String nameSet, String timeSet) {
         xyz = new Coordinate(x, y, z);
         name = nameSet;
         time = timeSet;
+        id = CoordUtil.readCoords(CoordUtil.coordsLogFilename).size();
     }
 
     public CoordinateInfo(Coordinate pos, String nameSet, String timeSet) {
         xyz = pos;
         name = nameSet;
         time = timeSet;
+        id = CoordUtil.readCoords(CoordUtil.coordsLogFilename).size();
     }
 
     public Coordinate getPos() {

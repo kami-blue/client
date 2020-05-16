@@ -89,7 +89,7 @@ public class CoordsCommand extends Command {
             } else {
                 sendChatMessage("List of logged stashes:");
             }
-            String stashRegex = "(\\(.*chests, .* shulkers\\))";
+            String stashRegex = "(\\(.* chests, .* shulkers, .* droppers, .* dispensers\\))";
             Objects.requireNonNull(coords).forEach(coord -> {
                 if (stashes) {
                     if (coord.name.matches(stashRegex)) {
@@ -122,7 +122,7 @@ public class CoordsCommand extends Command {
         }
     }
     private String format(CoordinateInfo coord, String searchterm) {
-        String message = "   " + coord.name + " (" + coord.xyz.x + " " + coord.xyz.y + " " + coord.xyz.z + ")";
+        String message = "   [" + coord.id + "] " + coord.name + " (" + coord.xyz.x + " " + coord.xyz.y + " " + coord.xyz.z + ")";
         return message.replaceAll(searchterm, "&7" + searchterm + "&f");
     }
     private void confirm(String name, Coordinate xyz) {
