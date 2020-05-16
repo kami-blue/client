@@ -1,0 +1,21 @@
+package me.zeroeightsix.kami.command.commands
+
+import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.syntax.ChunkBuilder
+import me.zeroeightsix.kami.command.syntax.parsers.BaritoneParser
+import me.zeroeightsix.kami.util.MessageSendHelper
+
+/**
+ * @author dominikaaaa
+ */
+class BaritoneCommand : Command("baritone", ChunkBuilder().append("command", true, BaritoneParser()).build(), "b") {
+    override fun call(args: Array<out String>?) {
+        val newArgs = arrayOfNulls<String>(args!!.size - 1) // returns Array<String?>
+
+        if (args.size - 1 >= 0) {
+            System.arraycopy(args, 0, newArgs, 0, args.size - 1)
+        }
+
+        MessageSendHelper.sendBaritoneCommand(*newArgs)
+    }
+}

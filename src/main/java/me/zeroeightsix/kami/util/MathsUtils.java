@@ -64,10 +64,10 @@ public class MathsUtils {
         POS_X("+X"),
         POS_X_POS_Z("+X / +Z");
 
-        public String name;
+        public String cardinalName;
 
-        Cardinal(String name) {
-            this.name = name;
+        Cardinal(String cardinalName) {
+            this.cardinalName = cardinalName;
         }
     }
 }
