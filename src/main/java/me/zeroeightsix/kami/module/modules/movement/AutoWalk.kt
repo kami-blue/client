@@ -26,6 +26,7 @@ class AutoWalk : Module() {
     @JvmField
     var mode: Setting<AutoWalkMode> = register(Settings.e("Direction", AutoWalkMode.BARITONE))
     private var disableBaritone = false
+    private var wb = 30000000
 
     @EventHandler
     private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->
@@ -52,14 +53,14 @@ class AutoWalk : Module() {
     public override fun onEnable() {
         if (mode.value != AutoWalkMode.BARITONE) return
         when (MathsUtils.getPlayerCardinal(mc)!!) {
-            Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + Int.MAX_VALUE))
-            Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - Int.MAX_VALUE, mc.player.posZ.toInt() + Int.MAX_VALUE))
-            Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - Int.MAX_VALUE, mc.player.posZ.toInt()))
-            Cardinal.NEG_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - Int.MAX_VALUE, mc.player.posZ.toInt() - Int.MAX_VALUE))
-            Cardinal.NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() - Int.MAX_VALUE))
-            Cardinal.POS_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + Int.MAX_VALUE, mc.player.posZ.toInt() - Int.MAX_VALUE))
-            Cardinal.POS_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + Int.MAX_VALUE, mc.player.posZ.toInt()))
-            Cardinal.POS_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + Int.MAX_VALUE, mc.player.posZ.toInt() + Int.MAX_VALUE))
+            Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + wb))
+            Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - wb, mc.player.posZ.toInt() + wb))
+            Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - wb, mc.player.posZ.toInt()))
+            Cardinal.NEG_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - wb, mc.player.posZ.toInt() - wb))
+            Cardinal.NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() - wb))
+            Cardinal.POS_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + wb, mc.player.posZ.toInt() - wb))
+            Cardinal.POS_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + wb, mc.player.posZ.toInt()))
+            Cardinal.POS_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + wb, mc.player.posZ.toInt() + wb))
         }
         direction = MathsUtils.getPlayerCardinal(mc)!!.cardinalName
     }

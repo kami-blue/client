@@ -32,7 +32,11 @@ public class MathsUtils {
         return (max + min) - num;
     }
 
-    public static Cardinal getPlayerCardinal(Minecraft mc) {
+    public static boolean isBetween (int min, int max, int value) {
+        return value >= min && value <= max;
+    }
+
+    public static Cardinal getPlayerCardinal(Minecraft mc) { // TODO: switch to isBetween
         if (normalizeAngle(mc.player.rotationYaw) >= -22.5 && normalizeAngle(mc.player.rotationYaw) <= 22.5) {
             return Cardinal.POS_Z;
         } else if (normalizeAngle(mc.player.rotationYaw) >= 22.6 && normalizeAngle(mc.player.rotationYaw) <= 67.5) {
