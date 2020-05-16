@@ -31,6 +31,7 @@ public class RunConfig extends Module {
         MODULE_MANAGER.getModule(CommandConfig.class).enable();
         MODULE_MANAGER.getModule(InfoOverlay.class).enable();
         MODULE_MANAGER.getModule(InventoryViewer.class).enable();
+        MODULE_MANAGER.getModule(Baritone.class).enable();
 
         if (!hasRunCapes.getValue()) {
             MODULE_MANAGER.getModule(Capes.class).enable();

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.kami;
 
+import baritone.api.BaritoneAPI;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
@@ -18,6 +19,7 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
+import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Pair;
@@ -45,6 +47,7 @@ import static me.zeroeightsix.kami.util.InfoCalculator.cardinalToAxis;
 /**
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
+ * Updated by Dewy on the 22nd of April, 2020
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
@@ -285,6 +288,34 @@ public class KamiGUI extends GUI {
 
         frame.addChild(friends);
         friends.setFontRenderer(fontRenderer);
+        frames.add(frame);
+
+        /*
+         * Baritone
+         */
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
+        frame.setCloseable(false);
+        frame.setPinnable(true);
+        frame.setMinimumWidth(70);
+        Label processes = new Label("");
+        processes.setShadow(true);
+
+        Frame frameFinal = frame;
+
+        processes.addTickListener(() -> {
+            processes.setText("");
+
+            if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal() != null) {
+                if (MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                    processes.addLine("Current Process: AutoWalk (" + AutoWalk.direction + ")");
+                } else {
+                    processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal().toString());
+                }
+            }
+        });
+
+        frame.addChild(processes);
+        processes.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
