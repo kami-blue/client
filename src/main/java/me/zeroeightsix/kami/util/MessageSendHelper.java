@@ -66,7 +66,7 @@ public class MessageSendHelper {
         boolean prevValue = chatControl.value;
         chatControl.value = true;
 
-        // ty leijuwuv
+        // ty leijuwuv <--- quit it :monkey:
         ChatEvent event = new ChatEvent(String.join(" ", args));
         BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onSendChatMessage(event);
         if (!event.isCancelled() && !args[0].equals("damn")) { // don't remove the 'damn', it's critical code that will break everything if you remove it
