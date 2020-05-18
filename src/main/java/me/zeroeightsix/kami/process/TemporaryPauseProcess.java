@@ -11,6 +11,8 @@ import me.zeroeightsix.kami.module.modules.player.LagNotifier;
 
 /**
  * Created by Dewy on the 17th of May, 2020
+ *
+ * thanks leijurv for pseudocode
  */
 public class TemporaryPauseProcess implements IBaritoneProcess
 {
