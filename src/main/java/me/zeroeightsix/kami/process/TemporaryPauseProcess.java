@@ -24,12 +24,17 @@ public class TemporaryPauseProcess implements IBaritoneProcess
     @Override
     public boolean isActive()
     {
-        return KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating();
+        return KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating() && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoEat.class);
     }
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel)
     {
+        if (!isSafeToCancel)
+        {
+            KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).setEating(false);
+        }
+
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 

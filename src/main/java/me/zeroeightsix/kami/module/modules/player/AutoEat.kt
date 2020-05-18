@@ -2,6 +2,8 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -14,6 +16,7 @@ import net.minecraft.util.EnumHand
  * Updated by polymer on 09/03/20
  * Updated by dominikaaaa on 20/03/20
  * Updated by An-En on 24/03/20
+ * Updated by Dewy on the 17th of May, 2020
  */
 @Module.Info(
         name = "AutoEat",
@@ -48,6 +51,7 @@ class AutoEat : Module() {
                 lastSlot = -1
             }
             eating = false
+            unpause()
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
             return
@@ -61,6 +65,8 @@ class AutoEat : Module() {
             mc.player.activeHand = EnumHand.OFF_HAND
             eating = true
 
+            pause()
+
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
         } else {
@@ -69,6 +75,8 @@ class AutoEat : Module() {
                     lastSlot = mc.player.inventory.currentItem
                     mc.player.inventory.currentItem = i
                     eating = true
+
+                    pause()
 
                     KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                     mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
