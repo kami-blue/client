@@ -25,7 +25,7 @@ class AutoEat : Module() {
     private val healthLevel = register(Settings.integerBuilder("Below Health").withValue(8).withMinimum(1).withMaximum(20).build())
 
     private var lastSlot = -1
-    private var eating = false
+    var eating = false
 
     private fun isValid(stack: ItemStack, food: Int): Boolean {
         return passItemCheck(stack.getItem()) && stack.getItem() is ItemFood && foodLevel.value - food >= (stack.getItem() as ItemFood).getHealAmount(stack) ||

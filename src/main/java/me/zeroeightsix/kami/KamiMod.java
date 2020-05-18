@@ -22,6 +22,7 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
+import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
@@ -98,6 +99,8 @@ public class KamiMod {
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
 
+    public static TemporaryPauseProcess pauseProcess;
+
     @Mod.Instance
     private static KamiMod INSTANCE;
 
@@ -118,6 +121,8 @@ public class KamiMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         updateCheck();
+
+        pauseProcess = new TemporaryPauseProcess();
     }
 
     @Mod.EventHandler

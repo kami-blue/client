@@ -3,14 +3,17 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent.Receive
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MathsUtils
 import me.zeroeightsix.kami.util.WebHelper
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.GuiChat
+import baritone.api.BaritoneAPI
 
 /**
  * @author dominikaaaa
@@ -39,6 +42,10 @@ class LagNotifier : Module() {
             } else {
                 "Server Not Responding! "
             }
+
+//            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value) {
+//                BaritoneAPI.getProvider().primaryBaritone.
+//            }
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.getFontRenderer()

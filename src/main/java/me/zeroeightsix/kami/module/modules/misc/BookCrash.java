@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc;
 
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.modules.client.Baritone;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.client.Minecraft;
