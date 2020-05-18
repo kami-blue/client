@@ -42,50 +42,28 @@ public class MathsUtils {
         return value >= min && value <= max;
     }
 
-    public static Cardinal getPlayerCardinal(Minecraft mc) { // TODO: switch to isBetween
-        if (normalizeAngle(mc.player.rotationYaw) >= -22.5 && normalizeAngle(mc.player.rotationYaw) <= 22.5) {
+    public static Cardinal getPlayerCardinal(Minecraft mc) {
+        if (isBetween(-22.5, 22.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.POS_Z;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= 22.6 && normalizeAngle(mc.player.rotationYaw) <= 67.5) {
+        } else if (isBetween(22.6, 67.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.NEG_X_POS_Z;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= 67.6 && normalizeAngle(mc.player.rotationYaw) <= 112.5) {
+        } else if (isBetween(67.6, 112.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.NEG_X;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= 112.6 && normalizeAngle(mc.player.rotationYaw) <= 157.5) {
+        } else if (isBetween(112.6, 157.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.NEG_X_NEG_Z;
         } else if (normalizeAngle(mc.player.rotationYaw) >= 157.6 || normalizeAngle(mc.player.rotationYaw) <= -157.5) {
             return Cardinal.NEG_Z;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= -157.6 && normalizeAngle(mc.player.rotationYaw) <= -112.5) {
+        } else if (isBetween(-157.6, -112.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.POS_X_NEG_Z;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= -112.6 && normalizeAngle(mc.player.rotationYaw) <= -67.5) {
+        } else if (isBetween(-112.5, -67.5, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.POS_X;
-        } else if (normalizeAngle(mc.player.rotationYaw) >= -67.6 && normalizeAngle(mc.player.rotationYaw) <= -22.6) {
+        } else if (isBetween(-67.6, -22.6, normalizeAngle(mc.player.rotationYaw))) {
             return Cardinal.POS_X_POS_Z;
         } else {
-            return null;
+            MessageSendHelper.sendErrorMessage("MathUtils: Error calculating angle! Please report this message to the developers\n" + "value: " + normalizeAngle(mc.player.rotationYaw));
+            return Cardinal.ERROR;
         }
     }
-
-    // prototype version using inBetween: throws NullPointerException and returns null
-//    public static Cardinal getPlayerCardinal(Minecraft mc) {
-//        if (isBetween(-22.5, 22.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.POS_Z;
-//        } else if (isBetween(22.6, 67.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.NEG_X_POS_Z;
-//        } else if (isBetween(67.6, 112.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.NEG_X;
-//        } else if (isBetween(112.6, 157.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.NEG_X_NEG_Z;
-//        } else if (isBetween(157.6, -157.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.NEG_Z;
-//        } else if (isBetween(-157.6, -112.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.POS_X_NEG_Z;
-//        } else if (isBetween(-112.5, -67.5, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.POS_X;
-//        } else if (isBetween(-67.6, -22.6, normalizeAngle(mc.player.rotationYaw))) {
-//            return Cardinal.POS_X_POS_Z;
-//        } else {
-//            return null;
-//        }
-//    }
 
     public enum Cardinal {
         POS_Z("+Z"),
@@ -95,7 +73,8 @@ public class MathsUtils {
         NEG_Z("-Z"),
         POS_X_NEG_Z("+X / -Z"),
         POS_X("+X"),
-        POS_X_POS_Z("+X / +Z");
+        POS_X_POS_Z("+X / +Z"),
+        ERROR("ERROR_CALC_DIRECT");
 
         public String cardinalName;
 
