@@ -46,7 +46,7 @@ class Aura : Module() {
     private val disableOnDeath = register(Settings.b("Disable On Death", false))
 
     private var waitCounter = 0
-    var hasAttacked = false // only update isAttacking once during multi
+    private var hasAttacked = false // only update isAttacking once during multi
     var isAttacking = false // returned to TemporaryPauseProcess
 
     enum class HitMode {

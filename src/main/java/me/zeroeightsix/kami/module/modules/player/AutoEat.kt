@@ -1,8 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
+import me.zeroeightsix.kami.module.modules.combat.Aura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
@@ -45,7 +46,7 @@ class AutoEat : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null) return
+        if (mc.player == null || (MODULE_MANAGER.isModuleEnabled(Aura::class.java) && MODULE_MANAGER.getModuleT(Aura::class.java).isAttacking)) return
 
         if (eating && !mc.player.isHandActive) {
             if (lastSlot != -1) {
@@ -54,7 +55,7 @@ class AutoEat : Module() {
             }
             eating = false
 
-            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+            if (MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
             {
                 unpause()
             }
@@ -71,7 +72,7 @@ class AutoEat : Module() {
             mc.player.activeHand = EnumHand.OFF_HAND
             eating = true
 
-            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+            if (MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
             {
                 pause()
             }
@@ -85,7 +86,7 @@ class AutoEat : Module() {
                     mc.player.inventory.currentItem = i
                     eating = true
 
-                    if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+                    if (MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
                     {
                         pause()
                     }
