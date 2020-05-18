@@ -28,6 +28,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
         category = Module.Category.PLAYER
 )
 class LagNotifier : Module() {
+    var pauseDuringLag = register(Settings.b("Pause Baritone", false))
     private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
 
     private var serverLastUpdated: Long = 0
@@ -40,7 +41,7 @@ class LagNotifier : Module() {
         if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
             isLagging = false
 
-            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value) {
+            if (pauseDuringLag.value) {
                 BaritoneUtils.unpause()
             }
 
@@ -63,7 +64,7 @@ class LagNotifier : Module() {
 
         isLagging = true
 
-        if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value)
+        if (pauseDuringLag.value)
         {
             BaritoneUtils.pause()
         }
