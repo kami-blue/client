@@ -6,6 +6,7 @@ import baritone.api.process.PathingCommandType;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.modules.client.Baritone;
+import me.zeroeightsix.kami.module.modules.combat.Aura;
 import me.zeroeightsix.kami.module.modules.player.AutoEat;
 import me.zeroeightsix.kami.module.modules.player.LagNotifier;
 
@@ -31,7 +32,17 @@ public class TemporaryPauseProcess implements IBaritoneProcess
     @Override
     public boolean isActive()
     {
-        return (KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating() && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoEat.class) && KamiMod.MODULE_MANAGER.getModuleT(Baritone.class).getPauseDuringAutoEat().getValue()) || (KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).isLagging() && KamiMod.MODULE_MANAGER.isModuleEnabled(LagNotifier.class) && KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).getPauseDuringLag().getValue());
+        return (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoEat.class)
+                && KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating()
+                && KamiMod.MODULE_MANAGER.getModuleT(Baritone.class).getPauseDuringAutoEat().getValue())
+                ||
+                (KamiMod.MODULE_MANAGER.isModuleEnabled(LagNotifier.class)
+                && KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).isLagging()
+                && KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).getPauseDuringLag().getValue())
+                ||
+                (KamiMod.MODULE_MANAGER.isModuleEnabled(Aura.class)
+                && KamiMod.MODULE_MANAGER.getModuleT(Aura.class).isAttacking()
+                && KamiMod.MODULE_MANAGER.getModuleT(Aura.class).getPauseBaritone().getValue());
     }
 
     @Override

@@ -2,7 +2,10 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils.pause
+import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtil
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.LagCompensator
@@ -16,8 +19,8 @@ import net.minecraft.util.math.Vec3d
 /**
  * Created by 086 on 12/12/2017.
  * Updated by hub on 31 October 2019
- * Updated by dominikaaaa on 10/04/20
  * Updated by bot-debug on 10/04/20
+ * Baritone compat added by dominikaaaa on 18/05/20
  */
 @Module.Info(
         name = "Aura",
@@ -35,11 +38,16 @@ class Aura : Module() {
     private val attackAnimals = register(Settings.b("Animals", false))
     private val hitRange = register(Settings.d("Hit Range", 5.5))
     private val ignoreWalls = register(Settings.b("Ignore Walls", true))
-    private val prefer = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
-    private val autoTool = register(Settings.b("Auto Weapon", true))
     private val sync = register(Settings.b("TPS Sync", false))
+    val pauseBaritone: Setting<Boolean> = register(Settings.b("Pause Baritone", true))
+    private val timeAfterAttack = register(Settings.integerBuilder("Wait to Resume").withRange(1, 10).withValue(3).withVisibility { pauseBaritone.value }.build())
+    private val autoTool = register(Settings.b("Auto Weapon", true))
+    private val prefer = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
     private val disableOnDeath = register(Settings.b("Disable On Death", false))
+
     private var waitCounter = 0
+    var hasAttacked = false // only update isAttacking once during multi
+    var isAttacking = false // returned to TemporaryPauseProcess
 
     enum class HitMode {
         SWORD, AXE, NONE
@@ -73,6 +81,12 @@ class Aura : Module() {
             }
         }
 
+        // this goes after delay, because otherwise it would unpause baritone while in the middle of an attack
+        if (isAttacking && shouldResetTimer()) {
+            isAttacking = false
+            if (pauseBaritone.value) unpause()
+        }
+
         if (autoSpamDelay.value) {
             if (delayMode.value == WaitMode.SPAM && autoWaitTick > 0) {
                 if (sync.value) {
@@ -97,6 +111,7 @@ class Aura : Module() {
             }
         }
 
+        hasAttacked = false // reset for baritone-multi compat.
         for (target in mc.world.loadedEntityList) {
             if (!EntityUtil.isLiving(target)) continue
             if (target === mc.player) continue
@@ -120,6 +135,11 @@ class Aura : Module() {
     }
 
     private fun attack(e: Entity) {
+        if (!isAttacking && !hasAttacked && pauseBaritone.value) {
+            pause()
+        }
+        isAttacking = true
+        hasAttacked = true
         mc.playerController.attackEntity(mc.player, e)
         mc.player.swingArm(EnumHand.MAIN_HAND)
     }
@@ -131,5 +151,15 @@ class Aura : Module() {
 
     private fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
         return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
+    }
+
+    private var startTime: Long = 0
+    private fun shouldResetTimer(): Boolean {
+        if (startTime == 0L) startTime = System.currentTimeMillis()
+        if (startTime + timeAfterAttack.value * 1000 <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
+            startTime = System.currentTimeMillis()
+            return true
+        }
+        return false
     }
 }

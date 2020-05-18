@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.client
 
 import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MessageSendHelper
 
@@ -15,8 +16,8 @@ import me.zeroeightsix.kami.util.MessageSendHelper
         showOnArray = Module.ShowOnArray.OFF
 )
 class Baritone : Module() {
-    var pauseDuringAutoEat = register(Settings.b("Pause During AutoEat", true))
-    var pauseForAura = register(Settings.b("Pause For Aura", false))
+    var pauseDuringAutoEat: Setting<Boolean> = register(Settings.b("Pause During AutoEat", true))
+    var pauseForAura: Setting<Boolean> = register(Settings.b("Pause For Aura", false))
 
     private var allowBreak = register(Settings.b("Allow Break", true))
     private var allowSprint = register(Settings.b("Allow Sprint", true))
