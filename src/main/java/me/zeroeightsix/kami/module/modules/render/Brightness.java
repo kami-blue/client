@@ -48,6 +48,8 @@ public class Brightness extends Module {
             }
 
             inTransition = true;
+        } else {
+            currentBrightness = isEnabled() ? 1 : 0;
         }
     }
 
