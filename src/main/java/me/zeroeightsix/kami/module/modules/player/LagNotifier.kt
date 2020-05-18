@@ -33,13 +33,17 @@ class LagNotifier : Module() {
     private var serverLastUpdated: Long = 0
     var text = "Server Not Responding! "
 
+    var isLagging = false
+
     override fun onRender() {
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat) return
         if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
+            isLagging = false
+
             if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value) {
                 BaritoneUtils.unpause()
             }
-            
+
             return
         }
 
@@ -49,8 +53,6 @@ class LagNotifier : Module() {
             } else {
                 "Server Not Responding! "
             }
-
-
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.getFontRenderer()
@@ -58,6 +60,8 @@ class LagNotifier : Module() {
 
         /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 217, 255, 85, 85, text)
+
+        isLagging = true
 
         if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value)
         {

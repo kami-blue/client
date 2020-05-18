@@ -5,8 +5,13 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.module.modules.client.Baritone;
 import me.zeroeightsix.kami.module.modules.player.AutoEat;
+import me.zeroeightsix.kami.module.modules.player.LagNotifier;
 
+/**
+ * Created by Dewy on the 17th of May, 2020
+ */
 public class TemporaryPauseProcess implements IBaritoneProcess
 {
     @Override
@@ -24,7 +29,7 @@ public class TemporaryPauseProcess implements IBaritoneProcess
     @Override
     public boolean isActive()
     {
-        return KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating() && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoEat.class);
+        return (KamiMod.MODULE_MANAGER.getModuleT(AutoEat.class).getEating() && KamiMod.MODULE_MANAGER.isModuleEnabled(AutoEat.class) && KamiMod.MODULE_MANAGER.getModuleT(Baritone.class).getPauseDuringAutoEat().getValue()) || (KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).isLagging() && KamiMod.MODULE_MANAGER.isModuleEnabled(LagNotifier.class) && KamiMod.MODULE_MANAGER.getModuleT(Baritone.class).getPauseDuringLag().getValue());
     }
 
     @Override
