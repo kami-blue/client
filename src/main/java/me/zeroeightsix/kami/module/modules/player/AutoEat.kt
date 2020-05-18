@@ -1,9 +1,11 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
+import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -51,7 +53,11 @@ class AutoEat : Module() {
                 lastSlot = -1
             }
             eating = false
-            unpause()
+
+            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+            {
+                unpause()
+            }
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
             return
@@ -65,7 +71,10 @@ class AutoEat : Module() {
             mc.player.activeHand = EnumHand.OFF_HAND
             eating = true
 
-            pause()
+            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+            {
+                pause()
+            }
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
@@ -76,7 +85,10 @@ class AutoEat : Module() {
                     mc.player.inventory.currentItem = i
                     eating = true
 
-                    pause()
+                    if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringAutoEat.value)
+                    {
+                        pause()
+                    }
 
                     KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                     mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)

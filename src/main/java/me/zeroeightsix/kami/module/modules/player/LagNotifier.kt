@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.util.WebHelper
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.GuiChat
 import baritone.api.BaritoneAPI
+import me.zeroeightsix.kami.util.BaritoneUtils
 
 /**
  * @author dominikaaaa
@@ -34,7 +35,13 @@ class LagNotifier : Module() {
 
     override fun onRender() {
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat) return
-        if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) return
+        if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
+            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value) {
+                BaritoneUtils.unpause()
+            }
+            
+            return
+        }
 
         if (shouldPing()) {
             text = if (WebHelper.isDown("1.1.1.1", 80, 1000)) {
@@ -43,9 +50,7 @@ class LagNotifier : Module() {
                 "Server Not Responding! "
             }
 
-//            if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value) {
-//                BaritoneAPI.getProvider().primaryBaritone.
-//            }
+
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.getFontRenderer()
@@ -53,6 +58,11 @@ class LagNotifier : Module() {
 
         /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 217, 255, 85, 85, text)
+
+        if (KamiMod.MODULE_MANAGER.getModuleT(Baritone::class.java).pauseDuringLag.value)
+        {
+            BaritoneUtils.pause()
+        }
     }
 
     @EventHandler

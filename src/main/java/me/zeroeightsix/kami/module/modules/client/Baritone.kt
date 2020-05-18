@@ -16,6 +16,8 @@ import me.zeroeightsix.kami.util.MessageSendHelper
 )
 class Baritone : Module() {
     var pauseDuringLag = register(Settings.b("Pause During Lag", false))
+    var pauseDuringAutoEat = register(Settings.b("Pause During AutoEat", false))
+
     private var allowBreak = register(Settings.b("Allow Break", true))
     private var allowSprint = register(Settings.b("Allow Sprint", true))
     private var allowPlace = register(Settings.b("Allow Place", true))
