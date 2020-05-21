@@ -31,7 +31,12 @@ class ElytraReplace : Module() {
             return
         }
 
-        elytraCount = InfoOverlay.getItems(Items.ELYTRA) + InfoOverlay.getArmor(Items.ELYTRA)
+        elytraCount = 0
+        for (i in 0..44) {
+            if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
+                elytraCount += 1
+            }
+        }
         val chestplateCount = InfoOverlay.getItems(Items.DIAMOND_CHESTPLATE) + InfoOverlay.getArmor(Items.DIAMOND_CHESTPLATE)
 
         if (currentlyMovingElytra) {
