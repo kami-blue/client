@@ -88,29 +88,21 @@ class ElytraReplace : Module() {
             }
 
             // if there's no elytra, or it's broken
-            if (mc.player.inventory.armorInventory[2].isEmpty() || isBrokenArmor(2)) {
+            if (!(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) || isBrokenArmor(2)) {
                 for (i in 0..44) {
                     if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
                         slot = i
                         break
                     }
                 }
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                currentlyMovingElytra = true
-                return
-            }
-
-            // if it's not an elytra, or it's a broken elytra
-            if (!(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) || (mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA && isBrokenArmor(2))) {
-                for (i in 0..44) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
-                        slot = i
-                        break
-                    }
+                if (mc.player.inventory.armorInventory[2].isEmpty()) {
+                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
+                    currentlyMovingElytra = true
+                } else {
+                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
+                    mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
+                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
                 }
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
             }
         }
     }
