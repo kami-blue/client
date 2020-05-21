@@ -82,9 +82,7 @@ class ElytraReplace : Module() {
                 mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
                 return
             }
-        }
-
-        if (!onGround() && passElytraFlightCheck()) {
+        } else if (passElytraFlightCheck()) {
             var slot = -420
 
             if (elytraCount == 0) {
