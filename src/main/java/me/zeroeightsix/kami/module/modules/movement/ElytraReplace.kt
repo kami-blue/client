@@ -25,6 +25,7 @@ class ElytraReplace : Module() {
     private var currentlyMovingElytra = false
     private var currentlyMovingChestplate = false
     private var elytraCount = 0
+    private var chestplateCount = 0
 
     override fun onUpdate() {
         if (!inventoryMode.value && mc.currentScreen is GuiContainer) {
@@ -35,9 +36,10 @@ class ElytraReplace : Module() {
         for (i in 0..44) {
             if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
                 elytraCount += 1
+            } else if (mc.player.inventory.getStackInSlot(i).getItem() === Items.DIAMOND_CHESTPLATE && !isBroken(i)) {
+                chestplateCount += 1
             }
         }
-        val chestplateCount = InfoOverlay.getItems(Items.DIAMOND_CHESTPLATE) + InfoOverlay.getArmor(Items.DIAMOND_CHESTPLATE)
 
         if (currentlyMovingElytra) {
             mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
