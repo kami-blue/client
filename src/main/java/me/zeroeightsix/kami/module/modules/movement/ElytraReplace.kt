@@ -2,9 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
@@ -119,7 +117,7 @@ class ElytraReplace : Module() {
         return if (mc.player.inventory.getStackInSlot(i).maxDamage == 0) {
             false
         } else {
-            100 * mc.player.inventory.getStackInSlot(i).getItemDamage() / mc.player.inventory.getStackInSlot(i).maxDamage > MathsUtils.reverseNumber(threshold.value, 1, 100)
+            (100 * mc.player.inventory.getStackInSlot(i).getItemDamage() / mc.player.inventory.getStackInSlot(i).maxDamage) + threshold.value >= 100
         }
     }
 
@@ -127,7 +125,7 @@ class ElytraReplace : Module() {
         return if (mc.player.inventory.armorInventory[i].maxDamage == 0) {
             false
         } else {
-            100 * mc.player.inventory.armorInventory[i].getItemDamage() / mc.player.inventory.armorInventory[i].maxDamage > MathsUtils.reverseNumber(threshold.value, 1, 100)
+            (100 * mc.player.inventory.armorInventory[i].getItemDamage() / mc.player.inventory.armorInventory[i].maxDamage) + threshold.value >= 100
         }
     }
 
