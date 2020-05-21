@@ -45,9 +45,7 @@ class ElytraReplace : Module() {
             mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
             currentlyMovingElytra = false
             return
-        }
-
-        if (currentlyMovingChestplate) {
+        } else if (currentlyMovingChestplate) {
             mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
             currentlyMovingChestplate = false
             return
@@ -70,9 +68,7 @@ class ElytraReplace : Module() {
                 mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
                 currentlyMovingElytra = true
                 return
-            }
-
-            if (!(mc.player.inventory.armorInventory[2].getItem() === Items.DIAMOND_CHESTPLATE)) {
+            } else if (!(mc.player.inventory.armorInventory[2].getItem() === Items.DIAMOND_CHESTPLATE)) {
                 for (i in 0..44) {
                     if (mc.player.inventory.getStackInSlot(i).getItem() === Items.DIAMOND_CHESTPLATE) {
                         slot = i
