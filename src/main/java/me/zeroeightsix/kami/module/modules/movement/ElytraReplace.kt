@@ -3,8 +3,11 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.MessageSendHelper
+import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
+import net.minecraft.init.SoundEvents
 import net.minecraft.inventory.ClickType
 
 /**
@@ -20,6 +23,9 @@ class ElytraReplace : Module() {
     private val threshold = register(Settings.integerBuilder("Broken %").withRange(1, 100).withValue(7).build())
     private val inventoryMode = register(Settings.b("Inventory", false))
     private val elytraFlightCheck = register(Settings.b("ElytraFlight Check", true))
+    private val logToChat = register(Settings.booleanBuilder("Log Missing Replacement").withValue(false).build())
+    private val playSound = register(Settings.booleanBuilder("Play Sound").withValue(false).withVisibility { logToChat.value }.build())
+    private val logThreshold = register(Settings.integerBuilder("Log Threshold").withRange(1, 10).withValue(3).withVisibility { logToChat.value }.build())
     private var currentlyMovingElytra = false
     private var currentlyMovingChestplate = false
     private var elytraCount = 0
@@ -81,7 +87,15 @@ class ElytraReplace : Module() {
         } else if (passElytraFlightCheck()) {
             var slot = -420
 
+            if (logToChat.value && playSound.value && (elytraCount <= 2 || elytraCount <= logThreshold.value) && mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA && isBrokenArmor(2)) {
+                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+            }
+
             if (elytraCount == 0) {
+                if (logToChat.value && mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA && isBrokenArmor(2)) {
+                    MessageSendHelper.sendChatMessage("$chatName Your last elytra has reached your threshold. (logging will be turned off)")
+                    logToChat.value = false
+                }
                 return
             }
 
@@ -90,6 +104,11 @@ class ElytraReplace : Module() {
                 for (i in 0..44) {
                     if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
                         slot = i
+                        if (logToChat.value && elytraCount == 1) {
+                            MessageSendHelper.sendChatMessage("$chatName You just equipped your last elytra.")
+                        } else if (logToChat.value && elytraCount <= logThreshold.value) {
+                            MessageSendHelper.sendChatMessage("$chatName You have $elytraCount elytras left.")
+                        }
                         break
                     }
                 }
