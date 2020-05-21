@@ -65,6 +65,6 @@ public class TemporaryPauseProcess implements IBaritoneProcess
     @Override
     public String displayName0()
     {
-        return "";
+        return "Kami Blue Pauser";
     }
 }
