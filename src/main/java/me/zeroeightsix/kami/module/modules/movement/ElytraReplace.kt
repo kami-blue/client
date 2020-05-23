@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
 import net.minecraft.inventory.ClickType
@@ -19,6 +20,7 @@ import net.minecraft.inventory.ClickType
         category = Module.Category.MOVEMENT
 )
 class ElytraReplace : Module() {
+    private val inventoryMode = register(Settings.b("Inventory", false))
     private val autoChest = register(Settings.b("Auto Chest", false))
     private val elytraFlightCheck = register(Settings.b("ElytraFlight Check", true))
     private val logToChat = register(Settings.booleanBuilder("Missing Warning").withValue(false).build())
@@ -32,7 +34,7 @@ class ElytraReplace : Module() {
     private var chestplateCount = 0
 
     override fun onUpdate() {
-        if (mc.player == null) return
+        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) return
 
         elytraCount = 0
         for (i in 0..44) {
