@@ -2,11 +2,13 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import java.math.*
 
 /**
  * @author dominikaaaa
  * Created by dominikaaaa on 20/12/19
  * Updated by dominikaaaa on 22/12/19
+ * Updated by Salt on 24/5/20
  */
 @Module.Info(
         name = "Zoom",
@@ -17,7 +19,7 @@ import me.zeroeightsix.kami.setting.Settings
 class Zoom : Module() {
     private var fov = 0f
     private var sensi = 0f
-    private val fovChange = register(Settings.integerBuilder("FOV").withMinimum(30).withValue(30).withMaximum(150).build())
+    private val fovChange = register(Settings.integerBuilder("FOV").withMinimum(1).withValue(30).withMaximum(150).build())
     private val sensChange = register(Settings.floatBuilder("Sensitivity").withMinimum(0.25f).withValue(1.3f).withMaximum(2f).build())
     private val smoothCamera = register(Settings.b("Cinematic Camera", true))
     private val sens = register(Settings.b("Sensitivity", true))

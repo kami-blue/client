@@ -18,6 +18,9 @@ import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.ColourHolder;
 import me.zeroeightsix.kami.util.Wrapper;
 import org.lwjgl.opengl.GL11;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
@@ -28,7 +31,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
-    ColourHolder frameColour = KamiGUI.primaryColour.setA(100);
+    ColourHolder frameColour = KamiGUI.primaryColour.setA(255);
     ColourHolder outlineColour = frameColour.darker();
 
     Component yLineComponent = null;
@@ -38,18 +41,54 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     boolean centerX = false;
     boolean centerY = false;
     int xLineOffset = 0;
-
+    Color rgbGuiColor = new Color(255,0,0);
+    private boolean rgbListGenerated = false;
+    public boolean rgbGuiEnabled = false;
+    private Color[] rgbColors;
+    private int rgbMax = 0;
+    private int cycleNum = 0;
+    private int cycleCycleNum = 0;
+    /**
+     *  speed value between 0 and 100
+     */
+    public int speed = 0;
     private static final RootFontRenderer ff = new RootLargeFontRenderer();
-
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
+        //generate RGB list
+        if (!rgbListGenerated)
+        {
+            List<Color> colorsList = new ArrayList<Color>();
+            for (int r=0; r<100; r++) colorsList.add(new Color(r * 255 / 100, 255, 0));
+            for (int g=100; g>0; g--) colorsList.add(new Color(255, g*255/100,0));
+            for (int b=0; b<100; b++) colorsList.add(new Color(255, 0, b * 255 / 100));
+            for (int r=100; r>0; r--) colorsList.add(new Color(r*255/100,0,255));
+            for (int g=0; g<100; g++) colorsList.add(new Color(0,g*255/100,255));
+            for (int b=100; b>0; b--) colorsList.add(new Color(0,255,b*255/100));
+            colorsList.add(new Color(0,255,0));
+            rgbColors = colorsList.toArray(new Color[colorsList.size()]);
+            rgbListGenerated = true;
+        }
+        //Cycle RGB
+        if (rgbGuiEnabled)
+        {
+            if (cycleCycleNum == 100-speed || speed > 100)
+            {
+                cycleNum++;
+                cycleCycleNum = 0;
+            }
+            cycleCycleNum++;
+            if (cycleNum > rgbColors.length - 1) cycleNum = 0; //reset once it does a full RGB cycle
+        }
+
+
         if (component.getOpacity() == 0)
             return;
         glDisable(GL_TEXTURE_2D);
-
         glColor4f(.17f, .17f, .18f, .9f);
         RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight()); // Main window
-        glColor3f(toF(GuiC.windowOutline.color.getRed()), toF(GuiC.windowOutline.color.getGreen()), toF(GuiC.windowOutline.color.getBlue()));
+        if (rgbGuiEnabled) glColor3f(toF(rgbColors[cycleNum].getRed()),toF(rgbColors[cycleNum].getGreen()),toF(rgbColors[cycleNum].getBlue())); //if the gui is rgb, use RGB color
+        else glColor3f(toF(GuiC.windowOutline.color.getRed()), toF(GuiC.windowOutline.color.getGreen()), toF(GuiC.windowOutline.color.getBlue())); //otherwise use theme color
         glLineWidth(GuiC.windowOutlineWidth.aFloat);
         RenderHelper.drawRectangle(0, 0, component.getWidth(), component.getHeight()); // Border / Outline
 
@@ -88,20 +127,19 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             if (component.isMinimized()) {
                 glBegin(GL_LINE_LOOP);
                 {
-                    glVertex2d(component.getWidth() - 15, top_y + 2);
-                    glVertex2d(component.getWidth() - 15, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, top_y + 2);
+                    glVertex2d(component.getWidth() - 12, top_y + 2);
+                    glVertex2d(component.getWidth() - 12, bottom_y + 5);
+                    glVertex2d(component.getWidth() - 7, bottom_y + 5);
+                    glVertex2d(component.getWidth() - 7, top_y + 2);
                 }
-                glEnd();
             } else {
                 glBegin(GL_LINES);
                 {
-                    glVertex2d(component.getWidth() - 15, bottom_y + 4);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 4);
+                    glVertex2d(component.getWidth() - 12, bottom_y + 7.5);
+                    glVertex2d(component.getWidth() - 7, bottom_y + 7.5);
                 }
-                glEnd();
             }
+            glEnd();
         }
 
         if (component.isPinnable()) {
@@ -220,6 +258,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                         }
                     }
                 }
+
             }
 
             @Override

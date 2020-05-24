@@ -6,8 +6,11 @@ package me.zeroeightsix.kami.gui.kami;
  */
 public class RootLargeFontRenderer extends RootFontRenderer {
 
+    //public RootLargeFontRenderer() {
+    //    super(1.0f);
+    //}
     public RootLargeFontRenderer() {
-        super(1.2f);
+        super(0.8f);
     }
 
 }

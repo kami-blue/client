@@ -52,7 +52,8 @@ import static me.zeroeightsix.kami.util.InfoCalculator.cardinalToAxis;
  */
 public class KamiGUI extends GUI {
 
-    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
+    public static final RootFontRenderer fontRenderer = new RootFontRenderer(0.75F);
+    //public static final RootFontRenderer fontRenderer = new RootFontRenderer(0.65F);
     public Theme theme;
 
     public static ColourHolder primaryColour = new ColourHolder(29, 29, 29);
@@ -132,7 +133,6 @@ public class KamiGUI extends GUI {
             });
             scrollpane.addChild(checkButton);
         }
-
         int x = 10;
         int y = 10;
         int nexty = y;

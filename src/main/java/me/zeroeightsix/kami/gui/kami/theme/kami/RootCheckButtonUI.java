@@ -30,7 +30,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentUI<CheckButton> {
     @Override
     public void renderComponent(CheckButton component, FontRenderer ff) {
-
         glColor4f(toF(GuiC.bgColour.color.getRed()), toF(GuiC.bgColour.color.getGreen()), toF(GuiC.bgColour.color.getBlue()), component.getOpacity());
         if (component.isToggled()) { // red used to be a separate value, toF(229.5d)
             glColor3f(toF(GuiC.bgColour.color.getRed()), toF(GuiC.bgColour.color.getGreen()), toF(GuiC.bgColour.color.getBlue()));
@@ -48,9 +47,8 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
             c = (c & GuiC.buttonHoveredN.color.getRGB()) << 1; // hovered text color
             if (component.hasDescription() && !isSettingsOpen() && MODULE_MANAGER.isModuleEnabled(Tooltips.class)) {
                 Component componentAt = KamiMod.getInstance().guiManager.getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
-                if (componentAt.getHeight() != 11) return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
-
-                if (componentAt.getWidth() != component.getWidth()) return; // prevent drawing 2 different categories when overlapped
+                if (componentAt.getHeight() != component.getHeight()) return; //prevent drawing 2 different tooltips at once
+                if (componentAt.getWidth() != component.getWidth()) return; //prevent drawing 2 different tooltips at once
 
                 glDisable(GL_SCISSOR_TEST); // let it draw outside of the container
                 glDepthRange(0, 0.01); // set render priority to the top

@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dominikaaaa
