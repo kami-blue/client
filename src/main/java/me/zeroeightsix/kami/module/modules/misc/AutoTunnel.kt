@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper
 
 /**
  * @author dominikaaaa
+ * Updated by pNoName on 25/05/20
  */
 @Module.Info(
         name = "AutoTunnel",
@@ -44,8 +45,6 @@ class AutoTunnel : Module() {
     }
 
     private fun sendTunnel() {
-        // fixed *censored* customsize tunnel if settings are default --pNoName
-        // im sorry for *censored* *censored* *censored* code im new to java i came from c++
         var current = arrayOf("")
         if (height.value == 2 && width.value == 1) {
             current = arrayOf("tunnel")
