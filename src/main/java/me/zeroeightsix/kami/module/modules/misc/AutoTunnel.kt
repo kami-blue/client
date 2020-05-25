@@ -44,7 +44,15 @@ class AutoTunnel : Module() {
     }
 
     private fun sendTunnel() {
-        val current = arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
+        // fixed *censored* customsize tunnel if settings are default --pNoName
+        // im sorry for *censored* *censored* *censored* code im new to java i came from c++
+        var current = arrayOf("")
+        if (height.value == 2 && width.value == 1) {
+            current = arrayOf("tunnel")
+        }
+        else {
+            current = arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
+        }
 
         if (!current.contentEquals(lastCommand)) {
             lastCommand = current
