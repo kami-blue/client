@@ -20,10 +20,7 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
-import me.zeroeightsix.kami.util.ColourHolder;
-import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.Pair;
-import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -48,15 +45,16 @@ import static me.zeroeightsix.kami.util.InfoCalculator.cardinalToAxis;
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
+ * Updated by Salt 5/25/2020
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
 
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(0.75F);
-    //public static final RootFontRenderer fontRenderer = new RootFontRenderer(0.65F);
     public Theme theme;
 
     public static ColourHolder primaryColour = new ColourHolder(29, 29, 29);
+
 
     public KamiGUI() {
         super(new KamiTheme());
@@ -193,6 +191,7 @@ public class KamiGUI extends GUI {
          * Active modules
          */
         Frame frame = new Frame(getTheme(), new Stretcherlayout(1), "Active modules");
+        frame.setName("ActiveModulesFrame");
         frame.setCloseable(false);
         frame.addChild(new ActiveModules());
         frame.setPinnable(true);
@@ -236,6 +235,7 @@ public class KamiGUI extends GUI {
          * Information Overlay / InfoOverlay
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Info");
+        frame.setName("InformationOverlayFrame");
         frame.setCloseable(false);
         frame.setPinnable(true);
         Label information = new Label("");
@@ -255,6 +255,7 @@ public class KamiGUI extends GUI {
          * {@link me.zeroeightsix.kami.module.modules.client.InventoryViewer}
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Inventory Viewer");
+        frame.setName("InventoryViewerFrame");
         frame.setCloseable(false);
         frame.setMinimizeable(true);
         frame.setPinnable(true);
@@ -271,6 +272,7 @@ public class KamiGUI extends GUI {
          * Friends List
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Friends");
+        frame.setName("FriendsListFrame");
         frame.setCloseable(false);
         frame.setPinnable(false);
         frame.setMinimizeable(true);
@@ -294,6 +296,7 @@ public class KamiGUI extends GUI {
          * Baritone
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
+        frame.setName("BaritoneFrame");
         frame.setCloseable(false);
         frame.setPinnable(true);
         frame.setMinimumWidth(70);
@@ -322,6 +325,7 @@ public class KamiGUI extends GUI {
          * Text Radar
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
+        frame.setName("TextRadarFrame");
         Label list = new Label("");
         DecimalFormat dfHealth = new DecimalFormat("#.#");
         dfHealth.setRoundingMode(RoundingMode.HALF_UP);
@@ -386,11 +390,11 @@ public class KamiGUI extends GUI {
         frame.addChild(list);
         list.setFontRenderer(fontRenderer);
         frames.add(frame);
-
         /*
          * Entity List
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
+        frame.setName("EntityListFrame");
         Label entityLabel = new Label("");
         frame.setCloseable(false);
         frame.setMinimumWidth(60);
@@ -439,6 +443,7 @@ public class KamiGUI extends GUI {
          * Coordinates
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
+        frame.setName("CoordinatesFrame");
         frame.setCloseable(false);
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
@@ -497,6 +502,7 @@ public class KamiGUI extends GUI {
          * Radar
          */
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
+        frame.setName("RadarFrame");
         frame.setCloseable(false);
         frame.setMinimizeable(true);
         frame.setPinnable(true);
@@ -504,7 +510,9 @@ public class KamiGUI extends GUI {
         frame.setWidth(100);
         frame.setHeight(100);
         frames.add(frame);
-
+        /*
+         * Adding frames to the renderer
+         */
         for (Frame frame1 : frames) {
             frame1.setX(x);
             frame1.setY(y);
@@ -516,10 +524,11 @@ public class KamiGUI extends GUI {
                 nexty = y;
                 x = 10;
             }
-
             addChild(frame1);
         }
     }
+
+
 
     private static String getEntityName(@Nonnull Entity entity) {
         if (entity instanceof EntityItem) {
@@ -549,6 +558,7 @@ public class KamiGUI extends GUI {
 
         return entity.getName();
     }
+
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list =

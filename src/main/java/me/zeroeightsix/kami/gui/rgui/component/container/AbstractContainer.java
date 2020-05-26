@@ -5,11 +5,13 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.listen.RenderListener;
 import me.zeroeightsix.kami.gui.rgui.poof.use.AdditionPoof;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
+import me.zeroeightsix.kami.module.modules.client.*;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 /**
  * Created by 086 on 25/06/2017.
@@ -28,6 +30,25 @@ public abstract class AbstractContainer extends AbstractComponent implements Con
     @Override
     public ArrayList<Component> getChildren() {
         return children;
+    }
+
+    /**
+     *Changes the visibility of a child given the name
+     * @param name The name of the child
+     * @param visibility Whether the child is visible
+     */
+    public void setChildVisibilityByName(String name, boolean visibility)
+    {
+        for (Component c : children)
+        {
+            if (c.getName() == null) continue;
+            if (c.getName().equals(name))
+            {
+                c.setVisible(visibility);
+                return;
+            }
+        }
+        throw new NoSuchElementException("The specified element was not found");
     }
 
     @Override

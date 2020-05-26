@@ -106,4 +106,8 @@ public interface Component {
     public int getPriority(); // The higher, the more prioritized.
 
     public void kill();
+
+    public void setName(String name);
+
+    public String getName();
 }

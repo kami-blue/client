@@ -18,6 +18,8 @@ import java.util.ArrayList;
  */
 public abstract class AbstractComponent implements Component {
 
+    String name;
+
     int x;
     int y;
     int width;
@@ -136,7 +138,10 @@ public abstract class AbstractComponent implements Component {
         return height;
     }
 
+
+
     boolean workingy = false;
+
 
     public void setY(int y) {
         final int oldX = getX();
@@ -365,6 +370,12 @@ public abstract class AbstractComponent implements Component {
         minHeight = height;
         return this;
     }
+
+    @Override
+    public String getName(){return name;}
+
+    @Override
+    public void setName(String name){this.name = name;}
 
     @Override
     public boolean doAffectLayout() {
