@@ -45,7 +45,7 @@ class AutoEat : Module() {
         if (item === Items.ROTTEN_FLESH) return false
         if (item === Items.SPIDER_EYE) return false
         if (item === Items.POISONOUS_POTATO) return false
-        if (item === Items.FISH && stack.getMetadata() == 3) return false //Pufferfish
+        if (item === Items.FISH && stack.metadata == 3) return false // Pufferfish
         return true
     }
 
