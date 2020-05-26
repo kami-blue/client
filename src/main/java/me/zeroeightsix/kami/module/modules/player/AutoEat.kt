@@ -19,6 +19,7 @@ import net.minecraft.util.EnumHand
  * Updated by dominikaaaa on 20/03/20
  * Updated by An-En on 24/03/20
  * Updated by Dewy on the 17th of May, 2020
+ * Updated by Afel 05/25/20
  */
 @Module.Info(
         name = "AutoEat",
@@ -35,15 +36,16 @@ class AutoEat : Module() {
     var eating = false
 
     private fun isValid(stack: ItemStack, food: Int): Boolean {
-        return passItemCheck(stack.getItem()) && stack.getItem() is ItemFood && foodLevel.value - food >= (stack.getItem() as ItemFood).getHealAmount(stack) ||
-               passItemCheck(stack.getItem()) && stack.getItem() is ItemFood && healthLevel.value - (mc.player.health + mc.player.absorptionAmount) > 0f
+        return passItemCheck(stack) && stack.getItem() is ItemFood && foodLevel.value - food >= (stack.getItem() as ItemFood).getHealAmount(stack) ||
+               passItemCheck(stack) && stack.getItem() is ItemFood && healthLevel.value - (mc.player.health + mc.player.absorptionAmount) > 0f
     }
 
-    private fun passItemCheck(item: Item): Boolean {
+    private fun passItemCheck(stack: ItemStack): Boolean {
+        val item: Item = stack.getItem()
         if (item === Items.ROTTEN_FLESH) return false
         if (item === Items.SPIDER_EYE) return false
         if (item === Items.POISONOUS_POTATO) return false
-        if (item === Items.FISH && ItemStack(Items.FISH).getItemDamage() == 3) return false
+        if (item === Items.FISH && stack.getMetadata() == 3) return false //Pufferfish
         return true
     }
 
