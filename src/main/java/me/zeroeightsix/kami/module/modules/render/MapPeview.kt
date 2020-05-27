@@ -13,7 +13,6 @@ import net.minecraftforge.client.event.RenderTooltipEvent
 
 /**
  * Created by fred41 on 27/05/2020.
- *
  */
 @Module.Info(
         name = "MapPreview",
@@ -27,11 +26,11 @@ class MapPeview : Module() {
     private val tooltipEventListener = Listener(EventHook { event: RenderTooltipEvent.PostText ->
         if (event.getStack().getItem() is ItemMap) {
             val mapdata = (event.getStack().getItem() as ItemMap).getMapData(event.getStack(), mc.world as World)
-            if(mapdata==null)
+            if (mapdata == null)
                 return@EventHook
             GlStateManager.disableDepth()
             GlStateManager.disableLighting()
-            GlStateManager.translate(event.getX()-1.0, event.getY()+event.lines.size*15.0, 0.0)
+            GlStateManager.translate(event.getX() - 1.0, event.getY() + event.lines.size * 15.0, 0.0)
             GlStateManager.scale(scale.value, scale.value, 1.0)
             mc.entityRenderer.getMapItemRenderer().renderMap(mapdata, true)
             GlStateManager.enableLighting()
