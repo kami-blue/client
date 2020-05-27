@@ -349,4 +349,7 @@ public class ForgeEventProcessor {
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         KamiMod.EVENT_BUS.post(event);
     }
+
+    @SubscribeEvent
+    public void postTextTooltipRender(final RenderTooltipEvent.PostText event) {KamiMod.EVENT_BUS.post(event); }
 }
