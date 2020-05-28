@@ -23,6 +23,7 @@ import java.util.stream.Collectors
  * Updated 12 January 2020 by hub
  * Updated 19 February 2020 by aUniqueUser
  * Updated by dominikaaaa on 19/04/20
+ * Updated by Humboldt123 28/05/20 
  */
 @Module.Info(
         name = "AntiSpam",
@@ -222,7 +223,8 @@ class AntiSpam : Module() {
                 "WWE Client was the first public client to have Path Finder/New Chunks",
                 "WWE Client was the first public client to have color signs",
                 "WWE Client was the first client to have Teleport Finder",
-                "WWE Client was the first client to have Tunneller & Tunneller Back Fill")
+                "WWE Client was the first client to have Tunneller & Tunneller Back Fill",
+                "Zispanos") // This one is recent but it's annoying as FUCK.
         val INSULTER = arrayOf( // WWE
                 ".+ Download WWE utility mod, Its free!",
                 ".+ 4b4t is da best mintscreft serber",
