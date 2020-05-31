@@ -25,6 +25,7 @@ import java.util.*
 class VisualRange : Module() {
     private val playSound = register(Settings.b("Play Sound", false))
     private val leaving = register(Settings.b("Count Leaving", false))
+    private val friends = register(Settings.b("Friends", true))
     private val uwuAura = register(Settings.b("UwU Aura", false))
     private val logToFile = register(Settings.b("Log To File", false))
 
@@ -41,6 +42,7 @@ class VisualRange : Module() {
         if (tickPlayerList.size > 0) {
             for (playerName in tickPlayerList) {
                 if (playerName == mc.player.name) continue
+                if (Friends.isFriend(playerName) && !friends.value) continue
 
                 if (!knownPlayers!!.contains(playerName)) {
                     knownPlayers!!.add(playerName)
