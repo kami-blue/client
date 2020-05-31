@@ -41,8 +41,7 @@ class VisualRange : Module() {
 
         if (tickPlayerList.size > 0) {
             for (playerName in tickPlayerList) {
-                if (playerName == mc.player.name) continue
-                if (Friends.isFriend(playerName) && !friends.value) continue
+                if ((playerName == mc.player.name) || (Friends.isFriend(playerName) && !friends.value)) continue
 
                 if (!knownPlayers!!.contains(playerName)) {
                     knownPlayers!!.add(playerName)
