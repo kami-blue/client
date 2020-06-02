@@ -31,7 +31,6 @@ import net.minecraft.util.FoodStats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -349,7 +348,4 @@ public class ForgeEventProcessor {
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         KamiMod.EVENT_BUS.post(event);
     }
-
-    @SubscribeEvent
-    public void postTextTooltipRender(final RenderTooltipEvent.PostText event) {KamiMod.EVENT_BUS.post(event); }
 }
