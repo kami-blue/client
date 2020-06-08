@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.ChunkEvent;
 import org.lwjgl.opengl.GL11;
@@ -36,6 +37,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 /**
  * @author wnuke
  * Updated by dominikaaaa on 20/04/20
+ * Updated by Afel 08/06/20
  */
 @Module.Info(
         name = "Search",
@@ -50,6 +52,7 @@ public class Search extends Module {
     private final Setting<Integer> update = register(Settings.integerBuilder("Update Interval").withMinimum(100).withMaximum(10000).withValue(1500).build());
     public Setting<Boolean> overrideWarning = register(Settings.booleanBuilder("overrideWarning").withValue(false).withVisibility(v -> false).build());
     private final Setting<String> espBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_BLOCK_ESP_CONFIG).withConsumer((old, value) -> refreshESPBlocksSet(value)).build());
+    private final Setting<Boolean> tracers = register(Settings.booleanBuilder("Tracers").withValue(true));
 
     public String extGet() {
         return extGetInternal(null);
@@ -257,6 +260,12 @@ public class Search extends Module {
             KamiTessellator.release();
             GlStateManager.popMatrix();
             GlStateManager.enableTexture2D();
+
+            if(tracers.getValue()){
+                for (Map.Entry<BlockPos, Tuple<Integer, Integer>> entry : blocksToShow.entrySet()) {
+                    lineToBlock(entry.getKey(), entry.getValue().getFirst(), ((float) alpha.getValue()) / 255);
+                }
+            }
         }
     }
 
@@ -270,6 +279,41 @@ public class Search extends Module {
         return false;
     }
 
+    private void lineToBlock(BlockPos pos, int colour, float alpha){
+        Vec3d eyes = new Vec3d(0.0, 0.0, 1.0)
+                .rotatePitch((float) -Math.toRadians(mc.player.rotationPitch))
+                .rotateYaw((float) -Math.toRadians(mc.player.rotationYaw));
+
+        float red = ((float) (colour >> 16 & 0xFF)) / 255;
+        float green = ((float) (colour >> 8 & 0xFF)) / 255;
+        float blue = ((float) (colour & 0xFF)) / 255;
+
+        drawLineFromPosToPos(eyes.x, eyes.y  + mc.player.getEyeHeight(), eyes.z, pos.x + 0.5 -  mc.getRenderManager().renderPosX, pos.y + 0.5 -  mc.getRenderManager().renderPosY, pos.z + 0.5 -  mc.getRenderManager().renderPosZ, red, green, blue, alpha);
+    }
+
+    private void drawLineFromPosToPos(double posx, double posy, double posz, double posx2, double posy2, double posz2, float red, float green, float blue, float opacity) {
+        GL11.glBlendFunc(770, 771);
+        GL11.glLineWidth(1.5f);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        GL11.glColor4f(red, green, blue, opacity);
+        GlStateManager.disableLighting();
+        GL11.glLoadIdentity();
+        mc.entityRenderer.orientCamera(mc.getRenderPartialTicks());
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex3d(posx, posy, posz);
+        GL11.glVertex3d(posx2, posy2, posz2);
+        GL11.glVertex3d(posx2, posy2, posz2);
+        GL11.glVertex3d(posx2, posy2, posz2);
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
+        GL11.glColor3d(1.0, 1.0, 1.0);
+        GlStateManager.enableLighting();
+    }
+
     public static class Triplet<T, U, V> {
 
         private final T first;
@@ -281,7 +325,6 @@ public class Search extends Module {
             this.second = second;
             this.third = third;
         }
-
         public T getFirst() {
             return first;
         }
