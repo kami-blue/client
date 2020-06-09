@@ -50,6 +50,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
  * Updated 8 March 2020 by polymer
  * Updated by qther on 27/03/20
  * Updated by dominikaaaa on 27/03/20
+ * Updated by Afel on 08/06/20
  */
 @Module.Info(
         name = "CrystalAura",
@@ -366,7 +367,7 @@ public class CrystalAura extends Module {
                     bL = toF(b.getValue());
                     aL = toF(aTracer.getValue());
                 }
-                Tracers.drawLineFromPosToPos(render.x - mc.getRenderManager().renderPosX + .5d, render.y - mc.getRenderManager().renderPosY + 1, render.z - mc.getRenderManager().renderPosZ + .5d, p.x, p.y, p.z, renderEnt.getEyeHeight(), rL, gL, bL, aL);
+                KamiTessellator.drawLineToPos(render.x + 0.5d, render.y + 1d, render.z + 0.5d, rL, gL, bL, aL);
             }
         }
     }

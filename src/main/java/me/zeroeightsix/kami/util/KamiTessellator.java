@@ -1,10 +1,14 @@
 package me.zeroeightsix.kami.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -16,6 +20,7 @@ import static org.lwjgl.opengl.GL11.*;
  * 
  * Some is created by 086 on 9/07/2017.
  * Updated by dominikaaaa on 18/02/20
+ * Updated by on Afel 08/06/20
  */
 public class KamiTessellator extends Tessellator {
 
@@ -203,6 +208,60 @@ public class KamiTessellator extends Tessellator {
             buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
         }
     }
+
+    public static void drawLineToBlock(BlockPos pos, int colour, float alpha){
+        drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha);
+    }
+
+    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks){
+        //Interpolate
+        double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
+        double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
+        double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
+        drawLineToPos(x, y, z, colour, alpha);
+    }
+
+    public static void drawLineToPos(double x, double y, double z, int colour, float alpha){
+        float red = ((float) (colour >> 16 & 0xFF)) / 255;
+        float green = ((float) (colour >> 8 & 0xFF)) / 255;
+        float blue = ((float) (colour & 0xFF)) / 255;
+        drawLineToPos(x, y, z, red, green, blue, alpha);
+    }
+
+    public static void drawLineToPos(double x, double y, double z, float red, float green, float blue, float alpha){
+        Minecraft mc = Minecraft.getMinecraft();
+
+        x -= mc.getRenderManager().renderPosX;
+        y -= mc.getRenderManager().renderPosY;
+        z -= mc.getRenderManager().renderPosZ;
+
+        Vec3d eyes = new Vec3d(0.0, 0.0, 1.0)
+                .rotatePitch((float) -Math.toRadians(mc.player.rotationPitch))
+                .rotateYaw((float) -Math.toRadians(mc.player.rotationYaw));
+
+        GL11.glBlendFunc(770, 771);
+        GL11.glLineWidth(1.5f);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        GL11.glColor4f(red, green, blue, alpha);
+        GlStateManager.disableLighting();
+        GL11.glLoadIdentity();
+        mc.entityRenderer.orientCamera(mc.getRenderPartialTicks());
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex3d(eyes.x, eyes.y + mc.player.getEyeHeight(), eyes.z);
+        GL11.glVertex3d(x, y, z);
+        GL11.glVertex3d(x, y, z);
+        GL11.glVertex3d(x, y, z);
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
+        GL11.glColor3d(1.0, 1.0, 1.0);
+        GlStateManager.enableLighting();
+    }
+
+
 
     /**
      * @author polymer

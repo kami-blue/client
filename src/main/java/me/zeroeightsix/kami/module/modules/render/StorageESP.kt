@@ -21,7 +21,7 @@ import java.util.*
 /**
  * Created by 086 on 10/12/2017.
  * Updated by dominikaaaa on 14/12/19
- * Updated by Afel 08/06/20
+ * Updated by Afel on 08/06/20
  */
 @Module.Info(
         name = "StorageESP",
@@ -80,7 +80,7 @@ class StorageESP : Module() {
 
         if(tracer.value) {
             for (pair in a) {
-                lineToBlock(pair.first, pair.second, (alpha.value.toFloat()) / 255)
+                KamiTessellator.drawLineToBlock(pair.first, pair.second, (alpha.value.toFloat()) / 255)
             }
         }
 
@@ -90,44 +90,6 @@ class StorageESP : Module() {
         var origColor = origColor
         origColor = origColor and 0x00ffffff //drop the previous alpha value
         return userInputedAlpha shl 24 or origColor //add the one the user inputted
-    }
-
-    private fun lineToBlock(pos:BlockPos,colour:Int,alpha:Float){
-        val eyes = Vec3d(0.0, 0.0, 1.0)
-                .rotatePitch((-Math
-                        .toRadians(mc.player.rotationPitch.toDouble())).toFloat())
-                .rotateYaw((-Math
-                        .toRadians(mc.player.rotationYaw.toDouble())).toFloat())
-
-        val red: Float = (colour shr 16 and 0xFF).toFloat() /255
-        val green: Float = (colour shr 8 and 0xFF).toFloat() /255
-        val blue: Float = (colour and 0xFF).toFloat() / 255
-        drawLineFromPosToPos(eyes.x, eyes.y + mc.player.getEyeHeight(), eyes.z, pos.x.toDouble() + 0.5 - mc.getRenderManager().renderPosX, pos.y.toDouble() + 0.5 - mc.getRenderManager().renderPosY, pos.z.toDouble() + 0.5 - mc.getRenderManager().renderPosZ, red, green, blue, alpha)
-    }
-
-    private fun drawLineFromPosToPos(posx: Double, posy: Double, posz: Double, posx2: Double, posy2: Double, posz2: Double, red: Float, green: Float, blue: Float, opacity: Float) {
-        GL11.glBlendFunc(770, 771)
-        GL11.glLineWidth(1.5f)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(false)
-        GL11.glColor4f(red, green, blue, opacity)
-        GlStateManager.disableLighting()
-        GL11.glLoadIdentity()
-        mc.entityRenderer.orientCamera(mc.renderPartialTicks)
-        GL11.glBegin(GL11.GL_LINES)
-        run {
-            GL11.glVertex3d(posx, posy, posz)
-            GL11.glVertex3d(posx2, posy2, posz2)
-            GL11.glVertex3d(posx2, posy2, posz2)
-            GL11.glVertex3d(posx2, posy2, posz2)
-        }
-        GL11.glEnd()
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(true)
-        GL11.glColor3d(1.0, 1.0, 1.0)
-        GlStateManager.enableLighting()
     }
 
     inner class Triplet<T, U, V>(val first: T, val second: U, val third: V)
