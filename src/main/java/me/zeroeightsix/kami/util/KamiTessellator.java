@@ -14,10 +14,10 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * THE FOLLOWING CODE IS LICENSED UNDER MIT, AS PER the fr1kin/forgehax license
- * You can view the original code here: 
- * 
+ * You can view the original code here:
+ * <p>
  * https://github.com/fr1kin/ForgeHax/blob/master/src/main/java/com/matt/forgehax/util/tesselation/GeometryTessellator.java
- * 
+ * <p>
  * Some is created by 086 on 9/07/2017.
  * Updated by dominikaaaa on 18/02/20
  * Updated by on Afel 08/06/20
@@ -209,11 +209,11 @@ public class KamiTessellator extends Tessellator {
         }
     }
 
-    public static void drawLineToBlock(BlockPos pos, int colour, float alpha){
+    public static void drawLineToBlock(BlockPos pos, int colour, float alpha) {
         drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha);
     }
 
-    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks){
+    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks) {
         //Interpolate
         double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
@@ -221,14 +221,14 @@ public class KamiTessellator extends Tessellator {
         drawLineToPos(x, y, z, colour, alpha);
     }
 
-    public static void drawLineToPos(double x, double y, double z, int colour, float alpha){
+    public static void drawLineToPos(double x, double y, double z, int colour, float alpha) {
         float red = ((float) (colour >> 16 & 0xFF)) / 255;
         float green = ((float) (colour >> 8 & 0xFF)) / 255;
         float blue = ((float) (colour & 0xFF)) / 255;
         drawLineToPos(x, y, z, red, green, blue, alpha);
     }
 
-    public static void drawLineToPos(double x, double y, double z, float red, float green, float blue, float alpha){
+    public static void drawLineToPos(double x, double y, double z, float red, float green, float blue, float alpha) {
         Minecraft mc = Minecraft.getMinecraft();
 
         x -= mc.getRenderManager().renderPosX;
@@ -260,7 +260,6 @@ public class KamiTessellator extends Tessellator {
         GL11.glColor3d(1.0, 1.0, 1.0);
         GlStateManager.enableLighting();
     }
-
 
 
     /**

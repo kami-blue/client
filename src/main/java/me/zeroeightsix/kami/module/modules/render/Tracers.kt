@@ -8,8 +8,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.math.Vec3d
-import org.lwjgl.opengl.GL11
 
 /**
  * Created by 086 on 11/12/2017.
@@ -36,6 +34,7 @@ class Tracers : Module() {
     private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { customColours.value }.build())
     private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { customColours.value }.build())
     private var cycler = HueCycler(3600)
+
     override fun onWorldRender(event: RenderEvent) {
         GlStateManager.pushMatrix()
         Minecraft.getMinecraft().world.loadedEntityList.stream()
@@ -51,6 +50,7 @@ class Tracers : Module() {
                 .filter { entity: Entity? -> mc.player.getDistance(entity) < range.value }
                 .forEach { entity: Entity ->
                     var colour = getColour(entity)
+
                     colour = if (colour == ColourUtils.Colors.RAINBOW) {
                         if (!friends.value) return@forEach
                         if (customColours.value) {

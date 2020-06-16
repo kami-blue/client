@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.ChunkEvent;
 import org.lwjgl.opengl.GL11;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourUtils.toRGBA;
 import static me.zeroeightsix.kami.util.CoordUtil.getCurrentCoord;
-import static me.zeroeightsix.kami.util.KamiTessellator.drawLineToBlock;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
 
@@ -262,7 +260,7 @@ public class Search extends Module {
             GlStateManager.popMatrix();
             GlStateManager.enableTexture2D();
 
-            if(tracers.getValue()){
+            if (tracers.getValue()) {
                 for (Map.Entry<BlockPos, Tuple<Integer, Integer>> entry : blocksToShow.entrySet()) {
                     KamiTessellator.drawLineToBlock(entry.getKey(), entry.getValue().getFirst(), ((float) alpha.getValue()) / 255);
                 }
@@ -291,6 +289,7 @@ public class Search extends Module {
             this.second = second;
             this.third = third;
         }
+
         public T getFirst() {
             return first;
         }
