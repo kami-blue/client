@@ -288,8 +288,6 @@ class ElytraFlight : Module() {
     }
 
     override fun onEnable() {
-        /*Elytra check*/
-        if (mc.player.inventory.armorInventory[2].getItem() != Items.ELYTRA) sendChatMessage("$chatName Elytra is not equipped!")
         hoverTarget = -1.0 /* For control mode */
     }
 
