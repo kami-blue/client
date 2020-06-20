@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketPlayerPosLook
@@ -21,6 +22,7 @@ import kotlin.math.sqrt
  * Updated by Itistheend on 28/12/19.
  * Updated by dominikaaaa on 26/05/20
  * Updated by pNoName on 28/05/20
+ * Updated by Xiaro on 20/06/20
  *
  * Some of Control mode was written by an anonymous donator who didn't wish to be named.
  */
@@ -66,11 +68,12 @@ class ElytraFlight : Module() {
     private var packetYaw = 0.0f
     private var hoverState = false
     private var isBoosting = false
+    private var elytraIsEquipped = false
 
     /* Control Mode */
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
 
         if (event.packet is CPacketPlayer) {
             if (!mc.player.isElytraFlying) return@EventHook
@@ -94,7 +97,7 @@ class ElytraFlight : Module() {
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || !mc.player.isElytraFlying || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || !mc.player.isElytraFlying || mc.player.isSpectator) return@EventHook
         if (event.packet is SPacketPlayerPosLook) {
             val packet = event.packet as SPacketPlayerPosLook
             packet.pitch = mc.player.rotationPitch
@@ -103,7 +106,7 @@ class ElytraFlight : Module() {
 
     @EventHandler
     private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
 
         if (!mc.player.isElytraFlying) {
             if (easyTakeOffControl.value && !mc.player.onGround && mc.player.motionY < -0.04) {
@@ -184,7 +187,9 @@ class ElytraFlight : Module() {
     /* End of Control Mode */
 
     override fun onUpdate() {
-        if (mc.player == null || mc.player.isSpectator) return
+        /*Elytra check*/
+        elytraIsEquipped = mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA
+        if (!elytraIsEquipped || mc.player == null || mc.player.isSpectator) return
 
         if (mode.value == ElytraFlightMode.CONTROL) {
             val shouldAutoBoost = if (autoBoost.value) {
@@ -283,6 +288,8 @@ class ElytraFlight : Module() {
     }
 
     override fun onEnable() {
+        /*Elytra check*/
+        if (mc.player.inventory.armorInventory[2].getItem() != Items.ELYTRA) sendChatMessage("$chatName Elytra is not equipped!")
         hoverTarget = -1.0 /* For control mode */
     }
 
