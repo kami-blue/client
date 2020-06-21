@@ -185,6 +185,16 @@ class ElytraFlight : Module() {
         }
         event.cancel()
     })
+
+    private fun lookBoost() {
+        val shouldAutoBoost = if (autoBoost.value) {
+            !(mc.player.motionX.toInt() == 0 && mc.player.motionZ.toInt() == 0)
+        } else {
+            true
+        }
+
+        isBoosting = (mc.player.rotationPitch < -10 && shouldAutoBoost) && lookBoost.value
+    }
     /* End of Control Mode */
 
     override fun onUpdate() {
@@ -193,13 +203,11 @@ class ElytraFlight : Module() {
         if (!elytraIsEquipped || mc.player == null || mc.player.isSpectator) return
 
         if (mode.value == ElytraFlightMode.CONTROL) {
-            val shouldAutoBoost = if (autoBoost.value) {
-                !(mc.player.motionX.toInt() == 0 && mc.player.motionZ.toInt() == 0)
+            if (mc.player.isElytraFlying && lookBoost.value) {
+                lookBoost()
             } else {
-                true
+                isBoosting = false
             }
-
-            isBoosting = (mc.player.rotationPitch < -10 && shouldAutoBoost) && lookBoost.value
             return
         }
 
