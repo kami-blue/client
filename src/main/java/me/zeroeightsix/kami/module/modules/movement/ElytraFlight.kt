@@ -52,6 +52,7 @@ class ElytraFlight : Module() {
     private val upPitch = register(Settings.integerBuilder("Up Pitch").withRange(-90, 90).withValue(-10).withVisibility { spoofPitch.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val forwardPitch = register(Settings.integerBuilder("Forward Pitch").withRange(-90, 90).withValue(0).withVisibility { spoofPitch.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val lookBoost = register(Settings.booleanBuilder("Look Boost").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
+    private val spaceBarTrigger = register(Settings.booleanBuilder("Space Bar Trigger").withValue(false).withVisibility { lookBoost.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val autoBoost = register(Settings.booleanBuilder("Auto Boost").withValue(true).withVisibility { lookBoost.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val hoverControl = register(Settings.booleanBuilder("Hover").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val easyTakeOffControl = register(Settings.booleanBuilder("Easy Takeoff C").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
@@ -187,13 +188,14 @@ class ElytraFlight : Module() {
     })
 
     private fun lookBoost() {
+        val readyToBoost = mc.player.movementInput.moveForward > 0 && ((mc.player.movementInput.jump && spaceBarTrigger.value) || !spaceBarTrigger.value) && mc.player.rotationPitch <= -10
         val shouldAutoBoost = if (autoBoost.value) {
-            !(mc.player.motionX.toInt() == 0 && mc.player.motionZ.toInt() == 0)
+            (mc.player.motionY >= (-fallSpeedControl.value) && sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ) >= 0.8) || (mc.player.motionY >= 1) /*Make auto boost works great at all pitch*/
         } else {
             true
         }
-
-        isBoosting = (mc.player.rotationPitch < -10 && shouldAutoBoost) && lookBoost.value
+        if ((readyToBoost && shouldAutoBoost) != isBoosting) mc.player.rotationPitch -= 0.0001f /*Tried with sending rotation packet, doesn't work on 2B*/
+        isBoosting = readyToBoost && shouldAutoBoost
     }
     /* End of Control Mode */
 
@@ -315,6 +317,7 @@ class ElytraFlight : Module() {
             upPitch.value = -10
             forwardPitch.value = 0
             lookBoost.value = true
+            spaceBarTrigger.value = false
             autoBoost.value = true
             hoverControl.value = false
             easyTakeOffControl.value = true
