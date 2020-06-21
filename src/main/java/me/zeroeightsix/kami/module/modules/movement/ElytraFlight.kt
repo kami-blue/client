@@ -14,15 +14,16 @@ import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketPlayerPosLook
-import net.minecraft.util.math.MathHelper
 import kotlin.math.sqrt
+import kotlin.math.sin
+import kotlin.math.cos
 
 /**
  * Created by 086 on 11/04/2018.
  * Updated by Itistheend on 28/12/19.
  * Updated by dominikaaaa on 26/05/20
  * Updated by pNoName on 28/05/20
- * Updated by Xiaro on 20/06/20
+ * Updated by Xiaro on 21/06/20
  *
  * Some of Control mode was written by an anonymous donator who didn't wish to be named.
  */
@@ -145,7 +146,7 @@ class ElytraFlight : Module() {
         if (moveBackward) yawDeg -= 180.0f
 
         packetYaw = yawDeg
-        val yaw = Math.toRadians(yawDeg.toDouble()).toFloat()
+        val yaw = Math.toRadians(yawDeg.toDouble())
         val motionAmount = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
         hoverState = if (hoverState) mc.player.posY < hoverTarget + 0.1 else mc.player.posY < hoverTarget + 0.0
         val doHover: Boolean = hoverState && hoverControl.value
@@ -157,17 +158,17 @@ class ElytraFlight : Module() {
                 } else {
                     val calcMotionDiff = motionAmount * 0.008
                     mc.player.motionY += calcMotionDiff * 3.2
-                    mc.player.motionX -= (-MathHelper.sin(yaw)).toDouble() * calcMotionDiff / 1.0
-                    mc.player.motionZ -= MathHelper.cos(yaw).toDouble() * calcMotionDiff / 1.0
+                    mc.player.motionX -= (-sin(yaw)) * calcMotionDiff / 1.0
+                    mc.player.motionZ -= cos(yaw) * calcMotionDiff / 1.0
 
                     mc.player.motionX *= 0.99
                     mc.player.motionY *= 0.98
                     mc.player.motionZ *= 0.99
                 }
-            } else { /* runs when pressing wasd */
-                mc.player.motionX = (-MathHelper.sin(yaw)).toDouble() * speedControl.value
-                mc.player.motionY = (-fallSpeedControl.value).toDouble()
-                mc.player.motionZ = MathHelper.cos(yaw).toDouble() * speedControl.value
+            } else {/* runs when pressing wasd */
+                    mc.player.motionX = (-sin(yaw)) * speedControl.value
+                    mc.player.motionY = (-fallSpeedControl.value).toDouble()
+                    mc.player.motionZ = cos(yaw) * speedControl.value
             }
         } else { /* Stop moving if no inputs are pressed */
             mc.player.motionX = 0.0
@@ -224,12 +225,12 @@ class ElytraFlight : Module() {
 
             if (mc.gameSettings.keyBindForward.isKeyDown) {
                 val yaw = Math.toRadians(mc.player.rotationYaw.toDouble()).toFloat()
-                mc.player.motionX -= MathHelper.sin(yaw) * 0.05f.toDouble()
-                mc.player.motionZ += MathHelper.cos(yaw) * 0.05f.toDouble()
+                mc.player.motionX -= sin(yaw) * 0.05
+                mc.player.motionZ += cos(yaw) * 0.05
             } else if (mc.gameSettings.keyBindBack.isKeyDown) {
                 val yaw = Math.toRadians(mc.player.rotationYaw.toDouble()).toFloat()
-                mc.player.motionX += MathHelper.sin(yaw) * 0.05f.toDouble()
-                mc.player.motionZ -= MathHelper.cos(yaw) * 0.05f.toDouble()
+                mc.player.motionX += sin(yaw) * 0.05
+                mc.player.motionZ -= cos(yaw) * 0.05
             }
         } else if (mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.FLY) {
             mc.player.capabilities.flySpeed = .915f
