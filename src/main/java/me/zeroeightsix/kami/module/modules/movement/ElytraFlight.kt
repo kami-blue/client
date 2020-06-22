@@ -71,6 +71,7 @@ class ElytraFlight : Module() {
     private var hoverState = false
     private var isBoosting = false
     private var elytraIsEquipped = false
+    private var isStandingStill = true
 
     /* Control Mode */
     @EventHandler
@@ -82,7 +83,7 @@ class ElytraFlight : Module() {
             val packet = event.packet as CPacketPlayer
             val moveUp = if (!lookBoost.value) mc.player.movementInput.jump else false
 
-            if (spoofPitch.value) {
+            if (spoofPitch.value && !isStandingStill) {
                 if (moveUp) {
                     packet.pitch = upPitch.value.toFloat()
                 } else {
@@ -166,10 +167,10 @@ class ElytraFlight : Module() {
                     mc.player.motionY *= 0.98
                     mc.player.motionZ *= 0.99
                 }
-            } else {/* runs when pressing wasd */
-                    mc.player.motionX = (-sin(yaw)) * speedControl.value
-                    mc.player.motionY = (-fallSpeedControl.value).toDouble()
-                    mc.player.motionZ = cos(yaw) * speedControl.value
+            } else { /* runs when pressing wasd */
+                mc.player.motionX = (-sin(yaw)) * speedControl.value
+                mc.player.motionY = (-fallSpeedControl.value).toDouble()
+                mc.player.motionZ = cos(yaw) * speedControl.value
             }
         } else { /* Stop moving if no inputs are pressed */
             mc.player.motionX = 0.0
@@ -189,11 +190,7 @@ class ElytraFlight : Module() {
 
     private fun lookBoost() {
         val readyToBoost = mc.player.movementInput.moveForward > 0 && ((mc.player.movementInput.jump && spaceBarTrigger.value) || !spaceBarTrigger.value) && mc.player.rotationPitch <= -10
-        val shouldAutoBoost = if (autoBoost.value) {
-            (mc.player.motionY >= (-fallSpeedControl.value) && sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ) >= 0.8) || (mc.player.motionY >= 1) /*Make auto boost works great at all pitch*/
-        } else {
-            true
-        }
+        val shouldAutoBoost = !autoBoost.value || ((mc.player.motionY >= (-fallSpeedControl.value) && sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ) >= 0.8) || (mc.player.motionY >= 1))
         if ((readyToBoost && shouldAutoBoost) != isBoosting) mc.player.rotationPitch -= 0.0001f /*Tried with sending rotation packet, doesn't work on 2B*/
         isBoosting = readyToBoost && shouldAutoBoost
     }
@@ -204,11 +201,16 @@ class ElytraFlight : Module() {
         elytraIsEquipped = mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA
         if (!elytraIsEquipped || mc.player == null || mc.player.isSpectator) return
 
-        if (mode.value == ElytraFlightMode.CONTROL) {
-            if (mc.player.isElytraFlying && lookBoost.value) {
+        if (mode.value == ElytraFlightMode.CONTROL ) {
+            if (lookBoost.value) {
                 lookBoost()
             } else {
                 isBoosting = false
+            }
+            if (spoofPitch.value) {
+                val wasStandingStill = isStandingStill
+                isStandingStill = (mc.player.movementInput.moveForward == 0f && mc.player.movementInput.moveStrafe == 0f && !mc.player.movementInput.jump && !mc.player.movementInput.sneak)
+                if (wasStandingStill != isStandingStill) mc.connection!!.sendPacket(CPacketPlayer.Rotation()) /* Spoof your pitch if there is a movementInput */
             }
             return
         }
