@@ -23,7 +23,7 @@ import kotlin.math.cos
  * Updated by Itistheend on 28/12/19.
  * Updated by dominikaaaa on 26/05/20
  * Updated by pNoName on 28/05/20
- * Updated by Xiaro on 21/06/20
+ * Updated by Xiaro on 22/06/20
  *
  * Some of Control mode was written by an anonymous donator who didn't wish to be named.
  */
