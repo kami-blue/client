@@ -71,7 +71,7 @@ class ElytraFlight : Module() {
     private var hoverState = false
     private var isBoosting = false
     private var elytraIsEquipped = false
-    private var isStandingStill = true
+    private var isStandingStill = false
 
     /* Control Mode */
     @EventHandler
@@ -83,6 +83,9 @@ class ElytraFlight : Module() {
             val packet = event.packet as CPacketPlayer
             val moveUp = if (!lookBoost.value) mc.player.movementInput.jump else false
 
+            if (isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) { /* Cancels rotation packets when standing still and not clicking */
+                event.cancel()
+            }
             if (spoofPitch.value && !isStandingStill) {
                 if (moveUp) {
                     packet.pitch = upPitch.value.toFloat()
@@ -153,7 +156,7 @@ class ElytraFlight : Module() {
         hoverState = if (hoverState) mc.player.posY < hoverTarget + 0.1 else mc.player.posY < hoverTarget + 0.0
         val doHover: Boolean = hoverState && hoverControl.value
 
-        if (moveUp || moveForward || moveBackward || moveLeft || moveRight) {
+        if ((moveUp || moveForward || moveBackward || moveLeft || moveRight) && !isStandingStill) { /* Wait for the server side pitch to be updated before moving */
             if ((moveUp || doHover) && motionAmount > 1.0) {
                 if (mc.player.motionX == 0.0 && mc.player.motionZ == 0.0) {
                     mc.player.motionY = downSpeedControl.value
@@ -210,8 +213,8 @@ class ElytraFlight : Module() {
             if (spoofPitch.value) {
                 val wasStandingStill = isStandingStill
                 isStandingStill = (mc.player.movementInput.moveForward == 0f && mc.player.movementInput.moveStrafe == 0f && !mc.player.movementInput.jump && !mc.player.movementInput.sneak)
-                if (wasStandingStill != isStandingStill) mc.connection!!.sendPacket(CPacketPlayer.Rotation()) /* Spoof your pitch if there is a movementInput */
-            }
+                if ((wasStandingStill != isStandingStill) || isStandingStill && (mc.gameSettings.keyBindUseItem.isKeyDown || mc.gameSettings.keyBindAttack.isKeyDown)) mc.player.rotationPitch -= 0.0001f /* update server side pitch when starting moving or clicking */
+            } else isStandingStill = false
             return
         }
 
