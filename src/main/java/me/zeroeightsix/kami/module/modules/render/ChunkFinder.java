@@ -4,6 +4,7 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.ChunkEvent;
+import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
@@ -68,7 +69,11 @@ public class ChunkFinder extends Module {
                 double posY = 0;
                 double posZ = chunk.z * 16;
 
-                glColor3f(.6f, .1f, .2f);
+                if (InfoCalculator.playerDimension(mc).equals("Overworld") || InfoCalculator.playerDimension(mc).equals("The End")) {
+                    glColor3f(.6f, .1f, .2f);
+                } else {
+                    glColor3f(0.0f, 0.99f, 0.0f);
+                }
 
                 glBegin(GL_LINE_LOOP);
                 glVertex3d(posX, posY, posZ);
