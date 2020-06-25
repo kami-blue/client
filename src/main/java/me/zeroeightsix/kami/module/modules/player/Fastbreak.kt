@@ -7,10 +7,11 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.client.CPacketPlayerDigging
+import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 
 /**
  * @author 086
- * Updated by Xiaro on 24/06/2018.
+ * Updated by Xiaro on 24/06/2020.
  */
 @Module.Info(
         name = "Fastbreak",
@@ -18,36 +19,26 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
         description = "Breaks block faster"
 )
 class Fastbreak : Module() {
-    private val mode = register(Settings.e<FastBreakMode>("Mode", FastBreakMode.HIT_DELAY))
-    private val sneakTrigger = register(Settings.booleanBuilder("Sneak Trigger").withValue(true).withVisibility { mode.value == FastBreakMode.PACKET}.build())
+    private val packetMine = register(Settings.b("Packet Mine", false))
+    private val sneakTrigger = register(Settings.booleanBuilder("Sneak Trigger").withValue(true).withVisibility {packetMine.value}.build())
 
-    private enum class FastBreakMode {
-        HIT_DELAY, PACKET
-    }
-
-    private var isPacketMining = false
     private var diggingPacket = CPacketPlayerDigging()
 
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet !is CPacketPlayerDigging || mode.value != FastBreakMode.PACKET) return@EventHook
+        if (event.packet !is CPacketPlayerDigging || !packetMine.value) return@EventHook
         val packet = event.packet as CPacketPlayerDigging
 
-        if (packet.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK && !isPacketMining && ((sneakTrigger.value && mc.player.isSneaking) || !sneakTrigger.value)) {
-            isPacketMining = true
+        if (packet.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK) {
             diggingPacket = packet
-        } else if (packet.action == CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK && isPacketMining) { /* Cancels aborting packets */
-            event.cancel()
+        } else if (packet.action == CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK && packet.position == diggingPacket.position && ((sneakTrigger.value && mc.player.isSneaking) || !sneakTrigger.value)) {
+            val stopDiggingPacket = CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, packet.position, packet.facing)
+            event.cancel() /* Cancels aborting packets */
+            mc.connection!!.sendPacket(stopDiggingPacket) /* Sends a stop digging packet so the blocks will actually be mined after the server side breaking animation */
         }
     })
 
     override fun onUpdate() {
-        if (mode.value == FastBreakMode.HIT_DELAY) {
             mc.playerController.blockHitDelay = 0
-        } else if (isPacketMining) {
-            val stopDiggingPacket = CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, diggingPacket.position, diggingPacket.facing)
-            mc.connection!!.sendPacket(stopDiggingPacket) /* Sends a stop digging packet so the blocks will actually be mined after the server side breaking animation */
-            isPacketMining = false
-        }
     }
 }
