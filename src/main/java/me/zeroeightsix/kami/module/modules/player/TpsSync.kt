@@ -10,10 +10,4 @@ import me.zeroeightsix.kami.module.Module
         description = "Synchronizes block states with the server TPS",
         category = Module.Category.PLAYER
 )
-class TpsSync : Module() {
-    companion object {
-        lateinit var INSTANCE: TpsSync
-    }
-
-    fun TpsSync() { INSTANCE = this }
-}
+class TpsSync : Module()
