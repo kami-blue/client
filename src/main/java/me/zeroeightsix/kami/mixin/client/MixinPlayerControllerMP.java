@@ -25,7 +25,7 @@ public class MixinPlayerControllerMP {
 
     @Redirect(method = "onPlayerDamageBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/state/IBlockState;getPlayerRelativeBlockHardness(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)F"))
     float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        return state.getPlayerRelativeBlockHardness(player, worldIn, pos) * (TpsSync.Companion.isSync() ? (LagCompensator.INSTANCE.getTickRate() / 20f) : 1);
+        return state.getPlayerRelativeBlockHardness(player, worldIn, pos) * (TpsSync.INSTANCE.isEnabled() ? (LagCompensator.INSTANCE.getTickRate() / 20f) : 1);
     }
 
     @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)

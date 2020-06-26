@@ -12,8 +12,7 @@ import me.zeroeightsix.kami.module.Module
 )
 class TpsSync : Module() {
     companion object {
-        private lateinit var INSTANCE: TpsSync
-        fun isSync(): Boolean { return INSTANCE.isEnabled }
+        lateinit var INSTANCE: TpsSync
     }
 
     fun TpsSync() { INSTANCE = this }
