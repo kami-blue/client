@@ -192,6 +192,7 @@ class ElytraFlight : Module() {
     })
 
     private fun lookBoost() {
+        if (mc.player.movementInput.moveForward > 0 && mc.player.movementInput.jump && spaceBarTrigger.value && mc.player.rotationPitch > -10) mc.player.rotationPitch = -10f
         val readyToBoost = mc.player.movementInput.moveForward > 0 && ((mc.player.movementInput.jump && spaceBarTrigger.value) || !spaceBarTrigger.value) && mc.player.rotationPitch <= -10
         val shouldAutoBoost = !autoBoost.value || ((mc.player.motionY >= (-fallSpeedControl.value) && sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ) >= 0.8) || (mc.player.motionY >= 1))
         if ((readyToBoost && shouldAutoBoost) != isBoosting) mc.player.rotationPitch -= 0.0001f /*Tried with sending rotation packet, doesn't work on 2B*/
