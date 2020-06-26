@@ -14,9 +14,9 @@ import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketPlayerPosLook
-import kotlin.math.sqrt
-import kotlin.math.sin
 import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Created by 086 on 11/04/2018.
@@ -205,7 +205,7 @@ class ElytraFlight : Module() {
         elytraIsEquipped = mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA
         if (!elytraIsEquipped || mc.player == null || mc.player.isSpectator) return
 
-        if (mode.value == ElytraFlightMode.CONTROL ) {
+        if (mode.value == ElytraFlightMode.CONTROL) {
             if (lookBoost.value) {
                 lookBoost()
             } else {
