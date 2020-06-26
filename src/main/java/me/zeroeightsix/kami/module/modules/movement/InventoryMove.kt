@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.GuiEditSign
 import org.lwjgl.input.Keyboard
 
@@ -31,7 +32,7 @@ class InventoryMove : Module() {
     @EventHandler
     private val sendListener = Listener(EventHook { event: PlayerUpdateMoveEvent ->
         //Add Anvil Here
-        if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiEditSign) {
+        if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiEditSign && mc.currentScreen !is GuiRepair) {
             // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
                 mc.player.rotationYaw = mc.player.rotationYaw - speed.value
