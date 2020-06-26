@@ -39,16 +39,21 @@ class Criticals : Module() {
                 mc.player.connection.sendPacket(CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.1f, mc.player.posZ, false))
                 mc.player.connection.sendPacket(CPacketPlayer.Position(mc.player.posX, mc.player.posY, mc.player.posZ, false))
                 mc.player.onCriticalHit(event.target)
-            } else if (mode.value == CriticalMode.DELAY && !mc.player.isSprinting && mc.player.getCooledAttackStrength(0.0f) >= 1) event.isCanceled = true /* Cancel AttackEntityEvent for compatibility with some modules */
+            } else if (mode.value == CriticalMode.DELAY && !mc.player.isSprinting && mc.player.getCooledAttackStrength(0.0f) >= 1) {
+                event.isCanceled = true
+            } /* Cancel AttackEntityEvent for compatibility with some modules */
         }
     })
 
+    /* Delay mode code is here because packets are sent before AttackEntityEvent is called for some reasons */
     @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send -> /* Delay mode codes are here because packets are sent before AttackEntityEvent is called for some reasons */
+    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mode.value != CriticalMode.DELAY || !(event.packet is CPacketAnimation || event.packet is CPacketUseEntity)) return@EventHook
-        val shouldDoCritical = !mc.player.isInWater && !mc.player.isInLava && !mc.player.isSprinting && mc.player.onGround && mc.player.getCooledAttackStrength(0.0f) >= 1 /* Don't run if player is sprinting or weapon is still in cooldown */
+        /* Don't run if player is sprinting or weapon is still in cooldown */
+        val shouldDoCritical = !mc.player.isInWater && !mc.player.isInLava && !mc.player.isSprinting && mc.player.onGround && mc.player.getCooledAttackStrength(0.0f) >= 1
 
-        if (event.packet is CPacketUseEntity && shouldDoCritical && delayTick == 0) { /* Cancels attack packet and jump when you hit an entity */
+        /* Cancels attack packet and jump when you hit an entity */
+        if (event.packet is CPacketUseEntity && shouldDoCritical && delayTick == 0) {
             val packet = event.packet as CPacketUseEntity
             if (packet.action == CPacketUseEntity.Action.ATTACK) {
                 attackPacket = event.packet as CPacketUseEntity
@@ -57,14 +62,16 @@ class Criticals : Module() {
                 delayTick = 1
             }
         }
-        if (event.packet is CPacketAnimation && delayTick == 1) { /* Cancels swing packet after attack packet was cancelled */
+        /* Cancels swing packet after attack packet was cancelled */
+        if (event.packet is CPacketAnimation && delayTick == 1) {
             swingPacket = event.packet as CPacketAnimation
             event.cancel()
         }
     })
 
     override fun onUpdate() {
-        if (mc.player.motionY < -0.1 && delayTick >= 1) { /* Sends attack packet and swing packet when falling */
+        /* Sends attack packet and swing packet when falling */
+        if (mc.player.motionY < -0.1 && delayTick >= 1) {
             delayTick = 2
             mc.connection!!.sendPacket(attackPacket)
             mc.connection!!.sendPacket(swingPacket)
