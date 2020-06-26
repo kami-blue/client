@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.Listener
 import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.client.CPacketPlayerDigging
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 
 /**
  * @author 086
@@ -16,11 +15,11 @@ import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 @Module.Info(
         name = "Fastbreak",
         category = Module.Category.PLAYER,
-        description = "Breaks block faster"
+        description = "Breaks block faster and nullifies the break delay"
 )
 class Fastbreak : Module() {
-    private val packetMine = register(Settings.b("Packet Mine", false))
-    private val sneakTrigger = register(Settings.booleanBuilder("Sneak Trigger").withValue(true).withVisibility {packetMine.value}.build())
+    private val packetMine = register(Settings.b("Packet Mine", true))
+    private val sneakTrigger = register(Settings.booleanBuilder("Sneak Trigger").withValue(true).withVisibility { packetMine.value }.build())
 
     private var diggingPacket = CPacketPlayerDigging()
 
@@ -39,6 +38,6 @@ class Fastbreak : Module() {
     })
 
     override fun onUpdate() {
-            mc.playerController.blockHitDelay = 0
+        mc.playerController.blockHitDelay = 0
     }
 }
