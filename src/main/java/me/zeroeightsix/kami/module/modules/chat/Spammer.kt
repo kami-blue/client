@@ -1,0 +1,81 @@
+package me.zeroeightsix.kami.module.modules.chat
+
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.MessageSendHelper.*
+import java.io.*
+import kotlin.collections.ArrayList
+import kotlin.random.Random
+
+/**
+ * @author dominikaaaa
+ * Created by dominikaaaa on 10/04/20
+ * Updated by Xiaro on 27/6/20
+ */
+@Module.Info(
+        name = "Spammer",
+        description = "Spams text from a file on a set delay into the chat",
+        category = Module.Category.CHAT
+)
+class Spammer : Module() {
+    private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
+    private val timeoutTime = register(Settings.integerBuilder("Timeout (s)").withRange(1, 240).withValue(10).build())
+
+    private var spammer = ArrayList<String>()
+    private var currentLine = 0
+    private var startTime = 0L
+
+    private enum class Mode { IN_ORDER, RANDOM_ORDER }
+
+    override fun onEnable() {
+        val bufferedReader: BufferedReader
+        try {
+            sendChatMessage("$chatName Trying to find '&7spammer.txt&f'")
+            bufferedReader = BufferedReader(InputStreamReader(FileInputStream("spammer.txt"), "UTF-8"))
+            spammer.clear()
+            var str = bufferedReader.readLine()
+            while (str != null) {
+                spammer.add(str)
+                str = bufferedReader.readLine()
+            }
+            bufferedReader.close()
+        } catch (exception: FileNotFoundException) {
+            sendErrorMessage("$chatName Couldn't find a file called '&7spammer.txt&f' inside your '&7.minecraft&f' folder, disabling")
+            disable()
+            return
+        } catch (exception: IOException) {
+            sendErrorMessage(exception.toString())
+            return
+        }
+        sendChatMessage("$chatName Found '&7spammer.txt&f'!")
+
+    }
+
+    override fun onUpdate() {
+        sendMsg()
+    }
+
+    private fun sendMsg() {
+        if (startTime == 0L) startTime = System.currentTimeMillis()
+
+        if (startTime + (timeoutTime.value * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
+            startTime = System.currentTimeMillis()
+            if (modeSetting.value == Mode.IN_ORDER) {
+                sendServerMessage(getOrdered(spammer))
+            } else {
+                sendServerMessage(getRandom(spammer, currentLine))
+            }
+        }
+    }
+
+    private fun getOrdered(array: ArrayList<String>): String {
+        if (currentLine >= array.size) currentLine = 0
+        currentLine++
+        return array[currentLine - 1]
+    }
+
+    private fun getRandom(array: ArrayList<String>, LastLine: Int): String {
+        while (currentLine == LastLine) currentLine = Random.nextInt(array.size) // Avoids sending the same message
+        return array[currentLine]
+    }
+}
