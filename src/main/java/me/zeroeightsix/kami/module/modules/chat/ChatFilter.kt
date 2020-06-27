@@ -29,8 +29,8 @@ class ChatFilter : Module() {
     private val hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility { v: Boolean? -> false }.build())
 
     @EventHandler
-    var listener = Listener(label@ EventHook { event: ClientChatReceivedEvent ->
-        if (mc.player == null) return@label
+    var listener = Listener(EventHook { event: ClientChatReceivedEvent ->
+        if (mc.player == null) return@EventHook
         if (isDetected(event.message.unformattedText)) {
             event.isCanceled = true
         }
