@@ -35,12 +35,8 @@ import kotlin.math.sqrt
 class ElytraFlight : Module() {
     private val mode = register(Settings.e<ElytraFlightMode>("Mode", ElytraFlightMode.CREATIVE))
     private val defaultSetting = register(Settings.b("Defaults", false))
-
-    /* Highway */
-    private val easyTakeOff = register(Settings.booleanBuilder("Easy Takeoff C/CR").withValue(true).withVisibility { mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.PACKET }.build())
-    private val takeOffMode = register(Settings.enumBuilder(TakeoffMode::class.java).withName("Takeoff Mode").withValue(TakeoffMode.PACKET).withVisibility { easyTakeOff.value && (mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.PACKET) }.build())
-    private val speedCreative = register(Settings.floatBuilder("Speed CR").withValue(1.8f).withMaximum(1.8f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
-    private val fallSpeedCreative = register(Settings.floatBuilder("Fall Speed CR").withValue(0.000100000002f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
+    private val easyTakeOffControl = register(Settings.b("Easy Takeoff C", true))
+    private val timerControl = register(Settings.booleanBuilder("Takeoff Timer").withValue(true).withVisibility { easyTakeOffControl.value }.build())
 
     /* Fly or Boost */
     private val fallSpeed = register(Settings.floatBuilder("Fall Speed").withValue(-.003f).withVisibility { mode.value == ElytraFlightMode.BOOST || mode.value == ElytraFlightMode.FLY }.build())
@@ -55,15 +51,21 @@ class ElytraFlight : Module() {
     private val spaceBarTrigger = register(Settings.booleanBuilder("Space Bar Trigger").withValue(false).withVisibility { lookBoost.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val autoBoost = register(Settings.booleanBuilder("Auto Boost").withValue(true).withVisibility { lookBoost.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val hoverControl = register(Settings.booleanBuilder("Hover").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
-    private val easyTakeOffControl = register(Settings.booleanBuilder("Easy Takeoff C").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
-    private val timerControl = register(Settings.booleanBuilder("Takeoff Timer").withValue(true).withVisibility { easyTakeOffControl.value && mode.value == ElytraFlightMode.CONTROL }.build())
     private val speedControl = register(Settings.floatBuilder("Speed C").withValue(1.8f).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val fallSpeedControl = register(Settings.floatBuilder("Fall Speed C").withValue(0.000100000002f).withMaximum(0.3f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val downSpeedControl = register(Settings.doubleBuilder("Down Speed C").withMaximum(10.0).withMinimum(0.0).withValue(1.0).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
 
+    /* Creative */
+    private val speedCreative = register(Settings.floatBuilder("Speed CR").withValue(1.8f).withMaximum(1.8f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
+    private val fallSpeedCreative = register(Settings.floatBuilder("Fall Speed CR").withValue(0.000100000002f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
+
     /* Packet */
     private val speedPacket = register(Settings.floatBuilder("Speed P").withValue(1.3f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
     private val fallSpeedPacket = register(Settings.floatBuilder("Fall Speed P").withValue(0.000100000002f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
+
+    private enum class ElytraFlightMode {
+        BOOST, FLY, CONTROL, CREATIVE, PACKET
+    }
 
     /* Control mode states */
     private var hoverTarget = -1.0
@@ -73,13 +75,65 @@ class ElytraFlight : Module() {
     private var elytraIsEquipped = false
     private var isStandingStill = false
 
-    /* Control Mode */
+    /* Event Handlers */
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || isBoosting || mc.player == null || mc.player.isSpectator) return@EventHook
 
+        when (mode.value) {
+            ElytraFlightMode.BOOST -> null
+            ElytraFlightMode.FLY -> null
+            ElytraFlightMode.CONTROL -> controlMode(event)
+            ElytraFlightMode.CREATIVE -> null
+            ElytraFlightMode.PACKET -> null
+        }
+    })
+
+    @EventHandler
+    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
+        if (!elytraIsEquipped || isBoosting || mc.player == null || !mc.player.isElytraFlying || mc.player.isSpectator) return@EventHook
+
+        when (mode.value) {
+            ElytraFlightMode.BOOST -> null
+            ElytraFlightMode.FLY -> null
+            ElytraFlightMode.CONTROL -> controlMode(event)
+            ElytraFlightMode.CREATIVE -> null
+            ElytraFlightMode.PACKET -> null
+        }
+    })
+
+    @EventHandler
+    private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
+        if (/*!elytraIsEquipped ||*/ isBoosting || mc.player == null || mc.player.isSpectator) return@EventHook
+
+        if (!mc.player.isElytraFlying) takeoff(event) else {
+            mc.timer.tickLength = 50.0f
+            when (mode.value) {
+                ElytraFlightMode.BOOST -> null
+                ElytraFlightMode.FLY -> null
+                ElytraFlightMode.CONTROL -> controlMode(event)
+                ElytraFlightMode.CREATIVE -> creativeMode(event)
+                ElytraFlightMode.PACKET -> null
+            }
+        }
+    })
+    /* End of Event Handlers */
+
+    /* Generic Takeoff */
+    private fun takeoff(event: PlayerTravelEvent) {
+        if (easyTakeOffControl.value && !mc.player.onGround && mc.player.motionY < -0.04) {
+            if (timerControl.value) mc.timer.tickLength = 200.0f
+            mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
+        }
+        if (mc.player.onGround) {
+            mc.timer.tickLength = 50.0f
+        }
+    }
+
+    /* Control Mode */
+    private fun controlMode(event: PacketEvent.Send) {
         if (event.packet is CPacketPlayer) {
-            if (!mc.player.isElytraFlying) return@EventHook
+            if (!mc.player.isElytraFlying) return
             val packet = event.packet as CPacketPlayer
             val moveUp = if (!lookBoost.value) mc.player.movementInput.jump else false
 
@@ -99,33 +153,16 @@ class ElytraFlight : Module() {
         if (event.packet is CPacketEntityAction && (event.packet as CPacketEntityAction).action == CPacketEntityAction.Action.START_FALL_FLYING) {
             hoverTarget = mc.player.posY + 0.35
         }
-    })
+    }
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || !mc.player.isElytraFlying || mc.player.isSpectator) return@EventHook
+    private fun controlMode(event: PacketEvent.Receive) {
         if (event.packet is SPacketPlayerPosLook) {
             val packet = event.packet as SPacketPlayerPosLook
             packet.pitch = mc.player.rotationPitch
         }
-    })
+    }
 
-    @EventHandler
-    private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (!elytraIsEquipped || isBoosting || mode.value != ElytraFlightMode.CONTROL || mc.player == null || mc.player.isSpectator) return@EventHook
-
-        if (!mc.player.isElytraFlying) {
-            if (easyTakeOffControl.value && !mc.player.onGround && mc.player.motionY < -0.04) {
-                mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
-
-                if (timerControl.value) mc.timer.tickLength = 200.0f
-                event.cancel()
-                return@EventHook
-            }
-            return@EventHook
-        }
-        mc.timer.tickLength = 50.0f
-
+    private fun controlMode(event: PlayerTravelEvent) {
         if (hoverTarget < 0.0) hoverTarget = mc.player.posY
 
         val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)
@@ -189,7 +226,7 @@ class ElytraFlight : Module() {
             hoverTarget = mc.player.posY
         }
         event.cancel()
-    })
+    }
 
     private fun lookBoost() {
         if (mc.player.movementInput.moveForward > 0 && mc.player.movementInput.jump && spaceBarTrigger.value && mc.player.rotationPitch > -10)
@@ -204,6 +241,19 @@ class ElytraFlight : Module() {
         isBoosting = readyToBoost && shouldAutoBoost
     }
     /* End of Control Mode */
+
+    /* Creative Mode */
+    private fun creativeMode(event: PlayerTravelEvent) {
+        if (mc.player.capabilities.isCreativeMode) return
+        mc.player.capabilities.isFlying = true
+        mc.player.capabilities.allowFlying = true
+
+        mc.player.isSprinting = false
+        mc.player.setVelocity(0.0, 0.0, 0.0)
+        mc.player.setPosition(mc.player.posX, mc.player.posY - fallSpeedCreative.value, mc.player.posZ)
+        mc.player.capabilities.flySpeed = speedCreative.value
+    }
+    /* End of Creative Mode */
 
     override fun onUpdate() {
         /*Elytra check*/
@@ -224,7 +274,6 @@ class ElytraFlight : Module() {
             return
         }
 
-        takeoff()
         setFlySpeed()
 
         /* required on some servers in order to land */
@@ -253,7 +302,7 @@ class ElytraFlight : Module() {
                 mc.player.motionX += sin(yaw) * 0.05
                 mc.player.motionZ -= cos(yaw) * 0.05
             }
-        } else if (mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.FLY) {
+        } else if (mode.value == ElytraFlightMode.FLY) {
             mc.player.capabilities.flySpeed = .915f
             mc.player.capabilities.isFlying = true
 
@@ -270,33 +319,11 @@ class ElytraFlight : Module() {
 
     private fun setFlySpeed() {
         if (mc.player.capabilities.isFlying) {
-            if (mode.value == ElytraFlightMode.CREATIVE) {
-                mc.player.isSprinting = false
-                mc.player.setVelocity(0.0, 0.0, 0.0)
-                mc.player.setPosition(mc.player.posX, mc.player.posY - fallSpeedCreative.value, mc.player.posZ)
-                mc.player.capabilities.flySpeed = speedCreative.value
-            } else if (mode.value == ElytraFlightMode.BOOST || mode.value == ElytraFlightMode.FLY) {
+            if (mode.value == ElytraFlightMode.BOOST || mode.value == ElytraFlightMode.FLY) {
                 mc.player.setVelocity(0.0, 0.0, 0.0)
                 mc.player.capabilities.flySpeed = .915f
                 mc.player.setPosition(mc.player.posX, mc.player.posY - fallSpeed.value, mc.player.posZ)
             }
-        }
-    }
-
-    private fun takeoff() {
-        if (!((mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.PACKET) && easyTakeOff.value)) return
-        if (!mc.player.isElytraFlying && !mc.player.onGround) {
-            when (takeOffMode.value) {
-                TakeoffMode.CLIENT -> {
-                    mc.player.capabilities.isFlying = true
-                    mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
-                }
-                TakeoffMode.PACKET -> mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
-            }
-        }
-        if (mc.player.isElytraFlying) {
-            easyTakeOff.value = false
-            sendChatMessage("$chatName Disabled takeoff!")
         }
     }
 
@@ -315,8 +342,9 @@ class ElytraFlight : Module() {
 
     private fun defaults() {
         mc.player?.let {
-            easyTakeOff.value = true
-            takeOffMode.value = TakeoffMode.PACKET
+            easyTakeOffControl.value = true
+            timerControl.value = true
+
             speedCreative.value = 1.8f
             fallSpeedCreative.value = 0.000100000002f
 
@@ -331,8 +359,6 @@ class ElytraFlight : Module() {
             spaceBarTrigger.value = false
             autoBoost.value = true
             hoverControl.value = false
-            easyTakeOffControl.value = true
-            timerControl.value = true
             speedControl.value = 1.8f
             fallSpeedControl.value = 0.000100000002f
             downSpeedControl.value = 1.0
@@ -344,14 +370,6 @@ class ElytraFlight : Module() {
             sendChatMessage("$chatName Set to defaults!")
             closeSettings()
         }
-    }
-
-    private enum class ElytraFlightMode {
-        BOOST, FLY, CONTROL, CREATIVE, PACKET
-    }
-
-    private enum class TakeoffMode {
-        CLIENT, PACKET
     }
 
     init {
