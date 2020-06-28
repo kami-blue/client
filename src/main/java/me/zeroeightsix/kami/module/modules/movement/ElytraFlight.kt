@@ -56,12 +56,12 @@ class ElytraFlight : Module() {
     private val downSpeedControl = register(Settings.doubleBuilder("Down Speed C").withMaximum(10.0).withMinimum(0.0).withValue(1.0).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
 
     /* Creative */
-    private val speedCreative = register(Settings.floatBuilder("Speed CR").withValue(1.8f).withMaximum(1.8f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
-    private val fallSpeedCreative = register(Settings.floatBuilder("Fall Speed CR").withValue(0.000100000002f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
+    private val speedCreative = register(Settings.floatBuilder("Speed CR").withValue(1.8f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
+    private val fallSpeedCreative = register(Settings.floatBuilder("Fall Speed CR").withValue(0.0001f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
 
     /* Packet */
     private val speedPacket = register(Settings.floatBuilder("Speed P").withValue(1.3f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
-    private val fallSpeedPacket = register(Settings.floatBuilder("Fall Speed P").withValue(0.000100000002f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
+    private val fallSpeedPacket = register(Settings.floatBuilder("Fall Speed P").withValue(0.0001f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
 
     private enum class ElytraFlightMode {
         BOOST, FLY, CONTROL, CREATIVE, PACKET
@@ -104,9 +104,11 @@ class ElytraFlight : Module() {
 
     @EventHandler
     private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (/*!elytraIsEquipped ||*/ isBoosting || mc.player == null || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || isBoosting || mc.player == null || mc.player.isSpectator) return@EventHook
 
-        if (!mc.player.isElytraFlying) takeoff(event) else {
+        if (!mc.player.isElytraFlying && !mc.player.capabilities.isFlying) {
+            takeoff(event)
+        } else {
             mc.timer.tickLength = 50.0f
             when (mode.value) {
                 ElytraFlightMode.BOOST -> null
@@ -125,8 +127,11 @@ class ElytraFlight : Module() {
             if (timerControl.value) mc.timer.tickLength = 200.0f
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
         }
+
         if (mc.player.onGround) {
             mc.timer.tickLength = 50.0f
+            if (!mc.player.isCreative) mc.player.capabilities.allowFlying = false
+            mc.player.capabilities.isFlying = false
         }
     }
 
@@ -244,14 +249,13 @@ class ElytraFlight : Module() {
 
     /* Creative Mode */
     private fun creativeMode(event: PlayerTravelEvent) {
-        if (mc.player.capabilities.isCreativeMode) return
+        if (!mc.player.isCreative) mc.player.capabilities.allowFlying = true
         mc.player.capabilities.isFlying = true
-        mc.player.capabilities.allowFlying = true
-
         mc.player.isSprinting = false
-        mc.player.setVelocity(0.0, 0.0, 0.0)
-        mc.player.setPosition(mc.player.posX, mc.player.posY - fallSpeedCreative.value, mc.player.posZ)
+        val motionY = if (mc.player.motionX == 0.0 && mc.player.motionX == 0.0) 0.0 else -fallSpeedControl.value.toDouble()
+        mc.player.setVelocity(0.0, motionY, 0.0)
         mc.player.capabilities.flySpeed = speedCreative.value
+        sendChatMessage("Running Creative Mode")
     }
     /* End of Creative Mode */
 
@@ -273,11 +277,6 @@ class ElytraFlight : Module() {
             } else isStandingStill = false
             return
         }
-
-        setFlySpeed()
-
-        /* required on some servers in order to land */
-        if (mc.player.onGround) mc.player.capabilities.allowFlying = false
 
         if (mc.player.isElytraFlying) {
             modeNonControl()
@@ -306,8 +305,8 @@ class ElytraFlight : Module() {
             mc.player.capabilities.flySpeed = .915f
             mc.player.capabilities.isFlying = true
 
-            if (mc.player.capabilities.isCreativeMode) return
-            mc.player.capabilities.allowFlying = true
+
+            if (!mc.player.isCreative) mc.player.capabilities.allowFlying = true
         } else if (mode.value == ElytraFlightMode.PACKET) {
             mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
             mc.player.capabilities.isFlying = true
@@ -331,9 +330,8 @@ class ElytraFlight : Module() {
         mc.timer.tickLength = 50.0f
         mc.player.capabilities.flySpeed = 0.05f
 
-        if (mc.player.capabilities.isCreativeMode) return
         mc.player.capabilities.isFlying = false
-        mc.player.capabilities.allowFlying = false
+        if (!mc.player.isCreative) mc.player.capabilities.allowFlying = false
     }
 
     override fun onEnable() {
@@ -345,8 +343,8 @@ class ElytraFlight : Module() {
             easyTakeOffControl.value = true
             timerControl.value = true
 
-            speedCreative.value = 1.8f
-            fallSpeedCreative.value = 0.000100000002f
+            speedCreative.value = 1.81f
+            fallSpeedCreative.value = 0.00000000000003f
 
             fallSpeed.value = -.003f
             upSpeedBoost.value = 0.08f
