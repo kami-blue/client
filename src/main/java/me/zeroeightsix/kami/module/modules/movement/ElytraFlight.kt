@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
@@ -49,8 +50,8 @@ class ElytraFlight : Module() {
 
     /* Boost */
     private val speedBoost = register(Settings.floatBuilder("Speed B").withValue(1.0f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.BOOST }.build())
-    private val upSpeedBoost = register(Settings.floatBuilder("Up Speed B").withValue(1.0f).withMinimum(0.0f).withMaximum(2.5f).withVisibility { mode.value == ElytraFlightMode.BOOST }.build())
-    private val downSpeedBoost = register(Settings.floatBuilder("Down Speed B").withValue(1.0f).withMinimum(0.0f).withMaximum(2.5f).withVisibility { mode.value == ElytraFlightMode.BOOST }.build())
+    private val upSpeedBoost = register(Settings.floatBuilder("Up Speed B").withValue(1.0f).withMinimum(0.0f).withMaximum(5.0f).withVisibility { mode.value == ElytraFlightMode.BOOST }.build())
+    private val downSpeedBoost = register(Settings.floatBuilder("Down Speed B").withValue(1.0f).withMinimum(0.0f).withMaximum(5.0f).withVisibility { mode.value == ElytraFlightMode.BOOST }.build())
 
     /* Control */
     private val lookBoost = register(Settings.booleanBuilder("Look Boost").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
@@ -77,13 +78,13 @@ class ElytraFlight : Module() {
     private var elytraDurability = 0
     private var outOfDurability = false
     private var isFlying = false
+    private var isStandingStill = false
 
     /* Control mode states */
     private var hoverTarget = -1.0
     private var packetYaw = 0.0f
     private var hoverState = false
     private var isBoosting = false
-    private var isStandingStill = false
 
     /* Event Handlers */
     @EventHandler
@@ -165,7 +166,13 @@ class ElytraFlight : Module() {
 
     /* The best takeoff method <3 */
     private fun takeoff(event: PlayerTravelEvent) {
-        // TODO: Pause takeoff if the server is lagging
+        /* Pause Takeoff if server is lagging */
+        val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
+        if (lagNotifier.takeoffPaused) {
+            mc.timer.tickLength = 50.0f
+            return
+        }
+
         if (easyTakeOff.value && !mc.player.onGround && mc.player.motionY < -0.04) {
             if (timerControl.value) mc.timer.tickLength = 200.0f
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))

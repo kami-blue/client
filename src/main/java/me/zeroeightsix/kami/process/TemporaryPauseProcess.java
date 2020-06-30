@@ -38,7 +38,7 @@ public class TemporaryPauseProcess implements IBaritoneProcess
                 ||
                 (KamiMod.MODULE_MANAGER.isModuleEnabled(LagNotifier.class)
                 && !KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).getHasUnpaused()
-                && KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).getPauseDuringLag().getValue())
+                && KamiMod.MODULE_MANAGER.getModuleT(LagNotifier.class).getPauseBaritone().getValue())
                 ||
                 (KamiMod.MODULE_MANAGER.isModuleEnabled(Aura.class)
                 && KamiMod.MODULE_MANAGER.getModuleT(Aura.class).isAttacking()

@@ -29,22 +29,25 @@ import net.minecraft.client.gui.GuiChat
         category = Module.Category.PLAYER
 )
 class LagNotifier : Module() {
-    var pauseDuringLag: Setting<Boolean> = register(Settings.b("Pause Baritone", true))
-    private val feedback = register(Settings.booleanBuilder("Pause Feedback").withValue(true).withVisibility { pauseDuringLag.value }.build())
+    private val pauseTakeoff = register(Settings.b("Pause Elytra Takeoff", true))
+    var pauseBaritone: Setting<Boolean> = register(Settings.b("Pause Baritone", true))
+    private val feedback = register(Settings.booleanBuilder("Pause Feedback").withValue(true).withVisibility { pauseBaritone.value }.build())
     private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
 
     private var serverLastUpdated: Long = 0
     var hasUnpaused = true
+    var takeoffPaused = false
     var text = "Server Not Responding! "
 
     override fun onRender() {
         if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return
         if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
-            if (!hasUnpaused && pauseDuringLag.value) {
+            if (!hasUnpaused && pauseBaritone.value) {
                 hasUnpaused = true
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
                 unpause()
             }
+            if (pauseTakeoff.value) takeoffPaused = false
             return
         }
 
@@ -55,11 +58,12 @@ class LagNotifier : Module() {
             } else {
                 "Server Not Responding! "
             }
-            if (hasUnpaused && pauseDuringLag.value && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.goal != null) {
+            if (hasUnpaused && pauseBaritone.value && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.goal != null) {
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
                 pause()
                 hasUnpaused = false
             }
+            if (pauseTakeoff.value) takeoffPaused = true
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.getFontRenderer()
