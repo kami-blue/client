@@ -18,8 +18,8 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
         description = "Breaks block faster and nullifies the break delay"
 )
 class Fastbreak : Module() {
-    private val packetMine = register(Settings.b("Packet Mine", true))
-    private val sneakTrigger = register(Settings.booleanBuilder("Sneak Trigger").withValue(true).withVisibility { packetMine.value }.build())
+    private val packetMine = register(Settings.b("PacketMine", true))
+    private val sneakTrigger = register(Settings.booleanBuilder("SneakTrigger").withValue(true).withVisibility { packetMine.value }.build())
 
     private var diggingPacket = CPacketPlayerDigging()
 

@@ -31,8 +31,8 @@ class NoRender : Module() {
     private val fire = register(Settings.b("Fire", true))
     private val explosion = register(Settings.b("Explosions", true))
     @JvmField
-    var beacon: Setting<Boolean> = register(Settings.b("Beacon Beams", false))
-    var skylight: Setting<Boolean> = register(Settings.b("SkyLight Updates", true))
+    var beacon: Setting<Boolean> = register(Settings.b("BeaconBeams", false))
+    var skylight: Setting<Boolean> = register(Settings.b("SkyLightUpdates", true))
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: Receive ->

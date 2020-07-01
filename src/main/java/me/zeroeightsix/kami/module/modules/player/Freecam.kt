@@ -26,7 +26,7 @@ import net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent
 )
 class Freecam : Module() {
     private val speed = register(Settings.i("Speed", 5)) // /100 in practice
-    private val packetCancel = register(Settings.b("Packet Cancel", false))
+    private val packetCancel = register(Settings.b("PacketCancel", false))
 
     private var posX = 0.0
     private var posY = 0.0

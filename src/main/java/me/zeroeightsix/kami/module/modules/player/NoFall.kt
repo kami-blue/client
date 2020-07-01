@@ -36,7 +36,7 @@ class NoFall : Module() {
     private val fallMode = register(Settings.enumBuilder(FallMode::class.java).withName("Fall").withValue(FallMode.PACKET).withVisibility { mode.value == Mode.FALL }.build())
     private val catchMode = register(Settings.enumBuilder(CatchMode::class.java).withName("Catch").withValue(CatchMode.MOTION).withVisibility { mode.value == Mode.CATCH }.build())
     private val pickup = register(Settings.booleanBuilder("Pickup").withValue(false).withVisibility { fallMode.value == FallMode.BUCKET }.build())
-    private val pickupDelay = register(Settings.integerBuilder("Pickup Delay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { fallMode.value == FallMode.BUCKET && pickup.value }.build())
+    private val pickupDelay = register(Settings.integerBuilder("PickupDelay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { fallMode.value == FallMode.BUCKET && pickup.value }.build())
     private var last: Long = 0
 
     @EventHandler

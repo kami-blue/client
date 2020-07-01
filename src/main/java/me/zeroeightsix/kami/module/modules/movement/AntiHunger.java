@@ -25,7 +25,7 @@ import static net.minecraft.network.play.client.CPacketEntityAction.Action.STOP_
         description = "Reduces hunger lost when moving around"
 )
 public class AntiHunger extends Module {
-    private Setting<Boolean> cancelMovementState = register(Settings.b("Cancel Movement State", true));
+    private Setting<Boolean> cancelMovementState = register(Settings.b("CancelMovementState", true));
 
     @EventHandler
     public Listener<PacketEvent.Send> packetListener = new Listener<>(event -> {

@@ -22,8 +22,8 @@ import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 )
 public class AutoTotem extends Module {
     private Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.REPLACE_OFFHAND));
-    private Setting<Boolean> smartOffhand = register(Settings.booleanBuilder("Custom Item").withValue(false).withVisibility(v -> modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
-    private Setting<Double> healthSetting = register(Settings.doubleBuilder("Custom Item Health").withValue(14.0).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
+    private Setting<Boolean> smartOffhand = register(Settings.booleanBuilder("CustomItem").withValue(false).withVisibility(v -> modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
+    private Setting<Double> healthSetting = register(Settings.doubleBuilder("CustomItemHealth").withValue(14.0).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
     private Setting<CustomItem> smartItemSetting = register(Settings.enumBuilder(CustomItem.class).withName("Item").withValue(CustomItem.GAPPLE).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
 
     private enum Mode { NEITHER, REPLACE_OFFHAND, INVENTORY;}

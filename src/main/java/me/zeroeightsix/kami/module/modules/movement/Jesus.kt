@@ -30,7 +30,7 @@ import net.minecraft.util.math.MathHelper
         category = Module.Category.MOVEMENT
 )
 class Jesus : Module() {
-    private var baritoneCompat = register(Settings.b("Baritone Compatibility", true))
+    private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
 
     override fun onToggle() {
         if (mc.player != null && baritoneCompat.value) {

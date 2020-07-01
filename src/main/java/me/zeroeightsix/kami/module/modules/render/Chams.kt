@@ -17,9 +17,9 @@ import net.minecraft.entity.player.EntityPlayer
 class Chams : Module() {
     companion object {
         private val players = Settings.b("Players", true)
-        private val passive = Settings.b("Passive Mobs", false)
-        private val neutral = Settings.b("Neutral Mobs", true)
-        private val hostile = Settings.b("Hostile Mobs", true)
+        private val passive = Settings.b("PassiveMobs", false)
+        private val neutral = Settings.b("NeutralMobs", true)
+        private val hostile = Settings.b("HostileMobs", true)
 
         @JvmStatic
         fun renderChams(entity: Entity?): Boolean {

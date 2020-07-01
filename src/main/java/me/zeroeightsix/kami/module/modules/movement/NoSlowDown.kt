@@ -30,14 +30,14 @@ import net.minecraftforge.client.event.InputUpdateEvent
         description = "Prevents being slowed down when using an item or going through cobwebs"
 )
 class NoSlowDown : Module() {
-    private val ncpStrict: Setting<Boolean> = register(Settings.b("NCP Strict", true))
+    private val ncpStrict: Setting<Boolean> = register(Settings.b("NCPStrict", true))
     private val sneak: Setting<Boolean> = register(Settings.b("Sneak", true))
     @JvmField
-    var soulSand: Setting<Boolean> = register(Settings.b("Soul Sand", true))
+    var soulSand: Setting<Boolean> = register(Settings.b("SoulSand", true))
     @JvmField
     var cobweb: Setting<Boolean> = register(Settings.b("Cobweb", true))
     private val slime = register(Settings.b("Slime", true))
-    private val allItems = register(Settings.b("All Items", false))
+    private val allItems = register(Settings.b("AllItems", false))
     private val food = register(Settings.booleanBuilder().withName("Food").withValue(true).withVisibility { !allItems.value }.build())
     private val bow = register(Settings.booleanBuilder().withName("Bows").withValue(true).withVisibility { !allItems.value }.build())
     private val potion = register(Settings.booleanBuilder().withName("Potions").withValue(true).withVisibility { !allItems.value }.build())

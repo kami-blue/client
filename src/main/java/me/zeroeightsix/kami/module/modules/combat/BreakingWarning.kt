@@ -28,9 +28,9 @@ import kotlin.math.pow
         description = "Notifies you when someone is breaking a block near you."
 )
 class BreakingWarning : Module() {
-    private val minRange = register(Settings.doubleBuilder("Min Range").withMinimum(0.0).withValue(1.5).withMaximum(10.0).build())
-    private val obsidianOnly = register(Settings.b("Obsidian Only", true))
-    private val pickaxeOnly = register(Settings.b("Pickaxe Only", true))
+    private val minRange = register(Settings.doubleBuilder("MinRange").withMinimum(0.0).withValue(1.5).withMaximum(10.0).build())
+    private val obsidianOnly = register(Settings.b("ObsidianOnly", true))
+    private val pickaxeOnly = register(Settings.b("PickaxeOnly", true))
 
     private var warn = false
     private var playerName: String? = null

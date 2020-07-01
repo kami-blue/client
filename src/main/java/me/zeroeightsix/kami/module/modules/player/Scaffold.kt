@@ -31,11 +31,11 @@ import kotlin.math.round
         description = "Places blocks under you"
 )
 class Scaffold : Module() {
-    private val placeBlocks = register(Settings.b("Place Blocks", true))
+    private val placeBlocks = register(Settings.b("PlaceBlocks", true))
     private val tower = register(Settings.b("Tower", true))
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
-    private val randomDelay = register(Settings.booleanBuilder("Random Delay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT }.build())
-    private val delayRange = register(Settings.integerBuilder("Delay Range").withMinimum(0).withValue(6).withMaximum(10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value }.build())
+    private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT }.build())
+    private val delayRange = register(Settings.integerBuilder("DelayRange").withMinimum(0).withValue(6).withMaximum(10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value }.build())
     private val ticks = register(Settings.integerBuilder("Ticks").withMinimum(0).withMaximum(60).withValue(2).withVisibility { modeSetting.value == Mode.NORMAL }.build())
 
     private var shouldSlow = false

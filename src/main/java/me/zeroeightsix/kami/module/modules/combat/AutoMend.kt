@@ -24,12 +24,12 @@ import net.minecraft.util.EnumHand
         description = "Automatically mends armour"
 )
 class AutoMend : Module() {
-    private val autoThrow = register(Settings.b("Auto Throw", true))
-    private val autoSwitch = register(Settings.b("Auto Switch", true))
-    private val autoDisable = register(Settings.booleanBuilder("Auto Disable").withValue(false).withVisibility { autoSwitch.value }.build())
-    private val threshold = register(Settings.integerBuilder("Repair %").withMinimum(1).withMaximum(100).withValue(75).build())
+    private val autoThrow = register(Settings.b("AutoThrow", true))
+    private val autoSwitch = register(Settings.b("AutoSwitch", true))
+    private val autoDisable = register(Settings.booleanBuilder("AutoDisable").withValue(false).withVisibility { autoSwitch.value }.build())
+    private val threshold = register(Settings.integerBuilder("Repair%").withMinimum(1).withMaximum(100).withValue(75).build())
     private val fast = register(Settings.b("FastUse", true))
-    private val gui = register(Settings.b("Run in GUIs", false))
+    private val gui = register(Settings.b("RunInGUIs", false))
 
     private var initHotbarSlot = -1
     private var isGuiOpened = false

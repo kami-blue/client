@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Macros
 import java.io.*
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 /**
  * @author dominikaaaa
@@ -29,9 +30,14 @@ object Macro {
 
     fun readFileToMemory() {
         try {
-            Macros.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)
-        } catch (e: FileNotFoundException) {
-            KamiMod.log.warn("Could not find file $configName, clearing the macros list")
+            try {
+                Macros.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)!!
+            } catch (e: FileNotFoundException) {
+                KamiMod.log.warn("Could not find file $configName, clearing the macros list")
+                Macros.macros.clear()
+            }
+        } catch (e: IllegalStateException) {
+            KamiMod.log.warn("$configName is empty!")
             Macros.macros.clear()
         }
     }

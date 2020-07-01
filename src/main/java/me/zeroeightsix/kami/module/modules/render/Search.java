@@ -48,7 +48,7 @@ public class Search extends Module {
     private static final String DEFAULT_BLOCK_ESP_CONFIG = "minecraft:portal, minecraft:end_portal_frame, minecraft:bed";
 
     private final Setting<Integer> alpha = register(Settings.integerBuilder("Transparency").withMinimum(1).withMaximum(255).withValue(120).build());
-    private final Setting<Integer> update = register(Settings.integerBuilder("Update Interval").withMinimum(100).withMaximum(10000).withValue(1500).build());
+    private final Setting<Integer> update = register(Settings.integerBuilder("UpdateInterval").withMinimum(100).withMaximum(10000).withValue(1500).build());
     public Setting<Boolean> overrideWarning = register(Settings.booleanBuilder("overrideWarning").withValue(false).withVisibility(v -> false).build());
     private final Setting<String> espBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_BLOCK_ESP_CONFIG).withConsumer((old, value) -> refreshESPBlocksSet(value)).build());
     private final Setting<Boolean> tracers = register(Settings.booleanBuilder("Tracers").withValue(true).build());

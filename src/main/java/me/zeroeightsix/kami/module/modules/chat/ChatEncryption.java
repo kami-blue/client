@@ -34,7 +34,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
 )
 public class ChatEncryption extends Module {
 
-    private Setting<Boolean> self = register(Settings.b("Decrypt own", true));
+    private Setting<Boolean> self = register(Settings.b("DecryptOwn", true));
     private Setting<EncryptionMode> mode = register(Settings.e("Mode", EncryptionMode.SHUFFLE));
     private Setting<Integer> key = register(Settings.i("Key", 6));
     private Setting<Boolean> delim = register(Settings.b("Delimiter", true));

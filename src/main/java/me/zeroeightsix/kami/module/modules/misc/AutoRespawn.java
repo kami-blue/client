@@ -24,8 +24,8 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 public class AutoRespawn extends Module {
 
     private Setting<Boolean> respawn = register(Settings.b("Respawn", true));
-    private Setting<Boolean> deathCoords = register(Settings.b("Save Death Coords", true));
-    private Setting<Boolean> antiGlitchScreen = register(Settings.b("Anti Glitch Screen", true));
+    private Setting<Boolean> deathCoords = register(Settings.b("SaveDeathCoords", true));
+    private Setting<Boolean> antiGlitchScreen = register(Settings.b("AntiGlitchScreen", true));
 
     @EventHandler
     public Listener<GuiScreenEvent.Displayed> listener = new Listener<>(event -> {

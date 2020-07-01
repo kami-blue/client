@@ -29,7 +29,7 @@ import kotlin.math.pow
         category = Module.Category.MISC
 )
 class AutoTool : Module() {
-    private val switchBack = register(Settings.b("Switch Back", true))
+    private val switchBack = register(Settings.b("SwitchBack", true))
     private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value }.build())
     private val preferTool = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
 

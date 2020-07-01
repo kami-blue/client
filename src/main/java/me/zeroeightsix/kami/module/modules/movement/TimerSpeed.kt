@@ -16,10 +16,10 @@ import me.zeroeightsix.kami.util.MathsUtils
 class TimerSpeed : Module() {
     private var tickDelay = 0.0f
 
-    private val minimumSpeed = register(Settings.floatBuilder("Minimum Speed").withMinimum(0.1f).withMaximum(10.0f).withValue(4.0f).build())
-    private val maxSpeed = register(Settings.floatBuilder("Max Speed").withMinimum(0.1f).withMaximum(10.0f).withValue(7.0f).build())
-    private val attemptSpeed = register(Settings.floatBuilder("Attempt Speed").withMinimum(1.0f).withMaximum(10.0f).withValue(4.2f).build())
-    private val fastSpeed = register(Settings.floatBuilder("Fast Speed").withMinimum(1.0f).withMaximum(10.0f).withValue(5.0f).build())
+    private val minimumSpeed = register(Settings.floatBuilder("MinimumSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(4.0f).build())
+    private val maxSpeed = register(Settings.floatBuilder("MaxSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(7.0f).build())
+    private val attemptSpeed = register(Settings.floatBuilder("AttemptSpeed").withMinimum(1.0f).withMaximum(10.0f).withValue(4.2f).build())
+    private val fastSpeed = register(Settings.floatBuilder("FastSpeed").withMinimum(1.0f).withMaximum(10.0f).withValue(5.0f).build())
 
     override fun onUpdate() {
         if (tickDelay == minimumSpeed.value) {

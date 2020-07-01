@@ -19,15 +19,15 @@ import me.zeroeightsix.kami.util.MessageSendHelper
         description = "Discord Rich Presence"
 )
 class DiscordRPC : Module() {
-    private val coordsConfirm = register(Settings.b("Coords Confirm", false))
+    private val coordsConfirm = register(Settings.b("CoordsConfirm", false))
     @JvmField
-    var line1Setting: Setting<LineInfo> = register(Settings.e("Line 1 Left", LineInfo.VERSION)) // details left
+    var line1Setting: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
     @JvmField
-    var line3Setting: Setting<LineInfo> = register(Settings.e("Line 1 Right", LineInfo.USERNAME)) // details right
+    var line3Setting: Setting<LineInfo> = register(Settings.e("Line1Right", LineInfo.USERNAME)) // details right
     @JvmField
-    var line2Setting: Setting<LineInfo> = register(Settings.e("Line 2 Left", LineInfo.SERVER_IP)) // state left
+    var line2Setting: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
     @JvmField
-    var line4Setting: Setting<LineInfo> = register(Settings.e("Line 2 Right", LineInfo.HEALTH)) // state right
+    var line4Setting: Setting<LineInfo> = register(Settings.e("Line2Right", LineInfo.HEALTH)) // state right
 
     enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, SERVER_IP, COORDS, NONE

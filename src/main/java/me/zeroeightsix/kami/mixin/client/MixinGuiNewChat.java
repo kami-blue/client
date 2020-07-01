@@ -1,16 +1,21 @@
 package me.zeroeightsix.kami.mixin.client;
 
+import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.events.PrintChatMessageEvent;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author 3arthqu4ke
- * Updated by dominikaaaa on 27/12/19
+ * Updated by dominikaaaa on 29/06/20
  */
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat {
@@ -28,6 +33,11 @@ public abstract class MixinGuiNewChat {
             return fontRenderer.drawStringWithShadow(text, x, y, color);
         }
         return fontRenderer.drawString(text, (int) x, (int) y, color);
+    }
+
+    @Inject(method = "printChatMessage", at = @At("HEAD"))
+    private void printChatMessage(ITextComponent chatComponent, CallbackInfo ci) {
+        KamiMod.EVENT_BUS.post(new PrintChatMessageEvent(chatComponent, chatComponent.getUnformattedComponentText()));
     }
 
 }

@@ -32,11 +32,11 @@ class StorageESP : Module() {
     private val chest = register(Settings.b("Chest", true))
     private val dispenser = register(Settings.b("Dispenser", true))
     private val shulker = register(Settings.b("Shulker", true))
-    private val enderChest = register(Settings.b("Ender Chest", true))
+    private val enderChest = register(Settings.b("EnderChest", true))
     private val furnace = register(Settings.b("Furnace", true))
     private val hopper = register(Settings.b("Hopper", true))
     private val cart = register(Settings.b("Minecart", true))
-    private val frame = register(Settings.b("Item Frame", true))
+    private val frame = register(Settings.b("ItemFrame", true))
     private val tracer = register(Settings.b("Tracers", true))
 
     private fun getTileEntityColor(tileEntity: TileEntity): Int {

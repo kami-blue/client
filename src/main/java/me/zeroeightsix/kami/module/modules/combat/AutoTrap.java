@@ -55,8 +55,8 @@ public class AutoTrap extends Module {
     private Setting<Cage> cage = register(Settings.e("Cage", Cage.TRAP));
     private Setting<Boolean> rotate = register(Settings.b("Rotate", false));
     private Setting<Boolean> noGlitchBlocks = register(Settings.b("NoGlitchBlocks", true));
-    private Setting<Boolean> activeInFreecam = register(Settings.b("Active In Freecam", true));
-    private Setting<Boolean> selfTrap = register(Settings.b("Self Trap", false));
+    private Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
+    private Setting<Boolean> selfTrap = register(Settings.b("SelfTrap", false));
     private Setting<Boolean> infoMessage = register(Settings.b("Debug", false));
 
     private EntityPlayer closestTarget;

@@ -35,13 +35,13 @@ import static org.lwjgl.opengl.GL11.*;
         category = Module.Category.RENDER
 )
 public class ChunkFinder extends Module {
-    private Setting<Integer> yOffset = register(Settings.i("Y Offset", 0));
+    private Setting<Integer> yOffset = register(Settings.i("YOffset", 0));
     private Setting<Boolean> relative = register(Settings.b("Relative", true));
-    private Setting<Boolean> saveNewChunks = register(Settings.b("Save New Chunks", false));
-    private Setting<SaveOption> saveOption = register(Settings.enumBuilder(SaveOption.class).withValue(SaveOption.EXTRA_FOLDER).withName("Save Option").withVisibility(aBoolean -> saveNewChunks.getValue()).build());
-    private Setting<Boolean> saveInRegionFolder = register(Settings.booleanBuilder("In Region").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
-    private Setting<Boolean> alsoSaveNormalCoords = register(Settings.booleanBuilder("Save Normal Coords").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
-    private Setting<Boolean> closeFile = register(Settings.booleanBuilder("Close File").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
+    private Setting<Boolean> saveNewChunks = register(Settings.b("SaveNewChunks", false));
+    private Setting<SaveOption> saveOption = register(Settings.enumBuilder(SaveOption.class).withValue(SaveOption.EXTRA_FOLDER).withName("SaveOption").withVisibility(aBoolean -> saveNewChunks.getValue()).build());
+    private Setting<Boolean> saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
+    private Setting<Boolean> alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
+    private Setting<Boolean> closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
 
     private LastSetting lastSetting = new LastSetting();
     private PrintWriter logWriter;

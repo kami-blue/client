@@ -43,9 +43,9 @@ public class Nametags extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));
     private Setting<Boolean> mobs = register(Settings.b("Mobs", false));
-    private Setting<Boolean> passive = register(Settings.booleanBuilder("Passive Mobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
-    private Setting<Boolean> neutral = register(Settings.booleanBuilder("Neutral Mobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
-    private Setting<Boolean> hostile = register(Settings.booleanBuilder("Hostile Mobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
     private Setting<Double> range = register(Settings.d("Range", 200));
     private Setting<Float> scale = register(Settings.floatBuilder("Scale").withMinimum(.5f).withMaximum(10f).withValue(2.5f).build());
     private Setting<Boolean> health = register(Settings.b("Health", true));

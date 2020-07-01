@@ -26,7 +26,7 @@ public class MessageDetectionHelper {
     }
 
     public static boolean isTPA(boolean tpa, String message) {
-        return tpa && Pattern.compile("^([0-9A-z_])+ has requested to teleport to you\\..*").matcher(message).find();
+        return tpa && Pattern.compile("^([0-9A-z_])+ (has requested|wants) to teleport to you\\..*").matcher(message).find();
     }
 
     public static boolean isQueue(boolean queue, String message) {

@@ -18,10 +18,10 @@ import java.util.*
         showOnArray = Module.ShowOnArray.OFF
 )
 class AutoQMain : Module() {
-    private val showWarns = register(Settings.b("Show Warnings", true))
-    private val connectionWarning = register(Settings.b("Connection Warning", true))
-    private val dimensionWarning = register(Settings.b("Dimension Warning", true))
-    private val delay = register(Settings.doubleBuilder("Wait time").withMinimum(0.2).withValue(7.1).withMaximum(10.0).build())
+    private val showWarns = register(Settings.b("ShowWarnings", true))
+    private val connectionWarning = register(Settings.b("ConnectionWarning", true))
+    private val dimensionWarning = register(Settings.b("DimensionWarning", true))
+    private val delay = register(Settings.doubleBuilder("WaitTime").withMinimum(0.2).withValue(7.1).withMaximum(10.0).build())
 
     private var delayTime = 0.0
     private var oldDelay = 0.0

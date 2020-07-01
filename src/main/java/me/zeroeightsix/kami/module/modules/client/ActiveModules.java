@@ -29,14 +29,14 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 )
 public class ActiveModules extends Module {
     private Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
-    public Setting<Boolean> potion = register(Settings.b("Potions Move", false));
+    public Setting<Boolean> potion = register(Settings.b("PotionsMove", false));
     public Setting<Mode> mode = register(Settings.e("Mode", Mode.RAINBOW));
-    private Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("Speed R").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> saturationR = register(Settings.integerBuilder().withName("Saturation R").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> brightnessR = register(Settings.integerBuilder().withName("Brightness R").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> hueC = register(Settings.integerBuilder().withName("Hue C").withValue(178).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
-    public Setting<Integer> saturationC = register(Settings.integerBuilder().withName("Saturation C").withValue(156).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
-    public Setting<Integer> brightnessC = register(Settings.integerBuilder().withName("Brightness C").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    private Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("SpeedR").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public Setting<Integer> saturationR = register(Settings.integerBuilder().withName("SaturationR").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public Setting<Integer> brightnessR = register(Settings.integerBuilder().withName("BrightnessR").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public Setting<Integer> hueC = register(Settings.integerBuilder().withName("HueC").withValue(178).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    public Setting<Integer> saturationC = register(Settings.integerBuilder().withName("SaturationC").withValue(156).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    public Setting<Integer> brightnessC = register(Settings.integerBuilder().withName("BrightnessC").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
     private Setting<Boolean> alternate = register(Settings.booleanBuilder().withName("Alternate").withValue(true).withVisibility(v -> mode.getValue().equals(Mode.INFO_OVERLAY)).build());
 
     public Setting<String> chat = register(Settings.s("Chat", "162,136,227"));

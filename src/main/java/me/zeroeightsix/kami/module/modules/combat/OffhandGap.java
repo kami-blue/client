@@ -31,11 +31,11 @@ import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
         description = "Holds a God apple when right clicking your sword!"
 )
 public class OffhandGap extends Module {
-	private Setting<Double> disableHealth = register(Settings.doubleBuilder("Disable Health").withMinimum(0.0).withValue(4.0).withMaximum(20.0).build());
-	private Setting<Boolean> eatWhileAttacking = register(Settings.b("Eat While Attacking", false));
-	private Setting<Boolean> swordOrAxeOnly = register(Settings.b("Sword or Axe Only", true));
-	private Setting<Boolean> preferBlocks = register(Settings.booleanBuilder("Prefer Placing Blocks").withValue(false).withVisibility(v -> !swordOrAxeOnly.getValue()).build());
-	private Setting<Boolean> crystalCheck = register(Settings.b("Crystal Check", false));
+	private Setting<Double> disableHealth = register(Settings.doubleBuilder("DisableHealth").withMinimum(0.0).withValue(4.0).withMaximum(20.0).build());
+	private Setting<Boolean> eatWhileAttacking = register(Settings.b("EatWhileAttacking", false));
+	private Setting<Boolean> swordOrAxeOnly = register(Settings.b("SwordAndAxeOnly", true));
+	private Setting<Boolean> preferBlocks = register(Settings.booleanBuilder("PreferPlacingBlocks").withValue(false).withVisibility(v -> !swordOrAxeOnly.getValue()).build());
+	private Setting<Boolean> crystalCheck = register(Settings.b("CrystalCheck", false));
 
 	int gaps = -1;
 	boolean autoTotemWasEnabled = false;

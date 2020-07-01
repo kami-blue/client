@@ -20,9 +20,9 @@ class Zoom : Module() {
     private var sensi = 0f
 
     private val fovChange = register(Settings.integerBuilder("FOV").withRange(1, 130).withValue(40).build())
-    private val sens = register(Settings.b("Change Sensitivity", true))
-    private val sensChange = register(Settings.floatBuilder("Sensitivity Multiplier").withMinimum(0.25f).withValue(1.3f).withMaximum(2f).withVisibility { sens.value }.build())
-    private val smoothCamera = register(Settings.b("Cinematic Camera", false))
+    private val sens = register(Settings.b("ChangeSensitivity", true))
+    private val sensChange = register(Settings.floatBuilder("SensitivityMultiplier").withMinimum(0.25f).withValue(1.3f).withMaximum(2f).withVisibility { sens.value }.build())
+    private val smoothCamera = register(Settings.b("CinematicCamera", false))
 
     init {
         fovChange.settingListener = Setting.SettingListeners { if (isEnabled && mc.player != null) mc.gameSettings.fovSetting = fovChange.value.toFloat() }

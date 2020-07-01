@@ -17,15 +17,15 @@ import me.zeroeightsix.kami.util.MessageSendHelper
 )
 class CommandConfig : Module() {
     @JvmField
-    var aliasInfo: Setting<Boolean> = register(Settings.b("Alias Info", true))
+    var aliasInfo: Setting<Boolean> = register(Settings.b("AliasInfo", true))
     @JvmField
-    var prefixChat: Setting<Boolean> = register(Settings.b("Prefix Chat", true))
+    var prefixChat: Setting<Boolean> = register(Settings.b("PrefixChat", true))
     @JvmField
-    var toggleMessages: Setting<Boolean> = register(Settings.b("Toggle Messages", false))
+    var toggleMessages: Setting<Boolean> = register(Settings.b("ToggleMessages", false))
     @JvmField
-    var logLevel: Setting<LogLevel> = register(Settings.e("Log Level", LogLevel.ALL))
+    var logLevel: Setting<LogLevel> = register(Settings.e("LogLevel", LogLevel.ALL))
     @JvmField
-    var customTitle: Setting<Boolean> = register(Settings.b("Window Title", true))
+    var customTitle: Setting<Boolean> = register(Settings.b("WindowTitle", true))
 
     enum class LogLevel {
         NONE, ERROR, WARN, ALL

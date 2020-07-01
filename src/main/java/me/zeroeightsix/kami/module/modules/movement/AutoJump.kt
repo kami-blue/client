@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.setting.Settings
         description = "Automatically jumps if possible"
 )
 class AutoJump : Module() {
-    private val delay = register(Settings.integerBuilder("Tick Delay").withValue(10).build())
+    private val delay = register(Settings.integerBuilder("TickDelay").withValue(10).build())
 
     override fun onUpdate() {
         if (mc.player.isInWater || mc.player.isInLava) mc.player.motionY = 0.1 else jump()

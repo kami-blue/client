@@ -28,10 +28,10 @@ import java.util.*
 )
 class AutoFish : Module() {
     private val defaultSetting = register(Settings.b("Defaults", false))
-    private val baseDelay = register(Settings.integerBuilder("Throw Delay").withValue(450).withMinimum(50).withMaximum(1000).build())
-    private val extraDelay = register(Settings.integerBuilder("Catch Delay").withValue(300).withMinimum(0).withMaximum(1000).build())
+    private val baseDelay = register(Settings.integerBuilder("ThrowDelay").withValue(450).withMinimum(50).withMaximum(1000).build())
+    private val extraDelay = register(Settings.integerBuilder("CatchDelay").withValue(300).withMinimum(0).withMaximum(1000).build())
     private val variation = register(Settings.integerBuilder("Variation").withValue(50).withMinimum(0).withMaximum(1000).build())
-    private val recastOnReconnect = register(Settings.booleanBuilder("Cast on reconnect").withValue(true).build())
+    private val recastOnReconnect = register(Settings.booleanBuilder("CastOnReconnect").withValue(true).build())
 
     var random: Random? = null
     private var recast = false

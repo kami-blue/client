@@ -26,7 +26,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.*;
 )
 public class Spammer extends Module {
     private Setting<Mode> modeSetting = register(Settings.e("Order", Mode.RANDOM_ORDER));
-    private Setting<Integer> timeoutTime = register(Settings.integerBuilder().withName("Timeout (s)").withMinimum(1).withMaximum(240).withValue(10).build());
+    private Setting<Integer> timeoutTime = register(Settings.integerBuilder().withName("Timeout(s)").withMinimum(1).withMaximum(240).withValue(10).build());
 
     private List<String> tempLines = new ArrayList<>();
     private String[] spammer;

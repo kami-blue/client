@@ -21,9 +21,9 @@ import net.minecraft.util.math.MathHelper
 )
 class PlayerModel : Module() {
     private val scale = register(Settings.integerBuilder("Size").withRange(1, 100).withValue(50).build())
-    private val timeout = register(Settings.integerBuilder("Reset Timeout").withRange(1, 100).withValue(10).build())
-    private val emulatePitch = register(Settings.b("Emulate Pitch", true))
-    private val emulateYaw = register(Settings.b("Emulate Yaw", false))
+    private val timeout = register(Settings.integerBuilder("ResetTimeout").withRange(1, 100).withValue(10).build())
+    private val emulatePitch = register(Settings.b("EmulatePitch", true))
+    private val emulateYaw = register(Settings.b("EmulateYaw", false))
     private val x = register(Settings.i("X", 100))
     private val y = register(Settings.i("Y", 120))
 

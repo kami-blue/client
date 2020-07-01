@@ -20,7 +20,7 @@ import net.minecraft.world.storage.MapData
         description = "Previews maps when hovering over them"
 )
 class MapPreview : Module() {
-    val frame: Setting<Boolean> = register(Settings.b("Show Frame", true))
+    val frame: Setting<Boolean> = register(Settings.b("ShowFrame", true))
     val scale: Setting<Double> = register(Settings.doubleBuilder("Size").withRange(0.0, 10.0).withValue(5.0).build())
 
     companion object MapPreview {

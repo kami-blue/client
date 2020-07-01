@@ -32,7 +32,7 @@ public class BookCrash extends Module {
 
     private int currDelay;
     private Setting<Mode> mode = register(Settings.e("Mode", Mode.RAION));
-    private Setting<FillMode> fillMode = register(Settings.e("Fill Mode", FillMode.RANDOM));
+    private Setting<FillMode> fillMode = register(Settings.e("FillMode", FillMode.RANDOM));
     private Setting<Integer> uses = register(Settings.i("Uses", 5));
     private Setting<Integer> delay = register(Settings.i("Delay", 0));
     private Setting<Integer> pagesSettings = register(Settings.i("Pages", 50));

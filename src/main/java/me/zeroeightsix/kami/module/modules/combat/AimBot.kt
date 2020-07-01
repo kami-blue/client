@@ -24,15 +24,15 @@ import kotlin.math.atan2
 )
 class AimBot : Module() {
     private val range = register(Settings.integerBuilder("Range").withMinimum(4).withMaximum(24).withValue(16).build())
-    private val useBow = register(Settings.booleanBuilder("Use Bow").withValue(true).build())
-    private val ignoreWalls = register(Settings.booleanBuilder("Ignore Walls").withValue(true).build())
-    private val targetPlayers = register(Settings.booleanBuilder("Target Players").withValue(true).build())
+    private val useBow = register(Settings.booleanBuilder("UseBow").withValue(true).build())
+    private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(true).build())
+    private val targetPlayers = register(Settings.booleanBuilder("TargetPlayers").withValue(true).build())
     private val targetFriends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { targetPlayers.value == true }.build())
-    private val targetSleeping = register(Settings.booleanBuilder("Sleeping Players").withValue(false).withVisibility { targetPlayers.value == true }.build())
+    private val targetSleeping = register(Settings.booleanBuilder("SleepingPlayers").withValue(false).withVisibility { targetPlayers.value == true }.build())
     private val mobs = register(Settings.b("Mobs", false))
-    private val passive = register(Settings.booleanBuilder("Passive Mobs").withValue(false).withVisibility { mobs.value }.build())
-    private val neutral = register(Settings.booleanBuilder("Neutral Mobs").withValue(false).withVisibility { mobs.value }.build())
-    private val hostile = register(Settings.booleanBuilder("Hostile Mobs").withValue(false).withVisibility { mobs.value }.build())
+    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
+    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { mobs.value }.build())
+    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { mobs.value }.build())
 
     override fun onUpdate() {
         if (KamiMod.MODULE_MANAGER.getModuleT(Aura::class.java).isEnabled) {

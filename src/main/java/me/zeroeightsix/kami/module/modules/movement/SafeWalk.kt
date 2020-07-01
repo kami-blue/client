@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.setting.Settings
  */
 @Module.Info(name = "SafeWalk", category = Module.Category.MOVEMENT, description = "Keeps you from walking off edges")
 class SafeWalk : Module() {
-    private var baritoneCompat = register(Settings.b("Baritone Compatibility", true))
+    private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
 
     fun shouldSafewalk(): Boolean {
         return isEnabled && (baritoneCompat.value && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.goal == null || !baritoneCompat.value)

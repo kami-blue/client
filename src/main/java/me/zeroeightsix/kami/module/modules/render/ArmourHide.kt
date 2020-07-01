@@ -18,7 +18,7 @@ class ArmourHide : Module() {
     @JvmField
     var player: Setting<Boolean> = register(Settings.b("Players", false))
     @JvmField
-    var armourstand: Setting<Boolean> = register(Settings.b("Armour Stands", true))
+    var armourstand: Setting<Boolean> = register(Settings.b("ArmourStands", true))
     @JvmField
     var mobs: Setting<Boolean> = register(Settings.b("Mobs", true))
     var helmet: Setting<Boolean> = register(Settings.b("Helmet", false))

@@ -32,7 +32,7 @@ public class MobOwner extends Module {
     private Setting<Boolean> speed = register(Settings.b("Speed", true));
     private Setting<Boolean> jump = register(Settings.b("Jump", true));
     private Setting<Boolean> hp = register(Settings.b("Health", true));
-    private Setting<Integer> requestTime = register(Settings.integerBuilder("Cache Reset").withMinimum(10).withValue(20).build());
+    private Setting<Integer> requestTime = register(Settings.integerBuilder("CacheReset").withMinimum(10).withValue(20).build());
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
 
     /* First String is your key / uuid, second String is the value / username */

@@ -25,7 +25,7 @@ class FancyChat : Module() {
     private val leet = register(Settings.b("1337", false))
     private val mock = register(Settings.b("mOcK", false))
     private val green = register(Settings.b(">", false))
-    private val randomSetting = register(Settings.booleanBuilder("Random Case").withValue(true).withVisibility { mock.value }.build())
+    private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value }.build())
     private val commands = register(Settings.b("Commands", false))
 
     private fun getText(s: String): String {

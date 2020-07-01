@@ -28,9 +28,9 @@ public class EyeFinder extends Module {
 
     private Setting<Boolean> players = register(Settings.b("Players", true));
     private Setting<Boolean> mobs = register(Settings.b("Mobs", false));
-    private Setting<Boolean> passive = register(Settings.booleanBuilder("Passive Mobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
-    private Setting<Boolean> neutral = register(Settings.booleanBuilder("Neutral Mobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
-    private Setting<Boolean> hostile = register(Settings.booleanBuilder("Hostile Mobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
+    private Setting<Boolean> hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
 
     @Override
     public void onWorldRender(RenderEvent event) {

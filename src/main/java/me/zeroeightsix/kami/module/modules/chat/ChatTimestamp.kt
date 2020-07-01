@@ -23,11 +23,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
         showOnArray = Module.ShowOnArray.OFF
 )
 class ChatTimestamp : Module() {
-    private val firstColour = register(Settings.e<ColourCode>("First Colour", ColourCode.GRAY))
-    private val secondColour = register(Settings.e<ColourCode>("Second Colour", ColourCode.GRAY))
-    private val timeTypeSetting = register(Settings.e<TimeUtil.TimeType>("Time Format", TimeUtil.TimeType.HHMM))
-    private val timeUnitSetting = register(Settings.e<TimeUtil.TimeUnit>("Time Unit", TimeUtil.TimeUnit.H24))
-    private val doLocale = register(Settings.booleanBuilder("Show AM/PM").withValue(true).withVisibility { timeUnitSetting.value == TimeUtil.TimeUnit.H12 }.build())
+    private val firstColour = register(Settings.e<ColourCode>("FirstColour", ColourCode.GRAY))
+    private val secondColour = register(Settings.e<ColourCode>("SecondColour", ColourCode.GRAY))
+    private val timeTypeSetting = register(Settings.e<TimeUtil.TimeType>("TimeFormat", TimeUtil.TimeType.HHMM))
+    private val timeUnitSetting = register(Settings.e<TimeUtil.TimeUnit>("TimeUnit", TimeUtil.TimeUnit.H24))
+    private val doLocale = register(Settings.booleanBuilder("ShowAM/PM").withValue(true).withVisibility { timeUnitSetting.value == TimeUtil.TimeUnit.H12 }.build())
 
     @EventHandler
     private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->

@@ -15,11 +15,11 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
         showOnArray = Module.ShowOnArray.ON
 )
 public class CoordsLog extends Module {
-    private Setting<Boolean> forceLogOnDeath = register(Settings.b("Save Death Coords", true));
-    private Setting<Boolean> deathInChat = register(Settings.b("Log in chat", true));
+    private Setting<Boolean> forceLogOnDeath = register(Settings.b("SaveDeathCoords", true));
+    private Setting<Boolean> deathInChat = register(Settings.b("LogInChat", true));
     private Setting<Boolean> autoLog = register(Settings.b("Delay", false));
     private Setting<Double> delay = register(Settings.doubleBuilder("Delay").withMinimum(1.0).withValue(15.0).withMaximum(60.0).build());
-    private Setting<Boolean> checkDuplicates = register(Settings.b("Avoid Duplicates", true));
+    private Setting<Boolean> checkDuplicates = register(Settings.b("AvoidDuplicates", true));
 
     private String previousCoord;
 

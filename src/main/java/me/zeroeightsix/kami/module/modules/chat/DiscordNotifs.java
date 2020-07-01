@@ -41,15 +41,15 @@ public class DiscordNotifs extends Module {
     private Setting<Boolean> timeout = register(Settings.b("Timeout", true));
     private Setting<Integer> timeoutTime = register(Settings.integerBuilder().withName("Seconds").withMinimum(0).withMaximum(120).withValue(10).withVisibility(v -> timeout.getValue()).build());
     private Setting<Boolean> time = register(Settings.b("Timestamp", true));
-    private Setting<Boolean> importantPings = register(Settings.b("Important Pings", false));
-    private Setting<Boolean> disconnect = register(Settings.b("Disconnect Msgs", true));
-    private Setting<Boolean> all = register(Settings.b("All Messages", false));
-    private Setting<Boolean> queue = register(Settings.booleanBuilder("Queue Position").withValue(true).withVisibility(v -> !all.getValue()).build());
-    private Setting<Boolean> restart = register(Settings.booleanBuilder("Restart Msgs").withValue(true).withVisibility(v -> !all.getValue()).build());
-    private Setting<Boolean> direct = register(Settings.booleanBuilder("Received DMs").withValue(true).withVisibility(v -> !all.getValue()).build());
-    private Setting<Boolean> directSent = register(Settings.booleanBuilder("Send DMs").withValue(true).withVisibility(v -> !all.getValue()).build());
+    private Setting<Boolean> importantPings = register(Settings.b("ImportantPings", false));
+    private Setting<Boolean> disconnect = register(Settings.b("DisconnectMsgs", true));
+    private Setting<Boolean> all = register(Settings.b("AllMessages", false));
+    private Setting<Boolean> queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility(v -> !all.getValue()).build());
+    private Setting<Boolean> restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility(v -> !all.getValue()).build());
+    private Setting<Boolean> direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility(v -> !all.getValue()).build());
+    private Setting<Boolean> directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility(v -> !all.getValue()).build());
     public Setting<String> url = register(Settings.s("URL", "unchanged"));
-    public Setting<String> pingID = register(Settings.s("Ping ID", "unchanged"));
+    public Setting<String> pingID = register(Settings.s("PingID", "unchanged"));
     public Setting<String> avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"));
 
     private static ServerData cServer;

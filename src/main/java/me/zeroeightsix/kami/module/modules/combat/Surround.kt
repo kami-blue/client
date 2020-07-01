@@ -38,13 +38,13 @@ import kotlin.math.sqrt
 )
 class Surround : Module() {
     @JvmField
-    var autoDisable: Setting<Boolean> = register(Settings.b("Disable on place", true))
-    private val spoofRotations = register(Settings.b("Spoof Rotations", true))
-    private val spoofHotbar = register(Settings.b("Spoof Hotbar", false))
-    private val blockPerTick = register(Settings.doubleBuilder("Blocks per Tick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build())
-    private val debugMsgs = register(Settings.e<DebugMsgs>("Debug Messages", DebugMsgs.IMPORTANT))
+    var autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
+    private val spoofRotations = register(Settings.b("SpoofRotations", true))
+    private val spoofHotbar = register(Settings.b("SpoofHotbar", false))
+    private val blockPerTick = register(Settings.doubleBuilder("BlocksPerTick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build())
+    private val debugMsgs = register(Settings.e<DebugMsgs>("DebugMessages", DebugMsgs.IMPORTANT))
     private val autoCenter = register(Settings.b("AutoCenter", true))
-    private val placeAnimation = register(Settings.b("Place Animation", false))
+    private val placeAnimation = register(Settings.b("PlaceAnimation", false))
 
     private val surroundTargets = arrayOf(Vec3d(0.0, 0.0, 0.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0), Vec3d(1.0, 0.0, 0.0), Vec3d(0.0, 0.0, 1.0), Vec3d(-1.0, 0.0, 0.0), Vec3d(0.0, 0.0, -1.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0))
 

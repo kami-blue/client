@@ -23,11 +23,11 @@ import java.util.*
         category = Module.Category.COMBAT
 )
 class VisualRange : Module() {
-    private val playSound = register(Settings.b("Play Sound", false))
-    private val leaving = register(Settings.b("Count Leaving", false))
+    private val playSound = register(Settings.b("PlaySound", false))
+    private val leaving = register(Settings.b("CountLeaving", false))
     private val friends = register(Settings.b("Friends", true))
-    private val uwuAura = register(Settings.b("UwU Aura", false))
-    private val logToFile = register(Settings.b("Log To File", false))
+    private val uwuAura = register(Settings.b("UwUAura", false))
+    private val logToFile = register(Settings.b("LogTo File", false))
 
     private var knownPlayers: MutableList<String>? = null
 

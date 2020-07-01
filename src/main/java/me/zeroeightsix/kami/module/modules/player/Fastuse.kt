@@ -24,9 +24,9 @@ class Fastuse : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build())
     private val all = register(Settings.b("All", false))
     private val bow = register(Settings.booleanBuilder().withName("Bow").withValue(true).withVisibility { !all.value }.build())
-    private val chargeState = register(Settings.integerBuilder("Bow Charge").withMinimum(0).withMaximum(20).withValue(3).withVisibility { all.value || bow.value }.build())
-    private val expBottles = register(Settings.booleanBuilder().withName("Exp Bottles").withValue(true).withVisibility { !all.value }.build())
-    private val endCrystals = register(Settings.booleanBuilder().withName("End Crystals").withValue(true).withVisibility { !all.value }.build())
+    private val chargeState = register(Settings.integerBuilder("BowCharge").withMinimum(0).withMaximum(20).withValue(3).withVisibility { all.value || bow.value }.build())
+    private val expBottles = register(Settings.booleanBuilder().withName("ExpBottles").withValue(true).withVisibility { !all.value }.build())
+    private val endCrystals = register(Settings.booleanBuilder().withName("EndCrystals").withValue(true).withVisibility { !all.value }.build())
     private val fireworks = register(Settings.booleanBuilder().withName("Fireworks").withValue(false).withVisibility { !all.value }.build())
 
     public override fun onDisable() {

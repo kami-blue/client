@@ -11,5 +11,5 @@ import me.zeroeightsix.kami.setting.Settings
 )
 class AntiDisconnect : Module() {
     @JvmField
-    var requiredButtonPresses: Setting<Int> = register(Settings.integerBuilder("Button Presses").withMinimum(1).withMaximum(20).withValue(3).build())
+    var requiredButtonPresses: Setting<Int> = register(Settings.integerBuilder("ButtonPresses").withMinimum(1).withMaximum(20).withValue(3).build())
 }

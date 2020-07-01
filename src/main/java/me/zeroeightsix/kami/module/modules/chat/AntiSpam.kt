@@ -35,28 +35,28 @@ class AntiSpam : Module() {
     private val p = register(Settings.e<Page>("Page", Page.ONE))
 
     /* Page One */
-    private val discordLinks = register(Settings.booleanBuilder("Discord Links").withValue(true).withVisibility { p.value == Page.ONE }.build())
+    private val discordLinks = register(Settings.booleanBuilder("DiscordLinks").withValue(true).withVisibility { p.value == Page.ONE }.build())
     private val announcers = register(Settings.booleanBuilder("Announcers").withValue(true).withVisibility { p.value == Page.ONE }.build())
     private val spammers = register(Settings.booleanBuilder("Spammers").withValue(true).withVisibility { p.value == Page.ONE }.build())
     private val insulters = register(Settings.booleanBuilder("Insulters").withValue(true).withVisibility { p.value == Page.ONE }.build())
     private val greeters = register(Settings.booleanBuilder("Greeters").withValue(true).withVisibility { p.value == Page.ONE }.build())
-    private val ips = register(Settings.booleanBuilder("Server Ips").withValue(true).withVisibility { p.value == Page.ONE }.build())
-    private val specialCharEnding = register(Settings.booleanBuilder("Special Ending").withValue(true).withVisibility { p.value == Page.ONE }.build())
-    private val specialCharBegin = register(Settings.booleanBuilder("Special Begin").withValue(true).withVisibility { p.value == Page.ONE }.build())
-    private val iJustThanksTo = register(Settings.booleanBuilder("I just...thanks to").withValue(true).withVisibility { p.value == Page.ONE }.build())
+    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { p.value == Page.ONE }.build())
+    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.ONE }.build())
+    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.ONE }.build())
+    private val iJustThanksTo = register(Settings.booleanBuilder("IJustThanksTo").withValue(true).withVisibility { p.value == Page.ONE }.build())
 
     /* Page Two */
-    private val ownsMeAndAll = register(Settings.booleanBuilder("Owns Me And All").withValue(true).withVisibility { p.value == Page.TWO }.build())
-    private val greenText = register(Settings.booleanBuilder("Green Text").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val numberSuffix = register(Settings.booleanBuilder("Number Ending").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val numberPrefix = register(Settings.booleanBuilder("Number Begin").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val ownsMeAndAll = register(Settings.booleanBuilder("OwnsMeAndAll").withValue(true).withVisibility { p.value == Page.TWO }.build())
+    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val numberSuffix = register(Settings.booleanBuilder("NumberEnding").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val numberPrefix = register(Settings.booleanBuilder("NumberBegin").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.TWO }.build())
-    private val duplicatesTimeout = register(Settings.integerBuilder("Duplicates Timeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility { duplicates.value && p.value == Page.TWO }.build())
-    private val webLinks = register(Settings.booleanBuilder("Web Links").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterOwn = register(Settings.booleanBuilder("Filter Own").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterDMs = register(Settings.booleanBuilder("Filter DMs").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterServer = register(Settings.booleanBuilder("Filter server").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("Show Blocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.TWO }.build())
+    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility { duplicates.value && p.value == Page.TWO }.build())
+    private val webLinks = register(Settings.booleanBuilder("WebLinks").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.TWO }.build())
+    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.TWO }.build())
     private var messageHistory: ConcurrentHashMap<String, Long>? = null
 
     private enum class Page {

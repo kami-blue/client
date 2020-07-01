@@ -28,14 +28,14 @@ import java.util.*
         category = Module.Category.COMBAT
 )
 class TotemPopCounter : Module() {
-    private val countFriends = register(Settings.b("Count Friends", true))
-    private val countSelf = register(Settings.b("Count Self", false))
-    private val resetDeaths = register(Settings.b("Reset On Death", true))
-    private val resetSelfDeaths = register(Settings.b("Reset Self Death", true))
+    private val countFriends = register(Settings.b("CountFriends", true))
+    private val countSelf = register(Settings.b("CountSelf", false))
+    private val resetDeaths = register(Settings.b("ResetOnDeath", true))
+    private val resetSelfDeaths = register(Settings.b("ResetSelfDeath", true))
     private val announceSetting = register(Settings.e<Announce>("Announce", Announce.CLIENT))
-    private val thanksTo = register(Settings.b("Thanks to", false))
-    private val colourCode = register(Settings.e<ColourCode>("Color Name", ColourCode.DARK_PURPLE))
-    private val colourCode1 = register(Settings.e<ColourCode>("Color Number", ColourCode.LIGHT_PURPLE))
+    private val thanksTo = register(Settings.b("ThanksTo", false))
+    private val colourCode = register(Settings.e<ColourCode>("ColorName", ColourCode.DARK_PURPLE))
+    private val colourCode1 = register(Settings.e<ColourCode>("ColorNumber", ColourCode.LIGHT_PURPLE))
 
     private enum class Announce {
         CLIENT, EVERYONE

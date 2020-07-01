@@ -41,25 +41,25 @@ public class InfoOverlay extends Module {
     private Setting<Boolean> tps = register(Settings.booleanBuilder("TPS").withValue(true).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
-    private Setting<Boolean> durability = register(Settings.booleanBuilder("Item Damage").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
-    private Setting<Boolean> memory = register(Settings.booleanBuilder("RAM Used").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
-    private Setting<Boolean> timerSpeed = register(Settings.booleanBuilder("Timer Speed").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
+    private Setting<Boolean> timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility(v -> page.getValue().equals(Page.ONE)).build());
     /* Page Two */
     private Setting<Boolean> totems = register(Settings.booleanBuilder("Totems").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> endCrystals = register(Settings.booleanBuilder("End Crystals").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> expBottles = register(Settings.booleanBuilder("EXP Bottles").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
-    private Setting<Boolean> godApples = register(Settings.booleanBuilder("God Apples").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> endCrystals = register(Settings.booleanBuilder("EndCrystals").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> expBottles = register(Settings.booleanBuilder("EXPBottles").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
+    private Setting<Boolean> godApples = register(Settings.booleanBuilder("GodApples").withValue(false).withVisibility(v -> page.getValue().equals(Page.TWO)).build());
     /* Page Three */
-    private Setting<Integer> decimalPlaces = register(Settings.integerBuilder("Decimal Places").withValue(2).withMinimum(0).withMaximum(10).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
+    private Setting<Integer> decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withMinimum(0).withMaximum(10).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
     private Setting<Boolean> speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
-    private Setting<SpeedUnit> speedUnit = register(Settings.enumBuilder(SpeedUnit.class).withName("Speed Unit").withValue(SpeedUnit.KMH).withVisibility(v -> page.getValue().equals(Page.THREE) && speed.getValue()).build());
+    private Setting<SpeedUnit> speedUnit = register(Settings.enumBuilder(SpeedUnit.class).withName("SpeedUnit").withValue(SpeedUnit.KMH).withVisibility(v -> page.getValue().equals(Page.THREE) && speed.getValue()).build());
     private Setting<Boolean> time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
-    public Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.enumBuilder(TimeUtil.TimeType.class).withName("Time Format").withValue(TimeUtil.TimeType.HHMMSS).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
-    public Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.enumBuilder(TimeUtil.TimeUnit.class).withName("Time Unit").withValue(TimeUtil.TimeUnit.H12).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
-    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("Time Show AM/PM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue() && timeUnitSetting.getValue().equals(TimeUtil.TimeUnit.H12)).build());
-    public Setting<ColourTextFormatting.ColourCode> firstColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("First Colour").withValue(ColourTextFormatting.ColourCode.WHITE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
-    public Setting<ColourTextFormatting.ColourCode> secondColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("Second Colour").withValue(ColourTextFormatting.ColourCode.BLUE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
+    public Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.enumBuilder(TimeUtil.TimeType.class).withName("TimeFormat").withValue(TimeUtil.TimeType.HHMMSS).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
+    public Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.enumBuilder(TimeUtil.TimeUnit.class).withName("TimeUnit").withValue(TimeUtil.TimeUnit.H12).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
+    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue() && timeUnitSetting.getValue().equals(TimeUtil.TimeUnit.H12)).build());
+    public Setting<ColourTextFormatting.ColourCode> firstColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("FirstColour").withValue(ColourTextFormatting.ColourCode.WHITE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
+    public Setting<ColourTextFormatting.ColourCode> secondColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("SecondColour").withValue(ColourTextFormatting.ColourCode.BLUE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
 
     public static String getStringColour(TextFormatting c) {
         return c.toString();

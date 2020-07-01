@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.SPacketChat
         category = Module.Category.CHAT
 )
 class AutoTPA : Module() {
-    private val friends = register(Settings.b("Always accept friends", true))
+    private val friends = register(Settings.b("AlwaysAcceptFriends", true))
     private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
 
     @EventHandler

@@ -30,10 +30,10 @@ import net.minecraft.util.EnumHand
         category = Module.Category.PLAYER
 )
 class AutoEat : Module() {
-    private val foodLevel = register(Settings.integerBuilder("Below Hunger").withValue(15).withMinimum(1).withMaximum(20).build())
-    private val healthLevel = register(Settings.integerBuilder("Below Health").withValue(8).withMinimum(1).withMaximum(20).build())
+    private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withMinimum(1).withMaximum(20).build())
+    private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withMinimum(1).withMaximum(20).build())
 
-    var pauseBaritone: Setting<Boolean> = register(Settings.b("Pause Baritone", true))
+    var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
 
     private var lastSlot = -1
     var eating = false

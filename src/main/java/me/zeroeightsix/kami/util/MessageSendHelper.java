@@ -42,7 +42,7 @@ public class MessageSendHelper {
         if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ERROR)) {
             sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
         } else {
-            KamiMod.log.error("&7[&4\" + KamiMod.KAMI_KANJI + \"&7] &r" + message);
+            KamiMod.log.error("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
         }
     }
 

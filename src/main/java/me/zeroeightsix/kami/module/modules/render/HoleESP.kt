@@ -31,15 +31,15 @@ class HoleESP : Module() {
             BlockPos(0, 0, 1),  // south
             BlockPos(-1, 0, 0) // west
     )
-    private val renderDistance = register(Settings.d("Render Distance", 8.0))
+    private val renderDistance = register(Settings.d("RenderDistance", 8.0))
     private val a0 = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).build())
-    private val r1 = register(Settings.integerBuilder("Red (Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val g1 = register(Settings.integerBuilder("Green (Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val b1 = register(Settings.integerBuilder("Blue (Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val r2 = register(Settings.integerBuilder("Red (Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
-    private val g2 = register(Settings.integerBuilder("Green (Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
-    private val b2 = register(Settings.integerBuilder("Blue (Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { bedrockSettings() }.build())
-    private val renderModeSetting = register(Settings.e<RenderMode>("Render Mode", RenderMode.BLOCK))
+    private val r1 = register(Settings.integerBuilder("Red(Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { obbySettings() }.build())
+    private val g1 = register(Settings.integerBuilder("Green(Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { obbySettings() }.build())
+    private val b1 = register(Settings.integerBuilder("Blue(Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { obbySettings() }.build())
+    private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
+    private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
+    private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { bedrockSettings() }.build())
+    private val renderModeSetting = register(Settings.e<RenderMode>("RenderMode", RenderMode.BLOCK))
     private val renderBlocksSetting = register(Settings.e<RenderBlocks>("Render", RenderBlocks.BOTH))
     private var safeHoles: ConcurrentHashMap<BlockPos, Boolean>? = null
 

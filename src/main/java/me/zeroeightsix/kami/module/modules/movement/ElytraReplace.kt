@@ -21,12 +21,12 @@ import net.minecraft.inventory.ClickType
 )
 class ElytraReplace : Module() {
     private val inventoryMode = register(Settings.b("Inventory", false))
-    private val autoChest = register(Settings.b("Auto Chest", false))
-    private val elytraFlightCheck = register(Settings.b("ElytraFlight Check", true))
-    private val logToChat = register(Settings.booleanBuilder("Missing Warning").withValue(false).build())
-    private val playSound = register(Settings.booleanBuilder("Play Sound").withValue(false).withVisibility { logToChat.value }.build())
-    private val logThreshold = register(Settings.integerBuilder("Missing threshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
-    private val threshold = register(Settings.integerBuilder("Broken %").withRange(1, 100).withValue(7).build())
+    private val autoChest = register(Settings.b("AutoChest", false))
+    private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
+    private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false).build())
+    private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value }.build())
+    private val logThreshold = register(Settings.integerBuilder("MissingThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
+    private val threshold = register(Settings.integerBuilder("Broken%").withRange(1, 100).withValue(7).build())
 
     private var currentlyMovingElytra = false
     private var currentlyMovingChestplate = false

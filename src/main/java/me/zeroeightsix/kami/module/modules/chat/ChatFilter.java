@@ -28,8 +28,8 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
         showOnArray = Module.ShowOnArray.OFF
 )
 public class ChatFilter extends Module {
-    private Setting<Boolean> filterOwn = register(Settings.b("Filter Own", false));
-    private Setting<Boolean> filterDMs = register(Settings.b("Filter DMs", false));
+    private Setting<Boolean> filterOwn = register(Settings.b("FilterOwn", false));
+    private Setting<Boolean> filterDMs = register(Settings.b("FilterDMs", false));
     private Setting<Boolean> hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility(v -> false).build());
 
     private static ArrayList<Pattern> chatFilter = new ArrayList<>();

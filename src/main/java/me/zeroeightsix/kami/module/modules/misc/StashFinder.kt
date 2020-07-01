@@ -22,20 +22,20 @@ import kotlin.math.roundToInt
         description = "Logs storage units in render distance."
 )
 class StashFinder : Module() {
-    private val logToChat = register(Settings.b("Log To Chat"))
-    private val playSound = register(Settings.b("Play Sound"))
+    private val logToChat = register(Settings.b("LogToChat"))
+    private val playSound = register(Settings.b("PlaySound"))
 
     private val logChests = register(Settings.b("Chests"))
-    private val chestDensity = register(Settings.integerBuilder("Min Chests").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logChests.value }.build())
+    private val chestDensity = register(Settings.integerBuilder("MinChests").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logChests.value }.build())
 
     private val logShulkers = register(Settings.b("Shulkers"))
-    private val shulkerDensity = register(Settings.integerBuilder("Min Shulkers").withMinimum(1).withMaximum(20).withValue(1).withVisibility { logShulkers.value }.build())
+    private val shulkerDensity = register(Settings.integerBuilder("MinShulkers").withMinimum(1).withMaximum(20).withValue(1).withVisibility { logShulkers.value }.build())
 
     private val logDroppers = register(Settings.b("Droppers", false))
-    private val dropperDensity = register(Settings.integerBuilder("Min Droppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDroppers.value }.build())
+    private val dropperDensity = register(Settings.integerBuilder("MinDroppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDroppers.value }.build())
 
     private val logDispensers = register(Settings.b("Dispensers", false))
-    private val dispenserDensity = register(Settings.integerBuilder("Min Dispensers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
+    private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
 
     private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hot: Boolean = false) {
         val tileEntities = mutableListOf<TileEntity>()

@@ -24,14 +24,14 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent
         category = Module.Category.COMBAT
 )
 class AutoLog : Module() {
-    private val autoDisable = register(Settings.b("Auto Disable", true))
+    private val autoDisable = register(Settings.b("AutoDisable", true))
     private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(30).withVisibility { !autoDisable.value }.build())
     private val health = register(Settings.integerBuilder("Health").withRange(0, 36).withValue(6).build())
     private val crystals = register(Settings.b("Crystals", true))
     private val creeper = register(Settings.b("Creepers", true))
-    private val distance = register(Settings.integerBuilder("Creeper Distance").withRange(1, 10).withValue(5).withVisibility { creeper.value }.build())
+    private val distance = register(Settings.integerBuilder("CreeperDistance").withRange(1, 10).withValue(5).withVisibility { creeper.value }.build())
     private val totem = register(Settings.b("Totems", false))
-    private val totemAmount = register(Settings.integerBuilder("Min Totems").withRange(1, 10).withValue(2).withVisibility { totem.value }.build())
+    private val totemAmount = register(Settings.integerBuilder("MinTotems").withRange(1, 10).withValue(2).withVisibility { totem.value }.build())
 
     private var shouldLog = false
     private var lastLog = System.currentTimeMillis()

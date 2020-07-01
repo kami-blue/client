@@ -25,9 +25,9 @@ import net.minecraft.network.play.server.SPacketChat
 )
 class AutoReply : Module() {
     @JvmField
-    var customMessage: Setting<Boolean> = register(Settings.b("Custom Message", false))
+    var customMessage: Setting<Boolean> = register(Settings.b("CustomMessage", false))
     @JvmField
-    var message: Setting<String> = register(Settings.stringBuilder("Custom Text").withValue("Use &7" + Command.getCommandPrefix() + "autoreply&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customMessage.value }.build())
+    var message: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "autoreply&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customMessage.value }.build())
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->

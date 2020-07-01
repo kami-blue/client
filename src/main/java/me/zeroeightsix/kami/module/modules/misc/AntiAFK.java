@@ -29,7 +29,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
 )
 public class AntiAFK extends Module {
 
-    private Setting<Integer> frequency = register(Settings.integerBuilder("Action Frequency").withMinimum(1).withMaximum(100).withValue(40).build());
+    private Setting<Integer> frequency = register(Settings.integerBuilder("ActionFrequency").withMinimum(1).withMaximum(100).withValue(40).build());
     public Setting<Boolean> autoReply = register(Settings.b("AutoReply", true));
     private Setting<Mode> mode = register(Settings.enumBuilder(Mode.class).withName("Mode").withValue(Mode.TRADITIONAL).withVisibility(v -> false).build());
     private Setting<Boolean> swing = register(Settings.b("Swing", true));

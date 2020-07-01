@@ -19,7 +19,7 @@ import java.util.*
         description = "Refills items in your hotbar"
 )
 class AutoReplenish : Module() {
-    private val threshold = register(Settings.integerBuilder("Refill at").withMinimum(1).withValue(32).withMaximum(63).build())
+    private val threshold = register(Settings.integerBuilder("RefillAt").withMinimum(1).withValue(32).withMaximum(63).build())
     private val tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(1).withValue(2).withMaximum(10).build())
 
     private var delayStep = 0

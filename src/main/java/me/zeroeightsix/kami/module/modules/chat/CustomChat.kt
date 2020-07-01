@@ -28,7 +28,7 @@ class CustomChat : Module() {
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
     @JvmField
-    var customText: Setting<String> = register(Settings.s("Custom Text", "unchanged"))
+    var customText: Setting<String> = register(Settings.s("CustomText", "unchanged"))
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE
