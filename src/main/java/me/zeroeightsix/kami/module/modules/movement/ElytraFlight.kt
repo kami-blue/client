@@ -69,8 +69,9 @@ class ElytraFlight : Module() {
     private val downSpeedCreative = register(Settings.floatBuilder("DownSpeedCR").withMaximum(5.0f).withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
 
     /* Packet */
-    private val speedPacket = register(Settings.floatBuilder("SpeedP").withValue(1.3f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
-    private val fallSpeedPacket = register(Settings.floatBuilder("FallSpeedP").withValue(0.0001f).withMinimum(0.0f).withMaximum(0.3f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
+    private val speedPacket = register(Settings.floatBuilder("SpeedP").withValue(1.8f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
+    private val fallSpeedPacket = register(Settings.floatBuilder("FallSpeedP").withValue(0.00001f).withMinimum(0.0f).withMaximum(0.3f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
+    private val downSpeedPacket = register(Settings.floatBuilder("DownSpeedP").withValue(1.0f).withMinimum(0.0f).withMaximum(5.0f).withVisibility { mode.value == ElytraFlightMode.PACKET }.build())
 
     private enum class ElytraFlightMode {
         BOOST, CONTROL, CREATIVE, PACKET
@@ -81,6 +82,7 @@ class ElytraFlight : Module() {
     private var elytraDurability = 0
     private var outOfDurability = false
     private var isFlying = false
+    private var isPacketFlying = false
     private var isStandingStillH = false
     private var isStandingStill = false
 
@@ -93,21 +95,21 @@ class ElytraFlight : Module() {
     /* Event Handlers */
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (!elytraIsEquipped || elytraDurability <= 1 || mc.player == null || !isFlying || !(mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.CONTROL) || mc.player.isSpectator) return@EventHook
+        if (!elytraIsEquipped || elytraDurability <= 1 || mc.player == null || !isFlying || mode.value == ElytraFlightMode.BOOST || mc.player.isSpectator) return@EventHook
         if (event.packet is CPacketPlayer) {
-
-            /* Cancels rotation packets when standing still and not clicking */
-            if (spoofPitch.value && event.packet !is CPacketPlayer.Position && isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) {
-                event.cancel()
-            }
-
-            /* Spoof Pitch */
             val packet = event.packet as CPacketPlayer
-            if (spoofPitch.value && !isStandingStill) {
-                packet.pitch = packetPitch
-            }
+            if (mode.value != ElytraFlightMode.PACKET) {
+                /* Cancels rotation packets when standing still and not clicking */
+                if (spoofPitch.value && event.packet !is CPacketPlayer.Position && isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) {
+                    event.cancel()
+                }
 
-            if (mode.value == ElytraFlightMode.CONTROL) packet.yaw = packetYaw
+                /* Spoof Pitch */
+                if (spoofPitch.value && !isStandingStill) {
+                    packet.pitch = packetPitch
+                }
+            }
+            if (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) packet.yaw = packetYaw
         }
     })
 
@@ -127,8 +129,8 @@ class ElytraFlight : Module() {
         stateUpdate(event)
 
         if (elytraIsEquipped && elytraDurability > 1) {
-            if (!isFlying) {
-                if (mode.value == ElytraFlightMode.BOOST || mode.value == ElytraFlightMode.CONTROL) mc.player.capabilities.isFlying = false /* For fixing issues when switching mode in air */
+            if (!isFlying && !isPacketFlying) {
+                if (mode.value != ElytraFlightMode.CREATIVE) mc.player.capabilities.isFlying = false /* For fixing issues when switching mode in air */
                 takeoff()
             } else {
                 mc.timer.tickLength = 50.0f
@@ -138,7 +140,7 @@ class ElytraFlight : Module() {
                     ElytraFlightMode.BOOST -> boostMode()
                     ElytraFlightMode.CONTROL -> controlMode(event)
                     ElytraFlightMode.CREATIVE -> creativeMode()
-                    else -> packetMode()
+                    else -> packetMode(event)
                 }
             }
         }
@@ -177,7 +179,9 @@ class ElytraFlight : Module() {
             mc.player.setVelocity(0.0, -0.01, 0.0)
         } else if (outOfDurability) outOfDurability = false //* Reset if players is on ground or replace with a new elytra *//
 
-        isFlying = if (mode.value == ElytraFlightMode.BOOST || mode.value == ElytraFlightMode.CONTROL) mc.player.isElytraFlying else mc.player.isElytraFlying || mc.player.capabilities.isFlying
+        /* Elytra flying status check */
+        isFlying = mc.player.isElytraFlying || (mc.player.capabilities.isFlying && mode.value == ElytraFlightMode.CREATIVE)
+        isPacketFlying = isPacketFlying && mode.value == ElytraFlightMode.PACKET
 
         /* Movement input check */
         if (isFlying) {
@@ -200,6 +204,17 @@ class ElytraFlight : Module() {
             hoverTarget = mc.player.posY + 0.2
         } else if (mc.player.onGround) mc.timer.tickLength = 50.0f /* Reset timer if player is on ground */
     }
+
+    /* Calculate yaw for control and packet mode */
+    private fun getYaw(): Double {
+        var strafeYawDeg = 90.0f * mc.player.movementInput.moveStrafe
+        strafeYawDeg *= if (mc.player.movementInput.moveForward != 0.0f) mc.player.movementInput.moveForward * 0.5f else 1.0f
+        var yawDeg = mc.player.rotationYaw - strafeYawDeg
+        packetYaw = yawDeg
+        yawDeg -= if (mc.player.movementInput.moveForward < 0.0f) 180 else 0
+        return Math.toRadians(yawDeg.toDouble())
+    }
+
     /* End of Generic Functions */
 
     /* Boost mode */
@@ -210,21 +225,17 @@ class ElytraFlight : Module() {
         mc.player.motionZ += mc.player.movementInput.moveForward * cos(yaw) * speedBoost.value / 20
     }
 
-    /* Control Mode */
+    /* Control/Packet Mode */
     private fun controlMode(event: PlayerTravelEvent) {
+        // TODO: Remove leg twitching when standing still
+        // TODO: Add dynamic down speed
+
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
         val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)
         val moveUp = mc.player.movementInput.jump
         val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
-
-        /* Yaw calculation */
-        var strafeYawDeg = 90.0f * mc.player.movementInput.moveStrafe
-        strafeYawDeg *= if (mc.player.movementInput.moveForward != 0.0f) mc.player.movementInput.moveForward * 0.5f else 1.0f
-        var yawDeg = mc.player.rotationYaw - strafeYawDeg
-        packetYaw = yawDeg
-        yawDeg -= if (mc.player.movementInput.moveForward < 0.0f) 180 else 0
-        val yaw = Math.toRadians(yawDeg.toDouble())
+        val yaw = getYaw()
 
         /* Hover */
         if (hoverTarget < 0.0 || moveUp) hoverTarget = mc.player.posY else if (moveDown) hoverTarget = mc.player.posY - downSpeedControl.value
@@ -275,7 +286,7 @@ class ElytraFlight : Module() {
         mc.player.motionY *= 0.98
         mc.player.motionZ *= 0.99
     }
-    /* End of Control Mode */
+    /* End of Control/Packet Mode */
 
     /* Creative Mode */
     private fun creativeMode() {
@@ -287,31 +298,42 @@ class ElytraFlight : Module() {
         mc.player.capabilities.isFlying = true
         mc.player.capabilities.flySpeed = speedCreative.value
         val motionY = when {
-            isStandingStill -> mc.player.motionY
+            isStandingStill -> 0.0
             mc.player.movementInput.jump -> upSpeedCreative.value.toDouble()
             mc.player.movementInput.sneak -> -downSpeedCreative.value.toDouble()
-            else -> mc.player.motionY - fallSpeedCreative.value
+            else -> -fallSpeedCreative.value.toDouble()
         }
-        mc.player.setVelocity(0.0, motionY, 0.0)
+        mc.player.setVelocity(0.0, motionY, 0.0) /* Remove the creative flight acceleration and set the motionY */
     }
 
     /* Packet Mode */
-    private fun packetMode() {
-        if (mc.player.isElytraFlying) mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
-        mc.player.capabilities.isFlying = true
-        mc.player.capabilities.flySpeed = speedPacket.value / 8
-        mc.player.motionY = if (isStandingStill) mc.player.motionY else mc.player.motionY - fallSpeedPacket.value.toDouble()
+    private fun packetMode(event: PlayerTravelEvent) {
+        // TODO: Disable the elytra flight view changing
+
+        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
+        isPacketFlying = !mc.player.onGround
+        val yaw = getYaw()
+
+        /* Set velocity */
+        if (!isStandingStillH) { /* Runs when pressing wasd */
+            mc.player.motionX = sin(-yaw) * speedPacket.value
+            mc.player.motionZ = cos(yaw) * speedPacket.value
+        } else mc.player.setVelocity(0.0, 0.0, 0.0)
+        mc.player.motionY = (if (mc.player.movementInput.sneak) -downSpeedPacket.value else -fallSpeedPacket.value).toDouble()
+
+        event.cancel()
     }
 
     override fun onUpdate() {
         /* Continuously update server side rotation */
-        if (isFlying && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.CREATIVE) && spoofPitch.value) {
-            mc.player.rotationYaw += random().toFloat() * 0.001f - 0.0005f
-            mc.player.rotationPitch += random().toFloat() * 0.001f - 0.0005f
+        if ((isFlying || isPacketFlying) && mode.value != ElytraFlightMode.BOOST) {
+            mc.player.rotationYaw += random().toFloat() * 0.01f - 0.005f
+            mc.player.rotationPitch += random().toFloat() * 0.01f - 0.005f
         }
     }
 
     override fun onDisable() {
+        isPacketFlying = false
         mc.timer.tickLength = 50.0f
         mc.player.capabilities.flySpeed = 0.05f
         mc.player.capabilities.isFlying = false
@@ -346,8 +368,9 @@ class ElytraFlight : Module() {
             upSpeedCreative.value = 1.0f
             downSpeedCreative.value = 1.0f
 
-            speedPacket.value = 1.3f
+            speedPacket.value = 1.8f
             fallSpeedPacket.value = 0.00001f
+            downSpeedPacket.value = 1.0f
 
             defaultSetting.value = false
             sendChatMessage("$chatName Set to defaults!")
