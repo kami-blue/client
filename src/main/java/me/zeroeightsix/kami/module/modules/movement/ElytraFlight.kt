@@ -257,7 +257,7 @@ class ElytraFlight : Module() {
         } else downSpeedControl.value.toDouble()
 
         /* Hover */
-        if (hoverTarget < 0.0 || moveUp) hoverTarget = mc.player.posY else if (moveDown) hoverTarget = mc.player.posY - downSpeedControl.value
+        if (hoverTarget < 0.0 || moveUp) hoverTarget = mc.player.posY else if (moveDown) hoverTarget = mc.player.posY - calcDownSpeed
         hoverState = (if (hoverState) mc.player.posY < hoverTarget else mc.player.posY < hoverTarget - 0.1) && altitudeHoldControl.value
 
         /* Set velocity */
