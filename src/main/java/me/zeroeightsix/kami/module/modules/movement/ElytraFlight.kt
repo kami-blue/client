@@ -16,8 +16,8 @@ import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.network.play.server.SPacketEntityMetadata
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import java.lang.Math.random
 import kotlin.math.cos
 import kotlin.math.sin
@@ -29,8 +29,6 @@ import kotlin.math.sqrt
  * Updated by dominikaaaa on 26/05/20
  * Updated by pNoName on 28/05/20
  * Updated by Xiaro on 02/07/20
- *
- * Some of Control mode was written by an anonymous donator who didn't wish to be named.
  */
 @Module.Info(
         name = "ElytraFlight",
@@ -187,7 +185,7 @@ class ElytraFlight : Module() {
         if (!mc.player.onGround && outOfDurability && elytraDurability <= 1) {
             event.cancel()
             mc.player.setVelocity(0.0, -0.01, 0.0)
-        } else if (outOfDurability) outOfDurability = false //* Reset if players is on ground or replace with a new elytra *//
+        } else if (outOfDurability) outOfDurability = false /* Reset if players is on ground or replace with a new elytra */
 
         /* Elytra flying status check */
         isFlying = mc.player.isElytraFlying || (mc.player.capabilities.isFlying && mode.value == ElytraFlightMode.CREATIVE)
@@ -220,8 +218,10 @@ class ElytraFlight : Module() {
         var strafeYawDeg = 90.0f * mc.player.movementInput.moveStrafe
         strafeYawDeg *= if (mc.player.movementInput.moveForward != 0.0f) mc.player.movementInput.moveForward * 0.5f else 1.0f
         var yawDeg = mc.player.rotationYaw - strafeYawDeg
+
         yawDeg -= if (mc.player.movementInput.moveForward < 0.0f) 180 else 0
         packetYaw = yawDeg
+
         return Math.toRadians(yawDeg.toDouble())
     }
 
@@ -235,7 +235,7 @@ class ElytraFlight : Module() {
         mc.player.motionZ += mc.player.movementInput.moveForward * cos(yaw) * speedBoost.value / 20
     }
 
-    /* Control/Packet Mode */
+    /* Control and Packet Mode */
     private fun controlMode(event: PlayerTravelEvent) {
         // TODO: Remove leg twitching when standing still
         // TODO: Add dynamic down speed
@@ -313,9 +313,11 @@ class ElytraFlight : Module() {
             mc.player.capabilities.isFlying = false
             return
         }
+
         packetPitch = forwardPitch.value.toFloat()
         mc.player.capabilities.isFlying = true
         mc.player.capabilities.flySpeed = speedCreative.value
+
         val motionY = when {
             isStandingStill -> 0.0
             mc.player.movementInput.jump -> upSpeedCreative.value.toDouble()
@@ -336,6 +338,7 @@ class ElytraFlight : Module() {
             mc.player.motionX = sin(-yaw) * speedPacket.value
             mc.player.motionZ = cos(yaw) * speedPacket.value
         } else mc.player.setVelocity(0.0, 0.0, 0.0)
+
         mc.player.motionY = (if (mc.player.movementInput.sneak) -downSpeedPacket.value else -fallSpeedPacket.value).toDouble()
 
         event.cancel()
@@ -343,7 +346,7 @@ class ElytraFlight : Module() {
 
     override fun onUpdate() {
         /* Continuously update server side rotation */
-        if (mode.value != ElytraFlightMode.BOOST && isFlying && spoofPitch.value ) {
+        if (mode.value != ElytraFlightMode.BOOST && isFlying && spoofPitch.value) {
             mc.player.rotationYaw += random().toFloat() * 0.01f - 0.005f
             mc.player.rotationPitch += random().toFloat() * 0.01f - 0.005f
         }
@@ -364,6 +367,7 @@ class ElytraFlight : Module() {
         mc.player?.let {
             durabilityWarning.value = true
             threshold.value = 5
+
             easyTakeOff.value = true
             timerControl.value = true
 
@@ -383,8 +387,8 @@ class ElytraFlight : Module() {
             minDownSpeedControl.value = 0.5f
             maxDownSpeedControl.value = 2.0f
 
-            speedPacket.value = 1.8f
-            fallSpeedPacket.value = 0.00001f
+            speedCreative.value = 1.8f
+            fallSpeedCreative.value = 0.00001f
             upSpeedCreative.value = 1.0f
             downSpeedCreative.value = 1.0f
 
