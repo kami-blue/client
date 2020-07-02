@@ -148,7 +148,8 @@ class ElytraFlight : Module() {
                     ElytraFlightMode.BOOST -> boostMode()
                     ElytraFlightMode.CONTROL -> controlMode(event)
                     ElytraFlightMode.CREATIVE -> creativeMode()
-                    else -> packetMode(event)
+                    ElytraFlightMode.PACKET -> packetMode(event)
+                    else -> return@EventHook
                 }
             }
         }
