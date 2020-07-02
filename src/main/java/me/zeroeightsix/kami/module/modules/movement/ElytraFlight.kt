@@ -17,6 +17,7 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketPlayerPosLook
+import net.minecraft.network.play.server.SPacketEntityMetadata
 import java.lang.Math.random
 import kotlin.math.cos
 import kotlin.math.sin
@@ -58,9 +59,12 @@ class ElytraFlight : Module() {
     /* Control */
     private val boostPitchControl = register(Settings.integerBuilder("BaseBoostPitch").withRange(0, 90).withValue(20).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val altitudeHoldControl = register(Settings.booleanBuilder("AltitudeHold").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
+    private val dynamicDownSpeed = register(Settings.booleanBuilder("DynamicDownSpeed").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val speedControl = register(Settings.floatBuilder("SpeedC").withValue(1.81f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
     private val fallSpeedControl = register(Settings.floatBuilder("FallSpeedC").withValue(0.00000000000003f).withMinimum(0.0f).withMaximum(0.3f).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
-    private val downSpeedControl = register(Settings.floatBuilder("DownSpeedC").withMaximum(10.0f).withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL }.build())
+    private val downSpeedControl = register(Settings.floatBuilder("DownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && !dynamicDownSpeed.value }.build())
+    private val minDownSpeedControl = register(Settings.floatBuilder("MinDownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(0.5f).withVisibility { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value }.build())
+    private val maxDownSpeedControl = register(Settings.floatBuilder("MaxDownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(2.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value }.build())
 
     /* Creative */
     private val speedCreative = register(Settings.floatBuilder("SpeedCR").withValue(1.8f).withMinimum(0.0f).withVisibility { mode.value == ElytraFlightMode.CREATIVE }.build())
@@ -115,11 +119,17 @@ class ElytraFlight : Module() {
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (!elytraIsEquipped || elytraDurability <= 1 || mc.player == null || !isFlying || !(mode.value == ElytraFlightMode.CREATIVE || mode.value == ElytraFlightMode.CONTROL) || mc.player.isSpectator) return@EventHook
-        if (event.packet is SPacketPlayerPosLook) {
+        if (!elytraIsEquipped || elytraDurability <= 1 || mc.player == null || !isFlying || mode.value == ElytraFlightMode.BOOST || mc.player.isSpectator) return@EventHook
+        if (event.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
             val packet = event.packet as SPacketPlayerPosLook
             packet.pitch = mc.player.rotationPitch
             if (isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) packet.yaw = mc.player.rotationPitch
+        }
+
+        /* Cancels the elytra opening animation */
+        if (event.packet is SPacketEntityMetadata && isPacketFlying) {
+            val packet = event.packet as SPacketEntityMetadata
+            if (packet.entityId == mc.player.getEntityId()) event.cancel()
         }
     })
 
@@ -210,8 +220,8 @@ class ElytraFlight : Module() {
         var strafeYawDeg = 90.0f * mc.player.movementInput.moveStrafe
         strafeYawDeg *= if (mc.player.movementInput.moveForward != 0.0f) mc.player.movementInput.moveForward * 0.5f else 1.0f
         var yawDeg = mc.player.rotationYaw - strafeYawDeg
-        packetYaw = yawDeg
         yawDeg -= if (mc.player.movementInput.moveForward < 0.0f) 180 else 0
+        packetYaw = yawDeg
         return Math.toRadians(yawDeg.toDouble())
     }
 
@@ -237,12 +247,21 @@ class ElytraFlight : Module() {
         val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
         val yaw = getYaw()
 
+        /* Dynamic down speed */
+        val calcDownSpeed = if (dynamicDownSpeed.value) {
+            val min = minDownSpeedControl.value.toDouble()
+            val max = maxDownSpeedControl.value.toDouble()
+            if (mc.player.rotationPitch > 0) {
+                mc.player.rotationPitch / 90.0 * (min.coerceAtLeast(max) - min.coerceAtMost(max)) + min.coerceAtMost(max)
+            } else minDownSpeedControl.value.toDouble()
+        } else downSpeedControl.value.toDouble()
+
         /* Hover */
         if (hoverTarget < 0.0 || moveUp) hoverTarget = mc.player.posY else if (moveDown) hoverTarget = mc.player.posY - downSpeedControl.value
         hoverState = (if (hoverState) mc.player.posY < hoverTarget else mc.player.posY < hoverTarget - 0.1) && altitudeHoldControl.value
 
         /* Set velocity */
-        if (!isStandingStill) {
+        if (!isStandingStillH || moveUp) {
             if ((moveUp || hoverState) && (currentSpeed >= 0.8 || mc.player.motionY > 1.0)) {
                 upwardFlight(currentSpeed, yaw)
             } else if (!isStandingStillH || moveUp) { /* Runs when pressing wasd */
@@ -251,9 +270,9 @@ class ElytraFlight : Module() {
                 mc.player.motionY = -fallSpeedControl.value.toDouble()
                 mc.player.motionZ = cos(yaw) * speedControl.value
             }
-            if (moveDown) mc.player.motionY = -downSpeedControl.value.toDouble() /* Runs when holding shift */
-
         } else mc.player.setVelocity(0.0, 0.0, 0.0) /* Stop moving if no inputs are pressed */
+
+        if (moveDown) mc.player.motionY = -calcDownSpeed /* Runs when holding shift */
 
         event.cancel()
     }
@@ -308,10 +327,8 @@ class ElytraFlight : Module() {
 
     /* Packet Mode */
     private fun packetMode(event: PlayerTravelEvent) {
-        // TODO: Disable the elytra flight view changing
-
-        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
         isPacketFlying = !mc.player.onGround
+        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
         val yaw = getYaw()
 
         /* Set velocity */
@@ -326,7 +343,7 @@ class ElytraFlight : Module() {
 
     override fun onUpdate() {
         /* Continuously update server side rotation */
-        if ((isFlying || isPacketFlying) && mode.value != ElytraFlightMode.BOOST) {
+        if ((mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) && isFlying && spoofPitch.value ) {
             mc.player.rotationYaw += random().toFloat() * 0.01f - 0.005f
             mc.player.rotationPitch += random().toFloat() * 0.01f - 0.005f
         }
@@ -359,9 +376,12 @@ class ElytraFlight : Module() {
 
             boostPitchControl.value = 20
             altitudeHoldControl.value = false
+            dynamicDownSpeed.value = false
             speedControl.value = 1.81f
             fallSpeedControl.value = 0.00000000000003f
             downSpeedControl.value = 1.0f
+            minDownSpeedControl.value = 0.5f
+            maxDownSpeedControl.value = 2.0f
 
             speedPacket.value = 1.8f
             fallSpeedPacket.value = 0.00001f
