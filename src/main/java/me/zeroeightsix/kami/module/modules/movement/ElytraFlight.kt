@@ -28,7 +28,7 @@ import kotlin.math.sqrt
  * Updated by Itistheend on 28/12/19.
  * Updated by dominikaaaa on 26/05/20
  * Updated by pNoName on 28/05/20
- * Updated by Xiaro on 01/07/20
+ * Updated by Xiaro on 02/07/20
  *
  * Some of Control mode was written by an anonymous donator who didn't wish to be named.
  */
@@ -127,7 +127,7 @@ class ElytraFlight : Module() {
         }
 
         /* Cancels the elytra opening animation */
-        if (event.packet is SPacketEntityMetadata && isPacketFlying) {
+        if (event.packet is SPacketEntityMetadata && isPacketFlying && mode.value == ElytraFlightMode.PACKET) {
             val packet = event.packet as SPacketEntityMetadata
             if (packet.entityId == mc.player.getEntityId()) event.cancel()
         }
@@ -343,7 +343,7 @@ class ElytraFlight : Module() {
 
     override fun onUpdate() {
         /* Continuously update server side rotation */
-        if ((mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) && isFlying && spoofPitch.value ) {
+        if (mode.value != ElytraFlightMode.BOOST && isFlying && spoofPitch.value ) {
             mc.player.rotationYaw += random().toFloat() * 0.01f - 0.005f
             mc.player.rotationPitch += random().toFloat() * 0.01f - 0.005f
         }
