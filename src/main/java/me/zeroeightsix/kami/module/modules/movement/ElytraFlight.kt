@@ -123,7 +123,7 @@ class ElytraFlight : Module() {
         if (event.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
             val packet = event.packet as SPacketPlayerPosLook
             packet.pitch = mc.player.rotationPitch
-            if (isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) packet.yaw = mc.player.rotationPitch
+            if (isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) packet.yaw = mc.player.rotationYaw
         }
 
         /* Cancels the elytra opening animation */
