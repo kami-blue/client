@@ -41,13 +41,13 @@ class LagNotifier : Module() {
 
     override fun onRender() {
         if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return
-        if (1000L *  timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
+        if (1000L * timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
             if (!hasUnpaused && pauseBaritone.value) {
                 hasUnpaused = true
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
                 unpause()
             }
-            if (pauseTakeoff.value) takeoffPaused = false
+            takeoffPaused = false
             return
         }
 

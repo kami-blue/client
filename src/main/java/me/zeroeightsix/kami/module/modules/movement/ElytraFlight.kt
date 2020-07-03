@@ -98,11 +98,11 @@ class ElytraFlight : Module() {
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (!elytraIsEquipped || elytraDurability <= 1 || mc.player == null || !isFlying || mode.value == ElytraFlightMode.BOOST || mc.player.isSpectator) return@EventHook
-        if (event.packet is CPacketPlayer) {
+        if (event.packet is CPacketPlayer.Rotation || event.packet is CPacketPlayer.PositionRotation) {
             val packet = event.packet as CPacketPlayer
             if (mode.value != ElytraFlightMode.PACKET) {
                 /* Cancels rotation packets when standing still and not clicking */
-                if (spoofPitch.value && event.packet !is CPacketPlayer.Position && isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) {
+                if (spoofPitch.value && isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) {
                     event.cancel()
                 }
 
@@ -111,7 +111,7 @@ class ElytraFlight : Module() {
                     packet.pitch = packetPitch
                 }
             }
-            if (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) packet.yaw = packetYaw
+            if (mode.value != ElytraFlightMode.CREATIVE) packet.yaw = packetYaw
         }
     })
 
@@ -121,7 +121,6 @@ class ElytraFlight : Module() {
         if (event.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
             val packet = event.packet as SPacketPlayerPosLook
             packet.pitch = mc.player.rotationPitch
-            if (isStandingStill && !mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown) packet.yaw = mc.player.rotationYaw
         }
 
         /* Cancels the elytra opening animation */
@@ -236,10 +235,9 @@ class ElytraFlight : Module() {
         mc.player.motionZ += mc.player.movementInput.moveForward * cos(yaw) * speedBoost.value / 20
     }
 
-    /* Control and Packet Mode */
+    /* Control Mode */
     private fun controlMode(event: PlayerTravelEvent) {
         // TODO: Remove leg twitching when standing still
-        // TODO: Add dynamic down speed
 
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
@@ -306,7 +304,7 @@ class ElytraFlight : Module() {
         mc.player.motionY *= 0.98
         mc.player.motionZ *= 0.99
     }
-    /* End of Control/Packet Mode */
+    /* End of Control Mode */
 
     /* Creative Mode */
     private fun creativeMode() {
