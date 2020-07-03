@@ -104,6 +104,7 @@ dependencies {
     compile group: "org.jetbrains", name: "annotations", version: annotations_version
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: coroutines_version
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: coroutines_version
+    compile 'com.google.cloud:google-cloud-translate:1.95.0'
 }
 
 processResources {
@@ -148,6 +149,7 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
         include(dependency('net.shadowfacts:Forgelin'))
+        include(dependency('com.google.cloud:google-cloud-translate:1.95.0'))
     }
     exclude 'dummyThing' // can someone explain why this is here
     classifier = 'release'
