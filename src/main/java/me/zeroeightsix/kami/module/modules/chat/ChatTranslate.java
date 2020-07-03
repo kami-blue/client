@@ -11,6 +11,9 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
+/**
+ * Created by sourTaste000 on 7/3/2020
+ */
 @SuppressWarnings("FieldMayBeFinal")
 @Module.Info(
         name = "ChatTranslate",
@@ -18,8 +21,6 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
         category = Module.Category.CHAT
 )
 public class ChatTranslate extends Module{
-    private Setting<Boolean> fullChat = register(Settings.b("Translate Everything", false));
-    private Setting<Boolean> dmsOnly = register(Settings.b("Only Translate /msg", true));
     private Setting<Languages> fromLanguage = register(Settings.e("From Language", Languages.TRADITIONAL_CHINESE));
     private Setting<Languages> toLanguage = register(Settings.e("To Language", Languages.ENGLISH));
 
@@ -44,20 +45,20 @@ public class ChatTranslate extends Module{
         }
     }
 
-    @EventHandler
-    public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
-        msg = event.getMessage().getUnformattedText();
-        onUpdate();
-    });
+        @EventHandler
+        public Listener<ClientChatReceivedEvent> listener = new Listener<>(event -> {
+            msg = event.getMessage().getUnformattedText();
+            onUpdate();
+        });
 
     @Override
     public void onUpdate(){
         translation = translate.translate(
                 msg,
-                Translate.TranslateOption.sourceLanguage(String.valueOf(Languages.SIMPLIFIED_CHINESE)),
-                Translate.TranslateOption.targetLanguage(String.valueOf(Languages.ENGLISH)),
+                Translate.TranslateOption.sourceLanguage(String.valueOf(fromLanguage)),
+                Translate.TranslateOption.targetLanguage(String.valueOf(toLanguage)),
                 Translate.TranslateOption.model("base")
         );
-        sendChatMessage(translation.toString());
+        sendChatMessage("Translated text (From " + fromLanguage + " to " + toLanguage + ") " + translation.toString());
     }
 }
