@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.command;
+package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.setting.Setting;
