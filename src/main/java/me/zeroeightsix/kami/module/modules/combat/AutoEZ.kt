@@ -88,11 +88,9 @@ class AutoEZ : Module() {
 
     private fun getText(m: Mode, playerName: String): String {
         return if (m == Mode.CUSTOM) {
-            customText.value.replace("\$NAME", playerName)
-            customText.value.replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+            customText.value.replace("\$NAME", playerName).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
         } else {
-            m.text!!.replace("\$NAME", playerName)
-            m.text!!.replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+            m.text!!.replace("\$NAME", playerName).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
         }
 
 
