@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent
  * @author cookiedragon234
  * Updated by polymer 10 March 2020
  * Updated by dominikaaaa on 12/04/20
+ * Updated by humboldt123 on July 3rd, 2020
  */
 @Module.Info(
         name = "AutoEZ",
@@ -30,14 +31,50 @@ class AutoEZ : Module() {
     @JvmField
 	var customText: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("unchanged").withConsumer { _: String?, _: String? -> }.build())
 
+    var hypixelCensorMessages: Array<String> = arrayOf(
+        "Hey Helper, how play game?",
+        "You’re a great person! Do you want to play some Hypixel games with me?",
+        "Your personality shines brighter than the sun!",
+        "Welcome to the hypixel zoo!",
+        "Maybe we can have a rematch?",
+        "In my free time I like to watch cat videos on youtube",
+        "I heard you like minecraft, so I built a computer so you can minecraft, while minecrafting in your minecraft.",
+        "I like pineapple on my pizza",
+        "I had something to say, then I forgot it.",
+        "Hello everyone! I’m an innocent player who loves everything Hypixel.",
+        "I like Minecraft pvp but you are truly better than me!",
+        "Behold, the great and powerful, my magnificent and almighty nemesis!",
+        "When nothing is right, go left.",
+        "Let’s be friends instead of fighting okay?",
+        "Your Clicks per second are godly.",
+        "If the world in Minecraft is infinite how can the sun revolve around it?",
+        "Pls give me doggo memes!",
+        "Blue is greenier than purple for sure",
+        "I sometimes try to say bad things and then this happens :(",
+        "I have really enjoyed playing with you! <3",
+        "What can’t the Ender Dragon read a book? Because he always starts at the End.",
+        "You are very good at this game friend.",
+        "I like to eat pasta, do you prefer nachos?",
+        "Sometimes I sing soppy, love songs in the car.",
+        "I love the way your hair glistens in the light",
+        "In my free time I like to watch cat videos on youtube",
+        "When I saw the guy with a potion I knew there was trouble brewing.",
+        "I enjoy long walks on the beach and playing Hypixel",
+        "Doin a bamboozle fren.",
+        "I need help, teach me how to play!",
+        "Can you paint with all the colors of the wind"
+    ) // Got these from the forums, kinda based -humboldt123
+
     private var focus: EntityPlayer? = null
     private var hasBeenCombat = 0
 
     enum class Mode {
+
+
         GG("gg, \$NAME"),
         ONTOP("KAMI BLUE on top! ez \$NAME"),
         EZD("You just got ez'd \$NAME"),
-        EZ_HYPIXEL("E Z Win \$NAME"),
+        EZ_HYPIXEL("\$HYPIXEL_MESSAGE \$NAME"),
         NAENAE("You just got naenae'd by kami blue plus, \$NAME"), CUSTOM;
 
         var text: String? = null
@@ -52,7 +89,13 @@ class AutoEZ : Module() {
     private fun getText(m: Mode, playerName: String): String {
         return if (m == Mode.CUSTOM) {
             customText.value.replace("\$NAME", playerName)
-        } else m.text!!.replace("\$NAME", playerName)
+            customText.value.replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+        } else {
+            m.text!!.replace("\$NAME", playerName)
+            m.text!!.replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+        }
+
+
     }
 
     @EventHandler
