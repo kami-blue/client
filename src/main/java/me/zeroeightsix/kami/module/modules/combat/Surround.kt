@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockInteractionHelper
+import me.zeroeightsix.kami.util.CenterPlayer
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.block.Block
 import net.minecraft.block.BlockObsidian
@@ -30,6 +31,7 @@ import kotlin.math.sqrt
  * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
  * Updated by Polymer on 09/01/20
  * Updated by dominikaaaa on 28/01/20
+ * Updated by Xiaro on 7/8/20
  */
 @Module.Info(
         name = "Surround",
@@ -48,7 +50,6 @@ class Surround : Module() {
 
     private val surroundTargets = arrayOf(Vec3d(0.0, 0.0, 0.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0), Vec3d(1.0, 0.0, 0.0), Vec3d(0.0, 0.0, 1.0), Vec3d(-1.0, 0.0, 0.0), Vec3d(0.0, 0.0, -1.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0))
 
-    private var playerPos: Vec3d? = null
     private var basePos: BlockPos? = null
     private var offsetStep = 0
     private var playerHotbarSlot = -1
@@ -59,87 +60,44 @@ class Surround : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player != null && !KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-            if (offsetStep == 0) {
-                basePos = BlockPos(mc.player.positionVector).down()
-                playerHotbarSlot = mc.player.inventory.currentItem
-                if (debugMsgs.value == DebugMsgs.ALL) {
-                    MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
+        if (autoCenter.value && (mc.player.posX != CenterPlayer.getPosX(1.0f) || mc.player.posZ != CenterPlayer.getPosZ(1.0f))) {
+            CenterPlayer.centerPlayer(1.0f)
+            if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
+        } else {
+            if (mc.player != null && !KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
+                if (offsetStep == 0) {
+                    basePos = BlockPos(mc.player.positionVector).down()
+                    playerHotbarSlot = mc.player.inventory.currentItem
+                    if (debugMsgs.value == DebugMsgs.ALL) {
+                        MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
+                    }
+                    if (!spoofHotbar.value) {
+                        lastHotbarSlot = mc.player.inventory.currentItem
+                    }
                 }
-                if (!spoofHotbar.value) {
-                    lastHotbarSlot = mc.player.inventory.currentItem
+                for (i in 0 until Math.floor(blockPerTick.value).toInt()) {
+                    if (debugMsgs.value == DebugMsgs.ALL) {
+                        MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
+                    }
+                    if (offsetStep >= surroundTargets.size) {
+                        endLoop()
+                        return
+                    }
+                    val offset = surroundTargets[offsetStep]
+                    placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
+                    ++offsetStep
                 }
-            }
-            for (i in 0 until Math.floor(blockPerTick.value).toInt()) {
-                if (debugMsgs.value == DebugMsgs.ALL) {
-                    MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
-                }
-                if (offsetStep >= surroundTargets.size) {
-                    endLoop()
-                    return
-                }
-                val offset = surroundTargets[offsetStep]
-                placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
-                ++offsetStep
             }
         }
     }
 
-    /* AutoCenter */
-    private fun centerPlayer(x: Double, y: Double, z: Double) {
-        if (debugMsgs.value == DebugMsgs.ALL && playerPos != null) {
-            MessageSendHelper.sendChatMessage("$chatName Player position is " + playerPos.toString())
-        } else if (debugMsgs.value == DebugMsgs.ALL) {
-            MessageSendHelper.sendChatMessage("$chatName Player position is null")
-        }
-        mc.player.connection.sendPacket(CPacketPlayer.Position(x, y, z, true))
-        mc.player.setPosition(x, y, z)
-    }
-
-    private fun getDst(vec: Vec3d?): Double {
-        return playerPos!!.distanceTo(vec)
-    }
-
-    /* End of AutoCenter */
     public override fun onEnable() {
         if (mc.player == null) return
 
-        /* AutoCenter */
-        val centerPos = mc.player.position
-        playerPos = mc.player.positionVector
-
-        val y = centerPos.getY().toDouble()
-        var x = centerPos.getX().toDouble()
-        var z = centerPos.getZ().toDouble()
-
-        val plusPlus = Vec3d(x + 0.5, y, z + 0.5)
-        val plusMinus = Vec3d(x + 0.5, y, z - 0.5)
-        val minusMinus = Vec3d(x - 0.5, y, z - 0.5)
-        val minusPlus = Vec3d(x - 0.5, y, z + 0.5)
-
         if (autoCenter.value) {
-            if (getDst(plusPlus) < getDst(plusMinus) && getDst(plusPlus) < getDst(minusMinus) && getDst(plusPlus) < getDst(minusPlus)) {
-                x = centerPos.getX() + 0.5
-                z = centerPos.getZ() + 0.5
-                centerPlayer(x, y, z)
-            }
-            if (getDst(plusMinus) < getDst(plusPlus) && getDst(plusMinus) < getDst(minusMinus) && getDst(plusMinus) < getDst(minusPlus)) {
-                x = centerPos.getX() + 0.5
-                z = centerPos.getZ() - 0.5
-                centerPlayer(x, y, z)
-            }
-            if (getDst(minusMinus) < getDst(plusPlus) && getDst(minusMinus) < getDst(plusMinus) && getDst(minusMinus) < getDst(minusPlus)) {
-                x = centerPos.getX() - 0.5
-                z = centerPos.getZ() - 0.5
-                centerPlayer(x, y, z)
-            }
-            if (getDst(minusPlus) < getDst(plusPlus) && getDst(minusPlus) < getDst(plusMinus) && getDst(minusPlus) < getDst(minusMinus)) {
-                x = centerPos.getX() - 0.5
-                z = centerPos.getZ() + 0.5
-                centerPlayer(x, y, z)
-            }
+            CenterPlayer.centerPlayer(0.5f)
+            if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
         }
-        /* End of AutoCenter */
 
         playerHotbarSlot = mc.player.inventory.currentItem
         lastHotbarSlot = -1
