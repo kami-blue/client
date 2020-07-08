@@ -31,7 +31,7 @@ import kotlin.math.sqrt
  * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
  * Updated by Polymer on 09/01/20
  * Updated by dominikaaaa on 28/01/20
- * Updated by Xiaro on 7/8/20
+ * Updated by Xiaro on 08/07/20
  */
 @Module.Info(
         name = "Surround",

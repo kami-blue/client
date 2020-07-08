@@ -27,7 +27,7 @@ import kotlin.math.*
  * Updated by Itistheend on 28/12/19.
  * Updated by pNoName on 28/05/20
  * Updated by dominikaaaa on 06/07/20
- * *Updated by Xiaro on 07/08/20
+ * *Updated by Xiaro on 08/07/20
  */
 @Module.Info(
         name = "ElytraFlight",
