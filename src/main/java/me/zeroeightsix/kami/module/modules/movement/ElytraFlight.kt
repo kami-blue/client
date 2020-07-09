@@ -94,7 +94,6 @@ class ElytraFlight : Module() {
     private var elytraIsEquipped = false
     private var elytraDurability = 0
     private var outOfDurability = false
-    private var previousMode = mode.value
     private var isFlying = false
     private var isPacketFlying = false
     private var isStandingStillH = false
@@ -546,18 +545,15 @@ class ElytraFlight : Module() {
     }
 
     init {
-        defaultSetting.settingListener = SettingListeners { if (defaultSetting.value) defaults() }
-    }
+        defaultSetting.settingListener = SettingListeners {
+            if (defaultSetting.value) defaults()
+        }
 
-    /* Reset isFlying state when switch mode */
-    init {
+        /* Reset isFlying states when switching mode */
         mode.settingListener = SettingListeners {
-            if (mode.value != previousMode) {
-                mc.player.capabilities.isFlying = false
-                isFlying = false
-                isPacketFlying = false
-            }
-            previousMode = mode.value
+            isFlying = false
+            isPacketFlying = false
+            if (mc.player != null) mc.player.capabilities.isFlying = false
         }
     }
 }
