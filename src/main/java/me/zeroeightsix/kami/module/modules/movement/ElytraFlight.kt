@@ -27,7 +27,7 @@ import kotlin.math.*
  * Updated by Itistheend on 28/12/19.
  * Updated by pNoName on 28/05/20
  * Updated by dominikaaaa on 06/07/20
- * *Updated by Xiaro on 08/07/20
+ * Updated by Xiaro on 08/07/20
  */
 @Module.Info(
         name = "ElytraFlight",
@@ -208,7 +208,6 @@ class ElytraFlight : Module() {
 
         /* Elytra flying status check */
         isFlying = mc.player.isElytraFlying || (mc.player.capabilities.isFlying && mode.value == ElytraFlightMode.CREATIVE)
-        isPacketFlying = isPacketFlying && mode.value == ElytraFlightMode.PACKET
 
         /* Movement input check */
         isStandingStillH = mc.player.movementInput.moveForward == 0f && mc.player.movementInput.moveStrafe == 0f
@@ -240,12 +239,12 @@ class ElytraFlight : Module() {
                 autoLanding.value = false
                 return
             }
-            MODULE_MANAGER.getModuleT(LagNotifier::class.java).takeoffPaused -> {
-                holdPlayer(event)
-            }
             checkForLiquid() -> {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
+            }
+            MODULE_MANAGER.getModuleT(LagNotifier::class.java).takeoffPaused -> {
+                holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
                 mc.player.capabilities.isFlying = false
@@ -485,13 +484,6 @@ class ElytraFlight : Module() {
             mc.player.rotationYaw += random().toFloat() * 0.005f - 0.0025f
             mc.player.rotationPitch += random().toFloat() * 0.005f - 0.0025f
         }
-
-        /* Reset isFlying state when switch mode */
-        if (mode.value != previousMode) {
-            mc.player.capabilities.isFlying = false
-            isFlying = false
-        }
-        previousMode = mode.value
     }
 
     override fun onDisable() {
@@ -555,5 +547,17 @@ class ElytraFlight : Module() {
 
     init {
         defaultSetting.settingListener = SettingListeners { if (defaultSetting.value) defaults() }
+    }
+
+    /* Reset isFlying state when switch mode */
+    init {
+        mode.settingListener = SettingListeners {
+            if (mode.value != previousMode) {
+                mc.player.capabilities.isFlying = false
+                isFlying = false
+                isPacketFlying = false
+            }
+            previousMode = mode.value
+        }
     }
 }
