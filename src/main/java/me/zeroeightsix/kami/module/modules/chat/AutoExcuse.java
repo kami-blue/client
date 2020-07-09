@@ -12,6 +12,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.*;
 
 /**
  * @author sourTaste000
+ * @since 7/8/2020
  * I can't believe I'm actually making this
  */
 
@@ -30,7 +31,7 @@ public class AutoExcuse extends Module{
 
     @EventHandler
     public Listener<SPacketUpdateHealth> listener = new Listener<>(event -> {
-        if((mc.player != null) && (mc.player.getHealth() <= 0.0F)){
+        if(mc.player.getHealth() <= 0.0F){
             do {
                 switch (modeSetting.getValue()){
                     case CRYSTAL:
@@ -44,7 +45,7 @@ public class AutoExcuse extends Module{
                                 break;
 
                             case 3:
-                                sendServerMessage("why is my syrround not working");
+                                sendServerMessage("why is my surround not working");
                                 break;
                         }
                         break;
@@ -66,7 +67,7 @@ public class AutoExcuse extends Module{
                         break;
                 }
                 break;
-            }while((mc.player != null) && (mc.player.getHealth() >= 5.0F));
+            }while(mc.player.getHealth() >= 5.0F);
         }
     });
 }
