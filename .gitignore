@@ -317,3 +317,6 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/linux,gradle,eclipse,windows,forgegradle,intellij+all,emacs,vim
 /target/
+
+# macOS system generate files
+.DS_Store

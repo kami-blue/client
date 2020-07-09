@@ -2,18 +2,20 @@ package me.zeroeightsix.kami.module.modules.chat;
 
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import net.minecraft.network.play.server.SPacketUpdateHealth;
+import net.minecraft.client.gui.GuiGameOver;
+
 import java.util.Random;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
 
 /**
  * @author sourTaste000
  * @since 7/8/2020
- * I can't believe I'm actually making this
+ * most :smoothbrain: code ever
  */
 
 @Module.Info(
@@ -21,53 +23,58 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.*;
         description = "Makes an excuse for you when you die",
         category = Module.Category.CHAT
 )
-public class AutoExcuse extends Module{
-    private Setting<Mode> modeSetting = register(Settings.enumBuilder(Mode.class).withName("Mode").withValue(Mode.CRYSTAL).withVisibility(v -> true).build());
-
-    private enum Mode {CRYSTAL, ANARCHY}
-
+public class AutoExcuse extends Module {
     Random rand = new Random();
 
+    private final Setting<Mode> modeSetting = register(Settings.enumBuilder(Mode.class).withName("Mode").withValue(Mode.CRYSTAL).withVisibility(v -> true).build());
 
     @EventHandler
-    public Listener<SPacketUpdateHealth> listener = new Listener<>(event -> {
-        if(mc.player.getHealth() <= 0.0F){
-            do {
-                switch (modeSetting.getValue()){
-                    case CRYSTAL:
-                        switch (rand.nextInt(3)){
-                            case 1:
-                                sendServerMessage("oops i think my autototem is off lol");
-                                break;
+    public Listener<GuiScreenEvent.Displayed> listener = new Listener<>(event -> {
+        if (event.getScreen() instanceof GuiGameOver) {
+            mc.player.respawnPlayer();
+            switch (modeSetting.getValue()) {
+                case CRYSTAL:
+                    switch (rand.nextInt(3)) {
+                        case 0:
+                            sendServerMessage("my ping is so bad");
+                            break;
 
-                            case 2:
-                                sendServerMessage("my crystalaura settings are shit");
-                                break;
+                        case 1:
+                            sendServerMessage("i was changing my config :(");
+                            break;
 
-                            case 3:
-                                sendServerMessage("why is my surround not working");
-                                break;
-                        }
-                        break;
+                        case 2:
+                            sendServerMessage("why did my autototem break");
+                            break;
 
-                    case ANARCHY:
-                        switch (rand.nextInt(3)){
-                            case 1:
-                                sendServerMessage("fucking spawnfags");
-                                break;
+                        case 3:
+                            sendServerMessage("i was desynced");
+                            break;
+                    }
+                    break;
 
-                            case 2:
-                                sendServerMessage("why are you hitting me we are both escaping");
-                                break;
+                case ANARCHY:
+                    switch (rand.nextInt(3)) {
+                        case 0:
+                            sendServerMessage("i hate withers");
+                            break;
 
-                            case 3:
-                                sendServerMessage("ouch i broke my legs");
-                                break;
-                        }
-                        break;
-                }
-                break;
-            }while(mc.player.getHealth() >= 5.0F);
+                        case 1:
+                            sendServerMessage("im trying to escape why did u kill me :((");
+                            break;
+
+                        case 2:
+                            sendServerMessage("can someone give me food");
+                            break;
+
+                        case 3:
+                            sendServerMessage("ouch i broke my legs");
+                            break;
+                    }
+                    break;
+            }
         }
     });
+
+    private enum Mode {CRYSTAL, ANARCHY}
 }
