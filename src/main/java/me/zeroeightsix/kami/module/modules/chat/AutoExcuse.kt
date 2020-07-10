@@ -30,26 +30,24 @@ class AutoExcuse : Module() {
     @EventHandler
     var listener = Listener(EventHook { event: Displayed ->
         if (event.screen is GuiGameOver) {
-            //can't send message when player died
-            mc.player.respawnPlayer()
+            do{
+                when (modeSetting.value) {
+                    Mode.CRYSTAL -> when (rand.nextInt(3)) {
+                        0 -> MessageSendHelper.sendServerMessage("my ping is so bad")
+                        1 -> MessageSendHelper.sendServerMessage("i was changing my config :(")
+                        2 -> MessageSendHelper.sendServerMessage("why did my autototem break")
+                        3 -> MessageSendHelper.sendServerMessage("i was desynced")
+                    }
 
-            //just change the bound to add more
-            when (modeSetting.value) {
-                Mode.CRYSTAL -> when (rand.nextInt(3)) {
-                    0 -> MessageSendHelper.sendServerMessage("my ping is so bad")
-                    1 -> MessageSendHelper.sendServerMessage("i was changing my config :(")
-                    2 -> MessageSendHelper.sendServerMessage("why did my autototem break")
-                    3 -> MessageSendHelper.sendServerMessage("i was desynced")
+                    Mode.ANARCHY -> when (rand.nextInt(3)) {
+                        0 -> MessageSendHelper.sendServerMessage("i hate withers")
+                        1 -> MessageSendHelper.sendServerMessage("im trying to escape why did u kill me :((")
+                        2 -> MessageSendHelper.sendServerMessage("can someone give me food")
+                        3 -> MessageSendHelper.sendServerMessage("ouch i broke my legs")
+                    }
                 }
-
-                Mode.ANARCHY -> when (rand.nextInt(3)) {
-                    0 -> MessageSendHelper.sendServerMessage("i hate withers")
-                    1 -> MessageSendHelper.sendServerMessage("im trying to escape why did u kill me :((")
-                    2 -> MessageSendHelper.sendServerMessage("can someone give me food")
-                    3 -> MessageSendHelper.sendServerMessage("ouch i broke my legs")
-                }
-
-            }
+                break
+            }while(!(mc.player.isDead))
         }
     })
 
