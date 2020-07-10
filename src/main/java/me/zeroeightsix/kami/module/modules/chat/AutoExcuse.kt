@@ -5,8 +5,6 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage
 import net.minecraft.client.gui.GuiGameOver
 import java.util.*
@@ -25,9 +23,7 @@ class AutoExcuse : Module() {
 
     private val rand = Random()
 
-    private val modeSetting: Setting<Mode> = register(Settings.e("Mode", Mode.PVP))
-
-    private val excusesPVP = arrayOf<String>(
+    private val excuses = arrayOf(
             "my ping is so bad", //0
             "i was changing my config :(", //1
             "why did my autototem break", //2
@@ -37,28 +33,14 @@ class AutoExcuse : Module() {
             "lagggg" //6
     )
 
-    private val excusesAnarchy = arrayOf<String>(
-            "i hate withers", //0
-            "im trying to escape why did u kill me :((", //1
-            "ouch i broke my legs", //2
-            "can someone give me food" //3
-    )
-
+    @Suppress("UNREACHABLE_CODE")
     @EventHandler
     var listener = Listener(EventHook { event: Displayed ->
         if (event.screen is GuiGameOver) {
             do {
-                if (modeSetting.value == Mode.PVP) {
-                    sendServerMessage(excusesPVP[rand.nextInt(6)])
-                } else if (modeSetting.value == Mode.ANARCHY) {
-                    sendServerMessage(excusesAnarchy[rand.nextInt(3)])
-                }
+                sendServerMessage(excuses[rand.nextInt(6)])
                 break
             } while (!(mc.player.isDead))
         }
     })
-
-    private enum class Mode {
-        PVP, ANARCHY
-    }
 }
