@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage
 import net.minecraft.client.gui.GuiGameOver
 import java.util.*
 
@@ -25,33 +25,40 @@ class AutoExcuse : Module() {
 
     private val rand = Random()
 
-    private val modeSetting : Setting<Mode> = register(Settings.e("Mode", Mode.CRYSTAL))
+    private val modeSetting: Setting<Mode> = register(Settings.e("Mode", Mode.PVP))
+
+    private val excusesPVP = arrayOf<String>(
+            "my ping is so bad", //0
+            "i was changing my config :(", //1
+            "why did my autototem break", //2
+            "i was desynced", //3
+            "stupid hackers killed me", //4
+            "wow, so many tryhards", //5
+            "lagggg" //6
+    )
+
+    private val excusesAnarchy = arrayOf<String>(
+            "i hate withers", //0
+            "im trying to escape why did u kill me :((", //1
+            "ouch i broke my legs", //2
+            "can someone give me food" //3
+    )
 
     @EventHandler
     var listener = Listener(EventHook { event: Displayed ->
         if (event.screen is GuiGameOver) {
-            do{
-                when (modeSetting.value) {
-                    Mode.CRYSTAL -> when (rand.nextInt(3)) {
-                        0 -> MessageSendHelper.sendServerMessage("my ping is so bad")
-                        1 -> MessageSendHelper.sendServerMessage("i was changing my config :(")
-                        2 -> MessageSendHelper.sendServerMessage("why did my autototem break")
-                        3 -> MessageSendHelper.sendServerMessage("i was desynced")
-                    }
-
-                    Mode.ANARCHY -> when (rand.nextInt(3)) {
-                        0 -> MessageSendHelper.sendServerMessage("i hate withers")
-                        1 -> MessageSendHelper.sendServerMessage("im trying to escape why did u kill me :((")
-                        2 -> MessageSendHelper.sendServerMessage("can someone give me food")
-                        3 -> MessageSendHelper.sendServerMessage("ouch i broke my legs")
-                    }
+            do {
+                if (modeSetting.value == Mode.PVP) {
+                    sendServerMessage(excusesPVP[rand.nextInt(6)])
+                } else if (modeSetting.value == Mode.ANARCHY) {
+                    sendServerMessage(excusesAnarchy[rand.nextInt(3)])
                 }
                 break
-            }while(!(mc.player.isDead))
+            } while (!(mc.player.isDead))
         }
     })
 
     private enum class Mode {
-        CRYSTAL, ANARCHY
+        PVP, ANARCHY
     }
 }
