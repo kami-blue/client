@@ -94,6 +94,7 @@ class ElytraFlight : Module() {
     private var elytraIsEquipped = false
     private var elytraDurability = 0
     private var outOfDurability = false
+    private var wasInLiquid = false
     private var isFlying = false
     private var isPacketFlying = false
     private var isStandingStillH = false
@@ -170,6 +171,8 @@ class ElytraFlight : Module() {
                     else -> return@EventHook
                 }
             }
+        } else if (!outOfDurability) {
+            reset()
         }
     })
     /* End of Event Handlers */
@@ -205,6 +208,13 @@ class ElytraFlight : Module() {
             holdPlayer(event)
         } else if (outOfDurability) outOfDurability = false /* Reset if players is on ground or replace with a new elytra */
 
+        /* wasInLiquid check */
+        if (mc.player.inWater || mc.player.isInLava) {
+            wasInLiquid = true
+        } else if (mc.player.onGround || isFlying || isPacketFlying) {
+            wasInLiquid = false
+        }
+
         /* Elytra flying status check */
         isFlying = mc.player.isElytraFlying || (mc.player.capabilities.isFlying && mode.value == ElytraFlightMode.CREATIVE)
 
@@ -220,6 +230,17 @@ class ElytraFlight : Module() {
             mc.player.prevLimbSwingAmount = 0.0f
             mc.player.limbSwing = 0.0f
             mc.player.limbSwingAmount = 0.0f
+        }
+    }
+
+    private fun reset() {
+        wasInLiquid = false
+        isFlying = false
+        isPacketFlying = false
+        if (mc.player != null) {
+            mc.timer.tickLength = 50.0f
+            mc.player.capabilities.flySpeed = 0.05f
+            mc.player.capabilities.isFlying = false
         }
     }
 
@@ -246,9 +267,7 @@ class ElytraFlight : Module() {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
-                mc.player.capabilities.isFlying = false
-                isFlying = false
-                isPacketFlying = false
+                reset()
                 takeoff(event)
                 return
             }
@@ -276,18 +295,20 @@ class ElytraFlight : Module() {
     private fun takeoff(event: PlayerTravelEvent) {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
-        if (!easyTakeOff.value || lagNotifier.takeoffPaused || mc.player.isInWater || mc.player.isInLava || mc.player.onGround) {
+        if (!easyTakeOff.value || lagNotifier.takeoffPaused || mc.player.onGround) {
             if (lagNotifier.takeoffPaused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
-            mc.timer.tickLength = 50.0f
+            reset()
             return
         }
         if (mc.player.motionY < -0.0) {
-            if (mc.player.posY <= getGroundPosY(false) + 0.8f) {
+            if (mc.player.posY <= getGroundPosY(false) + 0.8f && !wasInLiquid) {
                 mc.timer.tickLength = 25.0f
                 return
             }
-            event.cancel()
-            mc.player.setVelocity(0.0, -0.02, 0.0)
+            if (!wasInLiquid) {
+                event.cancel()
+                mc.player.setVelocity(0.0, -0.02, 0.0)
+            }
             if (timerControl.value) mc.timer.tickLength = 200.0f
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = mc.player.posY + 0.2
@@ -446,7 +467,7 @@ class ElytraFlight : Module() {
     /* Creative Mode */
     private fun creativeMode() {
         if (mc.player.onGround) {
-            mc.player.capabilities.isFlying = false
+            reset()
             return
         }
 
@@ -486,11 +507,7 @@ class ElytraFlight : Module() {
     }
 
     override fun onDisable() {
-        isPacketFlying = false
-        isFlying = false
-        mc.timer.tickLength = 50.0f
-        mc.player.capabilities.flySpeed = 0.05f
-        mc.player.capabilities.isFlying = false
+        reset()
     }
 
     override fun onEnable() {
@@ -551,9 +568,7 @@ class ElytraFlight : Module() {
 
         /* Reset isFlying states when switching mode */
         mode.settingListener = SettingListeners {
-            isFlying = false
-            isPacketFlying = false
-            if (mc.player != null) mc.player.capabilities.isFlying = false
+            reset()
         }
     }
 }
