@@ -63,6 +63,7 @@ class ElytraFlight : Module() {
 
     /* Control */
     private val boostPitchControl = register(Settings.integerBuilder("BaseBoostPitch").withRange(0, 90).withValue(20).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
+    private val lookBoost = register(Settings.booleanBuilder("LegacyLookBoost").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val altitudeHoldControl = register(Settings.booleanBuilder("AltitudeHold").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val dynamicDownSpeed = register(Settings.booleanBuilder("DynamicDownSpeed").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val speedControl = register(Settings.floatBuilder("SpeedC").withMinimum(0.0f).withValue(1.81f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
@@ -401,7 +402,7 @@ class ElytraFlight : Module() {
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
         val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)
-        val moveUp = mc.player.movementInput.jump
+        val moveUp = if (!lookBoost.value) mc.player.movementInput.jump else mc.player.rotationPitch < -10.0f && !isStandingStillH
         val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
 
         /* Dynamic down speed */
@@ -434,7 +435,6 @@ class ElytraFlight : Module() {
     }
 
     private fun upwardFlight(currentSpeed: Double, yaw: Double) {
-        if (autoReset.value) speedPercentage = accelerateStartSpeed.value.toFloat()
         /* Smooth the boost pitch to bypass the pitch limit */
         val targetPitch = max(mc.player.rotationPitch * (90.0f - boostPitchControl.value.toFloat()) / 90.0f - boostPitchControl.value.toFloat(), -90.0f)
         packetPitch = if (mc.player.rotationPitch < 0.0f) {
@@ -538,6 +538,7 @@ class ElytraFlight : Module() {
             downSpeedBoost.value = 1.0f
 
             boostPitchControl.value = 20
+            lookBoost.value = false
             altitudeHoldControl.value = false
             dynamicDownSpeed.value = false
             speedControl.value = 1.81f
