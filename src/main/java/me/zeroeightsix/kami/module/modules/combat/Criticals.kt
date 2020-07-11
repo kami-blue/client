@@ -6,6 +6,9 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.EntityUtil.isLiving
+import me.zeroeightsix.kami.util.EntityUtil.mobTypeSettings
+import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -14,8 +17,9 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent
 /**
  * @author dominikaaaa
  * Thanks cookie for teaching me how dumb minecraft is uwu
- * Updated by Xiaro on 24/06/20
+ * Updated by Xiaro on 10/07/20
  */
+
 @Module.Info(
         name = "Criticals",
         category = Module.Category.COMBAT,
@@ -41,6 +45,7 @@ class Criticals : Module() {
                 mc.player.onCriticalHit(event.target)
             } else if (mode.value == CriticalMode.DELAY && !mc.player.isSprinting && mc.player.getCooledAttackStrength(0.0f) >= 1) {
                 event.isCanceled = true
+                event.target
             } /* Cancel AttackEntityEvent for compatibility with some modules */
         }
     })
@@ -48,7 +53,7 @@ class Criticals : Module() {
     /* Delay mode code is here because packets are sent before AttackEntityEvent is called for some reasons */
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mode.value != CriticalMode.DELAY || !(event.packet is CPacketAnimation || event.packet is CPacketUseEntity)) return@EventHook
+        if (mc.player == null || mode.value != CriticalMode.DELAY || !(event.packet is CPacketAnimation || event.packet is CPacketUseEntity)) return@EventHook
         /* Don't run if player is sprinting or weapon is still in cooldown */
         val shouldDoCritical = !mc.player.isInWater && !mc.player.isInLava && !mc.player.isSprinting && mc.player.onGround && mc.player.getCooledAttackStrength(0.0f) >= 1
 
@@ -57,6 +62,7 @@ class Criticals : Module() {
             val packet = event.packet as CPacketUseEntity
             if (packet.action == CPacketUseEntity.Action.ATTACK) {
                 attackPacket = event.packet as CPacketUseEntity
+                if (!isLiving(attackPacket.getEntityFromWorld(mc.world)!!)) return@EventHook
                 event.cancel()
                 mc.player.jump()
                 delayTick = 1
