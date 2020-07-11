@@ -25,6 +25,7 @@ class FancyChat : Module() {
     private val leet = register(Settings.b("1337", false))
     private val mock = register(Settings.b("mOcK", false))
     private val green = register(Settings.b(">", false))
+    private val blue = register(Settings.b("`", false))
     private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value }.build())
     private val commands = register(Settings.b("Commands", false))
 
@@ -34,11 +35,15 @@ class FancyChat : Module() {
         if (leet.value) string = leetConverter(string)
         if (mock.value) string = mockingConverter(string)
         if (green.value) string = greenConverter(string)
+        if (blue.value) string = blueConverter(string)
         return string
     }
 
     private fun greenConverter(input: String): String {
         return "> $input"
+    }
+    private fun blueConverter(input: String): String {
+        return "`$input"
     }
 
     @EventHandler
@@ -67,6 +72,9 @@ class FancyChat : Module() {
         }
         if (green.value) {
             returned.append(" >")
+        }
+        if (blue.value) {
+            returned.append(" `")
         }
         return returned.toString()
     }
