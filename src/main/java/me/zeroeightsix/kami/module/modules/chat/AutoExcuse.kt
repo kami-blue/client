@@ -24,21 +24,38 @@ class AutoExcuse : Module() {
     private val rand = Random()
 
     private val excuses = arrayOf(
-            "my ping is so bad", //0
-            "i was changing my config :(", //1
-            "why did my autototem break", //2
-            "i was desynced", //3
-            "stupid hackers killed me", //4
-            "wow, so many tryhards", //5
-            "lagggg" //6
+            "sorry, im using ",
+            "my ping is so bad",
+            "i was changing my config :(",
+            "why did my autototem break",
+            "i was desynced",
+            "stupid hackers killed me",
+            "wow, so many tryhards",
+            "lagggg"
     )
 
+    private val clients = arrayOf(
+            "future",
+            "salhack",
+            "impact"
+    )
+
+    private fun getExcuse(): String {
+        val excuse = rand.nextInt(excuses.size)
+        return if (excuse == 0) {
+            excuses[0] + clients.random()
+        } else {
+            excuses[excuse]
+        }
+    }
+
+    /* it's not actually unreachable, thanks intellij */
     @Suppress("UNREACHABLE_CODE")
     @EventHandler
     var listener = Listener(EventHook { event: Displayed ->
         if (event.screen is GuiGameOver) {
             do {
-                sendServerMessage(excuses[rand.nextInt(6)])
+                sendServerMessage(getExcuse())
                 break
             } while (!(mc.player.isDead))
         }
