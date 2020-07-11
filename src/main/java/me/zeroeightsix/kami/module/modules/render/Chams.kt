@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer
 
 /**
  * Created by 086 on 12/12/2017.
+ * Updated by Xiaro on 11/07/20
  */
 @Module.Info(
         name = "Chams",
@@ -23,8 +24,11 @@ class Chams : Module() {
 
         @JvmStatic
         fun renderChams(entity: Entity?): Boolean {
-            return if (entity is EntityPlayer) players.value
-            else mobTypeSettings(entity, true, passive.value, neutral.value, hostile.value)
+            return when (entity) {
+                null -> false
+                is EntityPlayer -> players.value
+                else -> mobTypeSettings(entity, true, passive.value, neutral.value, hostile.value)
+            }
         }
     }
 
