@@ -53,7 +53,7 @@ class Criticals : Module() {
             } else {
                 delayModeAttack(event)
             }
-        } else if (mode.value == CriticalMode.DELAY) {
+        } else if (event.packet is CPacketAnimation && mode.value == CriticalMode.DELAY) {
             delayModeSwing(event)
         }
     })
@@ -82,13 +82,15 @@ class Criticals : Module() {
 
     private fun delayModeSwing(event: PacketEvent) {
         /* Cancels swing packet after attack packet was cancelled */
-        if (delayTick == 1) {
-            swingPacket = event.packet as CPacketAnimation
-            event.cancel()
-        } else if (!sendingPacket) {
-            event.cancel()
-        } else {
-            sendingPacket = false
+        if (delayTick != 0) {
+            if (delayTick == 1) {
+                swingPacket = event.packet as CPacketAnimation
+                event.cancel()
+            } else if (!sendingPacket) {
+                event.cancel()
+            } else {
+                sendingPacket = false
+            }
         }
     }
 
