@@ -13,6 +13,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
  * @author dominikaaaa
  * Updated by dominikaaaa on 13/01/20
  * Updated (slightly) by Dewy on 3rd April 2020
+ * Updated (slightly) by sourTaste000 on 13/7/2020 (legit 3 lines)
  */
 public class DiscordPresence {
     public static DiscordRichPresence presence;
