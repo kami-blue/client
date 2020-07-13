@@ -52,7 +52,12 @@ public class DiscordPresence {
             try {
                 DiscordPresence.rpc.Discord_RunCallbacks();
                 discordRPC = MODULE_MANAGER.getModuleT(DiscordRPC.class);
-                String separator = " | ";
+                String separator;
+                if(discordRPC.line1Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line2Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line3Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line4Setting.getValue() == DiscordRPC.LineInfo.NONE){
+                    separator = " ";
+                } else {
+                    separator = " | ";
+                }
                 details = discordRPC.getLine(discordRPC.line1Setting.getValue()) + separator + discordRPC.getLine(discordRPC.line3Setting.getValue());
                 state = discordRPC.getLine(discordRPC.line2Setting.getValue()) + separator + discordRPC.getLine(discordRPC.line4Setting.getValue());
                 DiscordPresence.presence.details = details;
