@@ -79,15 +79,15 @@ public class DiscordPresence {
     private static String getSeparator(int line) {
         if (line == 0) {
             if (discordRPC.line1Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line3Setting.getValue() == DiscordRPC.LineInfo.NONE) {
-                return " | ";
-            } else {
                 return " ";
+            } else {
+                return " | ";
             }
         } else {
             if (discordRPC.line2Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line4Setting.getValue() == DiscordRPC.LineInfo.NONE) {
-                return " | ";
-            } else {
                 return " ";
+            } else {
+                return " | ";
             }
         }
     }

@@ -23,7 +23,6 @@ import net.minecraft.util.EnumHand
         description = "Discord Rich Presence"
 )
 class DiscordRPC : Module() {
-    private val coordsConfirm = register(Settings.b("CoordsConfirm", false))
     @JvmField
     var line1Setting: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
     @JvmField
@@ -32,6 +31,7 @@ class DiscordRPC : Module() {
     var line2Setting: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
     @JvmField
     var line4Setting: Setting<LineInfo> = register(Settings.e("Line2Right", LineInfo.HEALTH)) // state right
+    private val coordsConfirm = register(Settings.booleanBuilder("CoordsConfirm").withValue(false).withVisibility { showCoordsConfirm() })
 
     enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
@@ -73,6 +73,16 @@ class DiscordRPC : Module() {
 
     override fun onDisable() {
         DiscordPresence.end()
+    }
+
+    private fun showCoordsConfirm(): Boolean {
+        return when {
+            line1Setting.value == LineInfo.COORDS -> true
+            line2Setting.value == LineInfo.COORDS -> true
+            line3Setting.value == LineInfo.COORDS -> true
+            line4Setting.value == LineInfo.COORDS -> true
+            else -> false
+        }
     }
 
     companion object {
