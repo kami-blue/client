@@ -23,6 +23,7 @@ import java.util.Random;
  * TODO: Warn about Forge not installed
  * TODO: Fix images
  * TODO: GUI for all exceptions
+ * TODO: Automatically-closing prompt when downloading
  */
 public class Main extends JPanel {
     private final JButton stableButton;
@@ -34,14 +35,13 @@ public class Main extends JPanel {
         STABLE, BETA
     }
 
-    public static String getMinecraftFolder() {
+    public static String getModsFolder() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getenv("APPDATA") + File.separator + ".minecraft" + File.separator;
         } else if (System.getProperty("os.name").toLowerCase().contains("nux")) {
-            return System.getProperty("user.home") + File.separator + ".minecraft" + File.separator;
+            return System.getProperty("user.home") + "/.minecraft/mods/";
         } else if (System.getProperty("os.name").toLowerCase().contains("darwin") || System.getProperty("os.name").toLowerCase().contains("mac")) {
-            return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support"
-                    + File.separator + "minecraft" + File.separator;
+            return System.getProperty("user.home") + "/Library/Application Support/minecraft/mods";
         } else if (System.getProperty("os.name").toLowerCase().contains("temple")) {
             throw new RuntimeException("They glow in the dark!");
         }
@@ -61,18 +61,23 @@ public class Main extends JPanel {
          */
         if (version == VersionType.STABLE) {
             try {
-                downloadUsingNIO(downloadsAPI[9], getMinecraftFolder() + "mods\\kamiblue-" + downloadsAPI[5] + ".jar");
+                downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (version == VersionType.BETA) {
             try {
-                downloadUsingNIO(downloadsAPI[19], getMinecraftFolder() + "mods\\kamiblue-" + downloadsAPI[15] + ".jar");
+                downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else throw new IllegalStateException("Invalid version type!");
 
+    }
+
+    private static String getFullJarName(String url) {
+        String[] split = url.split("/");
+        return split[split.length - 1];
     }
 
     public static void downloadUsingNIO(String urlStr, String file) throws IOException {
@@ -114,10 +119,10 @@ public class Main extends JPanel {
 
         String installedStable = "The latest stable version of KAMI Blue was installed. You need to have Forge installed " +
                 "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
-                "\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
+                "\nmake sure to delete the already existing KAMI in your mods folder (" + getModsFolder() + ")";
         String installedBeta = "The latest beta version of KAMI Blue was installed. You need to have Forge installed " +
                 "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
-                "\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
+                "\nmake sure to delete the already existing KAMI in your mods (" + getModsFolder() + ")";
 
 
         stableButton.setOpaque(false);
@@ -196,10 +201,10 @@ public class Main extends JPanel {
     public static void main(String[] args) throws IOException {
         System.out.println("ran installer!!!");
 
-        Path modfolder = Paths.get(getMinecraftFolder() + "mods");
+        Path modsFolder = Paths.get(getModsFolder());
 
-        if (Files.notExists(modfolder)) {
-            new File(getMinecraftFolder() + "mods").mkdirs();
+        if (Files.notExists(modsFolder)) {
+            new File(getModsFolder()).mkdirs();
             // make warning about not having forge yada yada
         }
         //  in this space the mods folder is ensured to exist
