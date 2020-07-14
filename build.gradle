@@ -1,5 +1,4 @@
 // forge's stuff
-
 buildscript {
     repositories {
         jcenter()
@@ -17,6 +16,10 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "${kotlin_version}"    }
+}
+
+plugins {
+    id 'java'
 }
 
 apply plugin: 'kotlin'
@@ -70,7 +73,7 @@ repositories {
     }
     maven {
         name = "forgelin-repo"
-        url "http://maven.shadowfacts.net/"
+        url "https://charlie35.xyz/maven/repository/internal" //thanks charlie!
     }
     mavenCentral()
     jcenter()
@@ -96,7 +99,9 @@ dependencies {
     compile 'com.github.kevinsawicki:http-request:http-request-6.0'
     compile 'com.github.cabaletta:baritone:1.2.14'
     compile 'cabaletta:baritone-api:1.2'
+    compile 'com.intellij:forms_rt:7.0.3'
     compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.4"
+  //  compile group: "com.formdev", name:"flatlaf", version: "0.38" doesnt work
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk7", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8", version: kotlin_version
@@ -181,3 +186,13 @@ jar {
 }
 
 build.dependsOn(shadowJar)
+
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'me.humboldt123.installer.Main'
+        )
+    }
+}
+
