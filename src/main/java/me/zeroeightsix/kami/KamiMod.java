@@ -76,7 +76,7 @@ public class KamiMod {
 
     public static final String APP_ID = "638403216278683661";
 
-    private static final String UPDATE_JSON = "https://kamiblue.org/api/v1/downloads.json";
+    public static final String DOWNLOADS_API = "https://kamiblue.org/api/v1/downloads.json";
     public static final String DONATORS_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/donators.json";
     public static final String CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
@@ -280,7 +280,7 @@ public class KamiMod {
             KamiMod.log.info("Attempting KAMI Blue update check...");
 
             JsonParser parser = new JsonParser();
-            String latestVersion = parser.parse(IOUtils.toString(new URL(UPDATE_JSON))).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
+            String latestVersion = parser.parse(IOUtils.toString(new URL(DOWNLOADS_API))).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
 
             isLatest = latestVersion.equals(VER_STABLE);
             latest = latestVersion;

@@ -2,11 +2,11 @@ package me.humboldt123.installer;
 
 import me.zeroeightsix.kami.KamiMod;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -20,12 +20,12 @@ import java.util.Random;
  */
 
 // TODO:
-    //test if already installed
-    //close
-    //fix images
+//test if already installed
+//close
+//fix images
 
 
-public class Main extends JPanel{
+public class Main extends JPanel {
     private JButton jcomp1;
     private JButton jcomp2;
     private JLabel BackgroundPane;
@@ -61,13 +61,13 @@ public class Main extends JPanel{
 
         if (version.equals("stable")) {
             try {
-                downloadUsingNIO(lv[9], getMinecraftFolder()+"mods\\kamiblue-"+lv[5]+".jar");
+                downloadUsingNIO(lv[9], getMinecraftFolder() + "mods\\kamiblue-" + lv[5] + ".jar");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                downloadUsingNIO(lv[19], getMinecraftFolder()+"mods\\kamiblue-"+lv[15]+".jar");
+                downloadUsingNIO(lv[19], getMinecraftFolder() + "mods\\kamiblue-" + lv[15] + ".jar");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -112,8 +112,8 @@ public class Main extends JPanel{
         jcomp1 = new JButton();// ("Stable");
         jcomp2 = new JButton();// ("Nightly");
         Random rand = new Random();
-        String installedStable = "The latest stable version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() +")";
-        String installedBeta = "The latest BETA version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() +")";
+        String installedStable = "The latest stable version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
+        String installedBeta = "The latest BETA version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
 
 
         jcomp1.setOpaque(false);
@@ -124,10 +124,10 @@ public class Main extends JPanel{
         jcomp2.setBorderPainted(false);
 
         //set components properties
-        jcomp1.setToolTipText ("This version of Kami Blue is the latest release with bugfixes and polish.");
-        jcomp2.setToolTipText ("A beta version of Kami; new one every night!");
+        jcomp1.setToolTipText("This version of Kami Blue is the latest release with bugfixes and polish.");
+        jcomp2.setToolTipText("A beta version of Kami; new one every night!");
 
-        URL imageBG = Main.class.getResource("/installer/0"+Integer.toString(rand.nextInt(4))+".png");
+        URL imageBG = Main.class.getResource("/installer/0" + Integer.toString(rand.nextInt(4)) + ".png");
         BackgroundPane = new JLabel(new ImageIcon(ImageIO.read(imageBG)));
         URL imageStable = Main.class.getResource("/installer/stable.png");
         StableButtonImage = new JLabel(new ImageIcon(ImageIO.read(imageStable)));
@@ -139,14 +139,12 @@ public class Main extends JPanel{
         BREAD = new JLabel(new ImageIcon(ImageIO.read(breadimg)));
 
         //adjust size and set layout
-        setPreferredSize(new Dimension (600, 335));
+        setPreferredSize(new Dimension(600, 335));
         setLayout(null);
 
-        //; <- replaces semicolons with this
-
         //add components
-        add (jcomp1);
-        add (jcomp2);
+        add(jcomp1);
+        add(jcomp2);
         add(StableButtonImage);
         add(NightlyButtonImage);
         add(KamiLogo);
@@ -156,20 +154,19 @@ public class Main extends JPanel{
         }
 
 
-
         add(BackgroundPane); // Add this *LAST* it renders over everything else.
 
 
-        StableButtonImage.setBounds (70, 245, 200, 50);
-        jcomp1.setBounds (70, 245, 200, 50);
-        NightlyButtonImage.setBounds (310, 245, 200, 50);
-        jcomp2.setBounds (310, 245, 200, 50);
+        StableButtonImage.setBounds(70, 245, 200, 50);
+        jcomp1.setBounds(70, 245, 200, 50);
+        NightlyButtonImage.setBounds(310, 245, 200, 50);
+        jcomp2.setBounds(310, 245, 200, 50);
         KamiLogo.setBounds(248, 70, 128, 128);
         BREAD.setBounds(200, 150, 128, 128);
         BackgroundPane.setBounds(0, 0, 600, 355);
 
         jcomp1.addActionListener(e -> {
-           System.out.println("Pressed Install Stable Button");
+            System.out.println("Pressed Install Stable Button");
             jcomp1.disable();
             jcomp2.disable();
             StableButtonImage.setOpaque(false);
@@ -201,21 +198,20 @@ public class Main extends JPanel{
         Path modfolder = Paths.get(getMinecraftFolder() + "mods");
 
         if (Files.notExists(modfolder)) {
-            new File(getMinecraftFolder()+"mods").mkdirs();
+            new File(getMinecraftFolder() + "mods").mkdirs();
             // make warning about not having forge yada yada
         }
         //  in this space the mods folder is ensured to exist
 
 
         URL kamiLogo = Main.class.getResource("/installer/kami.png");
-        JFrame frame = new JFrame ("KAMI Blue Installer");
+        JFrame frame = new JFrame("KAMI Blue Installer");
         frame.setIconImage(ImageIO.read(kamiLogo));
-        frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add (new Main());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(new Main());
         frame.pack();
         frame.setResizable(false);
-        frame.setVisible (true);
-
+        frame.setVisible(true);
 
 
     }
