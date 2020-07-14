@@ -6,11 +6,9 @@ import me.zeroeightsix.kami.util.WebHelper;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,15 +25,6 @@ import java.util.Random;
  * TODO: Automatically-closing prompt when downloading
  */
 public class Main extends JPanel {
-    private final JButton stableButton;
-    private final JButton betaButton;
-    private final JLabel stableButtonIcon;
-    private final JLabel betaButtonIcon;
-
-    private enum VersionType {
-        STABLE, BETA
-    }
-
     public static String getModsFolder() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return System.getenv("APPDATA") + File.separator + ".minecraft" + File.separator;
@@ -52,7 +41,7 @@ public class Main extends JPanel {
     /**
      * This wasn't supposed to be hardcoded, but we cannot include gson in the shadowjar because Minecraft already provides it
      * And the installer does not have access to Minecraft's libraries when run, so we are forced to manually parse the json
-     *
+     * <p>
      * 5 = stable name
      * 9 = stable url
      * 15 = beta name
@@ -84,8 +73,8 @@ public class Main extends JPanel {
     }
 
     public Main() throws IOException {
-        stableButton = new JButton();
-        betaButton = new JButton();
+        JButton stableButton = new JButton();
+        JButton betaButton = new JButton();
         Random rand = new Random();
 
         String installedStable = "The latest stable version of KAMI Blue was installed. You need to have Forge installed " +
@@ -103,7 +92,6 @@ public class Main extends JPanel {
         betaButton.setContentAreaFilled(false);
         betaButton.setBorderPainted(false);
 
-        //set components properties
         stableButton.setToolTipText("This version of KAMI Blue is the latest major release");
         betaButton.setToolTipText("A beta version of KAMI Blue, with frequent updates and bug fixes");
 
@@ -111,10 +99,10 @@ public class Main extends JPanel {
         JLabel backgroundPane = new JLabel(new ImageIcon(ImageIO.read(backgroundImage)));
 
         URL stableButtonImage = Main.class.getResource("/installer/stable.png");
-        stableButtonIcon = new JLabel(new ImageIcon(ImageIO.read(stableButtonImage)));
+        JLabel stableButtonIcon = new JLabel(new ImageIcon(ImageIO.read(stableButtonImage)));
 
         URL betaButtonImage = Main.class.getResource("/installer/beta.png");
-        betaButtonIcon = new JLabel(new ImageIcon(ImageIO.read(betaButtonImage)));
+        JLabel betaButtonIcon = new JLabel(new ImageIcon(ImageIO.read(betaButtonImage)));
 
         URL kamiImage = Main.class.getResource("/installer/kami.png");
         JLabel kamiIcon = new JLabel(new ImageIcon(ImageIO.read(kamiImage)));
@@ -188,6 +176,10 @@ public class Main extends JPanel {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
+    }
+
+    private enum VersionType {
+        STABLE, BETA
     }
 }
 
