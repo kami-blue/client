@@ -60,23 +60,27 @@ import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
  * Created by 086 on 7/11/2017.
  * Updated by dominikaaaa on 25/03/19
  * Updated by Dewy on 09/04/2020
+ * Updated by humboldt123 on 7/14/2020.
  */
 @Mod(
         modid = KamiMod.MODID,
         name = KamiMod.MODNAME,
-        version = KamiMod.VER_FULL_BETA
+        version = KamiMod.MODVER
 )
 public class KamiMod {
 
     public static final String MODNAME = "KAMI Blue";
     public static final String MODID = "kamiblue";
-    public static final String VER_FULL_BETA = "v1.1.7-beta"; // this is changed to v1.x.x-commit for debugging by automatic builds
-    public static final String VER_SMALL = "v1.1.7-beta"; // shown to the user, unchanged
-    public static final String VER_STABLE = "v1.1.6"; // used for update checking
+    public static final String MODVER = "v1.1.7-beta"; // this is changed to v1.x.x-commit for debugging during travis releases
+    public static final String MODVERSMALL = "v1.1.7-beta"; // shown to the user
+    public static final String MODVERBROAD = "v1.1.6"; // used for update checking
+
+    public static final String MCVER = "1.12.2";
 
     public static final String APP_ID = "638403216278683661";
 
-    private static final String UPDATE_JSON = "https://kamiblue.org/api/v1/downloads.json";
+    private static final String UPDATE_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/updateChecker.json";
+    public static final String DOWNLOADS_API = "https://kamiblue.org/api/v1/downloads.json"; //current cool and swag v1 api
     public static final String DONATORS_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/donators.json";
     public static final String CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
@@ -127,13 +131,13 @@ public class KamiMod {
     public void postInit(FMLPostInitializationEvent event) {
         setCustomIcons();
         if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
-            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
+            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + MODVERSMALL);
         }
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        log.info("\n\nInitializing " + MODNAME + " " + VER_FULL_BETA);
+        log.info("\n\nInitializing " + MODNAME + " " + MODVER);
 
         MODULE_MANAGER.register();
 
@@ -280,18 +284,18 @@ public class KamiMod {
             KamiMod.log.info("Attempting KAMI Blue update check...");
 
             JsonParser parser = new JsonParser();
-            String latestVersion = parser.parse(IOUtils.toString(new URL(UPDATE_JSON))).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
+            String latestVersion = parser.parse(IOUtils.toString(new URL(UPDATE_JSON))).getAsJsonObject().getAsJsonObject("version").get(MCVER + "-latest").getAsString();
 
-            isLatest = latestVersion.equals(VER_STABLE);
+            isLatest = latestVersion.equals(MODVERBROAD);
             latest = latestVersion;
 
             if (!isLatest) {
-                KamiMod.log.warn("You are running an outdated version of KAMI Blue.\nCurrent: " + VER_STABLE + "\nLatest: " + latestVersion);
+                KamiMod.log.warn("You are running an outdated version of KAMI Blue.\nCurrent: " + MODVERBROAD + "\nLatest: " + latestVersion);
 
                 return;
             }
 
-            KamiMod.log.info("Your KAMI Blue (" + VER_STABLE + ") is up-to-date with the latest stable release.");
+            KamiMod.log.info("Your KAMI Blue (" + MODVERBROAD + ") is up-to-date with the latest stable release.");
         } catch (IOException e) {
             latest = null;
 

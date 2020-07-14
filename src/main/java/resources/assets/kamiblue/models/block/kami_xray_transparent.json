@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "kamiblue:blocks/kami_xray_transparent"
+    }
+}
