@@ -33,7 +33,7 @@ public class DiscordPresence {
         DiscordPresence.presence.startTimestamp = System.currentTimeMillis() / 1000L;
 
         /* update rpc normally */
-        setRpcFromSettings();
+        setRpcFromSettings(true);
 
         /* update rpc while thread isn't interrupted  */
         new Thread(DiscordPresence::setRpcWithDelay, "Discord-RPC-Callback-Handler").start();
