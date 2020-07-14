@@ -36,7 +36,7 @@ public class DiscordPresence {
         setRpcFromSettings();
 
         /* update rpc while thread isn't interrupted  */
-        new Thread(DiscordPresence::setRpcFromSettingsNonInt, "Discord-RPC-Callback-Handler").start();
+        new Thread(DiscordPresence::setRpcWithDelay, "Discord-RPC-Callback-Handler").start();
         KamiMod.log.info("Discord RPC initialised successfully");
     }
 
@@ -48,37 +48,48 @@ public class DiscordPresence {
         DiscordPresence.rpc.Discord_Shutdown();
     }
 
-    private static void setRpcFromSettingsNonInt() {
+    private static void setRpcWithDelay() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                DiscordPresence.rpc.Discord_RunCallbacks();
-                discordRPC = MODULE_MANAGER.getModuleT(DiscordRPC.class);
-                String separator;
-                if(discordRPC.line1Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line2Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line3Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line4Setting.getValue() == DiscordRPC.LineInfo.NONE){
-                    separator = " ";
-                } else {
-                    separator = " | ";
-                }
-                details = discordRPC.getLine(discordRPC.line1Setting.getValue()) + separator + discordRPC.getLine(discordRPC.line3Setting.getValue());
-                state = discordRPC.getLine(discordRPC.line2Setting.getValue()) + separator + discordRPC.getLine(discordRPC.line4Setting.getValue());
-                DiscordPresence.presence.details = details;
-                DiscordPresence.presence.state = state;
-                DiscordPresence.rpc.Discord_UpdatePresence(DiscordPresence.presence);
+                setRpcFromSettings(false);
+            } catch (Exception e2) {
+                e2.printStackTrace();
             }
-            catch (Exception e2) { e2.printStackTrace(); }
-            try { Thread.sleep(4000L); }
-            catch (InterruptedException e3) { e3.printStackTrace(); }
+            try {
+                Thread.sleep(4000L);
+            } catch (InterruptedException e3) {
+                e3.printStackTrace();
+            }
         }
     }
-    private static void setRpcFromSettings() {
+
+    private static void setRpcFromSettings(boolean image) {
         discordRPC = MODULE_MANAGER.getModuleT(DiscordRPC.class);
-        details = discordRPC.getLine(discordRPC.line1Setting.getValue()) + " " + discordRPC.getLine(discordRPC.line3Setting.getValue());
-        state = discordRPC.getLine(discordRPC.line2Setting.getValue()) + " " + discordRPC.getLine(discordRPC.line4Setting.getValue());
+        details = discordRPC.getLine(discordRPC.line1Setting.getValue()) + getSeparator(0) + discordRPC.getLine(discordRPC.line3Setting.getValue());
+        state = discordRPC.getLine(discordRPC.line2Setting.getValue()) + getSeparator(1) + discordRPC.getLine(discordRPC.line4Setting.getValue());
         DiscordPresence.presence.details = details;
         DiscordPresence.presence.state = state;
-        DiscordPresence.presence.largeImageKey = "kami";
-        DiscordPresence.presence.largeImageText = "kamiblue.org";
+        if (image) {
+            DiscordPresence.presence.largeImageKey = "kami";
+            DiscordPresence.presence.largeImageText = "kamiblue.org";
+        }
         DiscordPresence.rpc.Discord_UpdatePresence(DiscordPresence.presence);
+    }
+
+    private static String getSeparator(int line) {
+        if (line == 0) {
+            if (discordRPC.line1Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line3Setting.getValue() == DiscordRPC.LineInfo.NONE) {
+                return " | ";
+            } else {
+                return " ";
+            }
+        } else {
+            if (discordRPC.line2Setting.getValue() == DiscordRPC.LineInfo.NONE || discordRPC.line4Setting.getValue() == DiscordRPC.LineInfo.NONE) {
+                return " | ";
+            } else {
+                return " ";
+            }
+        }
     }
 
     static {
