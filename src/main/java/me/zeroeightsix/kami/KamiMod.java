@@ -76,7 +76,7 @@ public class KamiMod {
 
     public static final String APP_ID = "638403216278683661";
 
-    private static final String UPDATE_JSON = "https://kamiblue.org/latest.json";
+    private static final String UPDATE_JSON = "https://kamiblue.org/api/v1/downloads.json";
     public static final String DONATORS_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/donators.json";
     public static final String CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/assets/assets/assets/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
