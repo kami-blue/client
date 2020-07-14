@@ -16,23 +16,23 @@ import java.nio.file.Paths;
 import java.util.Random;
 
 /**
- * Created by humboldt123 on 7/14/2020.
+ * Created by humboldt123 on 14/07/20
+ * Updated by dominikaaaa on 14/07/20
+ * TODO: Remove old jars and warn
+ * TODO: Close on confirmation of installation
+ * TODO: Warn about Forge not installed
+ * TODO: Fix images
+ * TODO: GUI for all exceptions
  */
-
-// TODO:
-//test if already installed
-//close
-//fix images
-
-
 public class Main extends JPanel {
-    private JButton jcomp1;
-    private JButton jcomp2;
-    private JLabel BackgroundPane;
-    private JLabel StableButtonImage;
-    private JLabel NightlyButtonImage;
-    private JLabel KamiLogo;
-    private JLabel BREAD;
+    private final JButton stableButton;
+    private final JButton betaButton;
+    private final JLabel stableButtonIcon;
+    private final JLabel betaButtonIcon;
+
+    private enum VersionType {
+        STABLE, BETA
+    }
 
     public static String getMinecraftFolder() {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
@@ -45,33 +45,33 @@ public class Main extends JPanel {
         } else if (System.getProperty("os.name").toLowerCase().contains("temple")) {
             throw new RuntimeException("They glow in the dark!");
         }
-        throw new RuntimeException("Cannot find minecraft folder!"); // Add fancy GUI here too~!
+        throw new RuntimeException("Cannot find Minecraft folder!"); // Add fancy GUI here too~!
     }
 
-    public static void downloadKami(String version) {
-        String[] lv = getUrlContents().split("\""); //Thanks to bella for doing this faster than I could in JavaScript.
+    public static void download(VersionType version) {
+        String[] downloadsAPI = getUrlContents(KamiMod.DOWNLOADS_API).split("\"");
         /**
+         * This wasn't supposed to be hardcoded, but we cannot include gson in the shadowjar because Minecraft already provides it
+         * And the installer does not have access to Minecraft's libraries when run, so we are forced to manually parse the json
+         *
          * 5 = stable name
          * 9 = stable url
          * 15 = beta name
          * 19 = beta url
          */
-        //System.out.println("Download " + lv[5] + ": " + lv[9]);
-        //System.out.println("Download " + lv[15] + ": " + lv[19]);
-
-        if (version.equals("stable")) {
+        if (version == VersionType.STABLE) {
             try {
-                downloadUsingNIO(lv[9], getMinecraftFolder() + "mods\\kamiblue-" + lv[5] + ".jar");
+                downloadUsingNIO(downloadsAPI[9], getMinecraftFolder() + "mods\\kamiblue-" + downloadsAPI[5] + ".jar");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        } else if (version == VersionType.BETA) {
             try {
-                downloadUsingNIO(lv[19], getMinecraftFolder() + "mods\\kamiblue-" + lv[15] + ".jar");
+                downloadUsingNIO(downloadsAPI[19], getMinecraftFolder() + "mods\\kamiblue-" + downloadsAPI[15] + ".jar");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        } else throw new IllegalStateException("Invalid version type!");
 
     }
 
@@ -84,11 +84,11 @@ public class Main extends JPanel {
         rbc.close();
     }
 
-    private static String getUrlContents() {
+    private static String getUrlContents(String _url) {
         StringBuilder content = new StringBuilder();
 
         try {
-            URL url = new URL(KamiMod.DOWNLOADS_API);
+            URL url = new URL(_url);
 
             URLConnection urlConnection = url.openConnection();
 
@@ -108,87 +108,88 @@ public class Main extends JPanel {
 
 
     public Main() throws IOException {
-        //construct components
-        jcomp1 = new JButton();// ("Stable");
-        jcomp2 = new JButton();// ("Nightly");
+        stableButton = new JButton();
+        betaButton = new JButton();
         Random rand = new Random();
-        String installedStable = "The latest stable version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
-        String installedBeta = "The latest BETA version of KAMI Blue was installed. You need to have forge installed \nto run it if you do not already. If you wish to install a separate version of KAMI;\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
+
+        String installedStable = "The latest stable version of KAMI Blue was installed. You need to have Forge installed " +
+                "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
+                "\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
+        String installedBeta = "The latest beta version of KAMI Blue was installed. You need to have Forge installed " +
+                "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
+                "\nmake sure to delete the already existing KAMI in your .minecraft folder (" + getMinecraftFolder() + ")";
 
 
-        jcomp1.setOpaque(false);
-        jcomp1.setContentAreaFilled(false);
-        jcomp1.setBorderPainted(false);
-        jcomp2.setOpaque(false);
-        jcomp2.setContentAreaFilled(false);
-        jcomp2.setBorderPainted(false);
+        stableButton.setOpaque(false);
+        stableButton.setContentAreaFilled(false);
+        stableButton.setBorderPainted(false);
+        betaButton.setOpaque(false);
+        betaButton.setContentAreaFilled(false);
+        betaButton.setBorderPainted(false);
 
         //set components properties
-        jcomp1.setToolTipText("This version of Kami Blue is the latest release with bugfixes and polish.");
-        jcomp2.setToolTipText("A beta version of Kami; new one every night!");
+        stableButton.setToolTipText("This version of KAMI Blue is the latest major release");
+        betaButton.setToolTipText("A beta version of KAMI Blue, with frequent updates and bug fixes");
 
-        URL imageBG = Main.class.getResource("/installer/0" + Integer.toString(rand.nextInt(4)) + ".png");
-        BackgroundPane = new JLabel(new ImageIcon(ImageIO.read(imageBG)));
-        URL imageStable = Main.class.getResource("/installer/stable.png");
-        StableButtonImage = new JLabel(new ImageIcon(ImageIO.read(imageStable)));
-        URL imageNightly = Main.class.getResource("/installer/nightly.png");
-        NightlyButtonImage = new JLabel(new ImageIcon(ImageIO.read(imageNightly)));
-        URL imageKamiLogo = Main.class.getResource("/installer/kami.png");
-        KamiLogo = new JLabel(new ImageIcon(ImageIO.read(imageKamiLogo)));
-        URL breadimg = Main.class.getResource("/installer/breaduwu.png");
-        BREAD = new JLabel(new ImageIcon(ImageIO.read(breadimg)));
+        URL backgroundImage = Main.class.getResource("/installer/0" + rand.nextInt(4) + ".png");
+        JLabel backgroundPane = new JLabel(new ImageIcon(ImageIO.read(backgroundImage)));
 
-        //adjust size and set layout
+        URL stableButtonImage = Main.class.getResource("/installer/stable.png");
+        stableButtonIcon = new JLabel(new ImageIcon(ImageIO.read(stableButtonImage)));
+
+        URL betaButtonImage = Main.class.getResource("/installer/beta.png");
+        betaButtonIcon = new JLabel(new ImageIcon(ImageIO.read(betaButtonImage)));
+
+        URL kamiImage = Main.class.getResource("/installer/kami.png");
+        JLabel kamiIcon = new JLabel(new ImageIcon(ImageIO.read(kamiImage)));
+
+        URL breadImage = Main.class.getResource("/installer/breaduwu.png");
+        JLabel breadIcon = new JLabel(new ImageIcon(ImageIO.read(breadImage)));
+
         setPreferredSize(new Dimension(600, 335));
         setLayout(null);
 
-        //add components
-        add(jcomp1);
-        add(jcomp2);
-        add(StableButtonImage);
-        add(NightlyButtonImage);
-        add(KamiLogo);
-        int bread = rand.nextInt(20);
+        add(stableButton);
+        add(betaButton);
+        add(stableButtonIcon);
+        add(betaButtonIcon);
+        add(kamiIcon);
+
+        int bread = rand.nextInt(50);
         if (bread == 1) {
-            add(BREAD); // <@!703341270260514916> (@ them on the kami discord, see who they are)
+            add(breadIcon);
         }
 
+        add(backgroundPane); // Add this *LAST* it renders over everything else.
 
-        add(BackgroundPane); // Add this *LAST* it renders over everything else.
 
+        stableButtonIcon.setBounds(70, 245, 200, 50);
+        stableButton.setBounds(70, 245, 200, 50);
+        betaButtonIcon.setBounds(310, 245, 200, 50);
+        betaButton.setBounds(310, 245, 200, 50);
+        kamiIcon.setBounds(248, 70, 128, 128);
+        breadIcon.setBounds(200, 150, 128, 128);
+        backgroundPane.setBounds(0, 0, 600, 355);
 
-        StableButtonImage.setBounds(70, 245, 200, 50);
-        jcomp1.setBounds(70, 245, 200, 50);
-        NightlyButtonImage.setBounds(310, 245, 200, 50);
-        jcomp2.setBounds(310, 245, 200, 50);
-        KamiLogo.setBounds(248, 70, 128, 128);
-        BREAD.setBounds(200, 150, 128, 128);
-        BackgroundPane.setBounds(0, 0, 600, 355);
-
-        jcomp1.addActionListener(e -> {
-            System.out.println("Pressed Install Stable Button");
-            jcomp1.disable();
-            jcomp2.disable();
-            StableButtonImage.setOpaque(false);
-            NightlyButtonImage.setOpaque(false);
-            downloadKami("stable");
+        stableButton.addActionListener(e -> {
+            stableButton.disable();
+            betaButton.disable();
+            stableButtonIcon.setOpaque(false);
+            betaButtonIcon.setOpaque(false);
+            download(VersionType.STABLE);
             JOptionPane.showMessageDialog(null, installedStable);
             System.exit(0);
         });
 
-        jcomp2.addActionListener(e -> {
-            System.out.println("Pressed Install Nightly Button");
-            jcomp1.disable();
-            jcomp2.disable();
-            StableButtonImage.setOpaque(false);
-            NightlyButtonImage.setOpaque(false);
-            downloadKami("beta");
+        betaButton.addActionListener(e -> {
+            stableButton.disable();
+            betaButton.disable();
+            stableButtonIcon.setOpaque(false);
+            betaButtonIcon.setOpaque(false);
+            download(VersionType.BETA);
             JOptionPane.showMessageDialog(null, installedBeta);
             System.exit(0);
-
         });
-
-
     }
 
 
@@ -203,7 +204,6 @@ public class Main extends JPanel {
         }
         //  in this space the mods folder is ensured to exist
 
-
         URL kamiLogo = Main.class.getResource("/installer/kami.png");
         JFrame frame = new JFrame("KAMI Blue Installer");
         frame.setIconImage(ImageIO.read(kamiLogo));
@@ -212,10 +212,6 @@ public class Main extends JPanel {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
-
-
     }
-
-
 }
 
