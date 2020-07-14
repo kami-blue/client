@@ -145,17 +145,13 @@ public class Installer extends JPanel {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
             } catch (IOException e) {
-                notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
-                e.printStackTrace();
-                System.exit(1);
+                notifyAndExitWeb(e);
             }
         } else if (version == VersionType.BETA) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
             } catch (IOException e) {
-                notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
-                e.printStackTrace();
-                System.exit(1);
+                notifyAndExitWeb(e);
             }
         } else {
             notify("Error when downloading, invalid VersionType entered!");
@@ -195,6 +191,12 @@ public class Installer extends JPanel {
     private static String getFullJarName(String url) {
         String[] split = url.split("/");
         return split[split.length - 1];
+    }
+
+    private void notifyAndExitWeb(Exception e) {
+        notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
+        e.printStackTrace();
+        System.exit(1);
     }
 
     private enum VersionType {
