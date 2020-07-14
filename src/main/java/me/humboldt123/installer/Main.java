@@ -1,6 +1,7 @@
 package me.humboldt123.installer;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.util.WebHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -48,26 +49,28 @@ public class Main extends JPanel {
         throw new RuntimeException("Cannot find Minecraft folder!"); // Add fancy GUI here too~!
     }
 
+    /**
+     * This wasn't supposed to be hardcoded, but we cannot include gson in the shadowjar because Minecraft already provides it
+     * And the installer does not have access to Minecraft's libraries when run, so we are forced to manually parse the json
+     *
+     * 5 = stable name
+     * 9 = stable url
+     * 15 = beta name
+     * 19 = beta url
+     *
+     * @param version which type you want to download, stable or the beta
+     */
     public static void download(VersionType version) {
-        String[] downloadsAPI = getUrlContents(KamiMod.DOWNLOADS_API).split("\"");
-        /**
-         * This wasn't supposed to be hardcoded, but we cannot include gson in the shadowjar because Minecraft already provides it
-         * And the installer does not have access to Minecraft's libraries when run, so we are forced to manually parse the json
-         *
-         * 5 = stable name
-         * 9 = stable url
-         * 15 = beta name
-         * 19 = beta url
-         */
+        String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
         if (version == VersionType.STABLE) {
             try {
-                downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
+                WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (version == VersionType.BETA) {
             try {
-                downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
+                WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,38 +82,6 @@ public class Main extends JPanel {
         String[] split = url.split("/");
         return split[split.length - 1];
     }
-
-    public static void downloadUsingNIO(String urlStr, String file) throws IOException {
-        URL url = new URL(urlStr);
-        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-        rbc.close();
-    }
-
-    private static String getUrlContents(String _url) {
-        StringBuilder content = new StringBuilder();
-
-        try {
-            URL url = new URL(_url);
-
-            URLConnection urlConnection = url.openConnection();
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-            String line;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                content.append(line);
-            }
-            bufferedReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return content.toString();
-    }
-
 
     public Main() throws IOException {
         stableButton = new JButton();
