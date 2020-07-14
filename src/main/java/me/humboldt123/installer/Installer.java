@@ -18,15 +18,12 @@ import java.util.Random;
  * Created by humboldt123 on 14/07/20
  * Updated by dominikaaaa on 14/07/20
  * TODO: Remove old jars and warn
- * TODO: Close on confirmation of installation
  * TODO: Warn about Forge not installed
- * TODO: Fix images
- * TODO: GUI for all exceptions
  * TODO: Automatically-closing prompt when downloading
  */
 public class Installer extends JPanel {
     public static void main(String[] args) throws IOException {
-        System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer");
+        System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer!");
 
         Path modsFolder = Paths.get(getModsFolder());
 
@@ -96,7 +93,7 @@ public class Installer extends JPanel {
         add(kamiIcon);
 
         int bread = rand.nextInt(50);
-        if (bread == 1) {
+        if (bread == 1) { /* easter egg :3 */
             add(breadIcon);
         }
 
@@ -116,7 +113,7 @@ public class Installer extends JPanel {
             stableButtonIcon.setOpaque(false);
             betaButtonIcon.setOpaque(false);
             download(VersionType.STABLE);
-            JOptionPane.showMessageDialog(null, installedStable);
+            notify(installedStable);
             System.exit(0);
         });
 
@@ -126,7 +123,7 @@ public class Installer extends JPanel {
             stableButtonIcon.setOpaque(false);
             betaButtonIcon.setOpaque(false);
             download(VersionType.BETA);
-            JOptionPane.showMessageDialog(null, installedBeta);
+            notify(installedBeta);
             System.exit(0);
         });
     }
@@ -142,22 +139,36 @@ public class Installer extends JPanel {
      *
      * @param version which type you want to download, stable or the beta
      */
-    public static void download(VersionType version) {
+    public void download(VersionType version) {
         String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
         if (version == VersionType.STABLE) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
             } catch (IOException e) {
+                notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
                 e.printStackTrace();
+                System.exit(1);
             }
         } else if (version == VersionType.BETA) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
             } catch (IOException e) {
+                notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
                 e.printStackTrace();
+                System.exit(1);
             }
-        } else throw new IllegalStateException("Invalid version type!");
+        } else {
+            notify("Error when downloading, invalid VersionType entered!");
+            throw new IllegalStateException();
+        }
 
+    }
+
+    /**
+     * @param message that you want to display to the user
+     */
+    private static void notify(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 
     /**
@@ -173,7 +184,8 @@ public class Installer extends JPanel {
         } else if (System.getProperty("os.name").toLowerCase().contains("temple")) {
             throw new RuntimeException("They glow in the dark!");
         }
-        throw new RuntimeException("Cannot find Minecraft folder!"); // Add fancy GUI here too~!
+        notify("Couldn't detect Minecraft folder, not on standard *NIX / OSX / Windows. Report this to the developers!");
+        throw new RuntimeException("Cannot find Minecraft folder!");
     }
 
     /**
