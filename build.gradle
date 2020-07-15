@@ -185,7 +185,7 @@ build.dependsOn(shadowJar)
 jar {
     manifest {
         attributes(
-                'Main-Class': 'me.humboldt123.installer.Installer'
+                'Main-Class': 'me.zeroeightsix.installer.Installer'
         )
     }
 }

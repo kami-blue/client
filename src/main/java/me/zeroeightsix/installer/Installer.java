@@ -1,4 +1,4 @@
-package me.humboldt123.installer;
+package me.zeroeightsix.installer;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.FolderHelper;
