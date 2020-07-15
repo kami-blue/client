@@ -1,5 +1,6 @@
 package me.humboldt123.installer;
 
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.FolderHelper;
 import me.zeroeightsix.kami.util.OperatingSystemHelper;
@@ -17,7 +18,6 @@ import java.util.Random;
  * Created by humboldt123 on 14/07/20
  * Updated by dominikaaaa on 14/07/20
  * TODO: Remove old jars and warn
- * TODO: Warn about Forge not installed
  */
 public class Installer extends JPanel {
     public static void main(String[] args) throws IOException {
@@ -25,6 +25,8 @@ public class Installer extends JPanel {
 
         /* ensure mods exists */
         new File(getModsFolder()).mkdirs();
+
+        boolean hasForge = checkForForge();
 
         URL kamiLogo = Installer.class.getResource("/installer/kami.png");
         JFrame frame = new JFrame("KAMI Blue Installer");
@@ -34,6 +36,11 @@ public class Installer extends JPanel {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
+
+        if (!hasForge) {
+            notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use KAMI Blue. " +
+                    "Head to https://kamiblue.org/faq to get instructions for installing Forge");
+        }
     }
 
     /**
@@ -132,7 +139,7 @@ public class Installer extends JPanel {
      *
      * @param version which type you want to download, stable or the beta
      */
-    public void download(VersionType version) {
+    private void download(VersionType version) {
         final JDialog[] dialog = {null};
         new Thread(() -> {
             dialog[0] = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
@@ -165,10 +172,31 @@ public class Installer extends JPanel {
     }
 
     /**
+     * Checks if Forge is installed
+     * @return true if Forge is installed
+     */
+    private static boolean checkForForge() {
+        File ver = new File(getVersionsFolder());
+        File[] files = ver.listFiles();
+        boolean found = false;
+
+        for (File file : files) {
+            boolean match = file.getName().matches(".*1.12.2.*[Ff]orge.*");
+            if (match) found = true;
+        }
+
+        return found;
+    }
+
+    /**
      * @param message that you want to display to the user
      */
     private static void notify(String message) {
         JOptionPane.showMessageDialog(null, message);
+    }
+
+    private static String getVersionsFolder() {
+        return FolderHelper.INSTANCE.getVersionsFolder(OperatingSystemHelper.INSTANCE.getOS());
     }
 
     private static String getModsFolder() {
