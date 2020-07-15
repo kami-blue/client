@@ -1,6 +1,5 @@
 package me.humboldt123.installer;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.FolderHelper;
 import me.zeroeightsix.kami.util.OperatingSystemHelper;
@@ -12,12 +11,12 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * Created by humboldt123 on 14/07/20
- * Updated by dominikaaaa on 14/07/20
- * TODO: Remove old jars and warn
+ * Rewritten almost entirely by dominikaaaa on 14/07/20
  */
 public class Installer extends JPanel {
     public static void main(String[] args) throws IOException {
@@ -25,8 +24,6 @@ public class Installer extends JPanel {
 
         /* ensure mods exists */
         new File(getModsFolder()).mkdirs();
-
-        boolean hasForge = checkForForge();
 
         URL kamiLogo = Installer.class.getResource("/installer/kami.png");
         JFrame frame = new JFrame("KAMI Blue Installer");
@@ -37,9 +34,17 @@ public class Installer extends JPanel {
         frame.setResizable(false);
         frame.setVisible(true);
 
+        boolean hasForge = checkForForge();
+        ArrayList<File> kamiJars = getKamiJars();
+
         if (!hasForge) {
             notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use KAMI Blue. " +
                     "Head to https://kamiblue.org/faq to get instructions for installing Forge");
+        }
+        if (kamiJars != null) {
+            notify("Attention! It looks like you had KAMI Blue installed before. Closing this popup will delete the older versions, " +
+                    "so if you want to save those jars you should go and make a copy somewhere else");
+            deleteKamiJars(kamiJars);
         }
     }
 
@@ -169,6 +174,37 @@ public class Installer extends JPanel {
             throw new IllegalStateException();
         }
 
+    }
+
+    /**
+     * Deletes all the older KAMI Jars
+     * @param files list of KAMI jar Files
+     */
+    private static void deleteKamiJars(ArrayList<File> files) {
+        for (File file : files) {
+            file.delete();
+        }
+    }
+
+    /**
+     * @return null if there were no KAMI jars, otherwise returns a list of files to delete
+     */
+    private static ArrayList<File> getKamiJars() {
+        File mods = new File(getModsFolder());
+        File[] files = mods.listFiles();
+        ArrayList<File> foundFiles = new ArrayList<>();
+        boolean found = false;
+
+        for (File file : files) {
+            boolean match = file.getName().matches(".*[Kk][Aa][Mm][Ii].*");
+            if (match) {
+                foundFiles.add(file);
+                found = true;
+            }
+        }
+
+        if (found) return foundFiles;
+        else return null;
     }
 
     /**
