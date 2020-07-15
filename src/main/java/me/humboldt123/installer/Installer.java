@@ -19,6 +19,8 @@ import java.util.Random;
  * Rewritten almost entirely by dominikaaaa on 14/07/20
  */
 public class Installer extends JPanel {
+    String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
+
     public static void main(String[] args) throws IOException {
         System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer!");
 
@@ -56,8 +58,8 @@ public class Installer extends JPanel {
         JButton betaButton = new JButton();
         Random rand = new Random();
 
-        String installedStable = "The latest stable version of KAMI Blue was installed.";
-        String installedBeta = "The latest beta version of KAMI Blue was installed.";
+        String installedStable = "The latest stable (" + downloadsAPI[5] + ") version of KAMI Blue was installed.";
+        String installedBeta = "The latest beta (" + downloadsAPI[15] + ") version of KAMI Blue was installed.";
 
         stableButton.setOpaque(false);
         stableButton.setContentAreaFilled(false);
@@ -152,7 +154,6 @@ public class Installer extends JPanel {
 
         /* please ignore the clusterfuck of code that this is */
         System.out.println(KamiMod.MODNAME + " download started!");
-        String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
         if (version == VersionType.STABLE) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
