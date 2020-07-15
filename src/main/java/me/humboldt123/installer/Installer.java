@@ -56,12 +56,8 @@ public class Installer extends JPanel {
         JButton betaButton = new JButton();
         Random rand = new Random();
 
-        String installedStable = "The latest stable version of KAMI Blue was installed. You need to have Forge installed " +
-                "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
-                "\nmake sure to delete the already existing KAMI in your mods folder (" + getModsFolder() + ")";
-        String installedBeta = "The latest beta version of KAMI Blue was installed. You need to have Forge installed " +
-                "\nto run it if you do not already. If you wish to install a separate version of KAMI;" +
-                "\nmake sure to delete the already existing KAMI in your mods (" + getModsFolder() + ")";
+        String installedStable = "The latest stable version of KAMI Blue was installed.";
+        String installedBeta = "The latest beta version of KAMI Blue was installed.";
 
         stableButton.setOpaque(false);
         stableButton.setContentAreaFilled(false);
