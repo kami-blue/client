@@ -11,9 +11,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Random;
 
 /**
@@ -21,7 +18,6 @@ import java.util.Random;
  * Updated by dominikaaaa on 14/07/20
  * TODO: Remove old jars and warn
  * TODO: Warn about Forge not installed
- * TODO: Progress bar
  */
 public class Installer extends JPanel {
     public static void main(String[] args) throws IOException {
@@ -137,19 +133,27 @@ public class Installer extends JPanel {
      * @param version which type you want to download, stable or the beta
      */
     public void download(VersionType version) {
+        final JDialog[] dialog = {null};
+        new Thread(() -> {
+            dialog[0] = new JOptionPane("KAMI Blue is currently being downloaded, please wait", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
+            dialog[0].show();
+//            notify("KAMI Blue is currently being downloaded, please wait")
+        }).start();
+
+        System.out.println(KamiMod.MODNAME + " download started!");
         String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
         if (version == VersionType.STABLE) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
-            } catch (IOException e) {
-                notifyAndExitWeb(e);
-            }
+                dialog[0].hide();
+                System.out.println(KamiMod.MODNAME + " download finished!");
+            } catch (IOException e) { notifyAndExitWeb(e); }
         } else if (version == VersionType.BETA) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
-            } catch (IOException e) {
-                notifyAndExitWeb(e);
-            }
+                dialog[0].hide();
+                System.out.println(KamiMod.MODNAME + " download finished!");
+            } catch (IOException e) { notifyAndExitWeb(e); }
         } else {
             notify("Error when downloading, invalid VersionType entered!");
             throw new IllegalStateException();
