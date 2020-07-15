@@ -17,6 +17,7 @@ import java.util.Random;
 /**
  * Created by humboldt123 on 14/07/20
  * Rewritten almost entirely by dominikaaaa on 14/07/20
+ * Added more background images by humboldt123 on 15/08/20
  */
 public class Installer extends JPanel {
     String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
@@ -71,7 +72,7 @@ public class Installer extends JPanel {
         stableButton.setToolTipText("This version of KAMI Blue is the latest major release");
         betaButton.setToolTipText("A beta version of KAMI Blue, with frequent updates and bug fixes");
 
-        URL backgroundImage = Installer.class.getResource("/installer/0" + rand.nextInt(4) + ".png");
+        URL backgroundImage = Installer.class.getResource("/installer/0" + rand.nextInt(7) + ".png");
         JLabel backgroundPane = new JLabel(new ImageIcon(ImageIO.read(backgroundImage)));
 
         URL stableButtonImage = Installer.class.getResource("/installer/stable.png");

@@ -4,3 +4,6 @@ Castle - Minecraft Screenshot
 Lo Poly Island - Render by Humboldt123
 Parlor - Screenshot (with Shaders) by Ratthew_
 World - Minecraft Screenshot
+Oceanicwave - Render by Humboldt123
+Odyssey Sans Quire - Sky Islands from Odyssey (without main character)
+Stellar Afterlife - Render by Humboldt123
