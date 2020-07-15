@@ -92,11 +92,11 @@ public class Installer extends JPanel {
 
         add(backgroundPane); // Add this *LAST* so renders over everything else.
 
-        stableButtonIcon.setBounds(70, 245, 200, 50);
-        stableButton.setBounds(70, 245, 200, 50);
+        stableButtonIcon.setBounds(90, 245, 200, 50);
+        stableButton.setBounds(90, 245, 200, 50);
         betaButtonIcon.setBounds(310, 245, 200, 50);
         betaButton.setBounds(310, 245, 200, 50);
-        kamiIcon.setBounds(248, 70, 128, 128);
+        kamiIcon.setBounds(236, 70, 128, 128);
         breadIcon.setBounds(200, 150, 128, 128);
         backgroundPane.setBounds(0, 0, 600, 355);
 
@@ -135,11 +135,14 @@ public class Installer extends JPanel {
     public void download(VersionType version) {
         final JDialog[] dialog = {null};
         new Thread(() -> {
-            dialog[0] = new JOptionPane("KAMI Blue is currently being downloaded, please wait", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
+            dialog[0] = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
+            dialog[0].setResizable(false);
+            dialog[0].setSize(300, 0);
             dialog[0].show();
 //            notify("KAMI Blue is currently being downloaded, please wait")
         }).start();
 
+        /* please ignore the clusterfuck of code that this is */
         System.out.println(KamiMod.MODNAME + " download started!");
         String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
         if (version == VersionType.STABLE) {
