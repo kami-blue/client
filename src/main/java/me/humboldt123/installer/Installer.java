@@ -1,6 +1,8 @@
 package me.humboldt123.installer;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.util.FolderHelper;
+import me.zeroeightsix.kami.util.OperatingSystemHelper;
 import me.zeroeightsix.kami.util.WebHelper;
 
 import javax.imageio.ImageIO;
@@ -19,19 +21,14 @@ import java.util.Random;
  * Updated by dominikaaaa on 14/07/20
  * TODO: Remove old jars and warn
  * TODO: Warn about Forge not installed
- * TODO: Automatically-closing prompt when downloading
+ * TODO: Progress bar
  */
 public class Installer extends JPanel {
     public static void main(String[] args) throws IOException {
         System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer!");
 
-        Path modsFolder = Paths.get(getModsFolder());
-
-        if (Files.notExists(modsFolder)) {
-            new File(getModsFolder()).mkdirs();
-            // make warning about not having forge yada yada
-        }
-        //  in this space the mods folder is ensured to exist
+        /* ensure mods exists */
+        new File(getModsFolder()).mkdirs();
 
         URL kamiLogo = Installer.class.getResource("/installer/kami.png");
         JFrame frame = new JFrame("KAMI Blue Installer");
@@ -167,21 +164,12 @@ public class Installer extends JPanel {
         JOptionPane.showMessageDialog(null, message);
     }
 
-    /**
-     * @return the minecraft/mods folder specific to the OS
-     */
     private static String getModsFolder() {
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            return System.getenv("APPDATA") + File.separator + ".minecraft" + File.separator;
-        } else if (System.getProperty("os.name").toLowerCase().contains("nux")) {
-            return System.getProperty("user.home") + "/.minecraft/mods/";
-        } else if (System.getProperty("os.name").toLowerCase().contains("darwin") || System.getProperty("os.name").toLowerCase().contains("mac")) {
-            return System.getProperty("user.home") + "/Library/Application Support/minecraft/mods";
-        } else if (System.getProperty("os.name").toLowerCase().contains("temple")) {
-            throw new RuntimeException("They glow in the dark!");
-        }
-        notify("Couldn't detect Minecraft folder, not on standard *NIX / OSX / Windows. Report this to the developers!");
-        throw new RuntimeException("Cannot find Minecraft folder!");
+        return FolderHelper.INSTANCE.getModsFolder(OperatingSystemHelper.INSTANCE.getOS());
+    }
+
+    private static String getMinecraftFolder() {
+        return FolderHelper.INSTANCE.getMinecraftFolder(OperatingSystemHelper.INSTANCE.getOS());
     }
 
     /**
