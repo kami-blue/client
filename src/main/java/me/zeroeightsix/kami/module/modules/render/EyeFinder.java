@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import net.minecraft.client.Minecraft;
@@ -35,11 +35,11 @@ public class EyeFinder extends Module {
     @Override
     public void onWorldRender(RenderEvent event) {
         mc.world.loadedEntityList.stream()
-                .filter(EntityUtil::isLiving)
+                .filter(EntityUtils::isLiving)
                 .filter(entity -> mc.player != entity)
                 .map(entity -> (EntityLivingBase) entity)
                 .filter(entityLivingBase -> !entityLivingBase.isDead)
-                .filter(entity -> (players.getValue() && entity instanceof EntityPlayer) || (EntityUtil.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue())))
+                .filter(entity -> (players.getValue() && entity instanceof EntityPlayer) || (EntityUtils.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue())))
                 .forEach(this::drawLine);
     }
 

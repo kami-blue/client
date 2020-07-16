@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.MathsUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorse;
@@ -54,7 +54,7 @@ public class MobOwner extends Module {
                 if (apiRequests > 10) {
                     return "Too many API requests";
                 }
-                cachedUUIDs.put(uuid, Objects.requireNonNull(EntityUtil.getNameFromUUID(uuid)).replace("\"", ""));
+                cachedUUIDs.put(uuid, Objects.requireNonNull(EntityUtils.getNameFromUUID(uuid)).replace("\"", ""));
                 apiRequests++;
             } catch (IllegalStateException illegal) { /* this means the json parsing failed meaning the UUID is invalid */
                 cachedUUIDs.put(uuid, invalidText);

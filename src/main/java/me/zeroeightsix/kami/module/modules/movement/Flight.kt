@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil
+import me.zeroeightsix.kami.util.EntityUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.network.play.client.CPacketPlayer.PositionRotation
 
@@ -58,8 +58,8 @@ class Flight : Module() {
                 }
                 if (angle != -1 && (forward || left || right || back)) {
                     val yaw = mc.player.rotationYaw + angle
-                    mc.player.motionX = EntityUtil.getRelativeX(yaw) * 0.2f
-                    mc.player.motionZ = EntityUtil.getRelativeZ(yaw) * 0.2f
+                    mc.player.motionX = EntityUtils.getRelativeX(yaw) * 0.2f
+                    mc.player.motionZ = EntityUtils.getRelativeZ(yaw) * 0.2f
                 }
 
                 mc.player.motionY = 0.0

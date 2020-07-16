@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.render.PlayerModel;
-import me.zeroeightsix.kami.module.modules.render.Tracers;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.*;
@@ -41,7 +40,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
-import static me.zeroeightsix.kami.util.EntityUtil.calculateLookAt;
+import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
@@ -241,7 +240,7 @@ public class CrystalAura extends Module {
         if (players.getValue()) {
             entities.addAll(mc.world.playerEntities.stream().filter(entityPlayer -> !Friends.isFriend(entityPlayer.getName())).collect(Collectors.toList()));
         }
-        entities.addAll(mc.world.loadedEntityList.stream().filter(entity -> EntityUtil.isLiving(entity) && (EntityUtil.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()))).collect(Collectors.toList()));
+        entities.addAll(mc.world.loadedEntityList.stream().filter(entity -> EntityUtils.isLiving(entity) && (EntityUtils.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()))).collect(Collectors.toList()));
 
         BlockPos q = null;
         double damage = .5;
@@ -356,7 +355,7 @@ public class CrystalAura extends Module {
             KamiTessellator.drawBox(render, colour, GeometryMasks.Quad.ALL);
             KamiTessellator.release();
             if (renderEnt != null && tracer.getValue()) {
-                Vec3d p = EntityUtil.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
+                Vec3d p = EntityUtils.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
                 float rL = 1;
                 float gL = 1;
                 float bL = 1;

@@ -6,8 +6,8 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockInteractionHelper
-import me.zeroeightsix.kami.util.EntityUtil
+import me.zeroeightsix.kami.util.BlockUtils
+import me.zeroeightsix.kami.util.EntityUtils
 import net.minecraft.block.Block
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling
@@ -64,13 +64,13 @@ class Scaffold : Module() {
         shouldSlow = false
 
         val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value
-        var vec3d = EntityUtil.getInterpolatedPos(mc.player, ticks.value.toFloat())
+        var vec3d = EntityUtils.getInterpolatedPos(mc.player, ticks.value.toFloat())
 
-        if (modeSetting.value == Mode.LEGIT) vec3d = EntityUtil.getInterpolatedPos(mc.player, 0f)
+        if (modeSetting.value == Mode.LEGIT) vec3d = EntityUtils.getInterpolatedPos(mc.player, 0f)
 
         val blockPos = BlockPos(vec3d).down()
         val belowBlockPos = blockPos.down()
-        val legitPos = BlockPos(EntityUtil.getInterpolatedPos(mc.player, 2f))
+        val legitPos = BlockPos(EntityUtils.getInterpolatedPos(mc.player, 2f))
 
         /* when legitBridge is enabled */
         /* check if block behind player is air or other replaceable block and if it is, make the player crouch */
@@ -94,10 +94,10 @@ class Scaffold : Module() {
         setSlotToBlocks(belowBlockPos)
 
         /* check if we don't have a block adjacent to the blockPos */
-        if (!BlockInteractionHelper.checkForNeighbours(blockPos)) return
+        if (!BlockUtils.checkForNeighbours(blockPos)) return
 
         /* place the block */
-        if (placeBlocks.value) BlockInteractionHelper.placeBlockScaffold(blockPos)
+        if (placeBlocks.value) BlockUtils.placeBlockScaffold(blockPos)
 
         /* Reset the slot */
         if (!holding) mc.player.inventory.currentItem = oldSlot
@@ -156,7 +156,7 @@ class Scaffold : Module() {
         if (stack == ItemStack.EMPTY || stack.getItem() !is ItemBlock) return false
 
         val block = (stack.getItem() as ItemBlock).block
-        if (BlockInteractionHelper.blackList.contains(block) || block is BlockContainer) return false
+        if (BlockUtils.blackList.contains(block) || block is BlockContainer) return false
 
         /* filter out non-solid blocks */
         if (!Block.getBlockFromItem(stack.getItem()).defaultState.isFullBlock) return false

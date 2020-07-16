@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.BlockInteractionHelper.*;
+import static me.zeroeightsix.kami.util.BlockUtils.*;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**

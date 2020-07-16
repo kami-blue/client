@@ -1,13 +1,11 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.MathsUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.AbstractHorse;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
@@ -38,7 +36,7 @@ public class EntityStatsCommand extends Command {
             String builder = "&6Entity Statistics:" + "\n&cMax Health: " + maxHealth +
                       "\n&cSpeed: " + speed +
                       "\n&cJump: " + jump +
-                      "\n&cOwner: " + Objects.requireNonNull(EntityUtil.getNameFromUUID(ownerId)).replace("\"", "");
+                      "\n&cOwner: " + Objects.requireNonNull(EntityUtils.getNameFromUUID(ownerId)).replace("\"", "");
             sendChatMessage(builder);
         } else if (mc.player.getRidingEntity() instanceof EntityLivingBase) {
             EntityLivingBase entity = (EntityLivingBase) mc.player.getRidingEntity();

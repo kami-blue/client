@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.ShaderUniform;
@@ -54,7 +54,7 @@ public class ESP extends Module {
                 float viewerYaw = Wrapper.getMinecraft().getRenderManager().playerViewY;
 
                 mc.world.loadedEntityList.stream()
-                        .filter(EntityUtil::isLiving)
+                        .filter(EntityUtils::isLiving)
                         .filter(entity -> {
                             if (entity.isInvisible()) {
                                 return renderInvis.getValue();
@@ -64,10 +64,10 @@ public class ESP extends Module {
                         .filter(entity -> mc.player != entity)
                         .map(entity -> (EntityLivingBase) entity)
                         .filter(entityLivingBase -> !entityLivingBase.isDead)
-                        .filter(entity -> (players.getValue() && entity instanceof EntityPlayer) || (EntityUtil.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue())))
+                        .filter(entity -> (players.getValue() && entity instanceof EntityPlayer) || (EntityUtils.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue())))
                         .forEach(e -> {
                             GlStateManager.pushMatrix();
-                            Vec3d pos = EntityUtil.getInterpolatedPos(e, event.getPartialTicks());
+                            Vec3d pos = EntityUtils.getInterpolatedPos(e, event.getPartialTicks());
                             GlStateManager.translate(pos.x - mc.getRenderManager().renderPosX, pos.y - mc.getRenderManager().renderPosY, pos.z - mc.getRenderManager().renderPosZ);
                             GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
                             GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
@@ -81,7 +81,7 @@ public class ESP extends Module {
                             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
                             if (e instanceof EntityPlayer) glColor3f(1, 1, 1);
-                            else if (EntityUtil.isPassiveMob(e)) glColor3f(0.11f, 0.9f, 0.11f);
+                            else if (EntityUtils.isPassiveMob(e)) glColor3f(0.11f, 0.9f, 0.11f);
                             else glColor3f(0.9f, .1f, .1f);
 
                             GlStateManager.disableTexture2D();
@@ -132,7 +132,7 @@ public class ESP extends Module {
                 } else if (e instanceof EntityPlayer && !players.getValue()) {
                     e.setGlowing(false);
                 }
-                e.setGlowing(EntityUtil.mobTypeSettings(e, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()));
+                e.setGlowing(EntityUtils.mobTypeSettings(e, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()));
             }
         } else if (removeGlow && !mode.getValue().equals(ESPMode.GLOW)) {
             for (Entity e : mc.world.loadedEntityList) {

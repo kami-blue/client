@@ -13,7 +13,8 @@ object BaritoneUtils
 
     fun unpause()
     {
-        if (BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().isPresent)
+        if (BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().isPresent &&
+            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().get() is TemporaryPauseProcess) /* Don't run if not paused lol */
         {
             BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().get().onLostControl()
         }

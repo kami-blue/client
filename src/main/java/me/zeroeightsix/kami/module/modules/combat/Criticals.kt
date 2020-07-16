@@ -6,9 +6,9 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil.getSpeed
-import me.zeroeightsix.kami.util.EntityUtil.isLiving
-import me.zeroeightsix.kami.util.EntityUtil.resetHSpeed
+import me.zeroeightsix.kami.util.EntityUtils.getSpeed
+import me.zeroeightsix.kami.util.EntityUtils.isLiving
+import me.zeroeightsix.kami.util.EntityUtils.resetHSpeed
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity

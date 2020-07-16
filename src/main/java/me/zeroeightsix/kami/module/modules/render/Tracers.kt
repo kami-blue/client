@@ -38,15 +38,15 @@ class Tracers : Module() {
     override fun onWorldRender(event: RenderEvent) {
         GlStateManager.pushMatrix()
         Minecraft.getMinecraft().world.loadedEntityList.stream()
-                .filter { e: Entity? -> EntityUtil.isLiving(e) }
+                .filter { e: Entity? -> EntityUtils.isLiving(e) }
                 .filter { entity: Entity ->
                     if (entity.isInvisible) {
                         return@filter renderInvis.value
                     }
                     true
                 }
-                .filter { entity: Entity? -> !EntityUtil.isFakeLocalPlayer(entity) }
-                .filter { entity: Entity -> if (entity is EntityPlayer) players.value && mc.player !== entity else EntityUtil.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value) }
+                .filter { entity: Entity? -> !EntityUtils.isFakeLocalPlayer(entity) }
+                .filter { entity: Entity -> if (entity is EntityPlayer) players.value && mc.player !== entity else EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value) }
                 .filter { entity: Entity? -> mc.player.getDistance(entity) < range.value }
                 .forEach { entity: Entity ->
                     var colour = getColour(entity)
@@ -75,7 +75,7 @@ class Tracers : Module() {
         return if (entity is EntityPlayer) {
             if (Friends.isFriend(entity.getName())) ColourUtils.Colors.RAINBOW else ColourUtils.Colors.WHITE
         } else {
-            if (EntityUtil.isPassiveMob(entity)) ColourUtils.Colors.GREEN else if (EntityUtil.isCurrentlyNeutral(entity)) ColourUtils.Colors.BLUE else ColourUtils.Colors.RED
+            if (EntityUtils.isPassiveMob(entity)) ColourUtils.Colors.GREEN else if (EntityUtils.isCurrentlyNeutral(entity)) ColourUtils.Colors.BLUE else ColourUtils.Colors.RED
         }
     }
 }

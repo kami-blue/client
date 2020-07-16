@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.ColourHolder;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -59,9 +59,9 @@ public class Nametags extends Module {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         Minecraft.getMinecraft().world.loadedEntityList.stream()
-                .filter(EntityUtil::isLiving)
-                .filter(entity -> !EntityUtil.isFakeLocalPlayer(entity))
-                .filter(entity -> (entity instanceof EntityPlayer ? players.getValue() && mc.player != entity : (EntityUtil.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()))))
+                .filter(EntityUtils::isLiving)
+                .filter(entity -> !EntityUtils.isFakeLocalPlayer(entity))
+                .filter(entity -> (entity instanceof EntityPlayer ? players.getValue() && mc.player != entity : (EntityUtils.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue()))))
                 .filter(entity -> mc.player.getDistance(entity) < range.getValue())
                 .sorted(Comparator.comparing(entity -> -mc.player.getDistance(entity)))
                 .forEach(this::drawNametag);
@@ -74,7 +74,7 @@ public class Nametags extends Module {
     private void drawNametag(Entity entityIn) {
         GlStateManager.pushMatrix();
 
-        Vec3d interp = EntityUtil.getInterpolatedRenderPos(entityIn, mc.getRenderPartialTicks());
+        Vec3d interp = EntityUtils.getInterpolatedRenderPos(entityIn, mc.getRenderPartialTicks());
         float yAdd = entityIn.height + 0.5F - (entityIn.isSneaking() ? 0.25F : 0.0F);
         double x = interp.x;
         double y = interp.y + yAdd;

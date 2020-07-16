@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
 import me.zeroeightsix.kami.util.ClassFinder;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
@@ -74,7 +74,7 @@ public class ModuleManager {
         GlStateManager.disableDepth();
 
         GlStateManager.glLineWidth(1f);
-        Vec3d renderPos = EntityUtil.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
+        Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
 
         RenderEvent e = new RenderEvent(KamiTessellator.INSTANCE, renderPos);
         e.resetTranslation();

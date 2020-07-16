@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.BlockInteractionHelper;
-import me.zeroeightsix.kami.util.EntityUtil;
+import me.zeroeightsix.kami.util.BlockUtils;
+import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -34,8 +34,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.BlockInteractionHelper.canBeClicked;
-import static me.zeroeightsix.kami.util.BlockInteractionHelper.faceVectorPacketInstant;
+import static me.zeroeightsix.kami.util.BlockUtils.canBeClicked;
+import static me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
 /**
@@ -249,7 +249,7 @@ public class AutoTrap extends Module {
             lastHotbarSlot = obiSlot;
         }
 
-        if (!isSneaking && BlockInteractionHelper.blackList.contains(neighbourBlock) || BlockInteractionHelper.shulkerList.contains(neighbourBlock)) {
+        if (!isSneaking && BlockUtils.blackList.contains(neighbourBlock) || BlockUtils.shulkerList.contains(neighbourBlock)) {
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
             isSneaking = true;
         }
@@ -299,7 +299,7 @@ public class AutoTrap extends Module {
 
             if (mc.player.getDistance(target) > range.getValue() + 3) continue;
 
-            if (!EntityUtil.isLiving(target)) continue;
+            if (!EntityUtils.isLiving(target)) continue;
 
             if ((target).getHealth() <= 0) continue;
 

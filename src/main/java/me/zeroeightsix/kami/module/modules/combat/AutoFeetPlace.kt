@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockInteractionHelper
+import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLiquid
@@ -174,7 +174,7 @@ class AutoFeetPlace : Module() {
         val opposite = side.opposite
 
         // check if neighbor can be right clicked
-        if (!BlockInteractionHelper.canBeClicked(neighbour)) {
+        if (!BlockUtils.canBeClicked(neighbour)) {
             return false
         }
 
@@ -190,12 +190,12 @@ class AutoFeetPlace : Module() {
             mc.player.inventory.currentItem = obiSlot
             lastHotbarSlot = obiSlot
         }
-        if (!isSneaking && BlockInteractionHelper.blackList.contains(neighbourBlock) || BlockInteractionHelper.shulkerList.contains(neighbourBlock)) {
+        if (!isSneaking && BlockUtils.blackList.contains(neighbourBlock) || BlockUtils.shulkerList.contains(neighbourBlock)) {
             mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
             isSneaking = true
         }
         if (rotate.value) {
-            BlockInteractionHelper.faceVectorPacketInstant(hitVec)
+            BlockUtils.faceVectorPacketInstant(hitVec)
         }
 
         mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND)

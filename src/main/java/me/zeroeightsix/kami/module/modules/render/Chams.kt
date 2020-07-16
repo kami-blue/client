@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil.mobTypeSettings
+import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 

@@ -10,6 +10,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
+import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Items
@@ -18,7 +20,6 @@ import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
-import net.minecraft.util.math.BlockPos
 import java.lang.Math.random
 import kotlin.math.*
 
@@ -316,35 +317,6 @@ class ElytraFlight : Module() {
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = mc.player.posY + 0.2
         }
-    }
-
-    /**
-     * @return true if there is liquid below
-     */
-    private fun checkForLiquid(): Boolean {
-        return getGroundPosY(true) == -1.0f
-    }
-
-    /**
-     * Get the height of the ground surface below, and check for liquid if [checkLiquid] is true
-     *
-     * @return The y position of the ground surface, -1.0f if found liquid below and [checkLiquid] is true
-     */
-    private fun getGroundPosY(checkLiquid: Boolean): Float {
-        val boundingBox = mc.player.boundingBox
-        var yOffset = mc.player.posY - boundingBox.minY
-        val xArray = arrayOf(floor(boundingBox.minX).toInt(), floor(boundingBox.maxX).toInt())
-        val zArray = arrayOf(floor(boundingBox.minZ).toInt(), floor(boundingBox.maxZ).toInt())
-        while (!mc.world.collidesWithAnyBlock(boundingBox.offset(0.0, yOffset, 0.0))) {
-            if (checkLiquid) {
-                for (x in 0..1) for (z in 0..1) {
-                    val blockPos = BlockPos(xArray[x], (mc.player.posY + yOffset).toInt(), zArray[z])
-                    if (mc.world.getBlockState(blockPos).block.material.isLiquid) return -1.0f
-                }
-            }
-            yOffset -= 0.05
-        }
-        return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY.toFloat()
     }
 
     /**

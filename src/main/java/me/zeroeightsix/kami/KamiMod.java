@@ -22,6 +22,7 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
+import me.zeroeightsix.kami.process.AutoObsidianProcess;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -98,6 +99,7 @@ public class KamiMod {
     public static boolean hasAskedToUpdate = false;
 
     public static TemporaryPauseProcess pauseProcess;
+    public static AutoObsidianProcess autoObsidianProcess;
 
     @Mod.Instance
     private static KamiMod INSTANCE;
@@ -121,6 +123,7 @@ public class KamiMod {
         updateCheck();
 
         pauseProcess = new TemporaryPauseProcess();
+        autoObsidianProcess = new AutoObsidianProcess();
     }
 
     @Mod.EventHandler

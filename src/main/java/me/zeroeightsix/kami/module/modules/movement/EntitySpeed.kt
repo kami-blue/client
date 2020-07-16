@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil
+import me.zeroeightsix.kami.util.EntityUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.AbstractHorse
@@ -70,8 +70,8 @@ class EntitySpeed : Module() {
         if (angle == -1) return
 
         val yaw = mc.player.rotationYaw + angle
-        boat.motionX = EntityUtil.getRelativeX(yaw) * speed.value
-        boat.motionZ = EntityUtil.getRelativeZ(yaw) * speed.value
+        boat.motionX = EntityUtils.getRelativeX(yaw) * speed.value
+        boat.motionZ = EntityUtils.getRelativeZ(yaw) * speed.value
     }
 
     override fun onRender() {

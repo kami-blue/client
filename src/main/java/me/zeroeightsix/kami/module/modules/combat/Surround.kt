@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockInteractionHelper
+import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.CenterPlayer
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.block.Block
@@ -155,7 +155,7 @@ class Surround : Module() {
             if (debugMsgs.value == DebugMsgs.ALL) {
                 MessageSendHelper.sendChatMessage("$chatName Block is already placed, skipping")
             }
-        } else if (!BlockInteractionHelper.checkForNeighbours(blockPos) && debugMsgs.value == DebugMsgs.ALL) {
+        } else if (!BlockUtils.checkForNeighbours(blockPos) && debugMsgs.value == DebugMsgs.ALL) {
             MessageSendHelper.sendChatMessage("$chatName !checkForNeighbours(blockPos), disabling! ")
         } else {
             if (placeAnimation.value) mc.player.connection.sendPacket(CPacketAnimation(mc.player.activeHand))
@@ -204,7 +204,7 @@ class Surround : Module() {
                     var needSneak = false
                     val blockBelow = mc.world.getBlockState(neighbor).block
 
-                    if (BlockInteractionHelper.blackList.contains(blockBelow) || BlockInteractionHelper.shulkerList.contains(blockBelow)) {
+                    if (BlockUtils.blackList.contains(blockBelow) || BlockUtils.shulkerList.contains(blockBelow)) {
                         if (debugMsgs.value == DebugMsgs.IMPORTANT) {
                             MessageSendHelper.sendChatMessage("$chatName Sneak enabled!")
                         }

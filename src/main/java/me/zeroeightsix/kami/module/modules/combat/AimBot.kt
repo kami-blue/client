@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtil.faceEntity
-import me.zeroeightsix.kami.util.EntityUtil.getPrioritizedTarget
-import me.zeroeightsix.kami.util.EntityUtil.getTargetList
+import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
+import me.zeroeightsix.kami.util.EntityUtils.faceEntity
+import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
+import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import net.minecraft.item.ItemBow
 
 /**

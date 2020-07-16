@@ -6,10 +6,10 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
-import me.zeroeightsix.kami.util.EntityUtil.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtil.faceEntity
-import me.zeroeightsix.kami.util.EntityUtil.getPrioritizedTarget
-import me.zeroeightsix.kami.util.EntityUtil.getTargetList
+import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
+import me.zeroeightsix.kami.util.EntityUtils.faceEntity
+import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
+import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items

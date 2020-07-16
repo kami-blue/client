@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.command.commands.TeleportCommand
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.MessageSendHelper
 import me.zeroeightsix.kami.util.VectorUtil
 import net.minecraft.init.Items
@@ -49,7 +49,7 @@ class NoFall : Module() {
     override fun onUpdate() {
         if (!mc.player.capabilities.isCreativeMode && mc.player.fallDistance >= distance.value) {
             if (mode.value == Mode.FALL) {
-                if (fallMode.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtil.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
+                if (fallMode.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
                     val posVec = mc.player.positionVector
                     val result = mc.world.rayTraceBlocks(posVec, posVec.add(0.0, -5.33, 0.0), true, true, false)
                     if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {

@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtil
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
@@ -40,7 +40,7 @@ class Jesus : Module() {
 
     override fun onUpdate() {
         if (!KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-            if (EntityUtil.isInWater(mc.player) && !mc.player.isSneaking) {
+            if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
                 mc.player.motionY = 0.1
                 if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
                     mc.player.getRidingEntity()!!.motionY = 0.3
@@ -52,11 +52,11 @@ class Jesus : Module() {
     @EventHandler
     private val addCollisionBoxToListEventListener = Listener(EventHook { event: AddCollisionBoxToListEvent ->
         if (mc.player != null && event.block is BlockLiquid
-                && (EntityUtil.isDrivenByPlayer(event.entity) || event.entity === mc.player)
+                && (EntityUtils.isDrivenByPlayer(event.entity) || event.entity === mc.player)
                 && event.entity !is EntityBoat
                 && !mc.player.isSneaking
-                && mc.player.fallDistance < 3 && !EntityUtil.isInWater(mc.player)
-                && (EntityUtil.isAboveWater(mc.player, false) || EntityUtil.isAboveWater(mc.player.getRidingEntity(), false))
+                && mc.player.fallDistance < 3 && !EntityUtils.isInWater(mc.player)
+                && (EntityUtils.isAboveWater(mc.player, false) || EntityUtils.isAboveWater(mc.player.getRidingEntity(), false))
                 && isAboveBlock(mc.player, event.pos)) {
             val axisAlignedBB = WATER_WALK_AA.offset(event.pos)
             if (event.entityBox.intersects(axisAlignedBB)) event.collidingBoxes.add(axisAlignedBB)
@@ -68,7 +68,7 @@ class Jesus : Module() {
     private val packetEventSendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (event.era == KamiEvent.Era.PRE) {
             if (event.packet is CPacketPlayer) {
-                if (EntityUtil.isAboveWater(mc.player, true) && !EntityUtil.isInWater(mc.player) && !isAboveLand(mc.player)) {
+                if (EntityUtils.isAboveWater(mc.player, true) && !EntityUtils.isInWater(mc.player) && !isAboveLand(mc.player)) {
                     val ticks = mc.player.ticksExisted % 2
                     if (ticks == 0) (event.packet as CPacketPlayer).y += 0.02
                 }
