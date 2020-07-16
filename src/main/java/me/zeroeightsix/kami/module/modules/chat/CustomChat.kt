@@ -15,6 +15,7 @@ import net.minecraft.network.play.client.CPacketChatMessage
 /**
  * Created by 086 on 8/04/2018.
  * Updated by dominikaaaa on 12/03/20
+ * Updated by Humboldt123 on 16/7/20
  */
 @Module.Info(
         name = "CustomChat",
@@ -42,7 +43,7 @@ class CustomChat : Module() {
         return when (t) {
             TextMode.NAME -> "\u1d0b\u1d00\u1d0d\u026a \u0299\u029f\u1d1c\u1d07"
             TextMode.ON_TOP -> "\u1d0b\u1d00\u1d0d\u026a \u0299\u029f\u1d1c\u1d07 \u1d0f\u0274 \u1d1b\u1d0f\u1d18"
-            TextMode.WEBSITE -> "\u0299\u029f\u1d1c\u1d07\u002e\u0299\u1d07\u029f\u029f\u1d00\u002e\u1d21\u1d1b\u0493"
+            TextMode.WEBSITE -> "\uff4b\uff41\uff4d\uff49\uff42\uff4c\uff55\uff45\uff0e\uff4f\uff52\uff47"
             TextMode.JAPANESE -> "\u4e0a\u306b\u30ab\u30df\u30d6\u30eb\u30fc"
             TextMode.CUSTOM -> customText.value
         }
