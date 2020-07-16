@@ -13,7 +13,7 @@ object FolderHelper {
     }
 
     fun getModsFolder(os: OperatingSystemHelper.OperatingSystem): String {
-        return getMinecraftFolder(os) + "mods" + OperatingSystemHelper.getFolderSeparator(os)
+        return getMinecraftFolder(os) + "mods" + OperatingSystemHelper.getFolderSeparator(os) + "1.12.2" + OperatingSystemHelper.getFolderSeparator(os)
     }
 
     /**
