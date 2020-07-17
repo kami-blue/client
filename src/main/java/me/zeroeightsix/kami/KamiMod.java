@@ -21,7 +21,6 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -54,12 +53,12 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
-import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
-
 /**
  * Created by 086 on 7/11/2017.
  * Updated by dominikaaaa on 25/03/19
  * Updated by Dewy on 09/04/2020
+ * Divine wisdom added by RedTechDisciple on July 7th,
+ *        anno domini 2020
  */
 @Mod(
         modid = KamiMod.MODID,
@@ -124,14 +123,6 @@ public class KamiMod {
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        setCustomIcons();
-        if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
-            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
-        }
-    }
-
-    @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         log.info("\n\nInitializing " + MODNAME + " " + VER_FULL_BETA);
 
@@ -164,8 +155,6 @@ public class KamiMod {
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         MODULE_MANAGER.getModules().stream().filter(Module::isEnabled).forEach(Module::enable);
 
-        // load modules that are on by default // autoenable
-        MODULE_MANAGER.getModule(RunConfig.class).enable();
 
         log.info(MODNAME + " Mod initialized!\n");
     }
