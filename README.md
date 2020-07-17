@@ -1,3 +1,4 @@
+[![Jesus Christ](https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Cefal%C3%B9_Pantocrator_retouched.jpg/220px-Cefal%C3%B9_Pantocrator_retouched.jpg)](https://www.kingjamesbibleonline.org/)
 [![Build Status features-master](https://img.shields.io/travis/com/kami-blue/client/master?logo=gradle&label=build&style=flat-square)](https://travis-ci.com/kami-blue/client)
 [![Discord Mine](https://img.shields.io/discord/573954110454366214?label=chat&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/KfpqwZB)
 [![HitCount](http://hits.dwyl.com/kami-blue/client.svg)](http://hits.dwyl.com/kami-blue/client)
