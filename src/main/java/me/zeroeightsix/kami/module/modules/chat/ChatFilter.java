@@ -23,7 +23,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
  */
 @Module.Info(
         name = "ChatFilter",
-        description = "Filters custom words or phrases from the chat",
+        description = "Filters heresy from the chat",
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )

@@ -13,8 +13,8 @@ import kotlin.random.Random
  * Updated by Xiaro on 27/6/20
  */
 @Module.Info(
-        name = "Spammer",
-        description = "Spams text from a file on a set delay into the chat",
+        name = "Preacher",
+        description = "Spreads the word of god in chat",
         category = Module.Category.CHAT
 )
 class Spammer : Module() {

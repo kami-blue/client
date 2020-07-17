@@ -20,9 +20,9 @@ import net.minecraft.network.play.client.CPacketUseEntity
  */
 
 @Module.Info(
-        name = "Criticals",
+        name = "Miracles",
         category = Module.Category.COMBAT,
-        description = "Always do critical attacks"
+        description = "Removed heratics faster with mircales from the heavens"
 )
 class Criticals : Module() {
     private val mode = register(Settings.e<CriticalMode>("Mode", CriticalMode.PACKET))

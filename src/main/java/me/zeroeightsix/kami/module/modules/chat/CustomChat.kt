@@ -20,7 +20,7 @@ import net.minecraft.network.play.client.CPacketChatMessage
 @Module.Info(
         name = "CustomChat",
         category = Module.Category.CHAT,
-        description = "Add a custom ending to your message!",
+        description = "Add a the word of the lord to your message!",
         showOnArray = Module.ShowOnArray.OFF
 )
 class CustomChat : Module() {

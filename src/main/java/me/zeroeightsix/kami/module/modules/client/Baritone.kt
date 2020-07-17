@@ -15,7 +15,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper
  * Created by Dewy on the 21st of April, 2020
  */
 @Module.Info(
-        name = "Baritone",
+        name = "Shepherd",
         category = Module.Category.CLIENT,
         description = "Configures Baritone settings",
         showOnArray = Module.ShowOnArray.OFF
