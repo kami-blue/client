@@ -301,11 +301,11 @@ public class KamiGUI extends GUI {
         processes.addTickListener(() -> {
             processes.setText("");
 
-            if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal() != null) {
+            if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
                 if (MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
                     processes.addLine("Current Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
-                    processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().getGoal().toString());
+                    processes.addLine("Current Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().get().displayName());
                 }
             }
         });

@@ -9,12 +9,9 @@ import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.WebHelper
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.GuiChat
 
 /**
@@ -30,20 +27,19 @@ import net.minecraft.client.gui.GuiChat
 )
 class LagNotifier : Module() {
     private val pauseTakeoff = register(Settings.b("PauseElytraTakeoff", true))
-    var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
+    private var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
     private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value }.build())
     private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
 
     private var serverLastUpdated: Long = 0
-    var hasUnpaused = true
     var takeoffPaused = false
     var text = "Server Not Responding! "
 
     override fun onRender() {
         if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return
+
         if (1000L * timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
-            if (!hasUnpaused && pauseBaritone.value) {
-                hasUnpaused = true
+            if (BaritoneUtils.paused) {
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
                 unpause()
             }
@@ -58,10 +54,9 @@ class LagNotifier : Module() {
             } else {
                 "Server Not Responding! "
             }
-            if (hasUnpaused && pauseBaritone.value && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.goal != null) {
+            if (pauseBaritone.value && !BaritoneUtils.paused) {
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
                 pause()
-                hasUnpaused = false
             }
             if (pauseTakeoff.value) takeoffPaused = true
         }
@@ -71,6 +66,10 @@ class LagNotifier : Module() {
 
         /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 217, 255, 85, 85, text)
+    }
+
+    override fun onDisable() {
+        unpause()
     }
 
     @EventHandler

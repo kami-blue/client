@@ -192,7 +192,7 @@ object BlockUtils {
         for (x in 0..1) for (y in 0..1) for (z in 0..1) {
             if (pos == BlockPos(xArray[x], yArray[y], zArray[z])) return false
         }
-        return (mc.world.isAirBlock(pos) || mc.world.getBlockState(pos).block is BlockEnderChest) && !mc.world.isAirBlock(pos.down())
+        return mc.world.isAirBlock(pos) && !mc.world.isAirBlock(pos.down())
     }
 
     /**

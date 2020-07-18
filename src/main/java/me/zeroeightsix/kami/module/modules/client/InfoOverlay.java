@@ -122,9 +122,9 @@ public class InfoOverlay extends Module {
     public static int getArmor(Item i) {
         return mc.player.inventory.armorInventory.stream().filter(itemStack -> itemStack.getItem() == i).mapToInt(ItemStack::getCount).sum();
     }
-    
+
     public String getSpeed () {
-        return speed(useUnitKmH(), mc, decimalPlaces.getValue()) + " " + unitType(speedUnit.getValue());
+        return speed(useUnitKmH(), mc, Math.min(decimalPlaces.getValue(), 2)) + " " + unitType(speedUnit.getValue());
     }
 
     private String unitType(SpeedUnit s) {

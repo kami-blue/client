@@ -32,8 +32,7 @@ import net.minecraft.util.EnumHand
 class AutoEat : Module() {
     private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withMinimum(1).withMaximum(20).build())
     private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withMinimum(1).withMaximum(20).build())
-
-    var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
+    private var pauseBaritone = register(Settings.b("PauseBaritone", true))
 
     private var lastSlot = -1
     var eating = false
@@ -64,10 +63,8 @@ class AutoEat : Module() {
                 lastSlot = -1
             }
             eating = false
+            unpause()
 
-            if (pauseBaritone.value) {
-                unpause()
-            }
             BaritoneAPI.getSettings().allowInventory.value = false
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)

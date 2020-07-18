@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.Module
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -287,6 +286,7 @@ object EntityUtils {
                 if (!player[2] && entity.isPlayerSleeping) continue
             } else if (!mobTypeSettings(entity, mobs[0], mobs[1], mobs[2], mobs[3])) continue
 
+            if (mc.player.isRiding && entity == mc.player.ridingEntity) continue // Riding entity check
             if (mc.player.getDistance(entity) > range) continue // Distance check
             if ((entity as EntityLivingBase).health <= 0) continue // HP check
             if (!ignoreWalls && !mc.player.canEntityBeSeen(entity) && !canEntityFeetBeSeen(entity)) continue  // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
