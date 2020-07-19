@@ -115,10 +115,10 @@ class AutoObsidian : Module() {
             State.COLLECTING -> collectDroppedItem(49)
             State.DONE -> {
                 if (!autoRefill.value) {
-                    sendChatMessage("$chatName Reached targer stacks, disabling.")
+                    sendChatMessage("$chatName Reached target stacks, disabling.")
                     this.disable()
                 } else {
-                    sendChatMessage("$chatName Reached targer stacks, stopping.")
+                    if (active) sendChatMessage("$chatName Reached target stacks, stopping.")
                     reset()
                 }
             }
@@ -148,7 +148,7 @@ class AutoObsidian : Module() {
 
         /* Tell baritone to get you back to position */
         if (state != State.DONE && state != State.COLLECTING && searchingState != SearchingState.COLLECTING) {
-            if (currentPos != playerPos) {
+            if (currentPos.x != playerPos.x || currentPos.z != playerPos.z) {
                 pathing = true
                 goal = playerPos
                 return

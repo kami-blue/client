@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
@@ -74,7 +75,7 @@ class Aura : Module() {
         val targetList = getTargetList(player, mob, ignoreWalls.value, delayMode.value == WaitMode.SPAM, range.value)
         if (targetList.isNotEmpty()) {
             /* Pausing baritone and other stuff */
-            if (pauseBaritone.value) {
+            if (pauseBaritone.value && !BaritoneUtils.paused) {
                 isAttacking = true
                 startTime = 0L
                 pause()
@@ -90,7 +91,7 @@ class Aura : Module() {
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
             }
-        } else if (canResume()) {
+        } else if (canResume() && BaritoneUtils.paused) {
             isAttacking = false
             unpause()
         }

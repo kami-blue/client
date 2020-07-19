@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.inventory.ClickType
@@ -115,8 +114,8 @@ object InventoryUtils {
         mc.playerController.syncCurrentPlayItem()
     }
 
-    private fun inventoryClick(slot: Int, clickType: ClickType) {
-        mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, clickType, mc.player)
+    private fun inventoryClick(slot: Int, type: ClickType) {
+        mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, type, mc.player)
     }
 
     /**
@@ -128,14 +127,11 @@ object InventoryUtils {
         var slot2 = 36
         for (i in 36..44) { /* Finds slot contains no exception item first */
             val currentItemStack = mc.player.inventoryContainer.inventory[i]
-            if (getIdFromItem(currentItemStack.getItem()) != exceptionID) {
+            if (currentItemStack.isEmpty) {
                 slot2 = i
                 break
             }
-        }
-        for (i in 36..44) { /* If an empty slot is found, then overwrite it */
-            val currentItemStack = mc.player.inventoryContainer.inventory[i]
-            if (currentItemStack.isEmpty) {
+            if (getIdFromItem(currentItemStack.getItem()) != exceptionID) {
                 slot2 = i
                 break
             }
@@ -148,7 +144,6 @@ object InventoryUtils {
      */
     fun moveToSlot(slotFrom: Int, slotTo: Int, delayMillis: Long) {
         if (inProgress) return
-        sendChatMessage("BRUH")
         Thread(Runnable {
             inProgress = true
             val prevScreen = mc.currentScreen
@@ -160,13 +155,13 @@ object InventoryUtils {
             Thread.sleep(delayMillis)
             inventoryClick(slotFrom, ClickType.PICKUP)
             mc.displayGuiScreen(prevScreen)
-            mc.playerController.syncCurrentPlayItem()
             inProgress = false
         }).start()
     }
 
     /**
      * Move all the item that equals to the item in [slotFrom] to [slotTo], if [slotTo] contains an item, then move it to [slotFrom]
+     * Note: Not working
      */
     fun moveAllToSlot(slotFrom: Int, slotTo: Int, delayMillis: Long) {
         if (inProgress) return
@@ -175,13 +170,10 @@ object InventoryUtils {
             val prevScreen = mc.currentScreen
             mc.displayGuiScreen(GuiInventory(mc.player))
             Thread.sleep(delayMillis)
-            inventoryClick(slotFrom, ClickType.PICKUP_ALL)
+            inventoryClick(slotTo, ClickType.PICKUP_ALL)
             Thread.sleep(delayMillis)
             inventoryClick(slotTo, ClickType.PICKUP)
-            Thread.sleep(delayMillis)
-            inventoryClick(slotFrom, ClickType.PICKUP)
             mc.displayGuiScreen(prevScreen)
-            mc.playerController.syncCurrentPlayItem()
             inProgress = false
         }).start()
     }
@@ -193,12 +185,21 @@ object InventoryUtils {
         if (inProgress) return
         Thread(Runnable {
             inProgress = true
-            val prevScreen = mc.currentScreen
-            mc.displayGuiScreen(GuiInventory(mc.player))
-            Thread.sleep(delayMillis)
             inventoryClick(slotFrom, ClickType.QUICK_MOVE)
-            mc.displayGuiScreen(prevScreen)
-            mc.playerController.syncCurrentPlayItem()
+            Thread.sleep(delayMillis)
+            inProgress = false
+        }).start()
+    }
+
+    /**
+     * Throw all the item in [slot]
+     */
+    fun throwAllInSlot(slot: Int, delayMillis: Long) {
+        if (inProgress) return
+        Thread(Runnable {
+            inProgress = true
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 1, ClickType.THROW, mc.player)
+            Thread.sleep(delayMillis)
             inProgress = false
         }).start()
     }
