@@ -27,7 +27,6 @@ import kotlin.math.ceil
 /**
  * Created by Xiaro on 7/13/20
  */
-
 @Module.Info(
         name = "InventoryManager",
         category = Module.Category.PLAYER,

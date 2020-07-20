@@ -43,6 +43,6 @@ class TemporaryPauseProcess : IBaritoneProcess {
     }
 
     override fun displayName0(): String {
-        return "Kami Blue Pauser"
+        return "KAMI Blue Pauser"
     }
 }

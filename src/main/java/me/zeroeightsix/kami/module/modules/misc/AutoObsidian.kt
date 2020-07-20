@@ -260,7 +260,6 @@ class AutoObsidian : Module() {
     }
 
     /* Tasks */
-    // TODO: SHULKERS SEARCHING
     private fun placeShulker(pos: BlockPos) {
         for (i in 219..234) {
             if (getSlotsHotbar(i) == null) {
