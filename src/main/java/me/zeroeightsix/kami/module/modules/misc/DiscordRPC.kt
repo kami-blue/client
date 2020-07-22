@@ -50,7 +50,7 @@ class DiscordRPC : Module() {
             LineInfo.SPEED -> if (mc.player != null) KamiMod.MODULE_MANAGER.getModuleT(InfoOverlay::class.java).speed else "No Speed"
             LineInfo.HELD_ITEM -> "Holding " + (if (mc.player != null && !mc.player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName.toLowerCase() else "No Items")
             LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"
-            LineInfo.TPS -> if (mc.getCurrentServerData() != null) tps(2).toString() + " tps" else "No TPS"
+            LineInfo.TPS -> if (mc.player != null) tps(2).toString() + " tps" else "No TPS"
             else -> ""
         }
     }
