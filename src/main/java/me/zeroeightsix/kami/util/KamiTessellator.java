@@ -6,9 +6,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL32;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -29,6 +31,8 @@ public class KamiTessellator extends Tessellator {
     public KamiTessellator() {
         super(0x200000);
     }
+
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void prepare(int mode) {
         prepareGL();
@@ -79,7 +83,28 @@ public class KamiTessellator extends Tessellator {
         drawBox(blockPos, r, g, b, a, sides);
     }
 
-    public static void drawBox(float x, float y, float z, int argb, int sides) {
+    public static void drawBox(BlockPos blockPos, int colour, int a, int sides) {
+        int r = (colour >> 16 & 0xFF);
+        int g = (colour >> 8 & 0xFF);
+        int b = (colour & 0xFF);
+        drawBox(blockPos, r, g, b, a, sides);
+    }
+
+    public static void drawBox(AxisAlignedBB box, int colour, int a, int sides) {
+        int r = (colour >> 16 & 0xFF);
+        int g = (colour >> 8 & 0xFF);
+        int b = (colour & 0xFF);
+        drawBox(box, r, g, b, a, sides);
+    }
+
+    public static void drawBox(AxisAlignedBB box, int r, int g, int b, int a, int sides) {
+        float w = (float) (box.maxX - box.minX);
+        float h = (float) (box.maxY - box.minY);
+        float d = (float) (box.maxZ - box.minZ);
+        drawBox(INSTANCE.getBuffer(), box.minX, box.minY, box.minZ, w, h, d, r, g, b, a, sides);
+    }
+
+    public static void drawBox(double x, double y, double z, int argb, int sides) {
         final int a = (argb >>> 24) & 0xFF;
         final int r = (argb >>> 16) & 0xFF;
         final int g = (argb >>> 8) & 0xFF;
@@ -103,7 +128,7 @@ public class KamiTessellator extends Tessellator {
         return INSTANCE.getBuffer();
     }
 
-    public static void drawBox(final BufferBuilder buffer, float x, float y, float z, float w, float h, float d, int r, int g, int b, int a, int sides) {
+    public static void drawBox(final BufferBuilder buffer, double x, double y, double z, float w, float h, float d, int r, int g, int b, int a, int sides) {
         if ((sides & GeometryMasks.Quad.DOWN) != 0) {
             buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
             buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
@@ -147,7 +172,7 @@ public class KamiTessellator extends Tessellator {
         }
     }
 
-    public static void drawLines(final BufferBuilder buffer, float x, float y, float z, float w, float h, float d, int r, int g, int b, int a, int sides) {
+    public static void drawLines(final BufferBuilder buffer, double x, double y, double z, float w, float h, float d, int r, int g, int b, int a, int sides) {
         if ((sides & GeometryMasks.Line.DOWN_WEST) != 0) {
             buffer.pos(x, y, z).color(r, g, b, a).endVertex();
             buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
@@ -209,63 +234,62 @@ public class KamiTessellator extends Tessellator {
         }
     }
 
-    public static void drawLineToBlock(BlockPos pos, int colour, float alpha) {
-        drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha);
+    public static void drawLineToBlock(BlockPos pos, int colour, int alpha, float thickness) {
+        drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha / 255f, thickness);
     }
 
-    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks) {
+
+    public static void drawLineToBlock(BlockPos pos, int colour, float alpha, float thickness) {
+        drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha, thickness);
+    }
+
+    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks, float thickness) {
         //Interpolate
         double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-        drawLineToPos(x, y, z, colour, alpha);
+        drawLineToPos(x, y, z, colour, alpha, thickness);
     }
 
-    public static void drawLineToPos(double x, double y, double z, int colour, float alpha) {
+    public static void drawLineToPos(Vec3d vec3d, int r, int g, int b, int alpha, float thickness) {
+        drawLineToPos(vec3d.x, vec3d.y, vec3d.z, r / 255f, g / 255f, b / 255f, alpha / 255f, thickness);
+    }
+
+    public static void drawLineToPos(double x, double y, double z, int colour, float alpha, float thickness) {
         float red = ((float) (colour >> 16 & 0xFF)) / 255;
         float green = ((float) (colour >> 8 & 0xFF)) / 255;
         float blue = ((float) (colour & 0xFF)) / 255;
-        drawLineToPos(x, y, z, red, green, blue, alpha);
+        drawLineToPos(x, y, z, red, green, blue, alpha, thickness);
     }
 
-    public static void drawLineToPos(double x, double y, double z, float red, float green, float blue, float alpha) {
-        Minecraft mc = Minecraft.getMinecraft();
+    public static void drawLineToPos(double x, double y, double z, float red, float green, float blue, float alpha, float thickness) {
+        x -= mc.renderManager.renderPosX;
+        y -= mc.renderManager.renderPosY;
+        z -= mc.renderManager.renderPosZ;
+        float pTicks = mc.getRenderPartialTicks();
+        Vec3d eyes = mc.player.getLook(pTicks);
+        final boolean bobbing = mc.gameSettings.viewBobbing;
 
-        x -= mc.getRenderManager().renderPosX;
-        y -= mc.getRenderManager().renderPosY;
-        z -= mc.getRenderManager().renderPosZ;
-
-        Vec3d eyes = new Vec3d(0.0, 0.0, 1.0)
-                .rotatePitch((float) -Math.toRadians(mc.player.rotationPitch))
-                .rotateYaw((float) -Math.toRadians(mc.player.rotationYaw));
-
-        GL11.glBlendFunc(770, 771);
-        GL11.glLineWidth(1.5f);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
+        prepareLine();
+        GL11.glLineWidth(thickness);
         GL11.glColor4f(red, green, blue, alpha);
-        GlStateManager.disableLighting();
-        GL11.glLoadIdentity();
-        mc.entityRenderer.orientCamera(mc.getRenderPartialTicks());
+        mc.gameSettings.viewBobbing = false;
+        mc.entityRenderer.setupCameraTransform(pTicks, 0);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex3d(eyes.x, eyes.y + mc.player.getEyeHeight(), eyes.z);
         GL11.glVertex3d(x, y, z);
-        GL11.glVertex3d(x, y, z);
-        GL11.glVertex3d(x, y, z);
         GL11.glEnd();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(true);
+        mc.gameSettings.viewBobbing = bobbing;
+        mc.entityRenderer.setupCameraTransform(pTicks, 0);
         GL11.glColor3d(1.0, 1.0, 1.0);
-        GlStateManager.enableLighting();
+        releaseLine();
     }
 
 
     /**
      * @author polymer
      */
-    public static void drawBoxSmall(float x, float y, float z, int argb, int sides) {
+    public static void drawBoxSmall(double x, double y, double z, int argb, int sides) {
         final int a = (argb >>> 24) & 0xFF;
         final int r = (argb >>> 16) & 0xFF;
         final int g = (argb >>> 8) & 0xFF;
@@ -273,7 +297,7 @@ public class KamiTessellator extends Tessellator {
         drawBox(INSTANCE.getBuffer(), x, y, z, 0.25f, 0.25f, 0.25f, r, g, b, a, sides);
     }
 
-    public static void drawRectangle(float x, float y, float w, float h, int color) {
+    public static void drawRectangle(double x, double y, float w, float h, int color) {
         float r = (float) (color >> 16 & 255) / 255.0F;
         float g = (float) (color >> 8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
@@ -294,4 +318,115 @@ public class KamiTessellator extends Tessellator {
         GlStateManager.disableBlend();
     }
 
+    /**
+     * @author Xiaro
+     * <p>
+     * Draws outline of given entity's bounding box, uses int rgba (0 - 255)
+     */
+    public static void drawBoundingBox(Entity entity, int r, int g, int b, int a, float thickness) {
+        Minecraft mc = Minecraft.getMinecraft();
+        double pTicks = mc.getRenderPartialTicks();
+        double xOffset = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pTicks) - entity.posX;
+        double yOffset = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pTicks) - entity.posY;
+        double zOffset = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pTicks) - entity.posZ;
+        final AxisAlignedBB box = entity.getEntityBoundingBox().offset(xOffset, yOffset, zOffset);
+        drawBoundingBox(box, r, g, b, a, thickness);
+    }
+
+    /**
+     * @author Xiaro
+     * <p>
+     * Draws outline of given axis aligned bounding box, uses int colur and int alpha
+     */
+    public static void drawBoundingBox(AxisAlignedBB box, int colour, int a, float thickness) {
+        drawBoundingBox(box, colour, a / 255f, thickness);
+    }
+
+    /**
+     * @author Xiaro
+     * <p>
+     * Draws outline of given axis aligned bounding box, uses int colur and float alpha
+     */
+    public static void drawBoundingBox(AxisAlignedBB box, int colour, float a, float thickness) {
+        float r = ((float) (colour >> 16 & 0xFF)) / 255;
+        float g = ((float) (colour >> 8 & 0xFF)) / 255;
+        float b = ((float) (colour & 0xFF)) / 255;
+        drawBoundingBox(box, r, g, b, a, thickness);
+    }
+
+    /**
+     * @author Xiaro
+     * <p>
+     * Draws outline of given axis aligned bounding box, uses int rgba (0 - 255)
+     */
+    public static void drawBoundingBox(AxisAlignedBB box, int r, int g, int b, int a, float thickness) {
+        drawBoundingBox(box, r / 255f, g / 255f, b / 255f, a / 255f, thickness);
+    }
+
+    /**
+     * @author Xiaro
+     * <p>
+     * Draws outline of given axis aligned bounding box
+     */
+    public static void drawBoundingBox(AxisAlignedBB box, float r, float g, float b, float a, float thickness) {
+        Minecraft mc = Minecraft.getMinecraft();
+        double xOffset = mc.renderManager.renderPosX;
+        double yOffset = mc.renderManager.renderPosY;
+        double zOffset = mc.renderManager.renderPosZ;
+        box = box.offset(-xOffset, -yOffset, -zOffset);
+        double[] xArray = new double[]{box.minX, box.maxX};
+        double[] yArray = new double[]{box.minY, box.maxY};
+        double[] zArray = new double[]{box.minZ, box.maxZ};
+
+        prepareLine();
+        GL11.glLineWidth(thickness);
+        GL11.glColor4f(r, g, b, a);
+        for (double y : yArray) { /* Draw out top edges and bottom edges */
+            GL11.glBegin(GL_LINE_LOOP);
+            {
+                GL11.glVertex3d(xArray[0], y, zArray[0]);
+                GL11.glVertex3d(xArray[0], y, zArray[1]);
+                GL11.glVertex3d(xArray[1], y, zArray[1]);
+                GL11.glVertex3d(xArray[1], y, zArray[0]);
+            }
+            GL11.glEnd();
+        }
+        /* Draw out side edges */
+        GL11.glBegin(GL_LINES);
+        {
+            for (double x : xArray)
+                for (double z : zArray)
+                    for (double y : yArray) {
+                        GL11.glVertex3d(x, y, z);
+                    }
+        }
+        GL11.glEnd();
+        GL11.glColor3d(1.0, 1.0, 1.0);
+        releaseLine();
+    }
+
+    public static void prepareLine() {
+        GlStateManager.pushMatrix();
+        glDepthMask(false);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL32.GL_DEPTH_CLAMP);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        GlStateManager.shadeModel(GL_SMOOTH);
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+    }
+
+    public static void releaseLine() {
+        GlStateManager.disableBlend();
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableLighting();
+        GlStateManager.shadeModel(GL_FLAT);
+        glDisable(GL32.GL_DEPTH_CLAMP);
+        glDisable(GL_LINE_SMOOTH);
+        glDepthMask(true);
+        GlStateManager.popMatrix();
+    }
 }

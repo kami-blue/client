@@ -366,7 +366,7 @@ public class CrystalAura extends Module {
                     bL = toF(b.getValue());
                     aL = toF(aTracer.getValue());
                 }
-                KamiTessellator.drawLineToPos(render.x + 0.5d, render.y + 1d, render.z + 0.5d, rL, gL, bL, aL);
+                KamiTessellator.drawLineToPos(render.x + 0.5d, render.y + 1d, render.z + 0.5d, rL, gL, bL, aL, 2f);
             }
         }
     }

@@ -10,6 +10,7 @@
     "MixinBlockWeb",
     "MixinC00Handshake",
     "MixinChunkCache",
+    "MixinElytraSound",
     "MixinEntity",
     "MixinEntityLlama",
     "MixinEntityPig",

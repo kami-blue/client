@@ -275,6 +275,7 @@ object EntityUtils {
     }
 
     fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, immune: Boolean, range: Float): Array<Entity> {
+        if (mc.world.loadedEntityList == null) return emptyArray()
         val entityList = ArrayList<Entity>()
         for (entity in mc.world.loadedEntityList) {
             /* Entity type check */
@@ -296,8 +297,27 @@ object EntityUtils {
         return entityList.toTypedArray()
     }
 
+    /**
+     * Ray tracing the 8 vertex of the entity bounding box
+     *
+     * @return [Vec3d] of the visible vertex, null if none
+     */
+    fun canEntityHitboxBeSeen(entity: Entity): Vec3d? {
+        val playerPos = mc.player.positionVector.add(0.0, mc.player.eyeHeight.toDouble(), 0.0)
+        val box = entity.boundingBox
+        val xArray = arrayOf(box.minX, box.maxX)
+        val yArray = arrayOf(box.minY, box.maxY)
+        val zArray = arrayOf(box.minZ, box.maxZ)
+
+        for (x in xArray) for (y in yArray) for (z in zArray) {
+            val vertex = Vec3d(x, y, z)
+            if (mc.world.rayTraceBlocks(vertex, playerPos, false, true, false) == null) return vertex
+        }
+        return null
+    }
+
     fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
-        return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
+        return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
     }
 
     fun faceEntity(entity: Entity) {

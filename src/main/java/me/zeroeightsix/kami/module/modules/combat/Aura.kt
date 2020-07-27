@@ -106,13 +106,8 @@ class Aura : Module() {
             val shield = mc.player.heldItemOffhand.getItem() == Items.SHIELD && mc.player.activeHand == EnumHand.OFF_HAND
             if (mc.player.isHandActive && !shield) return false
         }
-
-        val preSyncWaitTime = if (delayMode.value == WaitMode.DELAY) mc.player.cooldownPeriod * 2 else waitTick.value
-        val syncedWaitTick = if (sync.value) preSyncWaitTime / ((LagCompensator.INSTANCE.tickRate - 1.0f) / 20.0f) else preSyncWaitTime
-        return if (waitCounter >= syncedWaitTick) {
-            waitCounter = 0
-            true
-        } else false
+        val adjustTicks = if (!sync.value) 0f else (20f - LagCompensator.INSTANCE.tickRate)
+        return (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
     }
 
     private fun attack(e: Entity) {

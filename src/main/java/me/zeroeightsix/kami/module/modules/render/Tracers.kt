@@ -33,6 +33,7 @@ class Tracers : Module() {
     private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { customColours.value }.build())
     private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { customColours.value }.build())
     private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { customColours.value }.build())
+    private val thickness = register(Settings.floatBuilder("Thickness").withValue(4.0f).withRange(0.0f, 16.0f).build())
     private var cycler = HueCycler(3600)
 
     override fun onWorldRender(event: RenderEvent) {
@@ -61,8 +62,7 @@ class Tracers : Module() {
                     } else {
                         cycler.current()
                     }
-
-                    KamiTessellator.drawLineToEntity(entity, colour, opacity.value, mc.renderPartialTicks)
+                    KamiTessellator.drawLineToEntity(entity, colour, opacity.value, mc.renderPartialTicks, thickness.value)
                 }
         GlStateManager.popMatrix()
     }
