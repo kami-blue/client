@@ -31,7 +31,10 @@ class AutoExcuse : Module() {
             "i was desynced",
             "stupid hackers killed me",
             "wow, so many tryhards",
-            "lagggg"
+            "lagggg",
+            "there was an optfine error",
+            "i wasnt trying",
+            "im not using lion client"
     )
 
     private val clients = arrayOf(

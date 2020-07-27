@@ -112,7 +112,7 @@ public class MessageSendHelper {
 
         ChatMessage(String text) {
 
-            Pattern p = Pattern.compile("&[0123456789abcdefrlosmk]");
+            Pattern p = Pattern.compile("&[0123456789abcdefrlonmk]");
             Matcher m = p.matcher(text);
             StringBuffer sb = new StringBuffer();
 
