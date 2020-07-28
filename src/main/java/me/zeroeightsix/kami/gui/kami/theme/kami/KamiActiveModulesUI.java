@@ -32,20 +32,16 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        FontRenderer renderer = Wrapper.getFontRenderer();
-        List<Module> Visualmods = MODULE_MANAGER.getModules().stream()
-                .filter(Module::isEnabled)
-                .filter(Module::isOnArray)
-                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
-                .collect(Collectors.toList());
-        
-        List<Module> Enabledmods = MODULE_MANAGER.getModules().stream()
-	    		.filter(Module::isEnabled)
-                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
-	            .collect(Collectors.toList());
-	        
-        final int[] y = {2};
         activeMods = MODULE_MANAGER.getModuleT(ActiveModules.class);
+        
+        FontRenderer renderer = Wrapper.getFontRenderer();
+	    List<Module> mods = MODULE_MANAGER.getModules().stream()
+		    	.filter(Module::isEnabled)
+	    		.filter(Module -> (activeMods.hidden.getValue() ? 1 == 1 : Module.isOnArray()))
+		    	.sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
+	            	.collect(Collectors.toList());
+
+        final int[] y = {2};
 
         if (activeMods.potion.getValue() && component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
             y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
@@ -66,8 +62,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 break;
         }
 
-        for (int i = 0 ; i < (activeMods.hidden.getValue() ? Enabledmods.size(): Visualmods.size()) ; i++) {
-            Module module = activeMods.hidden.getValue() ? Enabledmods.get(i): Visualmods.get(i);
+        for (int i = 0 ; i < mods.size() ; i++) {
+            Module module = mods.get(i);
             int rgb;
 
             switch (activeMods.mode.getValue()) {
