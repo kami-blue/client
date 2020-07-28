@@ -35,11 +35,10 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         activeMods = MODULE_MANAGER.getModuleT(ActiveModules.class);
         
         FontRenderer renderer = Wrapper.getFontRenderer();
-	    List<Module> mods = MODULE_MANAGER.getModules().stream()
-		    	.filter(Module::isEnabled)
-	    		.filter(Module -> (activeMods.hidden.getValue() ? 1 == 1 : Module.isOnArray()))
-		    	.sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
-	            	.collect(Collectors.toList());
+	List<Module> mods = MODULE_MANAGER.getModules().stream()
+		.filter(Module::isEnabled).filter(Module -> (activeMods.hidden.getValue() ? true : Module.isOnArray()))
+		.sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
+		.collect(Collectors.toList());
 
         final int[] y = {2};
 
