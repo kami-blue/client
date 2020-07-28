@@ -46,7 +46,7 @@ class StorageESP : Module() {
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { outline.value }.build())
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 16.0f).build())
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
     private fun getTileEntityColor(tileEntity: TileEntity): Int {
         return if (customColours.value) rgbToInt(r.value, g.value, b.value) else when (tileEntity) {
@@ -73,7 +73,8 @@ class StorageESP : Module() {
     override fun onWorldRender(event: RenderEvent) {
         val a = ArrayList<Triplet<AxisAlignedBB, Int, Int>>()
         for (tileEntity in mc.world.loadedTileEntityList) {
-            val box = mc.world.getBlockState(tileEntity.pos).getCollisionBoundingBox(mc.world, tileEntity.pos)?.offset(tileEntity.pos) ?: tileEntity.renderBoundingBox
+            val box = mc.world.getBlockState(tileEntity.pos).getCollisionBoundingBox(mc.world, tileEntity.pos)?.offset(tileEntity.pos)
+                    ?: tileEntity.renderBoundingBox
             val color = getTileEntityColor(tileEntity)
             var side = GeometryMasks.Quad.ALL
             if (tileEntity is TileEntityChest) {
@@ -94,7 +95,7 @@ class StorageESP : Module() {
         }
 
         for (entity in mc.world.loadedEntityList) {
-            var box = entity.renderBoundingBox
+            val box = entity.renderBoundingBox
             val color = getEntityColor(entity)
             if (entity is EntityItemFrame && frame.value
                     || (entity is EntityMinecartChest || entity is EntityMinecartHopper) && cart.value) {
@@ -104,7 +105,7 @@ class StorageESP : Module() {
 
         //pair.first = pos, pair.second = color
         for (pair in a) {
-            drawESPBox(pair.first, filled.value, outline.value, tracer.value, pair.second, aFilled.value, aOutline.value, aTracer.value, pair.third, thickness.value)
+            drawESPBox(pair.first, filled.value, outline.value, tracer.value, pair.second, aFilled.value, aOutline.value, aTracer.value, pair.third, thickness.value, true)
         }
     }
 

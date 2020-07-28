@@ -48,27 +48,25 @@ public class EyeFinder extends Module {
         if (result == null) return;
         Vec3d eyes = e.getPositionEyes(Minecraft.getMinecraft().getRenderPartialTicks());
 
-        GlStateManager.enableDepth();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
+        KamiTessellator.prepareLine(true);
 
-        double posx = eyes.x - mc.getRenderManager().renderPosX;
-        double posy = eyes.y - mc.getRenderManager().renderPosY;
-        double posz = eyes.z - mc.getRenderManager().renderPosZ;
-        double posx2 = result.hitVec.x - mc.getRenderManager().renderPosX;
-        double posy2 = result.hitVec.y - mc.getRenderManager().renderPosY;
-        double posz2 = result.hitVec.z - mc.getRenderManager().renderPosZ;
+        double posx = eyes.x - mc.renderManager.renderPosX;
+        double posy = eyes.y - mc.renderManager.renderPosY;
+        double posz = eyes.z - mc.renderManager.renderPosZ;
+        double posx2 = result.hitVec.x - mc.renderManager.renderPosX;
+        double posy2 = result.hitVec.y - mc.renderManager.renderPosY;
+        double posz2 = result.hitVec.z - mc.renderManager.renderPosZ;
         GL11.glColor4f(.2f, .1f, .3f, .8f);
-        GlStateManager.glLineWidth(1.5f);
+        GlStateManager.glLineWidth(2f);
 
         GL11.glBegin(GL11.GL_LINES);
         {
             GL11.glVertex3d(posx, posy, posz);
             GL11.glVertex3d(posx2, posy2, posz2);
-            GL11.glVertex3d(posx2, posy2, posz2);
-            GL11.glVertex3d(posx2, posy2, posz2);
         }
         GL11.glEnd();
+
+        KamiTessellator.releaseLine(true);
 
         if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
             KamiTessellator.prepare(GL11.GL_QUADS);
@@ -80,8 +78,5 @@ public class EyeFinder extends Module {
             KamiTessellator.drawBox(KamiTessellator.getBufferBuilder(), x, y, z, 1.01f, 1.01f, 1.01f, 51, 25, 73, 200, GeometryMasks.Quad.ALL);
             KamiTessellator.release();
         }
-
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableLighting();
     }
 }

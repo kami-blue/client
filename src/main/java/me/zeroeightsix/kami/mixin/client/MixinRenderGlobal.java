@@ -1,10 +1,15 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ChunkRenderContainer;
+import me.zeroeightsix.kami.module.modules.render.SelectionHighlight;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * Created by 086 on 11/04/2018.
@@ -12,10 +17,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobal {
 
-    @Shadow
-    Minecraft mc;
-    @Shadow
-    public ChunkRenderContainer renderContainer;
+//    @Shadow
+//    Minecraft mc;
+//    @Shadow
+//    public ChunkRenderContainer renderContainer;
 
 //    @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;)V", at = @At("HEAD"), cancellable = true)
 //    public void renderBlockLayer(BlockRenderLayer blockLayerIn, CallbackInfo callbackInfo) {
@@ -62,5 +67,13 @@ public class MixinRenderGlobal {
 //
 //        this.mc.entityRenderer.disableLightmap();
 //    }
+
+    @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
+    public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks, CallbackInfo ci) {
+        SelectionHighlight sh = MODULE_MANAGER.getModuleT(SelectionHighlight.class);
+        if (sh.isEnabled() && sh.getBlock().getValue()) {
+            ci.cancel();
+        }
+    }
 
 }

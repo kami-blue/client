@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourConverter.rgbToInt
 import me.zeroeightsix.kami.util.ESPHelper.drawESPBlock
@@ -36,7 +35,6 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 class Search : Module() {
-    private val kek = register(Settings.i("kek", 5))
     private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(100, 5000).build())
     var overrideWarning = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
     private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
@@ -63,7 +61,7 @@ class Search : Module() {
         return ArrayList(searchList.value.split(","))
     }
 
-    fun searchGetString(): String   {
+    fun searchGetString(): String {
         return searchArrayList.joinToString()
     }
 
@@ -149,7 +147,7 @@ class Search : Module() {
             var colour = rgbToInt(r.value, g.value, b.value)
             for ((key, value) in renderList.entries) {
                 if (value != -1) colour = value
-                drawESPBlock(key, filled.value, outline.value, tracer.value, colour, aFilled.value, aOutline.value, aTracer.value, thickness.value)
+                drawESPBlock(key, filled.value, outline.value, tracer.value, colour, aFilled.value, aOutline.value, aTracer.value, thickness.value, true)
             }
         }
     }
@@ -235,10 +233,10 @@ class Search : Module() {
         val cacheDistMap = TreeMap<Double, Map<BlockPos, Block>>(Comparator.naturalOrder())
         /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
         for (value in mainList.values) {
-            for ((key, value) in value) {
-                val distance = sqrt(mc.player.getDistanceSq(key))
+            for ((k, v) in value) {
+                val distance = sqrt(mc.player.getDistanceSq(k))
                 if (distance > range.value) continue
-                cacheDistMap[distance] = mapOf(Pair(key, value))
+                cacheDistMap[distance] = mapOf(Pair(k, v))
             }
         }
 

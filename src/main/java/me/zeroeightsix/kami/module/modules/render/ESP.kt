@@ -42,7 +42,7 @@ class ESP : Module() {
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value }.build())
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value }.build())
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value }.build())
-    private val range = register(Settings.floatBuilder("Range").withValue(64.0f).withRange(0.0f, 128.0f).withVisibility { page.value == Page.ENTITY_TYPE }.build())
+    private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 128).withVisibility { page.value == Page.ENTITY_TYPE }.build())
 
     /* Rendering settings */
     private val mode = register(Settings.enumBuilder(ESPMode::class.java).withName("Mode").withValue(ESPMode.BOX).withVisibility { page.value == Page.RENDERING }.build())
@@ -113,7 +113,7 @@ class ESP : Module() {
                 entityList.add(entity)
             }
         } else {
-            entityList.addAll(getTargetList(player, mob, true, false, range.value))
+            entityList.addAll(getTargetList(player, mob, true, false, range.value.toFloat()))
             for (entity in mc.world.loadedEntityList) {
                 if (entity == mc.player) continue
                 if (mc.player.getDistance(entity) > range.value) continue

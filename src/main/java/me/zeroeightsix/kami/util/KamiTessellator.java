@@ -235,30 +235,41 @@ public class KamiTessellator extends Tessellator {
     }
 
     public static void drawLineToBlock(BlockPos pos, int colour, int alpha, float thickness) {
-        drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha / 255f, thickness);
-    }
-
-
-    public static void drawLineToBlock(BlockPos pos, int colour, float alpha, float thickness) {
         drawLineToPos(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, colour, alpha, thickness);
     }
 
-    public static void drawLineToEntity(Entity entity, int colour, float alpha, float partialTicks, float thickness) {
+    public static void drawLineToEntity(Entity entity, int colour, int a, float partialTicks, float thickness) {
+        //Interpolate
+        int red = (colour >> 16 & 0xFF);
+        int green = (colour >> 8 & 0xFF);
+        int blue = (colour & 0xFF);
+        drawLineToEntity(entity, red, green, blue, a, partialTicks, thickness);
+    }
+
+    public static void drawLineToEntity(Entity entity, int r, int g, int b, int a, float partialTicks, float thickness) {
         //Interpolate
         double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
         double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks;
         double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
-        drawLineToPos(x, y, z, colour, alpha, thickness);
+        drawLineToPos(x, y, z, r, g, b, a, thickness);
     }
 
     public static void drawLineToPos(Vec3d vec3d, int r, int g, int b, int alpha, float thickness) {
         drawLineToPos(vec3d.x, vec3d.y, vec3d.z, r / 255f, g / 255f, b / 255f, alpha / 255f, thickness);
     }
 
-    public static void drawLineToPos(double x, double y, double z, int colour, float alpha, float thickness) {
-        float red = ((float) (colour >> 16 & 0xFF)) / 255;
-        float green = ((float) (colour >> 8 & 0xFF)) / 255;
-        float blue = ((float) (colour & 0xFF)) / 255;
+    public static void drawLineToPos(double x, double y, double z, int colour, int alpha, float thickness) {
+        int red = (colour >> 16 & 0xFF);
+        int green = (colour >> 8 & 0xFF);
+        int blue = (colour & 0xFF);
+        drawLineToPos(x, y, z, red, green, blue, alpha, thickness);
+    }
+
+    public static void drawLineToPos(double x, double y, double z, int r, int g, int b, int a, float thickness) {
+        float red = r / 255f;
+        float green = g / 255f;
+        float blue = b / 255f;
+        float alpha = a / 255f;
         drawLineToPos(x, y, z, red, green, blue, alpha, thickness);
     }
 
@@ -270,7 +281,7 @@ public class KamiTessellator extends Tessellator {
         Vec3d eyes = mc.player.getLook(pTicks);
         final boolean bobbing = mc.gameSettings.viewBobbing;
 
-        prepareLine();
+        prepareLine(true);
         GL11.glLineWidth(thickness);
         GL11.glColor4f(red, green, blue, alpha);
         mc.gameSettings.viewBobbing = false;
@@ -282,7 +293,7 @@ public class KamiTessellator extends Tessellator {
         mc.gameSettings.viewBobbing = bobbing;
         mc.entityRenderer.setupCameraTransform(pTicks, 0);
         GL11.glColor3d(1.0, 1.0, 1.0);
-        releaseLine();
+        releaseLine(true);
     }
 
 
@@ -321,46 +332,10 @@ public class KamiTessellator extends Tessellator {
     /**
      * @author Xiaro
      * <p>
-     * Draws outline of given entity's bounding box, uses int rgba (0 - 255)
-     */
-    public static void drawBoundingBox(Entity entity, int r, int g, int b, int a, float thickness) {
-        Minecraft mc = Minecraft.getMinecraft();
-        double pTicks = mc.getRenderPartialTicks();
-        double xOffset = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * pTicks) - entity.posX;
-        double yOffset = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * pTicks) - entity.posY;
-        double zOffset = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * pTicks) - entity.posZ;
-        final AxisAlignedBB box = entity.getEntityBoundingBox().offset(xOffset, yOffset, zOffset);
-        drawBoundingBox(box, r, g, b, a, thickness);
-    }
-
-    /**
-     * @author Xiaro
-     * <p>
-     * Draws outline of given axis aligned bounding box, uses int colur and int alpha
-     */
-    public static void drawBoundingBox(AxisAlignedBB box, int colour, int a, float thickness) {
-        drawBoundingBox(box, colour, a / 255f, thickness);
-    }
-
-    /**
-     * @author Xiaro
-     * <p>
-     * Draws outline of given axis aligned bounding box, uses int colur and float alpha
-     */
-    public static void drawBoundingBox(AxisAlignedBB box, int colour, float a, float thickness) {
-        float r = ((float) (colour >> 16 & 0xFF)) / 255;
-        float g = ((float) (colour >> 8 & 0xFF)) / 255;
-        float b = ((float) (colour & 0xFF)) / 255;
-        drawBoundingBox(box, r, g, b, a, thickness);
-    }
-
-    /**
-     * @author Xiaro
-     * <p>
      * Draws outline of given axis aligned bounding box, uses int rgba (0 - 255)
      */
-    public static void drawBoundingBox(AxisAlignedBB box, int r, int g, int b, int a, float thickness) {
-        drawBoundingBox(box, r / 255f, g / 255f, b / 255f, a / 255f, thickness);
+    public static void drawBoundingBox(AxisAlignedBB box, int r, int g, int b, int a, float thickness, boolean through) {
+        drawBoundingBox(box, r / 255f, g / 255f, b / 255f, a / 255f, thickness, through);
     }
 
     /**
@@ -368,7 +343,7 @@ public class KamiTessellator extends Tessellator {
      * <p>
      * Draws outline of given axis aligned bounding box
      */
-    public static void drawBoundingBox(AxisAlignedBB box, float r, float g, float b, float a, float thickness) {
+    public static void drawBoundingBox(AxisAlignedBB box, float r, float g, float b, float a, float thickness, boolean through) {
         Minecraft mc = Minecraft.getMinecraft();
         double xOffset = mc.renderManager.renderPosX;
         double yOffset = mc.renderManager.renderPosY;
@@ -378,7 +353,7 @@ public class KamiTessellator extends Tessellator {
         double[] yArray = new double[]{box.minY, box.maxY};
         double[] zArray = new double[]{box.minZ, box.maxZ};
 
-        prepareLine();
+        prepareLine(through);
         GL11.glLineWidth(thickness);
         GL11.glColor4f(r, g, b, a);
         for (double y : yArray) { /* Draw out top edges and bottom edges */
@@ -402,10 +377,10 @@ public class KamiTessellator extends Tessellator {
         }
         GL11.glEnd();
         GL11.glColor3d(1.0, 1.0, 1.0);
-        releaseLine();
+        releaseLine(through);
     }
 
-    public static void prepareLine() {
+    public static void prepareLine(boolean through) {
         GlStateManager.pushMatrix();
         glDepthMask(false);
         glEnable(GL_LINE_SMOOTH);
@@ -413,16 +388,24 @@ public class KamiTessellator extends Tessellator {
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         GlStateManager.shadeModel(GL_SMOOTH);
         GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
+        if (through) {
+            GlStateManager.disableDepth();
+        } else {
+            GlStateManager.enableDepth();
+        }
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
     }
 
-    public static void releaseLine() {
-        GlStateManager.disableBlend();
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
+    public static void releaseLine(boolean through) {
         GlStateManager.enableLighting();
+        GlStateManager.enableTexture2D();
+        if (through) {
+            GlStateManager.enableDepth();
+        } else {
+            GlStateManager.disableDepth();
+        }
+        GlStateManager.disableBlend();
         GlStateManager.shadeModel(GL_FLAT);
         glDisable(GL32.GL_DEPTH_CLAMP);
         glDisable(GL_LINE_SMOOTH);

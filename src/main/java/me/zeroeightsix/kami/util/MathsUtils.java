@@ -118,16 +118,19 @@ public class MathsUtils {
     }
 
     public static int convertRange(int valueIn, int minIn, int maxIn, int minOut, int maxOut) {
-        final double rangeIn = maxIn - minIn;
-        final double rangeOut = maxOut - minOut;
-        final int convertedIn = (int) ((valueIn - minIn) * (rangeOut / rangeIn) + minOut);
-        return Math.min(Math.max(convertedIn, minOut),maxOut);
+        return (int) convertRange((double) valueIn, minIn, maxIn, minOut, maxOut);
     }
 
     public static float convertRange(float valueIn, float minIn, float maxIn, float minOut, float maxOut) {
+        return (float) convertRange((double) valueIn, minIn, maxIn, minOut, maxOut);
+    }
+
+    public static double convertRange(double valueIn, double minIn, double maxIn, double minOut, double maxOut) {
         final double rangeIn = maxIn - minIn;
-        final double rangeOut = maxOut - maxIn;
-        final float convertedIn = (float) ((valueIn - minIn) * (rangeOut / rangeIn) + minOut);
-        return Math.min(Math.max(convertedIn, minOut),maxOut);
+        final double rangeOut = maxOut - minOut;
+        final double convertedIn = ((valueIn - minIn) * (rangeOut / rangeIn) + minOut);
+        final double acutalMin = Math.min(minOut, maxOut);
+        final double acutalMax = Math.max(minOut, maxOut);
+        return Math.min(Math.max(convertedIn, acutalMin), acutalMax);
     }
 }
