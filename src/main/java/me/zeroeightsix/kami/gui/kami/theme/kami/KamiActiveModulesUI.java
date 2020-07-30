@@ -34,8 +34,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         activeMods = MODULE_MANAGER.getModuleT(ActiveModules.class);
-
         FontRenderer renderer = Wrapper.getFontRenderer();
+
         List<Module> mods = MODULE_MANAGER.getModules().stream()
                 .filter(Module::isEnabled)
                 .filter(Module -> (activeMods.hidden.getValue() || Module.isOnArray()))
