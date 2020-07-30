@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.gui.kami;
 
 import baritone.api.BaritoneAPI;
 import com.mojang.realmsclient.gui.ChatFormatting;
+import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
 import me.zeroeightsix.kami.gui.kami.component.Radar;
@@ -78,7 +79,7 @@ public class KamiGUI extends GUI {
             }
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
-            Scrollpane scrollpane = pair.getKey();
+            Scrollpane scrollpane = pair.getFirst();
             CheckButton checkButton = new CheckButton(module.getName(), module.getDescription());
             checkButton.setToggled(module.isEnabled());
 
@@ -93,9 +94,9 @@ public class KamiGUI extends GUI {
                 @Override
                 public void onMouseDown(MouseButtonEvent event) {
                     if (event.getButton() == 1) { // Right click
-                        pair.getValue().setModule(module);
-                        pair.getValue().setX(event.getX() + checkButton.getX());
-                        pair.getValue().setY(event.getY() + checkButton.getY());
+                        pair.getSecond().setModule(module);
+                        pair.getSecond().setX(event.getX() + checkButton.getX());
+                        pair.getSecond().setY(event.getY() + checkButton.getY());
                     }
                 }
 
@@ -137,9 +138,9 @@ public class KamiGUI extends GUI {
             Stretcherlayout stretcherlayout = new Stretcherlayout(1);
             stretcherlayout.COMPONENT_OFFSET_Y = 1;
             Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getName());
-            Scrollpane scrollpane = entry.getValue().getKey();
+            Scrollpane scrollpane = entry.getValue().getFirst();
             frame.addChild(scrollpane);
-            frame.addChild(entry.getValue().getValue());
+            frame.addChild(entry.getValue().getSecond());
             scrollpane.setOriginOffsetY(0);
             scrollpane.setOriginOffsetX(0);
             frame.setCloseable(false);
