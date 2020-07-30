@@ -354,4 +354,10 @@ object EntityUtils {
         }
         return null
     }
+
+    fun getRidingEntity(): Entity? {
+        return mc.player?.let {
+            mc.player.ridingEntity
+        }
+    }
 }

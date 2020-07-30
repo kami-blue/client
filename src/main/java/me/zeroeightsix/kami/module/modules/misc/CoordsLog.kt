@@ -15,7 +15,7 @@ class CoordsLog : Module() {
     private val forceLogOnDeath = register(Settings.b("SaveDeathCoords", true))
     private val deathInChat = register(Settings.b("LogInChat", true))
     private val autoLog = register(Settings.b("Delay", false))
-    private val delay = register(Settings.doubleBuilder("Delay").withMinimum(1.0).withValue(15.0).withMaximum(60.0).build())
+    private val delay = register(Settings.doubleBuilder("DelayT").withMinimum(1.0).withValue(15.0).withMaximum(60.0).build())
     private val checkDuplicates = register(Settings.b("AvoidDuplicates", true))
 
     private var previousCoord: String? = null

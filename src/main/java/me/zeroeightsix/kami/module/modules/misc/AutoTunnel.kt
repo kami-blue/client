@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
         category = Module.Category.MISC
 )
 class AutoTunnel : Module() {
+    private var backfill = register(Settings.b("Backfill", false))
     private var height = register(Settings.integerBuilder("Height").withRange(1, 10).withValue(2).build())
     private var width = register(Settings.integerBuilder("Width").withRange(1, 10).withValue(1).build())
 
@@ -33,6 +34,7 @@ class AutoTunnel : Module() {
     init {
         height.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }
         width.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }
+        backfill.settingListener = Setting.SettingListeners { if (mc.player != null) BaritoneAPI.getSettings().backfill.value = backfill.value }
     }
 
     override fun onEnable() {

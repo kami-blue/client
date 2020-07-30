@@ -50,6 +50,27 @@ public class CoordUtil {
         }
     }
 
+    public static boolean removeCoord(Coordinate coordinate, String filename) {
+        boolean removed = false;
+        try {
+            ArrayList<CoordinateInfo> coords = readCoords(filename);
+            for (CoordinateInfo coord : coords) {
+                if (coord.xyz.x == coordinate.x && coord.xyz.y == coordinate.y && coord.xyz.z == coordinate.z) {
+                    coords.remove(coord);
+                    removed = true;
+                    break;
+                }
+            }
+            FileWriter writer = new FileWriter(filename);
+            gson.toJson(coords, writer);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return removed;
+    }
+
     public static boolean removeCoord(String id, String filename) {
         boolean removed = false;
         try {

@@ -22,13 +22,13 @@ class PacketLogger : Module() {
     private val lines: MutableList<String> = ArrayList()
     private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
 
-    public override fun onEnable() { readToList() }
+    public override fun onEnable() { if (mc.player == null) disable() else readToList() }
 
-    public override fun onDisable() { write() }
+    public override fun onDisable() { if (mc.player == null) return else write() }
 
     @EventHandler
     var packetListener = Listener( EventHook { event: PacketEvent.Send ->
-        if (mc.player == null) return@EventHook
+        if (mc.player == null) { disable(); return@EventHook }
         addLine(event.packet)
     })
 
