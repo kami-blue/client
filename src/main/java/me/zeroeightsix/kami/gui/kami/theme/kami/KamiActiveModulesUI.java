@@ -37,7 +37,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
         FontRenderer renderer = Wrapper.getFontRenderer();
         List<Module> mods = MODULE_MANAGER.getModules().stream()
-                .filter(Module::isEnabled).filter(Module -> (activeMods.hidden.getValue() || Module.isOnArray()))
+                .filter(Module::isEnabled)
+                .filter(Module -> (activeMods.hidden.getValue() || Module.isOnArray()))
                 .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
