@@ -30,6 +30,7 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 public class ActiveModules extends Module {
     private Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
     public Setting<Boolean> potion = register(Settings.b("PotionsMove", false));
+    public Setting<Boolean> hidden = register(Settings.b("ShowHidden", false));
     public Setting<Mode> mode = register(Settings.e("Mode", Mode.RAINBOW));
     private Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("SpeedR").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
     public Setting<Integer> saturationR = register(Settings.integerBuilder().withName("SaturationR").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());

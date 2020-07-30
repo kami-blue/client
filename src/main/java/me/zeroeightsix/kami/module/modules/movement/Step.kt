@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getRidingEntity
 import me.zeroeightsix.kami.util.PacketHelper
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.CPacketPlayer
@@ -96,7 +95,7 @@ class Step : Module() {
      */
     @EventHandler
     var listener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
-        if (mode.value != Mode.PACKET) return@EventHook
+        if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@EventHook
         val player = event.entityLiving as EntityPlayer
         updateStepHeight(player)
         updateUnStep(player)
@@ -112,7 +111,7 @@ class Step : Module() {
 
     @EventHandler
     var packetListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null || mode.value != Mode.PACKET) return@EventHook
+        if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@EventHook
 
         if (event.packet is CPacketPlayer.Position || event.packet is PositionRotation) {
             val packetPlayer = event.packet as CPacketPlayer
