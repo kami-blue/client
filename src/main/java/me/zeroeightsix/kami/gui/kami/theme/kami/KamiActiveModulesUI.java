@@ -63,7 +63,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 break;
         }
 
-        for (int i = 0; i < mods.size(); i++) {
+        for (int i = 0 ; i < mods.size() ; i++) {
             Module module = mods.get(i);
             int rgb;
 
