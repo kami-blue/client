@@ -1,5 +1,9 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
@@ -9,11 +13,13 @@ import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
 import me.zeroeightsix.kami.util.EntityUtils.faceEntity
+import me.zeroeightsix.kami.util.EntityUtils.getFaceEntityRotation
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
+import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
 
 /**
@@ -32,6 +38,7 @@ class Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
     private val priority = register(Settings.e<EntityPriority>("Priority", EntityPriority.DISTANCE))
     private val multi = register(Settings.b("Multi", true))
+    private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value }.build())
     private val lockView = register(Settings.booleanBuilder("LockView").withValue(false).withVisibility { !multi.value }.build())
     private val waitTick = register(Settings.floatBuilder("SpamDelay").withMinimum(0.1f).withValue(2.0f).withMaximum(40.0f).withVisibility { delayMode.value == WaitMode.SPAM }.build())
     private val eat = register(Settings.b("WhileEating", true))
@@ -51,8 +58,9 @@ class Aura : Module() {
     private val prefer = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
     private val disableOnDeath = register(Settings.b("DisableOnDeath", false))
 
-    private var waitCounter = 0
     private var startTime: Long = 0
+    private var yaw = 0f
+    private var pitch = 0f
     var isAttacking = false // returned to AutoEat
 
     private enum class WaitMode {
@@ -63,22 +71,35 @@ class Aura : Module() {
         SWORD, AXE, NONE
     }
 
+    @EventHandler
+    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
+        if (mc.player == null || !spoofRotation.value || !isAttacking || event.packet !is CPacketPlayer) return@EventHook
+        val packet = event.packet as CPacketPlayer
+        packet.yaw = yaw
+        packet.pitch = pitch
+    })
+
     override fun onUpdate() {
         if (mc.player == null || mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()
             return
         }
+        if (spoofRotation.value) {
+            mc.player.rotationYaw += Math.random().toFloat() * 0.005f - 0.0025f
+            mc.player.rotationPitch += Math.random().toFloat() * 0.005f - 0.0025f
+        }
 
-        waitCounter++
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val targetList = getTargetList(player, mob, ignoreWalls.value, delayMode.value == WaitMode.SPAM, range.value)
         if (targetList.isNotEmpty()) {
             /* Pausing baritone and other stuff */
-            if (pauseBaritone.value && !BaritoneUtils.paused) {
+            if (!isAttacking) {
                 isAttacking = true
-                startTime = 0L
-                pause()
+                if (pauseBaritone.value && !BaritoneUtils.paused) {
+                    startTime = 0L
+                    pause()
+                }
             }
 
             if (autoTool.value) equipBestWeapon(prefer.value)
@@ -88,17 +109,20 @@ class Aura : Module() {
                 }
             } else {
                 val target = getPrioritizedTarget(targetList, priority.value)
+                if (spoofRotation.value) {
+                    val rotation = getFaceEntityRotation(target)
+                    yaw = rotation[0]
+                    pitch = rotation[1]
+                }
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
             }
-        } else if (canResume() && BaritoneUtils.paused) {
+        } else if (isAttacking) {
             isAttacking = false
-            unpause()
+            if (canResume() && isAttacking && BaritoneUtils.paused) {
+                unpause()
+            }
         }
-    }
-
-    override fun onEnable() {
-        waitCounter = 0
     }
 
     private fun canAttack(): Boolean {
