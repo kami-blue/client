@@ -1,5 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CoordUtil
@@ -7,6 +10,7 @@ import me.zeroeightsix.kami.util.Coordinate
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * @author dominikaaaa
@@ -21,22 +25,13 @@ class LogoutLogger : Module() {
     private var saveToFile = register(Settings.b("SaveToFile", true))
     private var print = register(Settings.b("PrintToChat", true))
 
-    private val loggedPlayers = HashMap<String, Coordinate>()
+    private var loggedPlayers = HashMap<String, Coordinate>()
     private var onlinePlayers = mutableListOf<NetworkPlayerInfo>()
     private var ticks = 0
-    private var hasCleared = false
 
     override fun onUpdate() {
-        if (mc.player == null) {
-            if (!hasCleared) {
-                loggedPlayers.clear()
-                onlinePlayers.clear()
-                hasCleared = true
-            }
-            return
-        }
+        if (mc.player == null) return
 
-        hasCleared = false
         ticks++
 
         for (player in mc.world.loadedEntityList.filterIsInstance<EntityPlayer>()) {
@@ -65,6 +60,18 @@ class LogoutLogger : Module() {
             ticks = 0
         }
     }
+
+    @EventHandler
+    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
+        loggedPlayers.clear()
+        onlinePlayers.clear()
+    })
+
+    @EventHandler
+    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+        loggedPlayers.clear()
+        onlinePlayers.clear()
+    })
 
     private fun coords(coordinate: Coordinate): String {
         return coordinate.x.toString() + ", " + coordinate.y + ", " + coordinate.z
