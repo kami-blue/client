@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.io.IOUtils
 import java.io.IOException
@@ -49,20 +50,12 @@ object EntityUtils {
     /**
      * Find the entities interpolated amount
      */
-    fun getInterpolatedAmount(entity: Entity, x: Double, y: Double, z: Double): Vec3d {
+    fun getInterpolatedAmount(entity: Entity, ticks: Float): Vec3d {
         return Vec3d(
-                (entity.posX - entity.lastTickPosX) * x,
-                (entity.posY - entity.lastTickPosY) * y,
-                (entity.posZ - entity.lastTickPosZ) * z
+                (entity.posX - entity.lastTickPosX) * ticks,
+                (entity.posY - entity.lastTickPosY) * ticks,
+                (entity.posZ - entity.lastTickPosZ) * ticks
         )
-    }
-
-    fun getInterpolatedAmount(entity: Entity, vec: Vec3d): Vec3d {
-        return getInterpolatedAmount(entity, vec.x, vec.y, vec.z)
-    }
-
-    fun getInterpolatedAmount(entity: Entity, ticks: Double): Vec3d {
-        return getInterpolatedAmount(entity, ticks, ticks, ticks)
     }
 
     fun isMobAggressive(entity: Entity): Boolean {
@@ -121,7 +114,7 @@ object EntityUtils {
      */
     @JvmStatic
     fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d {
-        return Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).add(getInterpolatedAmount(entity, ticks.toDouble()))
+        return Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).add(getInterpolatedAmount(entity, ticks))
     }
 
     @JvmStatic
@@ -320,7 +313,7 @@ object EntityUtils {
         return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
     }
 
-    fun faceEntity(entity: Entity) {
+    fun getFaceEntityRotation(entity: Entity): Array<Float> {
         val diffX = entity.posX - mc.player.posX
         val diffZ = entity.posZ - mc.player.posZ
         val diffY = mc.player.posY + mc.player.getEyeHeight().toDouble() - (entity.posY + entity.eyeHeight.toDouble())
@@ -329,8 +322,14 @@ object EntityUtils {
         val yaw = MathsUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
         val pitch = MathsUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
 
-        mc.player.rotationYaw = yaw
-        mc.player.rotationPitch = -pitch
+        return arrayOf(yaw, -pitch)
+    }
+
+    fun faceEntity(entity: Entity) {
+        val rotation = getFaceEntityRotation(entity)
+
+        mc.player.rotationYaw = rotation[0]
+        mc.player.rotationPitch = rotation[1]
     }
 
     fun getDroppedItems(itemId: Int, range: Float): Array<Entity>? {
