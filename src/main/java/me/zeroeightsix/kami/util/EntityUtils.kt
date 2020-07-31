@@ -316,13 +316,13 @@ object EntityUtils {
     fun getFaceEntityRotation(entity: Entity): Array<Float> {
         val diffX = entity.posX - mc.player.posX
         val diffZ = entity.posZ - mc.player.posZ
-        val diffY = mc.player.posY + mc.player.getEyeHeight().toDouble() - (entity.posY + entity.eyeHeight.toDouble())
+        val diffY = (entity.boundingBox.center.y) - (mc.player.posY + mc.player.getEyeHeight())
 
         val xz = MathHelper.sqrt(diffX * diffX + diffZ * diffZ).toDouble()
         val yaw = MathsUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
         val pitch = MathsUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
 
-        return arrayOf(yaw, -pitch)
+        return arrayOf(yaw, pitch)
     }
 
     fun faceEntity(entity: Entity) {
