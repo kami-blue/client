@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.setting;
 
-import me.zeroeightsix.kami.util.Pair;
+import kotlin.Pair;
 
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -28,7 +28,7 @@ public class SettingsRegister {
 
     public static void register(String name, Setting setting) {
         Pair<String, SettingsRegister> pair = dig(name);
-        pair.getValue().put(pair.getKey(), setting);
+        pair.getSecond().put(pair.getFirst(), setting);
     }
 
     public Setting getSetting(String group) {
@@ -37,7 +37,7 @@ public class SettingsRegister {
 
     public static Setting get(String group) {
         Pair<String, SettingsRegister> pair = dig(group);
-        return pair.getValue().getSetting(pair.getKey());
+        return pair.getSecond().getSetting(pair.getFirst());
     }
 
     private static Pair<String, SettingsRegister> dig(String group) {
