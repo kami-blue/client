@@ -1,3 +1,8 @@
+/*
+ * This file is adapted from 2b2t-Utilities/emoji-api which is licensed under MIT.
+ * You can find a copy of the original license here: https://github.com/2b2t-Utilities/emoji-api/blob/35b0683/LICENSE
+ */
+
 package me.zeroeightsix.kami.emoji
 
 import me.zeroeightsix.kami.util.JsonUtils
@@ -27,11 +32,13 @@ class KamiMoji {
                 val globalVer = JsonUtils.streamToJson(URL(VERSION_URL).openStream())
                 val localVer = JsonUtils.streamToJson(FileInputStream(LOCAL_VERSION))
 
-                if (!globalVer.has("version")) {
-                    updateEmojis()
-                } else {
-                    if (globalVer["version"].asInt != localVer["version"].asInt) {
+                if (globalVer != null) {
+                    if (!globalVer.has("version")) {
                         updateEmojis()
+                    } else {
+                        if (globalVer["version"].asInt != localVer?.get("version")?.asInt ?: 8) {
+                            updateEmojis()
+                        }
                     }
                 }
             }
