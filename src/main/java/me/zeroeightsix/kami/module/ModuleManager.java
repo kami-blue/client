@@ -3,15 +3,11 @@ package me.zeroeightsix.kami.module;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
-import me.zeroeightsix.kami.util.ClassFinder;
-import me.zeroeightsix.kami.util.EntityUtils;
-import me.zeroeightsix.kami.util.KamiTessellator;
-import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -65,13 +61,7 @@ public class ModuleManager {
         Minecraft.getMinecraft().profiler.startSection("kami");
 
         Minecraft.getMinecraft().profiler.startSection("setup");
-//        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.disableDepth();
+        KamiTessellatorNew.prepareGL();
 
         GlStateManager.glLineWidth(1f);
         Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
@@ -90,15 +80,7 @@ public class ModuleManager {
 
         Minecraft.getMinecraft().profiler.startSection("release");
         GlStateManager.glLineWidth(1f);
-
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableDepth();
-        GlStateManager.enableCull();
-//        GlStateManager.popMatrix();
-        KamiTessellator.releaseGL();
+        KamiTessellatorNew.releaseGL();
         Minecraft.getMinecraft().profiler.endSection();
     }
 
@@ -123,7 +105,7 @@ public class ModuleManager {
      * Get typed module object so that no casting is needed afterwards.
      *
      * @param clazz Module class
-     * @param <T> Type of module
+     * @param <T>   Type of module
      * @return Object
      */
     public <T extends Module> T getModuleT(Class<T> clazz) {
