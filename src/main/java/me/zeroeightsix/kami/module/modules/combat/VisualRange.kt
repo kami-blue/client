@@ -51,7 +51,7 @@ class VisualRange : Module() {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
                     if (logToFile.value) {
-                        Waypoint.writePlayerCoords("$playerName spotted!")
+                        Waypoint.writePlayerCoords("$playerName spotted!", 4)
                     }
                     if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
                     return
