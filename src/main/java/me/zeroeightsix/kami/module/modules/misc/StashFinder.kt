@@ -102,7 +102,7 @@ class StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            Waypoint.createWaypoint(chunkStats.getBlockPos(), chunkStats.toString())
+            Waypoint.createWaypoint(chunkStats.getBlockPos(), chunkStats.toString(), 2)
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
