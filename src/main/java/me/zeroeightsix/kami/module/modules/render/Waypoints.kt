@@ -36,7 +36,6 @@ class Waypoints : Module() {
     private val fr = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { customFontColor.value && page.value == Page.GENERIC_SETTINGS }.build())
     private val fg = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { customFontColor.value && page.value == Page.GENERIC_SETTINGS }.build())
     private val fb = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { customFontColor.value && page.value == Page.GENERIC_SETTINGS }.build())
-    private val test = register(Settings.doubleBuilder("test").withMinimum(-2.0).withMaximum(2.0).withValue(0.0).build())
 
     /* Waypoint Types */
     private val t0 = register(Settings.booleanBuilder("Normal").withValue(true).withVisibility { page.value == Page.WAYPOINT_TYPES }.build())
