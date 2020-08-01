@@ -4,17 +4,19 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourConverter.rgbToInt
+import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.ColourUtils
-import me.zeroeightsix.kami.util.ESPHelper.drawESPBox
+import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.entity.item.EntityMinecartChest
+import net.minecraft.entity.item.EntityMinecartFurnace
 import net.minecraft.entity.item.EntityMinecartHopper
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
-import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by 086 on 10/12/2017.
@@ -48,6 +50,61 @@ class StorageESP : Module() {
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { tracer.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
+    private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
+
+    override fun onWorldRender(event: RenderEvent) {
+        val renderer = ESPRenderer(event.partialTicks)
+        renderer.aFilled = if (filled.value) aFilled.value else 0
+        renderer.aOutline = if (outline.value) aOutline.value else 0
+        renderer.aTracer = if (tracer.value) aTracer.value else 0
+        renderer.thickness = thickness.value
+        for ((box, pair) in renderList) {
+            renderer.add(box, pair.first, pair.second)
+        }
+        renderer.render()
+    }
+
+    override fun onUpdate() {
+        renderList.clear()
+        for (tileEntity in mc.world.loadedTileEntityList) {
+            if (tileEntity is TileEntityChest && chest.value
+                    || tileEntity is TileEntityDispenser && dispenser.value
+                    || tileEntity is TileEntityShulkerBox && shulker.value
+                    || tileEntity is TileEntityEnderChest && enderChest.value
+                    || tileEntity is TileEntityFurnace && furnace.value
+                    || tileEntity is TileEntityHopper && hopper.value) {
+                val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
+                val rgb = getTileEntityColor(tileEntity)
+                var side = GeometryMasks.Quad.ALL
+                if (tileEntity is TileEntityChest) {
+                    // Leave only the colliding face and then flip the bits (~) to have ALL but that face
+                    if (tileEntity.adjacentChestZNeg != null) side = (side and GeometryMasks.Quad.NORTH).inv()
+                    if (tileEntity.adjacentChestXPos != null) side = (side and GeometryMasks.Quad.EAST).inv()
+                    if (tileEntity.adjacentChestZPos != null) side = (side and GeometryMasks.Quad.SOUTH).inv()
+                    if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
+                }
+                if (rgb != -1) {
+                    val rgba = ColourHolder((rgb shr 16), (rgb shr 8 and 255), (rgb and 255))
+                    renderList[box] = Pair(rgba, side)
+                }
+            }
+        }
+
+        for (entity in mc.world.loadedEntityList) {
+            if (entity is EntityItemFrame && frame.value
+                    || (entity is EntityMinecartChest
+                            || entity is EntityMinecartHopper
+                            || entity is EntityMinecartFurnace) && cart.value) {
+                val box = entity.renderBoundingBox
+                val rgb = getEntityColor(entity)
+                if (rgb != -1) {
+                    val rgba = ColourHolder((rgb shr 16), (rgb shr 8 and 255), (rgb and 255))
+                    renderList[box] = Pair(rgba, GeometryMasks.Quad.ALL)
+                }
+            }
+        }
+    }
+
     private fun getTileEntityColor(tileEntity: TileEntity): Int {
         return if (customColours.value) rgbToInt(r.value, g.value, b.value) else when (tileEntity) {
             is TileEntityChest -> ColourUtils.Colors.ORANGE
@@ -69,45 +126,4 @@ class StorageESP : Module() {
             else -> -1
         }
     }
-
-    override fun onWorldRender(event: RenderEvent) {
-        val a = ArrayList<Triplet<AxisAlignedBB, Int, Int>>()
-        for (tileEntity in mc.world.loadedTileEntityList) {
-            val box = mc.world.getBlockState(tileEntity.pos).getCollisionBoundingBox(mc.world, tileEntity.pos)?.offset(tileEntity.pos)
-                    ?: tileEntity.renderBoundingBox
-            val color = getTileEntityColor(tileEntity)
-            var side = GeometryMasks.Quad.ALL
-            if (tileEntity is TileEntityChest) {
-                // Leave only the colliding face and then flip the bits (~) to have ALL but that face
-                if (tileEntity.adjacentChestZNeg != null) side = (side and GeometryMasks.Quad.NORTH).inv()
-                if (tileEntity.adjacentChestXPos != null) side = (side and GeometryMasks.Quad.EAST).inv()
-                if (tileEntity.adjacentChestZPos != null) side = (side and GeometryMasks.Quad.SOUTH).inv()
-                if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
-            }
-            if (tileEntity is TileEntityChest && chest.value
-                    || tileEntity is TileEntityDispenser && dispenser.value
-                    || tileEntity is TileEntityShulkerBox && shulker.value
-                    || tileEntity is TileEntityEnderChest && enderChest.value
-                    || tileEntity is TileEntityFurnace && furnace.value
-                    || tileEntity is TileEntityHopper && hopper.value) {
-                if (color != -1) a.add(Triplet(box, color, side))
-            }
-        }
-
-        for (entity in mc.world.loadedEntityList) {
-            val box = entity.renderBoundingBox
-            val color = getEntityColor(entity)
-            if (entity is EntityItemFrame && frame.value
-                    || (entity is EntityMinecartChest || entity is EntityMinecartHopper) && cart.value) {
-                if (color != -1) a.add(Triplet(box, color, GeometryMasks.Quad.ALL))
-            }
-        }
-
-        //pair.first = pos, pair.second = color
-        for (pair in a) {
-            drawESPBox(pair.first, filled.value, outline.value, tracer.value, pair.second, aFilled.value, aOutline.value, aTracer.value, pair.third, thickness.value, true)
-        }
-    }
-
-    inner class Triplet<T, U, V>(val first: T, val second: U, val third: V)
 }

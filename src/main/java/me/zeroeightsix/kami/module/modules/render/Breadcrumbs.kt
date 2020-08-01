@@ -7,8 +7,9 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.Vec3d
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
@@ -51,8 +52,8 @@ class Breadcrumbs : Module() {
         /* Adding point to list */
         var currentPos = getInterpolatedPos(mc.player, event.partialTicks)
         if (mc.player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
-        val minDist = if (isEnabled) (2.01f - smooth.value / 5f) else (2.01f - smooth.value / 5f) * 2f
-        if (posList.isEmpty()) {
+        val minDist = if (isEnabled) (5.01f - smooth.value / 2f) else (5.01f - smooth.value / 2f) * 2f
+        if (posList.isEmpty() && currentPos.x != 0.0 && currentPos.y != 0.0 && currentPos.z != 0.0 ) {
             posList.add(currentPos)
         } else if (currentPos.distanceTo(posList.last()) > minDist) {
             posList.add(currentPos)
@@ -61,19 +62,15 @@ class Breadcrumbs : Module() {
         /* Rendering */
         if (posList.isNotEmpty() && isEnabled) {
             val offset = Vec3d(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY + yOffset.value + 0.05, -mc.renderManager.renderPosZ)
-            GL11.glColor4f(r.value / 255f, g.value / 255f, b.value / 255f, a.value / 255f)
-            GL11.glLineWidth(thickness.value)
-            KamiTessellator.prepareLine(throughBlocks.value)
-            GL11.glBegin(GL11.GL_LINE_STRIP)
+            val buffer = KamiTessellator.buffer
+            GlStateManager.depthMask(!throughBlocks.value)
+            GlStateManager.glLineWidth(thickness.value)
+            KamiTessellator.begin(GL_LINE_STRIP)
             for (pos in posList) {
-                val renderPos = pos.add(offset)
-                GL11.glVertex3d(renderPos.x, renderPos.y, renderPos.z)
+                buffer.pos(pos.add(offset).x, pos.add(offset).y, pos.add(offset).z).color(r.value, g.value, b.value, a.value).endVertex()
             }
-            val renderCurrentPos = currentPos.add(offset)
-            GL11.glVertex3d(renderCurrentPos.x, renderCurrentPos.y, renderCurrentPos.z)
-            GL11.glEnd()
-            KamiTessellator.releaseLine(throughBlocks.value)
-            GL11.glColor3d(1.0, 1.0, 1.0)
+            buffer.pos(currentPos.add(offset).x, currentPos.add(offset).y, currentPos.add(offset).z).color(r.value, g.value, b.value, a.value).endVertex()
+            KamiTessellator.render()
         }
     }
 

@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourConverter.rgbToInt
-import me.zeroeightsix.kami.util.ESPHelper.drawESPBlock
+import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
@@ -13,7 +13,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.chunk.Chunk
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_VENDOR
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -21,6 +21,7 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.sqrt
 
 /**
@@ -38,7 +39,7 @@ class Search : Module() {
     private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(100, 5000).build())
     var overrideWarning = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
     private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
-    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(128).withRange(16, 1024).build())
+    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(128).withRange(16, 4096).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
     private val tracer = register(Settings.b("Tracer", true))
@@ -92,12 +93,11 @@ class Search : Module() {
     /* End of eject list */
 
     private val loadChunks = ConcurrentLinkedQueue<Chunk>()
-    private var thread = Thread(Runnable { updateMainList() })
     private val chunkThreads = Executors.newCachedThreadPool()
     private val mainList = ConcurrentHashMap<ChunkPos, Map<BlockPos, Block>>()
-    private val renderList = ConcurrentHashMap<BlockPos, Int>()
-    private var startTimeChunk = System.currentTimeMillis()
-    private var startTimeRender = System.currentTimeMillis()
+    private val renderList = ConcurrentHashMap<BlockPos, ColourHolder>()
+    private var startTimeChunk = 0L
+    private var startTimeRender = 0L
     private var emptyList = false
 
     override fun getHudInfo(): String {
@@ -105,25 +105,24 @@ class Search : Module() {
     }
 
     override fun onEnable() {
-        if (!overrideWarning.value && GlStateManager.glGetString(GL11.GL_VENDOR).contains("Intel")) {
+        if (!overrideWarning.value && GlStateManager.glGetString(GL_VENDOR).contains("Intel")) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
             MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${Command.getCommandPrefix()}search override&f command")
             disable()
             return
         }
         searchArrayList = searchGetArrayList()
-
-        if (thread.state == Thread.State.NEW || thread.state == Thread.State.TERMINATED) {
-            thread = Thread(Runnable { updateMainList() })
-            thread.priority = 2
-            thread.start()
-        }
+        startTimeChunk = 0L
+        startTimeRender = 0L
     }
 
     override fun onUpdate() {
         if (shouldUpdateChunk()) {
             Thread(Runnable {
                 updateLoadedChunkList()
+            }).start()
+            Thread(Runnable {
+                updateMainList()
             }).start()
         }
 
@@ -142,19 +141,21 @@ class Search : Module() {
         }
     }
 
-    override fun onWorldRender(event: RenderEvent?) {
-        if (renderList.isNotEmpty() && (filled.value || outline.value || tracer.value)) {
-            var colour = rgbToInt(r.value, g.value, b.value)
-            for ((key, value) in renderList.entries) {
-                if (value != -1) colour = value
-                drawESPBlock(key, filled.value, outline.value, tracer.value, colour, aFilled.value, aOutline.value, aTracer.value, thickness.value, true)
-            }
+    override fun onWorldRender(event: RenderEvent) {
+        val renderer = ESPRenderer(event.partialTicks)
+        renderer.aFilled = if (filled.value) aFilled.value else 0
+        renderer.aOutline = if (outline.value) aOutline.value else 0
+        renderer.aTracer = if (tracer.value) aTracer.value else 0
+        renderer.thickness = thickness.value
+        for ((pos, colour) in renderList) {
+            renderer.add(pos, colour)
         }
+        renderer.render()
     }
 
     /* Main list updating */
     private fun shouldUpdateChunk(): Boolean {
-        return if (System.currentTimeMillis() - startTimeChunk < 3000L) {
+        return if (System.currentTimeMillis() - startTimeChunk < max(renderUpdate.value * 2, 1000)) {
             false
         } else {
             startTimeChunk = System.currentTimeMillis()
@@ -184,19 +185,16 @@ class Search : Module() {
     }
 
     private fun updateMainList() {
-        while (isEnabled) {
-            val list = loadChunks
-            for (chunk in list) {
-                val thread = Thread(Runnable {
-                    val pos = chunk.pos
-                    val found = findBlocksInChunk(chunk, searchArrayList.toTypedArray())
-                    mainList[pos] = found
-                })
-                thread.priority = 1
-                chunkThreads.execute(thread)
-                Thread.sleep(5L) /* Don't search all chunks in once to avoid lag */
-            }
-            Thread.sleep(renderUpdate.value.toLong())
+        val list = loadChunks
+        for (chunk in list) {
+            val thread = Thread(Runnable {
+                val pos = chunk.pos
+                val found = findBlocksInChunk(chunk, searchArrayList.toTypedArray())
+                mainList[pos] = found
+            })
+            thread.priority = 1
+            chunkThreads.execute(thread)
+            Thread.sleep(5L) /* Don't search all chunks in once to avoid lag */
         }
     }
 
@@ -229,14 +227,14 @@ class Search : Module() {
         }
     }
 
-    private fun getRenderList(): Map<BlockPos, Int> {
-        val cacheDistMap = TreeMap<Double, Map<BlockPos, Block>>(Comparator.naturalOrder())
+    private fun getRenderList(): Map<BlockPos, ColourHolder> {
+        val cacheDistMap = TreeMap<Double, Pair<BlockPos, Block>>(Comparator.naturalOrder())
         /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
         for (value in mainList.values) {
             for ((k, v) in value) {
                 val distance = sqrt(mc.player.getDistanceSq(k))
                 if (distance > range.value) continue
-                cacheDistMap[distance] = mapOf(Pair(k, v))
+                cacheDistMap[distance] = Pair(k, v)
             }
         }
 
@@ -245,30 +243,25 @@ class Search : Module() {
             cacheDistMap.pollLastEntry()
         }
 
-        val cacheRenderMap = HashMap<BlockPos, Int>()
-        for (e in cacheDistMap.values) {
-            val posColorMap = getPosColor(e)
-            cacheRenderMap.putAll(posColorMap)
+        val cacheRenderMap = HashMap<BlockPos, ColourHolder>()
+        for ((pos, block) in cacheDistMap.values) {
+            val color = getPosColor(block)
+            cacheRenderMap[pos] = color
         }
         return cacheRenderMap
     }
 
-    private fun getPosColor(map: Map<BlockPos, Block>): Map<BlockPos, Int> {
-        val posColorMap = HashMap<BlockPos, Int>()
-        for ((key, value) in map) {
-            val color = if (!customColours.value) {
-                val c = if (value == Blocks.PORTAL) {
-                    rgbToInt(82, 49, 153)
-                } else {
-                    value.blockMapColor.colorValue
-                }
-                rgbToInt((c shr 16), (c shr 8 and 255), (c and 255))
+    private fun getPosColor(block: Block): ColourHolder {
+        return if (!customColours.value) {
+            if (block == Blocks.PORTAL) {
+                ColourHolder(82, 49, 153)
             } else {
-                -1
+                val colorInt = block.blockMapColor.colorValue
+                ColourHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
-            posColorMap[key] = color
+        } else {
+            ColourHolder(r.value, g.value, b.value)
         }
-        return posColorMap
     }
     /* End of rendering */
 }

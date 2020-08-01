@@ -3,12 +3,10 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.HueCycler
-import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.MathsUtils.convertRange
+import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import java.util.concurrent.ConcurrentHashMap
@@ -55,69 +53,72 @@ class Tracers : Module() {
         ENTITY_TYPE, RENDERING
     }
 
-    private var entityList = ConcurrentHashMap<Entity, Float>()
-    private var cycler = HueCycler(3600)
+    private var renderList = ConcurrentHashMap<Entity, Pair<ColourHolder, Float>>() /* <Entity, <ColourRGBA, AlphaMultiplier>> */
+    private var cycler = HueCycler(200)
 
     override fun onWorldRender(event: RenderEvent) {
-        val pTicks = event.partialTicks
-        for ((entity, alpha) in entityList) {
-            val rgba = getColour(entity)
-            if (rgba[0] != -1) {
-                KamiTessellator.drawLineToEntity(entity, rgba[0], rgba[1], rgba[2], (rgba[3] * alpha).toInt(), pTicks, thickness.value)
-            } else {
-                KamiTessellator.drawLineToEntity(entity, cycler.current(), (rgba[3] * alpha).toInt(), pTicks, thickness.value)
-            }
+        val renderer = ESPRenderer(event.partialTicks)
+        renderer.aTracer = a.value
+        renderer.thickness = thickness.value
+        for ((entity, pair) in renderList) {
+            val rgba = pair.first.clone()
+            rgba.a = (rgba.a * pair.second).toInt()
+            renderer.add(entity, rgba)
         }
+        renderer.render()
     }
 
     override fun onUpdate() {
-        alwaysListening = entityList.isNotEmpty()
+        alwaysListening = renderList.isNotEmpty()
         cycler.next()
+
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val cacheList = if (isEnabled) {
+        val entityList = if (isEnabled) {
             getTargetList(player, mob, true, false, range.value.toFloat())
         } else {
             emptyArray()
         }
-        val cacheMap = HashMap<Entity, Float>()
-        for (entity in cacheList) {
-            cacheMap[entity] = 0f
+
+        val cacheMap = HashMap<Entity, Pair<ColourHolder, Float>>()
+        for (entity in entityList) {
+            cacheMap[entity] = Pair(getColour(entity), 0f)
         }
-        for ((entity, alpha) in entityList) {
-            cacheMap.computeIfPresent(entity) { _, _ -> min(alpha + 0.07f, 1f) }
-            cacheMap.computeIfAbsent(entity) { alpha - 0.05f }
-            if (alpha < 0f) cacheMap.remove(entity)
+
+        for ((entity, pair) in renderList) {
+            cacheMap.computeIfPresent(entity) { _, cachePair -> Pair(cachePair.first, min(pair.second + 0.07f, 1f)) }
+            cacheMap.computeIfAbsent(entity) { Pair(getColour(entity), pair.second - 0.05f) }
+            if (pair.second < 0f) cacheMap.remove(entity)
         }
-        entityList.clear()
-        entityList.putAll(cacheMap)
+        renderList.clear()
+        renderList.putAll(cacheMap)
     }
 
-    private fun getColour(entity: Entity): Array<Int> {
-        val rgb: Triple<Int, Int, Int> = when {
+    private fun getColour(entity: Entity): ColourHolder {
+        val rgb = when {
             Friends.isFriend(entity.name) -> {
-                val a = convertRange(mc.player.getDistance(entity), 0f, range.value.toFloat(), a.value.toFloat(), aFar.value.toFloat()).toInt()
-                return arrayOf(-1, -1, -1, a)
+                val colorInt = cycler.current()
+                ColourHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
 
-            entity is EntityPlayer -> Triple(r.value, g.value, b.value)
+            entity is EntityPlayer -> ColourHolder(r.value, g.value, b.value)
 
-            EntityUtils.isPassiveMob(entity) -> Triple(0, 255, 0)
+            EntityUtils.isPassiveMob(entity) -> ColourHolder(0, 255, 0)
 
-            EntityUtils.isCurrentlyNeutral(entity) -> Triple(255, 255, 0)
+            EntityUtils.isCurrentlyNeutral(entity) -> ColourHolder(255, 255, 0)
 
-            else -> Triple(255, 0, 0)
+            else -> ColourHolder(255, 0, 0)
         }
         return getRangedColour(entity, rgb)
     }
 
-    private fun getRangedColour(entity: Entity, rgb: Triple<Int, Int, Int>): Array<Int> {
-        if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return arrayOf(rgb.first, rgb.second, rgb.third, a.value)
+    private fun getRangedColour(entity: Entity, rgba: ColourHolder): ColourHolder {
+        if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return rgba
         val distance = mc.player.getDistance(entity)
-        val r = convertRange(distance, 0f, range.value.toFloat(), rgb.first.toFloat(), rFar.value.toFloat()).toInt()
-        val g = convertRange(distance, 0f, range.value.toFloat(), rgb.second.toFloat(), gFar.value.toFloat()).toInt()
-        val b = convertRange(distance, 0f, range.value.toFloat(), rgb.third.toFloat(), bFar.value.toFloat()).toInt()
+        val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), rFar.value.toFloat()).toInt()
+        val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), gFar.value.toFloat()).toInt()
+        val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), bFar.value.toFloat()).toInt()
         val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), aFar.value.toFloat()).toInt()
-        return arrayOf(r, g, b, a)
+        return if (!Friends.isFriend(entity.name)) ColourHolder(r, g, b, a) else ColourHolder(rgba.r, rgba.g, rgba.b, a)
     }
 }

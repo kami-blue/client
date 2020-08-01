@@ -4,7 +4,8 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ESPHelper.drawESPEntity
+import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.shader.Shader
@@ -20,7 +21,7 @@ import java.util.function.Consumer
  * Updated by d1gress/Qther on 27/11/2019.
  * Kurisu Makise is cute
  * Updated by dominikaaaa on 19/04/20
- * Updated by Xiaro on 26/07/20
+ * Updated by Xiaro on 31/07/20
  */
 @Module.Info(
         name = "ESP",
@@ -48,11 +49,11 @@ class ESP : Module() {
     private val mode = register(Settings.enumBuilder(ESPMode::class.java).withName("Mode").withValue(ESPMode.BOX).withVisibility { page.value == Page.RENDERING }.build())
     private val radiusValue = register(Settings.integerBuilder("Width").withMinimum(1).withMaximum(100).withValue(25).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.GLOW }.build())
     private val filled = register(Settings.booleanBuilder("Filled").withValue(false).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(false).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val aBox = register(Settings.integerBuilder("BoxAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
 
@@ -70,9 +71,15 @@ class ESP : Module() {
         if (Wrapper.getMinecraft().getRenderManager().options == null || entityList == null) return
         when (mode.value) {
             ESPMode.BOX -> {
+                val colour = ColourHolder(r.value, g.value, b.value)
+                val renderer = ESPRenderer(event.partialTicks)
+                renderer.aFilled = if (filled.value) aFilled.value else 0
+                renderer.aOutline = if (outline.value) aOutline.value else 0
+                renderer.thickness = thickness.value
                 for (e in entityList!!) {
-                    drawESPEntity(e, filled.value, outline.value, false, r.value, g.value, b.value, aBox.value, aOutline.value, 0, thickness.value)
+                    renderer.add(e, colour)
                 }
+                renderer.render()
             }
 
             else -> {

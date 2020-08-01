@@ -27,7 +27,7 @@ import kotlin.math.sin
  * Updated by on Afel 08/06/20
  * Updated by Xiaro on 01/08/20
  */
-object KamiTessellatorNew : Tessellator(0x200000) {
+object KamiTessellator : Tessellator(0x200000) {
     private val mc = Minecraft.getMinecraft()
 
     /**

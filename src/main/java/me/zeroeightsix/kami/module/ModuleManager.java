@@ -61,7 +61,7 @@ public class ModuleManager {
         Minecraft.getMinecraft().profiler.startSection("kami");
 
         Minecraft.getMinecraft().profiler.startSection("setup");
-        KamiTessellatorNew.prepareGL();
+        KamiTessellator.prepareGL();
 
         GlStateManager.glLineWidth(1f);
         Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
@@ -80,7 +80,7 @@ public class ModuleManager {
 
         Minecraft.getMinecraft().profiler.startSection("release");
         GlStateManager.glLineWidth(1f);
-        KamiTessellatorNew.releaseGL();
+        KamiTessellator.releaseGL();
         Minecraft.getMinecraft().profiler.endSection();
     }
 
