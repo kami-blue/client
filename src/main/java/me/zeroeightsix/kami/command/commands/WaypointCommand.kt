@@ -37,12 +37,12 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                             }
                             val split = args[2]!!.split(",").toTypedArray()
                             val coordinate = Coordinate(split[0].toInt(), split[1].toInt(), split[2].toInt())
-                            confirm(args[1]!!, createWaypoint(coordinate, args[1]!!))
+                            confirm(args[1]!!, createWaypoint(coordinate, args[1]!!, 0))
                         } else {
-                            confirm(args[1]!!, writePlayerCoords(args[1]!!))
+                            confirm(args[1]!!, writePlayerCoords(args[1]!!, 0))
                         }
                     } else {
-                        confirm("Unnamed", writePlayerCoords("Unnamed"))
+                        confirm("Unnamed", writePlayerCoords("Unnamed", 0))
                     }
                 }
                 "remove" -> delete(args)
