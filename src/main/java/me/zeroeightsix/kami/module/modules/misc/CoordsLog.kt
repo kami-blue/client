@@ -63,7 +63,7 @@ class CoordsLog : Module() {
     }
 
     private fun logCoordinates(name: String): Coordinate {
-        return Waypoint.writePlayerCoords(name)
+        return Waypoint.writePlayerCoords(name, 4)
     }
 
     public override fun onDisable() {
