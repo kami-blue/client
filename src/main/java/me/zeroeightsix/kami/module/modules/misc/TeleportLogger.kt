@@ -55,7 +55,7 @@ class TeleportLogger : Module() {
 
     private fun logCoordinates(coordinate: Coordinate, name: String): Coordinate {
         return if (saveToFile.value) {
-            Waypoint.createWaypoint(coordinate, name)
+            Waypoint.createWaypoint(coordinate, name, 3)
         } else {
             coordinate
         }
