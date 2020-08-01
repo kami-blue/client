@@ -63,14 +63,24 @@ object Waypoint {
         return Coordinate(mc.player.posX.toInt(), mc.player.posY.toInt(), mc.player.posZ.toInt())
     }
 
-    fun writePlayerCoords(locationName: String): Coordinate {
+    fun writePlayerCoords(locationName: String, type: Int): Coordinate {
         val coord = getCurrentCoord()
-        createWaypoint(coord, locationName)
+        createWaypoint(coord, locationName, type)
         return coord
     }
 
-    fun createWaypoint(xyz: Coordinate, locationName: String): Coordinate {
-        FileInstanceManager.waypoints.add(dateFormatter(xyz, locationName))
+    /**
+     * Waypoint types:
+     * 0 - Waypoint
+     * 1 - LogSpot
+     * 2 - Stash
+     * 3 - TeleportSpot
+     * 4 - Other
+     * 5 - Death
+     */
+
+    fun createWaypoint(xyz: Coordinate, locationName: String, type: Int): Coordinate {
+        FileInstanceManager.waypoints.add(dateFormatter(xyz, locationName, type))
 
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.UpdateType.CREATE)
         return xyz
@@ -124,8 +134,8 @@ object Waypoint {
         return oldFile.exists() && !file.exists()
     }
 
-    private fun dateFormatter(xyz: Coordinate, locationName: String): WaypointInfo {
+    private fun dateFormatter(xyz: Coordinate, locationName: String, type: Int): WaypointInfo {
         val date = sdf.format(Date())
-        return WaypointInfo(xyz, locationName, date)
+        return WaypointInfo(xyz, locationName, date, type)
     }
 }
