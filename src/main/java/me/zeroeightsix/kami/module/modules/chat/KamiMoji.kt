@@ -7,4 +7,4 @@ import me.zeroeightsix.kami.module.Module
         description = "Add emojis to chat, courtesy of the EmojiAPI.",
         category = Module.Category.CHAT
 )
-class Emoji : Module() 
+class KamiMoji : Module()
