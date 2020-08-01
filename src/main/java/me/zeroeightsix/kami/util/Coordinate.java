@@ -37,4 +37,8 @@ public class Coordinate {
     public void setZ(int z) {
         this.z = z;
     }
+
+    public String asString() {
+        return x + ", " + y + ", " + z;
+    }
 }

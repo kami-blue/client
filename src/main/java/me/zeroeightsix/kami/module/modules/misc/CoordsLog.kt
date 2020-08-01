@@ -2,9 +2,10 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CoordUtil
 import me.zeroeightsix.kami.util.Coordinate
+import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.Waypoint
 
 @Module.Info(
         name = "CoordsLog",
@@ -33,7 +34,7 @@ class CoordsLog : Module() {
         }
 
         if (!playerIsDead && 0 >= mc.player.health && forceLogOnDeath.value) {
-            val deathPoint = logCoordinates("deathPoint")
+            val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType(mc))
             if (deathInChat.value) {
                 MessageSendHelper.sendChatMessage("You died at " + deathPoint.x + " " + deathPoint.y + " " + deathPoint.z)
             }
@@ -46,7 +47,7 @@ class CoordsLog : Module() {
 
         if (startTime + delay.value * 1000 <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
             startTime = System.currentTimeMillis()
-            val pos = CoordUtil.getCurrentCoord()
+            val pos = Waypoint.getCurrentCoord()
             val currentCoord = pos.toString()
 
             if (checkDuplicates.value) {
@@ -62,7 +63,7 @@ class CoordsLog : Module() {
     }
 
     private fun logCoordinates(name: String): Coordinate {
-        return CoordUtil.writePlayerCoords(name)
+        return Waypoint.writePlayerCoords(name)
     }
 
     public override fun onDisable() {

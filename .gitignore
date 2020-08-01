@@ -57,6 +57,10 @@ local.properties
 .recommenders
 kami_Client.launch
 kami_Server.launch
+client_Client.launch
+client_Server.launch
+.classpath
+.project
 
 # External tool builders
 .externalToolBuilders/
@@ -103,11 +107,6 @@ kami_Server.launch
 .worksheet
 
 ### Eclipse Patch ###
-# Eclipse Core
-.project
-
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 # Annotation Processing
 .apt_generated

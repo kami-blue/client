@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.command.syntax.parsers.DependantParser;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.module.MacroManager;
+import me.zeroeightsix.kami.module.WaypointManager;
 import me.zeroeightsix.kami.util.Macro;
 
 import java.io.BufferedWriter;
@@ -46,7 +47,8 @@ public class ConfigCommand extends Command {
                 try {
                     KamiMod.saveConfigurationUnsafe();
                     MacroManager.INSTANCE.saveMacros();
-                    sendChatMessage("Saved configuration and macros!");
+                    WaypointManager.INSTANCE.saveWaypoints();
+                    sendChatMessage("Saved configuration, macros and waypoints!");
                 } catch (IOException e) {
                     e.printStackTrace();
                     sendChatMessage("Failed to save config! " + e.getMessage());

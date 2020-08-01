@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.DiscordPresence;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.module.MacroManager;
+import me.zeroeightsix.kami.module.WaypointManager;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -112,6 +113,7 @@ public class MixinMinecraft {
         System.out.println("Shutting down: saving KAMI configuration");
         KamiMod.saveConfiguration();
         MacroManager.INSTANCE.saveMacros();
+        WaypointManager.INSTANCE.saveWaypoints();
         System.out.println("Configuration saved.");
     }
 

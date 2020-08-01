@@ -2,10 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CoordUtil
-import me.zeroeightsix.kami.util.Coordinate
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.*
 import net.minecraft.entity.player.EntityPlayer
 
 /**
@@ -34,7 +31,7 @@ class TeleportLogger : Module() {
             /* 8 chunk render distance * 16 */
             if (remove.value && 128 > player.getDistance(mc.player)) {
                 if (teleportedPlayers.contains(player.name)) {
-                    val removed = CoordUtil.removeCoord(teleportedPlayers[player.name], CoordUtil.coordsLogFilename)
+                    val removed = Waypoint.removeWaypoint(teleportedPlayers[player.name]!!)
                     teleportedPlayers.remove(player.name)
 
                     if (removed) {
@@ -52,17 +49,13 @@ class TeleportLogger : Module() {
 
             val coords = logCoordinates(Coordinate(player.posX.toInt(), player.posY.toInt(), player.posZ.toInt()), "${player.name} Teleport Spot")
             teleportedPlayers[player.name] = coords
-            if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${player.name} teleported, ${getSaveText()} ${coords(coords)}")
+            if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${player.name} teleported, ${getSaveText()} ${coords.asString()}")
         }
-    }
-
-    private fun coords(coordinate: Coordinate): String {
-        return coordinate.x.toString() + ", " + coordinate.y + ", " + coordinate.z
     }
 
     private fun logCoordinates(coordinate: Coordinate, name: String): Coordinate {
         return if (saveToFile.value) {
-            CoordUtil.writeCustomCoords(coordinate, name)
+            Waypoint.createWaypoint(coordinate, name)
         } else {
             coordinate
         }

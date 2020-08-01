@@ -10,21 +10,30 @@ import java.text.DecimalFormat;
  * @author dominikaaaa
  * Created by dominikaaaa on 18/01/20
  * Updated by dominikaaaa on 06/02/20
- *
+ * <p>
  * Speed:
  * @author dominikaaaa
  * Created by dominikaaaa on 18/01/20
  * Credit to Seppuku for the following calculation I made more efficient and got inspiration from
  * final String bps = "BPS: " + df.format((MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ) / tickRate));
- *
+ * <p>
  * Durability:
  * @author TBM
  * Created by TBM on 8/12/19
- *
+ * <p>
  * TPS:
  * @author 086
  */
 public class InfoCalculator {
+
+    public static String getServerType(Minecraft mc) {
+        if (mc.getCurrentServerData() != null) {
+            return mc.getCurrentServerData().serverIP;
+        } else if (mc.isIntegratedServerRunning()) {
+            return "Singleplayer";
+        }
+        return "Main Menu";
+    }
 
     // Ping {
     public static int ping(Minecraft mc) {
@@ -54,9 +63,12 @@ public class InfoCalculator {
 
     private static double coordsDiff(char s, Minecraft mc) {
         switch (s) {
-            case 'x': return mc.player.posX - mc.player.prevPosX;
-            case 'z': return mc.player.posZ - mc.player.prevPosZ;
-            default: return 0.0;
+            case 'x':
+                return mc.player.posX - mc.player.prevPosX;
+            case 'z':
+                return mc.player.posZ - mc.player.prevPosZ;
+            default:
+                return 0.0;
         }
     }
     // }
@@ -91,7 +103,7 @@ public class InfoCalculator {
             case 1:
                 return "End";
             default:
-                return  "No Dimension";
+                return "No Dimension";
         }
     }
 }

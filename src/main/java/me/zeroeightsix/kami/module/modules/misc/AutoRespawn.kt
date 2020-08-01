@@ -6,8 +6,9 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CoordUtil
+import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.Waypoint
 import net.minecraft.client.gui.GuiGameOver
 
 /**
@@ -31,7 +32,7 @@ class AutoRespawn : Module() {
         }
 
         if (deathCoords.value && mc.player.health <= 0) {
-            CoordUtil.writePlayerCoords("Death")
+            Waypoint.writePlayerCoords("Death - " + InfoCalculator.getServerType(mc))
             MessageSendHelper.sendChatMessage(String.format("You died at x %d y %d z %d",
                     mc.player.posX.toInt(),
                     mc.player.posY.toInt(),

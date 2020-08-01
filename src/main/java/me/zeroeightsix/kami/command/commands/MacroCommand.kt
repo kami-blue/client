@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.MacroManager
-import me.zeroeightsix.kami.module.Macros
+import me.zeroeightsix.kami.module.FileInstanceManager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper.*
 import me.zeroeightsix.kami.util.Wrapper
@@ -31,12 +31,12 @@ class MacroCommand : Command("macro", ChunkBuilder().append("command", true, Enu
                 return
             }
             args[0] == "list" -> {
-                if (Macros.macros.isEmpty()) {
+                if (FileInstanceManager.macros.isEmpty()) {
                     sendChatMessage("You have no macros")
                     return
                 }
                 sendChatMessage("You have the following macros: ")
-                for ((key1, value) in Macros.macros) {
+                for ((key1, value) in FileInstanceManager.macros) {
                     sendRawChatMessage(Wrapper.getKeyName(key1) + ": $value")
                 }
                 return

@@ -1,9 +1,11 @@
 package me.zeroeightsix.kami.gui.mc;
 
+import kotlin.contracts.Returns;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
+import me.zeroeightsix.kami.util.MessageSendHelper;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.input.Keyboard;
@@ -101,10 +103,11 @@ public class KamiGuiChat extends GuiChat {
         if (alphaCommand.getSyntaxChunks() == null || alphaCommand.getSyntaxChunks().length == 0)
             return;
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !currentFillinLine.contains("<") && !currentFillinLine.contains("[")) {
+        /* not needed?? */
+/*        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !currentFillinLine.contains("<") && !currentFillinLine.contains("[")) {
             this.inputField.setText(chatLine + currentFillinLine);
             currentFillinLine = "";
-        }
+        }*/
 
         if (!line.endsWith(" "))
             currentFillinLine += " ";
@@ -124,8 +127,10 @@ public class KamiGuiChat extends GuiChat {
 
         if (cutSpace) currentFillinLine = currentFillinLine.substring(1);
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !currentFillinLine.contains("<") && !currentFillinLine.contains("[")) {
-            this.inputField.setText(chatLine + currentFillinLine);
+        /* debugging */
+//        MessageSendHelper.sendChatMessage("'" + currentFillinLine + "'" + " '" + getStartString() + "'");
+        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !getStartString().contains("<") && !getStartString().contains("[")) {
+            this.inputField.setText(chatLine + getStartString());
             currentFillinLine = "";
         }
     }
@@ -175,5 +180,11 @@ public class KamiGuiChat extends GuiChat {
             GL11.glEnable(GL11.GL_BLEND);
         if (b)
             GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    private String getStartString() {
+        String[] str1 = currentFillinLine.split(" <");
+        String[] str2 = str1[0].split(" \\[");
+        return str2[0];
     }
 }

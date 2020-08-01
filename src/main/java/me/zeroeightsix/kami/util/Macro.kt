@@ -3,10 +3,9 @@ package me.zeroeightsix.kami.util
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.Macros
+import me.zeroeightsix.kami.module.FileInstanceManager
 import java.io.*
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 /**
  * @author dominikaaaa
@@ -15,12 +14,12 @@ import kotlin.collections.LinkedHashMap
 object Macro {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val configName = "KAMIBlueMacros.json"
-    private val file = File(configName)
+    val file = File(configName)
 
     fun writeMemoryToFile() {
         try {
             val fw = FileWriter(file, false)
-            gson.toJson(Macros.macros, fw)
+            gson.toJson(FileInstanceManager.macros, fw)
             fw.flush()
             fw.close()
         } catch (e: IOException) {
@@ -31,19 +30,19 @@ object Macro {
     fun readFileToMemory() {
         try {
             try {
-                Macros.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)!!
+                FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)!!
             } catch (e: FileNotFoundException) {
                 KamiMod.log.warn("Could not find file $configName, clearing the macros list")
-                Macros.macros.clear()
+                FileInstanceManager.macros.clear()
             }
         } catch (e: IllegalStateException) {
             KamiMod.log.warn("$configName is empty!")
-            Macros.macros.clear()
+            FileInstanceManager.macros.clear()
         }
     }
 
     fun getMacrosForKey(keycode: Int): List<String?>? {
-        for ((key, value) in Macros.macros) {
+        for ((key, value) in FileInstanceManager.macros) {
             if (keycode == key.toInt()) {
                 return value
             }
@@ -53,11 +52,11 @@ object Macro {
 
     fun addMacroToKey(keycode: Int?, macro: String?) {
         if (macro == null) return  // prevent trying to add a null macro
-        Macros.macros.getOrPut(keycode, ::mutableListOf).add(macro)
+        FileInstanceManager.macros.getOrPut(keycode, ::mutableListOf).add(macro)
     }
 
     fun removeMacro(keycode: Int) {
-        for (entry in Macros.macros.entries) {
+        for (entry in FileInstanceManager.macros.entries) {
             if (entry.key == keycode) {
                 entry.setValue(null)
             }

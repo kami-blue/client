@@ -2,10 +2,9 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CoordUtil
-import me.zeroeightsix.kami.util.CoordUtil.coordsLogFilename
 import me.zeroeightsix.kami.util.Coordinate
 import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.Waypoint
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.tileentity.*
@@ -103,7 +102,7 @@ class StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            CoordUtil.writeCoords(chunkStats.getBlockPos(), chunkStats.toString(), coordsLogFilename)
+            Waypoint.createWaypoint(chunkStats.getBlockPos(), chunkStats.toString())
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
