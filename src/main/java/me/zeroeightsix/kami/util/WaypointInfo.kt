@@ -24,18 +24,34 @@ class WaypointInfo {
     @SerializedName("id")
     var id: Int
 
-    constructor(x: Int, y: Int, z: Int, nameSet: String, timeSet: String) {
+    @JvmField
+    @SerializedName("type")
+    var wpType: Int
+
+    /**
+     * Waypoint types:
+     * 0 - Waypoint
+     * 1 - LogSpot
+     * 2 - Stash
+     * 3 - TeleportSpot
+     * 4 - Other
+     * 5 - Death
+     */
+
+    constructor(x: Int, y: Int, z: Int, nameSet: String, timeSet: String, type: Int) {
         pos = Coordinate(x, y, z)
         name = nameSet
         date = timeSet
         id = genID()
+        wpType = type
     }
 
-    constructor(posSet: Coordinate, nameSet: String, timeSet: String) {
+    constructor(posSet: Coordinate, nameSet: String, timeSet: String, type: Int) {
         pos = posSet
         name = nameSet
         date = timeSet
         id = genID()
+        wpType = type
     }
 
     private fun genID(): Int {
