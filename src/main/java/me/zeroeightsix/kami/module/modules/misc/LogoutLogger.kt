@@ -75,7 +75,7 @@ class LogoutLogger : Module() {
 
     private fun logCoordinates(coordinate: Coordinate, name: String): Coordinate {
         return if (saveToFile.value) {
-            Waypoint.createWaypoint(coordinate, name)
+            Waypoint.createWaypoint(coordinate, name, 1)
         } else {
             coordinate
         }
