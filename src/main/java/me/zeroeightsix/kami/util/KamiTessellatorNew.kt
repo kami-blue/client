@@ -5,10 +5,13 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 /**
@@ -22,11 +25,14 @@ import org.lwjgl.opengl.GL32
  * Some is created by 086 on 9/07/2017.
  * Updated by dominikaaaa on 18/02/20
  * Updated by on Afel 08/06/20
- * Updated by Xiaro on 30/07/20
+ * Updated by Xiaro on 01/08/20
  */
 object KamiTessellatorNew : Tessellator(0x200000) {
     private val mc = Minecraft.getMinecraft()
 
+    /**
+     * Setup Gl states
+     */
     @JvmStatic
     fun prepareGL() {
         GlStateManager.pushMatrix()
@@ -42,11 +48,9 @@ object KamiTessellatorNew : Tessellator(0x200000) {
         GlStateManager.disableLighting()
     }
 
-    @JvmStatic
-    fun begin(mode: Int) {
-        buffer.begin(mode, DefaultVertexFormats.POSITION_COLOR)
-    }
-
+    /**
+     * Reverts Gl states
+     */
     @JvmStatic
     fun releaseGL() {
         GlStateManager.enableLighting()
@@ -63,16 +67,42 @@ object KamiTessellatorNew : Tessellator(0x200000) {
         GlStateManager.popMatrix()
     }
 
+    /**
+     * Begins VBO buffer with [mode]
+     */
+    @JvmStatic
+    fun begin(mode: Int) {
+        buffer.begin(mode, DefaultVertexFormats.POSITION_COLOR)
+    }
+
+    /**
+     * Draws vertexes in the buffer
+     */
     @JvmStatic
     fun render() {
         draw()
     }
 
+    /**
+     * @author Xiaro
+     *
+     * @return Render Parital Ticks
+     */
     @JvmStatic
     private fun pTicks(): Float {
         return mc.renderPartialTicks
     }
 
+    /**
+     * @author Xiaro
+     *
+     * Draws rectangles around [sides] of [box]
+     *
+     * @param box Box to be drawn rectangles around
+     * @param colour RGB
+     * @param a Alpha
+     * @param sides Sides to be drawn
+     */
     @JvmStatic
     fun drawBox(box: AxisAlignedBB, colour: ColourHolder, a: Int, sides: Int) {
         if (sides and GeometryMasks.Quad.DOWN != 0) {
@@ -113,25 +143,52 @@ object KamiTessellatorNew : Tessellator(0x200000) {
         }
     }
 
+    /**
+     * @author Xiaro
+     *
+     * Draws a line from player crosshair to [position]
+     *
+     * @param position Position to be drawn line to
+     * @param colour RGB
+     * @param a Alpha
+     * @param thickness Thickness of the line
+     */
     @JvmStatic
-    fun drawLineTo(pos: Vec3d, colour: ColourHolder, a: Int, thickness: Float) {
-        val eyePos = mc.player.getLook(pTicks())
+    fun drawLineTo(position: Vec3d, colour: ColourHolder, a: Int, thickness: Float) {
+        var eyePos = mc.player.getLook(pTicks())
+        if (mc.gameSettings.viewBobbing) {
+            val yawRad = Math.toRadians(mc.player.rotationYaw + 180.0)
+            val pitchRad = Math.toRadians(mc.player.rotationPitch.toDouble())
+            val distance = -(mc.player.distanceWalkedModified + (mc.player.distanceWalkedModified - mc.player.prevDistanceWalkedModified) * pTicks().toDouble())
+            val cameraYaw = mc.player.prevCameraYaw + (mc.player.cameraYaw - mc.player.prevCameraYaw) * pTicks().toDouble()
+            val cameraPitch = mc.player.prevCameraPitch + (mc.player.cameraPitch - mc.player.prevCameraPitch) * pTicks().toDouble()
+            val yawOffset = sin(distance * PI) * cameraYaw * 0.5f
+            val pitchOffset = cos(pitchRad) * (((abs(cos(distance * PI - 0.2) * cameraYaw) * 5.0) + cameraPitch) * PI / 180.0)
+            val xOffset = cos(yawRad) * yawOffset
+            val yOffset = pitchOffset - abs(cos(distance * PI) * cameraYaw)
+            val zOffset = sin(yawRad) * yawOffset
+            eyePos = mc.player.getLook(pTicks()).subtract(xOffset, yOffset, zOffset)
+        }
         GlStateManager.glLineWidth(thickness)
         buffer.pos(eyePos.x, eyePos.y + mc.player.getEyeHeight(), eyePos.z).color(colour.r, colour.g, colour.b, a).endVertex()
-        buffer.pos(pos.x, pos.y, pos.z).color(colour.r, colour.g, colour.b, a).endVertex()
+        buffer.pos(position.x, position.y, position.z).color(colour.r, colour.g, colour.b, a).endVertex()
     }
 
     /**
      * @author Xiaro
      *
+     * Draws outline of [box]
      *
-     * Draws outline of given axis aligned bounding box
+     * @param box Box to be drawn outline
+     * @param colour RGB
+     * @param a Alpha
+     * @param thickness Thickness of the outline
      */
     @JvmStatic
-    fun drawOutline(boxIn: AxisAlignedBB, colour: ColourHolder, a: Int, thickness: Float) {
-        val xArray = arrayOf(boxIn.minX, boxIn.maxX)
-        val yArray = arrayOf(boxIn.minY, boxIn.maxY)
-        val zArray = arrayOf(boxIn.minZ, boxIn.maxZ)
+    fun drawOutline(box: AxisAlignedBB, colour: ColourHolder, a: Int, thickness: Float) {
+        val xArray = arrayOf(box.minX, box.maxX)
+        val yArray = arrayOf(box.minY, box.maxY)
+        val zArray = arrayOf(box.minZ, box.maxZ)
         GlStateManager.glLineWidth(thickness)
 
         for (x in xArray) for (y in yArray) for (z in zArray) {
