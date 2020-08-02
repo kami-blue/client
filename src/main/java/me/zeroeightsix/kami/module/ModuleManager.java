@@ -17,6 +17,7 @@ import java.util.*;
  * Updated by Sasha
  */
 public class ModuleManager {
+    private Minecraft mc = Minecraft.getMinecraft();
 
     /**
      * Linked map for the registered Modules
@@ -58,9 +59,9 @@ public class ModuleManager {
     }
 
     public void onWorldRender(RenderWorldLastEvent event) {
-        Minecraft.getMinecraft().profiler.startSection("kami");
+        mc.profiler.startSection("kami");
 
-        Minecraft.getMinecraft().profiler.startSection("setup");
+        mc.profiler.startSection("setup");
         KamiTessellator.prepareGL();
 
         GlStateManager.glLineWidth(1f);
@@ -68,20 +69,20 @@ public class ModuleManager {
 
         RenderEvent e = new RenderEvent(KamiTessellator.INSTANCE, renderPos);
         e.resetTranslation();
-        Minecraft.getMinecraft().profiler.endSection();
+        mc.profiler.endSection();
 
         modules.forEach((clazz, mod) -> {
             if (mod.alwaysListening || mod.isEnabled()) {
-                Minecraft.getMinecraft().profiler.startSection(mod.getOriginalName());
+                mc.profiler.startSection(mod.getOriginalName());
                 mod.onWorldRender(e);
-                Minecraft.getMinecraft().profiler.endSection();
+                mc.profiler.endSection();
             }
         });
 
-        Minecraft.getMinecraft().profiler.startSection("release");
+        mc.profiler.startSection("release");
         GlStateManager.glLineWidth(1f);
         KamiTessellator.releaseGL();
-        Minecraft.getMinecraft().profiler.endSection();
+        mc.profiler.endSection();
     }
 
     public void onBind(int eventKey) {

@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11.GL_QUADS
 
 /**
  * @author Xiaro
+ *
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer(private val pTicks: Float) {
@@ -40,7 +41,7 @@ class ESPRenderer(private val pTicks: Float) {
     }
 
     fun add(box: AxisAlignedBB, colour: ColourHolder, sides: Int) {
-        toRender[box.offset(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY, -mc.renderManager.renderPosZ)] = Pair(colour, sides)
+        toRender[box] = Pair(colour, sides)
     }
 
     fun clear() {
@@ -77,5 +78,6 @@ class ESPRenderer(private val pTicks: Float) {
             KamiTessellator.render()
         }
         clear()
+        GlStateManager.enableDepth()
     }
 }
