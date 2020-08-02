@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class Breadcrumbs : Module() {
     private val clear = register(Settings.b("Clear", false))
     private val whileDisabled = register(Settings.b("WhileDisabled", false))
-    private val smooth = register(Settings.floatBuilder("SmoothFactor").withValue(5.0f).withRange(0.0f, 10.0f).build())
+    private val smoothFactor = register(Settings.floatBuilder("SmoothFactor").withValue(5.0f).withRange(0.0f, 10.0f).build())
     private val maxDistance = register(Settings.integerBuilder("MaxDistance").withValue(4096).withRange(1024, 16384).build())
     private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(0.0f, 1.0f).build())
     private val throughBlocks = register(Settings.b("ThroughBlocks", true))
@@ -52,7 +52,7 @@ class Breadcrumbs : Module() {
         /* Adding point to list */
         var currentPos = getInterpolatedPos(mc.player, event.partialTicks)
         if (mc.player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
-        val minDist = if (isEnabled) (5.01f - smooth.value / 2f) else (5.01f - smooth.value / 2f) * 2f
+        val minDist = if (isEnabled) (2.01f - smoothFactor.value / 5f) else (2.01f - smoothFactor.value / 5f) * 2f
         if (posList.isEmpty() && currentPos.x != 0.0 && currentPos.y != 0.0 && currentPos.z != 0.0 ) {
             posList.add(currentPos)
         } else if (currentPos.distanceTo(posList.last()) > minDist) {
@@ -61,7 +61,7 @@ class Breadcrumbs : Module() {
 
         /* Rendering */
         if (posList.isNotEmpty() && isEnabled) {
-            val offset = Vec3d(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY + yOffset.value + 0.05, -mc.renderManager.renderPosZ)
+            val offset = Vec3d(0.0, yOffset.value + 0.05, 0.0)
             val buffer = KamiTessellator.buffer
             GlStateManager.depthMask(!throughBlocks.value)
             GlStateManager.glLineWidth(thickness.value)
