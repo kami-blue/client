@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.process.IBaritoneProcess;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
@@ -45,6 +46,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
+ *
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
@@ -176,13 +178,21 @@ public class KamiGUI extends GUI {
                 }
             }
 
-            @Override public void onMouseRelease(MouseButtonEvent event) { }
+            @Override
+            public void onMouseRelease(MouseButtonEvent event) {
+            }
 
-            @Override public void onMouseDrag(MouseButtonEvent event) { }
+            @Override
+            public void onMouseDrag(MouseButtonEvent event) {
+            }
 
-            @Override public void onMouseMove(MouseMoveEvent event) { }
+            @Override
+            public void onMouseMove(MouseMoveEvent event) {
+            }
 
-            @Override public void onScroll(MouseScrollEvent event) { }
+            @Override
+            public void onScroll(MouseScrollEvent event) {
+            }
         });
 
         ArrayList<Frame> frames = new ArrayList<>();
@@ -229,7 +239,7 @@ public class KamiGUI extends GUI {
 //        information2.setFontRenderer(fontRenderer);
         frames.add(frame);
         */
-        
+
         /*
          * Information Overlay / InfoOverlay
          */
@@ -301,12 +311,13 @@ public class KamiGUI extends GUI {
 
         processes.addTickListener(() -> {
             processes.setText("");
-
-            if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
-                if (MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
+            Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
+            if (!frameFinal.isMinimized() && process.isPresent()) {
+                AutoWalk autoWalk = MODULE_MANAGER.getModuleT(AutoWalk.class);
+                if (process.get() != KamiMod.pauseProcess && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
                     processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
-                    processes.addLine("Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().get().displayName());
+                    processes.addLine("Process: " + process.get().displayName());
                 }
             }
         });
@@ -342,8 +353,10 @@ public class KamiGUI extends GUI {
                 String extraPaddingForFactors;
                 EntityPlayer ePlayer = (EntityPlayer) e;
 
-                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W"; else weaknessFactor = "";
-                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S"; else strengthFactor = "";
+                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
+                else weaknessFactor = "";
+                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
+                else strengthFactor = "";
                 if (weaknessFactor.equals("") && strengthFactor.equals("")) extraPaddingForFactors = "";
                 else extraPaddingForFactors = " ";
 
@@ -558,7 +571,10 @@ public class KamiGUI extends GUI {
         return result;
     }
 
-    @Override public void destroyGUI() { kill(); }
+    @Override
+    public void destroyGUI() {
+        kill();
+    }
 
     private static final int DOCK_OFFSET = 0;
 

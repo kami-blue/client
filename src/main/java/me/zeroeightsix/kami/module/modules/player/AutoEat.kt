@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.Aura
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
@@ -23,6 +22,7 @@ import net.minecraft.util.EnumHand
  * Updated by An-En on 24/03/20
  * Updated by Dewy on the 17th of May, 2020
  * Updated by Afel 05/25/20
+ * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "AutoEat",
@@ -103,5 +103,9 @@ class AutoEat : Module() {
                 }
             }
         }
+    }
+
+    override fun disable() {
+        unpause()
     }
 }

@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
@@ -27,7 +26,7 @@ import net.minecraft.util.EnumHand
  * Updated by hub on 31 October 2019
  * Updated by bot-debug on 10/04/20
  * Baritone compat added by dominikaaaa on 18/05/20
- * Updated by Xiaro on 16/07/20
+ * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "Aura",
@@ -96,7 +95,7 @@ class Aura : Module() {
             /* Pausing baritone and other stuff */
             if (!isAttacking) {
                 isAttacking = true
-                if (pauseBaritone.value && !BaritoneUtils.paused) {
+                if (pauseBaritone.value) {
                     startTime = 0L
                     pause()
                 }
@@ -117,12 +116,14 @@ class Aura : Module() {
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
             }
-        } else if (isAttacking) {
+        } else if (isAttacking && canResume()) {
             isAttacking = false
-            if (canResume() && isAttacking && BaritoneUtils.paused) {
-                unpause()
-            }
+            unpause()
         }
+    }
+
+    override fun onDisable() {
+        unpause()
     }
 
     private fun canAttack(): Boolean {
@@ -130,7 +131,7 @@ class Aura : Module() {
             val shield = mc.player.heldItemOffhand.getItem() == Items.SHIELD && mc.player.activeHand == EnumHand.OFF_HAND
             if (mc.player.isHandActive && !shield) return false
         }
-        val adjustTicks = if (!sync.value) 0f else (20f - LagCompensator.INSTANCE.tickRate)
+        val adjustTicks = if (!sync.value) 0f else (LagCompensator.INSTANCE.tickRate - 20f)
         return (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
     }
 

@@ -4,20 +4,21 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.ESPRenderer
+import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.GeometryMasks
 import me.zeroeightsix.kami.util.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.GL_LINES
+import kotlin.math.min
 
 /**
  * @author 086
- * Updated by Xiaro on 31/07/20
+ * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "EyeFinder",
@@ -49,34 +50,70 @@ class EyeFinder : Module() {
         ENTITY_TYPE, RENDERING
     }
 
-    private var entityList: Array<Entity>? = null
+    private val resultMap = HashMap<Entity, Pair<RayTraceResult, Float>>()
 
     override fun onWorldRender(event: RenderEvent) {
-        if (entityList.isNullOrEmpty()) return
-        for (entity in entityList!!) {
-            drawLine(entity as EntityLivingBase)
+        if (resultMap.isEmpty()) return
+        for ((entity, pair) in resultMap) {
+            drawLine(entity, pair)
         }
     }
 
     override fun onUpdate() {
+        alwaysListening = resultMap.isNotEmpty()
+
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        entityList = getTargetList(player, mob, true, false, range.value.toFloat())
+        val entityList = if (isEnabled) {
+            getTargetList(player, mob, true, false, range.value.toFloat())
+        } else {
+            emptyArray()
+        }
+        val cacheMap = HashMap<Entity, Pair<RayTraceResult, Float>>()
+        for (entity in entityList) {
+            val result = getRaytraceResult(entity) ?: continue
+            cacheMap[entity] = Pair(result, 0.0f)
+        }
+        for ((entity, pair) in resultMap) {
+            val result = getRaytraceResult(entity) ?: continue
+            cacheMap.computeIfPresent(entity) { _, cachePair -> Pair(cachePair.first, min(pair.second + 0.07f, 1f)) }
+            cacheMap.computeIfAbsent(entity) { Pair(result, pair.second - 0.05f) }
+            if (pair.second < 0f) cacheMap.remove(entity)
+        }
+        resultMap.clear()
+        resultMap.putAll(cacheMap)
     }
 
-    private fun drawLine(entity: Entity) {
-        val result = entity.rayTrace(6.0, Minecraft.getMinecraft().renderPartialTicks) ?: return
-        val eyes = entity.getPositionEyes(mc.renderPartialTicks)
-        val pos1 = eyes.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)
-        val pos2 = result.hitVec.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)
-        val colour = ColourHolder(r.value, g.value, b.value)
+    private fun getRaytraceResult(entity: Entity): RayTraceResult? {
+        var result = entity.rayTrace(5.0, Minecraft.getMinecraft().renderPartialTicks)
+                ?: return null /* Raytrace for block */
+        if (result.typeOfHit == RayTraceResult.Type.MISS) { /* Raytrace for entity */
+            val eyePos = entity.getPositionEyes(mc.renderPartialTicks)
+            val entityLookVec = entity.getLook(mc.renderPartialTicks).scale(5.0)
+            val entityLookEnd = eyePos.add(entityLookVec)
+            for (otherEntity in mc.world.loadedEntityList) {
+                if (otherEntity.getDistance(entity) > 10.0) continue /* Some entity has bigger bounding box */
+                if (otherEntity == entity || otherEntity == mc.player) continue
+                val box = otherEntity.boundingBox
+                result = box.calculateIntercept(eyePos, entityLookEnd) ?: continue
+                result.typeOfHit = RayTraceResult.Type.ENTITY
+                result.entityHit = otherEntity
+            }
+        }
+        return result
+    }
+
+    private fun drawLine(entity: Entity, pair: Pair<RayTraceResult, Float>) {
+        val eyePos = entity.getPositionEyes(mc.renderPartialTicks)
+        val result = pair.first
+        val alpha = (a.value * pair.second).toInt()
 
         /* Render line */
         val buffer = KamiTessellator.buffer
         GlStateManager.glLineWidth(thickness.value)
         KamiTessellator.begin(GL_LINES)
-        buffer.pos(pos1.x, pos1.y, pos1.z).color(r.value, g.value, b.value, a.value).endVertex()
-        buffer.pos(pos2.x, pos2.y, pos2.z).color(r.value, g.value, b.value, a.value).endVertex()
+        buffer.pos(eyePos.x, eyePos.y, eyePos.z).color(r.value, g.value, b.value, alpha).endVertex()
+        buffer.pos(result.hitVec.x, result.hitVec.y, result.hitVec.z).color(r.value, g.value, b.value, alpha).endVertex()
         KamiTessellator.render()
 
         /* Render hit position */
@@ -84,14 +121,17 @@ class EyeFinder : Module() {
             val box = if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 AxisAlignedBB(result.blockPos).grow(0.002)
             } else {
-                result.entityHit.renderBoundingBox
-            }.offset(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY, -mc.renderManager.renderPosZ)
-            KamiTessellator.begin(GL_QUADS)
-            KamiTessellator.drawBox(box, colour, a.value / 2, GeometryMasks.Quad.ALL)
-            KamiTessellator.render()
-            KamiTessellator.begin(GL_LINES)
-            KamiTessellator.drawOutline(box, colour, a.value, thickness.value)
-            KamiTessellator.render()
+                val offset = getInterpolatedAmount(result.entityHit, mc.renderPartialTicks)
+                result.entityHit.renderBoundingBox.offset(offset)
+            }
+            val colour = ColourHolder(r.value, g.value, b.value)
+            val renderer = ESPRenderer(mc.renderPartialTicks)
+            renderer.aFilled = (alpha / 3)
+            renderer.aOutline = alpha
+            renderer.thickness = (thickness.value)
+            renderer.through = false
+            renderer.add(box, colour)
+            renderer.render()
         }
     }
 }
