@@ -269,7 +269,7 @@ class ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            MODULE_MANAGER.getModuleT(LagNotifier::class.java).takeoffPaused -> {
+            MODULE_MANAGER.getModuleT(LagNotifier::class.java).paused -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
@@ -279,7 +279,7 @@ class ElytraFlight : Module() {
             }
             else -> {
                 when {
-                    mc.player.posY > getGroundPosY(false) + 2.0f -> {
+                    mc.player.posY > getGroundPosY(false) + 1.0f -> {
                         mc.timer.tickLength = 50.0f
                         mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
                     }
@@ -301,8 +301,8 @@ class ElytraFlight : Module() {
     private fun takeoff(event: PlayerTravelEvent) {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
-        if (!easyTakeOff.value || lagNotifier.takeoffPaused || mc.player.onGround) {
-            if (lagNotifier.takeoffPaused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+        if (!easyTakeOff.value || lagNotifier.paused || mc.player.onGround) {
+            if (lagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
             return
         }
