@@ -60,7 +60,9 @@ class ElytraFlight : Module() {
 
     /* Extra */
     val elytraSounds = register(Settings.booleanBuilder("ElytraSounds").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
-    /* Non Generic Settings */
+    /* End of Generic Settings */
+
+    /* Mode Settings */
     /* Boost */
     private val speedBoost = register(Settings.floatBuilder("SpeedB").withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS }.build())
     private val upSpeedBoost = register(Settings.floatBuilder("UpSpeedB").withMinimum(0.0f).withValue(1.0f).withMaximum(5.0f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS }.build())
@@ -87,6 +89,7 @@ class ElytraFlight : Module() {
     private val speedPacket = register(Settings.floatBuilder("SpeedP").withMinimum(0.0f).withValue(1.8f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
     private val fallSpeedPacket = register(Settings.floatBuilder("FallSpeedP").withMinimum(0.0f).withMaximum(0.3f).withValue(0.00001f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
     private val downSpeedPacket = register(Settings.floatBuilder("DownSpeedP").withMinimum(0.0f).withMaximum(5.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
+    /* End of Mode Settings */
 
     private enum class ElytraFlightMode {
         BOOST, CONTROL, CREATIVE, PACKET
