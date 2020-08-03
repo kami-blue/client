@@ -15,7 +15,6 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer(private val pTicks: Float) {
-    private val mc = Minecraft.getMinecraft()
     private val toRender = HashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
     var aFilled = 0
     var aOutline = 0
