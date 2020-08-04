@@ -3,7 +3,10 @@ package me.zeroeightsix.kami.module;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
-import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.ClassFinder;
+import me.zeroeightsix.kami.util.EntityUtils;
+import me.zeroeightsix.kami.util.KamiTessellator;
+import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.Vec3d;
@@ -15,6 +18,7 @@ import java.util.*;
 /**
  * Created by 086 on 23/08/2017.
  * Updated by Sasha
+ * Updated by Xiaro on 04/08/20
  */
 public class ModuleManager {
     private Minecraft mc = Minecraft.getMinecraft();
@@ -63,7 +67,6 @@ public class ModuleManager {
 
         mc.profiler.startSection("setup");
         KamiTessellator.prepareGL();
-
         GlStateManager.glLineWidth(1f);
         Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
 
@@ -74,7 +77,9 @@ public class ModuleManager {
         modules.forEach((clazz, mod) -> {
             if (mod.alwaysListening || mod.isEnabled()) {
                 mc.profiler.startSection(mod.getOriginalName());
+                KamiTessellator.prepareGL();
                 mod.onWorldRender(e);
+                KamiTessellator.releaseGL();
                 mc.profiler.endSection();
             }
         });
