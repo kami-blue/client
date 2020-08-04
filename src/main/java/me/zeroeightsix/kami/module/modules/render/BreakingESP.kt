@@ -9,6 +9,10 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
+import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.init.Blocks
+import net.minecraft.init.SoundEvents
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
@@ -22,8 +26,9 @@ import net.minecraft.util.math.BlockPos
 )
 class BreakingESP : Module() {
     private val ignoreSelf = register(Settings.b("IgnoreSelf", false))
-    private val warning = register(Settings.b("Warning", false))
     private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
+    private val warning = register(Settings.b("Warning", false))
+    private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withRange(0.0f, 64.0f).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
     private val tracer = register(Settings.b("Tracer", false))
@@ -35,7 +40,7 @@ class BreakingESP : Module() {
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withVisibility { outline.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
-    private val breakingBlockList = HashMap<Int, Pair<BlockPos, Int>>() /* <BreakerID, <Position, Progress> */
+    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Boolean>>() /* <BreakerID, <Position, Progress> */
 
     override fun onWorldRender(event: RenderEvent) {
         val colour = ColourHolder(r.value, g.value, b.value)
@@ -48,7 +53,7 @@ class BreakingESP : Module() {
         var selfBreaking: AxisAlignedBB? = null
         for ((breakID, pair) in breakingBlockList) {
             val box = mc.world.getBlockState(pair.first).getSelectedBoundingBox(mc.world, pair.first)
-            val progress = pair.second / 10f
+            val progress = pair.second / 9f
             val resizedBox = box.shrink((1f - progress) * box.averageEdgeLength * 0.5)
             if (mc.world.getEntityByID(breakID) == mc.player) {
                 selfBreaking = resizedBox
@@ -67,11 +72,19 @@ class BreakingESP : Module() {
 
     @EventHandler
     private val blockBreaklistener = Listener(EventHook { event: BlockBreakEvent ->
-        if (mc.player == null || (ignoreSelf.value && mc.world.getEntityByID(event.breakId) == mc.player)) return@EventHook
+        if (mc.player == null || mc.player.getDistanceSq(event.position) > range.value * range.value) return@EventHook
+        val breaker = mc.world.getEntityByID(event.breakId)?: return@EventHook
+        if (ignoreSelf.value && breaker == mc.player) return@EventHook
         if (event.progress in 0..9) {
-            val pair = Pair(event.position, event.progress)
-            breakingBlockList[event.breakId] = pair
-        } else if (breakingBlockList.containsKey(event.breakId)) {
+            breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, false))
+            breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third)}
+            if (warning.value && breaker != mc.player && event.progress > 4 && !breakingBlockList[event.breakId]!!.third
+                    && ((obsidianOnly.value && mc.world.getBlockState(event.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
+                mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                sendChatMessage("${breaker.name} is breaking near you!")
+                breakingBlockList[event.breakId] = Triple(event.position, event.progress, true)
+            }
+        } else {
             breakingBlockList.remove(event.breakId)
         }
     })
