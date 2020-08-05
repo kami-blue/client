@@ -57,6 +57,7 @@ public class ChunkFinder extends Module {
     public void onWorldRender(RenderEvent event) {
         if (dirty) {
             GL11.glNewList(list, GL11.GL_COMPILE);
+            glDisable(GL_DEPTH_TEST);
             glLineWidth(2.0F);
             if (mc.player.dimension == -1) { /* Nether */
                 glColor3f(0.1f, 0.9f, 0.2f);
@@ -77,6 +78,7 @@ public class ChunkFinder extends Module {
                 glEnd();
             }
             glColor4f(1, 1, 1, 1);
+            glEnable(GL_DEPTH_TEST);
             GL11.glEndList();
             dirty = false;
         }
