@@ -58,10 +58,10 @@ public class ChunkFinder extends Module {
         if (dirty) {
             GL11.glNewList(list, GL11.GL_COMPILE);
             glLineWidth(2.0F);
-            if (InfoCalculator.playerDimension(mc).equals("Overworld") || InfoCalculator.playerDimension(mc).equals("The End")) {
-                glColor3f(.9f, .1f, .2f);
-            } else {
+            if (mc.player.dimension == -1) { /* Nether */
                 glColor3f(0.1f, 0.9f, 0.2f);
+            } else {
+                glColor3f(.9f, .1f, .2f);
             }
             for (Chunk chunk : chunks) {
                 if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
