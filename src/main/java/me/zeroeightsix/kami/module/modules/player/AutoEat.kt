@@ -77,11 +77,12 @@ class AutoEat : Module() {
 
         if (isValid(mc.player.heldItemOffhand, stats.foodLevel)) {
             mc.player.activeHand = EnumHand.OFF_HAND
-            eating = true
 
-            if (pauseBaritone.value) {
+            if (pauseBaritone.value && !eating) {
                 pause()
             }
+
+            eating = true
             BaritoneAPI.getSettings().allowInventory.value = MODULE_MANAGER.getModuleT(Baritone::class.java).allowInventory.value
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
@@ -91,12 +92,12 @@ class AutoEat : Module() {
                 if (isValid(mc.player.inventory.getStackInSlot(i), stats.foodLevel)) {
                     lastSlot = mc.player.inventory.currentItem
                     mc.player.inventory.currentItem = i
-                    eating = true
 
-                    if (pauseBaritone.value) {
+                    if (pauseBaritone.value && !eating) {
                         pause()
                     }
 
+                    eating = true
                     KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                     mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
                     return
