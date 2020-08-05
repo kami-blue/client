@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.WaypointInfo
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
 import kotlin.math.pow
@@ -113,10 +114,10 @@ class WaypointRender : Module() {
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)
 
         var str = ""
-        if (name.value) str += "${'\n'} ${waypoint.name}"
-        if (date.value) str += "${'\n'} ${waypoint.date}"
-        if (coords.value) str += "${'\n'} ${waypoint.pos.asString()}"
-        if (dist.value) str += "${'\n'} ${distance.toInt()} m"
+        if (name.value) str += "${'\n'}${waypoint.name}"
+        if (date.value) str += "${'\n'}${waypoint.date}"
+        if (coords.value) str += "${'\n'}${waypoint.pos.asString()}"
+        if (dist.value) str += "${'\n'}${distance.toInt()} m"
 
         val fontRenderer = mc.fontRenderer
         var longestLine = ""
@@ -125,8 +126,8 @@ class WaypointRender : Module() {
                 longestLine = strLine
             }
         }
-        val stringWidth = fontRenderer.getStringWidth(longestLine) + 1.0
-        val stringHeight = ((fontRenderer.FONT_HEIGHT + 2) * (str.lines().size - 1)).toDouble()
+        val stringWidth = fontRenderer.getStringWidth(longestLine) + 8.0
+        val stringHeight = (fontRenderer.FONT_HEIGHT + 1) * (str.lines().size - 1) + 5.0
 
         /* Rectangle */
         GlStateManager.color(0.1f, 0.1f, 0.1f, 0.7f)
@@ -138,7 +139,7 @@ class WaypointRender : Module() {
         GlStateManager.glEnd()
 
         /* Outline of the rectangle */
-        GlStateManager.color(0.4f, 0.4f, 0.4f, 0.8f)
+        GlStateManager.color(0.3f, 0.3f, 0.3f, 0.8f)
         GlStateManager.glLineWidth(2f)
         GlStateManager.glBegin(GL_LINE_LOOP)
         glVertex3d(stringWidth * -0.5, 0.0, 0.0)
@@ -150,13 +151,13 @@ class WaypointRender : Module() {
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f)
-        GlStateManager.translate(0.0, -stringHeight - 5.5, 0.0)
+        GlStateManager.translate(0.0, -stringHeight - 6.0, 0.0)
 
         /* Draw string line by line */
         for (line in str.lines()) {
             val strLine = line.replace("${'\n'}", "")
             if (strLine.isBlank()) continue
-            val strLineWidth = fontRenderer.getStringWidth(strLine)
+            val strLineWidth = fontRenderer.getStringWidth(strLine).toFloat()
             fontRenderer.drawString(strLine, (strLineWidth / -2f), 10f, 0xffffff, false)
             GlStateManager.translate(0.0, 10.0, 0.0)
         }
