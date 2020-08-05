@@ -4,16 +4,18 @@ import net.minecraft.client.Minecraft
 import kotlin.math.*
 
 object StrafeUtils {
+    private val mc = Minecraft.getMinecraft()
+
     fun getDirection(): Double {
-        return Math.toRadians(Minecraft.getMinecraft().player.rotationYaw.toDouble())
+        return Math.toRadians(mc.player.rotationYaw.toDouble())
     }
 
     fun getSpeed(): Double {
-        return sqrt(Minecraft.getMinecraft().player.motionX.pow(2) + Minecraft.getMinecraft().player.motionZ.pow(2))
+        return sqrt(mc.player.motionX.pow(2) + mc.player.motionZ.pow(2))
     }
 
     fun setSpeed(speed: Double) {
-        Minecraft.getMinecraft().player.motionX = -sin(getDirection()) * speed
-        Minecraft.getMinecraft().player.motionZ = cos(getDirection()) * speed
+        mc.player.motionX = -sin(getDirection()) * speed
+        mc.player.motionZ = cos(getDirection()) * speed
     }
 }
