@@ -40,7 +40,7 @@ class BreakingESP : Module() {
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withVisibility { outline.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
-    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Boolean>>() /* <BreakerID, <Position, Progress> */
+    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Boolean>>() /* <BreakerID, <Position, Progress, Warned> */
 
     override fun onWorldRender(event: RenderEvent) {
         val colour = ColourHolder(r.value, g.value, b.value)
