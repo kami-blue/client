@@ -18,12 +18,11 @@ class Strafe : Module() {
     private val autoJump = register(Settings.b("AutoJump", true))
 
     private var jumpTicks = 0
-    private val strafeUtils = StrafeUtils()
 
     /* if you skid this you omega gay */
     override fun onUpdate() {
         if(mc.gameSettings.keyBindForward.isKeyDown) {
-            strafeUtils.setSpeed(strafeUtils.getSpeed())
+            StrafeUtils.setSpeed(StrafeUtils.getSpeed())
             if(airSpeedBoost.value)mc.player.jumpMovementFactor = 0.029F
             if(timerBoost.value)mc.timer.tickLength = 50 / 1.09F
             if(autoJump.value && mc.player.onGround && jumpTicks == 0) {

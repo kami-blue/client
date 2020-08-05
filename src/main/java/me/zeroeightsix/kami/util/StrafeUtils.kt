@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util
 import net.minecraft.client.Minecraft
 import kotlin.math.*
 
-class StrafeUtils {
+object StrafeUtils {
     fun getDirection(): Double {
         return Math.toRadians(Minecraft.getMinecraft().player.rotationYaw.toDouble())
     }
