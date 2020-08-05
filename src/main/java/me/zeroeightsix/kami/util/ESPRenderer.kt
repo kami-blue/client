@@ -21,6 +21,7 @@ class ESPRenderer(private val pTicks: Float) {
     var aTracer = 0
     var thickness = 2f
     var through = true
+    var tracerOffset = 50
 
     fun add(entity: Entity, colour: ColourHolder) {
         val interpolatedBox = entity.renderBoundingBox.offset(getInterpolatedAmount(entity, pTicks))
@@ -72,7 +73,9 @@ class ESPRenderer(private val pTicks: Float) {
             KamiTessellator.begin(GL_LINES)
             for ((box, pair) in toRender) {
                 val a = (aTracer * (pair.first.a / 255f)).toInt()
-                KamiTessellator.drawLineTo(box.center, pair.first, a, thickness)
+                val offset = (tracerOffset - 50) / 100.0 * (box.maxY - box.minY)
+                val offsetBox = box.center.add(0.0, offset, 0.0)
+                KamiTessellator.drawLineTo(offsetBox, pair.first, a, thickness)
             }
             KamiTessellator.render()
         }

@@ -43,10 +43,11 @@ class Tracers : Module() {
     private val gFar = register(Settings.integerBuilder("GreenFar").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
     private val bFar = register(Settings.integerBuilder("BlueFar").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
     private val aFar = register(Settings.integerBuilder("AlphaFar").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
+    private val r = register(Settings.integerBuilder("RedPlayer").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
+    private val g = register(Settings.integerBuilder("GreenPlayer").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
+    private val b = register(Settings.integerBuilder("BluePlayer").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
     private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.RENDERING }.build())
+    private val yOffset = register(Settings.integerBuilder("yOffsetPercentage").withValue(0).withRange(0, 100).withVisibility { page.value == Page.RENDERING }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDERING }.build())
 
     private enum class Page {
@@ -60,6 +61,7 @@ class Tracers : Module() {
         val renderer = ESPRenderer(event.partialTicks)
         renderer.aTracer = a.value
         renderer.thickness = thickness.value
+        renderer.tracerOffset = yOffset.value
         for ((entity, pair) in renderList) {
             val rgba = pair.first.clone()
             rgba.a = (rgba.a * pair.second).toInt()
