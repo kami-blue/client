@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.StrafeUtils
+import kotlin.math.*
 
 /**
  * Created july 14th 2020 by historian
@@ -21,12 +22,17 @@ class Strafe : Module() {
 
     /* if you skid this you omega gay */
     override fun onUpdate() {
-        if(mc.gameSettings.keyBindForward.isKeyDown) {
+        if(mc.player.moveForward != 0F || mc.player.moveStrafing != 0F) {
             StrafeUtils.setSpeed(StrafeUtils.getSpeed())
             if(airSpeedBoost.value)mc.player.jumpMovementFactor = 0.029F
             if(timerBoost.value)mc.timer.tickLength = 50 / 1.09F
             if(autoJump.value && mc.player.onGround && jumpTicks == 0) {
-                mc.player.jump()
+                mc.player.motionY = 0.41
+                if(mc.player.isSprinting) {
+                    mc.player.motionX -= sin(StrafeUtils.getMoveYaw()) * 0.2
+                    mc.player.motionZ += cos(StrafeUtils.getMoveYaw()) * 0.2
+                }
+                mc.player.isAirBorne = true
                 jumpTicks = 5
             }
             if(jumpTicks > 0)jumpTicks--
