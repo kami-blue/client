@@ -8,12 +8,12 @@ object StrafeUtils {
 
     /* totally not taken from elytrafly */
     fun getMoveYaw(): Double {
-        var strafeYawDeg = 90 * mc.player.moveStrafing
-        strafeYawDeg *= if(mc.player.moveForward != 0F)mc.player.moveForward * 0.5F else 1F
-        var yawDeg = mc.player.rotationYaw - strafeYawDeg
-        yawDeg -= if(mc.player.moveForward < 0F)180 else 0
+        var strafe = 90 * mc.player.moveStrafing
+        strafe *= if(mc.player.moveForward != 0F)mc.player.moveForward * 0.5F else 1F
+        var yaw = mc.player.rotationYaw - strafe
+        yaw -= if(mc.player.moveForward < 0F)180 else 0
 
-        return Math.toRadians(yawDeg.toDouble())
+        return Math.toRadians(yaw.toDouble())
     }
 
     fun getSpeed(): Double {
