@@ -23,7 +23,7 @@ class Strafe : Module() {
 
     /* if you skid this you omega gay */
     override fun onUpdate() {
-        if(mc.player.moveForward != 0F || mc.player.moveStrafing != 0F) {
+        if((mc.player.moveForward != 0F || mc.player.moveStrafing != 0F) && !mc.player.isElytraFlying) {
             StrafeUtils.setSpeed(StrafeUtils.getSpeed())
             if(airSpeedBoost.value)mc.player.jumpMovementFactor = 0.029F
             if(timerBoost.value)mc.timer.tickLength = 50 / 1.09F
