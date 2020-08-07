@@ -78,7 +78,7 @@ class Tracers : Module() {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val entityList = if (isEnabled) {
-            getTargetList(player, mob, true,, invisible.value, range.value.toFloat())
+            getTargetList(player, mob, true, invisible.value, range.value.toFloat())
         } else {
             emptyArray()
         }
