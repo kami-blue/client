@@ -48,8 +48,10 @@ class Aura : Module() {
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { mobs.value }.build())
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { mobs.value }.build())
-    private val range = register(Settings.f("Range", 5.5f))
+    private val invisible = register(Settings.b("Invisible", false))
     private val ignoreWalls = register(Settings.b("IgnoreWalls", true))
+    private val minExistTime = register(Settings.integerBuilder("MinExistTime(s)").withValue(5).withRange(0, 20).build())
+    private val range = register(Settings.f("Range", 5.5f))
     private val sync = register(Settings.b("TPSSync", false))
     private val pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
     private val timeAfterAttack = register(Settings.integerBuilder("ResumeDelay").withRange(1, 10).withValue(3).withVisibility { pauseBaritone.value }.build())
@@ -60,6 +62,7 @@ class Aura : Module() {
     private var startTime: Long = 0
     private var yaw = 0f
     private var pitch = 0f
+    private var tickCount = 0
     var isAttacking = false // returned to AutoEat
 
     private enum class WaitMode {
@@ -90,7 +93,12 @@ class Aura : Module() {
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = getTargetList(player, mob, ignoreWalls.value, delayMode.value == WaitMode.SPAM, range.value)
+        val cacheList = getTargetList(player, mob, ignoreWalls.value,  invisible.value, range.value)
+        val targetList = ArrayList<Entity>()
+        for (target in cacheList) {
+            if (target.ticksExisted < minExistTime.value * 20) continue
+            targetList.add(target)
+        }
         if (targetList.isNotEmpty()) {
             /* Pausing baritone and other stuff */
             if (!isAttacking) {
@@ -103,11 +111,11 @@ class Aura : Module() {
 
             if (autoTool.value) equipBestWeapon(prefer.value)
             if (multi.value) {
-                if (canAttack()) for (i in targetList.indices) {
-                    attack(targetList[i])
+                if (canAttack()) for (target in targetList) {
+                    attack(target)
                 }
             } else {
-                val target = getPrioritizedTarget(targetList, priority.value)
+                val target = getPrioritizedTarget(targetList.toTypedArray(), priority.value)
                 if (spoofRotation.value) {
                     val rotation = getFaceEntityRotation(target)
                     yaw = rotation[0]
@@ -132,7 +140,17 @@ class Aura : Module() {
             if (mc.player.isHandActive && !shield) return false
         }
         val adjustTicks = if (!sync.value) 0f else (LagCompensator.INSTANCE.tickRate - 20f)
-        return (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
+        return if (delayMode.value == WaitMode.DELAY) {
+            (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
+        } else {
+            if (tickCount < waitTick.value) {
+                tickCount++
+                false
+            } else {
+                tickCount = 0
+                true
+            }
+        }
     }
 
     private fun attack(e: Entity) {

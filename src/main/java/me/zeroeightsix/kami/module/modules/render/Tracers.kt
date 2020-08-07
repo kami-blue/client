@@ -34,6 +34,7 @@ class Tracers : Module() {
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value }.build())
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value }.build())
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value }.build())
+    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE }.build())
     private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 256).withVisibility { page.value == Page.ENTITY_TYPE }.build())
 
     /* Rendering settings */
@@ -77,7 +78,7 @@ class Tracers : Module() {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val entityList = if (isEnabled) {
-            getTargetList(player, mob, true, false, range.value.toFloat())
+            getTargetList(player, mob, true,, invisible.value, range.value.toFloat())
         } else {
             emptyArray()
         }

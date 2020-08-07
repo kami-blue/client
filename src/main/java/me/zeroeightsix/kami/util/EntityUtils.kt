@@ -267,7 +267,7 @@ object EntityUtils {
         return entity
     }
 
-    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, immune: Boolean, range: Float): Array<Entity> {
+    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, invisible: Boolean, range: Float): Array<Entity> {
         if (mc.world.loadedEntityList == null) return emptyArray()
         val entityList = ArrayList<Entity>()
         for (entity in mc.world.loadedEntityList) {
@@ -284,7 +284,7 @@ object EntityUtils {
             if (mc.player.getDistance(entity) > range) continue // Distance check
             if ((entity as EntityLivingBase).health <= 0) continue // HP check
             if (!ignoreWalls && !mc.player.canEntityBeSeen(entity) && !canEntityFeetBeSeen(entity)) continue  // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
-            if (immune && entity.hurtTime != 0) continue //Hurt time check
+            if (!invisible && entity.isInvisible) continue
             entityList.add(entity)
         }
         return entityList.toTypedArray()

@@ -30,6 +30,7 @@ class AimBot : Module() {
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { mobs.value }.build())
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { mobs.value }.build())
+    private val invisible = register(Settings.b("Invisible", false))
 
     override fun onUpdate() {
         if (mc.player == null || KamiMod.MODULE_MANAGER.getModuleT(Aura::class.java).isEnabled) return
@@ -46,7 +47,7 @@ class AimBot : Module() {
         }
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = getTargetList(player, mob, ignoreWalls.value, false, range.value)
+        val targetList = getTargetList(player, mob, ignoreWalls.value, invisible.value, range.value)
         if (targetList.isEmpty()) return
         faceEntity(getPrioritizedTarget(targetList, priority.value))
     }
