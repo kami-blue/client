@@ -4,15 +4,10 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.KamiTessellator
-import me.zeroeightsix.kami.util.WaypointInfo
+import me.zeroeightsix.kami.util.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
 import kotlin.math.pow
@@ -90,7 +85,7 @@ class WaypointRender : Module() {
         val box = AxisAlignedBB(pos.x.toDouble(), 0.0, pos.z.toDouble(),
                 pos.x + 1.0, 256.0, pos.z + 1.0)
         KamiTessellator.begin(GL_LINES)
-        KamiTessellator.drawOutline(box, colour, a, thickness.value)
+        KamiTessellator.drawOutline(box, colour, a, GeometryMasks.Quad.ALL, thickness.value)
         KamiTessellator.render()
     }
 
@@ -108,7 +103,7 @@ class WaypointRender : Module() {
         GlStateManager.rotate(viewerYaw, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(viewerPitch, 1.0f, 0.0f, 0.0f)
 
-        val distance = sqrt(getInterpolatedPos(mc.player, pTicks).squareDistanceTo(x, y, z))
+        val distance = sqrt(EntityUtils.getInterpolatedPos(mc.player, pTicks).squareDistanceTo(x, y, z))
         val scale = max(distance, 2.0) / 8f * 1.2589254.pow(textScale.value.toDouble())
         GlStateManager.scale(scale, scale, scale)
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)

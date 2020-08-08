@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
+import me.zeroeightsix.kami.util.GeometryMasks
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
@@ -15,6 +16,7 @@ import kotlin.math.ceil
 /**
  * Created 16 November 2019 by hub
  * Updated by dominikaaaa on 15/12/19
+ * Updated by Xiarooo on 08/08/20
  */
 @Module.Info(
         name = "HoleESP",
@@ -32,33 +34,33 @@ class HoleESP : Module() {
     private val renderDistance = register(Settings.floatBuilder("RenderDistance").withValue(8.0f).withRange(0.0f, 32.0f).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
-    private val r1 = register(Settings.integerBuilder("Red(Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val g1 = register(Settings.integerBuilder("Green(Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val b1 = register(Settings.integerBuilder("Blue(Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { obbySettings() }.build())
-    private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
-    private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
-    private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { bedrockSettings() }.build())
+    private val r1 = register(Settings.integerBuilder("Red(Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { shouldAddObby() }.build())
+    private val g1 = register(Settings.integerBuilder("Green(Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddObby() }.build())
+    private val b1 = register(Settings.integerBuilder("Blue(Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { shouldAddObby() }.build())
+    private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
+    private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
+    private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withMinimum(0).withValue(31).withMaximum(255).withVisibility { filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withMinimum(0).withValue(127).withMaximum(255).withVisibility { outline.value }.build())
-    private val renderModeSetting = register(Settings.e<RenderMode>("RenderMode", RenderMode.BLOCK))
-    private val renderBlocksSetting = register(Settings.e<RenderBlocks>("Render", RenderBlocks.BOTH))
+    private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
+    private val holeType = register(Settings.e<HoleType>("HoleType", HoleType.BOTH))
 
     private var safeHoles = ConcurrentHashMap<BlockPos, ColourHolder>()
 
-    private enum class RenderMode {
-        DOWN, BLOCK
+    private enum class Mode {
+        BLOCK_HOLE, BLOCK_FLOOR, FLAT
     }
 
-    private enum class RenderBlocks {
+    private enum class HoleType {
         OBBY, BEDROCK, BOTH
     }
 
-    private fun obbySettings(): Boolean {
-        return renderBlocksSetting.value == RenderBlocks.OBBY || renderBlocksSetting.value == RenderBlocks.BOTH
+    private fun shouldAddObby(): Boolean {
+        return holeType.value == HoleType.OBBY || holeType.value == HoleType.BOTH
     }
 
-    private fun bedrockSettings(): Boolean {
-        return renderBlocksSetting.value == RenderBlocks.BEDROCK || renderBlocksSetting.value == RenderBlocks.BOTH
+    private fun shouldAddBedrock(): Boolean {
+        return holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
     }
 
     override fun onUpdate() {
@@ -85,10 +87,10 @@ class HoleESP : Module() {
             }
 
             if (isSafe) {
-                if (!isBedrock && obbySettings()) {
+                if (!isBedrock && shouldAddObby()) {
                     safeHoles[pos] = ColourHolder(r1.value, g1.value, b1.value)
                 }
-                if (isBedrock && bedrockSettings()) {
+                if (isBedrock && shouldAddBedrock()) {
                     safeHoles[pos] = ColourHolder(r2.value, g2.value, b2.value)
                 }
             }
@@ -97,11 +99,14 @@ class HoleESP : Module() {
 
     override fun onWorldRender(event: RenderEvent) {
         if (mc.player == null || safeHoles.isEmpty()) return
+        val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
+        else GeometryMasks.Quad.DOWN
         val renderer = ESPRenderer(event.partialTicks)
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         for ((pos, colour) in safeHoles) {
-            renderer.add(pos, colour)
+            val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
+            renderer.add(renderPos, colour, side)
         }
         renderer.render()
     }
