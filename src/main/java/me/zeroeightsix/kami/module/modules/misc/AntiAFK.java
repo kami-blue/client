@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc;
 
+import baritone.api.BaritoneAPI;
+import baritone.api.pathing.goals.GoalXZ;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
@@ -34,10 +36,15 @@ public class AntiAFK extends Module {
     private Setting<Mode> mode = register(Settings.enumBuilder(Mode.class).withName("Mode").withValue(Mode.TRADITIONAL).withVisibility(v -> false).build());
     private Setting<Boolean> swing = register(Settings.b("Swing", true));
     private Setting<Boolean> jump = register(Settings.b("Jump", true));
+    private Setting<Boolean> squareWalk = register(Settings.b("SquareWalk", false));
+    private Setting<Integer> radius = register(Settings.i("Radius", 20));
     private Setting<Boolean> turn = register(Settings.booleanBuilder("Turn").withValue(true).withVisibility(v -> mode.getValue().equals(Mode.TRADITIONAL)).build());
 
     private Random random = new Random();
     private enum Mode { TRADITIONAL, CHUNK }
+
+    private int[] squareStartCoords = {0, 0};
+    private int squareStep = 0;
 //    private int[] pos = { 0, 0 };
 //
 //    public void onEnable() {
@@ -57,11 +64,52 @@ public class AntiAFK extends Module {
 //    }
 
     @Override
+    public void onEnable() {
+        if (mc.player == null)
+            return;
+
+        squareStartCoords[0] = (int)mc.player.posX;
+        squareStartCoords[1] = (int)mc.player.posZ;
+    }
+
+    @Override
+    public void onDisable() {
+        if (mc.player == null)
+            return;
+
+        if (squareWalk.getValue() && isBaritoneActive())
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+    }
+
+    @Override
     public void onUpdate() {
         if (mc.playerController.getIsHittingBlock()) return;
 
         if (swing.getValue() && mc.player.ticksExisted % (0.5 * getFrequency()) == 0) {
             Objects.requireNonNull(mc.getConnection()).sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+        }
+
+        if (squareWalk.getValue() && mc.player.ticksExisted % getFrequency() == 0 && !isBaritoneActive()) {
+            int r = clamp(radius.getValue());
+            switch (squareStep) {
+                // +z
+                case 0:
+                    baritoneGotoXZ(squareStartCoords[0], squareStartCoords[1] + r);
+                    break;
+                // +x
+                case 1:
+                    baritoneGotoXZ(squareStartCoords[0] + r, squareStartCoords[1] + r);
+                    break;
+                // -z
+                case 2:
+                    baritoneGotoXZ(squareStartCoords[0] + r, squareStartCoords[1]);;
+                    break;
+                // -x
+                case 3:
+                    baritoneGotoXZ(squareStartCoords[0], squareStartCoords[1]);
+                    break;
+            }
+            squareStep = (squareStep + 1) % 4;
         }
 
         if (jump.getValue() && mc.player.ticksExisted % (2 * getFrequency()) == 0) {
@@ -79,6 +127,20 @@ public class AntiAFK extends Module {
             sendServerMessage("/r I am currently AFK and using KAMI Blue!");
         }
     });
+
+    private boolean isBaritoneActive() {
+        return BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().isActive();
+    }
+
+    private void baritoneGotoXZ(int x, int z) {
+        BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalXZ(x, z));
+    }
+
+    private int clamp(int val) {
+        if (val < 0)
+            return 0;
+        return val;
+    }
 
     private float getFrequency() {
         return reverseNumber(frequency.getValue(), 1, 100);
