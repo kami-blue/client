@@ -45,7 +45,7 @@ class LoginMessage : Module() {
 
     @EventHandler
     private val localPlayerUpdateEvent = Listener(EventHook { event: LocalPlayerUpdateEvent? ->
-        if (!sent) {
+        if (!sent && loginMessage != null && mc.player != null) {
             mc.player.sendChatMessage(loginMessage!!)
             sent = true
         }
