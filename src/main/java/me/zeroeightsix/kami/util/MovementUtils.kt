@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util
 import net.minecraft.client.Minecraft
 import kotlin.math.*
 
-object StrafeUtils {
+object MovementUtils {
     private val mc = Minecraft.getMinecraft()
 
     /* totally not taken from elytrafly */
@@ -16,6 +16,7 @@ object StrafeUtils {
         return Math.toRadians(yaw.toDouble())
     }
 
+    /* triangle math tho */
     fun getSpeed(): Double {
         return sqrt(mc.player.motionX.pow(2) + mc.player.motionZ.pow(2))
     }
