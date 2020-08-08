@@ -63,7 +63,7 @@ class Search : Module() {
     }
 
     fun searchGetString(): String {
-        return searchArrayList.joinToString()
+        return searchArrayList.joinToString(separator = ",")
     }
 
     fun searchAdd(name: String) {

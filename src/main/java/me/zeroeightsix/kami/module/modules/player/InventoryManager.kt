@@ -55,7 +55,7 @@ class InventoryManager : Module() {
     }
 
     fun ejectGetString(): String {
-        return ejectArrayList.joinToString()
+        return ejectArrayList.joinToString(separator = ",")
     }
 
     fun ejectAdd(name: String) {
