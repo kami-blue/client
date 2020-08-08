@@ -56,14 +56,4 @@ public class GuiFrameUtil {
             if (frame.getY() < 0) frame.setY(0);
         }
     }
-
-    public static boolean areSettingsOpen() {
-        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
-        for (SettingsPanel settingsPanel : panels) {
-            if (settingsPanel.isVisible()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

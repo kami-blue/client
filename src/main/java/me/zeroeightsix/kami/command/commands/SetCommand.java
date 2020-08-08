@@ -76,7 +76,6 @@ public class SetCommand extends Command {
             /* PLEASE MAKE SURE TO USE PROPER NAMING WHEN USING ENUMS */ /* if you use improper lowercase letters it will *not* work with this command ie THIS_IS correct, this_is NOT ~dominikaaaa */
             setting.setValueFromString(arg2, setting.getValueClass().getSimpleName().equals("Boolean"));
             sendChatMessage("Set &b" + setting.getName() + "&r to &3" + setting.getValueAsString() + "&r.");
-            Module.closeSettings();
         } catch (Exception e) {
             e.printStackTrace();
             sendChatMessage("Unable to set value! &6" + e.getMessage());

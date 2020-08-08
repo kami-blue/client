@@ -199,16 +199,6 @@ public class Module {
     public void destroy() {
     }
 
-    /* If you change a setting with ;set or eg a defaults button the GUI doesn't update, so call this */
-    public static void closeSettings() {
-        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
-        for (SettingsPanel settingsPanel : panels) {
-            if (settingsPanel.isVisible()) {
-                settingsPanel.setModule(null);
-            }
-        }
-    }
-
     protected void registerAll(Setting... settings) {
         for (Setting setting : settings) {
             register(setting);

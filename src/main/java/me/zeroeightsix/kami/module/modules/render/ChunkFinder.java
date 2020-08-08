@@ -96,7 +96,6 @@ public class ChunkFinder extends Module {
         if (!closeFile.getValue())
             return;
         closeFile.setValue(false);
-        closeSettings();
         logWriterClose();
         sendChatMessage(getChatName() + " Saved file!");
     }

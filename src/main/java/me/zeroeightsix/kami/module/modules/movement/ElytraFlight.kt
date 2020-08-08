@@ -539,7 +539,6 @@ class ElytraFlight : Module() {
 
             defaultSetting.value = false
             sendChatMessage("$chatName Set to defaults!")
-            closeSettings()
         }
     }
 

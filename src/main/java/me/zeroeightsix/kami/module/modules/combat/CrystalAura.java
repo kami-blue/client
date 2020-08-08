@@ -608,6 +608,5 @@ public class CrystalAura extends Module {
 
         defaultSetting.setValue(false);
         sendChatMessage(getChatName() + " Set to defaults!");
-        closeSettings();
     }
 }
