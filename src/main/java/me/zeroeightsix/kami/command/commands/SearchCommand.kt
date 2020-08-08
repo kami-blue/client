@@ -14,7 +14,7 @@ import net.minecraft.block.Block
  * Modified for use with search module by wnuke on 20/04/2020
  * Updated by Xiaro on 23/07/20
  */
-class SearchCommand : Command("search", ChunkBuilder().append("command", true, EnumParser(arrayOf("help", "+block", "-block", "=block", "list", "default", "clear"))).build()) {
+class SearchCommand : Command("search", ChunkBuilder().append("command", true, EnumParser(arrayOf("+block", "-block", "=block", "list", "default", "clear", "help"))).build()) {
     private val ESP_BANNED_BLOCKS = arrayOf("minecraft:air", "minecraft:netherrack", "minecraft:dirt", "minecraft:water", "minecraft:stone")
     private val WARNING_BLOCKS = arrayOf("minecraft:grass", "minecraft:end_stone", "minecraft:lava", "minecraft:bedrock")
 
@@ -30,13 +30,20 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
         }
         when {
             args[0] == null || args[0].equals("help", ignoreCase = true) -> {
-                sendChatMessage("""Available options: 
-  +block: Adds block to the list
-  -block: Removes block from the list
-  =block: Changes the list to only contain block
-  list: Prints the list of selected blocks
-  defaults: Resets the list to the default list
-  clear: Removes all blocks from the ${search.name} block list""")
+                val p = getCommandPrefix()
+                sendChatMessage("Search command help\n\n" +
+                        "    &7+block&f <name>\n" +
+                        "        &7${p}search +cobblestone\n\n" +
+                        "    &7-block&f <name>\n" +
+                        "        &7${p}search -cobblestone\n\n" +
+                        "    &7=block&f <name>\n" +
+                        "        &7${p}search =portal\n\n" +
+                        "    &7list&f\n" +
+                        "        &7${p}search list\n\n" +
+                        "    &7default&f\n" +
+                        "        &7${p}search default\n\n" +
+                        "    &7clear&f\n" +
+                        "        &7${p}search clear")
             }
             args[0]!!.startsWith("+", true) -> {
                 val name = args[0]!!.replace("+", "").replace("?", "")
