@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render;
 
+import kotlin.Pair;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.ScaledResolution;
@@ -66,7 +66,7 @@ public class BossStack extends Module {
                 String s = entry.getValue().getName().getFormattedText();
                 if (to.containsKey(s)) {
                     Pair<BossInfoClient, Integer> p = to.get(s);
-                    p = new Pair<>(p.getKey(), p.getValue() + 1);
+                    p = new Pair(p.getFirst(), p.getSecond() + 1);
                     to.put(s, p);
                 } else {
                     Pair<BossInfoClient, Integer> p = new Pair<>(entry.getValue(), 1);
@@ -80,8 +80,8 @@ public class BossStack extends Module {
 
             for (Map.Entry<String, Pair<BossInfoClient, Integer>> entry : to.entrySet()) {
                 String text = entry.getKey();
-                BossInfoClient info = entry.getValue().getKey();
-                int a = entry.getValue().getValue();
+                BossInfoClient info = entry.getValue().getFirst();
+                int a = entry.getValue().getSecond();
                 text += " x" + a;
 
                 int k = (int) ((i / scale.getValue()) / 2 - 91);

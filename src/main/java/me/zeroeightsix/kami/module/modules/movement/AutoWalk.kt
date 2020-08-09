@@ -32,7 +32,7 @@ class AutoWalk : Module() {
     private var disableBaritone = false
     private var border = 30000000
 
-    init { mode.settingListener = Setting.SettingListeners { mc.player?.let { if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) { sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); closeSettings(); disable() } } } }
+    init { mode.settingListener = Setting.SettingListeners { mc.player?.let { if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) { sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable() } } } }
 
     @EventHandler
     private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->

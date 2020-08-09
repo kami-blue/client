@@ -37,7 +37,6 @@ class Criticals : Module() {
     private var attackPacket = CPacketUseEntity()
     private var swingPacket = CPacketAnimation()
 
-    /* Delay mode code is here because packets are sent before AttackEntityEvent is called for some reasons */
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mc.player == null || !(event.packet is CPacketAnimation || event.packet is CPacketUseEntity)) return@EventHook

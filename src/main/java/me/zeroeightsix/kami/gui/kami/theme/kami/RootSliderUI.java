@@ -13,6 +13,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 8/08/2017.
+ * updated by Xiaro on 04/08/20
  */
 public class RootSliderUI extends AbstractComponentUI<Slider> {
 
@@ -50,6 +51,7 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
             smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s), 0, s);
         }
         glDisable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
     }
 
     @Override

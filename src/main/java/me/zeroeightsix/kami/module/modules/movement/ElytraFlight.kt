@@ -59,7 +59,11 @@ class ElytraFlight : Module() {
     private val blockInteract = register(Settings.booleanBuilder("BlockInteract").withValue(false).withVisibility { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS }.build())
     private val forwardPitch = register(Settings.integerBuilder("ForwardPitch").withRange(-90, 90).withValue(0).withVisibility { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS }.build())
 
-    /* Non Generic Settings */
+    /* Extra */
+    val elytraSounds = register(Settings.booleanBuilder("ElytraSounds").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
+    /* End of Generic Settings */
+
+    /* Mode Settings */
     /* Boost */
     private val speedBoost = register(Settings.floatBuilder("SpeedB").withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS }.build())
     private val upSpeedBoost = register(Settings.floatBuilder("UpSpeedB").withMinimum(0.0f).withValue(1.0f).withMaximum(5.0f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS }.build())
@@ -86,6 +90,7 @@ class ElytraFlight : Module() {
     private val speedPacket = register(Settings.floatBuilder("SpeedP").withMinimum(0.0f).withValue(1.8f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
     private val fallSpeedPacket = register(Settings.floatBuilder("FallSpeedP").withMinimum(0.0f).withMaximum(0.3f).withValue(0.00001f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
     private val downSpeedPacket = register(Settings.floatBuilder("DownSpeedP").withMinimum(0.0f).withMaximum(5.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS }.build())
+    /* End of Mode Settings */
 
     private enum class ElytraFlightMode {
         BOOST, CONTROL, CREATIVE, PACKET
@@ -178,7 +183,7 @@ class ElytraFlight : Module() {
                 }
             }
         } else if (!outOfDurability) {
-            reset()
+            reset(true)
         }
     })
     /* End of Event Handlers */
@@ -239,14 +244,14 @@ class ElytraFlight : Module() {
         }
     }
 
-    private fun reset() {
+    private fun reset(cancelFlying: Boolean) {
         wasInLiquid = false
         isFlying = false
         isPacketFlying = false
         if (mc.player != null) {
             mc.timer.tickLength = 50.0f
             mc.player.capabilities.flySpeed = 0.05f
-            mc.player.capabilities.isFlying = false
+            if (cancelFlying) mc.player.capabilities.isFlying = false
         }
     }
 
@@ -269,11 +274,11 @@ class ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            MODULE_MANAGER.getModuleT(LagNotifier::class.java).takeoffPaused -> {
+            MODULE_MANAGER.getModuleT(LagNotifier::class.java).paused -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
-                reset()
+                reset(true)
                 takeoff(event)
                 return
             }
@@ -281,14 +286,14 @@ class ElytraFlight : Module() {
                 when {
                     mc.player.posY > getGroundPosY(false) + 1.0f -> {
                         mc.timer.tickLength = 50.0f
-                        mc.player.motionY = -(mc.player.posY - getGroundPosY(false)) / 20.0 - 0.1
+                        mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
                     }
                     mc.player.motionY != 0.0 -> { /* Pause falling to reset fall distance */
-                        mc.timer.tickLength = 400.0f /* Use timer to pause longer */
+                        if (!mc.integratedServerIsRunning) mc.timer.tickLength = 200.0f /* Use timer to pause longer */
                         mc.player.motionY = 0.0
                     }
                     else -> {
-                        mc.player.motionY = -0.4
+                        mc.player.motionY = -0.2
                     }
                 }
             }
@@ -301,21 +306,23 @@ class ElytraFlight : Module() {
     private fun takeoff(event: PlayerTravelEvent) {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
-        if (!easyTakeOff.value || lagNotifier.takeoffPaused || mc.player.onGround) {
-            if (lagNotifier.takeoffPaused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
-            reset()
+        if (!easyTakeOff.value || lagNotifier.paused || mc.player.onGround) {
+            if (lagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+            reset(mc.player.onGround)
             return
         }
         if (mc.player.motionY < -0.0) {
-            if (mc.player.posY <= getGroundPosY(false) + minTakeoffHeight.value && !wasInLiquid) {
+            if (mc.player.posY <= getGroundPosY(false) + minTakeoffHeight.value && !wasInLiquid && !mc.integratedServerIsRunning) {
                 mc.timer.tickLength = 25.0f
                 return
             }
             if (!wasInLiquid) {
-                event.cancel()
-                mc.player.setVelocity(0.0, -0.02, 0.0)
+                if (!mc.integratedServerIsRunning) { /* Cringe moment when you use elytra flight in single player world */
+                    event.cancel()
+                    mc.player.setVelocity(0.0, -0.02, 0.0)
+                }
             }
-            if (timerControl.value) mc.timer.tickLength = 200.0f
+            if (timerControl.value && !mc.integratedServerIsRunning) mc.timer.tickLength = 200.0f
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = mc.player.posY + 0.2
         }
@@ -449,7 +456,7 @@ class ElytraFlight : Module() {
     /* Creative Mode */
     private fun creativeMode() {
         if (mc.player.onGround) {
-            reset()
+            reset(true)
             return
         }
 
@@ -489,7 +496,7 @@ class ElytraFlight : Module() {
     }
 
     override fun onDisable() {
-        reset()
+        reset(true)
     }
 
     override fun onEnable() {
@@ -541,7 +548,6 @@ class ElytraFlight : Module() {
 
             defaultSetting.value = false
             sendChatMessage("$chatName Set to defaults!")
-            closeSettings()
         }
     }
 
@@ -552,7 +558,7 @@ class ElytraFlight : Module() {
 
         /* Reset isFlying states when switching mode */
         mode.settingListener = SettingListeners {
-            reset()
+            reset(true)
         }
     }
 }

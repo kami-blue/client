@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
-import me.zeroeightsix.kami.module.modules.movement.InventoryMove;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,8 +15,6 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.module.Module.closeSettings;
-import static me.zeroeightsix.kami.util.GuiFrameUtil.areSettingsOpen;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glEnable;
 
@@ -100,9 +97,6 @@ public class DisplayGuiScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (MODULE_MANAGER.getModule(ClickGUI.class).getBind().isDown(keyCode) || keyCode == Keyboard.KEY_ESCAPE) {
-            if (areSettingsOpen()) {
-                closeSettings();
-            }
             mc.displayGuiScreen(lastScreen);
         } else {
             gui.handleKeyDown(keyCode);
