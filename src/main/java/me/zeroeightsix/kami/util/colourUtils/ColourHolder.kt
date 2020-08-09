@@ -36,26 +36,6 @@ class ColourHolder {
         this.a = color.alpha
     }
 
-    fun setR(r: Int): ColourHolder {
-        this.r = r
-        return this
-    }
-
-    fun setG(g: Int): ColourHolder {
-        this.r = g
-        return this
-    }
-
-    fun setB(b: Int): ColourHolder {
-        this.r = b
-        return this
-    }
-
-    fun setA(a: Int): ColourHolder {
-        this.r = a
-        return this
-    }
-
     fun brighter(): ColourHolder {
         return ColourHolder(min(r + 10, 255), min(g + 10, 255), min(b + 10, 255), a)
     }

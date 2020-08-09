@@ -1,17 +1,28 @@
-package me.zeroeightsix.kami.util.colourUtils;
+package me.zeroeightsix.kami.util.colourUtils
 
 /**
  * @author dominikaaaa
  * Updated by dominikaaaa on 04/03/20
+ * Updated by Xiaro on 09/08/20
  */
-public class ColourConverter {
-    public static float toF(int i) { return i / 255f; }
+object ColourConverter {
+    @JvmStatic
+    fun toF(i: Int): Float {
+        return i / 255f
+    }
 
-    public static float toF(double d) { return (float) (d / 255f); }
+    @JvmStatic
+    fun toF(d: Double): Float {
+        return (d / 255f).toFloat()
+    }
 
-    public static int rgbToInt(int r, int g, int b, int a) { return (r << 16) | (g << 8) | (b) | (a << 24); }
+    @JvmStatic
+    fun rgbToInt(r: Int, g: Int, b: Int, a: Int): Int {
+        return r shl 16 or (g shl 8) or b or (a shl 24)
+    }
 
-    public static int rgbToInt(int r, int g, int b) { return (r << 16) | (g << 8) | (b); }
-
-    // settingsToInt(r.getValue(), g.getValue(), b.getValue(), aBlock.getValue()
+    @JvmStatic
+    fun rgbToInt(r: Int, g: Int, b: Int): Int {
+        return r shl 16 or (g shl 8) or b
+    } // settingsToInt(r.getValue(), g.getValue(), b.getValue(), aBlock.getValue()
 }
