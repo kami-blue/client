@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.client.CPacketPlayerDigging
-import java.util.concurrent.Executors.newSingleThreadScheduledExecutor
+import net.minecraft.util.EnumHand
 import java.util.concurrent.TimeUnit
 
 /**
@@ -29,11 +29,14 @@ class Fastbreak : Module() {
         val packet = event.packet as CPacketPlayerDigging
 
         if (packet.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK) {
-            /* Sends a stop digging packet so the blocks will actually be mined after the server side breaking animation */
-            newSingleThreadScheduledExecutor().schedule({
-                mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, packet.position, packet.facing))
-            }, 200, TimeUnit.MILLISECONDS)
-
+            /* Spams stop digging packets so the blocks will actually be mined after the server side breaking animation */
+            Thread(Runnable{
+                val startTime = System.currentTimeMillis()
+                while (!mc.world.isAirBlock(packet.position) && System.currentTimeMillis() - startTime < 10000L) { /* Stops running if the block is mined or it took too long */
+                    mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, packet.position, packet.facing))
+                    Thread.sleep(200L)
+                }
+            }).start()
         } else if (packet.action == CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK) {
             event.cancel() /* Cancels aborting packets */
         }

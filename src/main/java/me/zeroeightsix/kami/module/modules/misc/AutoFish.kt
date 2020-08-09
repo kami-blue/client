@@ -118,7 +118,6 @@ class AutoFish : Module() {
         recastOnReconnect.value = true
         defaultSetting.value = false
         MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
-        closeSettings()
     }
 
     init {

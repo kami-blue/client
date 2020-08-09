@@ -4,11 +4,11 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.ChunkEvent;
-import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.InfoCalculator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.SystemUtils;
@@ -28,6 +28,7 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * @author 086 and IronException
  * Rendering bugs fixed by dominikaaaa on 16/05/20
+ * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "ChunkFinder",
@@ -42,6 +43,7 @@ public class ChunkFinder extends Module {
     private Setting<Boolean> saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
     private Setting<Boolean> alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
     private Setting<Boolean> closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility(aBoolean -> saveNewChunks.getValue()).build());
+    private Setting<Integer> range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).build());
 
     private LastSetting lastSetting = new LastSetting();
     private PrintWriter logWriter;
@@ -55,42 +57,28 @@ public class ChunkFinder extends Module {
     public void onWorldRender(RenderEvent event) {
         if (dirty) {
             GL11.glNewList(list, GL11.GL_COMPILE);
-
-            glPushMatrix();
-            glEnable(GL_LINE_SMOOTH);
-//            glDisable(GL_DEPTH_TEST); // makes KamiTessellator.drawBox opacity too transparent
-//            glDisable(GL_TEXTURE_2D); // breaks KamiTessellator.drawBox colors
-//            glDepthMask(false); // makes KamiTessellator.drawBox opacity too transparent
-//            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // breaks KamiTessellator.drawBox opacity
-//            glEnable(GL_BLEND); // makes KamiTessellator.drawBox opacity too opaque
-            glLineWidth(1.0F);
+            glDisable(GL_DEPTH_TEST);
+            glLineWidth(2.0F);
+            if (mc.player.dimension == -1) { /* Nether */
+                glColor3f(0.1f, 0.9f, 0.2f);
+            } else {
+                glColor3f(.9f, .1f, .2f);
+            }
             for (Chunk chunk : chunks) {
+                if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
                 double posX = chunk.x * 16;
                 double posY = 0;
                 double posZ = chunk.z * 16;
-
-                if (InfoCalculator.playerDimension(mc).equals("Overworld") || InfoCalculator.playerDimension(mc).equals("The End")) {
-                    glColor3f(.6f, .1f, .2f);
-                } else {
-                    glColor3f(0.0f, 0.99f, 0.0f);
-                }
 
                 glBegin(GL_LINE_LOOP);
                 glVertex3d(posX, posY, posZ);
                 glVertex3d(posX + 16, posY, posZ);
                 glVertex3d(posX + 16, posY, posZ + 16);
                 glVertex3d(posX, posY, posZ + 16);
-                glVertex3d(posX, posY, posZ);
                 glEnd();
             }
-//            glDisable(GL_BLEND); // makes KamiTessellator.drawBox opacity too opaque
-//            glDepthMask(true); // makes KamiTessellator.drawBox opacity too transparent
-//            glEnable(GL_TEXTURE_2D); // breaks KamiTessellator.drawBox colors
-//            glEnable(GL_DEPTH_TEST); // makes KamiTessellator.drawBox opacity too transparent
-            glDisable(GL_LINE_SMOOTH);
-            glPopMatrix();
             glColor4f(1, 1, 1, 1);
-
+            glEnable(GL_DEPTH_TEST);
             GL11.glEndList();
             dirty = false;
         }
@@ -108,7 +96,6 @@ public class ChunkFinder extends Module {
         if (!closeFile.getValue())
             return;
         closeFile.setValue(false);
-        closeSettings();
         logWriterClose();
         sendChatMessage(getChatName() + " Saved file!");
     }

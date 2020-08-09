@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -19,8 +18,10 @@ import java.util.*;
 /**
  * Created by 086 on 23/08/2017.
  * Updated by Sasha
+ * Updated by Xiaro on 04/08/20
  */
 public class ModuleManager {
+    private Minecraft mc = Minecraft.getMinecraft();
 
     /**
      * Linked map for the registered Modules
@@ -62,44 +63,31 @@ public class ModuleManager {
     }
 
     public void onWorldRender(RenderWorldLastEvent event) {
-        Minecraft.getMinecraft().profiler.startSection("kami");
+        mc.profiler.startSection("kami");
 
-        Minecraft.getMinecraft().profiler.startSection("setup");
-//        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.disableDepth();
-
+        mc.profiler.startSection("setup");
+        KamiTessellator.prepareGL();
         GlStateManager.glLineWidth(1f);
         Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
 
         RenderEvent e = new RenderEvent(KamiTessellator.INSTANCE, renderPos);
         e.resetTranslation();
-        Minecraft.getMinecraft().profiler.endSection();
+        mc.profiler.endSection();
 
         modules.forEach((clazz, mod) -> {
             if (mod.alwaysListening || mod.isEnabled()) {
-                Minecraft.getMinecraft().profiler.startSection(mod.getOriginalName());
+                mc.profiler.startSection(mod.getOriginalName());
+                KamiTessellator.prepareGL();
                 mod.onWorldRender(e);
-                Minecraft.getMinecraft().profiler.endSection();
+                KamiTessellator.releaseGL();
+                mc.profiler.endSection();
             }
         });
 
-        Minecraft.getMinecraft().profiler.startSection("release");
+        mc.profiler.startSection("release");
         GlStateManager.glLineWidth(1f);
-
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableDepth();
-        GlStateManager.enableCull();
-//        GlStateManager.popMatrix();
         KamiTessellator.releaseGL();
-        Minecraft.getMinecraft().profiler.endSection();
+        mc.profiler.endSection();
     }
 
     public void onBind(int eventKey) {
@@ -123,7 +111,7 @@ public class ModuleManager {
      * Get typed module object so that no casting is needed afterwards.
      *
      * @param clazz Module class
-     * @param <T> Type of module
+     * @param <T>   Type of module
      * @return Object
      */
     public <T extends Module> T getModuleT(Class<T> clazz) {

@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.io.IOUtils
 import java.io.IOException
@@ -49,20 +50,12 @@ object EntityUtils {
     /**
      * Find the entities interpolated amount
      */
-    fun getInterpolatedAmount(entity: Entity, x: Double, y: Double, z: Double): Vec3d {
+    fun getInterpolatedAmount(entity: Entity, ticks: Float): Vec3d {
         return Vec3d(
-                (entity.posX - entity.lastTickPosX) * x,
-                (entity.posY - entity.lastTickPosY) * y,
-                (entity.posZ - entity.lastTickPosZ) * z
+                (entity.posX - entity.lastTickPosX) * ticks,
+                (entity.posY - entity.lastTickPosY) * ticks,
+                (entity.posZ - entity.lastTickPosZ) * ticks
         )
-    }
-
-    fun getInterpolatedAmount(entity: Entity, vec: Vec3d): Vec3d {
-        return getInterpolatedAmount(entity, vec.x, vec.y, vec.z)
-    }
-
-    fun getInterpolatedAmount(entity: Entity, ticks: Double): Vec3d {
-        return getInterpolatedAmount(entity, ticks, ticks, ticks)
     }
 
     fun isMobAggressive(entity: Entity): Boolean {
@@ -121,7 +114,7 @@ object EntityUtils {
      */
     @JvmStatic
     fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d {
-        return Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).add(getInterpolatedAmount(entity, ticks.toDouble()))
+        return Vec3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ).add(getInterpolatedAmount(entity, ticks))
     }
 
     @JvmStatic
@@ -274,7 +267,8 @@ object EntityUtils {
         return entity
     }
 
-    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, immune: Boolean, range: Float): Array<Entity> {
+    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, invisible: Boolean, range: Float): Array<Entity> {
+        if (mc.world.loadedEntityList == null) return emptyArray()
         val entityList = ArrayList<Entity>()
         for (entity in mc.world.loadedEntityList) {
             /* Entity type check */
@@ -290,27 +284,52 @@ object EntityUtils {
             if (mc.player.getDistance(entity) > range) continue // Distance check
             if ((entity as EntityLivingBase).health <= 0) continue // HP check
             if (!ignoreWalls && !mc.player.canEntityBeSeen(entity) && !canEntityFeetBeSeen(entity)) continue  // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
-            if (immune && entity.hurtTime != 0) continue //Hurt time check
+            if (!invisible && entity.isInvisible) continue
             entityList.add(entity)
         }
         return entityList.toTypedArray()
     }
 
-    fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
-        return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
+    /**
+     * Ray tracing the 8 vertex of the entity bounding box
+     *
+     * @return [Vec3d] of the visible vertex, null if none
+     */
+    fun canEntityHitboxBeSeen(entity: Entity): Vec3d? {
+        val playerPos = mc.player.positionVector.add(0.0, mc.player.eyeHeight.toDouble(), 0.0)
+        val box = entity.boundingBox
+        val xArray = arrayOf(box.minX, box.maxX)
+        val yArray = arrayOf(box.minY, box.maxY)
+        val zArray = arrayOf(box.minZ, box.maxZ)
+
+        for (x in xArray) for (y in yArray) for (z in zArray) {
+            val vertex = Vec3d(x, y, z)
+            if (mc.world.rayTraceBlocks(vertex, playerPos, false, true, false) == null) return vertex
+        }
+        return null
     }
 
-    fun faceEntity(entity: Entity) {
+    fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
+        return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
+    }
+
+    fun getFaceEntityRotation(entity: Entity): Array<Float> {
         val diffX = entity.posX - mc.player.posX
         val diffZ = entity.posZ - mc.player.posZ
-        val diffY = mc.player.posY + mc.player.getEyeHeight().toDouble() - (entity.posY + entity.eyeHeight.toDouble())
+        val diffY = (entity.boundingBox.center.y) - (mc.player.posY + mc.player.getEyeHeight())
 
         val xz = MathHelper.sqrt(diffX * diffX + diffZ * diffZ).toDouble()
         val yaw = MathsUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
         val pitch = MathsUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
 
-        mc.player.rotationYaw = yaw
-        mc.player.rotationPitch = -pitch
+        return arrayOf(yaw, pitch)
+    }
+
+    fun faceEntity(entity: Entity) {
+        val rotation = getFaceEntityRotation(entity)
+
+        mc.player.rotationYaw = rotation[0]
+        mc.player.rotationPitch = rotation[1]
     }
 
     fun getDroppedItems(itemId: Int, range: Float): Array<Entity>? {

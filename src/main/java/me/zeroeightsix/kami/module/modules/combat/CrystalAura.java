@@ -28,7 +28,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,8 +37,6 @@ import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
-import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
 import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
 
@@ -139,7 +136,6 @@ public class CrystalAura extends Module {
                 .map(entity -> (EntityEnderCrystal) entity)
                 .min(Comparator.comparing(c -> mc.player.getDistance(c)))
                 .orElse(null);
-
 
 
         if (explode.getValue() && crystal != null && mc.player.getDistance(crystal) <= range.getValue() && passSwordCheck()) {
@@ -349,25 +345,19 @@ public class CrystalAura extends Module {
     @Override
     public void onWorldRender(RenderEvent event) {
         if (render != null) {
-            KamiTessellator.prepare(GL11.GL_QUADS);
-            int colour = 0x44ffffff;
-            if (customColours.getValue()) colour = rgbToInt(r.getValue(), g.getValue(), b.getValue(), aBlock.getValue());
-            KamiTessellator.drawBox(render, colour, GeometryMasks.Quad.ALL);
-            KamiTessellator.release();
-            if (renderEnt != null && tracer.getValue()) {
-                Vec3d p = EntityUtils.getInterpolatedRenderPos(renderEnt, mc.getRenderPartialTicks());
-                float rL = 1;
-                float gL = 1;
-                float bL = 1;
-                float aL = 1;
-                if (customColours.getValue()) {
-                    rL = toF(r.getValue());
-                    gL = toF(g.getValue());
-                    bL = toF(b.getValue());
-                    aL = toF(aTracer.getValue());
-                }
-                KamiTessellator.drawLineToPos(render.x + 0.5d, render.y + 1d, render.z + 0.5d, rL, gL, bL, aL);
+            int tracerAlpha = 0;
+            if (tracer.getValue()) {
+                tracerAlpha = aTracer.getValue();
             }
+            ColourHolder colour = new ColourHolder(255, 255, 255);
+            if (customColours.getValue()) {
+                colour = new ColourHolder(r.getValue(), g.getValue(), b.getValue());
+            }
+            ESPRenderer renderer = new ESPRenderer(event.getPartialTicks());
+            renderer.setAFilled(aBlock.getValue());
+            renderer.setATracer(tracerAlpha);
+            renderer.add(render, colour);
+            renderer.render();
         }
     }
 
@@ -565,6 +555,7 @@ public class CrystalAura extends Module {
     }
 
     private static long startTime = 0;
+
     private boolean resetTime() {
         if (startTime == 0) startTime = System.currentTimeMillis();
         if (startTime + 900000 <= System.currentTimeMillis()) { // 15 minutes in milliseconds
@@ -617,6 +608,5 @@ public class CrystalAura extends Module {
 
         defaultSetting.setValue(false);
         sendChatMessage(getChatName() + " Set to defaults!");
-        closeSettings();
     }
 }

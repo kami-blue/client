@@ -5,12 +5,10 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.GeometryMasks
-import me.zeroeightsix.kami.util.KamiTessellator
+import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.ESPRenderer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
-import org.lwjgl.opengl.GL11
-import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 
@@ -31,17 +29,21 @@ class HoleESP : Module() {
             BlockPos(0, 0, 1),  // south
             BlockPos(-1, 0, 0) // west
     )
-    private val renderDistance = register(Settings.d("RenderDistance", 8.0))
-    private val a0 = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).build())
+    private val renderDistance = register(Settings.floatBuilder("RenderDistance").withValue(8.0f).withRange(0.0f, 32.0f).build())
+    private val filled = register(Settings.b("Filled", true))
+    private val outline = register(Settings.b("Outline", true))
     private val r1 = register(Settings.integerBuilder("Red(Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { obbySettings() }.build())
     private val g1 = register(Settings.integerBuilder("Green(Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { obbySettings() }.build())
     private val b1 = register(Settings.integerBuilder("Blue(Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { obbySettings() }.build())
     private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
     private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { bedrockSettings() }.build())
     private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { bedrockSettings() }.build())
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withMinimum(0).withValue(31).withMaximum(255).withVisibility { filled.value }.build())
+    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withMinimum(0).withValue(127).withMaximum(255).withVisibility { outline.value }.build())
     private val renderModeSetting = register(Settings.e<RenderMode>("RenderMode", RenderMode.BLOCK))
     private val renderBlocksSetting = register(Settings.e<RenderBlocks>("Render", RenderBlocks.BOTH))
-    private var safeHoles: ConcurrentHashMap<BlockPos, Boolean>? = null
+
+    private var safeHoles = ConcurrentHashMap<BlockPos, ColourHolder>()
 
     private enum class RenderMode {
         DOWN, BLOCK
@@ -60,80 +62,47 @@ class HoleESP : Module() {
     }
 
     override fun onUpdate() {
-        if (safeHoles == null) {
-            safeHoles = ConcurrentHashMap()
-        } else {
-            safeHoles!!.clear()
-        }
+        safeHoles.clear()
         val range = ceil(renderDistance.value).toInt()
         val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)
         val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
         for (pos in blockPosList) {
+            if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air
+                    || mc.world.getBlockState(pos.up()).block != Blocks.AIR // block 1 above gotta be air
+                    || mc.world.getBlockState(pos.up().up()).block != Blocks.AIR) continue // block 2 above gotta be air
 
-            // block gotta be air
-            if (mc.world.getBlockState(pos).block != Blocks.AIR) {
-                continue
-            }
-
-            // block 1 above gotta be air
-            if (mc.world.getBlockState(pos.add(0, 1, 0)).block != Blocks.AIR) {
-                continue
-            }
-
-            // block 2 above gotta be air
-            if (mc.world.getBlockState(pos.add(0, 2, 0)).block != Blocks.AIR) {
-                continue
-            }
             var isSafe = true
             var isBedrock = true
             for (offset in surroundOffset) {
                 val block = mc.world.getBlockState(pos.add(offset)).block
-                if (block !== Blocks.BEDROCK) {
-                    isBedrock = false
-                }
                 if (block !== Blocks.BEDROCK && block !== Blocks.OBSIDIAN && block !== Blocks.ENDER_CHEST && block !== Blocks.ANVIL) {
                     isSafe = false
                     break
                 }
+                if (block !== Blocks.BEDROCK) {
+                    isBedrock = false
+                }
             }
+
             if (isSafe) {
-                safeHoles!![pos] = isBedrock
+                if (!isBedrock && obbySettings()) {
+                    safeHoles[pos] = ColourHolder(r1.value, g1.value, b1.value)
+                }
+                if (isBedrock && bedrockSettings()) {
+                    safeHoles[pos] = ColourHolder(r2.value, g2.value, b2.value)
+                }
             }
         }
     }
 
     override fun onWorldRender(event: RenderEvent) {
-        if (mc.player == null || safeHoles == null) {
-            return
+        if (mc.player == null || safeHoles.isEmpty()) return
+        val renderer = ESPRenderer(event.partialTicks)
+        renderer.aFilled = if (filled.value) aFilled.value else 0
+        renderer.aOutline = if (outline.value) aOutline.value else 0
+        for ((pos, colour) in safeHoles) {
+            renderer.add(pos, colour)
         }
-        if (safeHoles!!.isEmpty()) {
-            return
-        }
-        KamiTessellator.prepare(GL11.GL_QUADS)
-        safeHoles!!.forEach { (blockPos: BlockPos, isBedrock: Boolean) ->
-            when (renderBlocksSetting.value) {
-                RenderBlocks.BOTH -> if (isBedrock) {
-                    drawBox(blockPos, r2.value, g2.value, b2.value)
-                } else {
-                    drawBox(blockPos, r1.value, g1.value, b1.value)
-                }
-                RenderBlocks.OBBY -> if (!isBedrock) {
-                    drawBox(blockPos, r1.value, g1.value, b1.value)
-                }
-                RenderBlocks.BEDROCK -> if (isBedrock) {
-                    drawBox(blockPos, r2.value, g2.value, b2.value)
-                }
-            }
-        }
-        KamiTessellator.release()
-    }
-
-    private fun drawBox(blockPos: BlockPos, r: Int, g: Int, b: Int) {
-        val color = Color(r, g, b, a0.value)
-        if (renderModeSetting.value == RenderMode.DOWN) {
-            KamiTessellator.drawBox(blockPos, color.rgb, GeometryMasks.Quad.DOWN)
-        } else if (renderModeSetting.value == RenderMode.BLOCK) {
-            KamiTessellator.drawBox(blockPos, color.rgb, GeometryMasks.Quad.ALL)
-        }
+        renderer.render()
     }
 }

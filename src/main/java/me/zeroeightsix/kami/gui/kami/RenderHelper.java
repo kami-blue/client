@@ -7,10 +7,13 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 5/07/2017.
+ * Updated by Xiaro on 04/08/20
  */
 public class RenderHelper {
 
     public static void drawArc(float cx, float cy, float r, float start_angle, float end_angle, int num_segments) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBegin(GL_TRIANGLES);
 
         for (int i = (int) (num_segments / (360 / start_angle)) + 1; i <= num_segments / (360 / end_angle); i++) {
@@ -22,6 +25,7 @@ public class RenderHelper {
         }
 
         glEnd();
+        glDisable(GL_BLEND);
     }
 
     public static void drawArcOutline(float cx, float cy, float r, float start_angle, float end_angle, int num_segments) {
@@ -69,6 +73,7 @@ public class RenderHelper {
             glVertex2d(width, height);
         }
         glEnd();
+        glDisable(GL_BLEND);
     }
 
     public static void drawRectanglePos(float x, float y, float width, float height) {
@@ -83,6 +88,7 @@ public class RenderHelper {
             glVertex2d(width, height);
         }
         glEnd();
+        glDisable(GL_BLEND);
     }
 
     public static void drawFilledRectangle(float x, float y, float width, float height) {
@@ -97,17 +103,18 @@ public class RenderHelper {
             glVertex2d(x + width, y + height);
         }
         glEnd();
+        glDisable(GL_BLEND);
     }
 
     public static void drawRoundedRectangle(float x, float y, float width, float height, float radius) {
-        glEnable(GL_BLEND);
-
 //        drawArc(50,50,30,0,90,64);
         drawArc((x + width - radius), (y + height - radius), radius, 0, 90, 16); // bottom right
         drawArc((x + radius), (y + height - radius), radius, 90, 180, 16); // bottom left
         drawArc(x + radius, y + radius, radius, 180, 270, 16); // top left
         drawArc((x + width - radius), (y + radius), radius, 270, 360, 16); // top right
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBegin(GL_TRIANGLES);
         {
             glVertex2d(x + width - radius, y);
@@ -137,10 +144,12 @@ public class RenderHelper {
             glVertex2d(x + radius, y + height);
         }
         glEnd();
-
+        glDisable(GL_BLEND);
     }
 
     public static void drawTooltip(int x, int y, int width, int height, float lineWidth, float boxR, float boxG, float boxB, float boxA, float lineR, float lineG, float lineB) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(boxR, boxG, boxB, boxA);
         drawFilledRectangle(x, y, width, height);
 
@@ -150,6 +159,7 @@ public class RenderHelper {
         GL11.glLineWidth(lineWidth);
         RenderHelper.drawRectangle(x, y, width, height);
         glPopMatrix();
+        glDisable(GL_BLEND);
     }
 
     public static void drawText(int x, int y, int color, String text) {
@@ -160,14 +170,14 @@ public class RenderHelper {
     }
 
     public static void enableAlpha(float alpha) {
-        GlStateManager.enableBlend();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         if (alpha == 1f) {
             return;
         }
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public static void disableAlpha(float alpha) {

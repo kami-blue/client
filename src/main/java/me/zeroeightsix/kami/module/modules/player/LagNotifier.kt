@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import baritone.api.BaritoneAPI
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -19,6 +18,7 @@ import net.minecraft.client.gui.GuiChat
  * Thanks Brady and cooker and leij for helping me not be completely retarded
  *
  * Updated by dominikaaaa on 19/04/20
+ * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "LagNotifier",
@@ -32,18 +32,18 @@ class LagNotifier : Module() {
     private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
 
     private var serverLastUpdated: Long = 0
-    var takeoffPaused = false
+    var paused = false
     var text = "Server Not Responding! "
 
     override fun onRender() {
         if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return
 
         if (1000L * timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
-            if (BaritoneUtils.paused) {
+            if (BaritoneUtils.paused && paused) {
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
                 unpause()
             }
-            takeoffPaused = false
+            paused = false
             return
         }
 
@@ -54,11 +54,11 @@ class LagNotifier : Module() {
             } else {
                 "Server Not Responding! "
             }
-            if (pauseBaritone.value && !BaritoneUtils.paused) {
+            if (pauseBaritone.value && !paused) {
                 if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
                 pause()
             }
-            if (pauseTakeoff.value) takeoffPaused = true
+            if (pauseTakeoff.value) paused = true
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.getFontRenderer()
