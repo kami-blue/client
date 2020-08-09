@@ -95,10 +95,10 @@ public class InventoryViewer extends Module {
         for (int size = items.size(), item = 9; item < size; ++item) {
             final int slotX = x + 1 + item % 9 * 18;
             final int slotY = y + 1 + (item / 9 - 1) * 18;
-            preItemRender();
+            //preItemRender(); Breaks with PlayerModel
             mc.getRenderItem().renderItemAndEffectIntoGUI(items.get(item), slotX, slotY);
             mc.getRenderItem().renderItemOverlays(mc.fontRenderer, items.get(item), slotX, slotY);
-            postItemRender();
+            //postItemRender(); Breaks with PlayerModel
         }
     }
 
