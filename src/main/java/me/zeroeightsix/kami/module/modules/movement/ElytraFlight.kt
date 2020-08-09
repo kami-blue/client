@@ -284,7 +284,7 @@ class ElytraFlight : Module() {
             }
             else -> {
                 when {
-                    mc.player.posY > getGroundPosY(false) + 1.0f -> {
+                    mc.player.posY > getGroundPosY(false) + 1.0 -> {
                         mc.timer.tickLength = 50.0f
                         mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
                     }
