@@ -9,6 +9,7 @@ import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
+import me.zeroeightsix.kami.emoji.KamiMoji;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
@@ -92,6 +93,8 @@ public class KamiMod {
     public static final EventBus EVENT_BUS = new EventManager();
     public static final ModuleManager MODULE_MANAGER = new ModuleManager();
 
+    public static final KamiMoji KAMIMOJI = new KamiMoji();
+
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
@@ -127,6 +130,10 @@ public class KamiMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         setCustomIcons();
+
+        log.info("Initialising KamiMoji...");
+        KAMIMOJI.start();
+
         if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }

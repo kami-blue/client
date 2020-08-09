@@ -72,7 +72,7 @@ public class Installer extends JPanel {
         stableButton.setToolTipText("This version of KAMI Blue is the latest major release");
         betaButton.setToolTipText("A beta version of KAMI Blue, with frequent updates and bug fixes");
 
-        URL backgroundImage = Installer.class.getResource("/installer/0" + rand.nextInt(4) + ".png");
+        URL backgroundImage = Installer.class.getResource("/installer/0" + rand.nextInt(4) + ".jpg");
         JLabel backgroundPane = new JLabel(new ImageIcon(ImageIO.read(backgroundImage)));
 
         URL stableButtonImage = Installer.class.getResource("/installer/stable.png");

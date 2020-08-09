@@ -5,6 +5,7 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * Created by Dewy on the 17th of April, 2020
+ * Updated by Xiaro on 21/07/20
  */
 public class MathsUtils {
 
@@ -119,5 +120,22 @@ public class MathsUtils {
         CardinalMain(String cardinalName) {
             this.cardinalName = cardinalName;
         }
+    }
+
+    public static int convertRange(int valueIn, int minIn, int maxIn, int minOut, int maxOut) {
+        return (int) convertRange((double) valueIn, minIn, maxIn, minOut, maxOut);
+    }
+
+    public static float convertRange(float valueIn, float minIn, float maxIn, float minOut, float maxOut) {
+        return (float) convertRange((double) valueIn, minIn, maxIn, minOut, maxOut);
+    }
+
+    public static double convertRange(double valueIn, double minIn, double maxIn, double minOut, double maxOut) {
+        final double rangeIn = maxIn - minIn;
+        final double rangeOut = maxOut - minOut;
+        final double convertedIn = ((valueIn - minIn) * (rangeOut / rangeIn) + minOut);
+        final double acutalMin = Math.min(minOut, maxOut);
+        final double acutalMax = Math.max(minOut, maxOut);
+        return Math.min(Math.max(convertedIn, acutalMin), acutalMax);
     }
 }

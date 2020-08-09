@@ -17,7 +17,9 @@ public class UIRenderer {
             return;
         KamiGUI gui = KamiMod.getInstance().getGuiManager();
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (Component c : gui.getChildren()) {
             if (c instanceof Frame) {
                 GlStateManager.pushMatrix();
@@ -61,9 +63,8 @@ public class UIRenderer {
                 GlStateManager.popMatrix();
             }
         }
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GlStateManager.enableBlend();
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
     }
 
 }

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {
     var paused = false
@@ -16,10 +15,10 @@ object BaritoneUtils {
 
     fun unpause() {
         if (paused) {
-            if (BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().isPresent &&
-                    BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().get() is TemporaryPauseProcess) /* Don't run if not paused lol */ {
+            val process = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
+            if (process.isPresent && process.get() == KamiMod.pauseProcess) /* Don't run if not paused lol */ {
                 paused = false
-                BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl().get().onLostControl()
+                process.get().onLostControl()
             }
         }
     }

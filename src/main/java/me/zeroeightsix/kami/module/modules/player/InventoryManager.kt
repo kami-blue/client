@@ -149,10 +149,11 @@ class InventoryManager : Module() {
     private fun refillBuildingCheck(): Boolean {
         if (!autoRefill.value || !buildingMode.value || buildingBlockID.value.toInt() == 0) return false
 
-        val itemCount = countItem(0, 8, buildingBlockID.value.toInt())
-        return itemCount <= refillThreshold.value ||
-                (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING) &&
-                countItem(0, 35, buildingBlockID.value.toInt()) > refillThreshold.value
+        val totalCount = countItem(0, 35, buildingBlockID.value.toInt())
+        val hotbarCount = countItem(0, 8, buildingBlockID.value.toInt())
+        return totalCount > refillThreshold.value && (hotbarCount <= refillThreshold.value ||
+                (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING))
+
     }
 
     private fun refillCheck(): Boolean {

@@ -1,7 +1,9 @@
 package me.zeroeightsix.kami.gui.kami;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.process.IBaritoneProcess;
 import com.mojang.realmsclient.gui.ChatFormatting;
+import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
 import me.zeroeightsix.kami.gui.kami.component.Radar;
@@ -20,7 +22,10 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
-import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.ColourHolder;
+import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.MathsUtils;
+import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,6 +49,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
+ *
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
@@ -78,7 +84,7 @@ public class KamiGUI extends GUI {
             }
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
-            Scrollpane scrollpane = pair.getKey();
+            Scrollpane scrollpane = pair.getFirst();
             CheckButton checkButton = new CheckButton(module.getName(), module.getDescription());
             checkButton.setToggled(module.isEnabled());
 
@@ -93,9 +99,9 @@ public class KamiGUI extends GUI {
                 @Override
                 public void onMouseDown(MouseButtonEvent event) {
                     if (event.getButton() == 1) { // Right click
-                        pair.getValue().setModule(module);
-                        pair.getValue().setX(event.getX() + checkButton.getX());
-                        pair.getValue().setY(event.getY() + checkButton.getY());
+                        pair.getSecond().setModule(module);
+                        pair.getSecond().setX(event.getX() + checkButton.getX());
+                        pair.getSecond().setY(event.getY() + checkButton.getY());
                     }
                 }
 
@@ -137,9 +143,9 @@ public class KamiGUI extends GUI {
             Stretcherlayout stretcherlayout = new Stretcherlayout(1);
             stretcherlayout.COMPONENT_OFFSET_Y = 1;
             Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getName());
-            Scrollpane scrollpane = entry.getValue().getKey();
+            Scrollpane scrollpane = entry.getValue().getFirst();
             frame.addChild(scrollpane);
-            frame.addChild(entry.getValue().getValue());
+            frame.addChild(entry.getValue().getSecond());
             scrollpane.setOriginOffsetY(0);
             scrollpane.setOriginOffsetX(0);
             frame.setCloseable(false);
@@ -175,13 +181,21 @@ public class KamiGUI extends GUI {
                 }
             }
 
-            @Override public void onMouseRelease(MouseButtonEvent event) { }
+            @Override
+            public void onMouseRelease(MouseButtonEvent event) {
+            }
 
-            @Override public void onMouseDrag(MouseButtonEvent event) { }
+            @Override
+            public void onMouseDrag(MouseButtonEvent event) {
+            }
 
-            @Override public void onMouseMove(MouseMoveEvent event) { }
+            @Override
+            public void onMouseMove(MouseMoveEvent event) {
+            }
 
-            @Override public void onScroll(MouseScrollEvent event) { }
+            @Override
+            public void onScroll(MouseScrollEvent event) {
+            }
         });
 
         ArrayList<Frame> frames = new ArrayList<>();
@@ -228,7 +242,7 @@ public class KamiGUI extends GUI {
 //        information2.setFontRenderer(fontRenderer);
         frames.add(frame);
         */
-        
+
         /*
          * Information Overlay / InfoOverlay
          */
@@ -300,12 +314,13 @@ public class KamiGUI extends GUI {
 
         processes.addTickListener(() -> {
             processes.setText("");
-
-            if (!frameFinal.isMinimized() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
-                if (MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
+            Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
+            if (!frameFinal.isMinimized() && process.isPresent()) {
+                AutoWalk autoWalk = MODULE_MANAGER.getModuleT(AutoWalk.class);
+                if (process.get() != KamiMod.pauseProcess && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
                     processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
-                    processes.addLine("Process: " + BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().get().displayName());
+                    processes.addLine("Process: " + process.get().displayName());
                 }
             }
         });
@@ -341,8 +356,10 @@ public class KamiGUI extends GUI {
                 String extraPaddingForFactors;
                 EntityPlayer ePlayer = (EntityPlayer) e;
 
-                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W"; else weaknessFactor = "";
-                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S"; else strengthFactor = "";
+                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
+                else weaknessFactor = "";
+                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
+                else strengthFactor = "";
                 if (weaknessFactor.equals("") && strengthFactor.equals("")) extraPaddingForFactors = "";
                 else extraPaddingForFactors = " ";
 
@@ -557,7 +574,10 @@ public class KamiGUI extends GUI {
         return result;
     }
 
-    @Override public void destroyGUI() { kill(); }
+    @Override
+    public void destroyGUI() {
+        kill();
+    }
 
     private static final int DOCK_OFFSET = 0;
 

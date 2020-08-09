@@ -16,12 +16,12 @@ import me.zeroeightsix.kami.module.modules.render.HungerOverlay;
 import me.zeroeightsix.kami.module.modules.render.NoRender;
 import me.zeroeightsix.kami.util.HungerOverlayRenderHelper;
 import me.zeroeightsix.kami.util.HungerOverlayUtils;
-import me.zeroeightsix.kami.util.KamiTessellator;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiShulkerBox;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.AbstractHorse;
@@ -45,7 +45,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
@@ -56,6 +55,7 @@ import static me.zeroeightsix.kami.util.Wrapper.getWorld;
  * Created by 086 on 11/11/2017.
  * Updated by Qther on 18/02/20
  * Updated by dominikaaaa on 18/02/20
+ * Updated by Xiaro on 04/08/20
  */
 public class ForgeEventProcessor {
 
@@ -183,10 +183,9 @@ public class ForgeEventProcessor {
 
         if (event.getType() == target) {
             MODULE_MANAGER.onRender();
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
             UIRenderer.renderAndUpdateFrames();
-            GL11.glPopMatrix();
-            KamiTessellator.releaseGL();
+            GlStateManager.popMatrix();
         } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
             BossStack.render(event);
         }
