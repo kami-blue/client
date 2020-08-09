@@ -46,18 +46,20 @@ public abstract class MixinFontRenderer {
 
     @Final @Shadow public int[] colorCode;
 
-    @Shadow protected abstract void setColor(float r, float g, float b, float a);
+    @Shadow(remap = false) protected abstract void setColor(float r, float g, float b, float a);
     @Shadow public abstract int getCharWidth(char character);
     @Shadow protected abstract float renderChar(char ch, boolean italic);
-    @Shadow protected abstract void doDraw(float f);
+    @Shadow(remap = false) protected abstract void doDraw(float f);
 
     List<Emoji> emojis = new ArrayList<>();
 
     /**
      * @author Tiger
+     *
+     * @reason KamiMoji
      */
     @Overwrite
-    public void renderStringAtPos(String text, boolean shadow) {
+    private void renderStringAtPos(String text, boolean shadow) {
         try {
             if (KamiMod.MODULE_MANAGER.isModuleEnabled(me.zeroeightsix.kami.module.modules.chat.KamiMoji.class)) {
                 int size = getStringWidth("  ");
@@ -198,6 +200,8 @@ public abstract class MixinFontRenderer {
 
     /**
      * @author cats
+     *
+     * @reason KamiMoji
      */
     @Overwrite
     public int getStringWidth(String text) {
