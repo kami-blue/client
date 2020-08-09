@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**

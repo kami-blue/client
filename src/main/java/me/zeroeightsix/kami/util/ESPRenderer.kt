@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
-import net.minecraft.client.Minecraft
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB

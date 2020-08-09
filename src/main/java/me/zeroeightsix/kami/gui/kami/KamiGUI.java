@@ -22,7 +22,7 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
-import me.zeroeightsix.kami.util.ColourHolder;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -57,7 +57,7 @@ public class KamiGUI extends GUI {
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
     public Theme theme;
 
-    public static ColourHolder primaryColour = new ColourHolder(29, 29, 29);
+    public static ColourHolder primaryColour = new ColourHolder(29, 29, 29, 100);
 
     public KamiGUI() {
         super(new KamiTheme());

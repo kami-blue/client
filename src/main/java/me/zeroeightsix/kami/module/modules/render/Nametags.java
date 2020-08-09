@@ -4,7 +4,8 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.ColourHolder;
+import me.zeroeightsix.kami.util.colourUtils.ColourConverter;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import net.minecraft.client.Minecraft;
@@ -248,7 +249,7 @@ public class Nametags extends Module {
         float green = ((float) itemstack.getMaxDamage() - (float) itemstack.getItemDamage()) / (float) itemstack.getMaxDamage();
         float red = 1 - green;
         int dmg = 100 - (int) (red * 100);
-        mc.fontRenderer.drawStringWithShadow(dmg + "", x + 8 - mc.fontRenderer.getStringWidth(dmg + "") / 2f, y - 11, ColourHolder.toHex((int) (red * 255), (int) (green * 255), 0));
+        mc.fontRenderer.drawStringWithShadow(dmg + "", x + 8 - mc.fontRenderer.getStringWidth(dmg + "") / 2f, y - 11, ColourConverter.rgbToInt((int) (red * 255), (int) (green * 255), 0));
     }
 
     public static class EnchantEntry {

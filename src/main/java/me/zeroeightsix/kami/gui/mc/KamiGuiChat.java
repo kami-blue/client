@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.gui.mc;
 
-import kotlin.contracts.Returns;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import me.zeroeightsix.kami.util.MessageSendHelper;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.input.Keyboard;
@@ -17,7 +15,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 
 public class KamiGuiChat extends GuiChat {
 

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

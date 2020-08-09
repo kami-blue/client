@@ -5,8 +5,8 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourTextFormatting
-import me.zeroeightsix.kami.util.ColourTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.TimeUtil
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting

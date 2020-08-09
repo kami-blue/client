@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

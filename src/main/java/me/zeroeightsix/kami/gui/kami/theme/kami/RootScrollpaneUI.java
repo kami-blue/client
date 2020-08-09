@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import org.lwjgl.opengl.GL11;
 
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 
 /**
  * Created by 086 on 27/06/2017.

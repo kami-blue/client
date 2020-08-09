@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.Wrapper
