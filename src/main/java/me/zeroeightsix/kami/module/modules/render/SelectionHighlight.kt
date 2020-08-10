@@ -1,9 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
@@ -29,10 +27,8 @@ class SelectionHighlight : Module() {
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(200).withRange(0, 255).withVisibility { outline.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
-    private val freecamDisable = register(Settings.b("FreecamDisable", true))
 
     override fun onWorldRender(event: RenderEvent) {
-        if (freecamDisable.value && MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) return
         val colour = ColourHolder(r.value, g.value, b.value)
         val hitObject = mc.objectMouseOver
         val renderer = ESPRenderer(event.partialTicks)
