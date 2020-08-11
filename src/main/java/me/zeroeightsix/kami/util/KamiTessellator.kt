@@ -87,8 +87,8 @@ object KamiTessellator : Tessellator(0x200000) {
      * @return Render Parital Ticks
      */
     @JvmStatic
-    private fun pTicks(): Float {
-        return mc.renderPartialTicks
+    fun pTicks(): Float {
+        return if (mc.isGamePaused) mc.renderPartialTicksPaused else mc.renderPartialTicks
     }
 
     /**

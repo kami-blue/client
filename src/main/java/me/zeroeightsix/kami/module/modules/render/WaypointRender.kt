@@ -72,7 +72,7 @@ class WaypointRender : Module() {
             }
             /* Draw waypoint info box */
             if ((coords.value || name.value || date.value || dist.value) && distance <= infoBoxRange.value) {
-                drawText(waypoint, event.partialTicks)
+                drawText(waypoint, KamiTessellator.pTicks())
             }
         }
         glEndList()
@@ -103,7 +103,7 @@ class WaypointRender : Module() {
         GlStateManager.rotate(viewerYaw, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(viewerPitch, 1.0f, 0.0f, 0.0f)
 
-        val distance = sqrt(EntityUtils.getInterpolatedPos(mc.player, pTicks).squareDistanceTo(x, y, z))
+        val distance = sqrt(EntityUtils.getInterpolatedPos(mc.player, KamiTessellator.pTicks()).squareDistanceTo(x, y, z))
         val scale = max(distance, 2.0) / 8f * 1.2589254.pow(textScale.value.toDouble())
         GlStateManager.scale(scale, scale, scale)
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)

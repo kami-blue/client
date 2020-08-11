@@ -29,7 +29,7 @@ class ESPRenderer(private val pTicks: Float) {
     }
 
     fun add(entity: Entity, colour: ColourHolder, sides: Int) {
-        val interpolatedBox = entity.renderBoundingBox.offset(getInterpolatedAmount(entity, pTicks))
+        val interpolatedBox = entity.renderBoundingBox.offset(getInterpolatedAmount(entity, KamiTessellator.pTicks()))
         add(interpolatedBox, colour, sides)
     }
 

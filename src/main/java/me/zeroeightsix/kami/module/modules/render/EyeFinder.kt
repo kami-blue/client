@@ -122,7 +122,7 @@ class EyeFinder : Module() {
             val box = if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 AxisAlignedBB(result.blockPos).grow(0.002)
             } else {
-                val offset = getInterpolatedAmount(result.entityHit, mc.renderPartialTicks)
+                val offset = getInterpolatedAmount(result.entityHit, KamiTessellator.pTicks())
                 result.entityHit.renderBoundingBox.offset(offset)
             }
             val colour = ColourHolder(r.value, g.value, b.value)

@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
+import me.zeroeightsix.kami.util.KamiTessellator
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult.Type
 import kotlin.math.floor
@@ -31,7 +32,7 @@ class SelectionHighlight : Module() {
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
     override fun onWorldRender(event: RenderEvent) {
-        val eyePos = mc.player.getPositionEyes(event.partialTicks)
+        val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
         val eyeBlockPos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
         if (!mc.world.isAirBlock(eyeBlockPos)) return
         val colour = ColourHolder(r.value, g.value, b.value)

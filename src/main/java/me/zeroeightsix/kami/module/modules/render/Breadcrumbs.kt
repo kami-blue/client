@@ -90,7 +90,7 @@ class Breadcrumbs : Module() {
         }
 
         /* Adding position points to list */
-        val renderPosList = addPos(serverIP, dimension, event.partialTicks)
+        val renderPosList = addPos(serverIP, dimension, KamiTessellator.pTicks())
 
         /* Rendering */
         drawTail(renderPosList)
