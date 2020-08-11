@@ -47,7 +47,7 @@ class AimBot : Module() {
         }
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = getTargetList(player, mob, ignoreWalls.value, invisible.value, range.value)
+        val targetList = getTargetList(player, mob, invisible.value, range.value)
         if (targetList.isEmpty()) return
         faceEntity(getPrioritizedTarget(targetList, priority.value))
     }

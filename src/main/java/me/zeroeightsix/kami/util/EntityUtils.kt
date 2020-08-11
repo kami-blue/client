@@ -201,7 +201,7 @@ object EntityUtils {
         DISTANCE, HEALTH
     }
 
-    fun getPrioritizedTarget(targetList: Array<Entity>, priority: EntityPriority): Entity {
+    fun getPrioritizedTarget(targetList: ArrayList<Entity>, priority: EntityPriority): Entity {
         var entity = targetList[0]
         when (priority) {
             EntityPriority.DISTANCE -> {
@@ -228,8 +228,8 @@ object EntityUtils {
         return entity
     }
 
-    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, ignoreWalls: Boolean, invisible: Boolean, range: Float): Array<Entity> {
-        if (mc.world.loadedEntityList == null) return emptyArray()
+    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, invisible: Boolean, range: Float): ArrayList<Entity> {
+        if (mc.world.loadedEntityList == null) return emptyList<Entity>() as ArrayList<Entity>
         val entityList = ArrayList<Entity>()
         for (entity in mc.world.loadedEntityList) {
             /* Entity type check */
@@ -243,11 +243,10 @@ object EntityUtils {
             if (mc.player.isRiding && entity == mc.player.ridingEntity) continue // Riding entity check
             if (mc.player.getDistance(entity) > range) continue // Distance check
             if ((entity as EntityLivingBase).health <= 0) continue // HP check
-            if (!ignoreWalls && !mc.player.canEntityBeSeen(entity) && !canEntityFeetBeSeen(entity)) continue  // If walls is on & you can't see the feet or head of the target, skip. 2 raytraces needed
             if (!invisible && entity.isInvisible) continue
             entityList.add(entity)
         }
-        return entityList.toTypedArray()
+        return entityList
     }
 
     @JvmStatic
