@@ -154,16 +154,16 @@ object BlockUtils {
      * @return true if there is liquid below
      */
     fun checkForLiquid(): Boolean {
-        return getGroundPosY(true) == -1.0f
+        return getGroundPosY(true) == -999.0
     }
 
     /**
      * Get the height of the ground surface below, and check for liquid if [checkLiquid] is true
      *
-     * @return The y position of the ground surface, -1.0f if found liquid below and [checkLiquid]
+     * @return The y position of the ground surface, -999.0 if found liquid below and [checkLiquid]
      * is true or player is above the void
      */
-    fun getGroundPosY(checkLiquid: Boolean): Float {
+    fun getGroundPosY(checkLiquid: Boolean): Double {
         val boundingBox = mc.player.boundingBox
         var yOffset = mc.player.posY - boundingBox.minY
         val xArray = arrayOf(floor(boundingBox.minX).toInt(), floor(boundingBox.maxX).toInt())
@@ -172,13 +172,13 @@ object BlockUtils {
             if (checkLiquid) {
                 for (x in 0..1) for (z in 0..1) {
                     val blockPos = BlockPos(xArray[x], (mc.player.posY + yOffset).toInt(), zArray[z])
-                    if (mc.world.getBlockState(blockPos).block.material.isLiquid) return -1.0f
+                    if (mc.world.getBlockState(blockPos).block.material.isLiquid) return -999.0
                 }
             }
             yOffset -= 0.05
-            if (mc.player.posY + yOffset < 0.0f) return -1.0f
+            if (mc.player.posY + yOffset < 0.0f) return -999.0
         }
-        return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY.toFloat()
+        return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY
     }
 
     /**

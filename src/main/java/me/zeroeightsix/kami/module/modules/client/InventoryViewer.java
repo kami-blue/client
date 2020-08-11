@@ -59,8 +59,8 @@ public class InventoryViewer extends Module {
 
     private void boxRender(final int x, final int y) {
         // SET UNRELIABLE DEFAULTS (Don't restore these) {
-        GlStateManager.enableAlpha();
-        GlStateManager.disableBlend();
+//        GlStateManager.enableAlpha(); // when PlayerModel is disabled, this causes InventoryViewer to turn the chat and everything gray
+//        GlStateManager.disableBlend(); // when PlayerModel is disabled, this causes InventoryViewer to turn the chat and everything gray
         // }
 
         // ENABLE LOCAL CHANGES {
@@ -109,14 +109,14 @@ public class InventoryViewer extends Module {
     private static void preItemRender() {
         GlStateManager.pushMatrix();
         GlStateManager.enableDepth();
-        GlStateManager.depthMask(true);
+//        GlStateManager.depthMask(true); // when PlayerModel is disabled, this causes InventoryViewer to turn the chat and everything gray
         // Yes, this is meant to be paired with disableStandardItemLighting - 20kdc
         RenderHelper.enableGUIStandardItemLighting();
     }
 
     private static void postItemRender() {
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.depthMask(false);
+//        GlStateManager.depthMask(false); // when PlayerModel is disabled, this causes InventoryViewer to turn the chat and everything gray
         GlStateManager.disableDepth();
         GlStateManager.popMatrix();
     }
