@@ -24,5 +24,13 @@ object ColourConverter {
     @JvmStatic
     fun rgbToInt(r: Int, g: Int, b: Int): Int {
         return r shl 16 or (g shl 8) or b
-    } // settingsToInt(r.getValue(), g.getValue(), b.getValue(), aBlock.getValue()
+    }
+
+    @JvmStatic
+    fun intToRgb(intColor: Int): ColourHolder {
+        val r = (intColor shr 16)
+        val g = (intColor shr 8 and 255)
+        val b = (intColor and 255)
+        return ColourHolder(r, g, b)
+    }
 }

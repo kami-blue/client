@@ -3,10 +3,11 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.colourUtils.DyeColors
+import me.zeroeightsix.kami.util.colourUtils.HueCycler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
 import net.minecraft.tileentity.*
@@ -50,7 +51,7 @@ class StorageESP : Module() {
     /* Render settings */
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDER }.build())
-    private val tracer = register(Settings.booleanBuilder("Tracer").withValue(true).withVisibility { page.value == Page.RENDER }.build())
+    private val tracer = register(Settings.booleanBuilder("Tracer").withValue(false).withVisibility { page.value == Page.RENDER }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { page.value == Page.RENDER && filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDER && outline.value }.build())
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.RENDER && tracer.value }.build())
@@ -61,6 +62,7 @@ class StorageESP : Module() {
     }
 
     private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
+    private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
         val renderer = ESPRenderer(event.partialTicks)
@@ -75,6 +77,7 @@ class StorageESP : Module() {
     }
 
     override fun onUpdate() {
+        cycler++
         renderList.clear()
         for (tileEntity in mc.world.loadedTileEntityList) {
             if (tileEntity is TileEntityChest && chest.value
@@ -110,7 +113,7 @@ class StorageESP : Module() {
     }
 
     private fun getTileEntityColor(tileEntity: TileEntity): ColourHolder? {
-        return (when (tileEntity) {
+        val color = (when (tileEntity) {
             is TileEntityChest -> colorChest
             is TileEntityDispenser -> colorDispenser
             is TileEntityShulkerBox -> colorShulker
@@ -119,13 +122,19 @@ class StorageESP : Module() {
             is TileEntityHopper -> colorHopper
             else -> return null
         }.value as DyeColors).color
+        return if (color == DyeColors.RAINBOW.color) {
+            cycler.currentRgb()
+        } else color
     }
 
     private fun getEntityColor(entity: Entity): ColourHolder? {
-        return (when (entity) {
+        val color =  (when (entity) {
             is EntityMinecartContainer -> colorCart
             is EntityItemFrame -> colorFrame
             else -> return null
         }.value as DyeColors).color
+        return if (color == DyeColors.RAINBOW.color) {
+            cycler.currentRgb()
+        } else color
     }
 }

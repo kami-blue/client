@@ -3,11 +3,14 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.ESPRenderer
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
+import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.MathsUtils.convertRange
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.colourUtils.DyeColors
+import me.zeroeightsix.kami.util.colourUtils.HueCycler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import java.util.concurrent.ConcurrentHashMap
@@ -59,10 +62,9 @@ class Tracers : Module() {
     }
 
     private var renderList = ConcurrentHashMap<Entity, Pair<ColourHolder, Float>>() /* <Entity, <RGBAColor, AlphaMultiplier>> */
-    private var cycler = HueCycler(300)
+    private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
-        cycler.set()
         val renderer = ESPRenderer(event.partialTicks)
         renderer.aTracer = a.value
         renderer.thickness = thickness.value
@@ -76,8 +78,8 @@ class Tracers : Module() {
     }
 
     override fun onUpdate() {
+        cycler++
         alwaysListening = renderList.isNotEmpty()
-        cycler.next()
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
@@ -111,12 +113,7 @@ class Tracers : Module() {
         } as DyeColors).color
 
         return if (color == DyeColors.RAINBOW.color) {
-            val cycleColor = cycler.current()
-            color.r = (cycleColor shr 16)
-            color.g = (cycleColor shr 8 and 255)
-            color.b = (cycleColor and 255)
-            color.a = a.value
-            color
+            getRangedColor(entity, cycler.currentRgba(a.value))
         } else {
             color.a = a.value
             getRangedColor(entity, color)
@@ -126,11 +123,12 @@ class Tracers : Module() {
     private fun getRangedColor(entity: Entity, rgba: ColourHolder): ColourHolder {
         if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return rgba
         val distance = mc.player.getDistance(entity)
-        val color = (colorFar.value as DyeColors).color
-        val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), color.r.toFloat()).toInt()
-        val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), color.g.toFloat()).toInt()
-        val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), color.b.toFloat()).toInt()
-        val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), color.a.toFloat()).toInt()
+        val colorFar = (colorFar.value as DyeColors).color
+        colorFar.a = aFar.value
+        val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
+        val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
+        val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
+        val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
         return ColourHolder(r, g, b, a)
     }
 }
