@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.commands
 
-import baritone.p
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
