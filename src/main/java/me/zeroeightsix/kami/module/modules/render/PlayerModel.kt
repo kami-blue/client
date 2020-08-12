@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.math.MathHelper
 
@@ -50,7 +51,11 @@ class PlayerModel : Module() {
 
     override fun onRender() {
         if (lastAttackedEntity == null) return
+        GlStateManager.pushMatrix()
+        GlStateManager.enableDepth()
         GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, lastAttackedEntity!!)
+        GlStateManager.disableDepth()
+        GlStateManager.popMatrix()
     }
 
     companion object {

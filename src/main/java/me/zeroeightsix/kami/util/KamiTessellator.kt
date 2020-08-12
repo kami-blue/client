@@ -4,14 +4,12 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 
 /**
@@ -25,7 +23,7 @@ import kotlin.math.sin
  * Some is created by 086 on 9/07/2017.
  * Updated by dominikaaaa on 18/02/20
  * Updated by on Afel 08/06/20
- * Updated by Xiaro on 01/08/20
+ * Updated by Xiaro on 06/08/20
  */
 object KamiTessellator : Tessellator(0x200000) {
     private val mc = Minecraft.getMinecraft()
@@ -105,41 +103,29 @@ object KamiTessellator : Tessellator(0x200000) {
      */
     @JvmStatic
     fun drawBox(box: AxisAlignedBB, colour: ColourHolder, a: Int, sides: Int) {
+        val vertexList = BetterArrayList<Vec3d>()
+
         if (sides and GeometryMasks.Quad.DOWN != 0) {
-            buffer.pos(box.minX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toQuad())
         }
         if (sides and GeometryMasks.Quad.UP != 0) {
-            buffer.pos(box.minX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.maxY, EnumFacing.UP).toQuad())
         }
         if (sides and GeometryMasks.Quad.NORTH != 0) {
-            buffer.pos(box.minX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.minZ, EnumFacing.NORTH).toQuad())
         }
         if (sides and GeometryMasks.Quad.SOUTH != 0) {
-            buffer.pos(box.minX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.maxZ, EnumFacing.SOUTH).toQuad())
         }
         if (sides and GeometryMasks.Quad.WEST != 0) {
-            buffer.pos(box.minX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.minX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.minX, EnumFacing.WEST).toQuad())
         }
         if (sides and GeometryMasks.Quad.EAST != 0) {
-            buffer.pos(box.maxX, box.minY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.minY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.maxZ).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(box.maxX, box.maxY, box.minZ).color(colour.r, colour.g, colour.b, a).endVertex()
+            vertexList.addAll(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.maxX, EnumFacing.EAST).toQuad())
+        }
+
+        for (pos in vertexList) {
+            buffer.pos(pos.x, pos.y, pos.z).color(colour.r, colour.g, colour.b, a).endVertex()
         }
     }
 
@@ -177,28 +163,81 @@ object KamiTessellator : Tessellator(0x200000) {
     /**
      * @author Xiaro
      *
-     * Draws outline of [box]
+     * Draws outline for [sides] of [box]
      *
      * @param box Box to be drawn outline
      * @param colour RGB
      * @param a Alpha
+     * @param sides Sides to draw outline
      * @param thickness Thickness of the outline
      */
     @JvmStatic
-    fun drawOutline(box: AxisAlignedBB, colour: ColourHolder, a: Int, thickness: Float) {
-        val xArray = arrayOf(box.minX, box.maxX)
-        val yArray = arrayOf(box.minY, box.maxY)
-        val zArray = arrayOf(box.minZ, box.maxZ)
+    fun drawOutline(box: AxisAlignedBB, colour: ColourHolder, a: Int, sides: Int, thickness: Float) {
+        val vertexList = BetterArrayList<Pair<Vec3d, Vec3d>>()
         GlStateManager.glLineWidth(thickness)
 
-        for (x in xArray) for (y in yArray) for (z in zArray) {
-            buffer.pos(x, y, z).color(colour.r, colour.g, colour.b, a).endVertex()
+        if (sides and GeometryMasks.Quad.DOWN != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toLines())
         }
-        for (x in xArray) for (z in zArray) for (y in yArray) {
-            buffer.pos(x, y, z).color(colour.r, colour.g, colour.b, a).endVertex()
+        if (sides and GeometryMasks.Quad.UP != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.maxY, EnumFacing.UP).toLines())
         }
-        for (y in yArray) for (z in zArray) for (x in xArray) {
-            buffer.pos(x, y, z).color(colour.r, colour.g, colour.b, a).endVertex()
+        if (sides and GeometryMasks.Quad.NORTH != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.minZ, EnumFacing.NORTH).toLines())
+        }
+        if (sides and GeometryMasks.Quad.SOUTH != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.maxZ, EnumFacing.SOUTH).toLines())
+        }
+        if (sides and GeometryMasks.Quad.WEST != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.minX, EnumFacing.WEST).toLines())
+        }
+        if (sides and GeometryMasks.Quad.EAST != 0) {
+            vertexList.addAllIfAbsent(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.maxX, EnumFacing.EAST).toLines())
+        }
+
+        for ((p1, p2) in vertexList) {
+            buffer.pos(p1.x, p1.y, p1.z).color(colour.r, colour.g, colour.b, a).endVertex()
+            buffer.pos(p2.x, p2.y, p2.z).color(colour.r, colour.g, colour.b, a).endVertex()
+        }
+    }
+
+    private class SquareVec(minX: Double, maxX: Double, minZ: Double, maxZ: Double, val y: Double, val facing: EnumFacing) {
+        val minX = min(minX, maxX)
+        val maxX = max(minX, maxX)
+        val minZ = min(minZ, maxZ)
+        val maxZ = max(minZ, maxZ)
+
+        fun toLines(): Array<Pair<Vec3d, Vec3d>> {
+            val quad = this.toQuad()
+            return arrayOf(
+                    Pair(quad[0], quad[1]),
+                    Pair(quad[1], quad[2]),
+                    Pair(quad[2], quad[3]),
+                    Pair(quad[3], quad[0])
+            )
+        }
+
+        fun toQuad(): Array<Vec3d> {
+            return if (this.facing.horizontalIndex != -1) {
+                val quad = this.to2DQuad()
+                Array(4) { i ->
+                    val vec = quad[i]
+                    if(facing.axis == EnumFacing.Axis.X) {
+                        Vec3d(vec.y, vec.x, vec.z)
+                    } else {
+                        Vec3d(vec.x, vec.z, vec.y)
+                    }
+                }
+            } else this.to2DQuad()
+        }
+
+        fun to2DQuad(): Array<Vec3d> {
+            return arrayOf(
+                    Vec3d(this.minX, this.y, this.minZ),
+                    Vec3d(this.minX, this.y, this.maxZ),
+                    Vec3d(this.maxX, this.y, this.maxZ),
+                    Vec3d(this.maxX, this.y, this.minZ)
+            )
         }
     }
 }

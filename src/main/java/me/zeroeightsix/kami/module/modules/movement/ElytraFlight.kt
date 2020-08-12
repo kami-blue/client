@@ -47,6 +47,7 @@ class ElytraFlight : Module() {
     /* Takeoff */
     private val easyTakeOff = register(Settings.booleanBuilder("EasyTakeoff").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
     private val timerControl = register(Settings.booleanBuilder("TakeoffTimer").withValue(true).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS }.build())
+    private val minTakeoffHeight = register(Settings.floatBuilder("MinTakeoffHeight").withRange(0.0f, 1.5f).withValue(0.5f).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS }.build())
 
     /* Acceleration */
     private val accelerateStartSpeed = register(Settings.integerBuilder("StartSpeed").withRange(0, 100).withValue(100).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS }.build())
@@ -70,11 +71,11 @@ class ElytraFlight : Module() {
 
     /* Control */
     private val boostPitchControl = register(Settings.integerBuilder("BaseBoostPitch").withRange(0, 90).withValue(20).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
+    private val ncpStrict = register(Settings.booleanBuilder("NCPStrict").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val legacyLookBoost = register(Settings.booleanBuilder("LegacyLookBoost").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val altitudeHoldControl = register(Settings.booleanBuilder("AltitudeHold").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val dynamicDownSpeed = register(Settings.booleanBuilder("DynamicDownSpeed").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val speedControl = register(Settings.floatBuilder("SpeedC").withMinimum(0.0f).withValue(1.81f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
-    private val boostSpeedControl = register(Settings.floatBuilder("BoostSpeedC").withMinimum(0.0f).withValue(1.81f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val fallSpeedControl = register(Settings.floatBuilder("FallSpeedC").withMinimum(0.0f).withMaximum(0.3f).withValue(0.00000000000003f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val downSpeedControl = register(Settings.floatBuilder("DownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val fastDownSpeedControl = register(Settings.floatBuilder("DynamicDownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(2.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value && page.value == Page.MODE_SETTINGS }.build())
@@ -115,6 +116,7 @@ class ElytraFlight : Module() {
     private var packetYaw = 0.0f
     private var packetPitch = 0.0f
     private var hoverState = false
+    private var boostingTick = 0
 
     /* Event Handlers */
     @EventHandler
@@ -282,7 +284,7 @@ class ElytraFlight : Module() {
             }
             else -> {
                 when {
-                    mc.player.posY > getGroundPosY(false) + 1.0f -> {
+                    mc.player.posY > getGroundPosY(false) + 1.0 -> {
                         mc.timer.tickLength = 50.0f
                         mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
                     }
@@ -310,7 +312,7 @@ class ElytraFlight : Module() {
             return
         }
         if (mc.player.motionY < -0.0) {
-            if (mc.player.posY <= getGroundPosY(false) + 0.8f && !wasInLiquid && !mc.integratedServerIsRunning) {
+            if (mc.player.posY <= getGroundPosY(false) + minTakeoffHeight.value && !wasInLiquid && !mc.integratedServerIsRunning) {
                 mc.timer.tickLength = 25.0f
                 return
             }
@@ -349,7 +351,7 @@ class ElytraFlight : Module() {
      */
     private fun getSpeed(speed: Float, boosting: Boolean): Double {
         return when {
-            boosting -> boostSpeedControl.value.toDouble()
+            boosting -> (if (ncpStrict.value) min(speedControl.value, 2.0f) else speedControl.value).toDouble()
 
             accelerateTime.value != 0.0f && accelerateStartSpeed.value != 100 -> {
                 speedPercentage = when {
@@ -407,6 +409,7 @@ class ElytraFlight : Module() {
                 packetPitch = forwardPitch.value.toFloat()
                 mc.player.motionY = -fallSpeedControl.value.toDouble()
                 setSpeed(getYaw(), speedControl.value, moveUp)
+                boostingTick = 0
             }
         } else mc.player.setVelocity(0.0, 0.0, 0.0) /* Stop moving if no inputs are pressed */
 
@@ -416,15 +419,20 @@ class ElytraFlight : Module() {
     }
 
     private fun upwardFlight(currentSpeed: Double, yaw: Double) {
-        /* Smooth the boost pitch to bypass the pitch limit */
-        val targetPitch = max(mc.player.rotationPitch * (90.0f - boostPitchControl.value.toFloat()) / 90.0f - boostPitchControl.value.toFloat(), -90.0f)
-        packetPitch = if (mc.player.rotationPitch < 0.0f) {
-            if (packetPitch > -boostPitchControl.value.toFloat()) -boostPitchControl.value.toFloat() else {
-                if (packetPitch < targetPitch) packetPitch += 15.0f
-                if (packetPitch > targetPitch) packetPitch -= 15.0f
-                max(packetPitch, targetPitch)
-            }
+        val multipliedSpeed = 0.128 * min(speedControl.value, 2.0f)
+        val strictPitch = Math.toDegrees(asin((multipliedSpeed - sqrt(multipliedSpeed * multipliedSpeed - 0.0348)) / 0.12)).toFloat()
+        val basePitch = if (ncpStrict.value && strictPitch < boostPitchControl.value && !strictPitch.isNaN()) -strictPitch
+        else -boostPitchControl.value.toFloat()
+        val targetPitch = if (mc.player.rotationPitch < 0.0f) {
+            max(mc.player.rotationPitch * (90.0f - boostPitchControl.value.toFloat()) / 90.0f - boostPitchControl.value.toFloat(), -90.0f)
         } else -boostPitchControl.value.toFloat()
+
+        packetPitch = if (packetPitch <= basePitch && boostingTick > 2) {
+            if (packetPitch < targetPitch) packetPitch += 17.0f
+            if (packetPitch > targetPitch) packetPitch -= 17.0f
+            max(packetPitch, targetPitch)
+        } else basePitch
+        boostingTick++
 
         /* These are actually the original Minecraft elytra fly code lol */
         val pitch = Math.toRadians(packetPitch.toDouble())
@@ -505,6 +513,7 @@ class ElytraFlight : Module() {
 
             easyTakeOff.value = true
             timerControl.value = true
+            minTakeoffHeight.value = 0.5f
 
             accelerateStartSpeed.value = 100
             accelerateTime.value = 0.0f
@@ -519,11 +528,11 @@ class ElytraFlight : Module() {
             downSpeedBoost.value = 1.0f
 
             boostPitchControl.value = 20
+            ncpStrict.value = true
             legacyLookBoost.value = false
             altitudeHoldControl.value = false
             dynamicDownSpeed.value = false
             speedControl.value = 1.81f
-            boostSpeedControl.value = 1.81f
             fallSpeedControl.value = 0.00000000000003f
             downSpeedControl.value = 1.0f
             fastDownSpeedControl.value = 2.0f

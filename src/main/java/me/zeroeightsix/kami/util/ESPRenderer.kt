@@ -22,10 +22,15 @@ class ESPRenderer(private val pTicks: Float) {
     var thickness = 2f
     var through = true
     var tracerOffset = 50
+    var fullOutline = false
 
     fun add(entity: Entity, colour: ColourHolder) {
+        add(entity, colour, GeometryMasks.Quad.ALL)
+    }
+
+    fun add(entity: Entity, colour: ColourHolder, sides: Int) {
         val interpolatedBox = entity.renderBoundingBox.offset(getInterpolatedAmount(entity, pTicks))
-        add(interpolatedBox, colour, GeometryMasks.Quad.ALL)
+        add(interpolatedBox, colour, sides)
     }
 
     fun add(pos: BlockPos, colour: ColourHolder) {
@@ -64,7 +69,8 @@ class ESPRenderer(private val pTicks: Float) {
             KamiTessellator.begin(GL_LINES)
             for ((box, pair) in toRender) {
                 val a = (aOutline * (pair.first.a / 255f)).toInt()
-                KamiTessellator.drawOutline(box, pair.first, a, thickness)
+                val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
+                KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
             }
             KamiTessellator.render()
         }
