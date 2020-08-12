@@ -1,4 +1,3 @@
-// forge's stuff
 buildscript {
     repositories {
         jcenter()
@@ -25,7 +24,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.modVersion
-group project.modGroup // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group project.modGroup
 
 compileKotlin {
     kotlinOptions {
@@ -68,16 +67,11 @@ repositories {
         name = "jitpack.io"
         url = "https://jitpack.io"
     }
-    maven {
-        name = "forgelin-repo"
-        url "http://maven.shadowfacts.net/"
-    }
     mavenCentral()
     jcenter()
 }
 
 dependencies {
-    // mixin needs to be distributed with the mod, very important
     compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") { // do NOT update this to 8.0 or above, it breaks compatibility with future client
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -85,47 +79,50 @@ dependencies {
         exclude module: 'commons-io'
         exclude module: 'log4j-core' // we want to exclude this as well because 0.7.11 includes it too new for MC
     }
+
     compile "com.github.ZeroMemes:Alpine:1.7"
+
     compile group: 'net.jodah', name: 'typetools', version: '0.6.2'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.26'
+
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.12') {
         exclude group: 'com.google.guava', module: 'guava'
     }
+
     compile 'club.minnced:java-discord-rpc:2.0.2'
     compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
     compile 'com.github.kevinsawicki:http-request:http-request-6.0'
+
     compile 'com.github.cabaletta:baritone:1.2.14'
     compile 'cabaletta:baritone-api:1.2'
-    compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.4"
+
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk7", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-reflect", version: kotlin_version
-    compile group: "org.jetbrains", name: "annotations", version: annotations_version
+
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: coroutines_version
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: coroutines_version
+
+    compile group: "org.jetbrains", name: "annotations", version: annotations_version
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
     inputs.property 'version', project.version
     inputs.property 'mcversion', project.minecraft.version
+
     exclude '**/rawimagefiles'
 
-    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
 
-        // replace version and mcversion
         expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
-    // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 
-    // move _at.cfg into META-INF
     rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
@@ -148,8 +145,8 @@ shadowJar {
         include(dependency("org.jetbrains:annotations:${annotations_version}"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
-        include(dependency('net.shadowfacts:Forgelin'))
     }
+
     exclude 'dummyThing' // can someone explain why this is here
     classifier = 'release'
 }
@@ -181,8 +178,6 @@ jar {
     }
 }
 
-build.dependsOn(shadowJar)
-
 jar {
     manifest {
         attributes(
@@ -190,3 +185,5 @@ jar {
         )
     }
 }
+
+build.dependsOn(shadowJar)
