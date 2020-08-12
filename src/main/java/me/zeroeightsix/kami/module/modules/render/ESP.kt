@@ -15,6 +15,7 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import java.util.function.Consumer
+import java.awt.Color;
 
 /**
  * Created by 086 on 14/12/2017.
@@ -51,9 +52,10 @@ class ESP : Module() {
     private val radiusValue = register(Settings.integerBuilder("Width").withMinimum(1).withMaximum(100).withValue(25).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.GLOW }.build())
     private val filled = register(Settings.booleanBuilder("Filled").withValue(false).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    //private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    //private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    //private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    private val rgb = register(Settings.colorBuilder().withName("Color").withValue(Color(155, 144, 255)).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
@@ -72,7 +74,7 @@ class ESP : Module() {
         if (Wrapper.getMinecraft().getRenderManager().options == null || entityList == null) return
         when (mode.value) {
             ESPMode.BOX -> {
-                val colour = ColourHolder(r.value, g.value, b.value)
+                val colour = ColourHolder(rgb.value.red, rgb.value.green, rgb.value.blue)
                 val renderer = ESPRenderer(event.partialTicks)
                 renderer.aFilled = if (filled.value) aFilled.value else 0
                 renderer.aOutline = if (outline.value) aOutline.value else 0

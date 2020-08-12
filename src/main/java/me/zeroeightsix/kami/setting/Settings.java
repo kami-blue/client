@@ -9,7 +9,9 @@ import me.zeroeightsix.kami.setting.builder.numerical.NumericalSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.primitive.BooleanSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.primitive.EnumSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.primitive.StringSettingBuilder;
+import me.zeroeightsix.kami.setting.builder.ColorSettingBuilder;
 
+import java.awt.Color;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -37,6 +39,8 @@ public class Settings {
     public static StringSettingBuilder stringBuilder() {
         return new StringSettingBuilder();
     }
+
+    public static ColorSettingBuilder colorBuilder() { return new ColorSettingBuilder(); }
 
     public static EnumSettingBuilder enumBuilder(Class<? extends Enum> clazz) {
         return new EnumSettingBuilder(clazz);
@@ -66,6 +70,10 @@ public class Settings {
         return stringBuilder(name).withValue(value).build();
     }
 
+    public static Setting<Color> c(String name) { return colorBuilder(name).withValue(new Color(255, 0, 0)).build(); }
+
+    public static Setting<Color> c(String name, Color value) { return colorBuilder(name).withValue(value).build(); }
+
     public static <T extends Enum> Setting<T> e(String name, Enum value) {
         return enumBuilder(value.getClass()).withName(name).withValue(value).build();
     }
@@ -88,6 +96,10 @@ public class Settings {
 
     public static StringSettingBuilder stringBuilder(String name) {
         return (StringSettingBuilder) new StringSettingBuilder().withName(name);
+    }
+
+    public static ColorSettingBuilder colorBuilder(String name) {
+        return new ColorSettingBuilder().withName(name);
     }
 
     public static <T> SettingBuilder<T> custom(String name, T initialValue, Converter converter, Predicate<T> restriction, BiConsumer<T, T> consumer, Predicate<T> visibilityPredicate) {

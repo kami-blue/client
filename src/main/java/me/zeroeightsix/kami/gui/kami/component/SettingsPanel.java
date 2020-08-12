@@ -3,6 +3,8 @@ package me.zeroeightsix.kami.gui.kami.component;
 import me.zeroeightsix.kami.gui.kami.Stretcherlayout;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.OrganisedContainer;
+import me.zeroeightsix.kami.gui.rgui.component.use.ColorSlider;
+import me.zeroeightsix.kami.gui.rgui.component.use.ColorSquare;
 import me.zeroeightsix.kami.gui.rgui.component.use.CheckButton;
 import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
@@ -10,6 +12,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.impl.BooleanSetting;
 import me.zeroeightsix.kami.setting.impl.EnumSetting;
+import me.zeroeightsix.kami.setting.impl.ColorSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.DoubleSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting;
@@ -17,6 +20,7 @@ import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 import me.zeroeightsix.kami.util.Bind;
 
 import java.util.Arrays;
+import java.awt.Color;
 
 /**
  * Created by 086 on 6/08/2017.
@@ -54,6 +58,7 @@ public class SettingsPanel extends OrganisedContainer {
                 boolean isNumber = setting instanceof NumberSetting;
                 boolean isBoolean = setting instanceof BooleanSetting;
                 boolean isEnum = setting instanceof EnumSetting;
+                boolean isColor = setting instanceof ColorSetting;
 
                 if (setting.getValue() instanceof Bind) {
                     addChild(new BindButton("Bind", null, module));
@@ -132,6 +137,27 @@ public class SettingsPanel extends OrganisedContainer {
                     });
                     enumbutton.setIndex(Arrays.asList(con).indexOf(setting.getValue()));
                     addChild(enumbutton);
+                } else if (isColor) {
+                    ColorSetting colorSetting = (ColorSetting) setting;
+                    Color value = colorSetting.getValue();
+                    //Color slider
+                    ColorSlider colorSlider = new ColorSlider(value, name);
+                    colorSlider.addPoof(new ColorSlider.ColorPoof<ColorSlider, ColorSlider.ColorPoof.ColorPoofInfo>() {
+                        @Override
+                        public void execute(ColorSlider component, ColorPoofInfo info) {
+                            setting.setValue(info.getNewValue());
+                        }
+                    });
+                    addChild(colorSlider);
+                    //Color saturation square
+                    ColorSquare colorSquare = new ColorSquare(value, name);
+                    colorSquare.addPoof(new ColorSquare.ColorPoof<ColorSquare, ColorSquare.ColorPoof.ColorPoofInfo>() {
+                        @Override
+                        public void execute(ColorSquare component, ColorPoofInfo info) {
+                            setting.setValue(info.getNewValue());
+                        }
+                    });
+                    addChild(colorSquare);
                 }
             }
         }
