@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
 import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.Friends
+import me.zeroeightsix.kami.util.Friends.isFriend
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
@@ -82,11 +83,7 @@ class TotemPopCounter : Module() {
     })
 
     private fun friendCheck(name: String): Boolean {
-        if (isDead) return false
-        for (names in Friends.friends.value) {
-            if (names.username.equals(name, ignoreCase = true)) return countFriends.value
-        }
-        return true
+        return !isDead || (isFriend(name) && countFriends.value)
     }
 
     private fun selfCheck(name: String): Boolean {
@@ -101,13 +98,6 @@ class TotemPopCounter : Module() {
 
     private fun isSelf(name: String): Boolean {
         return name.equals(mc.player.name, ignoreCase = true)
-    }
-
-    private fun isFriend(name: String): Boolean {
-        for (names in Friends.friends.value) {
-            if (names.username.equals(name, ignoreCase = true)) return true
-        }
-        return false
     }
 
     private fun formatName(username: String): String {
