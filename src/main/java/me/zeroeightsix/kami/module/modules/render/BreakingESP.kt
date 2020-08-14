@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos
  */
 @Module.Info(
         name = "BreakingESP",
-        description = "Highlights blocks being breaking near you",
+        description = "Highlights blocks being broken near you",
         category = Module.Category.RENDER
 )
 class BreakingESP : Module() {

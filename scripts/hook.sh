@@ -30,6 +30,7 @@ cd ~/website/
 
 git pull
 sleep 1
+./scripts/bumpWebsiteNightlies.sh
 sed -i "s|beta_jar_url:.*|beta_jar_url: https://github.com/kami-blue/nightly-releases/releases/download/${CUR_VER}-${COMMIT_TRIM}/${JAR_DIR}|g" _config.yml
 sed -i "s|beta_ver:.*|beta_ver: v${CUR_VER}-${COMMIT_TRIM}|g" _config.yml
 git commit -a -m "bump ver to v${CUR_VER}-${COMMIT_TRIM}"
