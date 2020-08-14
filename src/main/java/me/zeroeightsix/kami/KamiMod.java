@@ -27,7 +27,6 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.config.Configuration;
-import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.LagCompensator;
 import me.zeroeightsix.kami.util.RichPresence;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -155,8 +154,6 @@ public class KamiMod {
         guiManager.initializeGUI();
 
         commandManager = new CommandManager();
-
-        Friends.initFriends();
 
         FileInstanceManager.fixEmptyFiles();
         MacroManager.INSTANCE.registerMacros();

@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.command.commands.FriendCommand
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
+import me.zeroeightsix.kami.util.Friends.getFriendByName
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
@@ -33,7 +33,7 @@ class MidClickFriends : Module() {
     }
 
     @EventHandler
-    var mouseListener = Listener(EventHook<InputEvent.MouseInputEvent> { event: InputEvent.MouseInputEvent? ->
+    var mouseListener = Listener(EventHook<InputEvent.MouseInputEvent> {
         if (delay == 0) {
             if (Mouse.getEventButton() == 2) { // 0 is left, 1 is right, 2 is middle
                 if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY) {
@@ -59,7 +59,7 @@ class MidClickFriends : Module() {
     private fun add(name: String) {
         delay = 20
         Thread(Runnable {
-            val f = FriendCommand().getFriendByName(name)
+            val f = getFriendByName(name)
 
             if (f == null) {
                 MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
