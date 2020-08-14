@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.util.colourUtils.DyeColors
 import me.zeroeightsix.kami.util.colourUtils.HueCycler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
+import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
 import java.util.concurrent.ConcurrentHashMap
@@ -30,13 +31,14 @@ class StorageESP : Module() {
 
     /* Type settings */
     private val chest = register(Settings.booleanBuilder("Chest").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val dispenser = register(Settings.booleanBuilder("Dispenser").withValue(true).withVisibility { page.value == Page.TYPE }.build())
     private val shulker = register(Settings.booleanBuilder("Shulker").withValue(true).withVisibility { page.value == Page.TYPE }.build())
     private val enderChest = register(Settings.booleanBuilder("EnderChest").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val furnace = register(Settings.booleanBuilder("Furnace").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val hopper = register(Settings.booleanBuilder("Hopper").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val cart = register(Settings.booleanBuilder("Minecart").withValue(true).withVisibility { page.value == Page.TYPE }.build())
     private val frame = register(Settings.booleanBuilder("ItemFrame").withValue(true).withVisibility { page.value == Page.TYPE }.build())
+    private val frameShulker = register(Settings.booleanBuilder("ItFShulkerOnly").withValue(true).withVisibility { frame.value && page.value == Page.TYPE }.build())
+    private val furnace = register(Settings.booleanBuilder("Furnace").withValue(false).withVisibility { page.value == Page.TYPE }.build())
+    private val dispenser = register(Settings.booleanBuilder("Dispenser").withValue(false).withVisibility { page.value == Page.TYPE }.build())
+    private val hopper = register(Settings.booleanBuilder("Hopper").withValue(false).withVisibility { page.value == Page.TYPE }.build())
+    private val cart = register(Settings.booleanBuilder("Minecart").withValue(false).withVisibility { page.value == Page.TYPE }.build())
 
     /* Color settings */
     private val colorChest = register(Settings.enumBuilder(DyeColors::class.java).withName("ChestColor").withValue(DyeColors.ORANGE).withVisibility { page.value == Page.COLOR }.build())
@@ -101,7 +103,7 @@ class StorageESP : Module() {
         }
 
         for (entity in mc.world.loadedEntityList) {
-            if (entity is EntityItemFrame && frame.value
+            if (entity is EntityItemFrame && frameShulkerOrAny(entity)
                     || (entity is EntityMinecartChest
                             || entity is EntityMinecartHopper
                             || entity is EntityMinecartFurnace) && cart.value) {
@@ -136,5 +138,15 @@ class StorageESP : Module() {
         return if (color == DyeColors.RAINBOW.color) {
             cycler.currentRgb()
         } else color
+    }
+
+    private fun frameShulkerOrAny(e: Entity): Boolean {
+        return if (!frame.value) {
+            false
+        } else if (!frameShulker.value) {
+            true
+        } else {
+            (e as EntityItemFrame).displayedItem.getItem() is ItemShulkerBox
+        }
     }
 }
