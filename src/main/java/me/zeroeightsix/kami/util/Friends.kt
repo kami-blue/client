@@ -25,6 +25,7 @@ import kotlin.collections.ArrayList
 object Friends {
     @JvmField
     val friends: Setting<ArrayList<Friend>> = Settings.custom("Friends", ArrayList<Friend>(), FriendListConverter()).buildAndRegister("friends")
+
     @JvmField
     var enabled = true
 

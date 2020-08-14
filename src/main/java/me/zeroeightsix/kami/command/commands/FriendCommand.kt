@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.friends
 import me.zeroeightsix.kami.util.Friends.getFriendByName
+import me.zeroeightsix.kami.util.MessageSendHelper
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 
 /**
@@ -18,7 +19,12 @@ class FriendCommand : Command("friend", ChunkBuilder()
         .build(), "f") {
 
     override fun call(args: Array<String?>) {
-        when (getSubCommand(args)) {
+        val subCommand = getSubCommand(args)
+        if (!Friends.enabled && subCommand != SubCommands.NULL && subCommand != SubCommands.TOGGLE) {
+            MessageSendHelper.sendWarningMessage("&6Warning: Friends is disabled!")
+            MessageSendHelper.sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
+        }
+        when (subCommand) {
             SubCommands.ADD -> {
                 if (Friends.isFriend(args[1])) {
                     sendChatMessage("That player is already your friend.")
