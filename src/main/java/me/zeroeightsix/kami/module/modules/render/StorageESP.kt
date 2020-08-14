@@ -140,13 +140,11 @@ class StorageESP : Module() {
         } else color
     }
 
-    private fun frameShulkerOrAny(e: Entity): Boolean {
-        return if (!frame.value) {
-            false
-        } else if (!frameShulker.value) {
-            true
-        } else {
-            (e as EntityItemFrame).displayedItem.getItem() is ItemShulkerBox
+    private fun frameShulkerOrAny(e: EntityItemFrame): Boolean {
+        return when {
+            !frame.value -> false
+            !frameShulker.value -> true
+            else -> e.displayedItem.getItem() is ItemShulkerBox
         }
     }
 }
