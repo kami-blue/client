@@ -30,11 +30,8 @@ public class RadarUI extends AbstractComponentUI<Radar> {
     @Override
     public void renderComponent(Radar component, FontRenderer fontRenderer) {
         scale = 2;
-        GL11.glTranslated(component.getWidth() / 2, component.getHeight() / 2, 0);
+        GL11.glTranslated(component.getWidth() / 2.0, component.getHeight() / 2.0, 0);
 
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
         GlStateManager.disableCull();
 
         GlStateManager.pushMatrix();
@@ -80,9 +77,7 @@ public class RadarUI extends AbstractComponentUI<Radar> {
         GL11.glLineWidth(1.8f);
 //        glColor4f(1,1,1,1f);
         glColor3f(.60f, .56f, 1.00f);
-        GL11.glEnable(GL_LINE_SMOOTH);
         RenderHelper.drawCircleOutline(0, 0, radius);
-        GL11.glDisable(GL_LINE_SMOOTH);
 
         component.getTheme().getFontRenderer().drawString(-component.getTheme().getFontRenderer().getStringWidth("+z") / 2, radius - component.getTheme().getFontRenderer().getFontHeight(), "\u00A77z+");
         glRotatef(90, 0, 0, 1);
@@ -93,8 +88,7 @@ public class RadarUI extends AbstractComponentUI<Radar> {
         component.getTheme().getFontRenderer().drawString(-component.getTheme().getFontRenderer().getStringWidth("+x") / 2, radius - component.getTheme().getFontRenderer().getFontHeight(), "\u00A77x+");
 
         GlStateManager.popMatrix();
-        GlStateManager.enableTexture2D();
 
-        GL11.glTranslated(-component.getWidth() / 2, -component.getHeight() / 2, 0);
+        GL11.glTranslated(-component.getWidth() / 2.0, -component.getHeight() / 2.0, 0);
     }
 }
