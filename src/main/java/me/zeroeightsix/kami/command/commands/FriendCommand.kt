@@ -19,7 +19,6 @@ class FriendCommand : Command("friend", ChunkBuilder()
 
     override fun call(args: Array<String?>) {
         when (getSubCommand(args)) {
-
             SubCommands.ADD -> {
                 if (Friends.isFriend(args[1])) {
                     sendChatMessage("That player is already your friend.")
@@ -64,11 +63,16 @@ class FriendCommand : Command("friend", ChunkBuilder()
             }
 
             SubCommands.TOGGLE -> {
-                TODO()
+                Friends.enabled = !Friends.enabled
+                if (Friends.enabled) {
+                    sendChatMessage("Friends has been enabled")
+                } else {
+                    sendChatMessage("Friends has been disabled")
+                }
             }
 
             SubCommands.NULL -> {
-                val commands = args.joinToString(separator = "")
+                val commands = args.joinToString(separator = " ")
                 sendChatMessage("Invalid sub command $commands!")
             }
         }

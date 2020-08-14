@@ -292,7 +292,11 @@ public class KamiGUI extends GUI {
         friends.addTickListener(() -> {
             friends.setText("");
             if (!finalFrame.isMinimized()) {
-                Friends.friends.getValue().forEach(friend -> friends.addLine(friend.getUsername()));
+                if (Friends.enabled) {
+                    Friends.friends.getValue().forEach(friend -> friends.addLine(friend.getUsername()));
+                } else {
+                    friends.addLine("&cDisabled");
+                }
             }
         });
 

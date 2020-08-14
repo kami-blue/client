@@ -24,11 +24,13 @@ import kotlin.collections.ArrayList
  */
 object Friends {
     @JvmField
-    val friends: Setting<java.util.ArrayList<Friend>> = Settings.custom("Friends", ArrayList<Friend>(), FriendListConverter()).buildAndRegister("friends")
+    val friends: Setting<ArrayList<Friend>> = Settings.custom("Friends", ArrayList<Friend>(), FriendListConverter()).buildAndRegister("friends")
+    @JvmField
+    var enabled = true
 
     @JvmStatic
     fun isFriend(name: String?): Boolean {
-        return friends.value.any { friend -> friend.username.equals(name, ignoreCase = true) }
+        return enabled && friends.value.any { friend -> friend.username.equals(name, ignoreCase = true) }
     }
 
     fun getFriendByName(input: String?): Friend? {
