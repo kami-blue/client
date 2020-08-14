@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSquare;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-import java.awt.*;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
@@ -22,13 +22,12 @@ public class RootColorSquareUI extends AbstractComponentUI<ColorSquare> {
     @Override
     public void renderComponent(ColorSquare component, FontRenderer aa) {
         glColor4f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()), component.getOpacity());
-        glLineWidth(10f);
         int width = component.getWidth();
         int height = component.getHeight();
-        Color value = component.getValue();
-        float[] HSB = Color.RGBtoHSB(value.getRed(), value.getGreen(), value.getBlue(), null);
-        double w = width * (HSB[1]);
-        double v = height * (HSB[2]);
+        HSBColourHolder value = component.getValue();
+        HSBColourHolder raw = value.getRaw();
+        float w = width * (value.getS());
+        float v = height * (1 - value.getB());
 
         glShadeModel(GL_SMOOTH);
         glBegin(GL_QUADS);
@@ -37,12 +36,13 @@ public class RootColorSquareUI extends AbstractComponentUI<ColorSquare> {
             glColor3f(0f, 0f, 0f);
             glVertex2d(0, height); //Bottom left black corner
             glVertex2d(width, height); //Bottom right black corner
-            glColor3f(toF(value.getRed()), toF(value.getGreen()), toF(value.getBlue()));
+            glColor3f(toF(raw.getRed()), toF(raw.getGreen()), toF(raw.getBlue()));
             glVertex2d(width, 0); //Colored corner
         glEnd();
 
         glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        RenderHelper.drawCircle((int)w, (int)v, 2f);
+        RenderHelper.drawCircle(w, v, 2f);
+        //smallFontRenderer.drawString(0, 0, "Something");
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
@@ -50,9 +50,9 @@ public class RootColorSquareUI extends AbstractComponentUI<ColorSquare> {
 
     @Override
     public void handleAddComponent(ColorSquare component, Container container) {
-        component.setWidth(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getxMaximum() + "") + 3);
+        //component.setWidth(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getxMaximum() + "") + 3);
         //component.setHeight(component.getTheme().getFontRenderer().getFontHeight() + 2);
-        component.setHeight(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getxMaximum() + "") + 3);
+        //component.setHeight(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getxMaximum() + "") + 3);
     }
 
 }

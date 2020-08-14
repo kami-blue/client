@@ -18,6 +18,7 @@ import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 import me.zeroeightsix.kami.util.Bind;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
 import java.util.Arrays;
 import java.awt.Color;
@@ -139,24 +140,29 @@ public class SettingsPanel extends OrganisedContainer {
                     addChild(enumbutton);
                 } else if (isColor) {
                     ColorSetting colorSetting = (ColorSetting) setting;
-                    Color value = colorSetting.getValue();
+                    HSBColourHolder value = colorSetting.getValue();
                     //Color slider
                     ColorSlider colorSlider = new ColorSlider(value, name);
                     colorSlider.addPoof(new ColorSlider.ColorPoof<ColorSlider, ColorSlider.ColorPoof.ColorPoofInfo>() {
                         @Override
                         public void execute(ColorSlider component, ColorPoofInfo info) {
                             setting.setValue(info.getNewValue());
+                            setModule(module);
                         }
                     });
                     addChild(colorSlider);
+                    value = colorSlider.getValue();
                     //Color saturation square
                     ColorSquare colorSquare = new ColorSquare(value, name);
                     colorSquare.addPoof(new ColorSquare.ColorPoof<ColorSquare, ColorSquare.ColorPoof.ColorPoofInfo>() {
                         @Override
                         public void execute(ColorSquare component, ColorPoofInfo info) {
                             setting.setValue(info.getNewValue());
+                            setModule(module);
                         }
                     });
+                    colorSquare.setWidth(getWidth() - 10);
+                    colorSquare.setHeight(getWidth() - 10);
                     addChild(colorSquare);
                 }
             }

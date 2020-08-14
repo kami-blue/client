@@ -10,8 +10,8 @@ import me.zeroeightsix.kami.setting.builder.primitive.BooleanSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.primitive.EnumSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.primitive.StringSettingBuilder;
 import me.zeroeightsix.kami.setting.builder.ColorSettingBuilder;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
-import java.awt.Color;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -70,9 +70,9 @@ public class Settings {
         return stringBuilder(name).withValue(value).build();
     }
 
-    public static Setting<Color> c(String name) { return colorBuilder(name).withValue(new Color(255, 0, 0)).build(); }
+    public static Setting<HSBColourHolder> c(String name) { return colorBuilder(name).withValue(new HSBColourHolder(0f, 1f, 1f)).build(); }
 
-    public static Setting<Color> c(String name, Color value) { return colorBuilder(name).withValue(value).build(); }
+    public static Setting<HSBColourHolder> c(String name, HSBColourHolder value) { return colorBuilder(name).withValue(value).build(); }
 
     public static <T extends Enum> Setting<T> e(String name, Enum value) {
         return enumBuilder(value.getClass()).withName(name).withValue(value).build();

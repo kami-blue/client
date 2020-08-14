@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSlider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-import java.awt.*;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
 import static me.zeroeightsix.kami.util.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
@@ -22,42 +22,31 @@ public class RootColorSliderUI extends AbstractComponentUI<ColorSlider> {
     @Override
     public void renderComponent(ColorSlider component, FontRenderer aa) {
         glColor4f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()), component.getOpacity());
-        glLineWidth(10f); //2.5f
+        glLineWidth(10f);
         int bSize = 5;
         int width = component.getWidth();
         int height = component.getHeight();
-        Color value = component.getValue();
-        float[] HSB = Color.RGBtoHSB(value.getRed(), value.getGreen(), value.getBlue(), null);
-        double w = width * (HSB[0]);
+        HSBColourHolder value = component.getValue();
+        double w = width * (value.getH());
         float downscale = 1.1f;
         glShadeModel(GL_SMOOTH);
         glBegin(GL_LINE_STRIP);
-        glColor3f(255, 0, 0); //Red
-        glVertex2d(0, height / downscale);
-        glColor3f(255, 255, 0); //Yellow
-        glVertex2d(width / 6, height / downscale);
-        glColor3f(0, 255, 0); //Green
-        glVertex2d(width / 3, height / downscale);
-        glColor3f(0, 255, 255); //Light blue
-        glVertex2d(width / 2, height / downscale);
-        glColor3f(0, 0, 255); //Blue
-        glVertex2d(width / 1.5, height / downscale);
-        glColor3f(255, 0, 255); //Purple
-        glVertex2d(width / 1.2, height / downscale);
-        glColor3f(255, 0, 0); //Red
-        glVertex2d(width, height / downscale);
-        glEnd();
-        /*glBegin(GL_LINES);
-        {
+            glColor3f(255, 0, 0); //Red
             glVertex2d(0, height / downscale);
-            glVertex2d(w, height / downscale);
-        }
-        glColor3f(0.33f, 0.33f, 0.33f);
-        {
-            glVertex2d(w, height / downscale);
-            glVertex2d(component.getWidth(), height / downscale);
-        }
-        glEnd();*/
+            glColor3f(255, 255, 0); //Yellow
+            glVertex2d(width / 6, height / downscale);
+            glColor3f(0, 255, 0); //Green
+            glVertex2d(width / 3, height / downscale);
+            glColor3f(0, 255, 255); //Light blue
+            glVertex2d(width / 2, height / downscale);
+            glColor3f(0, 0, 255); //Blue
+            glVertex2d(width / 1.5, height / downscale);
+            glColor3f(255, 0, 255); //Purple
+            glVertex2d(width / 1.2, height / downscale);
+            glColor3f(255, 0, 0); //Red
+            glVertex2d(width, height / downscale);
+        glEnd();
+
         glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
         RenderHelper.drawCircle((int) w, height / downscale, 2f);
 

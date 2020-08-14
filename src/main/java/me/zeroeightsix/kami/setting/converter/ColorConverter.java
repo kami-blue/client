@@ -4,31 +4,31 @@ import com.google.common.base.Converter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-import java.awt.Color;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
 /**
  * Created by Guac on 10/8/2020.
  */
-public class ColorConverter extends Converter<Color, JsonElement> {
+public class ColorConverter extends Converter<HSBColourHolder, JsonElement> {
 
     @Override
-    protected JsonElement doForward(Color rgbaColor) {
+    protected JsonElement doForward(HSBColourHolder c) {
         JsonArray clr = new JsonArray();
-        clr.add(rgbaColor.getRed());
-        clr.add(rgbaColor.getGreen());
-        clr.add(rgbaColor.getBlue());
-        clr.add(rgbaColor.getAlpha());
+        clr.add(c.getH());
+        clr.add(c.getB());
+        clr.add(c.getS());
+        clr.add(c.getAlpha());
         return clr;
     }
 
     @Override
-    protected Color doBackward(JsonElement s) {
-        JsonArray color = s.getAsJsonArray();
-        Integer r = color.get(0).getAsInt();
-        Integer g = color.get(1).getAsInt();
-        Integer b = color.get(2).getAsInt();
-        Integer a = color.get(3).getAsInt();
-        return new Color(r, g, b, a);
+    protected HSBColourHolder doBackward(JsonElement c) {
+        JsonArray color = c.getAsJsonArray();
+        Float h = color.get(0).getAsFloat();
+        Float s = color.get(1).getAsFloat();
+        Float b = color.get(2).getAsFloat();
+        Float a = color.get(3).getAsFloat();
+        return new HSBColourHolder(h, s, b, a);
     }
 
 }

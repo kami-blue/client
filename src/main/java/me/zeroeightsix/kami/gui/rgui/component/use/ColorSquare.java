@@ -1,20 +1,20 @@
 package me.zeroeightsix.kami.gui.rgui.component.use;
 
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.AbstractComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
 import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 import net.minecraft.util.math.MathHelper;
-
-import java.awt.Color;
 
 /**
  * Created by Guac on 10/8/2020.
  */
 public class ColorSquare extends AbstractComponent {
 
-    Color value;
+    HSBColourHolder value;
     double xMinimum;
     double xMaximum;
     double yMinimum;
@@ -22,14 +22,14 @@ public class ColorSquare extends AbstractComponent {
     double step;
     String text;
 
-    public ColorSquare(Color value, String text) {
-        this.value = value;
-        this.xMinimum = 0.0;
+    public ColorSquare(HSBColourHolder clr, String txt) {
+        this.value = clr;
+        this.xMinimum = 0.5;
         this.xMaximum = 100.0;
-        this.yMinimum = 0.0;
+        this.yMinimum = 0.5;
         this.yMaximum = 100.0;
-        this.step = 1.0;
-        this.text = text;
+        this.step = 0.3;
+        this.text = txt;
 
         addMouseListener(new MouseListener() {
             @Override
@@ -61,8 +61,9 @@ public class ColorSquare extends AbstractComponent {
         double d1 = y / getHeight();
         double d2 = (yMaximum - yMinimum);
         double s = d1 * d2 + yMinimum;
-
-        return MathHelper.clamp(Math.floor((Math.round(s / step) * step) * 100) / 100, yMinimum, yMaximum); // round to 2 decimals & clamp min and max
+        double val = Math.floor((Math.round(s / step) * step) * 100) / 100;
+        
+        return MathHelper.clamp(val, yMinimum, yMaximum); // round to 2 decimals & clamp min and max
     }
 
 
@@ -70,7 +71,7 @@ public class ColorSquare extends AbstractComponent {
 
     public double getStep() { return step; }
 
-    public Color getValue() { return value; }
+    public HSBColourHolder getValue() { return value; }
 
     public double getxMaximum() { return xMaximum; }
 
@@ -81,33 +82,34 @@ public class ColorSquare extends AbstractComponent {
     public double getyMinimum() { return yMinimum; }
 
     public void setValue(double saturation, double brightness) {
-        float[] HSB = Color.RGBtoHSB(this.value.getRed(), this.value.getGreen(), this.value.getBlue(), null);
-        Color clr = Color.getHSBColor(HSB[0], (float)saturation, (float)brightness);
-        ColorSquare.ColorPoof.ColorPoofInfo info = new ColorSquare.ColorPoof.ColorPoofInfo(this.value, clr);
+        HSBColourHolder old = this.value;
+        this.value.setS((float)saturation / 100);
+        this.value.setB(1 - ((float)brightness / 100));
+        ColorSquare.ColorPoof.ColorPoofInfo info = new ColorSquare.ColorPoof.ColorPoofInfo(old, this.value);
         callPoof(ColorSquare.ColorPoof.class, info);
-        Color newValue = info.getNewValue();
+        HSBColourHolder newValue = info.getNewValue();
         this.value = newValue;
     }
 
     public static abstract class ColorPoof<T extends Component, S extends ColorSquare.ColorPoof.ColorPoofInfo> extends Poof<T, S> {
         public static class ColorPoofInfo extends PoofInfo {
-            Color oldValue;
-            Color newValue;
+            HSBColourHolder oldValue;
+            HSBColourHolder newValue;
 
-            public ColorPoofInfo(Color oldValue, Color newValue) {
+            public ColorPoofInfo(HSBColourHolder oldValue, HSBColourHolder newValue) {
                 ColorSquare.ColorPoof.ColorPoofInfo.this.oldValue = oldValue;
                 ColorSquare.ColorPoof.ColorPoofInfo.this.newValue = newValue;
             }
 
-            public Color getOldValue() {
+            public HSBColourHolder getOldValue() {
                 return oldValue;
             }
 
-            public Color getNewValue() {
+            public HSBColourHolder getNewValue() {
                 return newValue;
             }
 
-            public void setNewValue(Color newValue) { this.newValue = newValue; }
+            public void setNewValue(HSBColourHolder newValue) { this.newValue = newValue; }
         }
     }
 

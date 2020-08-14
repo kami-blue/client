@@ -6,21 +6,20 @@ import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
 import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
 import net.minecraft.util.math.MathHelper;
-
-import java.awt.Color;
+import me.zeroeightsix.kami.util.HSBColourHolder;
 
 /**
  * Created by Guac on 10/8/2020.
  */
 public class ColorSlider extends AbstractComponent {
 
-    Color value;
+    HSBColourHolder value;
     double minimum;
     double maximum;
     double step;
     String text;
 
-    public ColorSlider(Color value, String text) {
+    public ColorSlider(HSBColourHolder value, String text) {
         this.value = value;
         this.minimum = 0.0;
         this.maximum = 359.0;
@@ -49,48 +48,49 @@ public class ColorSlider extends AbstractComponent {
         double d1 = x / getWidth();
         double d2 = (maximum - minimum);
         double s = d1 * d2 + minimum;
-
-        return MathHelper.clamp(Math.floor((Math.round(s / step) * step) * 100) / 100, minimum, maximum); // round to 2 decimals & clamp min and max
+        double val = Math.floor((Math.round(s / step) * step) * 100) / 100;
+        if (val > maximum) { val = maximum - 0.5; }
+        return MathHelper.clamp(val, minimum, maximum); // round to 2 decimals & clamp min and max
     }
 
     public String getText() { return text; }
 
     public double getStep() { return step; }
 
-    public Color getValue() { return value; }
+    public HSBColourHolder getValue() { return value; }
 
     public double getMaximum() { return maximum; }
 
     public double getMinimum() { return minimum; }
 
     public void setValue(double hue) {
-        float[] HSB = Color.RGBtoHSB(this.value.getRed(), this.value.getGreen(), this.value.getBlue(), null);
-        Color clr = Color.getHSBColor(((float)hue / 359), HSB[1], HSB[2]);
-        ColorSlider.ColorPoof.ColorPoofInfo info = new ColorSlider.ColorPoof.ColorPoofInfo(this.value, clr);
+        HSBColourHolder old = this.value;
+        this.value.setH((float)hue / 359);
+        ColorSlider.ColorPoof.ColorPoofInfo info = new ColorSlider.ColorPoof.ColorPoofInfo(old, this.value);
         callPoof(ColorSlider.ColorPoof.class, info);
-        Color newValue = info.getNewValue();
+        HSBColourHolder newValue = info.getNewValue();
         this.value = newValue;
     }
 
     public static abstract class ColorPoof<T extends Component, S extends ColorSlider.ColorPoof.ColorPoofInfo> extends Poof<T, S> {
         public static class ColorPoofInfo extends PoofInfo {
-            Color oldValue;
-            Color newValue;
+            HSBColourHolder oldValue;
+            HSBColourHolder newValue;
 
-            public ColorPoofInfo(Color oldValue, Color newValue) {
+            public ColorPoofInfo(HSBColourHolder oldValue, HSBColourHolder newValue) {
                 ColorSlider.ColorPoof.ColorPoofInfo.this.oldValue = oldValue;
                 ColorSlider.ColorPoof.ColorPoofInfo.this.newValue = newValue;
             }
 
-            public Color getOldValue() {
+            public HSBColourHolder getOldValue() {
                 return oldValue;
             }
 
-            public Color getNewValue() {
+            public HSBColourHolder getNewValue() {
                 return newValue;
             }
 
-            public void setNewValue(Color newValue) { this.newValue = newValue; }
+            public void setNewValue(HSBColourHolder newValue) { this.newValue = newValue; }
         }
     }
 

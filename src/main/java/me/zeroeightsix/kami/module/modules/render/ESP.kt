@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.HSBColourHolder
 import net.minecraft.client.shader.Shader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -15,7 +16,6 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import java.util.function.Consumer
-import java.awt.Color;
 
 /**
  * Created by 086 on 14/12/2017.
@@ -55,7 +55,7 @@ class ESP : Module() {
     //private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     //private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     //private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
-    private val rgb = register(Settings.colorBuilder().withName("Color").withValue(Color(155, 144, 255)).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
+    private val rgb = register(Settings.colorBuilder().withName("Color").withValue(HSBColourHolder(0f, 1f, 1f)).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
     private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.BOX }.build())
