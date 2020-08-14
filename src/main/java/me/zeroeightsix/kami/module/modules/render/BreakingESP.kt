@@ -73,11 +73,11 @@ class BreakingESP : Module() {
     @EventHandler
     private val blockBreaklistener = Listener(EventHook { event: BlockBreakEvent ->
         if (mc.player == null || mc.player.getDistanceSq(event.position) > range.value * range.value) return@EventHook
-        val breaker = mc.world.getEntityByID(event.breakId)?: return@EventHook
+        val breaker = mc.world.getEntityByID(event.breakId) ?: return@EventHook
         if (ignoreSelf.value && breaker == mc.player) return@EventHook
         if (event.progress in 0..9) {
             breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, false))
-            breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third)}
+            breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third) }
             if (warning.value && breaker != mc.player && event.progress > 4 && !breakingBlockList[event.breakId]!!.third
                     && ((obsidianOnly.value && mc.world.getBlockState(event.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
@@ -88,4 +88,10 @@ class BreakingESP : Module() {
             breakingBlockList.remove(event.breakId)
         }
     })
+
+    override fun onUpdate() {
+        breakingBlockList.values.removeIf { triple ->
+            mc.world.isAirBlock(triple.first)
+        }
+    }
 }
