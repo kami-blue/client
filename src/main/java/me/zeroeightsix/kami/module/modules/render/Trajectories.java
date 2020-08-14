@@ -3,9 +3,10 @@ package me.zeroeightsix.kami.module.modules.render;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.util.ColourHolder;
+import me.zeroeightsix.kami.util.ESPRenderer;
 import me.zeroeightsix.kami.util.GeometryMasks;
-import me.zeroeightsix.kami.util.KamiTessellator;
 import me.zeroeightsix.kami.util.TrajectoryCalculator;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -50,18 +51,22 @@ public class Trajectories extends Module {
                             hit = flightPath.getCollidingTarget().getBlockPos();
 
                         if (hit != null) {
-                            glDepthMask(false);
-                            glColor4f(1, 1, 1, .3f);
-                            AxisAlignedBB box = new AxisAlignedBB(hit);
-                            ColourHolder colour = new ColourHolder(255, 255, 255);
-                            KamiTessellator.begin(GL_QUADS);
-                            KamiTessellator.drawBox(box, colour, 80, GeometryMasks.FACEMAP.get(flightPath.getCollidingTarget().sideHit));
-                            KamiTessellator.render();
+                            GlStateManager.pushMatrix();
+                            ESPRenderer renderer = new ESPRenderer(event.getPartialTicks());
+                            renderer.setAFilled(150);
+                            renderer.setAOutline(0);
+                            renderer.setThrough(false);
+                            renderer.setThickness(0.0f);
+                            renderer.setFullOutline(true);
+                            AxisAlignedBB box = mc.world.getBlockState(hit).getSelectedBoundingBox(mc.world, hit);
+                            renderer.add(box.grow(0.002), ColourHolder.fromHex(0xFFFFFF), GeometryMasks.Quad.UP);
+                            renderer.render();
+                            GlStateManager.popMatrix();
                         }
 
                         if (positions.isEmpty()) return;
 
-                        GL11.glLineWidth(2F);
+/*                        GL11.glLineWidth(2F);
                         glColor3f(1f, 1f, 1f);
                         glBegin(GL_LINE_STRIP);
                         Vec3d a = positions.get(0);
@@ -69,7 +74,7 @@ public class Trajectories extends Module {
                         for (Vec3d v : positions) {
                             glVertex3d(v.x, v.y, v.z);
                         }
-                        glEnd();
+                        glEnd();*/
                     });
         } catch (Exception e) {
             e.printStackTrace();
