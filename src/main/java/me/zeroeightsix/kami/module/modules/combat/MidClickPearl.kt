@@ -32,6 +32,7 @@ class MidClickPearl : Module() {
         if (mc.player == null || mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) return@EventHook
 
         if (startTime == -1L && Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {
+            /* 368 is ender pearl */
             if (InventoryUtils.getSlotsHotbar(368) != null) {
                 prevSlot = mc.player.inventory.currentItem
                 swapSlotToItem(368)
@@ -41,11 +42,10 @@ class MidClickPearl : Module() {
                 startTime = System.currentTimeMillis() + 1000L
             }
         }
-
-        Mouse.getEventButton()
     })
 
     override fun onUpdate() {
+        if (mc.player == null) return
         if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
             startTime = System.currentTimeMillis()
