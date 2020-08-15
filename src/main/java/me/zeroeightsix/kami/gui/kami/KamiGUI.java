@@ -27,6 +27,7 @@ import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.*;
@@ -41,6 +42,7 @@ import javax.annotation.Nonnull;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
@@ -284,7 +286,7 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinnable(false);
         frame.setMinimizeable(true);
-        frame.setMinimumWidth(60);
+        frame.setMinimumWidth(80);
         frame.setMinimumHeight(10);
         Label friends = new Label("");
         friends.setShadow(true);
@@ -306,7 +308,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setMinimumWidth(70);
+        frame.setMinimumWidth(85);
         Label processes = new Label("");
         processes.setShadow(true);
 
@@ -394,7 +396,7 @@ public class KamiGUI extends GUI {
         });
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setMinimumWidth(75);
+        frame.setMinimumWidth(100);
         list.setShadow(true);
         frame.addChild(list);
         list.setFontRenderer(fontRenderer);
@@ -406,7 +408,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
         Label entityLabel = new Label("");
         frame.setCloseable(false);
-        frame.setMinimumWidth(60);
+        frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
             Minecraft mc = Wrapper.getMinecraft();
@@ -447,6 +449,56 @@ public class KamiGUI extends GUI {
         entityLabel.setShadow(true);
         entityLabel.setFontRenderer(fontRenderer);
         frames.add(frame);
+
+        /*
+         * Potion Effects
+         */
+        frame = new Frame(getTheme(), new Stretcherlayout(1), "Potions");
+        frame.setCloseable(false);
+        frame.setPinnable(true);
+        Label potionsLabel = new Label("");
+        potionsLabel.addTickListener(new TickListener() {
+            Minecraft mc = Minecraft.getMinecraft();
+
+            @Override
+            public void onTick() {
+                potionsLabel.setText("");
+
+                if(mc.player == null){
+                    return;
+                }
+
+                // loop through potions and add them to the potions label
+                mc.player.getActivePotionMap().forEach((potion, potionEffect) -> {
+                    String name = I18n.format(potion.getName());
+                    String amplifier;
+                    switch (potionEffect.getAmplifier()) {
+                        case 0:
+                            amplifier = "I";
+                            break;
+                        case 1:
+                            amplifier = "II";
+                            break;
+                        default:
+                            amplifier = "?";
+                            break;
+                    }
+                    int secDuration = potionEffect.getDuration() / 20; // 20 ticks per sec, this may be incorrect in laggy servers
+                    long min = TimeUnit.SECONDS.toMinutes(secDuration);
+                    long secs = TimeUnit.SECONDS.toSeconds(secDuration) - (min * 60);
+                    String potionText = String.format("%s %s (%d:%02d)", name, amplifier, min, secs);
+                    potionsLabel.addLine(potionText);
+                });
+
+            }
+        });
+
+        frame.addChild(potionsLabel);
+        potionsLabel.setFontRenderer(fontRenderer);
+        potionsLabel.setShadow(true);
+        frame.setMinimumWidth(80);
+        frames.add(frame);
+
 
         /*
          * Coordinates
