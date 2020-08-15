@@ -27,6 +27,7 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.config.Configuration;
+import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.LagCompensator;
 import me.zeroeightsix.kami.util.RichPresence;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -162,6 +163,8 @@ public class KamiMod {
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
         SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
+        SettingsRegister.register("friends", Friends.friends); // these are case-sensitive
+
         loadConfiguration();
         log.info("Settings loaded");
 

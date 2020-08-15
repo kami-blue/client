@@ -295,7 +295,7 @@ public class KamiGUI extends GUI {
                 if (Friends.enabled) {
                     Friends.friends.getValue().forEach(friend -> friends.addLine(friend.getUsername()));
                 } else {
-                    friends.addLine("&cDisabled");
+                    friends.addLine(KamiMod.colour + "cDisabled");
                 }
             }
         });

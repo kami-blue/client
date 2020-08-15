@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
  * Updated by Xiaro on 14/08/20
  */
 class FriendCommand : Command("friend", ChunkBuilder()
-        .append("mode", true, EnumParser(arrayOf("add", "del", "list", "toggle")))
+        .append("mode", true, EnumParser(arrayOf("add", "del", "list", "\$toggle"))) /* toggle has a $ in it in order to allow friending on the user named 'toggle'. stupid edge case */
         .append("name")
         .build(), "f") {
 
@@ -36,7 +36,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
                             sendChatMessage("Failed to find UUID of " + args[1])
                         } else {
                             friends.value.add(f)
-                            sendChatMessage("&b" + f.username + "&r has been friended.")
+                            sendChatMessage("&7${f.username}&r has been friended.")
                         }
                     }).start()
                 }
@@ -48,16 +48,17 @@ class FriendCommand : Command("friend", ChunkBuilder()
                     name = friend.username
                     name.equals(args[1], ignoreCase = true)
                 }
-                if (removed) sendChatMessage("&b $name &r has been unfriended.")
+                if (removed) sendChatMessage("&7$name&r has been unfriended.")
                 else sendChatMessage("That player isn't your friend.")
             }
 
             SubCommands.LIST -> {
                 if (friends.value.isEmpty()) {
-                    sendChatMessage("You currently don't have any friends added. &bfriend add <name>&r to add one.")
+                    sendChatMessage("You currently don't have any friends added. &7${commandPrefix}friend add <name>&r to add one.")
                 } else {
-                    val f = friends.value.joinToString()
-                    sendChatMessage("Your friends: $f")
+                    var f = ""
+                    friends.value.forEach { _f -> f += "    ${_f.username}\n" } // nicely format the chat output
+                    sendChatMessage("Your friends: \n$f")
                 }
             }
 
@@ -86,7 +87,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
 
     private fun getSubCommand(args: Array<String?>): SubCommands {
         return when {
-            args[0] == null || args[1]?.equals("list", ignoreCase = true) == true -> SubCommands.LIST
+            args[0] == null || args[0]?.equals("list", ignoreCase = true) == true -> SubCommands.LIST
 
             args[0].equals("add", ignoreCase = true)
                     || args[0].equals("new", ignoreCase = true) -> SubCommands.ADD
@@ -95,9 +96,9 @@ class FriendCommand : Command("friend", ChunkBuilder()
                     || args[0].equals("remove", ignoreCase = true)
                     || args[0].equals("delete", ignoreCase = true) -> SubCommands.DEL
 
-            args[1] == null -> SubCommands.IS_FRIEND
+            args[0].equals("\$toggle", ignoreCase = true) -> SubCommands.TOGGLE
 
-            args[0].equals("toggle", ignoreCase = true) -> SubCommands.TOGGLE
+            args[1] == null -> SubCommands.IS_FRIEND
 
             else -> SubCommands.NULL
         }
