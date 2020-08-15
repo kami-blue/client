@@ -29,7 +29,7 @@ class ElytraReplace : Module() {
     private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
     private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false).build())
     private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value }.build())
-    private val logThreshold = register(Settings.integerBuilder("LogThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
+    private val logThreshold = register(Settings.integerBuilder("WarningThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
     private val threshold = register(Settings.integerBuilder("Broken%").withRange(1, 100).withValue(7).build())
 
     private var elytraCount = 0
