@@ -22,6 +22,7 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
+import me.zeroeightsix.kami.util.LagCompensator;
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.MathsUtils;
@@ -483,7 +484,7 @@ public class KamiGUI extends GUI {
                             amplifier = "?";
                             break;
                     }
-                    int secDuration = potionEffect.getDuration() / 20; // 20 ticks per sec, this may be incorrect in laggy servers
+                    long secDuration = new Float(potionEffect.getDuration() / LagCompensator.INSTANCE.getTickRate()).longValue();
                     long min = TimeUnit.SECONDS.toMinutes(secDuration);
                     long secs = TimeUnit.SECONDS.toSeconds(secDuration) - (min * 60);
                     String potionText = String.format("%s %s (%d:%02d)", name, amplifier, min, secs);
