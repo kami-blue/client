@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack
  * Created by Dewy on the 4th of April, 2020
  * Modified by Spider 8/14/2020
  */
-
 @Module.Info(
         name = "ElytraReplace",
         description = "Automatically swap and replace your chestplate and elytra.",
@@ -33,10 +32,8 @@ class ElytraReplace : Module() {
     private val threshold = register(Settings.integerBuilder("Broken%").withRange(1, 100).withValue(7).build())
 
     private var elytraCount = 0
-    private var chestplateCount = 0
-
+    private var chestPlateCount = 0
     private var shouldSendFinalWarning = true;
-
 
     override fun onUpdate() {
         if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
@@ -54,7 +51,7 @@ class ElytraReplace : Module() {
         } else if (shouldAttemptElytraSwap()) {
             var shouldSwap = isCurrentElytraBroken()
             if (autoChest.value) {
-                shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) //is current elytra broken or no elytra found in chest area
+                shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
             }
 
             if (shouldSwap) {
@@ -68,53 +65,53 @@ class ElytraReplace : Module() {
 
     private fun getElytraChestCount() {
         elytraCount = 0
-        chestplateCount = 0
+        chestPlateCount = 0
         for (i in 0..44) {
             val stack = mc.player.inventory.getStackInSlot(i)
             if (stack.getItem() === Items.ELYTRA && !isItemBroken(stack)) {
                 elytraCount += 1
-                if (!shouldSendFinalWarning) { //if we send the final warning but gained elytras afterwards - we can send the message again
+                if (!shouldSendFinalWarning) { // if we send the final warning but gained elytras afterwards - we can send the message again
                     shouldSendFinalWarning = true
                 }
             } else if (stack.getItem() is ItemArmor && !isItemBroken(stack)) {
                 val armor = stack.getItem() as ItemArmor
                 val armorType = armor.armorType.ordinal - 2
                 if (armorType == 2) {
-                    chestplateCount += 1
+                    chestPlateCount += 1
                 }
             }
         }
     }
 
-    //if we should check elytraflight, then we will swap if it is enabled
-    //if we don't need to check for elytraflight, then just swap
+    // if we should check elytraflight, then we will swap if it is enabled
+    // if we don't need to check for elytraflight, then just swap
     private fun shouldAttemptElytraSwap(): Boolean {
-        if (elytraFlightCheck.value) {
-            return KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)
+        return if (elytraFlightCheck.value) {
+            KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)
         } else {
-            return true
+            true
         }
     }
 
 
     private fun swapToChest() {
-        if (chestplateCount == 0) {
+        if (chestPlateCount == 0) {
             return
         }
+
         if (!emptySlotAvailable()) {
             return
         }
+
         var slot = getSlotOfBestChestPlate()
+        if (slot == -1) return // no chest or current chest is better
 
-        if (slot == -1) { //no chest or current chest is better
-            return
-        }
-        if (slot < 9) slot += 36 //hotbar fix
+        if (slot < 9) slot += 36 // hotbar is slots 0 to 8, convert the slot if it's hotbar
 
-        if (mc.player.inventory.armorInventory[2].isEmpty()) { //no need to click anything out
+        if (mc.player.inventory.armorInventory[2].isEmpty()) { // place chest into empty chest slot
             mc.playerController.windowClick(0, slot, 0, ClickType.QUICK_MOVE, mc.player)
             return
-        } else { //time to swap with the better
+        } else { // swap chestplate from inventory with whatever you were wearing, if you're already wearing non-armor in chest slot
             mc.playerController.windowClick(0, 6, 0,
                     ClickType.QUICK_MOVE, mc.player)
             mc.playerController.windowClick(0, slot, 0,
@@ -123,27 +120,28 @@ class ElytraReplace : Module() {
         }
     }
 
-    private fun swapToElytra(): Boolean { //returns success
+    private fun swapToElytra(): Boolean { // returns success
 
         if (elytraCount == 0) {
             return false
         }
+
         if (!emptySlotAvailable()) {
             return false
         }
 
         var slot: Int = getSlotOfNextElytra()
 
-        if (slot == -1) { //This shouldn't happen as we check elytra count earlier, but the check is here for peace of mind.
+        if (slot == -1) { // this shouldn't happen as we check elytra count earlier, but the check is here for peace of mind.
             return false
         }
 
-        if (slot < 9) slot += 36 //hotbar fix
+        if (slot < 9) slot += 36 // hotbar is slots 0 to 8, convert the slot if it's hotbar
 
-        return if (mc.player.inventory.armorInventory[2].isEmpty()) { //no need to click anything out
+        return if (mc.player.inventory.armorInventory[2].isEmpty()) { // place new elytra in empty chest slot
             mc.playerController.windowClick(0, slot, 0, ClickType.QUICK_MOVE, mc.player)
             true
-        } else { //time to move new elytra in
+        } else { // switch non-broken elytra with whatever was previously in the chest slot
             mc.playerController.windowClick(0, 6, 0,
                     ClickType.QUICK_MOVE, mc.player)
             mc.playerController.windowClick(0, slot, 0,
@@ -161,12 +159,12 @@ class ElytraReplace : Module() {
     }
 
 
-    //snagged from AutoArmor
+    // snagged from AutoArmor
     private fun getSlotOfBestChestPlate(): Int {
         var bestArmorSlot = -1
         var bestArmorValue = -1
 
-        //check armor slot first
+        // check armor slot first
         val chestArmor = mc.player.inventory.armorItemInSlot(2)
         if (chestArmor.getItem() is ItemArmor) {
             bestArmorValue = (chestArmor.getItem() as ItemArmor).damageReduceAmount
@@ -179,9 +177,9 @@ class ElytraReplace : Module() {
             val armor = stack.getItem() as ItemArmor
             val armorType = armor.armorType.ordinal - 2
 
-            if (armorType != 2) return@forEach //not chest
+            if (armorType != 2) return@forEach // not chestplate
 
-            if (stack.count > 1) return@forEach //should this be the case if stacked armor exists on some servers
+            if (stack.count > 1) return@forEach // should this be the case if stacked armor exists on some servers
 
             val armorValue = armor.damageReduceAmount
 
@@ -236,7 +234,7 @@ class ElytraReplace : Module() {
 
     private fun sendFinalElytraWarning() {
 
-        if (!isCurrentElytraBroken()) { //check to ensure there is an actual elytra in the inventory
+        if (!isCurrentElytraBroken()) { // check to ensure there is an actual elytra in the chest slot
             return
         }
 
