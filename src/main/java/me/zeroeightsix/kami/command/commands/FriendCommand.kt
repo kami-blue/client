@@ -14,9 +14,10 @@ import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
  * Updated by Xiaro on 14/08/20
  */
 class FriendCommand : Command("friend", ChunkBuilder()
-        .append("mode", true, EnumParser(arrayOf("add", "del", "list", "\$toggle"))) /* toggle has a $ in it in order to allow friending on the user named 'toggle'. stupid edge case */
+        .append("mode", true, EnumParser(arrayOf("add", "del", "list", "\$toggle", "clear"))) /* toggle has a $ in it in order to allow friending on the user named 'toggle'. stupid edge case */
         .append("name")
         .build(), "f") {
+    private var confirmTime = 0L
 
     override fun call(args: Array<String?>) {
         val subCommand = getSubCommand(args)
@@ -43,22 +44,21 @@ class FriendCommand : Command("friend", ChunkBuilder()
             }
 
             SubCommands.DEL -> {
-                var name = ""
                 val removed = friends.value.removeIf { friend ->
-                    name = friend.username
-                    name.equals(args[1], ignoreCase = true)
+                    friend.username.equals(args[1], ignoreCase = true)
                 }
-                if (removed) sendChatMessage("&7$name&r has been unfriended.")
+                if (removed) sendChatMessage("&7${args[1]}&r has been unfriended.")
                 else sendChatMessage("That player isn't your friend.")
             }
 
             SubCommands.LIST -> {
                 if (friends.value.isEmpty()) {
-                    sendChatMessage("You currently don't have any friends added. &7${commandPrefix}friend add <name>&r to add one.")
+                    sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
                 } else {
-                    var f = ""
-                    friends.value.forEach { _f -> f += "    ${_f.username}\n" } // nicely format the chat output
-                    sendChatMessage("Your friends: \n$f")
+                    val f = friends.value.joinToString(prefix = "\n    ", separator = "\n    ") { friend ->
+                        friend.username
+                    } // nicely format the chat output
+                    sendChatMessage("Your friends: $f")
                 }
             }
 
@@ -75,6 +75,17 @@ class FriendCommand : Command("friend", ChunkBuilder()
                     sendChatMessage("Friends has been enabled")
                 } else {
                     sendChatMessage("Friends has been disabled")
+                }
+            }
+
+            SubCommands.CLEAR -> {
+                if (System.currentTimeMillis() - confirmTime > 15000L) {
+                    confirmTime = System.currentTimeMillis()
+                    sendChatMessage("This will delete ALL your friends, run &7${commandPrefix.value}friend clear&f again to confirm")
+                } else {
+                    confirmTime = 0L
+                    friends.value.clear()
+                    sendChatMessage("Friends has been cleared")
                 }
             }
 
@@ -98,6 +109,8 @@ class FriendCommand : Command("friend", ChunkBuilder()
 
             args[0].equals("\$toggle", ignoreCase = true) -> SubCommands.TOGGLE
 
+            args[0].equals("clear", ignoreCase = true) -> SubCommands.CLEAR
+
             args[1] == null -> SubCommands.IS_FRIEND
 
             else -> SubCommands.NULL
@@ -105,7 +118,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
     }
 
     private enum class SubCommands {
-        ADD, DEL, LIST, IS_FRIEND, TOGGLE, NULL
+        ADD, DEL, LIST, IS_FRIEND, TOGGLE, CLEAR, NULL
     }
 
     init {
