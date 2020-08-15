@@ -6,9 +6,10 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
-import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.client.gui.inventory.GuiContainerCreative
-import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.gui.GuiEnchantment
+import net.minecraft.client.gui.GuiMerchant
+import net.minecraft.client.gui.GuiRepair
+import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
 
 @Module.Info(
@@ -47,6 +48,11 @@ class ChestStealer : Module() {
     fun isContainerOpen(): Boolean {
         return mc.player.openContainer != null
                 && mc.currentScreen is GuiContainer
+                && mc.currentScreen !is GuiEnchantment
+                && mc.currentScreen !is GuiMerchant
+                && mc.currentScreen !is GuiRepair
+                && mc.currentScreen !is GuiBeacon
+                && mc.currentScreen !is GuiCrafting
                 && mc.currentScreen !is GuiContainerCreative
                 && mc.currentScreen !is GuiInventory
     }
