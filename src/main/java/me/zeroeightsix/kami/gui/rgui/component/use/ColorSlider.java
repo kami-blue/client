@@ -23,7 +23,7 @@ public class ColorSlider extends AbstractComponent {
         this.value = value;
         this.minimum = 0.0;
         this.maximum = 359.0;
-        this.step = 1.0;
+        this.step = 0.5;
         this.text = text;
 
         addMouseListener(new MouseListener() {

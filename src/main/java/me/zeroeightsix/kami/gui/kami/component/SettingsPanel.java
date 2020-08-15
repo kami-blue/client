@@ -21,7 +21,6 @@ import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.HSBColourHolder;
 
 import java.util.Arrays;
-import java.awt.Color;
 
 /**
  * Created by 086 on 6/08/2017.
@@ -147,7 +146,6 @@ public class SettingsPanel extends OrganisedContainer {
                         @Override
                         public void execute(ColorSlider component, ColorPoofInfo info) {
                             setting.setValue(info.getNewValue());
-                            setModule(module);
                         }
                     });
                     addChild(colorSlider);
@@ -158,11 +156,10 @@ public class SettingsPanel extends OrganisedContainer {
                         @Override
                         public void execute(ColorSquare component, ColorPoofInfo info) {
                             setting.setValue(info.getNewValue());
-                            setModule(module);
                         }
                     });
-                    colorSquare.setWidth(getWidth() - 10);
-                    colorSquare.setHeight(getWidth() - 10);
+                    colorSquare.setWidth(getWidth() - 30);
+                    colorSquare.setHeight(getWidth() - 30);
                     addChild(colorSquare);
                 }
             }
@@ -180,11 +177,17 @@ public class SettingsPanel extends OrganisedContainer {
         this.module = module;
         setMinimumWidth((int) (getParent().getWidth() * .9f));
         prepare();
-
+        //This probably isn't the best solution but it's the easiest
+        int i = 0;
+        int h = 0;
         setAffectLayout(false);
         for (Component component : children) {
             component.setWidth(getWidth() - 10);
             component.setX(5);
+            if (i == 0) { component.setY(component.getY()); }
+            else { component.setY(h); }
+            h += component.getHeight() + 4;
+            i++;
         }
     }
 }

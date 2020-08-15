@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.rgui.component.use;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.AbstractComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
@@ -24,11 +23,11 @@ public class ColorSquare extends AbstractComponent {
 
     public ColorSquare(HSBColourHolder clr, String txt) {
         this.value = clr;
-        this.xMinimum = 0.5;
+        this.xMinimum = 0;
         this.xMaximum = 100.0;
-        this.yMinimum = 0.5;
+        this.yMinimum = 0;
         this.yMaximum = 100.0;
-        this.step = 0.3;
+        this.step = 0.2;
         this.text = txt;
 
         addMouseListener(new MouseListener() {
