@@ -39,7 +39,7 @@ class ElytraReplace : Module() {
 
 
     override fun onUpdate() {
-        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)){
+        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
             return
         }
 
@@ -53,33 +53,33 @@ class ElytraReplace : Module() {
             swapToChest()
         } else if (shouldAttemptElytraSwap()) {
             var shouldSwap = isCurrentElytraBroken()
-            if(autoChest.value){
+            if (autoChest.value) {
                 shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) //is current elytra broken or no elytra found in chest area
             }
 
             if (shouldSwap) {
                 val success = swapToElytra()
-                if(success){
+                if (success) {
                     sendEquipNotif()
                 }
             }
         }
     }
 
-    private fun getElytraChestCount(){
+    private fun getElytraChestCount() {
         elytraCount = 0
         chestplateCount = 0
         for (i in 0..44) {
             val stack = mc.player.inventory.getStackInSlot(i)
             if (stack.getItem() === Items.ELYTRA && !isItemBroken(stack)) {
                 elytraCount += 1
-                if(!shouldSendFinalWarning){ //if we send the final warning but gained elytras afterwards - we can send the message again
+                if (!shouldSendFinalWarning) { //if we send the final warning but gained elytras afterwards - we can send the message again
                     shouldSendFinalWarning = true
                 }
             } else if (stack.getItem() is ItemArmor && !isItemBroken(stack)) {
                 val armor = stack.getItem() as ItemArmor
                 val armorType = armor.armorType.ordinal - 2
-                if(armorType == 2){
+                if (armorType == 2) {
                     chestplateCount += 1
                 }
             }
@@ -89,7 +89,7 @@ class ElytraReplace : Module() {
     //if we should check elytraflight, then we will swap if it is enabled
     //if we don't need to check for elytraflight, then just swap
     private fun shouldAttemptElytraSwap(): Boolean {
-        if(elytraFlightCheck.value){
+        if (elytraFlightCheck.value) {
             return KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)
         } else {
             return true
@@ -97,16 +97,16 @@ class ElytraReplace : Module() {
     }
 
 
-    private fun swapToChest(){
+    private fun swapToChest() {
         if (chestplateCount == 0) {
             return
         }
-        if(!emptySlotAvailable()){
+        if (!emptySlotAvailable()) {
             return
         }
         var slot = getSlotOfBestChestPlate()
 
-        if(slot == -1){ //no chest or current chest is better
+        if (slot == -1) { //no chest or current chest is better
             return
         }
         if (slot < 9) slot += 36 //hotbar fix
@@ -123,18 +123,18 @@ class ElytraReplace : Module() {
         }
     }
 
-    private fun swapToElytra(): Boolean{ //returns success
+    private fun swapToElytra(): Boolean { //returns success
 
         if (elytraCount == 0) {
             return false
         }
-        if(!emptySlotAvailable()){
+        if (!emptySlotAvailable()) {
             return false
         }
 
         var slot: Int = getSlotOfNextElytra()
 
-        if(slot == -1){ //This shouldn't happen as we check elytra count earlier, but the check is here for peace of mind.
+        if (slot == -1) { //This shouldn't happen as we check elytra count earlier, but the check is here for peace of mind.
             return false
         }
 
@@ -163,7 +163,7 @@ class ElytraReplace : Module() {
 
     //snagged from AutoArmor
     private fun getSlotOfBestChestPlate(): Int {
-        var bestArmorSlot  = -1
+        var bestArmorSlot = -1
         var bestArmorValue = -1
 
         //check armor slot first
@@ -179,7 +179,7 @@ class ElytraReplace : Module() {
             val armor = stack.getItem() as ItemArmor
             val armorType = armor.armorType.ordinal - 2
 
-            if(armorType != 2) return@forEach //not chest
+            if (armorType != 2) return@forEach //not chest
 
             if (stack.count > 1) return@forEach //should this be the case if stacked armor exists on some servers
 
@@ -208,7 +208,7 @@ class ElytraReplace : Module() {
         return -1
     }
 
-    private fun isItemBroken(itemStack : ItemStack): Boolean { // (100 * damage / max damage) >= (100 - 70)
+    private fun isItemBroken(itemStack: ItemStack): Boolean { // (100 * damage / max damage) >= (100 - 70)
         return if (itemStack.maxDamage == 0) {
             false
         } else {
@@ -216,7 +216,7 @@ class ElytraReplace : Module() {
         }
     }
 
-    private fun emptySlotAvailable(): Boolean{
+    private fun emptySlotAvailable(): Boolean {
         return mc.player.inventory.firstEmptyStack != -1
     }
 
@@ -224,7 +224,7 @@ class ElytraReplace : Module() {
         return elytraCount.toString()
     }
 
-    private fun sendEquipNotif(){
+    private fun sendEquipNotif() {
         sendAlert()
         if (logToChat.value && elytraCount == 1) {
             MessageSendHelper.sendChatMessage("$chatName You equipped your last elytra.")
@@ -234,33 +234,32 @@ class ElytraReplace : Module() {
     }
 
 
-    private fun sendFinalElytraWarning(){
+    private fun sendFinalElytraWarning() {
 
-        if(!isCurrentElytraBroken()){ //check to ensure there is an actual elytra in the inventory
+        if (!isCurrentElytraBroken()) { //check to ensure there is an actual elytra in the inventory
             return
         }
 
         if (logToChat.value) {
             MessageSendHelper.sendChatMessage("$chatName Your last elytra has reached your durability threshold.")
         }
-        if(playSound.value){
+        if (playSound.value) {
             sendBadAlert()
         }
         shouldSendFinalWarning = false;
     }
 
-    private fun sendAlert(){
+    private fun sendAlert() {
         if (logToChat.value && playSound.value && (elytraCount <= logThreshold.value)) {
             mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         }
     }
 
-    private fun sendBadAlert(){
+    private fun sendBadAlert() {
         if (logToChat.value && playSound.value && (elytraCount <= logThreshold.value)) {
             mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.4f, 1.0f))
         }
     }
-
 
 
 }
