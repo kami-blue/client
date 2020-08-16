@@ -126,13 +126,13 @@ class EyeFinder : Module() {
                 result.entityHit.renderBoundingBox.offset(offset)
             }
             val colour = ColourHolder(r.value, g.value, b.value)
-            val renderer = ESPRenderer(mc.renderPartialTicks)
+            val renderer = ESPRenderer()
             renderer.aFilled = (alpha / 3)
             renderer.aOutline = alpha
             renderer.thickness = (thickness.value)
             renderer.through = false
             renderer.add(box, colour)
-            renderer.render()
+            renderer.render(true)
         }
     }
 }

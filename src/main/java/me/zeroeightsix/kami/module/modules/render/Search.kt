@@ -96,6 +96,8 @@ class Search : Module() {
     private val loadedChunks = ConcurrentSet<ChunkPos>()
     private val mainList = ConcurrentHashMap<ChunkPos, List<BlockPos>>()
     private val renderList = ConcurrentHashMap<BlockPos, ColourHolder>()
+    private val renderer = ESPRenderer()
+    private var dirty = 0
     private var startTimeChunk = 0L
     private var startTimeRender = 0L
 
@@ -127,15 +129,14 @@ class Search : Module() {
     }
 
     override fun onWorldRender(event: RenderEvent) {
-        val renderer = ESPRenderer(event.partialTicks)
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        renderer.aTracer = if (tracer.value) aTracer.value else 0
-        renderer.thickness = thickness.value
-        for ((pos, colour) in renderList) {
-            renderer.add(pos, colour)
+        if (dirty > 1) {
+            dirty = 0
+            renderer.clear()
+            for ((pos, colour) in renderList) {
+                renderer.add(pos, colour)
+            }
         }
-        renderer.render()
+        renderer.render(false)
     }
 
     /* Main list updating */
@@ -237,6 +238,18 @@ class Search : Module() {
 
             for (pos in cacheDistMap.values) {
                 renderList[pos] = getPosColor(pos)
+            }
+
+            /* Updates renderer */
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            renderer.aTracer = if (tracer.value) aTracer.value else 0
+            renderer.thickness = thickness.value
+
+            if (renderList.size != renderer.getSize()) {
+                dirty = 2
+            } else {
+                dirty++
             }
         }).start()
     }
