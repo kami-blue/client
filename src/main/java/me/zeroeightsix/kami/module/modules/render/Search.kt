@@ -18,6 +18,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -34,7 +35,7 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 class Search : Module() {
-    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(100, 3000).build())
+    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).build())
     val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
     private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
     private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).build())
@@ -90,9 +91,9 @@ class Search : Module() {
     }
     /* End of eject list */
 
-    private val loadedChunks = ConcurrentSet<ChunkPos>()
     private val chunkThreads = ConcurrentHashMap<ChunkPos, Thread>()
     private val chunkThreadPool = Executors.newCachedThreadPool()
+    private val loadedChunks = ConcurrentSet<ChunkPos>()
     private val mainList = ConcurrentHashMap<ChunkPos, List<BlockPos>>()
     private val renderList = ConcurrentHashMap<BlockPos, ColourHolder>()
     private var startTimeChunk = 0L
@@ -174,7 +175,7 @@ class Search : Module() {
         Thread(Runnable {
             for (chunkPos in loadedChunks) {
                 val thread = Thread(Runnable {
-                    findBlocksInChunk(chunkPos, searchArrayList)
+                    findBlocksInChunk(chunkPos, searchArrayList.toHashSet())
                 })
                 thread.priority = 1
                 chunkThreads.putIfAbsent(chunkPos, thread)
@@ -186,7 +187,7 @@ class Search : Module() {
         }).start()
     }
 
-    private fun findBlocksInChunk(chunkPos: ChunkPos, blocksToFind: List<String>) {
+    private fun findBlocksInChunk(chunkPos: ChunkPos, blocksToFind: HashSet<String>) {
         val yRange = IntRange(0, 256)
         val xRange = IntRange(chunkPos.xStart, chunkPos.xEnd)
         val zRange = IntRange(chunkPos.zStart, chunkPos.zEnd)
