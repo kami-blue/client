@@ -32,10 +32,6 @@ public class HSBColourHolder {
         this.a = a;
     }
 
-    public HSBColourHolder(String hex) {
-        this.fromHex(hex);
-    }
-
     public void setGLColour() {
         GL11.glColor4f(toF(getRed()), toF(getGreen()), toF(getBlue()), this.a);
     }
@@ -64,9 +60,9 @@ public class HSBColourHolder {
         return this.b;
     }
 
-    public float getAlpha() {
-        return this.a;
-    } //returns value from 0 - 1
+    public int getAlpha() {
+        return (int)this.a * 255;
+    }
 
     public HSBColourHolder setH(float h) {
         this.h = h;
@@ -88,11 +84,6 @@ public class HSBColourHolder {
         return this;
     }
 
-    public HSBColourHolder fromHex(String color) {
-        setJavaColour(Color.decode(color));
-        return this;
-    }
-
     public HSBColourHolder getRaw() {
         return new HSBColourHolder(this.h, 1f, 1f);
     }
@@ -101,23 +92,4 @@ public class HSBColourHolder {
         return Color.getHSBColor(this.a, this.s, this.b);
     }
     //Does not include the alpha value
-
-    public HSBColourHolder fromJavaColour(Color color) {
-        setJavaColour(color);
-        return this;
-    }
-    //Does not include the alpha value
-
-    public void setJavaColour(Color color) {
-        float[] clr = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-        this.h = clr[0];
-        this.s = clr[1];
-        this.b = clr[2];
-        this.a = 1f;
-    }
-
-    @Override
-    public String toString(){
-        return String.format("H: %f, S: %f, B: %f", this.h, this.s, this.b);
-    }
 }

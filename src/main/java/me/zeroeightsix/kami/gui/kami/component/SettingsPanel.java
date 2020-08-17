@@ -3,12 +3,10 @@ package me.zeroeightsix.kami.gui.kami.component;
 import me.zeroeightsix.kami.gui.kami.Stretcherlayout;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.OrganisedContainer;
-import me.zeroeightsix.kami.gui.rgui.component.use.ColorInput;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSlider;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSquare;
 import me.zeroeightsix.kami.gui.rgui.component.use.CheckButton;
 import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
-import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
@@ -163,16 +161,6 @@ public class SettingsPanel extends OrganisedContainer {
                     colorSquare.setWidth(getWidth() - 30);
                     colorSquare.setHeight(getWidth() - 30);
                     addChild(colorSquare);
-                    value = colorSquare.getValue();
-                    //Color input
-                    ColorInput colorInput = new ColorInput(value, name);
-                    colorInput.addPoof(new ColorInput.ColorInputPoof<ColorInput, ColorInput.ColorInputPoof.ColorInputPoofInfo>() {
-                        @Override
-                        public void execute(ColorInput component, ColorInputPoofInfo info) {
-                            setting.setValue(info.getNewValue());
-                        }
-                    });
-                    addChild(colorInput);
                 }
             }
         }

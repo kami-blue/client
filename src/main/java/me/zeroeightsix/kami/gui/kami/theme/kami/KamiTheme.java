@@ -34,7 +34,6 @@ public class KamiTheme extends AbstractTheme {
         installUI(new KamiUnboundSliderUI());
         installUI(new RootColorSliderUI());
         installUI(new RootColorSquareUI());
-        installUI(new RootColorInputUI());
 
         installUI(new RadarUI());
         installUI(new TabGuiUI());
