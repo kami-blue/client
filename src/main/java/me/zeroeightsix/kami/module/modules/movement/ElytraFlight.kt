@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
@@ -37,7 +38,7 @@ import kotlin.math.*
         category = Module.Category.MOVEMENT
 )
 class ElytraFlight : Module() {
-    private val mode = register(Settings.e<ElytraFlightMode>("Mode", ElytraFlightMode.CONTROL))
+    private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL).build())
     private val page = register(Settings.e<Page>("Page", Page.GENERIC_SETTINGS))
     private val defaultSetting = register(Settings.b("Defaults", false))
     private val durabilityWarning = register(Settings.booleanBuilder("DurabilityWarning").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
@@ -62,7 +63,7 @@ class ElytraFlight : Module() {
     private val forwardPitch = register(Settings.integerBuilder("ForwardPitch").withRange(-90, 90).withValue(0).withVisibility { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS }.build())
 
     /* Extra */
-    val elytraSounds = register(Settings.booleanBuilder("ElytraSounds").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
+    val elytraSounds: Setting<Boolean> = register(Settings.booleanBuilder("ElytraSounds").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
     private val swingSpeed = register(Settings.floatBuilder("SwingSpeed").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) }.build())
     private val swingAmount = register(Settings.floatBuilder("SwingAmount").withValue(0.8f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) }.build())
     /* End of Generic Settings */
@@ -183,7 +184,6 @@ class ElytraFlight : Module() {
                     ElytraFlightMode.CONTROL -> controlMode(event)
                     ElytraFlightMode.CREATIVE -> creativeMode()
                     ElytraFlightMode.PACKET -> packetMode(event)
-                    else -> return@EventHook
                 }
             }
         } else if (!outOfDurability) {
@@ -355,7 +355,7 @@ class ElytraFlight : Module() {
     /**
      * Calculate a speed with a non linear acceleration over time
      *
-     * @return [speed] if [boosting] is true, else return a accelerated speed.
+     * @return boostingSpeed if [boosting] is true, else return a accelerated speed.
      */
     private fun getSpeed(boosting: Boolean): Double {
         return when {
