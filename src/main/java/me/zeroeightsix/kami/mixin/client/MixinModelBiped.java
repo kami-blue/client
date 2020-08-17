@@ -1,24 +1,39 @@
 package me.zeroeightsix.kami.mixin.client;
 
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
+import me.zeroeightsix.kami.util.Wrapper;
+import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+@Mixin(ModelBiped.class)
+public abstract class MixinModelBiped extends ModelBase {
+    @Shadow public ModelRenderer bipedHead;
+    @Shadow public ModelRenderer bipedBody;
+    @Shadow public ModelRenderer bipedRightArm;
+    @Shadow public ModelRenderer bipedLeftArm;
+    @Shadow public ModelRenderer bipedRightLeg;
+    @Shadow public ModelRenderer bipedLeftLeg;
+    @Shadow public ModelBiped.ArmPose leftArmPose;
+    @Shadow public ModelBiped.ArmPose rightArmPose;
+    @Shadow protected abstract EnumHandSide getMainHand(Entity entityIn);
+    @Shadow protected abstract ModelRenderer getArmForSide(EnumHandSide side);
+    @Shadow public ModelRenderer bipedHeadwear;
 
-@Mixin(ModelPlayer.class)
-public class MixinModelPlayer extends ModelBiped {
+    @Inject(method = "setRotationAngles", at = @At("HEAD"), cancellable = true)
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
+        if (entityIn == Wrapper.getMinecraft().player && KamiMod.MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
+            ci.cancel();
 
-    @Redirect(method = "setRotationAngles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBiped;setRotationAngles(FFFFFFLnet/minecraft/entity/Entity;)V"))
-    public void setRotationAngles(ModelBiped modelBiped, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-        if (MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
             this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
 
             this.bipedHead.rotateAngleX = -((float) Math.PI / 4F);
@@ -122,8 +137,6 @@ public class MixinModelPlayer extends ModelBiped {
             }
 
             copyModelAngles(this.bipedHead, this.bipedHeadwear);
-        } else {
-            super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         }
     }
 }
