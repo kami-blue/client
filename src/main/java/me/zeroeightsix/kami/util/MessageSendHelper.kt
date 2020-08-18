@@ -1,142 +1,135 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util
 
-import baritone.api.BaritoneAPI;
-import baritone.api.Settings;
-import baritone.api.event.events.ChatEvent;
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.launchwrapper.LogWrapper;
-import net.minecraft.network.play.client.CPacketChatMessage;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentBase;
-import net.minecraft.util.text.TextFormatting;
+import baritone.api.BaritoneAPI
+import baritone.api.event.events.ChatEvent
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import me.zeroeightsix.kami.util.Wrapper.minecraft
+import me.zeroeightsix.kami.util.Wrapper.player
+import net.minecraft.client.Minecraft
+import net.minecraft.launchwrapper.LogWrapper
+import net.minecraft.network.play.client.CPacketChatMessage
+import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.TextComponentBase
+import net.minecraft.util.text.TextFormatting
+import java.util.regex.Pattern
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
-public class MessageSendHelper {
-    public static void sendChatMessage(String message) {
-        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
-        if (commandConfig == null) return;
-        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL)) {
-            sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+object MessageSendHelper {
+    @JvmStatic
+    fun sendChatMessage(message: String) {
+        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
+        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL) {
+            sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         } else {
-            KamiMod.log.info("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+            KamiMod.log.info("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         }
     }
 
-    public static void sendWarningMessage(String message) {
-        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
-        if (commandConfig == null) return;
-        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN)) {
-            sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+    @JvmStatic
+    fun sendWarningMessage(message: String) {
+        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
+        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL || commandConfig.logLevel.value == CommandConfig.LogLevel.WARN) {
+            sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         } else {
-            KamiMod.log.warn("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+            KamiMod.log.warn("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         }
     }
 
-    public static void sendErrorMessage(String message) {
-        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
-        if (commandConfig == null) return;
-        if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ERROR)) {
-            sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+    @JvmStatic
+    fun sendErrorMessage(message: String) {
+        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
+        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL || commandConfig.logLevel.value == CommandConfig.LogLevel.WARN || commandConfig.logLevel.value == CommandConfig.LogLevel.ERROR) {
+            sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         } else {
-            KamiMod.log.error("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
+            KamiMod.log.error("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
         }
     }
 
-    public static void sendKamiCommand(String command, boolean addToHistory) {
+    fun sendKamiCommand(command: String, addToHistory: Boolean) {
         try {
             if (addToHistory) {
-                Wrapper.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(command);
+                minecraft.ingameGUI.chatGUI.addToSentMessages(command)
             }
-            if (command.length() > 1)
-                KamiMod.getInstance().commandManager.callCommand(command.substring(Command.getCommandPrefix().length() - 1));
-            else
-                sendChatMessage("Please enter a command!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendChatMessage("Error occurred while running command! (" + e.getMessage() + "), check the log for info!");
+            if (command.length > 1) KamiMod.getInstance().commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
         }
     }
 
-    public static void sendBaritoneMessage(String message) {
-        sendRawChatMessage(TextFormatting.DARK_PURPLE + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + message);
+    fun sendBaritoneMessage(message: String) {
+        sendRawChatMessage(TextFormatting.DARK_PURPLE.toString() + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + message)
     }
 
-    public static void sendBaritoneCommand(String... args) {
-        Settings.Setting<Boolean> chatControl = BaritoneAPI.getSettings().chatControl;
-        boolean prevValue = chatControl.value;
-        chatControl.value = true;
+    fun sendBaritoneCommand(vararg args: String) {
+        val chatControl = BaritoneAPI.getSettings().chatControl
+        val prevValue = chatControl.value
+        chatControl.value = true
 
         // ty leijuwuv <--- quit it :monkey:
-        ChatEvent event = new ChatEvent(String.join(" ", args));
-        BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onSendChatMessage(event);
-        if (!event.isCancelled() && !args[0].equals("damn")) { // don't remove the 'damn', it's critical code that will break everything if you remove it
-            sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md");
+        val event = ChatEvent(java.lang.String.join(" ", *args))
+        BaritoneAPI.getProvider().primaryBaritone.gameEventHandler.onSendChatMessage(event)
+        if (!event.isCancelled && args[0] != "damn") { // don't remove the 'damn', it's critical code that will break everything if you remove it
+            sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md")
         }
-
-        chatControl.value = prevValue;
+        chatControl.value = prevValue
     }
 
-    public static void sendStringChatMessage(String[] messages) {
-        sendChatMessage("");
-        for (String s : messages) sendRawChatMessage(s);
+    @JvmStatic
+    fun sendStringChatMessage(messages: Array<String?>) {
+        sendChatMessage("")
+        for (s in messages) sendRawChatMessage(s)
     }
 
-    public static void sendDisableMessage(Class clazz) {
-        sendErrorMessage("Error: The " + MODULE_MANAGER.getModule(clazz).name.getValue() + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element");
-        MODULE_MANAGER.getModule(clazz).enable();
+    @JvmStatic
+    fun sendDisableMessage(clazz: Class<out Module>) {
+        sendErrorMessage("Error: The " + ModuleManager.getModule(clazz)!!.name.value + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element")
+        ModuleManager.getModule(clazz)!!.enable()
     }
 
-    public static void sendRawChatMessage(String message) {
+    @JvmStatic
+    fun sendRawChatMessage(message: String?) {
+        if (message == null) return
         if (Minecraft.getMinecraft().player != null) {
-            Wrapper.getPlayer().sendMessage(new ChatMessage(message));
+            player!!.sendMessage(ChatMessage(message))
         } else {
-            LogWrapper.info(message);
+            LogWrapper.info(message)
         }
     }
 
-    public static void sendServerMessage(String message) {
+    @JvmStatic
+    fun sendServerMessage(message: String?) {
+        if (message == null) return
         if (Minecraft.getMinecraft().player != null) {
-            Wrapper.getPlayer().connection.sendPacket(new CPacketChatMessage(message));
+            player!!.connection.sendPacket(CPacketChatMessage(message))
         } else {
-            LogWrapper.warning("Could not send server message: \"" + message + "\"");
+            LogWrapper.warning("Could not send server message: \"$message\"")
         }
     }
 
-    public static class ChatMessage extends TextComponentBase {
+    class ChatMessage internal constructor(text: String) : TextComponentBase() {
+        var text: String
+        override fun getUnformattedComponentText(): String {
+            return text
+        }
 
-        String text;
+        override fun createCopy(): ITextComponent {
+            return ChatMessage(text)
+        }
 
-        ChatMessage(String text) {
-
-            Pattern p = Pattern.compile("&[0123456789abcdefrlonmk]");
-            Matcher m = p.matcher(text);
-            StringBuffer sb = new StringBuffer();
-
+        init {
+            val p = Pattern.compile("&[0123456789abcdefrlonmk]")
+            val m = p.matcher(text)
+            val sb = StringBuffer()
             while (m.find()) {
-                String replacement = "\u00A7" + m.group().substring(1);
-                m.appendReplacement(sb, replacement);
+                val replacement = "\u00A7" + m.group().substring(1)
+                m.appendReplacement(sb, replacement)
             }
-
-            m.appendTail(sb);
-
-            this.text = sb.toString();
+            m.appendTail(sb)
+            this.text = sb.toString()
         }
-
-        public String getUnformattedComponentText() {
-            return text;
-        }
-
-        @Override
-        public ITextComponent createCopy() {
-            return new ChatMessage(text);
-        }
-
     }
 }
