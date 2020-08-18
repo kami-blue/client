@@ -73,7 +73,7 @@ public class KamiGuiChat extends GuiChat {
 
         if (args.length == 0) return; // Hell naw!
 
-        for (Command c : KamiMod.getInstance().getCommandManager().commands) {
+        for (Command c : KamiMod.getInstance().getCommandManager().getCommands()) {
             if (line.endsWith(" ")) break;
 
             if (c.getLabel().startsWith(args[0]) || c.getLabel().equals(args[0]))

@@ -73,8 +73,8 @@ public class KamiGUI extends GUI {
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
         for (Module module : MODULE_MANAGER.getModules()) {
-            if (module.getCategory().isHidden()) continue;
-            Module.Category moduleCategory = module.getCategory();
+            if (module.category.isHidden()) continue;
+            Module.Category moduleCategory = module.category;
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
                 Stretcherlayout stretcherlayout = new Stretcherlayout(1);
                 stretcherlayout.setComponentOffsetWidth(0);
@@ -85,14 +85,14 @@ public class KamiGUI extends GUI {
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
             Scrollpane scrollpane = pair.getFirst();
-            CheckButton checkButton = new CheckButton(module.getName(), module.getDescription());
+            CheckButton checkButton = new CheckButton(module.name.getValue(), module.description);
             checkButton.setToggled(module.isEnabled());
 
             /* descriptions aren't changed ever, so you don't need a tick listener */
-            checkButton.setDescription(module.getDescription());
+            checkButton.setDescription(module.description);
             checkButton.addTickListener(() -> { // dear god
                 checkButton.setToggled(module.isEnabled());
-                checkButton.setName(module.getName());
+                checkButton.setName(module.name.getValue());
             });
 
             checkButton.addMouseListener(new MouseListener() {
@@ -142,7 +142,7 @@ public class KamiGUI extends GUI {
         for (Map.Entry<Module.Category, Pair<Scrollpane, SettingsPanel>> entry : categoryScrollpaneHashMap.entrySet()) {
             Stretcherlayout stretcherlayout = new Stretcherlayout(1);
             stretcherlayout.COMPONENT_OFFSET_Y = 1;
-            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getName());
+            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getCategoryName());
             Scrollpane scrollpane = entry.getValue().getFirst();
             frame.addChild(scrollpane);
             frame.addChild(entry.getValue().getSecond());

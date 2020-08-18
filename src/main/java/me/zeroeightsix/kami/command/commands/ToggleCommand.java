@@ -34,7 +34,7 @@ public class ToggleCommand extends Command {
             Module m = MODULE_MANAGER.getModule((Class<? extends Module>) aClass);
             m.toggle();
             if (!MODULE_MANAGER.getModuleT(CommandConfig.class).toggleMessages.getValue()) {
-                sendChatMessage(m.getName() + (m.isEnabled() ? " &aenabled" : " &cdisabled"));
+                sendChatMessage(m.name.getValue() + (m.isEnabled() ? " &aenabled" : " &cdisabled"));
             }
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + args[0] + "'");

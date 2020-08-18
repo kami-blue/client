@@ -26,10 +26,10 @@ class WaypointRender : Module() {
     private val page = register(Settings.e<Page>("Page", Page.INFOBOX))
 
     /* Page one */
-    private val name = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val date = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val coords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val dist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showName = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
     private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.INFOBOX }.build())
     private val infoBoxRange = register(Settings.integerBuilder("InfoBoxRange").withValue(512).withRange(128, 2048).withVisibility { page.value == Page.INFOBOX }.build())
 
@@ -72,7 +72,7 @@ class WaypointRender : Module() {
                 drawVerticalLines(pos, colour, aOutline.value) /* Draw lines from y 0 to y 256 */
             }
             /* Draw waypoint info box */
-            if ((coords.value || name.value || date.value || dist.value) && distance <= infoBoxRange.value) {
+            if ((showCoords.value || showName.value || showDate.value || showDist.value) && distance <= infoBoxRange.value) {
                 drawText(waypoint, KamiTessellator.pTicks())
             }
         }
@@ -110,10 +110,10 @@ class WaypointRender : Module() {
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)
 
         var str = ""
-        if (name.value) str += "${'\n'}${waypoint.name}"
-        if (date.value) str += "${'\n'}${waypoint.date}"
-        if (coords.value) str += "${'\n'}${waypoint.pos.asString()}"
-        if (dist.value) str += "${'\n'}${distance.toInt()} m"
+        if (showName.value) str += "${'\n'}${waypoint.name}"
+        if (showDate.value) str += "${'\n'}${waypoint.date}"
+        if (showCoords.value) str += "${'\n'}${waypoint.pos.asString()}"
+        if (showDist.value) str += "${'\n'}${distance.toInt()} m"
 
         val fontRenderer = mc.fontRenderer
         var longestLine = ""

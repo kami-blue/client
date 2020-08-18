@@ -21,6 +21,7 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 public class MessageSendHelper {
     public static void sendChatMessage(String message) {
         CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig == null) return;
         if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL)) {
             sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message);
         } else {
@@ -30,6 +31,7 @@ public class MessageSendHelper {
 
     public static void sendWarningMessage(String message) {
         CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig == null) return;
         if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN)) {
             sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message);
         } else {
@@ -39,6 +41,7 @@ public class MessageSendHelper {
 
     public static void sendErrorMessage(String message) {
         CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        if (commandConfig == null) return;
         if (commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ALL) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.WARN) || commandConfig.logLevel.getValue().equals(CommandConfig.LogLevel.ERROR)) {
             sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message);
         } else {
@@ -86,7 +89,7 @@ public class MessageSendHelper {
     }
 
     public static void sendDisableMessage(Class clazz) {
-        sendErrorMessage("Error: The " + MODULE_MANAGER.getModule(clazz).getName() + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element");
+        sendErrorMessage("Error: The " + MODULE_MANAGER.getModule(clazz).name.getValue() + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element");
         MODULE_MANAGER.getModule(clazz).enable();
     }
 

@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
@@ -32,11 +31,13 @@ public class TabGUI extends AbstractComponent implements EventListener {
 
         LinkedHashMap<Module.Category, Tab> tabMap = new LinkedHashMap<>();
         for (Module.Category category : Module.Category.values())
-            tabMap.put(category, new Tab(category.getName()));
+            tabMap.put(category, new Tab(category.getCategoryName()));
 
-        for (Module feature : MODULE_MANAGER.getModules())
-            if (feature.getCategory() != null && !feature.getCategory().isHidden())
-                tabMap.get(feature.getCategory()).add(feature);
+        for (Module feature : MODULE_MANAGER.getModules()) {
+            Module.Category category = feature.category;
+            if (category.isHidden()) continue;
+            tabMap.get(category).add(feature);
+        }
 
         tabMap.entrySet().removeIf(entry -> entry.getValue().features.isEmpty());
 
@@ -109,7 +110,7 @@ public class TabGUI extends AbstractComponent implements EventListener {
         public void updateSize() {
             width = 64;
             for (Module feature : features) {
-                int fWidth = Wrapper.getFontRenderer().getStringWidth(feature.getName()) + 10;
+                int fWidth = Wrapper.getFontRenderer().getStringWidth(feature.name.getValue()) + 10;
                 if (fWidth > width)
                     width = fWidth;
             }

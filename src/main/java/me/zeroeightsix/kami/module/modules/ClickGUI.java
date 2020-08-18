@@ -15,7 +15,7 @@ import org.lwjgl.input.Keyboard;
 public class ClickGUI extends Module {
 
     public ClickGUI() {
-        getBind().setKey(Keyboard.KEY_Y);
+        bind.getValue().setKey(Keyboard.KEY_Y);
     }
 
     @Override

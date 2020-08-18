@@ -106,7 +106,7 @@ class AutoEat : Module() {
         }
     }
 
-    override fun disable() {
+    override fun onDisable() {
         unpause()
     }
 }

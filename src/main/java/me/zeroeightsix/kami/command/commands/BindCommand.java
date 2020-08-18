@@ -51,7 +51,7 @@ public class BindCommand extends Command {
             sendChatMessage("You have the following binds: ");
             for (Module module1 : modules) {
                 if (module1.getBindName().equals("None")) continue;
-                sendRawChatMessage(module1.getBindName() + ": " + module1.getName());
+                sendRawChatMessage(module1.getBindName() + ": " + module1.name.getValue());
             }
             return;
         } else if (module.equalsIgnoreCase("modifiers")) {
@@ -75,7 +75,7 @@ public class BindCommand extends Command {
         try {
             Module m = MODULE_MANAGER.getModule(module);
             if (rkey == null) {
-                sendChatMessage(m.getName() + " is bound to &b" + m.getBindName());
+                sendChatMessage(m.name.getValue() + " is bound to &b" + m.getBindName());
                 return;
             }
             int key = Wrapper.getKey(rkey);
@@ -86,8 +86,8 @@ public class BindCommand extends Command {
                 sendErrorMessage("Unknown key '&7" + rkey + "&f'! Left alt is &7lmenu&f, left Control is &7lcontrol&f and ` is &7grave&f. You cannot bind the &7meta&f key.");
                 return;
             }
-            m.getBind().setKey(key);
-            sendChatMessage("Bind for &b" + m.getName() + "&r set to &b" + rkey.toUpperCase());
+            m.bind.getValue().setKey(key);
+            sendChatMessage("Bind for &b" + m.name.getValue() + "&r set to &b" + rkey.toUpperCase());
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + module + "'!");
         }

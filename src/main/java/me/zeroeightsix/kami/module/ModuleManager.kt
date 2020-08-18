@@ -47,11 +47,9 @@ class ModuleManager {
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
             }
         }
-        Thread(Runnable {
-            moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
-                module.javaClass.simpleName
-            }).toArray { size -> arrayOfNulls<Module>(size) }
-        })
+        moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
+            module.javaClass.simpleName
+        }).toArray { size -> arrayOfNulls<Module>(size) }
         KamiMod.log.info("Modules registered")
     }
 
@@ -93,7 +91,7 @@ class ModuleManager {
     fun onBind(eventKey: Int) {
         if (eventKey == 0) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
         for (module in moduleList) {
-            if (module.bind.isDown(eventKey)) module.toggle()
+            if (module.bind.value.isDown(eventKey)) module.toggle()
         }
     }
 
@@ -117,7 +115,7 @@ class ModuleManager {
     }
 
     @Deprecated("Use `getModule(Class<? extends Module>)` instead")
-    fun getModule(name: String?): Module {
+    fun getModule(name: String?): Module? {
         for (module in moduleMap.entries) {
             if (module.javaClass.simpleName.equals(name, ignoreCase = true) || module.value.originalName.equals(name, ignoreCase = true)) {
                 return module.value

@@ -61,7 +61,7 @@ public class Brightness extends Module {
 
     @Override
     protected void onDisable() {
-        setAlwaysListening(true);
+        alwaysListening = true;
         super.onDisable();
         addTransition(false);
     }
@@ -71,7 +71,7 @@ public class Brightness extends Module {
         if (inTransition) {
             if (transitionStack.isEmpty()) {
                 inTransition = false;
-                setAlwaysListening(false);
+                alwaysListening = false;
                 currentBrightness = isEnabled() ? 1 : 0;
             } else {
                 currentBrightness = transitionStack.pop();

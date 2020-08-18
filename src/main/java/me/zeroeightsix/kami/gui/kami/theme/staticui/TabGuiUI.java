@@ -93,7 +93,7 @@ public class TabGuiUI extends AbstractComponentUI<TabGUI> {
             int tabTextY = 1;
             for (int i = 0; i < tab.features.size(); i++) {
                 Module feature = tab.features.get(i);
-                String fName = (feature.isEnabled() ? "\u00A7c" : "\u00A77") + feature.getName();
+                String fName = (feature.isEnabled() ? "\u00A7c" : "\u00A77") + feature.name.getValue();
 
                 /*if (i == tab.selected)
                     fName = "\u00A7b" + fName;*/
