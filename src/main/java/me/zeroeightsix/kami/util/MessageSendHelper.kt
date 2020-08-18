@@ -64,7 +64,7 @@ object MessageSendHelper {
         sendRawChatMessage(TextFormatting.DARK_PURPLE.toString() + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + message)
     }
 
-    fun sendBaritoneCommand(vararg args: String) {
+    fun sendBaritoneCommand(vararg args: String?) {
         val chatControl = BaritoneAPI.getSettings().chatControl
         val prevValue = chatControl.value
         chatControl.value = true
