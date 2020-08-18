@@ -9,10 +9,12 @@ import kotlin.math.*
  * Updated by Xiaro on 18/08/20
  */
 object MathsUtils {
+    @JvmStatic
     fun mcPlayerPosFloored(mc: Minecraft): BlockPos {
         return BlockPos(floor(mc.player.posX), floor(mc.player.posY), floor(mc.player.posZ))
     }
 
+    @JvmStatic
     fun normalizeAngle(angleIn: Double): Double {
         var angle = angleIn
         angle %= 360.0
@@ -25,6 +27,7 @@ object MathsUtils {
         return angle
     }
 
+    @JvmStatic
     fun round(value: Float, places: Int): Double {
         val scale = 10.0.pow(places.toDouble())
         return (value * scale).roundToInt() / scale
@@ -46,10 +49,12 @@ object MathsUtils {
         return max + min - num
     }
 
+    @JvmStatic
     fun isBetween(min: Int, max: Int, value: Int): Boolean {
         return value in min..max
     }
 
+    @JvmStatic
     fun isBetween(min: Double, max: Double, value: Double): Boolean {
         return value in min..max
     }
@@ -77,6 +82,7 @@ object MathsUtils {
         }
     }
 
+    @JvmStatic
     fun getPlayerMainCardinal(mc: Minecraft): CardinalMain? {
         return when (Character.toUpperCase(mc.player.horizontalFacing.toString()[0])) {
             'N' -> CardinalMain.NEG_Z
@@ -87,14 +93,17 @@ object MathsUtils {
         }
     }
 
+    @JvmStatic
     fun convertRange(valueIn: Int, minIn: Int, maxIn: Int, minOut: Int, maxOut: Int): Int {
         return convertRange(valueIn.toDouble(), minIn.toDouble(), maxIn.toDouble(), minOut.toDouble(), maxOut.toDouble()).toInt()
     }
 
+    @JvmStatic
     fun convertRange(valueIn: Float, minIn: Float, maxIn: Float, minOut: Float, maxOut: Float): Float {
         return convertRange(valueIn.toDouble(), minIn.toDouble(), maxIn.toDouble(), minOut.toDouble(), maxOut.toDouble()).toFloat()
     }
 
+    @JvmStatic
     fun convertRange(valueIn: Double, minIn: Double, maxIn: Double, minOut: Double, maxOut: Double): Double {
         val rangeIn = maxIn - minIn
         val rangeOut = maxOut - minOut
