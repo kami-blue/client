@@ -4,6 +4,11 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.util.ClassFinder.findClasses
 
+/**
+ * @author Xiaro
+ *
+ * Created by Xiaro on 08/18/20
+ */
 @Suppress("UNCHECKED_CAST")
 object ManagerLoader {
     @JvmStatic

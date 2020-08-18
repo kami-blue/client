@@ -1,31 +1,30 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
 
 /**
  * @author dominikaaaa
+ *
+ * Updated by Xiaro on 08/18/20
  */
-public class CommandUtil {
-    public static void runAliases(Command command) {
-        if (!MODULE_MANAGER.getModuleT(CommandConfig.class).aliasInfo.getValue()) return;
-        int amount = command.getAliases().size();
+object CommandUtil {
+    @JvmStatic
+    fun runAliases(command: Command) {
+        if (!ModuleManager.getModuleT(CommandConfig::class.java)!!.aliasInfo.value) return
+        val amount = command.aliases.size
         if (amount > 0) {
-            sendChatMessage("'" + command.getLabel() + "' has " + grammar1(amount) + "alias" + grammar2(amount));
-            sendChatMessage(command.getAliases().toString());
+            MessageSendHelper.sendChatMessage("'" + command.label + "' has " + grammar1(amount) + "alias" + grammar2(amount))
+            MessageSendHelper.sendChatMessage(command.aliases.toString())
         }
     }
 
-    private static String grammar1(int amount) {
-        if (amount == 1) return "an ";
-        return amount + " ";
+    private fun grammar1(amount: Int): String {
+        return if (amount == 1) "an " else "$amount "
     }
 
-    private static String grammar2(int amount) {
-        if (amount == 1) return "!";
-        return "es!";
+    private fun grammar2(amount: Int): String {
+        return if (amount == 1) "!" else "es!"
     }
 }

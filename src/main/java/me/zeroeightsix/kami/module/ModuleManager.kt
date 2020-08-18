@@ -17,7 +17,7 @@ import java.util.*
 /**
  * Created by 086 on 23/08/2017.
  * Updated by Sasha
- * Updated by Xiaro on 04/08/20
+ * Updated by Xiaro on 18/08/20
  */
 object ModuleManager {
     private val mc = Minecraft.getMinecraft()

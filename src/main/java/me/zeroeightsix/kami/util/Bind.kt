@@ -5,6 +5,7 @@ import org.lwjgl.input.Keyboard
 
 /**
  * Created by 086 on 9/10/2018.
+ * Updated by Xiaro on 08/18/20
  */
 class Bind(
         var isCtrl: Boolean,
