@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.TimeUtil;
+import me.zeroeightsix.kami.util.TimeUtils;
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
@@ -114,7 +114,7 @@ public class DiscordNotifs extends Module {
     private String getTime() {
         if (!time.getValue()) return "";
         InfoOverlay info = MODULE_MANAGER.getModuleT(InfoOverlay.class);
-        return "[" + TimeUtil.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
+        return "[" + TimeUtils.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
     }
 
     private void sendMessage(String content, String avatarUrl) {
