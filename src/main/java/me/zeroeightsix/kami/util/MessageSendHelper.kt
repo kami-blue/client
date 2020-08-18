@@ -48,6 +48,7 @@ object MessageSendHelper {
         }
     }
 
+    @JvmStatic
     fun sendKamiCommand(command: String, addToHistory: Boolean) {
         try {
             if (addToHistory) {
@@ -60,10 +61,12 @@ object MessageSendHelper {
         }
     }
 
+    @JvmStatic
     fun sendBaritoneMessage(message: String) {
         sendRawChatMessage(TextFormatting.DARK_PURPLE.toString() + "[" + TextFormatting.LIGHT_PURPLE + "Baritone" + TextFormatting.DARK_PURPLE + "] " + TextFormatting.RESET + message)
     }
 
+    @JvmStatic
     fun sendBaritoneCommand(vararg args: String?) {
         val chatControl = BaritoneAPI.getSettings().chatControl
         val prevValue = chatControl.value

@@ -6,7 +6,10 @@ import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.mangers.MacroManager
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.util.Macro
-import me.zeroeightsix.kami.util.MessageSendHelper.*
+import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.MessageSendHelper.sendRawChatMessage
+import me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage
 import me.zeroeightsix.kami.util.Wrapper
 
 /**

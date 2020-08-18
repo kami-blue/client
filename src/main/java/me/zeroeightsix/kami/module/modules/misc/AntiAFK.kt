@@ -24,7 +24,7 @@ import java.util.*
 @Module.Info(name = "AntiAFK", category = Module.Category.MISC, description = "Prevents being kicked for AFK")
 class AntiAFK : Module() {
     private val frequency = register(Settings.integerBuilder("ActionFrequency").withMinimum(1).withMaximum(100).withValue(40).build())
-    private val autoReply = register(Settings.b("AutoReply", true))
+    val autoReply = register(Settings.b("AutoReply", true))
     private val swing = register(Settings.b("Swing", true))
     private val jump = register(Settings.b("Jump", true))
     private val squareWalk = register(Settings.b("SquareWalk", true))

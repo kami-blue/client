@@ -5,7 +5,9 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.util.MessageSendHelper.*
+import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage
 import net.minecraft.item.Item
 
 /**

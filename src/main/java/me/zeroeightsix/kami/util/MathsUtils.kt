@@ -114,10 +114,21 @@ object MathsUtils {
     }
 
     enum class Cardinal(var cardinalName: String) {
-        POS_Z("+Z"), NEG_X_POS_Z("-X / +Z"), NEG_X("-X"), NEG_X_NEG_Z("-X / -Z"), NEG_Z("-Z"), POS_X_NEG_Z("+X / -Z"), POS_X("+X"), POS_X_POS_Z("+X / +Z"), ERROR("ERROR_CALC_DIRECT");
+        POS_Z("+Z"),
+        NEG_X_POS_Z("-X / +Z"),
+        NEG_X("-X"),
+        NEG_X_NEG_Z("-X / -Z"),
+        NEG_Z("-Z"),
+        POS_X_NEG_Z("+X / -Z"),
+        POS_X("+X"),
+        POS_X_POS_Z("+X / +Z"),
+        ERROR("ERROR_CALC_DIRECT");
     }
 
     enum class CardinalMain(var cardinalName: String) {
-        POS_Z("+Z"), NEG_X("-X"), NEG_Z("-Z"), POS_X("+X");
+        POS_Z("+Z"),
+        NEG_X("-X"),
+        NEG_Z("-Z"),
+        POS_X("+X");
     }
 }

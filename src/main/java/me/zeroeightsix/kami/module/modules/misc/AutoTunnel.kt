@@ -4,8 +4,8 @@ import baritone.api.BaritoneAPI
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -42,21 +42,21 @@ class AutoTunnel : Module() {
             disable()
             return
         }
-        if (MODULE_MANAGER.isModuleEnabled(AutoWalk::class.java)) {
-            MODULE_MANAGER.getModuleT(AutoWalk::class.java)!!.disable()
+        if (ModuleManager.isModuleEnabled(AutoWalk::class.java)) {
+            ModuleManager.getModuleT(AutoWalk::class.java)!!.disable()
         }
 
-        startingDirection = getPlayerMainCardinal(mc)
+        startingDirection = getPlayerMainCardinal(mc)!!
         sendTunnel()
     }
 
     private fun sendTunnel() {
         var current = arrayOf("")
-        if (height.value == 2 && width.value == 1) {
-            current = arrayOf("tunnel")
+        current = if (height.value == 2 && width.value == 1) {
+            arrayOf("tunnel")
         }
         else {
-            current = arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
+            arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
         }
 
         if (!current.contentEquals(lastCommand)) {

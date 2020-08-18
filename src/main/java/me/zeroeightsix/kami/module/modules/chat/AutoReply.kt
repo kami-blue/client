@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.misc.AntiAFK
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -31,7 +32,7 @@ class AutoReply : Module() {
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(AntiAFK::class.java) && KamiMod.MODULE_MANAGER.getModuleT(AntiAFK::class.java)!!.autoReply.value) return@EventHook
+        if (ModuleManager.isModuleEnabled(AntiAFK::class.java) && ModuleManager.getModuleT(AntiAFK::class.java)!!.autoReply.value) return@EventHook
 
         if (event.packet is SPacketChat && MessageDetectionHelper.isDirect(true, (event.packet as SPacketChat).getChatComponent().unformattedText)) {
             if (customMessage.value) {
