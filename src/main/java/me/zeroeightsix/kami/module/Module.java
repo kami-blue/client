@@ -5,8 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.RenderEvent;
-import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
-import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -19,6 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
@@ -32,15 +31,16 @@ public class Module {
     private final String originalName = getAnnotation().name();
     private final Category category = getAnnotation().category();
     private final String description = getAnnotation().description();
+    private final int priority = getAnnotation().priority();
     private final Setting<String> name = register(Settings.s("Name", originalName));
-    private Setting<Bind> bind = register(Settings.custom("Bind", Bind.none(), new BindConverter()).build());
-    private Setting<Boolean> enabled = register(Settings.booleanBuilder("Enabled").withVisibility(aBoolean -> false).withValue(false).build());
-    private Setting<ShowOnArray> showOnArray = register(Settings.e("Visible", getAnnotation().showOnArray()));
+    private final Setting<Bind> bind = register(Settings.custom("Bind", Bind.none(), new BindConverter()).build());
+    private final Setting<Boolean> enabled = register(Settings.booleanBuilder("Enabled").withVisibility(aBoolean -> false).withValue(false).build());
+    private final Setting<ShowOnArray> showOnArray = register(Settings.e("Visible", getAnnotation().showOnArray()));
 
     public boolean alwaysListening;
     protected static final Minecraft mc = Minecraft.getMinecraft();
 
-    public List<Setting> settingList = new ArrayList<>();
+    public List<Setting<?>> settingList = new ArrayList<>();
 
     public Module() {
         alwaysListening = getAnnotation().alwaysListening();
@@ -120,6 +120,7 @@ public class Module {
         String name();
         String description();
         Module.Category category();
+        int priority() default -1;
         boolean alwaysListening() default false;
         ShowOnArray showOnArray() default ShowOnArray.ON;
     }
@@ -136,6 +137,8 @@ public class Module {
 
     public Category getCategory() { return category; }
 
+    public int getPriority() { return priority; }
+
     public boolean isEnabled() { return enabled.getValue(); }
 
     public boolean isOnArray() { return showOnArray.getValue().equals(ShowOnArray.ON); }
@@ -147,7 +150,8 @@ public class Module {
     protected void onDisable() {}
 
     protected void onToggle() {
-        if (!name.getValue().equals("clickGUI") && MODULE_MANAGER.getModuleT(CommandConfig.class).toggleMessages.getValue()) {
+        if (!name.getValue().equals("clickGUI")
+                && Objects.requireNonNull(MODULE_MANAGER.getModuleT(CommandConfig.class)).toggleMessages.getValue()) {
             sendChatMessage(name.getValue() + (enabled.getValue() ? " &aenabled" : " &cdisabled"));
         }
     }
@@ -168,6 +172,10 @@ public class Module {
         onToggle();
         if (!alwaysListening)
             KamiMod.EVENT_BUS.unsubscribe(this);
+    }
+
+    public boolean isActive() {
+        return isEnabled() || alwaysListening;
     }
 
     public boolean isDisabled() {
@@ -199,8 +207,8 @@ public class Module {
     public void destroy() {
     }
 
-    protected void registerAll(Setting... settings) {
-        for (Setting setting : settings) {
+    protected void registerAll(Setting<?>... settings) {
+        for (Setting<?> setting : settings) {
             register(setting);
         }
     }
@@ -219,7 +227,7 @@ public class Module {
     }
 
 
-    private class BindConverter extends Converter<Bind, JsonElement> {
+    private static class BindConverter extends Converter<Bind, JsonElement> {
         @Override
         protected JsonElement doForward(Bind bind) {
             return new JsonPrimitive(bind.toString());
