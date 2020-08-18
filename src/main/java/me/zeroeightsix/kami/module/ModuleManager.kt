@@ -24,7 +24,7 @@ class ModuleManager {
     private val mc = Minecraft.getMinecraft()
 
     /**
-     * Linked map for the registered Modules
+     * HashMap for the registered Modules
      */
     private val moduleMap = HashMap<Class<out Module>, Module>()
     private lateinit var moduleList: Array<Module>
