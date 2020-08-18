@@ -24,7 +24,7 @@ import java.util.*
 class EndTeleport : Module() {
     private val confirmed = register(Settings.b("Confirm", true))
     public override fun onEnable() {
-        if (Wrapper.getMinecraft().getCurrentServerData() == null) {
+        if (mc.getCurrentServerData() == null) {
             MessageSendHelper.sendWarningMessage("$chatName This module does not work in singleplayer")
             disable()
         } else if (!confirmed.value) {
@@ -36,7 +36,7 @@ class EndTeleport : Module() {
     private val receiveListener = Listener(EventHook { event: Receive ->
         if (event.packet is SPacketRespawn) {
             if ((event.packet as SPacketRespawn).dimensionID == 1 && confirmed.value) {
-                Objects.requireNonNull(Wrapper.getMinecraft().connection)!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
+                mc.connection!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
                 disable()
             }
         }

@@ -1,8 +1,9 @@
-package me.zeroeightsix.kami.module.modules;
+package me.zeroeightsix.kami.module.modules
 
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
-import me.zeroeightsix.kami.module.Module;
-import org.lwjgl.input.Keyboard;
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
+import org.lwjgl.input.Keyboard
 
 /**
  * Created by 086 on 23/08/2017.
@@ -10,20 +11,19 @@ import org.lwjgl.input.Keyboard;
 @Module.Info(
         name = "clickGUI",
         description = "Opens the Click GUI",
-        category = Module.Category.HIDDEN
+        category = Module.Category.CLIENT
 )
-public class ClickGUI extends Module {
+class ClickGUI : Module() {
+    private val scale = register(Settings.floatBuilder("Scale").withValue(1f).withRange(0f, 4f).build())
 
-    public ClickGUI() {
-        bind.getValue().setKey(Keyboard.KEY_Y);
-    }
-
-    @Override
-    protected void onEnable() {
-        if (!(mc.currentScreen instanceof DisplayGuiScreen)) {
-            mc.displayGuiScreen(new DisplayGuiScreen(mc.currentScreen));
+    override fun onEnable() {
+        if (mc.currentScreen !is DisplayGuiScreen) {
+            mc.displayGuiScreen(DisplayGuiScreen(mc.currentScreen))
         }
-        disable();
+        disable()
     }
 
+    init {
+        bind.value.key = Keyboard.KEY_Y
+    }
 }

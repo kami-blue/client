@@ -8,7 +8,8 @@ import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent;
 import me.zeroeightsix.kami.gui.UIRenderer;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.module.MacroManager;
+import me.zeroeightsix.kami.manager.mangers.MacroManager;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.BossStack;
@@ -45,6 +46,8 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
+
+import java.util.Objects;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
@@ -102,7 +105,7 @@ public class ForgeEventProcessor {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (Wrapper.getMinecraft().world != null || Wrapper.getMinecraft().player != null) {
-            if (MODULE_MANAGER.getModuleT(NoRender.class).isEnabled() && MODULE_MANAGER.getModuleT(NoRender.class).items.getValue() && event.phase == TickEvent.Phase.START) {
+            if (ModuleManager.isModuleEnabled(NoRender.class) && ModuleManager.getModuleT(NoRender.class).items.getValue() && event.phase == TickEvent.Phase.START) {
                 for (Entity potentialItem : Wrapper.getMinecraft().world.getLoadedEntityList()) {
                     if (potentialItem instanceof EntityItem) {
                         potentialItem.setDead();
@@ -111,7 +114,7 @@ public class ForgeEventProcessor {
             }
         }
 
-        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+        if (ModuleManager.getModuleT(HungerOverlay.class).isEnabled()) {
             if (event.phase != TickEvent.Phase.END) {
                 return;
             }
@@ -127,26 +130,26 @@ public class ForgeEventProcessor {
             }
         }
 
-        GuiIngameForge.renderPortal = !MODULE_MANAGER.getModuleT(AntiOverlay.class).isEnabled() || !MODULE_MANAGER.getModuleT(AntiOverlay.class).portals.getValue();
+        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay.class) || !ModuleManager.getModuleT(AntiOverlay.class).portals.getValue();
 
         if (Wrapper.getPlayer() == null) return;
-        MODULE_MANAGER.onUpdate();
+        ModuleManager.INSTANCE.onUpdate();
         KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager());
     }
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         if (event.isCanceled()) return;
-        MODULE_MANAGER.onWorldRender(event);
+        ModuleManager.INSTANCE.onWorldRender(event);
     }
 
     @SubscribeEvent
     public void onRenderPre(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack.class)) {
             event.setCanceled(true);
         }
 
-        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+        if (ModuleManager.isModuleEnabled(HungerOverlay.class)) {
             if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
                 return;
             }
@@ -157,7 +160,7 @@ public class ForgeEventProcessor {
                 return;
             }
 
-            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodExhaustionOverlay.getValue()) {
+            if (!ModuleManager.getModuleT(HungerOverlay.class).foodExhaustionOverlay.getValue()) {
                 return;
             }
 
@@ -182,15 +185,15 @@ public class ForgeEventProcessor {
             target = RenderGameOverlayEvent.ElementType.HEALTHMOUNT;
 
         if (event.getType() == target) {
-            MODULE_MANAGER.onRender();
+            ModuleManager.INSTANCE.onRender();
             GlStateManager.pushMatrix();
             UIRenderer.renderAndUpdateFrames();
             GlStateManager.popMatrix();
-        } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && MODULE_MANAGER.isModuleEnabled(BossStack.class)) {
+        } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack.class)) {
             BossStack.render(event);
         }
 
-        if (MODULE_MANAGER.getModuleT(HungerOverlay.class).isEnabled()) {
+        if (ModuleManager.isModuleEnabled(HungerOverlay.class)) {
             if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
                 return;
             }
@@ -199,7 +202,7 @@ public class ForgeEventProcessor {
                 return;
             }
 
-            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() && !MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+            if (!ModuleManager.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() && !ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
                 return;
             }
 
@@ -213,11 +216,11 @@ public class ForgeEventProcessor {
             int left = scale.getScaledWidth() / 2 + 91;
             int top = scale.getScaledHeight() - foodIconsOffset;
 
-            if (MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+            if (ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
                 HungerOverlayRenderHelper.drawSaturationOverlay(0, stats.getSaturationLevel(), mc, left, top, 1f);
             }
 
-            if (!MODULE_MANAGER.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
+            if (!ModuleManager.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
                 flashAlpha = 0;
                 alphaDir = 1;
 
@@ -228,7 +231,7 @@ public class ForgeEventProcessor {
 
             HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.getFoodLevel(), mc, left, top, flashAlpha);
 
-            if (MODULE_MANAGER.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
+            if (ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
                 int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
                 float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
 
@@ -240,11 +243,11 @@ public class ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (!Keyboard.getEventKeyState()) return;
-        CommandConfig commandConfig = MODULE_MANAGER.getModuleT(CommandConfig.class);
+        CommandConfig commandConfig = ModuleManager.getModuleT(CommandConfig.class);
         if (commandConfig.prefixChat.getValue() && ("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix()) && !(Minecraft.getMinecraft().player.isSneaking())) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
         } else {
-            MODULE_MANAGER.onBind(Keyboard.getEventKey());
+            ModuleManager.INSTANCE.onBind(Keyboard.getEventKey());
             MacroManager.INSTANCE.sendMacro(Keyboard.getEventKey());
         }
     }

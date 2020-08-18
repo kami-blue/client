@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.module.MacroManager;
-import me.zeroeightsix.kami.module.WaypointManager;
+import me.zeroeightsix.kami.manager.mangers.MacroManager;
+import me.zeroeightsix.kami.manager.mangers.WaypointManager;
 import me.zeroeightsix.kami.util.Macro;
 import me.zeroeightsix.kami.util.Waypoint;
 

@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.io.IOUtils
 import java.io.IOException
@@ -44,7 +43,7 @@ object EntityUtils {
 
     @JvmStatic
     fun isFakeLocalPlayer(entity: Entity?): Boolean {
-        return entity != null && entity.getEntityId() == -100 && Wrapper.getPlayer() !== entity
+        return entity != null && entity.getEntityId() == -100 && Wrapper.player !== entity
     }
 
     /**
@@ -66,7 +65,7 @@ object EntityUtils {
             }
         } else if (entity is EntityWolf) {
             return entity.isAngry &&
-                    Wrapper.getPlayer() != entity.owner
+                    Wrapper.player != entity.owner
         } else if (entity is EntityEnderman) {
             return entity.isScreaming
         } else if (entity is EntityIronGolem) {
@@ -119,7 +118,7 @@ object EntityUtils {
 
     @JvmStatic
     fun getInterpolatedRenderPos(entity: Entity, ticks: Float): Vec3d {
-        return getInterpolatedPos(entity, ticks).subtract(Wrapper.getMinecraft().getRenderManager().renderPosX, Wrapper.getMinecraft().getRenderManager().renderPosY, Wrapper.getMinecraft().getRenderManager().renderPosZ)
+        return getInterpolatedPos(entity, ticks).subtract(Wrapper.minecraft.getRenderManager().renderPosX, Wrapper.minecraft.getRenderManager().renderPosY, Wrapper.minecraft.getRenderManager().renderPosZ)
     }
 
     fun isInWater(entity: Entity?): Boolean {
@@ -127,13 +126,13 @@ object EntityUtils {
         val y = entity.posY + 0.01
         for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
             val pos = BlockPos(x, y.toInt(), z)
-            if (Wrapper.getWorld().getBlockState(pos).block is BlockLiquid) return true
+            if (mc.world.getBlockState(pos).block is BlockLiquid) return true
         }
         return false
     }
 
     fun isDrivenByPlayer(entityIn: Entity?): Boolean {
-        return Wrapper.getPlayer() != null && entityIn != null && entityIn == Wrapper.getPlayer().getRidingEntity()
+        return mc.player != null && entityIn != null && entityIn == mc.player.getRidingEntity()
     }
 
     fun isAboveWater(entity: Entity?): Boolean {
@@ -145,7 +144,7 @@ object EntityUtils {
         val y = entity.posY - if (packet) 0.03 else if (isPlayer(entity)) 0.2 else 0.5 // increasing this seems to flag more in NCP but needs to be increased so the player lands on solid water
         for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
             val pos = BlockPos(x, MathHelper.floor(y), z)
-            if (Wrapper.getWorld().getBlockState(pos).block is BlockLiquid) return true
+            if (mc.world.getBlockState(pos).block is BlockLiquid) return true
         }
         return false
     }

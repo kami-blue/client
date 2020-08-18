@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import com.google.gson.annotations.SerializedName
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 
 /**
  * @author wnuke

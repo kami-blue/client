@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import net.minecraft.client.Minecraft
 import java.io.*
 import java.text.SimpleDateFormat

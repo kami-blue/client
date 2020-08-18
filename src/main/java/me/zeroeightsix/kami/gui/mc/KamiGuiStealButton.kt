@@ -11,7 +11,7 @@ class KamiGuiStealButton(x: Int, y: Int) :
         val chestStealer = KamiMod.MODULE_MANAGER.getModuleT(ChestStealer::class.java)?: return
         if (chestStealer.stealMode.value === ChestStealer.StealMode.MANUAL) {
             chestStealer.stealing = false
-            playPressSound(Wrapper.getMinecraft().soundHandler)
+            playPressSound(Wrapper.minecraft.soundHandler)
         }
         super.mouseReleased(mouseX, mouseY)
     }

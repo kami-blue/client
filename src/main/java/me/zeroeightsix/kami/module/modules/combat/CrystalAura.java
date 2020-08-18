@@ -5,6 +5,7 @@ import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -145,13 +146,13 @@ public class CrystalAura extends Module {
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
                         // save initial player hand
-                        oldSlot = Wrapper.getPlayer().inventory.currentItem;
+                        oldSlot = mc.player.inventory.currentItem;
                         isAttacking = true;
                     }
                     // search for sword and tools in hotbar
                     int newSlot = -1;
                     for (int i = 0; i < 9; i++) {
-                        ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
+                        ItemStack stack = mc.player.inventory.getStackInSlot(i);
                         if (stack == ItemStack.EMPTY) {
                             continue;
                         }
@@ -166,7 +167,7 @@ public class CrystalAura extends Module {
                     }
                     // check if any swords or tools were found
                     if (newSlot != -1) {
-                        Wrapper.getPlayer().inventory.currentItem = newSlot;
+                        mc.player.inventory.currentItem = newSlot;
                         switchCoolDown = true;
                     }
                 }
@@ -201,7 +202,7 @@ public class CrystalAura extends Module {
                     explode(crystal);
                 }
                 if (sneakEnable.getValue() && mc.player.isSneaking() && holeBlocks != 5) {
-                    MODULE_MANAGER.getModule(Surround.class).enable();
+                    ModuleManager.getModule(Surround.class).enable();
                 }
                 return;
             }
@@ -209,7 +210,7 @@ public class CrystalAura extends Module {
         } else {
             resetRotation();
             if (oldSlot != -1) {
-                Wrapper.getPlayer().inventory.currentItem = oldSlot;
+                mc.player.inventory.currentItem = oldSlot;
                 oldSlot = -1;
             }
             isAttacking = false;

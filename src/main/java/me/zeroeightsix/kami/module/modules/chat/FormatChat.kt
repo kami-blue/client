@@ -37,7 +37,7 @@ class FormatChat : Module() {
             if (message.contains("&") || message.contains("#n")) {
                 message = message.replace("&".toRegex(), KamiMod.colour.toString() + "")
                 message = message.replace("#n".toRegex(), "\n")
-                Wrapper.getPlayer().connection.sendPacket(CPacketChatMessage(message))
+                mc.player.connection.sendPacket(CPacketChatMessage(message))
                 event.cancel()
             }
         }

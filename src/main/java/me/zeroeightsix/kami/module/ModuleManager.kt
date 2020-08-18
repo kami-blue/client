@@ -19,8 +19,7 @@ import java.util.*
  * Updated by Sasha
  * Updated by Xiaro on 04/08/20
  */
-@Suppress("UNCHECKED_CAST")
-class ModuleManager {
+object ModuleManager {
     private val mc = Minecraft.getMinecraft()
 
     /**
@@ -32,6 +31,7 @@ class ModuleManager {
     /**
      * Registers modules
      */
+    @JvmStatic
     fun register() {
         KamiMod.log.info("Registering modules...")
         val classList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
@@ -95,10 +95,12 @@ class ModuleManager {
         }
     }
 
+    @JvmStatic
     fun getModules(): Array<Module> {
         return moduleList
     }
 
+    @JvmStatic
     fun getModule(clazz: Class<out Module>): Module? {
         return moduleMap[clazz]
     }
@@ -110,11 +112,13 @@ class ModuleManager {
      * @param [T] Type of module
      * @return Object <[T]>
      **/
+    @JvmStatic
     fun <T : Module> getModuleT(clazz: Class<T>): T? {
         return getModule(clazz) as? T?
     }
 
     @Deprecated("Use `getModule(Class<? extends Module>)` instead")
+    @JvmStatic
     fun getModule(name: String?): Module? {
         for (module in moduleMap.entries) {
             if (module.javaClass.simpleName.equals(name, ignoreCase = true) || module.value.originalName.equals(name, ignoreCase = true)) {
@@ -124,15 +128,18 @@ class ModuleManager {
         throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
     }
 
+    @JvmStatic
     fun isModuleEnabled(clazz: Class<out Module>): Boolean {
         return getModule(clazz)?.isEnabled ?: false
     }
 
+    @JvmStatic
     fun isModuleListening(clazz: Class<out Module>): Boolean {
         val module = getModule(clazz) ?: return false
         return isModuleListening(module)
     }
 
+    @JvmStatic
     fun isModuleListening(module: Module): Boolean {
         return module.isEnabled || module.alwaysListening
     }

@@ -61,7 +61,7 @@ class LagNotifier : Module() {
             if (pauseTakeoff.value) paused = true
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
-        val renderer = Wrapper.getFontRenderer()
+        val renderer = Wrapper.fontRenderer
         val divider = DisplayGuiScreen.getScale()
 
         /* 217 is the offset to make it go high, bigger = higher, with 0 being center */

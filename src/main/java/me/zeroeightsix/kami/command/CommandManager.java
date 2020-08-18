@@ -18,7 +18,7 @@ public class CommandManager {
     public CommandManager() {
         commands = new ArrayList<>();
 
-        for (Class<?> s : ClassFinder.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
+        for (Class<? extends Command> s : ClassFinder.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
             if (Command.class.isAssignableFrom(s)) {
                 try {
                     Command command = (Command) s.getConstructor().newInstance();

@@ -69,7 +69,7 @@ class ESP : Module() {
     private var entityList: Array<Entity>? = null
 
     override fun onWorldRender(event: RenderEvent) {
-        if (Wrapper.getMinecraft().getRenderManager().options == null || entityList == null) return
+        if (mc.renderManager.options == null || entityList == null) return
         when (mode.value) {
             ESPMode.BOX -> {
                 val colour = ColourHolder(r.value, g.value, b.value)

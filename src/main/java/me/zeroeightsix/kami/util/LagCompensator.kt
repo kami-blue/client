@@ -1,59 +1,58 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util
 
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.event.events.PacketEvent;
-import net.minecraft.network.play.server.SPacketTimeUpdate;
-import net.minecraft.util.math.MathHelper;
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.PacketEvent
+import net.minecraft.network.play.server.SPacketTimeUpdate
+import net.minecraft.util.math.MathHelper
+import java.util.*
 
-import java.util.Arrays;
-import java.util.EventListener;
+object LagCompensator : EventListener {
+    private val tickRates = FloatArray(20)
+    private var nextIndex = 0
+    private var timeLastTimeUpdate: Long = 0
 
-public class LagCompensator implements EventListener {
+    val tickRate: Float
+        get() {
+            var numTicks = 0.0f
+            var sumTickRates = 0.0f
+            for (tickRate in tickRates) {
+                if (tickRate > 0.0f) {
+                    sumTickRates += tickRate
+                    numTicks += 1.0f
+                }
+            }
+            return MathHelper.clamp(sumTickRates / numTicks, 0.0f, 20.0f)
+        }
 
-    public static LagCompensator INSTANCE;
-
-    private final float[] tickRates = new float[20];
-    private int nextIndex = 0;
-    private long timeLastTimeUpdate;
+    val adjustTicks: Float get() = tickRate - 20f
 
     @EventHandler
-    Listener<PacketEvent.Receive> packetEventListener = new Listener<>(event -> {
-        if (event.getPacket() instanceof SPacketTimeUpdate) {
-            INSTANCE.onTimeUpdate();
+    var packetEventListener = Listener(EventHook { event: PacketEvent.Receive ->
+        if (event.packet is SPacketTimeUpdate) {
+            onTimeUpdate()
         }
-    });
+    })
 
-    public LagCompensator() {
-        KamiMod.EVENT_BUS.subscribe(this);
-        reset();
+    fun reset() {
+        nextIndex = 0
+        timeLastTimeUpdate = -1L
+        Arrays.fill(tickRates, 0.0f)
     }
 
-    public void reset() {
-        this.nextIndex = 0;
-        this.timeLastTimeUpdate = -1L;
-        Arrays.fill(this.tickRates, 0.0F);
+    fun onTimeUpdate() {
+        if (timeLastTimeUpdate != -1L) {
+            val timeElapsed = (System.currentTimeMillis() - timeLastTimeUpdate).toFloat() / 1000.0f
+            tickRates[nextIndex % tickRates.size] = MathHelper.clamp(20.0f / timeElapsed, 0.0f, 20.0f)
+            nextIndex += 1
+        }
+        timeLastTimeUpdate = System.currentTimeMillis()
     }
 
-    public float getTickRate() {
-        float numTicks = 0.0F;
-        float sumTickRates = 0.0F;
-        for (float tickRate : this.tickRates) {
-            if (tickRate > 0.0F) {
-                sumTickRates += tickRate;
-                numTicks += 1.0F;
-            }
-        }
-        return MathHelper.clamp(sumTickRates / numTicks, 0.0F, 20.0F);
-    }
-
-    public void onTimeUpdate() {
-        if (this.timeLastTimeUpdate != -1L) {
-            float timeElapsed = (float) (System.currentTimeMillis() - this.timeLastTimeUpdate) / 1000.0F;
-            this.tickRates[(this.nextIndex % this.tickRates.length)] = MathHelper.clamp(20.0F / timeElapsed, 0.0F, 20.0F);
-            this.nextIndex += 1;
-        }
-        this.timeLastTimeUpdate = System.currentTimeMillis();
+    init {
+        KamiMod.EVENT_BUS.subscribe(this)
+        reset()
     }
 }

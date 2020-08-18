@@ -84,7 +84,7 @@ class Jesus : Module() {
             val y = entity.posY - 0.01
             for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
                 val pos = BlockPos(x, MathHelper.floor(y), z)
-                if (Wrapper.getWorld().getBlockState(pos).block.isFullBlock(Wrapper.getWorld().getBlockState(pos))) return true
+                if (mc.world.getBlockState(pos).isFullBlock) return true
             }
             return false
         }

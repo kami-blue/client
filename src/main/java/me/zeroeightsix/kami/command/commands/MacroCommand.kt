@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.module.MacroManager
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.MacroManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper.*
 import me.zeroeightsix.kami.util.Wrapper
@@ -15,7 +15,7 @@ import me.zeroeightsix.kami.util.Wrapper
  */
 class MacroCommand : Command("macro", ChunkBuilder().append("command", true, EnumParser(arrayOf("key", "list"))).append("setting", false, EnumParser(arrayOf("clear", "message|command"))).build(), "m") {
     override fun call(args: Array<out String?>) {
-        val rKey = args[0]
+        val rKey = args[0]?: return
         val macro = args[1]
         val key = Wrapper.getKey(rKey)
 

@@ -1,7 +1,8 @@
-package me.zeroeightsix.kami.module
+package me.zeroeightsix.kami.manager.mangers
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper
 
@@ -9,15 +10,13 @@ import me.zeroeightsix.kami.util.MessageSendHelper
  * @author dominikaaaa
  * Created by dominikaaaa on 04/05/20
  */
-object MacroManager {
+object MacroManager : Manager() {
 
     /**
      * Reads macros from KAMIBlueMacros.json into the macros Map
      */
     fun registerMacros() {
-        KamiMod.log.info("Registering macros...")
         Macro.readFileToMemory()
-        KamiMod.log.info("Macros registered")
     }
 
     /**
@@ -42,5 +41,9 @@ object MacroManager {
                 MessageSendHelper.sendServerMessage(currentMacro)
             }
         }
+    }
+
+    init {
+        registerMacros()
     }
 }

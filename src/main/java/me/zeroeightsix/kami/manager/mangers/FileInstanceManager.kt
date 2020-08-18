@@ -1,53 +1,55 @@
-package me.zeroeightsix.kami.module;
+package me.zeroeightsix.kami.manager.mangers
 
-import me.zeroeightsix.kami.util.Macro;
-import me.zeroeightsix.kami.util.Waypoint;
-import me.zeroeightsix.kami.util.WaypointInfo;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.util.Macro
+import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.util.WaypointInfo
+import java.io.FileWriter
+import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author dominikaaaa
- * Lazy fix used for Java instance of {@link me.zeroeightsix.kami.util.Macro} and {@link MacroManager}
+ * Lazy fix used for Java instance of [me.zeroeightsix.kami.util.Macro] and [MacroManager]
  */
-public class FileInstanceManager {
+object FileInstanceManager : Manager() {
     /*
      * Map of all the macros.
      * KeyCode, Actions
      */
-    public static Map<Integer, List<String>> macros = new LinkedHashMap<>();
+    var macros = LinkedHashMap<Int, ArrayList<String>>()
 
     /*
      * ArrayList of all Waypoints
      */
-    public static ArrayList<WaypointInfo> waypoints = new ArrayList<>();
+    var waypoints = ArrayList<WaypointInfo>()
 
     /**
      * Super lazy fix for Windows users sometimes saving empty files
      */
-    public static void fixEmptyFiles() {
-        if (!Waypoint.INSTANCE.getFile().exists()) {
+    fun fixEmptyFiles() {
+        if (!Waypoint.file.exists()) {
             try {
-                FileWriter w = new FileWriter(Waypoint.INSTANCE.getFile());
-                w.write("[]");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                val w = FileWriter(Waypoint.file)
+                w.write("[]")
+                w.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
-        if (!Macro.INSTANCE.getFile().exists()) {
+        if (!Macro.file.exists()) {
             try {
-                FileWriter w = new FileWriter(Macro.INSTANCE.getFile());
-                w.write("{}");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                val w = FileWriter(Macro.file)
+                w.write("{}")
+                w.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
+    }
+
+    init {
+        fixEmptyFiles()
     }
 }

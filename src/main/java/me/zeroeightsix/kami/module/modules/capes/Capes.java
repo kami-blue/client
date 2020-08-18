@@ -150,7 +150,7 @@ public class Capes extends Module {
                 public void skinAvailable() {}
             };
 
-            TextureManager textureManager = Wrapper.getMinecraft().getTextureManager();
+            TextureManager textureManager = mc.getTextureManager();
             textureManager.getTexture(location);
             ThreadDownloadImageData textureCape = new ThreadDownloadImageData(null, url, null, iib);
             textureManager.loadTexture(location, textureCape);

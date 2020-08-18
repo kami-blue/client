@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
+import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.module.*;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
@@ -95,7 +96,12 @@ public class KamiMod {
     public static final Logger log = LogManager.getLogger("KAMI Blue");
 
     public static final EventBus EVENT_BUS = new EventManager();
-    public static final ModuleManager MODULE_MANAGER = new ModuleManager();
+
+    /**
+     * @deprecated Use ModuleManger.INSTANCE instead
+     */
+    @Deprecated
+    public static final ModuleManager MODULE_MANAGER = ModuleManager.INSTANCE;
 
     public static final KamiMoji KAMIMOJI = new KamiMoji();
 
@@ -138,7 +144,7 @@ public class KamiMod {
         log.info("Initialising KamiMoji...");
         KAMIMOJI.start();
 
-        if (Objects.requireNonNull(MODULE_MANAGER.getModuleT(CommandConfig.class)).customTitle.getValue()) {
+        if (Objects.requireNonNull(ModuleManager.getModuleT(CommandConfig.class)).customTitle.getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
     }
@@ -147,12 +153,10 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         log.info("\n\nInitializing " + MODNAME + " " + VER_FULL_BETA);
 
-        MODULE_MANAGER.register();
+        ModuleManager.register();
+        ManagerLoader.loadManagers();
 
         MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
-        LagCompensator.INSTANCE = new LagCompensator();
-
-        Wrapper.init();
 
         guiManager = new KamiGUI();
         guiManager.initializeGUI();
@@ -160,10 +164,6 @@ public class KamiMod {
         commandManager = new CommandManager();
 
         Friends.initFriends();
-
-        FileInstanceManager.fixEmptyFiles();
-        MacroManager.INSTANCE.registerMacros();
-        WaypointManager.INSTANCE.registerWaypoints();
 
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
@@ -175,7 +175,7 @@ public class KamiMod {
         log.info("Rich Presence Users init!\n");
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
-        Module[] modules = MODULE_MANAGER.getModules();
+        Module[] modules = ModuleManager.getModules();
         for (int i = 0; i < modules.length; i++) {
             Module module = modules[i];
             if (module.alwaysListening) EVENT_BUS.subscribe(module);
@@ -183,7 +183,7 @@ public class KamiMod {
         }
 
         // load modules that are on by default // autoenable
-        Objects.requireNonNull(MODULE_MANAGER.getModule(RunConfig.class)).enable();
+        Objects.requireNonNull(ModuleManager.getModule(RunConfig.class)).enable();
 
         log.info(MODNAME + " Mod initialized!\n");
     }
@@ -268,7 +268,7 @@ public class KamiMod {
         if (!Files.exists(outputFile))
             Files.createFile(outputFile);
         Configuration.saveConfiguration(outputFile);
-        Module[] modules = MODULE_MANAGER.getModules();
+        Module[] modules = ModuleManager.getModules();
         for (int i = 0; i < modules.length; i++) {
             modules[i].destroy();
         }

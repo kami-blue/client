@@ -33,7 +33,7 @@ class BeaconSelector : Module() {
             val buf = PacketBuffer(Unpooled.buffer())
             buf.writeInt(effect)
             buf.writeInt(k1)
-            Wrapper.getPlayer().connection.sendPacket(CPacketCustomPayload("MC|Beacon", buf))
+            mc.player.connection.sendPacket(CPacketCustomPayload("MC|Beacon", buf))
             doCancelPacket = true
         }
     })
