@@ -1,45 +1,43 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing
+import java.util.*
 
-import java.util.HashMap;
+object GeometryMasks {
+    val FACEMAP = HashMap<EnumFacing, Int>()
 
-public final class GeometryMasks {
-
-    public static final HashMap<EnumFacing, Integer> FACEMAP = new HashMap<>();
-
-    static {
-        FACEMAP.put(EnumFacing.DOWN, Quad.DOWN);
-        FACEMAP.put(EnumFacing.WEST, Quad.WEST);
-        FACEMAP.put(EnumFacing.NORTH, Quad.NORTH);
-        FACEMAP.put(EnumFacing.SOUTH, Quad.SOUTH);
-        FACEMAP.put(EnumFacing.EAST, Quad.EAST);
-        FACEMAP.put(EnumFacing.UP, Quad.UP);
+    object Quad {
+        const val DOWN = 0x01
+        const val UP = 0x02
+        const val NORTH = 0x04
+        const val SOUTH = 0x08
+        const val WEST = 0x10
+        const val EAST = 0x20
+        const val ALL = DOWN or UP or NORTH or SOUTH or WEST or EAST
     }
 
-    public static final class Quad {
-        public static final int DOWN = 0x01;
-        public static final int UP = 0x02;
-        public static final int NORTH = 0x04;
-        public static final int SOUTH = 0x08;
-        public static final int WEST = 0x10;
-        public static final int EAST = 0x20;
-        public static final int ALL = DOWN | UP | NORTH | SOUTH | WEST | EAST;
+    object Line {
+        const val DOWN_WEST = 0x11
+        const val UP_WEST = 0x12
+        const val DOWN_EAST = 0x21
+        const val UP_EAST = 0x22
+        const val DOWN_NORTH = 0x05
+        const val UP_NORTH = 0x06
+        const val DOWN_SOUTH = 0x09
+        const val UP_SOUTH = 0x0A
+        const val NORTH_WEST = 0x14
+        const val NORTH_EAST = 0x24
+        const val SOUTH_WEST = 0x18
+        const val SOUTH_EAST = 0x28
+        const val ALL = DOWN_WEST or UP_WEST or DOWN_EAST or UP_EAST or DOWN_NORTH or UP_NORTH or DOWN_SOUTH or UP_SOUTH or NORTH_WEST or NORTH_EAST or SOUTH_WEST or SOUTH_EAST
     }
 
-    public static final class Line {
-        public static final int DOWN_WEST = 0x11;
-        public static final int UP_WEST = 0x12;
-        public static final int DOWN_EAST = 0x21;
-        public static final int UP_EAST = 0x22;
-        public static final int DOWN_NORTH = 0x05;
-        public static final int UP_NORTH = 0x06;
-        public static final int DOWN_SOUTH = 0x09;
-        public static final int UP_SOUTH = 0x0A;
-        public static final int NORTH_WEST = 0x14;
-        public static final int NORTH_EAST = 0x24;
-        public static final int SOUTH_WEST = 0x18;
-        public static final int SOUTH_EAST = 0x28;
-        public static final int ALL = DOWN_WEST | UP_WEST | DOWN_EAST | UP_EAST | DOWN_NORTH | UP_NORTH | DOWN_SOUTH | UP_SOUTH | NORTH_WEST | NORTH_EAST | SOUTH_WEST | SOUTH_EAST;
+    init {
+        FACEMAP[EnumFacing.DOWN] = Quad.DOWN
+        FACEMAP[EnumFacing.WEST] = Quad.WEST
+        FACEMAP[EnumFacing.NORTH] = Quad.NORTH
+        FACEMAP[EnumFacing.SOUTH] = Quad.SOUTH
+        FACEMAP[EnumFacing.EAST] = Quad.EAST
+        FACEMAP[EnumFacing.UP] = Quad.UP
     }
 }
