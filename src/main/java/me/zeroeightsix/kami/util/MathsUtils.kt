@@ -30,7 +30,7 @@ object MathsUtils {
     @JvmStatic
     fun round(value: Float, places: Int): Double {
         val scale = 10.0.pow(places.toDouble())
-        return (value * scale).roundToInt() / scale
+        return round(value * scale) / scale
     }
 
     @JvmStatic
