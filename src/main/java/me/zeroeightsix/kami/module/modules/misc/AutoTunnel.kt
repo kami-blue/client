@@ -46,13 +46,12 @@ class AutoTunnel : Module() {
             ModuleManager.getModuleT(AutoWalk::class.java)!!.disable()
         }
 
-        startingDirection = getPlayerMainCardinal(mc)!!
+        startingDirection = getPlayerMainCardinal(mc)
         sendTunnel()
     }
 
     private fun sendTunnel() {
-        var current = arrayOf("")
-        current = if (height.value == 2 && width.value == 1) {
+        val current: Array<String> = if (height.value == 2 && width.value == 1) {
             arrayOf("tunnel")
         }
         else {
@@ -66,6 +65,7 @@ class AutoTunnel : Module() {
                 CardinalMain.NEG_X -> { mc.player.rotationYaw = 90.0f; mc.player.rotationPitch = 0.0f }
                 CardinalMain.POS_Z -> { mc.player.rotationYaw = 0.0f; mc.player.rotationYaw = 0.0f }
                 CardinalMain.NEG_Z -> { mc.player.rotationYaw = 180.0f; mc.player.rotationYaw = 0.0f }
+                else -> return
             }
             MessageSendHelper.sendBaritoneCommand(*current)
         }

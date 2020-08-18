@@ -83,13 +83,13 @@ object MathsUtils {
     }
 
     @JvmStatic
-    fun getPlayerMainCardinal(mc: Minecraft): CardinalMain? {
+    fun getPlayerMainCardinal(mc: Minecraft): CardinalMain {
         return when (Character.toUpperCase(mc.player.horizontalFacing.toString()[0])) {
             'N' -> CardinalMain.NEG_Z
             'S' -> CardinalMain.POS_Z
             'E' -> CardinalMain.POS_X
             'W' -> CardinalMain.NEG_X
-            else -> null
+            else -> CardinalMain.NULL
         }
     }
 
@@ -113,7 +113,7 @@ object MathsUtils {
         return min(max(convertedIn, actualMin), actualMax)
     }
 
-    enum class Cardinal(var cardinalName: String) {
+    enum class Cardinal(@JvmField var cardinalName: String) {
         POS_Z("+Z"),
         NEG_X_POS_Z("-X / +Z"),
         NEG_X("-X"),
@@ -125,10 +125,11 @@ object MathsUtils {
         ERROR("ERROR_CALC_DIRECT");
     }
 
-    enum class CardinalMain(var cardinalName: String) {
+    enum class CardinalMain(@JvmField var cardinalName: String) {
         POS_Z("+Z"),
         NEG_X("-X"),
         NEG_Z("-Z"),
-        POS_X("+X");
+        POS_X("+X"),
+        NULL("N/A");
     }
 }
