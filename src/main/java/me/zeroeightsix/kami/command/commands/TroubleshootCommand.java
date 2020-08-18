@@ -33,12 +33,12 @@ public class TroubleshootCommand extends Command {
     @Override
     public void call(String[] args) {
         AtomicReference<String> enabled = new AtomicReference<>("");
-        List<Module> mods = new ArrayList<>(MODULE_MANAGER.getModules());
+        Module[] mods = MODULE_MANAGER.getModules();
 
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";
 
-        mods.forEach(module -> {
+        for(Module module : mods) {
             if (args[0] == null) {
                 if (module.isEnabled()) {
                     enabled.set(enabled + module.getName() + ", ");
@@ -48,7 +48,7 @@ public class TroubleshootCommand extends Command {
                     enabled.set(enabled + module.getName() + ", ");
                 }
             }
-        });
+        }
 
         enabled.set(StringUtils.chop(StringUtils.chop(String.valueOf(enabled)))); // this looks horrible but I don't know how else to do it sorry
         sendChatMessage("Enabled modules: " + f + "\n" + TextFormatting.GRAY + enabled);

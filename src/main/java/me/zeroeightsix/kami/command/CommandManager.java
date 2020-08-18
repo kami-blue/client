@@ -36,11 +36,11 @@ public class CommandManager {
         String[] parts = command.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"); // Split by every space if it isn't surrounded by quotes
 
         String label = parts[0].contains(" ") ? parts[0].substring(parts[0].indexOf(" ")).substring(1) : parts[0].substring(1);
-        String[] args = removeElement(parts);
+        String[] args = removeElement(parts, 0);
 
         for (int i = 0; i < args.length; i++) {
             if (args[i] == null) continue;
-            args[i] = strip(args[i]);
+            args[i] = strip(args[i], "\"");
         }
 
         for (Command c : commands) {
@@ -57,19 +57,18 @@ public class CommandManager {
         sendChatMessage("&7Unknown command. try '&f" + Command.getCommandPrefix() + "cmds&7' for a list of commands.");
     }
 
-    private static String[] removeElement(String[] input) {
-        List<String> result = new LinkedList<>();
+    private static String[] removeElement(String[] input, int indexToDelete) {
+        List<String> result = new ArrayList<>();
 
         for (int i = 0; i < input.length; i++) {
-            if (i != 0) result.add(input[i]);
+            if (i != indexToDelete) result.add(input[i]);
         }
 
         return result.toArray(input);
     }
 
-
-    private static String strip(String str) {
-        if (str.startsWith("\"") && str.endsWith("\"")) return str.substring("\"".length(), str.length() - "\"".length());
+    private static String strip(String str, String key) {
+        if (str.startsWith(key) && str.endsWith(key)) return str.substring(key.length(), str.length() - key.length());
         return str;
     }
 

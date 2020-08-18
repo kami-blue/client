@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.util.Wrapper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -27,33 +28,26 @@ public class TabGUI extends AbstractComponent implements EventListener {
     public boolean tabOpened;
 
     public TabGUI() {
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
 
         LinkedHashMap<Module.Category, Tab> tabMap = new LinkedHashMap<>();
         for (Module.Category category : Module.Category.values())
             tabMap.put(category, new Tab(category.getName()));
 
-        ArrayList<Module> features = new ArrayList<>(MODULE_MANAGER.getModules());
-
-        for (Module feature : features)
+        for (Module feature : MODULE_MANAGER.getModules())
             if (feature.getCategory() != null && !feature.getCategory().isHidden())
                 tabMap.get(feature.getCategory()).add(feature);
 
-        Iterator<Map.Entry<Module.Category, Tab>> iterator = tabMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Module.Category, Tab> entry = iterator.next();
-            if (entry.getValue().features.isEmpty())
-                iterator.remove();
-        }
+        tabMap.entrySet().removeIf(entry -> entry.getValue().features.isEmpty());
 
         tabs.addAll(tabMap.values());
-        tabs.forEach(tab -> tab.updateSize());
+        tabs.forEach(Tab::updateSize);
         updateSize();
     }
 
     @SubscribeEvent
     public void onKeyPress(InputEvent.KeyInputEvent event) {
-        if (Keyboard.getEventKeyState() == false) return;
+        if (!Keyboard.getEventKeyState()) return;
         Component framep = getParent();
         while (!(framep instanceof Frame))
             framep = framep.getParent();
@@ -61,14 +55,10 @@ public class TabGUI extends AbstractComponent implements EventListener {
             return;
 
         if (tabOpened)
-            switch (Keyboard.getEventKey()) {
-                case Keyboard.KEY_LEFT:
-                    tabOpened = false;
-                    break;
-
-                default:
-                    tabs.get(selected).onKeyPress(Keyboard.getEventKey());
-                    break;
+            if (Keyboard.getEventKey() == Keyboard.KEY_LEFT) {
+                tabOpened = false;
+            } else {
+                tabs.get(selected).onKeyPress(Keyboard.getEventKey());
             }
         else
             switch (Keyboard.getEventKey()) {

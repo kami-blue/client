@@ -19,13 +19,15 @@ import java.util.*
  * Updated by Sasha
  * Updated by Xiaro on 04/08/20
  */
+@Suppress("UNCHECKED_CAST")
 class ModuleManager {
     private val mc = Minecraft.getMinecraft()
 
     /**
      * Linked map for the registered Modules
      */
-    private val modules: MutableMap<Class<out Module>, Module> = LinkedHashMap()
+    private val moduleMap = HashMap<Class<out Module>, Module>()
+    private lateinit var moduleList: Array<Module>
 
     /**
      * Registers modules
@@ -33,28 +35,36 @@ class ModuleManager {
     fun register() {
         KamiMod.log.info("Registering modules...")
         val classList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
-        classList.stream().sorted(Comparator.comparing { obj: Class<*> -> obj.simpleName }).forEach { aClass: Class<*> ->
+        for (clazz in classList) {
             try {
-                val module = aClass.getConstructor().newInstance() as Module
-                modules[module.javaClass] = module
+                val module = clazz.getConstructor().newInstance() as Module
+                moduleMap[module.javaClass] = module
             } catch (e: InvocationTargetException) {
                 e.cause!!.printStackTrace()
-                System.err.println("Couldn't initiate module " + aClass.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
+                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
             } catch (e: Exception) {
                 e.printStackTrace()
-                System.err.println("Couldn't initiate module " + aClass.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
+                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
             }
         }
+        Thread(Runnable {
+            moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
+                module.javaClass.simpleName
+            }).toArray { size -> arrayOfNulls<Module>(size) }
+        })
         KamiMod.log.info("Modules registered")
     }
 
     fun onUpdate() {
-        modules.forEach { (clazz: Class<out Module>?, mod: Module) -> if (mod.alwaysListening || mod.isEnabled) mod.onUpdate() }
-        //modules.stream().filter(module -> module.alwaysListening || module.isEnabled()).forEach(Module::onUpdate);
+        for (module in moduleList) {
+            if (isModuleListening(module)) module.onUpdate()
+        }
     }
 
     fun onRender() {
-        modules.forEach { (clazz: Class<out Module>?, mod: Module) -> if (mod.alwaysListening || mod.isEnabled) mod.onRender() }
+        for (module in moduleList) {
+            if (isModuleListening(module)) module.onRender()
+        }
     }
 
     fun onWorldRender(event: RenderWorldLastEvent) {
@@ -66,11 +76,10 @@ class ModuleManager {
         val e = RenderEvent(KamiTessellator, renderPos)
         e.resetTranslation()
         mc.profiler.endSection()
-        modules.forEach { (clazz: Class<out Module>?, mod: Module) ->
-            if (mod.alwaysListening || mod.isEnabled) {
-                mc.profiler.startSection(mod.originalName)
+        for (module in moduleList) {
+            if (isModuleListening(module)) {
                 prepareGL()
-                mod.onWorldRender(e)
+                module.onWorldRender(e)
                 releaseGL()
                 mc.profiler.endSection()
             }
@@ -83,19 +92,17 @@ class ModuleManager {
 
     fun onBind(eventKey: Int) {
         if (eventKey == 0) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
-        modules.forEach { (clazz: Class<out Module>?, module: Module) ->
-            if (module.bind.isDown(eventKey)) {
-                module.toggle()
-            }
+        for (module in moduleList) {
+            if (module.bind.isDown(eventKey)) module.toggle()
         }
     }
 
-    fun getModules(): Collection<Module> {
-        return Collections.unmodifiableCollection(modules.values)
+    fun getModules(): Array<Module> {
+        return moduleList
     }
 
     fun getModule(clazz: Class<out Module>): Module? {
-        return modules[clazz]
+        return moduleMap[clazz]
     }
 
     /**
@@ -111,7 +118,7 @@ class ModuleManager {
 
     @Deprecated("Use `getModule(Class<? extends Module>)` instead")
     fun getModule(name: String?): Module {
-        for (module in modules.entries) {
+        for (module in moduleMap.entries) {
             if (module.javaClass.simpleName.equals(name, ignoreCase = true) || module.value.originalName.equals(name, ignoreCase = true)) {
                 return module.value
             }
@@ -121,6 +128,15 @@ class ModuleManager {
 
     fun isModuleEnabled(clazz: Class<out Module>): Boolean {
         return getModule(clazz)?.isEnabled ?: false
+    }
+
+    fun isModuleListening(clazz: Class<out Module>): Boolean {
+        val module = getModule(clazz) ?: return false
+        return isModuleListening(module)
+    }
+
+    fun isModuleListening(module: Module): Boolean {
+        return module.isEnabled || module.alwaysListening
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)

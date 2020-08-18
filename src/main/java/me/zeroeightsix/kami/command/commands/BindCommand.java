@@ -46,11 +46,11 @@ public class BindCommand extends Command {
         String rkey = args[1];
 
         if (module.equalsIgnoreCase("list")) {
-            Collection<Module> modules = MODULE_MANAGER.getModules().stream().filter(module1 -> !module1.getBindName().equals("None")).collect(Collectors.toList());
-            if (modules.isEmpty()) return;
+            Module[] modules = MODULE_MANAGER.getModules();
 
             sendChatMessage("You have the following binds: ");
             for (Module module1 : modules) {
+                if (module1.getBindName().equals("None")) continue;
                 sendRawChatMessage(module1.getBindName() + ": " + module1.getName());
             }
             return;
