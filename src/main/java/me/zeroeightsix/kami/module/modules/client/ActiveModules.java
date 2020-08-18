@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client;
 
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
@@ -82,7 +83,7 @@ public class ActiveModules extends Module {
     }
 
     private TextFormatting infoGetSetting(boolean isOne) {
-        InfoOverlay infoOverlay = (InfoOverlay) MODULE_MANAGER.getModule(InfoOverlay.class);
+        InfoOverlay infoOverlay = ModuleManager.getModuleT(InfoOverlay.class);
         assert infoOverlay != null;
         if (isOne) return setToText(infoOverlay.firstColour.getValue());
         else return setToText(infoOverlay.secondColour.getValue());

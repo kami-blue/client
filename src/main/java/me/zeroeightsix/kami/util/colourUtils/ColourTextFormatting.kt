@@ -54,7 +54,7 @@ object ColourTextFormatting {
         }
     }
 
-    enum class ColourEnum(var colorLocal: Color) {
+    enum class ColourEnum(@JvmField var colorLocal: Color) {
         BLACK(Color(0, 0, 0)),
         DARK_BLUE(Color(0, 0, 170)),
         DARK_GREEN(Color(0, 170, 0)),
