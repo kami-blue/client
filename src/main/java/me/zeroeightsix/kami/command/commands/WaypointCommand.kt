@@ -51,7 +51,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                         val current = getWaypoint(args[1]!!)
                         if (current != null) {
                             if (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk::class.java)) {
-                                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk::class.java).disable()
+                                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk::class.java)?.disable()
                             }
                             MessageSendHelper.sendBaritoneCommand("goto", current.x.toString(), current.y.toString(), current.z.toString())
                         } else {

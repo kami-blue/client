@@ -43,7 +43,7 @@ class AutoTunnel : Module() {
             return
         }
         if (MODULE_MANAGER.isModuleEnabled(AutoWalk::class.java)) {
-            MODULE_MANAGER.getModuleT(AutoWalk::class.java).disable()
+            MODULE_MANAGER.getModuleT(AutoWalk::class.java)!!.disable()
         }
 
         startingDirection = getPlayerMainCardinal(mc)

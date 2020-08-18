@@ -280,7 +280,7 @@ class ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            MODULE_MANAGER.getModuleT(LagNotifier::class.java).paused -> {
+            MODULE_MANAGER.getModuleT(LagNotifier::class.java)!!.paused -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
@@ -311,7 +311,7 @@ class ElytraFlight : Module() {
     /* The best takeoff method <3 */
     private fun takeoff(event: PlayerTravelEvent) {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
-        val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
+        val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)!!
         if (!easyTakeOff.value || lagNotifier.paused || mc.player.onGround) {
             if (lagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
@@ -390,7 +390,7 @@ class ElytraFlight : Module() {
     private fun controlMode(event: PlayerTravelEvent) {
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
-        val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)
+        val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)!!
         val moveUp = if (!legacyLookBoost.value) mc.player.movementInput.jump else mc.player.rotationPitch < -10.0f && !isStandingStillH
         val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
 

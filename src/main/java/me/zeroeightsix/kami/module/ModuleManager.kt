@@ -1,153 +1,127 @@
-package me.zeroeightsix.kami.module;
+package me.zeroeightsix.kami.module
 
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.event.events.RenderEvent;
-import me.zeroeightsix.kami.module.modules.ClickGUI;
-import me.zeroeightsix.kami.util.ClassFinder;
-import me.zeroeightsix.kami.util.EntityUtils;
-import me.zeroeightsix.kami.util.KamiTessellator;
-import me.zeroeightsix.kami.util.Wrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.util.ClassFinder
+import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
+import me.zeroeightsix.kami.util.KamiTessellator
+import me.zeroeightsix.kami.util.KamiTessellator.prepareGL
+import me.zeroeightsix.kami.util.KamiTessellator.releaseGL
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import java.lang.reflect.InvocationTargetException
+import java.util.*
 
 /**
  * Created by 086 on 23/08/2017.
  * Updated by Sasha
  * Updated by Xiaro on 04/08/20
  */
-public class ModuleManager {
-    private Minecraft mc = Minecraft.getMinecraft();
+class ModuleManager {
+    private val mc = Minecraft.getMinecraft()
 
     /**
      * Linked map for the registered Modules
      */
-    private Map<Class<? extends Module>, Module> modules = new LinkedHashMap<>();
+    private val modules: MutableMap<Class<out Module>, Module> = LinkedHashMap()
 
     /**
      * Registers modules
      */
-    public void register() {
-        KamiMod.log.info("Registering modules...");
-        Set<Class> classList = ClassFinder.findClasses(ClickGUI.class.getPackage().getName(), Module.class);
-        classList.stream().sorted(Comparator.comparing(Class::getSimpleName)).forEach(aClass -> {
+    fun register() {
+        KamiMod.log.info("Registering modules...")
+        val classList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
+        classList.stream().sorted(Comparator.comparing { obj: Class<*> -> obj.simpleName }).forEach { aClass: Class<*> ->
             try {
-                Module module = (Module) aClass.getConstructor().newInstance();
-                modules.put(module.getClass(), module);
-            } catch (InvocationTargetException e) {
-                e.getCause().printStackTrace();
-                System.err.println("Couldn't initiate module " + aClass.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Couldn't initiate module " + aClass.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
+                val module = aClass.getConstructor().newInstance() as Module
+                modules[module.javaClass] = module
+            } catch (e: InvocationTargetException) {
+                e.cause!!.printStackTrace()
+                System.err.println("Couldn't initiate module " + aClass.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                System.err.println("Couldn't initiate module " + aClass.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
             }
-        });
-        KamiMod.log.info("Modules registered");
+        }
+        KamiMod.log.info("Modules registered")
     }
 
-    public void onUpdate() {
-        modules.forEach((clazz, mod) -> {
-            if (mod.alwaysListening || mod.isEnabled()) mod.onUpdate();
-        });
+    fun onUpdate() {
+        modules.forEach { (clazz: Class<out Module>?, mod: Module) -> if (mod.alwaysListening || mod.isEnabled) mod.onUpdate() }
         //modules.stream().filter(module -> module.alwaysListening || module.isEnabled()).forEach(Module::onUpdate);
     }
 
-    public void onRender() {
-        modules.forEach((clazz, mod) -> {
-            if (mod.alwaysListening || mod.isEnabled()) mod.onRender();
-        });
+    fun onRender() {
+        modules.forEach { (clazz: Class<out Module>?, mod: Module) -> if (mod.alwaysListening || mod.isEnabled) mod.onRender() }
     }
 
-    public void onWorldRender(RenderWorldLastEvent event) {
-        mc.profiler.startSection("kami");
-
-        mc.profiler.startSection("setup");
-        KamiTessellator.prepareGL();
-        GlStateManager.glLineWidth(1f);
-        Vec3d renderPos = EntityUtils.getInterpolatedPos(Objects.requireNonNull(Wrapper.getMinecraft().getRenderViewEntity()), event.getPartialTicks());
-
-        RenderEvent e = new RenderEvent(KamiTessellator.INSTANCE, renderPos);
-        e.resetTranslation();
-        mc.profiler.endSection();
-
-        modules.forEach((clazz, mod) -> {
-            if (mod.alwaysListening || mod.isEnabled()) {
-                mc.profiler.startSection(mod.getOriginalName());
-                KamiTessellator.prepareGL();
-                mod.onWorldRender(e);
-                KamiTessellator.releaseGL();
-                mc.profiler.endSection();
+    fun onWorldRender(event: RenderWorldLastEvent) {
+        mc.profiler.startSection("kami")
+        mc.profiler.startSection("setup")
+        prepareGL()
+        GlStateManager.glLineWidth(1f)
+        val renderPos = getInterpolatedPos(mc.renderViewEntity!!, event.partialTicks)
+        val e = RenderEvent(KamiTessellator, renderPos)
+        e.resetTranslation()
+        mc.profiler.endSection()
+        modules.forEach { (clazz: Class<out Module>?, mod: Module) ->
+            if (mod.alwaysListening || mod.isEnabled) {
+                mc.profiler.startSection(mod.originalName)
+                prepareGL()
+                mod.onWorldRender(e)
+                releaseGL()
+                mc.profiler.endSection()
             }
-        });
-
-        mc.profiler.startSection("release");
-        GlStateManager.glLineWidth(1f);
-        KamiTessellator.releaseGL();
-        mc.profiler.endSection();
+        }
+        mc.profiler.startSection("release")
+        GlStateManager.glLineWidth(1f)
+        releaseGL()
+        mc.profiler.endSection()
     }
 
-    public void onBind(int eventKey) {
-        if (eventKey == 0) return; // if key is the 'none' key (stuff like mod key in i3 might return 0)
-        modules.forEach((clazz, module) -> {
-            if (module.getBind().isDown(eventKey)) {
-                module.toggle();
+    fun onBind(eventKey: Int) {
+        if (eventKey == 0) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
+        modules.forEach { (clazz: Class<out Module>?, module: Module) ->
+            if (module.bind.isDown(eventKey)) {
+                module.toggle()
             }
-        });
+        }
     }
 
-    public Collection<Module> getModules() {
-        return Collections.unmodifiableCollection(this.modules.values());
+    fun getModules(): Collection<Module> {
+        return Collections.unmodifiableCollection(modules.values)
     }
 
-    public Module getModule(Class<? extends Module> clazz) {
-        return modules.get(clazz);
+    fun getModule(clazz: Class<out Module>): Module? {
+        return modules[clazz]
     }
 
     /**
      * Get typed module object so that no casting is needed afterwards.
      *
      * @param clazz Module class
-     * @param <T>   Type of module
-     * @return Object
-     */
-    public <T extends Module> T getModuleT(Class<T> clazz) {
-        return (T) modules.get(clazz);
+     * @param [T] Type of module
+     * @return Object <[T]>
+     **/
+    fun <T : Module> getModuleT(clazz: Class<T>): T? {
+        return getModule(clazz) as? T?
     }
 
-    /**
-     * @deprecated Use `getModule(Class<? extends Module>)` instead
-     */
-    @Deprecated
-    public Module getModule(String name) {
-        for (Map.Entry<Class<? extends Module>, Module> module : modules.entrySet()) {
-            if (module.getClass().getSimpleName().equalsIgnoreCase(name) || module.getValue().getOriginalName().equalsIgnoreCase(name)) {
-                return module.getValue();
+    @Deprecated("Use `getModule(Class<? extends Module>)` instead")
+    fun getModule(name: String?): Module {
+        for (module in modules.entries) {
+            if (module.javaClass.simpleName.equals(name, ignoreCase = true) || module.value.originalName.equals(name, ignoreCase = true)) {
+                return module.value
             }
         }
-        throw new ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)");
+        throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
     }
 
-    public boolean isModuleEnabled(Class<? extends Module> clazz) {
-        return getModule(clazz).isEnabled();
+    fun isModuleEnabled(clazz: Class<out Module>): Boolean {
+        return getModule(clazz)?.isEnabled ?: false
     }
 
-    /**
-     * @deprecated Use `isModuleEnabled(Class<? extends Module>)` instead
-     */
-    @Deprecated
-    public boolean isModuleEnabled(String moduleName) {
-        return getModule(moduleName).isEnabled();
-    }
-
-    public static class ModuleNotFoundException extends IllegalArgumentException {
-
-        public ModuleNotFoundException(String s) {
-            super(s);
-        }
-    }
+    class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
 }
-

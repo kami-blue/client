@@ -33,7 +33,7 @@ class TemporaryPauseProcess : IBaritoneProcess {
 
     override fun onTick(calcFailed: Boolean, isSafeToCancel: Boolean): PathingCommand {
         if (!isSafeToCancel) {
-            KamiMod.MODULE_MANAGER.getModuleT(AutoEat::class.java).eating = false
+            KamiMod.MODULE_MANAGER.getModuleT(AutoEat::class.java)?.eating = false
         }
         return PathingCommand(null, PathingCommandType.REQUEST_PAUSE)
     }

@@ -36,7 +36,7 @@ class CommandConfig : Module() {
     }
 
     private fun sendDisableMessage() {
-        MessageSendHelper.sendErrorMessage("Error: The " + KamiMod.MODULE_MANAGER.getModule(this.javaClass).name + " module is only for configuring command options, disabling it doesn't do anything.")
-        KamiMod.MODULE_MANAGER.getModule(this.javaClass).enable()
+        MessageSendHelper.sendErrorMessage("Error: The " + KamiMod.MODULE_MANAGER.getModule(this.javaClass)!!.name + " module is only for configuring command options, disabling it doesn't do anything.")
+        KamiMod.MODULE_MANAGER.getModule(this.javaClass)!!.enable()
     }
 }

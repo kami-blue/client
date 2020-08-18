@@ -24,7 +24,7 @@ class FakeMessageCommand : Command("fakemsg", ChunkBuilder().append("message").b
     private fun getTime(): String? {
         return when {
             MODULE_MANAGER.isModuleEnabled(ChatTimestamp::class.java) -> {
-                MODULE_MANAGER.getModuleT(ChatTimestamp::class.java).formattedTime
+                MODULE_MANAGER.getModuleT(ChatTimestamp::class.java)?.formattedTime
             }
             else -> {
                 ""

@@ -33,7 +33,7 @@ class AimBot : Module() {
     private val invisible = register(Settings.b("Invisible", false))
 
     override fun onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.getModuleT(Aura::class.java).isEnabled) return
+        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Aura::class.java)) return
 
         if (useBow.value) {
             var bowSlot = 0

@@ -80,7 +80,7 @@ class AutoLog : Module() {
     }
 
     private fun log() {
-        KamiMod.MODULE_MANAGER.getModule(AutoReconnect::class.java).disable()
+        KamiMod.MODULE_MANAGER.getModule(AutoReconnect::class.java)!!.disable()
         shouldLog = true
     }
 }

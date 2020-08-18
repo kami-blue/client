@@ -66,7 +66,7 @@ class HoleESP : Module() {
     override fun onUpdate() {
         safeHoles.clear()
         val range = ceil(renderDistance.value).toInt()
-        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)
+        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)!!
         val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
         for (pos in blockPosList) {
             if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air

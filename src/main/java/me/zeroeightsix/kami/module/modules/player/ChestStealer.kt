@@ -81,7 +81,7 @@ class ChestStealer : Module() {
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java).ejectArrayList
+        val ejectList = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java)!!.ejectArrayList
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].getItem()
             if (item == Items.AIR) continue

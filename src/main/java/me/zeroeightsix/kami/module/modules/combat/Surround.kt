@@ -162,8 +162,9 @@ class Surround : Module() {
             placeBlockExecute(blockPos)
         }
 
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation::class.java)) {
-            (KamiMod.MODULE_MANAGER.getModule(NoBreakAnimation::class.java) as NoBreakAnimation).resetMining()
+        val noBreakAnimation = KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java)!!
+        if (noBreakAnimation.isEnabled) {
+            noBreakAnimation.resetMining()
         }
     }
 

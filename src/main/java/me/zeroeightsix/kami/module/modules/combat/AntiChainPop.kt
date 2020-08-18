@@ -53,7 +53,7 @@ class AntiChainPop : Module() {
     private fun itemMode() {
         val old = totems
         if (InfoOverlay.getItems(Items.TOTEM_OF_UNDYING) < old) {
-            val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)
+            val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)!!
             surround.autoDisable.value = true
             surround.enable()
         }
@@ -61,7 +61,7 @@ class AntiChainPop : Module() {
     }
 
     private fun packetMode() {
-        val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)
+        val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)!!
         surround.autoDisable.value = true
         surround.enable()
     }

@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.module.Module
 class Sprint : Module() {
     override fun onUpdate() {
         if (mc.player == null) return
-        if (KamiMod.MODULE_MANAGER.getModule(ElytraFlight::class.java).isEnabled && (mc.player.isElytraFlying || mc.player.capabilities.isFlying)) return
+        if (KamiMod.MODULE_MANAGER.getModule(ElytraFlight::class.java)!!.isEnabled && (mc.player.isElytraFlying || mc.player.capabilities.isFlying)) return
 
         try {
             mc.player.isSprinting = !mc.player.collidedHorizontally && mc.player.moveForward > 0
