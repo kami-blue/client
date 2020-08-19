@@ -3,15 +3,23 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.commands.PeekCommand
-import me.zeroeightsix.kami.event.events.*
+import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
+import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.*
-import me.zeroeightsix.kami.util.*
-import net.minecraft.client.gui.*
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay
+import me.zeroeightsix.kami.module.modules.render.BossStack
+import me.zeroeightsix.kami.module.modules.render.HungerOverlay
+import me.zeroeightsix.kami.module.modules.render.NoRender
+import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
+import me.zeroeightsix.kami.util.HungerOverlayUtils
+import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.Wrapper
+import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -21,11 +29,17 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.*
-import net.minecraftforge.event.entity.player.*
+import net.minecraftforge.event.entity.living.LivingDamageEvent
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
+import net.minecraftforge.event.entity.living.LivingEvent
+import net.minecraftforge.event.entity.player.AttackEntityEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.world.ChunkEvent
-import net.minecraftforge.fml.common.eventhandler.*
-import net.minecraftforge.fml.common.gameevent.*
+import net.minecraftforge.fml.common.eventhandler.Event
+import net.minecraftforge.fml.common.eventhandler.EventPriority
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
 
@@ -34,6 +48,8 @@ import org.lwjgl.input.Keyboard
  * Updated by Qther on 18/02/20
  * Updated by dominikaaaa on 18/02/20
  * Updated by Xiaro on 04/08/20
+ *
+ * TODO: Run the HungerOverlay coeds in its own class instead of here
  */
 open class ForgeEventProcessor {
     private val mc = Wrapper.minecraft
@@ -42,6 +58,7 @@ open class ForgeEventProcessor {
     private var flashAlpha = 0f
     private var alphaDir: Byte = 1
     private var foodIconsOffset = 0
+    private val hungerOverlay: HungerOverlay get() = ModuleManager.getModuleT(HungerOverlay::class.java)!!
 
     @SubscribeEvent
     fun onUpdate(event: LivingEvent.LivingUpdateEvent) {
@@ -84,7 +101,7 @@ open class ForgeEventProcessor {
             }
         }
 
-        if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.isEnabled) {
+        if (hungerOverlay.isEnabled) {
             if (event.phase != TickEvent.Phase.END) {
                 return
             }
@@ -116,11 +133,11 @@ open class ForgeEventProcessor {
         }
         if (event.isCanceled) return
 
-        if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
+        if (hungerOverlay.isEnabled) {
             if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
                 return
             }
-            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodExhaustionOverlay.value) {
+            if (!hungerOverlay.foodExhaustionOverlay.value) {
                 return
             }
             foodIconsOffset = GuiIngameForge.right_height
@@ -149,11 +166,11 @@ open class ForgeEventProcessor {
             BossStack.render(event)
         }
 
-        if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
+        if (hungerOverlay.isEnabled) {
             if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
                 return
             }
-            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodValueOverlay.value && !ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+            if (!hungerOverlay.foodValueOverlay.value && !hungerOverlay.saturationOverlay.value) {
                 return
             }
             val mc = mc
@@ -163,17 +180,17 @@ open class ForgeEventProcessor {
             val scale = event.resolution
             val left = scale.scaledWidth / 2 + 91
             val top = scale.scaledHeight - foodIconsOffset
-            if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+            if (hungerOverlay.saturationOverlay.value) {
                 HungerOverlayRenderHelper.drawSaturationOverlay(0f, stats.saturationLevel, mc, left, top, 1f)
             }
-            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodValueOverlay.value || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
+            if (!hungerOverlay.foodValueOverlay.value || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
                 flashAlpha = 0f
                 alphaDir = 1
                 return
             }
             val foodValues = HungerOverlayUtils.getDefaultFoodValues(heldItem)
             HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.foodLevel, mc, left, top, flashAlpha)
-            if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+            if (hungerOverlay.saturationOverlay.value) {
                 val newFoodValue = stats.foodLevel + foodValues.hunger
                 val newSaturationValue = stats.saturationLevel + foodValues.saturationIncrement
                 HungerOverlayRenderHelper.drawSaturationOverlay(if (newSaturationValue > newFoodValue) newFoodValue - stats.saturationLevel else foodValues.saturationIncrement, stats.saturationLevel, mc, left, top, flashAlpha)
@@ -195,17 +212,16 @@ open class ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (event.message.startsWith(Command.getCommandPrefix())) {
-            event.isCanceled = true
-            try {
-                mc.ingameGUI.chatGUI.addToSentMessages(event.message)
-                if (event.message.length > 1) KamiMod.getInstance().commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
-                else MessageSendHelper.sendChatMessage("Please enter a command!")
-            } catch (e: Exception) {
-                e.printStackTrace()
-                MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
-            }
-            event.message = ""
+        if (!event.message.startsWith(Command.getCommandPrefix())) return
+        event.isCanceled = true
+        event.message = ""
+        try {
+            mc.ingameGUI.chatGUI.addToSentMessages(event.message)
+            if (event.message.length > 1) KamiMod.getInstance().commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
+            else MessageSendHelper.sendChatMessage("Please enter a command!")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
         }
     }
 
