@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.KamiTessellator
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -28,13 +29,11 @@ class PlayerModel : Module() {
     private val x = register(Settings.i("X", 100))
     private val y = register(Settings.i("Y", 120))
 
-    private var lastAttackedEntity: EntityLivingBase? = null
-    private var pitch = 0f
-    private var yaw = 0f
+    private var entity: EntityLivingBase? = null
 
     override fun onUpdate() {
-        if (lastAttacked == 0L || lastAttackedEntity == null) {
-            lastAttackedEntity = mc.player
+        if (lastAttacked == 0L || entity == null) {
+            entity = mc.player
             mc.player.setLastAttackedEntity(mc.player)
             lastAttacked = System.currentTimeMillis()
         }
@@ -44,18 +43,22 @@ class PlayerModel : Module() {
             lastAttacked = 0
         }
 
-        lastAttackedEntity = mc.player.lastAttackedEntity
-        pitch = if (emulatePitch.value) MathHelper.wrapDegrees(mc.player.rotationPitch) else 0.0f
-        yaw = if (emulateYaw.value) MathHelper.wrapDegrees(mc.player.rotationYaw) else 0.0f
+        entity = mc.player.lastAttackedEntity
     }
 
     override fun onRender() {
-        if (lastAttackedEntity == null) return
+        if (entity == null) return
         GlStateManager.pushMatrix()
         GlStateManager.enableDepth()
-        GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, lastAttackedEntity!!)
+        val yaw = if (emulateYaw.value) interpolateAndWrap(entity!!.prevRotationYaw, entity!!.rotationYaw) else 0.0f
+        val pitch = if (emulatePitch.value) interpolateAndWrap(entity!!.prevRotationPitch, entity!!.rotationPitch) else 0.0f
+        GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, entity!!)
         GlStateManager.disableDepth()
         GlStateManager.popMatrix()
+    }
+
+    private fun interpolateAndWrap(prev: Float, current: Float): Float {
+        return MathHelper.wrapDegrees(prev + (current - prev) * KamiTessellator.pTicks())
     }
 
     companion object {

@@ -23,7 +23,7 @@ import java.util.stream.Collectors
  * Updated 12 January 2020 by hub
  * Updated 19 February 2020 by aUniqueUser
  * Updated by dominikaaaa on 19/04/20
- * Updated by Humboldt123 28/05/20 
+ * Updated by Humboldt123 28/05/20
  */
 @Module.Info(
         name = "AntiSpam",
@@ -51,12 +51,14 @@ class AntiSpam : Module() {
     private val numberSuffix = register(Settings.booleanBuilder("NumberEnding").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val numberPrefix = register(Settings.booleanBuilder("NumberBegin").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.TWO }.build())
-    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility { duplicates.value && p.value == Page.TWO }.build())
+    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withMinimum(1).withValue(30).withMaximum(600)
+            .withVisibility { duplicates.value && p.value == Page.TWO }.build())
     private val webLinks = register(Settings.booleanBuilder("WebLinks").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.TWO }.build())
     private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.TWO }.build())
+    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked").withValue(ShowBlocked.LOG_FILE)
+            .withVisibility { p.value == Page.TWO }.build())
     private var messageHistory: ConcurrentHashMap<String, Long>? = null
 
     private enum class Page {
@@ -73,10 +75,10 @@ class AntiSpam : Module() {
 
         /* leijurv's sexy lambda to remove older entries in messageHistory */
         messageHistory!!.entries
-            .stream()
-            .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 10 * 60 * 1000 } // 10 is delay in minutes
-            .collect(Collectors.toList())
-            .forEach(Consumer { entry: Map.Entry<String, Long> -> messageHistory!!.remove(entry.key) })
+                .stream()
+                .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 10 * 60 * 1000 } // 10 is delay in minutes
+                .collect(Collectors.toList())
+                .forEach(Consumer { entry: Map.Entry<String, Long> -> messageHistory!!.remove(entry.key) })
         if (isSpam(event.message.unformattedText)) {
             event.isCanceled = true
         }
@@ -91,9 +93,11 @@ class AntiSpam : Module() {
     }
 
     private fun isSpam(message: String): Boolean {
-        /* Quick bandaid fix for mc.player being null when the module is being registered, so don't register it with the map */
-        val ownMessage = "^<" + mc.player.name + "> "
-        return if (!filterOwn.value && isOwn(ownMessage, message) || MessageDetectionHelper.isDirect(!filterDMs.value, message) || MessageDetectionHelper.isDirectOther(!filterDMs.value, message) || MessageDetectionHelper.isQueue(!filterServer.value, message) || MessageDetectionHelper.isRestart(!filterServer.value, message)) {
+        return if (!filterOwn.value && isOwn(message)
+                || MessageDetectionHelper.isDirect(!filterDMs.value, message)
+                || MessageDetectionHelper.isDirectOther(!filterDMs.value, message)
+                || MessageDetectionHelper.isQueue(!filterServer.value, message)
+                || MessageDetectionHelper.isRestart(!filterServer.value, message)) {
             false
         } else {
             detectSpam(removeUsername(message))
@@ -113,21 +117,27 @@ class AntiSpam : Module() {
         }
 
         if (duplicates.value) {
-            if (messageHistory == null) messageHistory = ConcurrentHashMap()
-            var isDuplicate = false
-
-            if (messageHistory!!.containsKey(message) && (System.currentTimeMillis() - messageHistory!![message]!!) / 1000 < duplicatesTimeout.value) isDuplicate = true
-            messageHistory!![message] = System.currentTimeMillis()
-
-            if (isDuplicate) {
-                if (showBlocked.value == ShowBlocked.CHAT || showBlocked.value == ShowBlocked.BOTH) MessageSendHelper.sendChatMessage("$chatName Duplicate: $message")
-                if (showBlocked.value == ShowBlocked.LOG_FILE || showBlocked.value == ShowBlocked.BOTH) KamiMod.log.info("$chatName Duplicate: $message")
-            }
+            return checkDupes(message)
         }
         return false
     }
 
-    private fun isOwn(ownFilter: String, message: String): Boolean {
+    private fun checkDupes(message: String): Boolean {
+        if (messageHistory == null) messageHistory = ConcurrentHashMap()
+        var isDuplicate = false
+
+        if (messageHistory!!.containsKey(message) && (System.currentTimeMillis() - messageHistory!![message]!!) / 1000 < duplicatesTimeout.value) isDuplicate = true
+        messageHistory!![message] = System.currentTimeMillis()
+
+        if (isDuplicate) {
+            sendResult("Duplicate", message)
+        }
+        return isDuplicate
+    }
+
+    private fun isOwn(message: String): Boolean {
+        /* mc.player is null when the module is being registered, so this matcher isn't added alongside the other FilterPatterns */
+        val ownFilter = "^<" + mc.player.name + "> "
         return Pattern.compile(ownFilter, Pattern.CASE_INSENSITIVE).matcher(message).find()
     }
 
@@ -224,7 +234,7 @@ class AntiSpam : Module() {
                 "WWE Client was the first public client to have color signs",
                 "WWE Client was the first client to have Teleport Finder",
                 "WWE Client was the first client to have Tunneller & Tunneller Back Fill",
-                "Zispanos") // This one is recent but it's annoying as FUCK.
+                "Zispanos")
         val INSULTER = arrayOf( // WWE
                 ".+ Download WWE utility mod, Its free!",
                 ".+ 4b4t is da best mintscreft serber",

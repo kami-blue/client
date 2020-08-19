@@ -37,7 +37,7 @@ class SelectionHighlight : Module() {
         if (!mc.world.isAirBlock(eyeBlockPos) && !mc.player.isInLava && !mc.player.isInWater) return
         val colour = ColourHolder(r.value, g.value, b.value)
         val hitObject = mc.objectMouseOver
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
 
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
@@ -59,6 +59,6 @@ class SelectionHighlight : Module() {
             val side = if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit]!! else GeometryMasks.Quad.ALL
             renderer.add(box.grow(0.002), colour, side)
         }
-        renderer.render()
+        renderer.render(true)
     }
 }
