@@ -3,23 +3,15 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.commands.PeekCommand
-import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
+import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay
-import me.zeroeightsix.kami.module.modules.render.BossStack
-import me.zeroeightsix.kami.module.modules.render.HungerOverlay
-import me.zeroeightsix.kami.module.modules.render.NoRender
-import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
-import me.zeroeightsix.kami.util.HungerOverlayUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Wrapper
-import net.minecraft.client.gui.GuiChat
-import net.minecraft.client.gui.ScaledResolution
+import me.zeroeightsix.kami.module.modules.render.*
+import me.zeroeightsix.kami.util.*
+import net.minecraft.client.gui.*
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -29,20 +21,13 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDamageEvent
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
-import net.minecraftforge.event.entity.living.LivingEvent
-import net.minecraftforge.event.entity.player.AttackEntityEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.event.entity.living.*
+import net.minecraftforge.event.entity.player.*
 import net.minecraftforge.event.world.ChunkEvent
-import net.minecraftforge.fml.common.eventhandler.Event
-import net.minecraftforge.fml.common.eventhandler.EventPriority
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.eventhandler.*
+import net.minecraftforge.fml.common.gameevent.*
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
-
 /**
  * Created by 086 on 11/11/2017.
  * Updated by Qther on 18/02/20
