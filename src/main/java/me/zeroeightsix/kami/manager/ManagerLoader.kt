@@ -9,7 +9,6 @@ import me.zeroeightsix.kami.util.ClassFinder.findClasses
  *
  * Created by Xiaro on 08/18/20
  */
-@Suppress("UNCHECKED_CAST")
 object ManagerLoader {
     @JvmStatic
     fun loadManagers() {

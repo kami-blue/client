@@ -19,6 +19,7 @@ import java.util.*
  * Updated by Sasha
  * Updated by Xiaro on 18/08/20
  */
+@Suppress("UNCHECKED_CAST")
 object ModuleManager {
     private val mc = Minecraft.getMinecraft()
 
