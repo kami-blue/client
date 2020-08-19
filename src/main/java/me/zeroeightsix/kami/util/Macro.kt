@@ -16,21 +16,26 @@ object Macro {
     private const val configName = "KAMIBlueMacros.json"
     val file = File(configName)
 
-    fun writeMemoryToFile() {
-        try {
+    fun writeMemoryToFile(): Boolean {
+        return try {
             val fw = FileWriter(file, false)
             gson.toJson(FileInstanceManager.macros, fw)
             fw.flush()
             fw.close()
+            true
         } catch (e: IOException) {
             e.printStackTrace()
+            false
         }
     }
 
-    fun readFileToMemory() {
+    fun readFileToMemory(): Boolean {
+        var success = false
         try {
             try {
                 FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)!!
+                KamiMod.log.info("Macro loaded")
+                success = true
             } catch (e: FileNotFoundException) {
                 KamiMod.log.warn("Could not find file $configName, clearing the macros list")
                 FileInstanceManager.macros.clear()
@@ -39,6 +44,7 @@ object Macro {
             KamiMod.log.warn("$configName is empty!")
             FileInstanceManager.macros.clear()
         }
+        return success
     }
 
     fun getMacrosForKey(keycode: Int): List<String?>? {
