@@ -30,14 +30,13 @@ class CommandConfig : Module() {
     @JvmField val customTitle: Setting<Boolean> = register(Settings.b("WindowTitle", true))
     private val autoSaving = register(Settings.b("AutoSavingSettings", true))
     private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value }.build())
-    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(30).withRange(1, 60).withVisibility { autoSaving.value }.build())
-    private val saveOnClose = register(Settings.booleanBuilder("SaveOnGuiClose").withValue(false).withVisibility { autoSaving.value }.build())
+    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value }.build())
 
     enum class LogLevel {
         NONE, ERROR, WARN, ALL
     }
 
-    val timer = Timer(Timer.TimeUnit.SECONDS)
+    val timer = Timer(Timer.TimeUnit.MINUTES)
 
     override fun onUpdate() {
         if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
@@ -48,11 +47,6 @@ class CommandConfig : Module() {
             }.start()
         }
     }
-
-    @EventHandler
-    private val closeGuiListener = Listener(EventHook{event: GuiScreenEvent.Closed ->
-        event.screen
-    })
 
     override fun onDisable() {
         sendDisableMessage()
