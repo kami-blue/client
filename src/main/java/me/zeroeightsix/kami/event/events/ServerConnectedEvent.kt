@@ -1,9 +1,8 @@
-package me.zeroeightsix.kami.event.events;
+package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent;
+import me.zeroeightsix.kami.event.KamiEvent
 
-public class ServerConnectedEvent extends KamiEvent {
-    public ServerConnectedEvent() {
-        super();
-    }
-}
+/**
+ * Updated by Xiaro on 18/08/20
+ */
+class ServerConnectedEvent : KamiEvent()

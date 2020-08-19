@@ -1,10 +1,9 @@
-package me.zeroeightsix.kami.event.events;
+package me.zeroeightsix.kami.event.events
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.event.entity.living.LivingEvent
 
-public class LocalPlayerUpdateEvent extends LivingEvent {
-    public LocalPlayerUpdateEvent(EntityLivingBase entityLivingBase) {
-        super(entityLivingBase);
-    }
-}
+/**
+ * Updated by Xiaro on 18/08/20
+ */
+class LocalPlayerUpdateEvent(entityLivingBase: EntityLivingBase?) : LivingEvent(entityLivingBase)

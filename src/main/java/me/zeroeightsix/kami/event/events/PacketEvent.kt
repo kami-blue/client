@@ -1,40 +1,14 @@
-package me.zeroeightsix.kami.event.events;
+package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent;
-import net.minecraft.network.Packet;
+import me.zeroeightsix.kami.event.KamiEvent
+import net.minecraft.network.Packet
 
 /**
  * Created by 086 on 13/11/2017.
  */
-public class PacketEvent extends KamiEvent {
+open class PacketEvent(val packet: Packet<*>) : KamiEvent() {
 
-    private final Packet packet;
-
-    public PacketEvent(Packet packet) {
-        super();
-        this.packet = packet;
-    }
-
-    public Packet getPacket() {
-        return packet;
-    }
-
-    public static class Receive extends PacketEvent {
-        public Receive(Packet packet) {
-            super(packet);
-        }
-    }
-
-    public static class Send extends PacketEvent {
-        public Send(Packet packet) {
-            super(packet);
-        }
-    }
-
-    public static class PostSend extends PacketEvent {
-        public PostSend(Packet packet) {
-            super(packet);
-        }
-    }
-
+    class Receive(packet: Packet<*>) : PacketEvent(packet)
+    class Send(packet: Packet<*>) : PacketEvent(packet)
+    class PostSend(packet: Packet<*>) : PacketEvent(packet)
 }
