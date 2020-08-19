@@ -18,7 +18,9 @@ class AddCollisionBoxToListEvent(
         val world: World,
         val pos: BlockPos,
         val entityBox: AxisAlignedBB,
-        val collidingBoxes: List<AxisAlignedBB>,
+        collidingBoxes: List<AxisAlignedBB>,
         val entity: Entity,
         val isBool: Boolean
-) : KamiEvent()
+) : KamiEvent() {
+    val collidingBoxes = ArrayList(collidingBoxes)
+}
