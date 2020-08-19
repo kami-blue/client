@@ -229,12 +229,12 @@ public class Nametags extends Module {
     public void renderItem(ItemStack stack, int x, int y) {
         FontRenderer fontRenderer = mc.fontRenderer;
         RenderItem renderItem = mc.getRenderItem();
-        GlStateManager.pushMatrix(); // why are there 2
         GlStateManager.pushMatrix();
         GlStateManager.translate(x - 3, y + 8, 0.0F);
         GlStateManager.scale(0.3F, 0.3F, 0.3F);
         GlStateManager.popMatrix();
 
+        GlStateManager.pushMatrix();
         RenderHelper.enableGUIStandardItemLighting();
         renderItem.zLevel = -100.0F;
         renderItem.renderItemIntoGUI(stack, x, y);
@@ -252,12 +252,10 @@ public class Nametags extends Module {
                 levelDisplay = "10+";
             }
             if (level > 0) {
-                float scale2 = 0.32F;
                 GlStateManager.translate(x - 1, y + 2, 0.0F);
                 GlStateManager.scale(0.42F, 0.42F, 0.42F);
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                fontRenderer.drawString("\u00a7f" + enchant.getName() + " " + levelDisplay,
-                        20 - fontRenderer.getStringWidth("\u00a7f" + enchant.getName() + " " + levelDisplay) / 2, 0, Color.WHITE.getRGB(), true);
+                fontRenderer.drawString("\u00a7f" + enchant.getName() + " " + levelDisplay, 20 - fontRenderer.getStringWidth("\u00a7f" + enchant.getName() + " " + levelDisplay) / 2f, 0, Color.WHITE.getRGB(), true);
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                 GlStateManager.scale(2.42F, 2.42F, 2.42F);
                 GlStateManager.translate(-x + 1, -y, 0.0F);
