@@ -4,10 +4,10 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.colourUtils.ColourConverter;
 import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.KamiTessellator;
+import me.zeroeightsix.kami.util.colourUtils.ColourConverter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -57,13 +57,13 @@ public class Nametags extends Module {
 
     @Override
     public void onWorldRender(RenderEvent event) {
-        if (mc.getRenderManager().options == null){
+        if (mc.getRenderManager().options == null) {
             return;
         }
 
         List<Entity> entities = new ArrayList<>();
-        mc.world.loadedEntityList.forEach( entity -> {
-            if(shouldRender(entity)){
+        mc.world.loadedEntityList.forEach(entity -> {
+            if (shouldRender(entity)) {
                 entities.add(entity);
             }
         });
@@ -76,35 +76,35 @@ public class Nametags extends Module {
 
     }
 
-    private void drawNametags(List <Entity> entities){
+    private void drawNametags(List<Entity> entities) {
         for (Entity entity : entities) {
             drawNametag(entity);
         }
     }
 
-    private void sortByDist(List <Entity> entities){
+    private void sortByDist(List<Entity> entities) {
         entities.sort(Comparator.comparing(entity -> -mc.player.getDistance(entity)));
     }
 
-    private boolean shouldRender(Entity entity){
+    private boolean shouldRender(Entity entity) {
 
         if (mc.player.getDistance(entity) > range.getValue()) { // not in range - don't even bother checking
             return false;
         }
 
-        if(entity instanceof EntityItem){
+        if (entity instanceof EntityItem) {
             return items.getValue();
         }
 
-        if(!(entity instanceof EntityLivingBase)){
+        if (!(entity instanceof EntityLivingBase)) {
             return false;
         }
 
-        if(entity instanceof EntityPlayer){
+        if (entity instanceof EntityPlayer) {
             return players.getValue() && mc.player != entity;
         }
 
-        if(EntityUtils.isFakeLocalPlayer(entity)){ // no need to render nametags for freecam player
+        if (EntityUtils.isFakeLocalPlayer(entity)) { // no need to render nametags for freecam player
             return false;
         }
 
@@ -137,9 +137,9 @@ public class Nametags extends Module {
         GlStateManager.scale(-0.025F, -0.025F, 0.025F);
 
         String nameTagStr = "";
-        if(entityIn instanceof EntityLivingBase){
+        if (entityIn instanceof EntityLivingBase) {
             nameTagStr = entityIn.getName() + (health.getValue() ? " " + getHealthColoured(entityIn, Math.round(((EntityLivingBase) entityIn).getHealth() + (entityIn instanceof EntityPlayer ? ((EntityPlayer) entityIn).getAbsorptionAmount() : 0))) : "");
-        } else if (entityIn instanceof EntityItem){
+        } else if (entityIn instanceof EntityItem) {
             ItemStack itemStack = ((EntityItem) entityIn).getItem();
             nameTagStr = itemStack.getDisplayName() + (itemStack.getCount() > 1 ? " x" + itemStack.getCount() : ""); // EntityItem#getName returns unusable key so we get the itemstack
         }
