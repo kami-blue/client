@@ -34,15 +34,21 @@ class AntiAFK : Module() {
     private val random = Random()
     private val squareStartCoords = intArrayOf(0, 0)
     private var squareStep = 0
+    private var baritoneDisconnectOnArrival = false
 
     public override fun onEnable() {
         if (mc.player == null) return
+
+        baritoneDisconnectOnArrival = BaritoneAPI.getSettings().disconnectOnArrival.value
+        BaritoneAPI.getSettings().disconnectOnArrival.value = false
         squareStartCoords[0] = mc.player.posX.toInt()
         squareStartCoords[1] = mc.player.posZ.toInt()
     }
 
     public override fun onDisable() {
         if (mc.player == null) return
+
+        BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival
         if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     }
 
