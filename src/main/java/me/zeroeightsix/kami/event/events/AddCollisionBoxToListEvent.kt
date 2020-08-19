@@ -12,14 +12,14 @@ import net.minecraft.world.World
  * Created by 086 on 11/12/2017.
  * Updated by Xiaro on 18/08/20
  */
-class AddCollisionBoxToListEvent(
+class AddCollisionBoxToLisFixtEvent(
         val block: Block,
         val state: IBlockState,
         val world: World,
         val pos: BlockPos,
         val entityBox: AxisAlignedBB,
         collidingBoxes: List<AxisAlignedBB>,
-        val entity: Entity,
+        val entity: Entity?,
         val isBool: Boolean
 ) : KamiEvent() {
     val collidingBoxes = ArrayList(collidingBoxes)
