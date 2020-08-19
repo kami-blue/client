@@ -1,58 +1,51 @@
-package me.zeroeightsix.kami.event;
+package me.zeroeightsix.kami.event
 
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.command.commands.PeekCommand;
-import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent;
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent;
-import me.zeroeightsix.kami.gui.UIRenderer;
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.manager.mangers.MacroManager;
-import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
-import me.zeroeightsix.kami.module.modules.render.BossStack;
-import me.zeroeightsix.kami.module.modules.render.HungerOverlay;
-import me.zeroeightsix.kami.module.modules.render.NoRender;
-import me.zeroeightsix.kami.util.HungerOverlayRenderHelper;
-import me.zeroeightsix.kami.util.HungerOverlayUtils;
-import me.zeroeightsix.kami.util.Wrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiShulkerBox;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.AbstractHorse;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import org.lwjgl.input.Keyboard;
-
-import java.util.Objects;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.Wrapper.getPlayer;
-import static me.zeroeightsix.kami.util.Wrapper.getWorld;
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.commands.PeekCommand
+import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
+import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
+import me.zeroeightsix.kami.gui.UIRenderer
+import me.zeroeightsix.kami.gui.kami.KamiGUI
+import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
+import me.zeroeightsix.kami.manager.mangers.MacroManager.sendMacro
+import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay
+import me.zeroeightsix.kami.module.modules.render.BossStack
+import me.zeroeightsix.kami.module.modules.render.HungerOverlay
+import me.zeroeightsix.kami.module.modules.render.NoRender
+import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
+import me.zeroeightsix.kami.util.HungerOverlayUtils
+import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.Wrapper
+import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.gui.inventory.GuiShulkerBox
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.passive.AbstractHorse
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.GuiIngameForge
+import net.minecraftforge.client.event.*
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
+import net.minecraftforge.event.entity.living.LivingDamageEvent
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
+import net.minecraftforge.event.entity.living.LivingEvent
+import net.minecraftforge.event.entity.player.AttackEntityEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
+import net.minecraftforge.event.world.ChunkEvent
+import net.minecraftforge.fml.common.eventhandler.Event
+import net.minecraftforge.fml.common.eventhandler.EventPriority
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent
+import org.lwjgl.input.Keyboard
 
 /**
  * Created by 086 on 11/11/2017.
@@ -60,294 +53,268 @@ import static me.zeroeightsix.kami.util.Wrapper.getWorld;
  * Updated by dominikaaaa on 18/02/20
  * Updated by Xiaro on 04/08/20
  */
-public class ForgeEventProcessor {
-
-    private int displayWidth;
-    private int displayHeight;
-
-    private float flashAlpha = 0f;
-    private byte alphaDir = 1;
-    protected int foodIconsOffset;
-
-    public static final ResourceLocation icons = new ResourceLocation(KamiMod.MODID, "textures/hungeroverlay.png");
+open class ForgeEventProcessor {
+    private val mc = Wrapper.minecraft
+    private var displayWidth = 0
+    private var displayHeight = 0
+    private var flashAlpha = 0f
+    private var alphaDir: Byte = 1
+    protected var foodIconsOffset = 0
 
     @SubscribeEvent
-    public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-        if (getWorld() != null && event.getEntity().getEntityWorld().isRemote && event.getEntityLiving().equals(getPlayer())) {
-            Event localPlayerUpdateEvent = new LocalPlayerUpdateEvent(event.getEntityLiving());
-            KamiMod.EVENT_BUS.post(localPlayerUpdateEvent);
-            event.setCanceled(localPlayerUpdateEvent.isCanceled());
+    fun onUpdate(event: LivingEvent.LivingUpdateEvent) {
+        if (mc.world != null && event.entity.entityWorld.isRemote && event.entityLiving == mc.player) {
+            val localPlayerUpdateEvent: Event = LocalPlayerUpdateEvent(event.entityLiving)
+            KamiMod.EVENT_BUS.post(localPlayerUpdateEvent)
+            event.isCanceled = localPlayerUpdateEvent.isCanceled
         }
 
-        if (event.isCanceled()) return;
+        if (event.isCanceled) return
 
-        if (Minecraft.getMinecraft().displayWidth != displayWidth || Minecraft.getMinecraft().displayHeight != displayHeight) {
-            KamiMod.EVENT_BUS.post(new DisplaySizeChangedEvent());
-            displayWidth = Minecraft.getMinecraft().displayWidth;
-            displayHeight = Minecraft.getMinecraft().displayHeight;
-
-            KamiMod.getInstance().getGuiManager().getChildren().stream()
-                    .filter(component -> component instanceof Frame)
-                    .forEach(component -> KamiGUI.dock((Frame) component));
+        if (mc.displayWidth != displayWidth || mc.displayHeight != displayHeight) {
+            KamiMod.EVENT_BUS.post(DisplaySizeChangedEvent())
+            displayWidth = mc.displayWidth
+            displayHeight = mc.displayHeight
+            for (component in KamiMod.getInstance().getGuiManager().children) {
+                if (component !is Frame) continue
+                KamiGUI.dock(component)
+            }
         }
 
         if (PeekCommand.sb != null) {
-            ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-            int i = scaledresolution.getScaledWidth();
-            int j = scaledresolution.getScaledHeight();
-            GuiShulkerBox gui = new GuiShulkerBox(Wrapper.getPlayer().inventory, PeekCommand.sb);
-            gui.setWorldAndResolution(Wrapper.getMinecraft(), i, j);
-            Minecraft.getMinecraft().displayGuiScreen(gui);
-            PeekCommand.sb = null;
+            val scaledResolution = ScaledResolution(mc)
+            val scaledWidth = scaledResolution.scaledWidth
+            val scaledHeight = scaledResolution.scaledHeight
+            val gui = GuiShulkerBox(mc.player!!.inventory, PeekCommand.sb)
+            gui.setWorldAndResolution(mc, scaledWidth, scaledHeight)
+            mc.displayGuiScreen(gui)
+            PeekCommand.sb = null
         }
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        if (Wrapper.getMinecraft().world != null || Wrapper.getMinecraft().player != null) {
-            if (ModuleManager.isModuleEnabled(NoRender.class) && ModuleManager.getModuleT(NoRender.class).items.getValue() && event.phase == TickEvent.Phase.START) {
-                for (Entity potentialItem : Wrapper.getMinecraft().world.getLoadedEntityList()) {
-                    if (potentialItem instanceof EntityItem) {
-                        potentialItem.setDead();
-                    }
-                }
+    fun onTick(event: ClientTickEvent) {
+        if (mc.world != null || mc.player != null) return
+        if (ModuleManager.isModuleEnabled(NoRender::class.java) && ModuleManager.getModuleT(NoRender::class.java)!!.items.value && event.phase == TickEvent.Phase.START) {
+            for (potentialItem in mc.world.getLoadedEntityList()) {
+                (potentialItem as? EntityItem)?.setDead()
             }
         }
 
-        if (ModuleManager.getModuleT(HungerOverlay.class).isEnabled()) {
+        if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.isEnabled) {
             if (event.phase != TickEvent.Phase.END) {
-                return;
+                return
             }
-
-            flashAlpha += alphaDir * 0.125F;
-
-            if (flashAlpha >= 1.5F) {
-                flashAlpha = 1F;
-                alphaDir = -1;
-            } else if (flashAlpha <= -0.5F) {
-                flashAlpha = 0F;
-                alphaDir = 1;
+            flashAlpha += alphaDir * 0.125f
+            if (flashAlpha >= 1.5f) {
+                flashAlpha = 1f
+                alphaDir = -1
+            } else if (flashAlpha <= -0.5f) {
+                flashAlpha = 0f
+                alphaDir = 1
             }
         }
 
-        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay.class) || !ModuleManager.getModuleT(AntiOverlay.class).portals.getValue();
-
-        if (Wrapper.getPlayer() == null) return;
-        ModuleManager.INSTANCE.onUpdate();
-        KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager());
+        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay::class.java) || !ModuleManager.getModuleT(AntiOverlay::class.java)!!.portals.value
+        ModuleManager.onUpdate()
+        KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager())
     }
 
     @SubscribeEvent
-    public void onWorldRender(RenderWorldLastEvent event) {
-        if (event.isCanceled()) return;
-        ModuleManager.INSTANCE.onWorldRender(event);
+    fun onWorldRender(event: RenderWorldLastEvent) {
+        if (event.isCanceled) return
+        ModuleManager.onWorldRender(event)
     }
 
     @SubscribeEvent
-    public void onRenderPre(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack.class)) {
-            event.setCanceled(true);
+    fun onRenderPre(event: RenderGameOverlayEvent.Pre) {
+        if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
+            event.isCanceled = true
         }
 
-        if (ModuleManager.isModuleEnabled(HungerOverlay.class)) {
-            if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
-                return;
+        if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
+            if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
+                return
             }
-
-            foodIconsOffset = GuiIngameForge.right_height;
-
-            if (event.isCanceled()) {
-                return;
+            foodIconsOffset = GuiIngameForge.right_height
+            if (event.isCanceled) {
+                return
             }
-
-            if (!ModuleManager.getModuleT(HungerOverlay.class).foodExhaustionOverlay.getValue()) {
-                return;
+            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodExhaustionOverlay.value) {
+                return
             }
-
-            Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayer player = mc.player;
-
-            ScaledResolution scale = event.getResolution();
-
-            int left = scale.getScaledWidth() / 2 + 91;
-            int top = scale.getScaledHeight() - foodIconsOffset;
-
-            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(player), mc, left, top, 1f);
+            val mc = mc
+            val player: EntityPlayer = mc.player
+            val scale = event.resolution
+            val left = scale.scaledWidth / 2 + 91
+            val top = scale.scaledHeight - foodIconsOffset
+            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(player), mc, left, top, 1f)
         }
+
     }
 
     @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent.Post event) {
-        if (event.isCanceled()) return;
-
-        RenderGameOverlayEvent.ElementType target = RenderGameOverlayEvent.ElementType.EXPERIENCE;
-        if (!Wrapper.getPlayer().isCreative() && Wrapper.getPlayer().getRidingEntity() instanceof AbstractHorse)
-            target = RenderGameOverlayEvent.ElementType.HEALTHMOUNT;
-
-        if (event.getType() == target) {
-            ModuleManager.INSTANCE.onRender();
-            GlStateManager.pushMatrix();
-            UIRenderer.renderAndUpdateFrames();
-            GlStateManager.popMatrix();
-        } else if (event.getType() == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack.class)) {
-            BossStack.render(event);
+    fun onRender(event: RenderGameOverlayEvent.Post) {
+        if (event.isCanceled) return
+        var target = RenderGameOverlayEvent.ElementType.EXPERIENCE
+        if (!mc.player.isCreative && mc.player!!.ridingEntity is AbstractHorse) {
+            target = RenderGameOverlayEvent.ElementType.HEALTHMOUNT
         }
 
-        if (ModuleManager.isModuleEnabled(HungerOverlay.class)) {
-            if (event.getType() != RenderGameOverlayEvent.ElementType.FOOD) {
-                return;
+        if (event.type == target) {
+            ModuleManager.onRender()
+            GlStateManager.pushMatrix()
+            UIRenderer.renderAndUpdateFrames()
+            GlStateManager.popMatrix()
+        } else if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
+            BossStack.render(event)
+        }
+
+        if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
+            if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
+                return
             }
-
-            if (event.isCanceled()) {
-                return;
+            if (event.isCanceled) {
+                return
             }
-
-            if (!ModuleManager.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() && !ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
-                return;
+            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodValueOverlay.value && !ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+                return
             }
-
-            Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayer player = mc.player;
-            ItemStack heldItem = player.getHeldItemMainhand();
-            FoodStats stats = player.getFoodStats();
-
-            ScaledResolution scale = event.getResolution();
-
-            int left = scale.getScaledWidth() / 2 + 91;
-            int top = scale.getScaledHeight() - foodIconsOffset;
-
-            if (ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
-                HungerOverlayRenderHelper.drawSaturationOverlay(0, stats.getSaturationLevel(), mc, left, top, 1f);
+            val mc = mc
+            val player: EntityPlayer = mc.player
+            val heldItem = player.heldItemMainhand
+            val stats = player.getFoodStats()
+            val scale = event.resolution
+            val left = scale.scaledWidth / 2 + 91
+            val top = scale.scaledHeight - foodIconsOffset
+            if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+                HungerOverlayRenderHelper.drawSaturationOverlay(0f, stats.saturationLevel, mc, left, top, 1f)
             }
-
-            if (!ModuleManager.getModuleT(HungerOverlay.class).foodValueOverlay.getValue() || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
-                flashAlpha = 0;
-                alphaDir = 1;
-
-                return;
+            if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodValueOverlay.value || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
+                flashAlpha = 0f
+                alphaDir = 1
+                return
             }
-
-            HungerOverlayUtils.BasicFoodValues foodValues = HungerOverlayUtils.getDefaultFoodValues(heldItem);
-
-            HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.getFoodLevel(), mc, left, top, flashAlpha);
-
-            if (ModuleManager.getModuleT(HungerOverlay.class).saturationOverlay.getValue()) {
-                int newFoodValue = stats.getFoodLevel() + foodValues.hunger;
-                float newSaturationValue = stats.getSaturationLevel() + foodValues.getSaturationIncrement();
-
-                HungerOverlayRenderHelper.drawSaturationOverlay(newSaturationValue > newFoodValue ? newFoodValue - stats.getSaturationLevel() : foodValues.getSaturationIncrement(), stats.getSaturationLevel(), mc, left, top, flashAlpha);
+            val foodValues = HungerOverlayUtils.getDefaultFoodValues(heldItem)
+            HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.foodLevel, mc, left, top, flashAlpha)
+            if (ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
+                val newFoodValue = stats.foodLevel + foodValues.hunger
+                val newSaturationValue = stats.saturationLevel + foodValues.saturationIncrement
+                HungerOverlayRenderHelper.drawSaturationOverlay(if (newSaturationValue > newFoodValue) newFoodValue - stats.saturationLevel else foodValues.saturationIncrement, stats.saturationLevel, mc, left, top, flashAlpha)
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (!Keyboard.getEventKeyState()) return;
-        CommandConfig commandConfig = ModuleManager.getModuleT(CommandConfig.class);
-        if (commandConfig.prefixChat.getValue() && ("" + Keyboard.getEventCharacter()).equalsIgnoreCase(Command.getCommandPrefix()) && !(Minecraft.getMinecraft().player.isSneaking())) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiChat(Command.getCommandPrefix()));
+    fun onKeyInput(event: KeyInputEvent?) {
+        if (!Keyboard.getEventKeyState()) return
+        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java)
+        if (commandConfig!!.prefixChat.value && ("" + Keyboard.getEventCharacter()).equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
+            mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
         } else {
-            ModuleManager.INSTANCE.onBind(Keyboard.getEventKey());
-            MacroManager.INSTANCE.sendMacro(Keyboard.getEventKey());
+            ModuleManager.onBind(Keyboard.getEventKey())
+            sendMacro(Keyboard.getEventKey())
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChatSent(ClientChatEvent event) {
-        if (event.getMessage().startsWith(Command.getCommandPrefix())) {
-            event.setCanceled(true);
+    fun onChatSent(event: ClientChatEvent) {
+        if (event.message.startsWith(Command.getCommandPrefix())) {
+            event.isCanceled = true
             try {
-                Wrapper.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(event.getMessage());
-
-                if (event.getMessage().length() > 1)
-                    KamiMod.getInstance().commandManager.callCommand(event.getMessage().substring(Command.getCommandPrefix().length() - 1));
-                else
-                    sendChatMessage("Please enter a command!");
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendChatMessage("Error occured while running command! (" + e.getMessage() + "), check the log for info!");
+                mc.ingameGUI.chatGUI.addToSentMessages(event.message)
+                if (event.message.length > 1) KamiMod.getInstance().commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
+                else MessageSendHelper.sendChatMessage("Please enter a command!")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                MessageSendHelper.sendChatMessage("Error occured while running command! (" + e.message + "), check the log for info!")
             }
-            event.setMessage("");
+            event.message = ""
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerDrawn(RenderPlayerEvent.Pre event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onPlayerDrawn(event: RenderPlayerEvent.Pre?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerDrawn(RenderPlayerEvent.Post event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onPlayerDrawn(event: RenderPlayerEvent.Post?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onChunkLoaded(ChunkEvent.Load event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onChunkLoaded(event: ChunkEvent.Load?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onEventMouse(InputEvent.MouseInputEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onEventMouse(event: InputEvent.MouseInputEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onChunkLoaded(ChunkEvent.Unload event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onChunkLoaded(event: ChunkEvent.Unload?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onInputUpdate(InputUpdateEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onInputUpdate(event: InputUpdateEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onLivingEntityUseItemEventTick(LivingEntityUseItemEvent.Start entityUseItemEvent) {
-        KamiMod.EVENT_BUS.post(entityUseItemEvent);
+    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Start?) {
+        KamiMod.EVENT_BUS.post(entityUseItemEvent)
     }
 
     @SubscribeEvent
-    public void onLivingDamageEvent(LivingDamageEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onLivingDamageEvent(event: LivingDamageEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onEntityJoinWorldEvent(EntityJoinWorldEvent entityJoinWorldEvent) {
-        KamiMod.EVENT_BUS.post(entityJoinWorldEvent);
+    fun onEntityJoinWorldEvent(entityJoinWorldEvent: EntityJoinWorldEvent?) {
+        KamiMod.EVENT_BUS.post(entityJoinWorldEvent)
     }
 
     @SubscribeEvent
-    public void onPlayerPush(PlayerSPPushOutOfBlocksEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onPlayerPush(event: PlayerSPPushOutOfBlocksEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onLeftClickBlock(event: LeftClickBlock?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onAttackEntity(AttackEntityEvent entityEvent) {
-        KamiMod.EVENT_BUS.post(entityEvent);
+    fun onAttackEntity(entityEvent: AttackEntityEvent?) {
+        KamiMod.EVENT_BUS.post(entityEvent)
     }
 
     @SubscribeEvent
-    public void onRenderBlockOverlay(RenderBlockOverlayEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onRenderBlockOverlay(event: RenderBlockOverlayEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onClientChat(ClientChatReceivedEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onClientChat(event: ClientChatReceivedEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onServerDisconnect(FMLNetworkEvent.ServerDisconnectionFromClientEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onServerDisconnect(event: ServerDisconnectionFromClientEvent?) {
+        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        KamiMod.EVENT_BUS.post(event);
+    fun onClientDisconnect(event: ClientDisconnectionFromServerEvent?) {
+        KamiMod.EVENT_BUS.post(event)
+    }
+
+    companion object {
+        @JvmField
+        val icons = ResourceLocation(KamiMod.MODID, "textures/hungeroverlay.png")
     }
 }

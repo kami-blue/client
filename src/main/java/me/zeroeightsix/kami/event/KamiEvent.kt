@@ -1,30 +1,17 @@
-package me.zeroeightsix.kami.event;
+package me.zeroeightsix.kami.event
 
-import me.zero.alpine.type.Cancellable;
-import me.zeroeightsix.kami.util.Wrapper;
+import me.zero.alpine.type.Cancellable
+import me.zeroeightsix.kami.util.Wrapper.minecraft
 
 /**
  * Created by 086 on 16/11/2017.
+ * Updated by Xiaro on 18/08/20
  */
-public class KamiEvent extends Cancellable {
+open class KamiEvent : Cancellable() {
+    val era = Era.PRE
+    val partialTicks: Float = minecraft.renderPartialTicks
 
-    private Era era = Era.PRE;
-    private final float partialTicks;
-
-    public KamiEvent() {
-        partialTicks = Wrapper.getMinecraft().getRenderPartialTicks();
-    }
-
-    public Era getEra() {
-        return era;
-    }
-
-    public float getPartialTicks() {
-        return partialTicks;
-    }
-
-    public enum Era {
+    enum class Era {
         PRE, PERI, POST
     }
-
 }
