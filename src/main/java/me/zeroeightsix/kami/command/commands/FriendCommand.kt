@@ -72,9 +72,9 @@ class FriendCommand : Command("friend", ChunkBuilder()
             SubCommands.TOGGLE -> {
                 Friends.enabled = !Friends.enabled
                 if (Friends.enabled) {
-                    sendChatMessage("Friends has been enabled")
+                    sendChatMessage("Friends have been &aenabled")
                 } else {
-                    sendChatMessage("Friends has been disabled")
+                    sendChatMessage("Friends have been &cdisabled")
                 }
             }
 
@@ -85,7 +85,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
                 } else {
                     confirmTime = 0L
                     friends.value.clear()
-                    sendChatMessage("Friends has been cleared")
+                    sendChatMessage("Friends have been &ccleared")
                 }
             }
 
