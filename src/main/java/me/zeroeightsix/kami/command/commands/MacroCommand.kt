@@ -33,7 +33,7 @@ class MacroCommand : Command("macro", ChunkBuilder().append("command", true, Enu
             args[0] == null -> { /* key, error message is caught by the command handler but you don't want to continue the rest */
                 return
             }
-            args[0] == "list" -> {
+            args[0].equals("list", ignoreCase = true) -> {
                 if (FileInstanceManager.macros.isEmpty()) {
                     sendChatMessage("You have no macros")
                     return
@@ -42,7 +42,6 @@ class MacroCommand : Command("macro", ChunkBuilder().append("command", true, Enu
                 for ((key1, value) in FileInstanceManager.macros) {
                     sendRawChatMessage(Wrapper.getKeyName(key1) + ": $value")
                 }
-                return
             }
             args[1] == null -> { /* message */
                 if (keyList == null || keyList.isEmpty()) {
@@ -51,18 +50,15 @@ class MacroCommand : Command("macro", ChunkBuilder().append("command", true, Enu
                 }
                 sendChatMessage("'&7$rKey&f' has the following macros: ")
                 Macro.sendMacrosToChat(keyList.toTypedArray())
-                return
             }
-            args[1] == "clear" -> {
+            args[1].equals("clear", ignoreCase = true) -> {
                 Macro.removeMacro(key)
                 MacroManager.saveMacros()
                 MacroManager.registerMacros()
                 sendChatMessage("Cleared macros for '&7$rKey&f'")
-                return
             }
             args[2] != null -> { /* some random 3rd argument which shouldn't exist */
                 sendWarningMessage("$chatLabel Your macro / command must be inside quotes, as 1 argument in the command. Example: &7" + getCommandPrefix() + label + " R \";set AutoSpawner debug toggle\"")
-                return
             }
             else -> {
                 Macro.addMacroToKey(key, macro)

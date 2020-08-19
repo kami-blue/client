@@ -29,12 +29,10 @@ object Macro {
 
     fun readFileToMemory() {
         try {
-            try {
-                FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<LinkedHashMap<Int?, List<String?>?>?>() {}.type)!!
-            } catch (e: FileNotFoundException) {
-                KamiMod.log.warn("Could not find file $configName, clearing the macros list")
-                FileInstanceManager.macros.clear()
-            }
+            FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<LinkedHashMap<Int?, List<String?>?>?>() {}.type)!!
+        } catch (e: FileNotFoundException) {
+            KamiMod.log.warn("Could not find file $configName, clearing the macros list")
+            FileInstanceManager.macros.clear()
         } catch (e: IllegalStateException) {
             KamiMod.log.warn("$configName is empty!")
             FileInstanceManager.macros.clear()
@@ -42,7 +40,7 @@ object Macro {
     }
 
     fun getMacrosForKey(keycode: Int): List<String?>? {
-        val entry = FileInstanceManager.macros.entries.find { it.key == keycode }?: return null
+        val entry = FileInstanceManager.macros.entries.find { it.key == keycode } ?: return null
         return entry.value
     }
 
