@@ -199,7 +199,6 @@ open class ForgeEventProcessor {
     fun onChatSent(event: ClientChatEvent) {
         if (!event.message.startsWith(Command.getCommandPrefix())) return
         event.isCanceled = true
-        event.message = ""
         try {
             mc.ingameGUI.chatGUI.addToSentMessages(event.message)
             if (event.message.length > 1) KamiMod.getInstance().commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
@@ -208,6 +207,7 @@ open class ForgeEventProcessor {
             e.printStackTrace()
             MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
         }
+        event.message = ""
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
