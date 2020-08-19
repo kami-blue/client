@@ -12,7 +12,7 @@ import net.minecraft.world.World
  * Created by 086 on 11/12/2017.
  * Updated by Xiaro on 18/08/20
  */
-class AddCollisionBoxToLisFixtEvent(
+class AddCollisionBoxToListEvent(
         val block: Block,
         val state: IBlockState,
         val world: World,
