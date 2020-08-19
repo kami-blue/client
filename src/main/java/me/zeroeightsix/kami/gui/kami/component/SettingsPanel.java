@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.kami.component;
 import me.zeroeightsix.kami.gui.kami.Stretcherlayout;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.OrganisedContainer;
+import me.zeroeightsix.kami.gui.rgui.component.listen.KeyListener;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorInput;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSlider;
 import me.zeroeightsix.kami.gui.rgui.component.use.ColorSquare;
@@ -21,6 +22,7 @@ import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting;
 import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.HSBColourHolder;
+import org.lwjgl.input.Keyboard;
 
 import java.util.Arrays;
 
@@ -142,6 +144,17 @@ public class SettingsPanel extends OrganisedContainer {
                 } else if (isColor) {
                     ColorSetting colorSetting = (ColorSetting) setting;
                     HSBColourHolder value = colorSetting.getValue();
+                    //Color input
+                    ColorInput colorInput = new ColorInput(value, name);
+                    colorInput.addPoof(new ColorInput.ColorInputPoof<ColorInput, ColorInput.ColorInputPoof.ColorInputPoofInfo>() {
+                        @Override
+                        public void execute(ColorInput component, ColorInputPoofInfo info) {
+                            setting.setValue(info.getNewValue());
+                            setModule(module);
+                        }
+                    });
+                    addChild(colorInput);
+                    value = colorInput.getValue();
                     //Color slider
                     ColorSlider colorSlider = new ColorSlider(value, name);
                     colorSlider.addPoof(new ColorSlider.ColorPoof<ColorSlider, ColorSlider.ColorPoof.ColorPoofInfo>() {
@@ -151,7 +164,7 @@ public class SettingsPanel extends OrganisedContainer {
                         }
                     });
                     addChild(colorSlider);
-                    value = colorSlider.getValue();
+                    value = colorSetting.getValue();
                     //Color saturation square
                     ColorSquare colorSquare = new ColorSquare(value, name);
                     colorSquare.addPoof(new ColorSquare.ColorPoof<ColorSquare, ColorSquare.ColorPoof.ColorPoofInfo>() {
@@ -163,16 +176,6 @@ public class SettingsPanel extends OrganisedContainer {
                     colorSquare.setWidth(getWidth() - 30);
                     colorSquare.setHeight(getWidth() - 30);
                     addChild(colorSquare);
-                    value = colorSquare.getValue();
-                    //Color input
-                    ColorInput colorInput = new ColorInput(value, name);
-                    colorInput.addPoof(new ColorInput.ColorInputPoof<ColorInput, ColorInput.ColorInputPoof.ColorInputPoofInfo>() {
-                        @Override
-                        public void execute(ColorInput component, ColorInputPoofInfo info) {
-                            setting.setValue(info.getNewValue());
-                        }
-                    });
-                    addChild(colorInput);
                 }
             }
         }

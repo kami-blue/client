@@ -23,12 +23,11 @@ public class RootColorSliderUI extends AbstractComponentUI<ColorSlider> {
     public void renderComponent(ColorSlider component, FontRenderer aa) {
         glColor4f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()), component.getOpacity());
         glLineWidth(10f);
-        int bSize = 5;
         int width = component.getWidth();
         int height = component.getHeight();
         HSBColourHolder value = component.getValue();
         double w = width * (value.getH());
-        float downscale = 1.1f;
+        float downscale = 2f;
         glShadeModel(GL_SMOOTH);
         glBegin(GL_LINE_STRIP);
             glColor3f(255, 0, 0); //Red
@@ -49,20 +48,7 @@ public class RootColorSliderUI extends AbstractComponentUI<ColorSlider> {
 
         glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
         RenderHelper.drawCircle((int) w, height / downscale, 2f);
-
-        String s = "C";
-        if (component.isPressed()) {
-            w -= bSize / 2f;
-            w = Math.max(0, Math.min(w, component.getWidth() - smallFontRenderer.getStringWidth(s)));
-            glColor3f(toF(value.getRed()), toF(value.getGreen()), toF(value.getBlue()));
-            RenderHelper.drawFilledRectangle((int)w, 0, bSize, bSize);
-            glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        } else {
-            smallFontRenderer.drawString(0, 0, component.getText());
-            glColor3f(toF(value.getRed()), toF(value.getGreen()), toF(value.getBlue()));
-            RenderHelper.drawFilledRectangle(component.getWidth() - bSize, 0, bSize, bSize);
-            glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        }
+        glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
     }
@@ -70,7 +56,7 @@ public class RootColorSliderUI extends AbstractComponentUI<ColorSlider> {
     @Override
     public void handleAddComponent(ColorSlider component, Container container) {
         component.setWidth(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getMaximum() + "") + 3);
-        component.setHeight(component.getTheme().getFontRenderer().getFontHeight() + 2);
+        component.setHeight(2);
     }
 
 }

@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.component.use;
 
-import me.zeroeightsix.kami.KamiMod;
-
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
+import me.zeroeightsix.kami.gui.kami.RootSmallFontRenderer;
 import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.AbstractComponent;
 import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
@@ -23,9 +22,14 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
+import com.google.common.base.Joiner;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * Created by Guac on 18/08/2020.
+ * Adapted from 086's InputField.
+ */
 public class ColorInput extends AbstractComponent {
     String label;
     HSBColourHolder value;
@@ -54,18 +58,19 @@ public class ColorInput extends AbstractComponent {
 
     boolean shift = false;
 
-    FontRenderer fontRenderer = null;
+    RootSmallFontRenderer smallFontRenderer = null;
 
     public FontRenderer getFontRenderer() {
-        return fontRenderer == null ? getTheme().getFontRenderer() : fontRenderer;
+        return smallFontRenderer == null ? getTheme().getFontRenderer() : smallFontRenderer;
     }
 
-    public void setFontRenderer(FontRenderer fontRenderer) {
-        this.fontRenderer = fontRenderer;
+    public void setFontRenderer(RootSmallFontRenderer fontRenderer) {
+        this.smallFontRenderer = fontRenderer;
     }
 
     public ColorInput(HSBColourHolder value, String label) {
         this.value = value;
+        this.label = label;
         currentState.text = label;
 
         addRenderListener(new RenderListener() {
@@ -86,7 +91,7 @@ public class ColorInput extends AbstractComponent {
 
                 GL11.glTranslatef(-scrollX, 0, 0);
 
-                FontRenderer fontRenderer = getFontRenderer();
+                RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
 
                 glLineWidth(1);
 
@@ -102,14 +107,14 @@ public class ColorInput extends AbstractComponent {
                 if (getCursorRow() == 0 && cursor) {
                     glBegin(GL_LINES);
                     {
-                        glVertex2d(4, 2);
-                        glVertex2d(4, fontRenderer.getFontHeight() - 1);
+                        glVertex2d(4, 0);
+                        glVertex2d(4, smallFontRenderer.getFontHeight() + 1);
                     }
                     glEnd();
                 }
 
                 for (char c : getDisplayText().toCharArray()) {
-                    int w = fontRenderer.getStringWidth(c + "");
+                    int w = smallFontRenderer.getStringWidth(c + "");
 
                     if (getCurrentState().isSelection()) {
                         if (i == getCurrentState().getSelectionStart())
@@ -120,10 +125,10 @@ public class ColorInput extends AbstractComponent {
                         glColor4f(0.2f, 0.6f, 1f, .3f);
                         glBegin(GL_QUADS);
                         {
-                            glVertex2d(x + 2, 2);
-                            glVertex2d(x + 2, fontRenderer.getFontHeight() - 2);
-                            glVertex2d(x + w + 2, fontRenderer.getFontHeight() - 2);
-                            glVertex2d(x + w + 2, 2);
+                            glVertex2d(x + 2, 0);
+                            glVertex2d(x + 2, smallFontRenderer.getFontHeight() + 1);
+                            glVertex2d(x + w + 2, smallFontRenderer.getFontHeight() + 1);
+                            glVertex2d(x + w + 2, 0);
                         }
                         glEnd();
                     }
@@ -134,8 +139,8 @@ public class ColorInput extends AbstractComponent {
                     if (i == getCursorRow() && cursor && !getCurrentState().isSelection()) {
                         glBegin(GL_LINES);
                         {
-                            glVertex2d(x + 2, 2);
-                            glVertex2d(x + 2, fontRenderer.getFontHeight());
+                            glVertex2d(x + 2, 0);
+                            glVertex2d(x + 2, smallFontRenderer.getFontHeight() + 1);
                         }
                         glEnd();
                     }
@@ -149,7 +154,7 @@ public class ColorInput extends AbstractComponent {
                 String s = getDisplayText();
                 if (s.isEmpty()) s = " ";
                 glEnable(GL_BLEND);
-                fontRenderer.drawString(0, -1, s);
+                smallFontRenderer.drawString(0, 1, s);
 
                 glDisable(GL_TEXTURE_2D);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -246,7 +251,8 @@ public class ColorInput extends AbstractComponent {
                     }
                     //currentState.cursorRow = Math.max(0, currentState.cursorRow - 1);
                 } else if (event.getKey() == Keyboard.KEY_RETURN) {
-                    setValue(sanitizeHex(getText()));
+                    setValue(getText());
+                    setText(label);
                 } else {
                     if (Keyboard.getEventCharacter() != 0) {
                         pushUndo();
@@ -254,8 +260,10 @@ public class ColorInput extends AbstractComponent {
                             currentState.cursorRow = currentState.selectionEnd;
                             remove(currentState.selectionEnd - currentState.selectionStart);
                             currentState.selection = false;
+                            type(Keyboard.getEventCharacter() + "");
+                        } else if (getText().length() < maxLength) {
+                            type(Keyboard.getEventCharacter() + "");
                         }
-                        type(Keyboard.getEventCharacter() + "");
                     }
                 }
 
@@ -280,6 +288,9 @@ public class ColorInput extends AbstractComponent {
             @Override
             public void onMouseDown(MouseButtonEvent event) {
                 currentState.selection = false;
+                if (getText().equals(label)) {
+                    setText("");
+                }
                 int x = -scrollX;
                 int i = 0;
                 for (char c : getText().toCharArray()) {
@@ -463,25 +474,28 @@ public class ColorInput extends AbstractComponent {
         return this.value;
     }
 
-    public void setValue(String value) {
+    public HSBColourHolder setValue(String value) {
         String str = sanitizeHex(value);
         HSBColourHolder val = new HSBColourHolder(str);
         ColorInput.ColorInputPoof.ColorInputPoofInfo info = new ColorInput.ColorInputPoof.ColorInputPoofInfo(this.value, val);
         callPoof(ColorInputPoof.class, info);
         HSBColourHolder newValue = info.getNewValue();
-        KamiMod.log.info(newValue.toString());
         this.value = newValue;
+        return this.value;
     }
 
     public String sanitizeHex(String value) {
-        String digits;
-        if (value.startsWith("#")) {
-            digits = value.substring(1, Math.min(value.length(), 7));
-        } else {
-            digits = value;
+        String digits = value.toLowerCase();
+        String validValues = "1234567890abcdef";
+        ArrayList<Character> chars = new ArrayList();
+        for (int i = 0; i < Math.max(digits.length(), (digits.startsWith("#") ? 7 : 6)); i++) {
+            char c = i < digits.length() ? digits.charAt(i) : 'y';
+            if (validValues.indexOf(c) > 0) {
+                chars.add(digits.charAt(i));
+            } else if (c == '#') {
+            } else { chars.add('0'); }
         }
-        KamiMod.log.info("0x" + digits);
-        return "0x" + digits;
+        return "#" + Joiner.on("").join(chars);
     }
 
     public class InputState {
