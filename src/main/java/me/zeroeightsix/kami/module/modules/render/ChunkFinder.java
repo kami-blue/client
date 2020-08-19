@@ -58,6 +58,8 @@ public class ChunkFinder extends Module {
 
     @Override
     public void onWorldRender(RenderEvent event) {
+        double y = yOffset.getValue() + (relative.getValue()? mc.player.posY : 0.0);
+
         glLineWidth(2.0F);
         glDisable(GL_DEPTH_TEST);
         ColourHolder color;
@@ -70,10 +72,10 @@ public class ChunkFinder extends Module {
         for (Chunk chunk : chunks) {
             if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
             KamiTessellator.begin(GL_LINE_LOOP);
-            buffer.pos(chunk.getPos().getXStart(), yOffset.getValue(), chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXEnd(), yOffset.getValue(), chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXEnd(), yOffset.getValue(), chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXStart(), yOffset.getValue(), chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
             KamiTessellator.render();
         }
         glEnable(GL_DEPTH_TEST);
