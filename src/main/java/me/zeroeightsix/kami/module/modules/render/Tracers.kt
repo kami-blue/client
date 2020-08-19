@@ -65,7 +65,7 @@ class Tracers : Module() {
     private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aTracer = a.value
         renderer.thickness = thickness.value
         renderer.tracerOffset = yOffset.value
@@ -74,7 +74,7 @@ class Tracers : Module() {
             rgba.a = (rgba.a * pair.second).toInt()
             renderer.add(entity, rgba)
         }
-        renderer.render()
+        renderer.render(true)
     }
 
     override fun onUpdate() {

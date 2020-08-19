@@ -354,11 +354,11 @@ public class CrystalAura extends Module {
             if (customColours.getValue()) {
                 colour = new ColourHolder(r.getValue(), g.getValue(), b.getValue());
             }
-            ESPRenderer renderer = new ESPRenderer(event.getPartialTicks());
+            ESPRenderer renderer = new ESPRenderer();
             renderer.setAFilled(aBlock.getValue());
             renderer.setATracer(tracerAlpha);
             renderer.add(render, colour);
-            renderer.render();
+            renderer.render(true);
         }
     }
 

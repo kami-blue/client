@@ -51,7 +51,6 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
             smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s), 0, s);
         }
         glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
     }
 
     @Override

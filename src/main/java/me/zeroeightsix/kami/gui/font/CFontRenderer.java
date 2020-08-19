@@ -8,6 +8,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class CFontRenderer extends CFont {
 
     protected CharData[] boldChars = new CharData[256];
@@ -71,7 +73,7 @@ public class CFontRenderer extends CFont {
             GL11.glPushMatrix();
             GlStateManager.scale(0.5D, 0.5D, 0.5D);
             GlStateManager.enableBlend();
-            GlStateManager.blendFunc(770, 771);
+            GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             GlStateManager.color((color >> 16 & 0xFF) / 255.0F, (color >> 8 & 0xFF) / 255.0F, (color & 0xFF) / 255.0F, alpha);
             int size = text.length();
             GlStateManager.enableTexture2D();
@@ -153,6 +155,7 @@ public class CFontRenderer extends CFont {
                 }
             }
             GL11.glHint(3155, 4352);
+            GlStateManager.disableBlend();
             GL11.glPopMatrix();
         }
         return (float) x / 2.0F;

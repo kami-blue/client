@@ -56,7 +56,7 @@ class WaypointRender : Module() {
     override fun onWorldRender(event: RenderEvent) {
         if (mc.player == null || mc.renderManager.options == null || waypoints.isEmpty()) return
         val colour = ColourHolder(r.value, g.value, b.value)
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.aTracer = if (tracer.value) aTracer.value else 0
@@ -77,7 +77,7 @@ class WaypointRender : Module() {
             }
         }
         glEndList()
-        renderer.render()
+        renderer.render(true)
         GlStateManager.disableDepth()
         glCallList(glList) /* Render the text after so it will be on top of the ESP */
     }
