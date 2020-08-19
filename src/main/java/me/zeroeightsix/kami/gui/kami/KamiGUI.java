@@ -22,11 +22,12 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
-import me.zeroeightsix.kami.util.LagCompensator;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.LagCompensator;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.textUtils.RomanNumerals;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -459,31 +460,17 @@ public class KamiGUI extends GUI {
         frame.setPinnable(true);
         Label potionsLabel = new Label("");
         potionsLabel.addTickListener(new TickListener() {
-            Minecraft mc = Minecraft.getMinecraft();
+            final Minecraft mc = Minecraft.getMinecraft();
 
             @Override
             public void onTick() {
                 potionsLabel.setText("");
-
-                if(mc.player == null){
-                    return;
-                }
+                if (mc.player == null) return;
 
                 // loop through potions and add them to the potions label
                 mc.player.getActivePotionMap().forEach((potion, potionEffect) -> {
                     String name = I18n.format(potion.getName());
-                    String amplifier;
-                    switch (potionEffect.getAmplifier()) {
-                        case 0:
-                            amplifier = "I";
-                            break;
-                        case 1:
-                            amplifier = "II";
-                            break;
-                        default:
-                            amplifier = "?";
-                            break;
-                    }
+                    String amplifier = RomanNumerals.INSTANCE.numberToRoman(potionEffect.getAmplifier() + 1); // add one because minecraft starts at 0
                     long secDuration = new Float(potionEffect.getDuration() / LagCompensator.INSTANCE.getTickRate()).longValue();
                     long min = TimeUnit.SECONDS.toMinutes(secDuration);
                     long secs = TimeUnit.SECONDS.toSeconds(secDuration) - (min * 60);
