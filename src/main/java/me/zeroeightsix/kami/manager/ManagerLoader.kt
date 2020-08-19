@@ -14,7 +14,9 @@ object ManagerLoader {
     fun loadManagers() {
         KamiMod.log.info("Registering managers...")
         for (clazz in findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)) {
-            clazz.kotlin.objectInstance!!.new()
+            val manager = clazz.kotlin.objectInstance!!
+            manager.new()
+            KamiMod.EVENT_BUS.subscribe(manager)
         }
         KamiMod.log.info("Managers registered")
     }

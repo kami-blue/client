@@ -3,24 +3,15 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.commands.PeekCommand
-import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
+import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
-import me.zeroeightsix.kami.manager.mangers.MacroManager.sendMacro
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay
-import me.zeroeightsix.kami.module.modules.render.BossStack
-import me.zeroeightsix.kami.module.modules.render.HungerOverlay
-import me.zeroeightsix.kami.module.modules.render.NoRender
-import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
-import me.zeroeightsix.kami.util.HungerOverlayUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Wrapper
-import net.minecraft.client.gui.GuiChat
-import net.minecraft.client.gui.ScaledResolution
+import me.zeroeightsix.kami.module.modules.render.*
+import me.zeroeightsix.kami.util.*
+import net.minecraft.client.gui.*
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -30,21 +21,12 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDamageEvent
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
-import net.minecraftforge.event.entity.living.LivingEvent
-import net.minecraftforge.event.entity.player.AttackEntityEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
+import net.minecraftforge.event.entity.living.*
+import net.minecraftforge.event.entity.player.*
 import net.minecraftforge.event.world.ChunkEvent
-import net.minecraftforge.fml.common.eventhandler.Event
-import net.minecraftforge.fml.common.eventhandler.EventPriority
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent
+import net.minecraftforge.fml.common.eventhandler.*
+import net.minecraftforge.fml.common.gameevent.*
+import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
 
 /**
@@ -59,7 +41,7 @@ open class ForgeEventProcessor {
     private var displayHeight = 0
     private var flashAlpha = 0f
     private var alphaDir: Byte = 1
-    protected var foodIconsOffset = 0
+    private var foodIconsOffset = 0
 
     @SubscribeEvent
     fun onUpdate(event: LivingEvent.LivingUpdateEvent) {
@@ -93,8 +75,9 @@ open class ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
-        if (mc.world != null || mc.player != null) return
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (mc.world == null || mc.player == null) return
+
         if (ModuleManager.isModuleEnabled(NoRender::class.java) && ModuleManager.getModuleT(NoRender::class.java)!!.items.value && event.phase == TickEvent.Phase.START) {
             for (potentialItem in mc.world.getLoadedEntityList()) {
                 (potentialItem as? EntityItem)?.setDead()
@@ -131,24 +114,20 @@ open class ForgeEventProcessor {
         if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
             event.isCanceled = true
         }
+        if (event.isCanceled) return
 
         if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
             if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
                 return
             }
-            foodIconsOffset = GuiIngameForge.right_height
-            if (event.isCanceled) {
-                return
-            }
             if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodExhaustionOverlay.value) {
                 return
             }
-            val mc = mc
-            val player: EntityPlayer = mc.player
+            foodIconsOffset = GuiIngameForge.right_height
             val scale = event.resolution
             val left = scale.scaledWidth / 2 + 91
             val top = scale.scaledHeight - foodIconsOffset
-            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(player), mc, left, top, 1f)
+            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(mc.player), mc, left, top, 1f)
         }
 
     }
@@ -172,9 +151,6 @@ open class ForgeEventProcessor {
 
         if (ModuleManager.isModuleEnabled(HungerOverlay::class.java)) {
             if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
-                return
-            }
-            if (event.isCanceled) {
                 return
             }
             if (!ModuleManager.getModuleT(HungerOverlay::class.java)!!.foodValueOverlay.value && !ModuleManager.getModuleT(HungerOverlay::class.java)!!.saturationOverlay.value) {
@@ -206,14 +182,14 @@ open class ForgeEventProcessor {
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
-    fun onKeyInput(event: KeyInputEvent?) {
+    fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
         val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java)
         if (commandConfig!!.prefixChat.value && ("" + Keyboard.getEventCharacter()).equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
             mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
         } else {
+            KamiMod.EVENT_BUS.post(event)
             ModuleManager.onBind(Keyboard.getEventKey())
-            sendMacro(Keyboard.getEventKey())
         }
     }
 
@@ -227,89 +203,89 @@ open class ForgeEventProcessor {
                 else MessageSendHelper.sendChatMessage("Please enter a command!")
             } catch (e: Exception) {
                 e.printStackTrace()
-                MessageSendHelper.sendChatMessage("Error occured while running command! (" + e.message + "), check the log for info!")
+                MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
             }
             event.message = ""
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onPlayerDrawn(event: RenderPlayerEvent.Pre?) {
+    fun onPlayerDrawn(event: RenderPlayerEvent.Pre) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onPlayerDrawn(event: RenderPlayerEvent.Post?) {
+    fun onPlayerDrawn(event: RenderPlayerEvent.Post) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onChunkLoaded(event: ChunkEvent.Load?) {
+    fun onChunkLoaded(event: ChunkEvent.Load) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onEventMouse(event: InputEvent.MouseInputEvent?) {
+    fun onEventMouse(event: InputEvent.MouseInputEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onChunkLoaded(event: ChunkEvent.Unload?) {
+    fun onChunkLoaded(event: ChunkEvent.Unload) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onInputUpdate(event: InputUpdateEvent?) {
+    fun onInputUpdate(event: InputUpdateEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Start?) {
+    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Start) {
         KamiMod.EVENT_BUS.post(entityUseItemEvent)
     }
 
     @SubscribeEvent
-    fun onLivingDamageEvent(event: LivingDamageEvent?) {
+    fun onLivingDamageEvent(event: LivingDamageEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onEntityJoinWorldEvent(entityJoinWorldEvent: EntityJoinWorldEvent?) {
+    fun onEntityJoinWorldEvent(entityJoinWorldEvent: EntityJoinWorldEvent) {
         KamiMod.EVENT_BUS.post(entityJoinWorldEvent)
     }
 
     @SubscribeEvent
-    fun onPlayerPush(event: PlayerSPPushOutOfBlocksEvent?) {
+    fun onPlayerPush(event: PlayerSPPushOutOfBlocksEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onLeftClickBlock(event: LeftClickBlock?) {
+    fun onLeftClickBlock(event: PlayerInteractEvent.LeftClickBlock) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onAttackEntity(entityEvent: AttackEntityEvent?) {
+    fun onAttackEntity(entityEvent: AttackEntityEvent) {
         KamiMod.EVENT_BUS.post(entityEvent)
     }
 
     @SubscribeEvent
-    fun onRenderBlockOverlay(event: RenderBlockOverlayEvent?) {
+    fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onClientChat(event: ClientChatReceivedEvent?) {
+    fun onClientChat(event: ClientChatReceivedEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onServerDisconnect(event: ServerDisconnectionFromClientEvent?) {
+    fun onServerDisconnect(event: FMLNetworkEvent.ServerDisconnectionFromClientEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
-    fun onClientDisconnect(event: ClientDisconnectionFromServerEvent?) {
+    fun onClientDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
         KamiMod.EVENT_BUS.post(event)
     }
 

@@ -1,16 +1,27 @@
 package me.zeroeightsix.kami.manager.mangers
 
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.lwjgl.input.Keyboard
 
 /**
  * @author dominikaaaa
  * Created by dominikaaaa on 04/05/20
  */
+@Suppress("UNUSED_PARAMETER")
 object MacroManager : Manager() {
+
+    @EventHandler
+    private val onKeyInput = Listener(EventHook{ event: InputEvent.KeyInputEvent ->
+        sendMacro(Keyboard.getEventKey())
+    })
 
     /**
      * Reads macros from KAMIBlueMacros.json into the macros Map
