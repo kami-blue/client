@@ -56,7 +56,7 @@ class Search : Module() {
     private val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"
     private val searchList = register(Settings.stringBuilder("SearchList").withValue(defaultSearchList).withVisibility { false }.build())
 
-    lateinit var searchArrayList: ArrayList<String>
+    var searchArrayList = searchGetArrayList()
 
     private fun searchGetArrayList(): ArrayList<String> {
         return ArrayList(searchList.value.split(","))

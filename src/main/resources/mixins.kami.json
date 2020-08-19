@@ -20,6 +20,7 @@
     "MixinFontRenderer",
     "MixinFrustum",
     "MixinGuiChat",
+    "MixinGuiContainer",
     "MixinGuiContainerCreative",
     "MixinGuiIngameMenu",
     "MixinGuiInventory",
