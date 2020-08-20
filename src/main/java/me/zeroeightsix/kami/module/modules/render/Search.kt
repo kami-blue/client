@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
@@ -18,7 +18,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.sqrt
