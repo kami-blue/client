@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.math.BlockPos
 
 /**
  * @author dominikaaaa
@@ -21,7 +22,7 @@ class TeleportLogger : Module() {
     private var printRemove = register(Settings.booleanBuilder("PrintRemove").withValue(true).withVisibility { remove.value }.build())
     private var minimumDistance = register(Settings.integerBuilder("MinimumDistance").withValue(512).withMinimum(128).build())
 
-    private val teleportedPlayers = HashMap<String, Coordinate>()
+    private val teleportedPlayers = HashMap<String, BlockPos>()
 
     override fun onUpdate() {
         if (mc.player == null) return
@@ -47,13 +48,13 @@ class TeleportLogger : Module() {
                 continue
             }
 
-            val coords = logCoordinates(Coordinate(player.posX.toInt(), player.posY.toInt(), player.posZ.toInt()), "${player.name} Teleport Spot")
+            val coords = logCoordinates(player.position, "${player.name} Teleport Spot")
             teleportedPlayers[player.name] = coords
-            if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${player.name} teleported, ${getSaveText()} ${coords.asString()}")
+            if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${player.name} teleported, ${getSaveText()} ${coords.x}, ${coords.y}, ${coords.z}")
         }
     }
 
-    private fun logCoordinates(coordinate: Coordinate, name: String): Coordinate {
+    private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
         return if (saveToFile.value) {
             Waypoint.createWaypoint(coordinate, name)
         } else {

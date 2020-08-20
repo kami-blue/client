@@ -73,7 +73,7 @@ class WaypointRender : Module() {
             }
             /* Draw waypoint info box */
             if ((showCoords.value || showName.value || showDate.value || showDist.value) && distance <= infoBoxRange.value) {
-                drawText(waypoint, KamiTessellator.pTicks())
+                drawText(waypoint)
             }
         }
         glEndList()
@@ -90,7 +90,7 @@ class WaypointRender : Module() {
         KamiTessellator.render()
     }
 
-    private fun drawText(waypoint: WaypointInfo, pTicks: Float) {
+    private fun drawText(waypoint: WaypointInfo) {
         GlStateManager.pushMatrix()
 
         val x = (waypoint.pos.x + 0.5)
@@ -112,7 +112,7 @@ class WaypointRender : Module() {
         var str = ""
         if (showName.value) str += "${'\n'}${waypoint.name}"
         if (showDate.value) str += "${'\n'}${waypoint.date}"
-        if (showCoords.value) str += "${'\n'}${waypoint.pos.asString()}"
+        if (showCoords.value) str += "${'\n'}${waypoint.asString()}"
         if (showDist.value) str += "${'\n'}${distance.toInt()} m"
 
         val fontRenderer = mc.fontRenderer
