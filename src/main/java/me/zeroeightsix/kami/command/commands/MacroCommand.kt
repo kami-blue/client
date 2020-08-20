@@ -53,7 +53,7 @@ class MacroCommand : Command("macro", ChunkBuilder().append("command", true, Enu
             args[1] == "clear" -> {
                 Macro.removeMacro(key)
                 MacroManager.saveMacros()
-                MacroManager.registerMacros()
+                MacroManager.loadMacros()
                 sendChatMessage("Cleared macros for '&7$rKey&f'")
                 return
             }

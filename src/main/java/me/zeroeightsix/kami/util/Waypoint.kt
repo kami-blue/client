@@ -24,18 +24,21 @@ object Waypoint {
     val file = File(configName)
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
 
-    fun writeMemoryToFile() {
-        try {
+    fun writeMemoryToFile(): Boolean {
+        return try {
             val fw = FileWriter(file, false)
             gson.toJson(FileInstanceManager.waypoints, fw)
             fw.flush()
             fw.close()
+            true
         } catch (e: IOException) {
             e.printStackTrace()
+            false
         }
     }
 
-    fun readFileToMemory() {
+    fun readFileToMemory(): Boolean {
+        var success = false
         var localFile = file
         /* backwards compatibility for older configs */
         if (legacyFormat()) {
@@ -44,6 +47,8 @@ object Waypoint {
         try {
             try {
                 FileInstanceManager.waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<ArrayList<WaypointInfo>?>() {}.type)!!
+                KamiMod.log.info("Waypoint loaded")
+                success = true
             } catch (e: FileNotFoundException) {
                 KamiMod.log.warn("Could not find file $configName, clearing the waypoints list")
                 FileInstanceManager.waypoints.clear()
@@ -56,6 +61,7 @@ object Waypoint {
         if (legacyFormat()) {
             oldFile.delete()
         }
+        return success
     }
 
     fun getCurrentCoord(): Coordinate {

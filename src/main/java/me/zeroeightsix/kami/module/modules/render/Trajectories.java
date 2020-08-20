@@ -49,7 +49,7 @@ public class Trajectories extends Module {
 
                         if (hit != null) {
                             GlStateManager.pushMatrix();
-                            ESPRenderer renderer = new ESPRenderer(event.getPartialTicks());
+                            ESPRenderer renderer = new ESPRenderer();
                             renderer.setAFilled(150);
                             renderer.setAOutline(0);
                             renderer.setThrough(false);
@@ -57,7 +57,7 @@ public class Trajectories extends Module {
                             renderer.setFullOutline(true);
                             AxisAlignedBB box = mc.world.getBlockState(hit).getSelectedBoundingBox(mc.world, hit);
                             renderer.add(box.grow(0.002), new ColourHolder(255, 255, 255), GeometryMasks.Quad.ALL);
-                            renderer.render();
+                            renderer.render(true);
                             GlStateManager.popMatrix();
                         }
 

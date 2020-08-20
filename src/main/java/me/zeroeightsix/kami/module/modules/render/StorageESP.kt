@@ -67,7 +67,7 @@ class StorageESP : Module() {
     private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.aTracer = if (tracer.value) aTracer.value else 0
@@ -75,7 +75,7 @@ class StorageESP : Module() {
         for ((box, pair) in renderList) {
             renderer.add(box, pair.first, pair.second)
         }
-        renderer.render()
+        renderer.render(true)
     }
 
     override fun onUpdate() {

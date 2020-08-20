@@ -76,7 +76,6 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         }
 
         RenderHelper.drawText(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(text) / 2, KamiGUI.fontRenderer.getFontHeight() / 2 - 2, c, text);
-        glDisable(GL_BLEND);
     }
 
     @Override

@@ -27,10 +27,7 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.config.Configuration;
-import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.LagCompensator;
-import me.zeroeightsix.kami.util.RichPresence;
-import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -107,7 +104,7 @@ public class KamiMod {
 
     public KamiGUI guiManager;
     public CommandManager commandManager;
-    private Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
+    public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
         @Override
         protected JsonObject doForward(JsonObject jsonObject) {
             return jsonObject;
@@ -157,16 +154,11 @@ public class KamiMod {
         commandManager = new CommandManager();
 
         FileInstanceManager.fixEmptyFiles();
-        MacroManager.INSTANCE.registerMacros();
-        WaypointManager.INSTANCE.registerWaypoints();
 
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
         SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
-        SettingsRegister.register("friends", Friends.friends); // these are case-sensitive
-
-        loadConfiguration();
-        log.info("Settings loaded");
+        ConfigUtils.INSTANCE.loadAll();
 
         new RichPresence();
         log.info("Rich Presence Users init!\n");

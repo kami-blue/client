@@ -6,9 +6,6 @@ import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import org.lwjgl.opengl.GL11;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.glDisable;
-
 /**
  * Created by 086 on 2/08/2017.
  */
@@ -34,7 +31,6 @@ public class RootLabelUI<T extends Label> extends AbstractComponentUI<Label> {
             y += a.getFontHeight() + 3;
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
     }
 
     @Override

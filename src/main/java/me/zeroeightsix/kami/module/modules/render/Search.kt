@@ -1,25 +1,24 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.MessageSendHelper
-import net.minecraft.block.Block
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
-import net.minecraft.world.chunk.Chunk
 import org.lwjgl.opengl.GL11.GL_VENDOR
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -36,10 +35,10 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 class Search : Module() {
-    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(100, 5000).build())
-    var overrideWarning = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
+    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).build())
+    val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
     private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
-    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(128).withRange(16, 4096).build())
+    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
     private val tracer = register(Settings.b("Tracer", true))
@@ -92,13 +91,15 @@ class Search : Module() {
     }
     /* End of eject list */
 
-    private val loadChunks = ConcurrentLinkedQueue<Chunk>()
-    private val chunkThreads = Executors.newCachedThreadPool()
-    private val mainList = ConcurrentHashMap<ChunkPos, Map<BlockPos, Block>>()
+    private val chunkThreads = ConcurrentHashMap<ChunkPos, Thread>()
+    private val chunkThreadPool = Executors.newCachedThreadPool()
+    private val loadedChunks = ConcurrentSet<ChunkPos>()
+    private val mainList = ConcurrentHashMap<ChunkPos, List<BlockPos>>()
     private val renderList = ConcurrentHashMap<BlockPos, ColourHolder>()
+    private val renderer = ESPRenderer()
+    private var dirty = 0
     private var startTimeChunk = 0L
     private var startTimeRender = 0L
-    private var emptyList = false
 
     override fun getHudInfo(): String {
         return if (renderList.isNotEmpty()) renderList.size.toString() else "0"
@@ -118,44 +119,29 @@ class Search : Module() {
 
     override fun onUpdate() {
         if (shouldUpdateChunk()) {
-            Thread(Runnable {
-                updateLoadedChunkList()
-            }).start()
-            Thread(Runnable {
-                updateMainList()
-            }).start()
+            updateLoadedChunkList()
+            updateMainList()
         }
 
         if (shouldUpdateRender()) {
-            val cacheList = getRenderList()
-            if (cacheList.isNotEmpty()) {
-                emptyList = false
-                renderList.clear()
-                renderList.putAll(cacheList)
-            } else if (!emptyList) {
-                emptyList = true
-            } else {
-                emptyList = false
-                renderList.clear()
-            }
+            updateRenderList()
         }
     }
 
     override fun onWorldRender(event: RenderEvent) {
-        val renderer = ESPRenderer(event.partialTicks)
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        renderer.aTracer = if (tracer.value) aTracer.value else 0
-        renderer.thickness = thickness.value
-        for ((pos, colour) in renderList) {
-            renderer.add(pos, colour)
+        if (dirty > 1) {
+            dirty = 0
+            renderer.clear()
+            for ((pos, colour) in renderList) {
+                renderer.add(pos, colour)
+            }
         }
-        renderer.render()
+        renderer.render(false)
     }
 
     /* Main list updating */
     private fun shouldUpdateChunk(): Boolean {
-        return if (System.currentTimeMillis() - startTimeChunk < max(renderUpdate.value * 2, 1000)) {
+        return if (System.currentTimeMillis() - startTimeChunk < max(renderUpdate.value * 2, 500)) {
             false
         } else {
             startTimeChunk = System.currentTimeMillis()
@@ -165,55 +151,56 @@ class Search : Module() {
 
     private fun updateLoadedChunkList() {
         /* Removes unloaded chunks from the list */
-        val toRemove = ArrayList<Chunk>()
-        for (chunk in loadChunks) {
-            if (chunk.isLoaded) continue
-            toRemove.add(chunk)
-            mainList.remove(chunk.pos)
-        }
+        Thread(Runnable {
+            for (chunkPos in loadedChunks) {
+                if (isChunkLoaded(chunkPos)) continue
+                chunkThreads.remove(chunkPos)
+                loadedChunks.remove(chunkPos)
+                mainList.remove(chunkPos)
+            }
 
-        /* Adds new loaded chunks to the list */
-        val renderDist = mc.gameSettings.renderDistanceChunks
-        val chunkPos1 = ChunkPos(mc.player.chunkCoordX - renderDist, mc.player.chunkCoordZ - renderDist)
-        val chunkPos2 = ChunkPos(mc.player.chunkCoordX + renderDist, mc.player.chunkCoordZ + renderDist)
-        for (x in chunkPos1.x..chunkPos2.x) for (z in chunkPos1.z..chunkPos2.z) {
-            val chunk = mc.world.getChunk(x, z)
-            if (!chunk.isLoaded || loadChunks.contains(chunk)) continue
-            loadChunks.add(chunk)
-        }
-        loadChunks.removeAll(toRemove)
+            /* Adds new loaded chunks to the list */
+            val renderDist = mc.gameSettings.renderDistanceChunks
+            val playerChunkPos = ChunkPos(mc.player.position)
+            val chunkPos1 = ChunkPos(playerChunkPos.x - renderDist, playerChunkPos.z - renderDist)
+            val chunkPos2 = ChunkPos(playerChunkPos.x + renderDist, playerChunkPos.z + renderDist)
+            for (x in chunkPos1.x..chunkPos2.x) for (z in chunkPos1.z..chunkPos2.z) {
+                val chunk = mc.world.getChunk(x, z)
+                if (!chunk.isLoaded) continue
+                loadedChunks.add(chunk.pos)
+            }
+        }).start()
     }
 
     private fun updateMainList() {
-        val list = loadChunks
-        for (chunk in list) {
-            val thread = Thread(Runnable {
-                val pos = chunk.pos
-                val found = findBlocksInChunk(chunk, searchArrayList.toTypedArray())
-                mainList[pos] = found
-            })
-            thread.priority = 1
-            chunkThreads.execute(thread)
-            Thread.sleep(5L) /* Don't search all chunks in once to avoid lag */
-        }
+        Thread(Runnable {
+            for (chunkPos in loadedChunks) {
+                val thread = Thread(Runnable {
+                    findBlocksInChunk(chunkPos, searchArrayList.toHashSet())
+                })
+                thread.priority = 1
+                chunkThreads.putIfAbsent(chunkPos, thread)
+            }
+            for (thread in chunkThreads.values) {
+                chunkThreadPool.execute(thread)
+                Thread.sleep(5L)
+            }
+        }).start()
     }
 
-    private fun findBlocksInChunk(chunk: Chunk, blocksToFind: Array<String>): Map<BlockPos, Block> {
-        val pos1 = BlockPos(chunk.pos.xStart, 0, chunk.pos.zStart)
-        val pos2 = BlockPos(chunk.pos.xEnd, 256, chunk.pos.zEnd)
-        val blocks = BlockPos.getAllInBox(pos1, pos2)
-        val foundBlocks = HashMap<BlockPos, Block>()
-        try {
-            for (blockPos in blocks) {
-                val block = chunk.getBlockState(blockPos).block
-                if (block == Blocks.AIR) continue
-                if (blocksToFind.contains(block.registryName.toString())) {
-                    foundBlocks[blockPos] = block
-                }
-            }
-        } catch (ignored: NullPointerException) {
-        } //to fix ghost chunks get loaded and generating NullPointerExceptions
-        return foundBlocks
+    private fun findBlocksInChunk(chunkPos: ChunkPos, blocksToFind: HashSet<String>) {
+        val yRange = IntRange(0, 256)
+        val xRange = IntRange(chunkPos.xStart, chunkPos.xEnd)
+        val zRange = IntRange(chunkPos.zStart, chunkPos.zEnd)
+        val foundBlocks = ArrayList<BlockPos>()
+        for (y in yRange) for (x in xRange) for (z in zRange) {
+            val blockPos = BlockPos(x, y, z)
+            val block = mc.world.getBlockState(blockPos).block
+            if (block == Blocks.AIR) continue
+            if (!blocksToFind.contains(block.registryName.toString())) continue
+            foundBlocks.add(BlockPos(blockPos))
+        }
+        mainList[chunkPos] = foundBlocks
     }
     /* End of main list updating */
 
@@ -227,31 +214,48 @@ class Search : Module() {
         }
     }
 
-    private fun getRenderList(): Map<BlockPos, ColourHolder> {
-        val cacheDistMap = TreeMap<Double, Pair<BlockPos, Block>>(Comparator.naturalOrder())
-        /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
-        for (value in mainList.values) {
-            for ((k, v) in value) {
-                val distance = sqrt(mc.player.getDistanceSq(k))
-                if (distance > range.value) continue
-                cacheDistMap[distance] = Pair(k, v)
+    private fun updateRenderList() {
+        Thread(Runnable {
+            val cacheDistMap = TreeMap<Double, BlockPos>(Comparator.naturalOrder())
+            /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
+            for (posList in mainList.values) {
+                for (i in posList.indices) {
+                    val pos = posList[i]
+                    val distance = sqrt(mc.player.getDistanceSq(pos))
+                    if (distance > range.value) continue
+                    cacheDistMap[distance] = pos
+                }
             }
-        }
 
-        /* Removes the furthest blocks to keep it in the maximum block limit */
-        while (cacheDistMap.size > maximumBlocks.value) {
-            cacheDistMap.pollLastEntry()
-        }
+            /* Removes the furthest blocks to keep it in the maximum block limit */
+            while (cacheDistMap.size > maximumBlocks.value) {
+                cacheDistMap.pollLastEntry()
+            }
 
-        val cacheRenderMap = HashMap<BlockPos, ColourHolder>()
-        for ((pos, block) in cacheDistMap.values) {
-            val color = getPosColor(block)
-            cacheRenderMap[pos] = color
-        }
-        return cacheRenderMap
+            renderList.keys.removeIf { pos ->
+                !cacheDistMap.containsValue(pos)
+            }
+
+            for (pos in cacheDistMap.values) {
+                renderList[pos] = getPosColor(pos)
+            }
+
+            /* Updates renderer */
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            renderer.aTracer = if (tracer.value) aTracer.value else 0
+            renderer.thickness = thickness.value
+
+            if (renderList.size != renderer.getSize()) {
+                dirty = 2
+            } else {
+                dirty++
+            }
+        }).start()
     }
 
-    private fun getPosColor(block: Block): ColourHolder {
+    private fun getPosColor(pos: BlockPos): ColourHolder {
+        val block = mc.world.getBlockState(pos).block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
                 ColourHolder(82, 49, 153)
@@ -264,4 +268,8 @@ class Search : Module() {
         }
     }
     /* End of rendering */
+
+    private fun isChunkLoaded(chunkPos: ChunkPos): Boolean {
+        return mc.world.getChunk(chunkPos.x, chunkPos.z).isLoaded
+    }
 }
