@@ -26,17 +26,17 @@ object MacroManager : Manager() {
     /**
      * Reads macros from KAMIBlueMacros.json into the macros Map
      */
-    fun registerMacros() {
-        Macro.readFileToMemory()
+    fun loadMacros(): Boolean {
+        KamiMod.log.info("Loading macros...")
+        return Macro.readFileToMemory()
     }
 
     /**
      * Saves macros from the macros Map into KAMIBlueMacros.json
      */
-    fun saveMacros() {
+    fun saveMacros(): Boolean {
         KamiMod.log.info("Saving macros...")
-        Macro.writeMemoryToFile()
-        KamiMod.log.info("Macros saved")
+        return Macro.writeMemoryToFile()
     }
 
     /**

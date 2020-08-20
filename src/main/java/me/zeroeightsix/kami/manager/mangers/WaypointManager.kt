@@ -11,18 +11,25 @@ import me.zeroeightsix.kami.util.Waypoint
 object WaypointManager : Manager() {
 
     /**
+     * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
+     */
+    fun loadWaypoints(): Boolean {
+        KamiMod.log.info("Loading waypoints...")
+        return Waypoint.readFileToMemory()
+    }
+
+    /**
      * Saves waypoints from the waypoints ArrayList into KAMIBlueWaypoints.json
      */
-    fun saveWaypoints() {
+    fun saveWaypoints(): Boolean {
         KamiMod.log.info("Saving waypoints...")
-        Waypoint.writeMemoryToFile()
-        KamiMod.log.info("Waypoints saved")
+        return Waypoint.writeMemoryToFile()
     }
 
     /**
      * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
      */
     init {
-        Waypoint.readFileToMemory()
+        loadWaypoints()
     }
 }

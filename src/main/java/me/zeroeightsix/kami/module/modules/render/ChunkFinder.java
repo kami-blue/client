@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render;
 
+import kotlin.Triple;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
@@ -9,7 +10,12 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.InfoCalculator;
+import me.zeroeightsix.kami.util.KamiTessellator;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.SystemUtils;
 import org.lwjgl.opengl.GL11;
@@ -50,45 +56,29 @@ public class ChunkFinder extends Module {
 
     static ArrayList<Chunk> chunks = new ArrayList<>();
 
-    private static boolean dirty = true;
-    private int list = GL11.glGenLists(1);
-
     @Override
     public void onWorldRender(RenderEvent event) {
-        if (dirty) {
-            GL11.glNewList(list, GL11.GL_COMPILE);
-            glDisable(GL_DEPTH_TEST);
-            glLineWidth(2.0F);
-            if (mc.player.dimension == -1) { /* Nether */
-                glColor3f(0.1f, 0.9f, 0.2f);
-            } else {
-                glColor3f(.9f, .1f, .2f);
-            }
-            for (Chunk chunk : chunks) {
-                if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
-                double posX = chunk.x * 16;
-                double posY = 0;
-                double posZ = chunk.z * 16;
+        double y = yOffset.getValue() + (relative.getValue()? mc.player.posY : 0.0);
 
-                glBegin(GL_LINE_LOOP);
-                glVertex3d(posX, posY, posZ);
-                glVertex3d(posX + 16, posY, posZ);
-                glVertex3d(posX + 16, posY, posZ + 16);
-                glVertex3d(posX, posY, posZ + 16);
-                glEnd();
-            }
-            glColor4f(1, 1, 1, 1);
-            glEnable(GL_DEPTH_TEST);
-            GL11.glEndList();
-            dirty = false;
+        glLineWidth(2.0F);
+        glDisable(GL_DEPTH_TEST);
+        ColourHolder color;
+        if (mc.player.dimension == -1) { /* Nether */
+            color = new ColourHolder(25, 225, 50);
+        } else {
+            color = new ColourHolder(255, 25, 50);
         }
-
-        double x = mc.getRenderManager().renderPosX;
-        double y = relative.getValue() ? 0 : -mc.getRenderManager().renderPosY;
-        double z = mc.getRenderManager().renderPosZ;
-        GL11.glTranslated(-x, y + yOffset.getValue(), -z);
-        GL11.glCallList(list);
-        GL11.glTranslated(x, -(y + yOffset.getValue()), z);
+        BufferBuilder buffer = KamiTessellator.INSTANCE.getBuffer();
+        for (Chunk chunk : chunks) {
+            if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
+            KamiTessellator.begin(GL_LINE_LOOP);
+            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            KamiTessellator.render();
+        }
+        glEnable(GL_DEPTH_TEST);
     }
 
     @Override
@@ -111,7 +101,6 @@ public class ChunkFinder extends Module {
     public Listener<ChunkEvent> listener = new Listener<>(event -> {
         if (!event.getPacket().isFullChunk()) {
             chunks.add(event.getChunk());
-            dirty = true;
             if (saveNewChunks.getValue()) {
                 saveNewChunk(event.getChunk());
             }
@@ -295,12 +284,9 @@ public class ChunkFinder extends Module {
 
 
     @EventHandler
-    private Listener<net.minecraftforge.event.world.ChunkEvent.Unload> unloadListener = new Listener<>(event -> dirty = chunks.remove(event.getChunk()));
-
-    @Override
-    public void destroy() {
-        GL11.glDeleteLists(1, 1);
-    }
+    private Listener<net.minecraftforge.event.world.ChunkEvent.Unload> unloadListener = new Listener<>(event ->
+            chunks.remove(event.getChunk())
+    );
 
     private enum SaveOption {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL
