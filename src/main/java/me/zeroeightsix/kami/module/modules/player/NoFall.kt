@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.math.VectorUtil
+import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
@@ -101,7 +101,7 @@ class NoFall : Module() {
                         }
                     }
                     CatchMode.TP -> {
-                        val pos = VectorUtil.getHighestTerrainPos(mc.player.position)
+                        val pos = VectorUtils.getHighestTerrainPos(mc.player.position)
                         TeleportCommand.teleport(mc, Vec3d(pos), false)
                     }
                     CatchMode.MOTION -> {
