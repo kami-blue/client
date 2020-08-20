@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
 import me.zeroeightsix.kami.util.KamiTessellator
@@ -35,7 +35,7 @@ class SelectionHighlight : Module() {
         val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
         val eyeBlockPos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
         if (!mc.world.isAirBlock(eyeBlockPos) && !mc.player.isInLava && !mc.player.isInWater) return
-        val colour = ColourHolder(r.value, g.value, b.value)
+        val colour = ColorHolder(r.value, g.value, b.value)
         val hitObject = mc.objectMouseOver
         val renderer = ESPRenderer()
 

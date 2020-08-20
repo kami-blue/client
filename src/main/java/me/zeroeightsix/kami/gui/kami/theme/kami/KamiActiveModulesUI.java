@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**

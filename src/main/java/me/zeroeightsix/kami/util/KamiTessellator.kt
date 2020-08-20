@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -98,12 +98,12 @@ object KamiTessellator : Tessellator(0x200000) {
      * Draws rectangles around [sides] of [box]
      *
      * @param box Box to be drawn rectangles around
-     * @param colour RGB
+     * @param color RGB
      * @param a Alpha
      * @param sides Sides to be drawn
      */
     @JvmStatic
-    fun drawBox(box: AxisAlignedBB, colour: ColourHolder, a: Int, sides: Int) {
+    fun drawBox(box: AxisAlignedBB, color: ColorHolder, a: Int, sides: Int) {
         val vertexList = BetterArrayList<Vec3d>()
 
         if (sides and GeometryMasks.Quad.DOWN != 0) {
@@ -126,7 +126,7 @@ object KamiTessellator : Tessellator(0x200000) {
         }
 
         for (pos in vertexList) {
-            buffer.pos(pos.x, pos.y, pos.z).color(colour.r, colour.g, colour.b, a).endVertex()
+            buffer.pos(pos.x, pos.y, pos.z).color(color.r, color.g, color.b, a).endVertex()
         }
     }
 
@@ -136,12 +136,12 @@ object KamiTessellator : Tessellator(0x200000) {
      * Draws a line from player crosshair to [position]
      *
      * @param position Position to be drawn line to
-     * @param colour RGB
+     * @param color RGB
      * @param a Alpha
      * @param thickness Thickness of the line
      */
     @JvmStatic
-    fun drawLineTo(position: Vec3d, colour: ColourHolder, a: Int, thickness: Float) {
+    fun drawLineTo(position: Vec3d, color: ColorHolder, a: Int, thickness: Float) {
         var eyePos = mc.player.getLook(pTicks()).add(mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ)
         if (mc.gameSettings.viewBobbing) { /* This why bobbing is so annoying */
             val yawRad = Math.toRadians(mc.player.rotationYaw.toDouble())
@@ -157,8 +157,8 @@ object KamiTessellator : Tessellator(0x200000) {
             eyePos = eyePos.subtract(xOffset, yOffset, zOffset)
         }
         GlStateManager.glLineWidth(thickness)
-        buffer.pos(eyePos.x, eyePos.y + mc.player.getEyeHeight(), eyePos.z).color(colour.r, colour.g, colour.b, a).endVertex()
-        buffer.pos(position.x, position.y, position.z).color(colour.r, colour.g, colour.b, a).endVertex()
+        buffer.pos(eyePos.x, eyePos.y + mc.player.getEyeHeight(), eyePos.z).color(color.r, color.g, color.b, a).endVertex()
+        buffer.pos(position.x, position.y, position.z).color(color.r, color.g, color.b, a).endVertex()
     }
 
     /**
@@ -167,13 +167,13 @@ object KamiTessellator : Tessellator(0x200000) {
      * Draws outline for [sides] of [box]
      *
      * @param box Box to be drawn outline
-     * @param colour RGB
+     * @param color RGB
      * @param a Alpha
      * @param sides Sides to draw outline
      * @param thickness Thickness of the outline
      */
     @JvmStatic
-    fun drawOutline(box: AxisAlignedBB, colour: ColourHolder, a: Int, sides: Int, thickness: Float) {
+    fun drawOutline(box: AxisAlignedBB, color: ColorHolder, a: Int, sides: Int, thickness: Float) {
         val vertexList = BetterArrayList<Pair<Vec3d, Vec3d>>()
         GlStateManager.glLineWidth(thickness)
 
@@ -197,8 +197,8 @@ object KamiTessellator : Tessellator(0x200000) {
         }
 
         for ((p1, p2) in vertexList) {
-            buffer.pos(p1.x, p1.y, p1.z).color(colour.r, colour.g, colour.b, a).endVertex()
-            buffer.pos(p2.x, p2.y, p2.z).color(colour.r, colour.g, colour.b, a).endVertex()
+            buffer.pos(p1.x, p1.y, p1.z).color(color.r, color.g, color.b, a).endVertex()
+            buffer.pos(p2.x, p2.y, p2.z).color(color.r, color.g, color.b, a).endVertex()
         }
     }
 

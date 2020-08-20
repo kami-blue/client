@@ -26,7 +26,7 @@ import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -58,7 +58,7 @@ public class KamiGUI extends GUI {
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
     public Theme theme;
 
-    public static ColourHolder primaryColour = new ColourHolder(29, 29, 29, 100);
+    public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
 
     public KamiGUI() {
         super(new KamiTheme());

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer {
-    private val toRender = HashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
+    private val toRender = HashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     var aFilled = 0
     var aOutline = 0
     var aTracer = 0
@@ -28,29 +28,29 @@ class ESPRenderer {
         return toRender.size
     }
 
-    fun add(entity: Entity, colour: ColourHolder) {
-        add(entity, colour, GeometryMasks.Quad.ALL)
+    fun add(entity: Entity, color: ColorHolder) {
+        add(entity, color, GeometryMasks.Quad.ALL)
     }
 
-    fun add(entity: Entity, colour: ColourHolder, sides: Int) {
+    fun add(entity: Entity, color: ColorHolder, sides: Int) {
         val interpolatedBox = entity.renderBoundingBox.offset(getInterpolatedAmount(entity, KamiTessellator.pTicks()))
-        add(interpolatedBox, colour, sides)
+        add(interpolatedBox, color, sides)
     }
 
-    fun add(pos: BlockPos, colour: ColourHolder) {
-        add(pos, colour, GeometryMasks.Quad.ALL)
+    fun add(pos: BlockPos, color: ColorHolder) {
+        add(pos, color, GeometryMasks.Quad.ALL)
     }
 
-    fun add(pos: BlockPos, colour: ColourHolder, sides: Int) {
-        add(AxisAlignedBB(pos), colour, sides)
+    fun add(pos: BlockPos, color: ColorHolder, sides: Int) {
+        add(AxisAlignedBB(pos), color, sides)
     }
 
-    fun add(box: AxisAlignedBB, colour: ColourHolder) {
-        add(box, colour, GeometryMasks.Quad.ALL)
+    fun add(box: AxisAlignedBB, color: ColorHolder) {
+        add(box, color, GeometryMasks.Quad.ALL)
     }
 
-    fun add(box: AxisAlignedBB, colour: ColourHolder, sides: Int) {
-        toRender[box] = Pair(colour, sides)
+    fun add(box: AxisAlignedBB, color: ColorHolder, sides: Int) {
+        toRender[box] = Pair(color, sides)
     }
 
     fun clear() {
@@ -81,18 +81,18 @@ class ESPRenderer {
         KamiTessellator.render()
     }
 
-    private fun drawFilled(box: AxisAlignedBB, pair: Pair<ColourHolder, Int>) {
+    private fun drawFilled(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aFilled * (pair.first.a / 255f)).toInt()
         KamiTessellator.drawBox(box, pair.first, a, pair.second)
     }
 
-    private fun drawOutline(box: AxisAlignedBB, pair: Pair<ColourHolder, Int>) {
+    private fun drawOutline(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aOutline * (pair.first.a / 255f)).toInt()
         val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
         KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
     }
 
-    private fun drawTracer(box: AxisAlignedBB, pair: Pair<ColourHolder, Int>) {
+    private fun drawTracer(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aTracer * (pair.first.a / 255f)).toInt()
         val offset = (tracerOffset - 50) / 100.0 * (box.maxY - box.minY)
         val offsetBox = box.center.add(0.0, offset, 0.0)

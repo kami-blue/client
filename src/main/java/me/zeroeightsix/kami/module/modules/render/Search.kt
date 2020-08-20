@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
@@ -95,7 +95,7 @@ class Search : Module() {
     private val chunkThreadPool = Executors.newCachedThreadPool()
     private val loadedChunks = ConcurrentSet<ChunkPos>()
     private val mainList = ConcurrentHashMap<ChunkPos, List<BlockPos>>()
-    private val renderList = ConcurrentHashMap<BlockPos, ColourHolder>()
+    private val renderList = ConcurrentHashMap<BlockPos, ColorHolder>()
     private val renderer = ESPRenderer()
     private var dirty = 0
     private var startTimeChunk = 0L
@@ -254,17 +254,17 @@ class Search : Module() {
         }).start()
     }
 
-    private fun getPosColor(pos: BlockPos): ColourHolder {
+    private fun getPosColor(pos: BlockPos): ColorHolder {
         val block = mc.world.getBlockState(pos).block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
-                ColourHolder(82, 49, 153)
+                ColorHolder(82, 49, 153)
             } else {
                 val colorInt = block.blockMapColor.colorValue
-                ColourHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
+                ColorHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
         } else {
-            ColourHolder(r.value, g.value, b.value)
+            ColorHolder(r.value, g.value, b.value)
         }
     }
     /* End of rendering */

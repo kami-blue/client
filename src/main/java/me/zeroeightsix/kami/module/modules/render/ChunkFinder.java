@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.render;
 
-import kotlin.Triple;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
@@ -9,16 +8,12 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.util.KamiTessellator;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.SystemUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -62,11 +57,11 @@ public class ChunkFinder extends Module {
 
         glLineWidth(2.0F);
         glDisable(GL_DEPTH_TEST);
-        ColourHolder color;
+        ColorHolder color;
         if (mc.player.dimension == -1) { /* Nether */
-            color = new ColourHolder(25, 225, 50);
+            color = new ColorHolder(25, 225, 50);
         } else {
-            color = new ColourHolder(255, 25, 50);
+            color = new ColorHolder(255, 25, 50);
         }
         BufferBuilder buffer = KamiTessellator.INSTANCE.getBuffer();
         for (Chunk chunk : chunks) {

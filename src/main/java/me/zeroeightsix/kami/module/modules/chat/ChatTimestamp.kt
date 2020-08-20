@@ -5,8 +5,8 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.color.ColorTextFormatting
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.TimeUtils
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
@@ -42,6 +42,6 @@ class ChatTimestamp : Module() {
         get() = "<" + TimeUtils.getFinalTime(setToText(secondColour.value), setToText(firstColour.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value) + TextFormatting.RESET + "> "
 
     private fun setToText(colourCode: ColourCode): TextFormatting? {
-        return ColourTextFormatting.toTextMap[colourCode]
+        return ColorTextFormatting.toTextMap[colourCode]
     }
 }

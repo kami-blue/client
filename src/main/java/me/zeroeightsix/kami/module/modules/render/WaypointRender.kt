@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -55,7 +55,7 @@ class WaypointRender : Module() {
 
     override fun onWorldRender(event: RenderEvent) {
         if (mc.player == null || mc.renderManager.options == null || waypoints.isEmpty()) return
-        val colour = ColourHolder(r.value, g.value, b.value)
+        val colour = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
@@ -82,11 +82,11 @@ class WaypointRender : Module() {
         glCallList(glList) /* Render the text after so it will be on top of the ESP */
     }
 
-    private fun drawVerticalLines(pos: BlockPos, colour: ColourHolder, a: Int) {
+    private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
         val box = AxisAlignedBB(pos.x.toDouble(), 0.0, pos.z.toDouble(),
                 pos.x + 1.0, 256.0, pos.z + 1.0)
         KamiTessellator.begin(GL_LINES)
-        KamiTessellator.drawOutline(box, colour, a, GeometryMasks.Quad.ALL, thickness.value)
+        KamiTessellator.drawOutline(box, color, a, GeometryMasks.Quad.ALL, thickness.value)
         KamiTessellator.render()
     }
 

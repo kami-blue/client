@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.util.ESPRenderer;
 import me.zeroeightsix.kami.util.GeometryMasks;
 import me.zeroeightsix.kami.util.TrajectoryCalculator;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -56,7 +56,7 @@ public class Trajectories extends Module {
                             renderer.setThickness(0.0f);
                             renderer.setFullOutline(true);
                             AxisAlignedBB box = mc.world.getBlockState(hit).getSelectedBoundingBox(mc.world, hit);
-                            renderer.add(box.grow(0.002), new ColourHolder(255, 255, 255), GeometryMasks.Quad.ALL);
+                            renderer.add(box.grow(0.002), new ColorHolder(255, 255, 255), GeometryMasks.Quad.ALL);
                             renderer.render(true);
                             GlStateManager.popMatrix();
                         }

@@ -18,10 +18,9 @@ import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt;
+import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**

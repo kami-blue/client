@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.colourUtils.DyeColors
-import me.zeroeightsix.kami.util.colourUtils.HueCycler
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.color.DyeColors
+import me.zeroeightsix.kami.util.color.HueCycler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
@@ -63,7 +63,7 @@ class StorageESP : Module() {
         TYPE, COLOR ,RENDER
     }
 
-    private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
+    private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
@@ -114,7 +114,7 @@ class StorageESP : Module() {
         }
     }
 
-    private fun getTileEntityColor(tileEntity: TileEntity): ColourHolder? {
+    private fun getTileEntityColor(tileEntity: TileEntity): ColorHolder? {
         val color = (when (tileEntity) {
             is TileEntityChest -> colorChest
             is TileEntityDispenser -> colorDispenser
@@ -129,7 +129,7 @@ class StorageESP : Module() {
         } else color
     }
 
-    private fun getEntityColor(entity: Entity): ColourHolder? {
+    private fun getEntityColor(entity: Entity): ColorHolder? {
         val color =  (when (entity) {
             is EntityMinecartContainer -> colorCart
             is EntityItemFrame -> colorFrame

@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.shader.Shader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -72,7 +71,7 @@ class ESP : Module() {
         if (mc.renderManager.options == null || entityList == null) return
         when (mode.value) {
             ESPMode.BOX -> {
-                val colour = ColourHolder(r.value, g.value, b.value)
+                val colour = ColorHolder(r.value, g.value, b.value)
                 val renderer = ESPRenderer()
                 renderer.aFilled = if (filled.value) aFilled.value else 0
                 renderer.aOutline = if (outline.value) aOutline.value else 0

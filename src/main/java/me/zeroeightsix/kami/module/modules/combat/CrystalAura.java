@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.*;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
@@ -351,9 +350,9 @@ public class CrystalAura extends Module {
             if (tracer.getValue()) {
                 tracerAlpha = aTracer.getValue();
             }
-            ColourHolder colour = new ColourHolder(255, 255, 255);
+            ColorHolder colour = new ColorHolder(255, 255, 255);
             if (customColours.getValue()) {
-                colour = new ColourHolder(r.getValue(), g.getValue(), b.getValue());
+                colour = new ColorHolder(r.getValue(), g.getValue(), b.getValue());
             }
             ESPRenderer renderer = new ESPRenderer();
             renderer.setAFilled(aBlock.getValue());

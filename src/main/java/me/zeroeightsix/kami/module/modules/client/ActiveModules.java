@@ -4,15 +4,14 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
+import me.zeroeightsix.kami.util.color.ColorTextFormatting;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.colourEnumMap;
-import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt;
+import static me.zeroeightsix.kami.util.color.ColorTextFormatting.colourEnumMap;
+import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.MathsUtils.isNumberEven;
 import static me.zeroeightsix.kami.util.MathsUtils.reverseNumber;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
@@ -90,7 +89,7 @@ public class ActiveModules extends Module {
 
     }
 
-    private TextFormatting setToText(ColourTextFormatting.ColourCode colourCode) {
+    private TextFormatting setToText(ColorTextFormatting.ColourCode colourCode) {
         return toTextMap.get(colourCode);
     }
 
