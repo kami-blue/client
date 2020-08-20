@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.Timer
+import me.zeroeightsix.kami.util.TimerUtils
 
 /**
  * @author dominikaaaa
@@ -32,7 +32,7 @@ class CommandConfig : Module() {
         NONE, ERROR, WARN, ALL
     }
 
-    val timer = Timer(Timer.TimeUnit.MINUTES)
+    val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     override fun onUpdate() {
         if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
