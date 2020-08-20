@@ -158,6 +158,7 @@ public class KamiMod {
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
         SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
+        SettingsRegister.register("Friends", Friends.friends); /* Temp fix for now, will be converted to a manager later */
         ConfigUtils.INSTANCE.loadAll();
 
         new RichPresence();
