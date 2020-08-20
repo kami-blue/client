@@ -25,11 +25,4 @@ object WaypointManager : Manager() {
         KamiMod.log.info("Saving waypoints...")
         return Waypoint.writeMemoryToFile()
     }
-
-    /**
-     * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
-     */
-    init {
-        loadWaypoints()
-    }
 }

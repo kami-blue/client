@@ -53,8 +53,4 @@ object MacroManager : Manager() {
             }
         }
     }
-
-    init {
-        loadMacros()
-    }
 }
