@@ -6,6 +6,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
+import me.zeroeightsix.kami.gui.kami.component.Potions;
 import me.zeroeightsix.kami.gui.kami.component.Radar;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
@@ -23,13 +24,10 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.LagCompensator;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
-import me.zeroeightsix.kami.util.textUtils.RomanNumerals;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.*;
@@ -44,7 +42,6 @@ import javax.annotation.Nonnull;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
@@ -214,38 +211,14 @@ public class KamiGUI extends GUI {
         frames.add(frame);
 
         /*
-         * Testing
+         * Potions
          */
-        /*
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Info2");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-//        Label information2 = new Label("");
-        EnumButton theme = new EnumButton("Theme", new String[] {"Modern", "Modern2", "Kami", "Kami Blue", "Custom"});
-        ColorizedCheckButton checkButton = new ColorizedCheckButton("Button");
-//        checkButton.addTickListener(() -> {
-//            if (checkButton.isFocused()) {
-//                sendChatMessage("focused");
-//            }
-//            else if (checkButton.isHovered()) {
-//                sendChatMessage("hovered");
-//            }
-//            else if (checkButton.isToggled()) {
-//                sendChatMessage("toggled");
-//            }
-//        });
-
-//        information.setShadow(true);
-//        information2.addTickListener(() -> {
-//            information2.setText("");
-//            information2.addLine(KamiMod.colour + "b" + KamiMod.KAMI_KANJI + KamiMod.colour + "3 " + KamiMod.MODVER);
-//            information2.addLine(KamiMod.colour + "b" + Math.round(LagCompensator.INSTANCE.getTickRate()) + KamiMod.colour + "3 tps");
-//            information2.addLine(KamiMod.colour + "b" + Minecraft.debugFPS + KamiMod.colour + "3 fps");
-//        });
-        frame.addChild(theme, checkButton);
-//        information2.setFontRenderer(fontRenderer);
-        frames.add(frame);
-        */
+        Frame frame2 = new Frame(getTheme(), new Stretcherlayout(1), "Potion Effects");
+        frame2.setCloseable(false);
+        frame2.setMinimizeable(true);
+        frame2.setPinnable(true);
+        frame2.addChild(new Potions());
+        frames.add(frame2);
 
         /*
          * Information Overlay / InfoOverlay
@@ -451,42 +424,6 @@ public class KamiGUI extends GUI {
         entityLabel.setShadow(true);
         entityLabel.setFontRenderer(fontRenderer);
         frames.add(frame);
-
-        /*
-         * Potion Effects
-         */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Potions");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-        Label potionsLabel = new Label("");
-        potionsLabel.addTickListener(new TickListener() {
-            final Minecraft mc = Minecraft.getMinecraft();
-
-            @Override
-            public void onTick() {
-                potionsLabel.setText("");
-                if (mc.player == null) return;
-
-                // loop through potions and add them to the potions label
-                mc.player.getActivePotionMap().forEach((potion, potionEffect) -> {
-                    String name = I18n.format(potion.getName());
-                    String amplifier = RomanNumerals.INSTANCE.numberToRoman(potionEffect.getAmplifier() + 1); // add one because minecraft starts at 0
-                    long secDuration = new Float(potionEffect.getDuration() / LagCompensator.INSTANCE.getTickRate()).longValue();
-                    long min = TimeUnit.SECONDS.toMinutes(secDuration);
-                    long secs = TimeUnit.SECONDS.toSeconds(secDuration) - (min * 60);
-                    String potionText = String.format("%s %s (%d:%02d)", name, amplifier, min, secs);
-                    potionsLabel.addLine(potionText);
-                });
-
-            }
-        });
-
-        frame.addChild(potionsLabel);
-        potionsLabel.setFontRenderer(fontRenderer);
-        potionsLabel.setShadow(true);
-        frame.setMinimumWidth(80);
-        frames.add(frame);
-
 
         /*
          * Coordinates

@@ -27,6 +27,7 @@ public class KamiTheme extends AbstractTheme {
         installUI(new RootChatUI());
         installUI(new RootCheckButtonUI());
         installUI(new KamiActiveModulesUI());
+        installUI(new KamiPotionUi());
         installUI(new KamiSettingsPanelUI());
         installUI(new RootSliderUI());
         installUI(new KamiEnumButtonUI());
