@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.GeometryMasks
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.KamiTessellator
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult.Type

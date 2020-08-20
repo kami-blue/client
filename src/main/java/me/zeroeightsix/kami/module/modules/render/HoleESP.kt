@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.GeometryMasks
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap

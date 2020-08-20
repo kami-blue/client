@@ -1,6 +1,7 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
+import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity

@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util.graphics;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;

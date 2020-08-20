@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.hidden
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.GuiFrameUtil
+import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
 /**
  * @author dominikaaaa
