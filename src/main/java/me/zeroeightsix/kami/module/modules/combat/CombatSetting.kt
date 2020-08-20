@@ -156,4 +156,7 @@ class CombatSetting : Module() {
         return if (module is Aura || module is AimBot) ignoreWalls.value else true
     }
 
+    init {
+        this.enable()
+    }
 }
