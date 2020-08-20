@@ -14,7 +14,6 @@ object WaypointManager : Manager() {
      * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
      */
     fun loadWaypoints(): Boolean {
-        KamiMod.log.info("Loading waypoints...")
         return Waypoint.readFileToMemory()
     }
 
@@ -22,7 +21,6 @@ object WaypointManager : Manager() {
      * Saves waypoints from the waypoints ArrayList into KAMIBlueWaypoints.json
      */
     fun saveWaypoints(): Boolean {
-        KamiMod.log.info("Saving waypoints...")
         return Waypoint.writeMemoryToFile()
     }
 }
