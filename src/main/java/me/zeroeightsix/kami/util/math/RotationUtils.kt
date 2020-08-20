@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.math
 
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2

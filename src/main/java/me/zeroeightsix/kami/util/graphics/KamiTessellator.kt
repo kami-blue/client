@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.util.BetterArrayList
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

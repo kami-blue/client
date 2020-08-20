@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.WaypointInfo
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos

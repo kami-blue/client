@@ -5,9 +5,7 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.KamiTessellator
-import me.zeroeightsix.kami.util.KamiTessellator.prepareGL
-import me.zeroeightsix.kami.util.KamiTessellator.releaseGL
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -69,7 +67,7 @@ object ModuleManager {
     fun onWorldRender(event: RenderWorldLastEvent) {
         mc.profiler.startSection("kami")
         mc.profiler.startSection("setup")
-        prepareGL()
+        KamiTessellator.prepareGL()
         GlStateManager.glLineWidth(1f)
         val renderPos = getInterpolatedPos(mc.renderViewEntity!!, event.partialTicks)
         val e = RenderEvent(KamiTessellator, renderPos)
@@ -77,15 +75,15 @@ object ModuleManager {
         mc.profiler.endSection()
         for (module in moduleList) {
             if (isModuleListening(module)) {
-                prepareGL()
+                KamiTessellator.prepareGL()
                 module.onWorldRender(e)
-                releaseGL()
+                KamiTessellator.releaseGL()
                 mc.profiler.endSection()
             }
         }
         mc.profiler.startSection("release")
         GlStateManager.glLineWidth(1f)
-        releaseGL()
+        KamiTessellator.releaseGL()
         mc.profiler.endSection()
     }
 

@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
