@@ -11,8 +11,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.MathsUtils.Cardinal
+import me.zeroeightsix.kami.util.math.MathUtils
+import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
@@ -75,7 +75,7 @@ class AutoWalk : Module() {
             return
         }
 
-        when (MathsUtils.getPlayerCardinal(mc)) {
+        when (MathUtils.getPlayerCardinal(mc)) {
             Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
             Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
             Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
@@ -90,7 +90,7 @@ class AutoWalk : Module() {
             }
         }
 
-        direction = MathsUtils.getPlayerCardinal(mc).cardinalName
+        direction = MathUtils.getPlayerCardinal(mc).cardinalName
     }
 
     override fun getHudInfo(): String {

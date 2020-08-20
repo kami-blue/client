@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.MathsUtils.convertRange
+import me.zeroeightsix.kami.util.math.MathUtils.convertRange
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler

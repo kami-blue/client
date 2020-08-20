@@ -2,12 +2,6 @@ package me.zeroeightsix.kami.module.modules
 
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager.getModuleT
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.Wrapper.minecraft
-import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 
 /**

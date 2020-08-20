@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.math
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
@@ -8,7 +8,7 @@ import kotlin.math.*
  * Created by Dewy on the 17th of April, 2020
  * Updated by Xiaro on 18/08/20
  */
-object MathsUtils {
+object MathUtils {
     @JvmStatic
     fun mcPlayerPosFloored(mc: Minecraft): BlockPos {
         return BlockPos(floor(mc.player.posX), floor(mc.player.posY), floor(mc.player.posZ))

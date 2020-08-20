@@ -24,7 +24,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.MathsUtils;
+import me.zeroeightsix.kami.util.math.MathUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.client.Minecraft;
@@ -473,7 +473,7 @@ public class KamiGUI extends GUI {
                 );
                 coordsLabel.setText("");
                 coordsLabel.addLine(ow);
-                coordsLabel.addLine(MathsUtils.getPlayerCardinal(mc).cardinalName + colouredSeparator + nether);
+                coordsLabel.addLine(MathUtils.getPlayerCardinal(mc).cardinalName + colouredSeparator + nether);
             }
         });
         frame.addChild(coordsLabel);

@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtils;
-import me.zeroeightsix.kami.util.MathsUtils;
+import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityTameable;
@@ -102,22 +102,22 @@ public class MobOwner extends Module {
 
     private String getSpeed(AbstractHorse horse) {
         if (!speed.getValue()) return "";
-        return " S: " + MathsUtils.round(43.17 * horse.getAIMoveSpeed(), 2);
+        return " S: " + MathUtils.round(43.17 * horse.getAIMoveSpeed(), 2);
     }
 
     private String getJump(AbstractHorse horse) {
         if (!jump.getValue()) return "";
-        return " J: " + MathsUtils.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 2);
+        return " J: " + MathUtils.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 2);
     }
 
     private String getHealth(AbstractHorse horse) {
         if (!hp.getValue()) return "";
-        return " HP: " + MathsUtils.round(horse.getHealth(), 2);
+        return " HP: " + MathUtils.round(horse.getHealth(), 2);
     }
 
     private String getHealth(EntityTameable tameable) {
         if (!hp.getValue()) return "";
-        return " HP: " + MathsUtils.round(tameable.getHealth(), 2);
+        return " HP: " + MathUtils.round(tameable.getHealth(), 2);
     }
 
     public void onUpdate() {

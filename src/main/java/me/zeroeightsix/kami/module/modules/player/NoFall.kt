@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.VectorUtil
+import me.zeroeightsix.kami.util.math.VectorUtil
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack

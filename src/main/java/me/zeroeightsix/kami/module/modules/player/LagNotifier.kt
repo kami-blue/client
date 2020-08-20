@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
 
@@ -77,7 +78,7 @@ class LagNotifier : Module() {
     private val receiveListener = Listener(EventHook { event: Receive? -> serverLastUpdated = System.currentTimeMillis() })
 
     private fun timeDifference(): Double {
-        return MathsUtils.round((System.currentTimeMillis() - serverLastUpdated) / 1000.0, 1)
+        return MathUtils.round((System.currentTimeMillis() - serverLastUpdated) / 1000.0, 1)
     }
 
     private fun shouldPing(): Boolean {

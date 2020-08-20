@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -318,8 +319,8 @@ object EntityUtils {
         val diffY = (entity.boundingBox.center.y) - (mc.player.posY + mc.player.getEyeHeight())
 
         val xz = MathHelper.sqrt(diffX * diffX + diffZ * diffZ).toDouble()
-        val yaw = MathsUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
-        val pitch = MathsUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
+        val yaw = MathUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
+        val pitch = MathUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
 
         return arrayOf(yaw, pitch)
     }

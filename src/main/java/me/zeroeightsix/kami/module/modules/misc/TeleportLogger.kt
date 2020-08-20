@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
@@ -37,7 +38,7 @@ class TeleportLogger : Module() {
                     teleportedPlayers.remove(player.name)
 
                     if (removed) {
-                        if (printRemove.value) MessageSendHelper.sendChatMessage("$chatName Removed ${player.name}, they are now ${MathsUtils.round(player.getDistance(mc.player), 1)} blocks away")
+                        if (printRemove.value) MessageSendHelper.sendChatMessage("$chatName Removed ${player.name}, they are now ${MathUtils.round(player.getDistance(mc.player), 1)} blocks away")
                     } else {
                         if (printRemove.value) MessageSendHelper.sendErrorMessage("$chatName Error removing ${player.name} from coords, their position wasn't saved anymore")
                     }

@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayer
@@ -63,7 +63,7 @@ class NoSlowDown : Module() {
     @EventHandler
     private val receivedEvent = Listener(EventHook { event: PacketEvent.PostSend ->
         if (ncpStrict.value && event.packet is CPacketPlayer && passItemCheck(mc.player.activeItemStack.getItem()) && !mc.player.isRiding) {
-            mc.player.connection.sendPacket(CPacketPlayerDigging(Action.ABORT_DESTROY_BLOCK, MathsUtils.mcPlayerPosFloored(mc), EnumFacing.DOWN))
+            mc.player.connection.sendPacket(CPacketPlayerDigging(Action.ABORT_DESTROY_BLOCK, MathUtils.mcPlayerPosFloored(mc), EnumFacing.DOWN))
         }
     })
 

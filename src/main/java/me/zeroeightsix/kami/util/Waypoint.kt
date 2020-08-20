@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
 import java.io.*
@@ -67,7 +68,7 @@ object Waypoint {
 
     fun getCurrentCoord(): BlockPos {
         val mc = Minecraft.getMinecraft()
-        return MathsUtils.mcPlayerPosFloored(mc)
+        return MathUtils.mcPlayerPosFloored(mc)
     }
 
     fun writePlayerCoords(locationName: String): BlockPos {
