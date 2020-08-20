@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import java.awt.*;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
