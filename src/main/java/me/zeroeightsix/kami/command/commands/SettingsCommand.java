@@ -11,8 +11,8 @@ import me.zeroeightsix.kami.setting.impl.EnumSetting;
 import java.util.List;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendStringChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage;
 
 /**
  * Created by 086 on 11/12/2017.

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.textUtils.RomanNumerals
+import me.zeroeightsix.kami.util.text.RomanNumerals
 import net.minecraft.potion.PotionEffect
 import java.util.concurrent.TimeUnit
 

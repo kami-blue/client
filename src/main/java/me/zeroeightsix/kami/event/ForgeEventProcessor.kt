@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.module.modules.render.*
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.*
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager

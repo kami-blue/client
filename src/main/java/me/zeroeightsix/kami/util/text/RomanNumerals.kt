@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.textUtils
+package me.zeroeightsix.kami.util.text
 
 object RomanNumerals {
     fun numberToRoman(number: Int): String {

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by 086 on 28/12/2017.

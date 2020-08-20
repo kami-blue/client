@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
-import me.zeroeightsix.kami.module.modules.combat.Surround
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketEntityStatus
 

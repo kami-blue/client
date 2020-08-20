@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.InfoCalculator.speed;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * @author dominikaaaa

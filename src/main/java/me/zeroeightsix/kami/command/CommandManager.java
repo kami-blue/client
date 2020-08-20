@@ -5,11 +5,10 @@ import me.zeroeightsix.kami.command.commands.BindCommand;
 import me.zeroeightsix.kami.util.ClassFinder;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static me.zeroeightsix.kami.util.CommandUtil.runAliases;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 public class CommandManager {
 

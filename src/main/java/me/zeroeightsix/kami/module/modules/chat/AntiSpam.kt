@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageDetectionHelper
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

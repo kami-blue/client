@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.WebUtils;
 import java.util.Arrays;
 import java.util.List;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by dominikaaaa on 01/12/2019.

@@ -15,7 +15,7 @@ import net.minecraft.network.play.client.CPacketCustomPayload;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * @author 0x2E | PretendingToCode

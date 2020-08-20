@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 import static org.lwjgl.opengl.GL11.*;
 
 /**

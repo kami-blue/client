@@ -14,7 +14,7 @@ import static me.zeroeightsix.kami.util.color.ColorTextFormatting.colourEnumMap;
 import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.MathsUtils.isNumberEven;
 import static me.zeroeightsix.kami.util.MathsUtils.reverseNumber;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * @author dominikaaaa

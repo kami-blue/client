@@ -22,8 +22,8 @@ import net.minecraft.network.play.server.SPacketChat;
 
 import static me.zeroeightsix.kami.KamiMod.EVENT_BUS;
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageDetectionHelper.*;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageDetectionHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author dominikaaaa

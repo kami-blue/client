@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 
 import java.util.Comparator;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by 086 on 12/11/2017.

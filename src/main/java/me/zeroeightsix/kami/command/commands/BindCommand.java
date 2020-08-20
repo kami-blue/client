@@ -9,15 +9,10 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
-import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.Wrapper;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
  * Created by 086 on 12/11/2017.

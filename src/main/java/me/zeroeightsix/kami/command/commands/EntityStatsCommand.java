@@ -8,8 +8,8 @@ import net.minecraft.entity.passive.AbstractHorse;
 
 import java.util.Objects;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * Created by d1gress/Qther on 25/11/2017, updated on 16/12/2019

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * @author dominikaaaa

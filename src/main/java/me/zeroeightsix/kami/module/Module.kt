@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.setting.builder.SettingBuilder
 import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 import java.util.*

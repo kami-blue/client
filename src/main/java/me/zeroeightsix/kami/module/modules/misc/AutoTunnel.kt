@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MathsUtils.CardinalMain
 import me.zeroeightsix.kami.util.MathsUtils.getPlayerMainCardinal
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**

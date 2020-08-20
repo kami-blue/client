@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.text
 
 import java.util.regex.Pattern
 

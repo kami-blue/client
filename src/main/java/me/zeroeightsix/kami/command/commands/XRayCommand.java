@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.render.XRay;
 import net.minecraft.block.Block;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
  * Created by 20kdc on 17/02/2020.

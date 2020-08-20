@@ -13,7 +13,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MathsUtils
 import me.zeroeightsix.kami.util.MathsUtils.Cardinal
-import me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 

@@ -5,7 +5,7 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.client.gui.GuiGameOver
 import java.util.*
 

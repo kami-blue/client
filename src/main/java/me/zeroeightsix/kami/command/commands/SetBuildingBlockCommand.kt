@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.Block.getBlockFromItem
 import net.minecraft.block.BlockAir
 import net.minecraft.item.Item.getIdFromItem

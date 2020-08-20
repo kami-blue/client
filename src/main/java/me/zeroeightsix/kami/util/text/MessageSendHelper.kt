@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.text
 
 import baritone.api.BaritoneAPI
 import baritone.api.event.events.ChatEvent
