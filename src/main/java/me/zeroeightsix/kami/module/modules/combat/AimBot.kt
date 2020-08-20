@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtils.faceEntity
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
 import net.minecraft.item.ItemBow
 
 /**

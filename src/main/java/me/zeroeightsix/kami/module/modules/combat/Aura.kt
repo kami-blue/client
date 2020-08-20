@@ -11,11 +11,11 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtils.faceEntity
-import me.zeroeightsix.kami.util.EntityUtils.getFaceEntityRotation
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayer
@@ -117,9 +117,9 @@ class Aura : Module() {
             } else {
                 val target = getPrioritizedTarget(targetList.toTypedArray(), priority.value)
                 if (spoofRotation.value) {
-                    val rotation = getFaceEntityRotation(target)
-                    yaw = rotation[0]
-                    pitch = rotation[1]
+                    val rotation = getRotationToEntity(target)
+                    yaw = rotation.first.toFloat()
+                    pitch = rotation.second.toFloat()
                 }
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)

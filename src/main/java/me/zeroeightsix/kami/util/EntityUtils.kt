@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.math.MathUtils
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationFromVec
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -22,7 +22,10 @@ import net.minecraft.util.math.Vec3d
 import org.apache.commons.io.IOUtils
 import java.io.IOException
 import java.net.URL
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 object EntityUtils {
     private val mc = Minecraft.getMinecraft()
@@ -150,24 +153,6 @@ object EntityUtils {
         return false
     }
 
-    @JvmStatic
-    fun calculateLookAt(px: Double, py: Double, pz: Double, me: EntityPlayer): DoubleArray {
-        var dirx = me.posX - px
-        var diry = me.posY - py
-        var dirz = me.posZ - pz
-        val len = sqrt(dirx * dirx + diry * diry + dirz * dirz)
-        dirx /= len
-        diry /= len
-        dirz /= len
-        var pitch = asin(diry)
-        var yaw = atan2(dirz, dirx)
-
-        // to degree
-        pitch = Math.toDegrees(pitch)
-        yaw = Math.toDegrees(yaw) + 90.0
-        return doubleArrayOf(yaw, pitch)
-    }
-
     fun isPlayer(entity: Entity?): Boolean {
         return entity is EntityPlayer
     }
@@ -180,33 +165,9 @@ object EntityUtils {
         return cos(Math.toRadians(yaw.toDouble()))
     }
 
-    fun getRotationFromVec3d(vec3d: Vec3d): Array<Double> {
-        var x = vec3d.x
-        var y = vec3d.y
-        var z = vec3d.z
-        val speed = sqrt(x * x + y * y + z * z)
-
-        x /= speed
-        y /= speed
-        z /= speed
-
-        val yaw = Math.toDegrees(atan2(z, x)) - 90.0
-        val pitch = Math.toDegrees(-asin(y))
-
-        return arrayOf(yaw, pitch)
-    }
-
-    fun getRotationFromBlockPos(posFrom: BlockPos, posTo: BlockPos): Array<Double> {
-        val delta = doubleArrayOf((posFrom.x - posTo.x).toDouble(), (posFrom.y - posTo.y).toDouble(), (posFrom.z - posTo.z).toDouble())
-        val yaw = Math.toDegrees(atan2(delta[0], -delta[2]))
-        val dist = sqrt(delta[0] * delta[0] + delta[2] * delta[2])
-        val pitch = Math.toDegrees(atan2(delta[1], dist))
-        return arrayOf(yaw, pitch)
-    }
-
     fun resetHSpeed(speed: Float, player: EntityPlayer) {
         val vec3d = Vec3d(player.motionX, player.motionY, player.motionZ)
-        val yaw = Math.toRadians(getRotationFromVec3d(vec3d)[0])
+        val yaw = Math.toRadians(getRotationFromVec(vec3d).first)
         player.motionX = sin(-yaw) * speed
         player.motionZ = cos(yaw) * speed
     }
@@ -311,25 +272,6 @@ object EntityUtils {
 
     fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
         return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
-    }
-
-    fun getFaceEntityRotation(entity: Entity): Array<Float> {
-        val diffX = entity.posX - mc.player.posX
-        val diffZ = entity.posZ - mc.player.posZ
-        val diffY = (entity.boundingBox.center.y) - (mc.player.posY + mc.player.getEyeHeight())
-
-        val xz = MathHelper.sqrt(diffX * diffX + diffZ * diffZ).toDouble()
-        val yaw = MathUtils.normalizeAngle(atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0f).toFloat()
-        val pitch = MathUtils.normalizeAngle(-atan2(diffY, xz) * 180.0 / Math.PI).toFloat()
-
-        return arrayOf(yaw, pitch)
-    }
-
-    fun faceEntity(entity: Entity) {
-        val rotation = getFaceEntityRotation(entity)
-
-        mc.player.rotationYaw = rotation[0]
-        mc.player.rotationPitch = rotation[1]
     }
 
     fun getDroppedItems(itemId: Int, range: Float): Array<Entity>? {

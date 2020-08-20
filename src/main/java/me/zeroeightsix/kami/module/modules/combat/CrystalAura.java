@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
+import kotlin.Pair;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
@@ -9,7 +10,9 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.EntityUtils;
+import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.ESPRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -39,7 +42,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
-import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
+import static me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
@@ -317,7 +320,7 @@ public class CrystalAura extends Module {
                 }
                 return;
             }
-            lookAtPacket(q.x + .5, q.y - .5, q.z + .5, mc.player);
+            lookAtPacket(new Vec3d(q.x + .5, q.y - .5, q.z + .5));
             RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(q.x + .5, q.y - .5d, q.z + .5));
             EnumFacing f;
             if (result == null || result.sideHit == null) {
@@ -363,9 +366,9 @@ public class CrystalAura extends Module {
         }
     }
 
-    private void lookAtPacket(double px, double py, double pz, EntityPlayer me) {
-        double[] v = calculateLookAt(px, py, pz, me);
-        setYawAndPitch((float) v[0], (float) v[1]+1f);
+    private void lookAtPacket(Vec3d pos) {
+        Pair<Double, Double> lookAt = getRotationTo(pos, true);
+        setYawAndPitch((float) (double) lookAt.getFirst(), (float) (double) lookAt.getSecond());
     }
 
     private boolean canPlaceCrystal(BlockPos blockPos) {
@@ -511,7 +514,7 @@ public class CrystalAura extends Module {
                 ignoredCrystals.add(crystal);
                 hitTries = 0;
             } else {
-                lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, mc.player);
+                lookAtPacket(crystal.getPositionVector());
                 mc.playerController.attackEntity(mc.player, crystal);
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             }

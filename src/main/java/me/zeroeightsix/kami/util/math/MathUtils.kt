@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.math
 
+import me.zeroeightsix.kami.util.math.RotationUtils.normalizeAngle
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
 import kotlin.math.*
@@ -12,19 +13,6 @@ object MathUtils {
     @JvmStatic
     fun mcPlayerPosFloored(mc: Minecraft): BlockPos {
         return BlockPos(floor(mc.player.posX), floor(mc.player.posY), floor(mc.player.posZ))
-    }
-
-    @JvmStatic
-    fun normalizeAngle(angleIn: Double): Double {
-        var angle = angleIn
-        angle %= 360.0
-        if (angle >= 180.0) {
-            angle -= 360.0
-        }
-        if (angle < -180.0) {
-            angle += 360.0
-        }
-        return angle
     }
 
     @JvmStatic
