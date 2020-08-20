@@ -9,17 +9,15 @@ import me.zeroeightsix.kami.gui.rgui.component.Component
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
 import me.zeroeightsix.kami.gui.rgui.util.Docking
-import me.zeroeightsix.kami.module.MacroManager
-import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.WaypointManager
+import me.zeroeightsix.kami.manager.mangers.MacroManager
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
-import java.util.concurrent.Executors
-import java.util.function.Consumer
 
 object ConfigUtils {
 
@@ -177,9 +175,11 @@ object ConfigUtils {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }
         }
-        KamiMod.getInstance().getGuiManager().children.stream()
-                .filter { component: Component -> component is Frame && component.isPinnable && component.isVisible() }
-                .forEach { component: Component -> component.opacity = 0f }
+        for (component in KamiMod.getInstance().guiManager.children) {
+            if (component !is Frame) continue
+            if (!component.isPinnable || !component.isVisible) continue
+            component.opacity = 0f
+        }
     }
 
     @Throws(IOException::class)
@@ -201,9 +201,9 @@ object ConfigUtils {
         val outputFile = Paths.get(getConfigName()!!)
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)
-        KamiMod.MODULE_MANAGER.modules.forEach(Consumer { obj: Module ->
-            obj.destroy()
-        })
+        for (module in ModuleManager.getModules()) {
+            module.destroy()
+        }
     }
 
     private const val KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json"

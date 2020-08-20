@@ -55,6 +55,6 @@ object MacroManager : Manager() {
     }
 
     init {
-        registerMacros()
+        loadMacros()
     }
 }

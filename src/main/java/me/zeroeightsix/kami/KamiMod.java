@@ -112,7 +112,7 @@ public class KamiMod {
     @Mod.Instance
     private static KamiMod INSTANCE;
 
-    public KamiGUI guiManager;
+    private KamiGUI guiManager;
     public CommandManager commandManager;
     public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
         @Override
@@ -285,7 +285,11 @@ public class KamiMod {
     }
 
     public KamiGUI getGuiManager() {
-        return guiManager;
+        return this.guiManager;
+    }
+
+    public void setGuiManager(KamiGUI guiManager) {
+        this.guiManager = guiManager;
     }
 
     public CommandManager getCommandManager() {

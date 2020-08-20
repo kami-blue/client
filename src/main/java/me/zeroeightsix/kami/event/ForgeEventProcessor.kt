@@ -59,7 +59,7 @@ open class ForgeEventProcessor {
             KamiMod.EVENT_BUS.post(DisplaySizeChangedEvent())
             displayWidth = mc.displayWidth
             displayHeight = mc.displayHeight
-            for (component in KamiMod.getInstance().getGuiManager().children) {
+            for (component in KamiMod.getInstance().guiManager.children) {
                 if (component !is Frame) continue
                 KamiGUI.dock(component)
             }
@@ -102,7 +102,7 @@ open class ForgeEventProcessor {
 
         GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay::class.java) || !ModuleManager.getModuleT(AntiOverlay::class.java)!!.portals.value
         ModuleManager.onUpdate()
-        KamiMod.getInstance().getGuiManager().callTick(KamiMod.getInstance().getGuiManager())
+        KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
     }
 
     @SubscribeEvent

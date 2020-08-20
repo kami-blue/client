@@ -6,13 +6,8 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.gui.kami.KamiGUI
-import me.zeroeightsix.kami.module.MacroManager.saveMacros
-import me.zeroeightsix.kami.module.WaypointManager.saveWaypoints
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Waypoint
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
