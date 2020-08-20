@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
-import me.zeroeightsix.kami.util.BeaconGui;
+import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -53,7 +53,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         if (MODULE_MANAGER.isModuleEnabled(BeaconSelector.class)) {
             if (chestInventory instanceof IInteractionObject) {
                 if ("minecraft:beacon".equals(((IInteractionObject)chestInventory).getGuiID())) {
-                    Minecraft.getMinecraft().displayGuiScreen(new BeaconGui(this.inventory, chestInventory));
+                    Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
                     ci.cancel();
                 }
             }
