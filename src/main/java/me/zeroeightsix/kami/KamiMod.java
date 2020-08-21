@@ -156,6 +156,8 @@ public class KamiMod {
 
         MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
 
+        guiManager = new KamiGUI();
+        guiManager.initializeGUI();
         commandManager = new CommandManager();
 
         Friends.initFriends();
