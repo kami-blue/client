@@ -6,19 +6,15 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.gui.kami.KamiGUI
-import me.zeroeightsix.kami.module.MacroManager.saveMacros
-import me.zeroeightsix.kami.module.WaypointManager.saveWaypoints
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Waypoint
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
  * Created by 086 on 14/10/2018.
+ * Updated by Xiaro on 21/08/20
  */
 class ConfigCommand : Command("config", ChunkBuilder()
         .append("mode", true, EnumParser(arrayOf("reload", "save", "path")))
@@ -42,7 +38,7 @@ class ConfigCommand : Command("config", ChunkBuilder()
             "save" -> {
                 Thread {
                     val saved = ConfigUtils.saveAll()
-                    if (saved) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints reloaded!")
+                    if (saved) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints saved!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
                 }.start()
             }
