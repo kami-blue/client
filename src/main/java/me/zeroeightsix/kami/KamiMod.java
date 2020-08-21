@@ -37,7 +37,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
@@ -95,7 +94,7 @@ public class KamiMod {
     public static final EventBus EVENT_BUS = new EventManager();
 
     /**
-     * @deprecated Use ModuleManger.INSTANCE instead
+     * @deprecated Use ModuleManger instead
      */
     @Deprecated
     public static final ModuleManager MODULE_MANAGER = ModuleManager.INSTANCE;
@@ -129,6 +128,8 @@ public class KamiMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         updateCheck();
+        ModuleManager.preLoad();
+        ManagerLoader.preLoad();
 
         pauseProcess = new TemporaryPauseProcess();
         autoObsidianProcess = new AutoObsidianProcess();
@@ -150,13 +151,10 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         log.info("\n\nInitializing " + MODNAME + " " + VER_FULL_BETA);
 
-        ModuleManager.register();
-        ManagerLoader.loadManagers();
+        ModuleManager.load();
+        ManagerLoader.load();
 
         MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
-
-        guiManager = new KamiGUI();
-        guiManager.initializeGUI();
 
         commandManager = new CommandManager();
 
@@ -168,7 +166,7 @@ public class KamiMod {
         ConfigUtils.INSTANCE.loadAll();
 
         new RichPresence();
-        log.info("Rich Presence Users init!\n");
+        log.info("Rich Presence Users init!");
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         Module[] modules = ModuleManager.getModules();

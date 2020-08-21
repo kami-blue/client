@@ -12,9 +12,7 @@ open class Manager {
     /**
      * Dummy method for instance creation
      */
-    fun new() {}
-
-    init {
-        KamiMod.log.info("Registering ${this.javaClass.simpleName}...")
+    fun new() {
+            KamiMod.EVENT_BUS.subscribe(this)
     }
 }

@@ -2,9 +2,11 @@ package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -21,20 +23,36 @@ import java.util.*
 object ModuleManager {
     private val mc = Minecraft.getMinecraft()
 
-    /**
-     * HashMap for the registered Modules
-     */
+    /** Thread for scanning module during Forge pre-init */
+    private var preLoadingThread: Thread? = null
+
+    /** List for module classes found during pre-loading */
+    private var moduleClassList: Array<Class<out Module>>? = null
+
+    /** HashMap for the registered Modules */
     private val moduleMap = HashMap<Class<out Module>, Module>()
+
+    /** Array for the registered Modules (sorted) */
     private lateinit var moduleList: Array<Module>
+
+    @JvmStatic
+    fun preLoad() {
+        preLoadingThread = Thread{
+            moduleClassList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
+            KamiMod.log.info("${moduleClassList!!.size} modules found")
+        }
+        preLoadingThread!!.name = "Modules Pre-Loading"
+        preLoadingThread!!.start()
+    }
 
     /**
      * Registers modules
      */
     @JvmStatic
-    fun register() {
-        KamiMod.log.info("Registering modules...")
-        val classList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
-        for (clazz in classList) {
+    fun load() {
+        preLoadingThread!!.join()
+        val stopTimer = TimerUtils.StopTimer()
+        for (clazz in moduleClassList!!) {
             try {
                 val module = clazz.getConstructor().newInstance() as Module
                 moduleMap[module.javaClass] = module
@@ -46,10 +64,21 @@ object ModuleManager {
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
             }
         }
-        moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
-            module.javaClass.simpleName
-        }).toArray { size -> arrayOfNulls<Module>(size) }
-        KamiMod.log.info("Modules registered")
+        initSortedList()
+        val time = stopTimer.stop()
+        KamiMod.log.info("${moduleMap.size} modules loaded, took ${time}ms")
+
+        /* Clean up variables used during pre-loading and registering */
+        preLoadingThread = null
+        moduleClassList = null
+    }
+
+    private fun initSortedList() {
+        Thread {
+            moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
+                module.javaClass.simpleName
+            }).toArray { size -> arrayOfNulls<Module>(size) }
+        }.start()
     }
 
     fun onUpdate() {

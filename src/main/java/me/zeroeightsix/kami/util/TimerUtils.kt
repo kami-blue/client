@@ -2,14 +2,16 @@ package me.zeroeightsix.kami.util
 
 open class TimerUtils {
 
-    protected val currentTime: Long get() = System.currentTimeMillis()
+    protected fun getCurrentTime(): Long {
+        return System.currentTimeMillis()
+    }
 
     class TickTimer(val timeUnit: TimeUnit = TimeUnit.MILLISECONDS) : TimerUtils() {
-        var lastTickTime = currentTime
+        var lastTickTime = getCurrentTime()
 
         fun tick(delay: Long): Boolean {
-            return if (currentTime - lastTickTime > delay * timeUnit.multiplier) {
-                lastTickTime = currentTime
+            return if (getCurrentTime() - lastTickTime > delay * timeUnit.multiplier) {
+                lastTickTime = getCurrentTime()
                 true
             } else {
                 false
@@ -18,10 +20,10 @@ open class TimerUtils {
     }
 
     class StopTimer(val timeUnit: TimeUnit = TimeUnit.MILLISECONDS) : TimerUtils() {
-        private val startTime: Long = currentTime
+        private val startTime: Long = getCurrentTime()
 
         fun stop(): Long {
-            return (currentTime - startTime) * timeUnit.multiplier
+            return (getCurrentTime() - startTime) * timeUnit.multiplier
         }
     }
 
