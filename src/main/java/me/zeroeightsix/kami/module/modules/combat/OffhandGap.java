@@ -5,6 +5,7 @@ import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -52,9 +53,9 @@ public class OffhandGap extends Module {
 				return;
 			}
 			if (mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || mc.player.getHeldItemMainhand().getItem() instanceof ItemAxe || passItemCheck()) {
-				if (MODULE_MANAGER.isModuleEnabled(AutoTotem.class)) {
+				if (ModuleManager.isModuleEnabled(AutoTotem.class)) {
 					autoTotemWasEnabled = true;
-					MODULE_MANAGER.getModule(AutoTotem.class).disable();
+					ModuleManager.getModule(AutoTotem.class).disable();
 				}
 				if (!eatWhileAttacking.getValue()) { /* Save item for later when using preventDesync */
 					usedItem = mc.player.getHeldItemMainhand().getItem();

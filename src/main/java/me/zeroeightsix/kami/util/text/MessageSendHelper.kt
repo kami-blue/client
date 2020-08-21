@@ -89,8 +89,8 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendDisableMessage(clazz: Class<out Module>) {
-        sendErrorMessage("Error: The " + ModuleManager.getModule(clazz)!!.name.value + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element")
-        ModuleManager.getModule(clazz)!!.enable()
+        sendErrorMessage("Error: The " + ModuleManager.getModule(clazz).name.value + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element")
+        ModuleManager.getModule(clazz).enable()
     }
 
     @JvmStatic

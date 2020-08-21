@@ -23,26 +23,26 @@ class RunConfig : Module() {
     private val hasRunTooltips = register(Settings.b("Tooltips", false))
 
     public override fun onEnable() {
-        ModuleManager.getModule(ActiveModules::class.java)!!.enable()
-        ModuleManager.getModule(CommandConfig::class.java)!!.enable()
-        ModuleManager.getModule(InfoOverlay::class.java)!!.enable()
-        ModuleManager.getModule(InventoryViewer::class.java)!!.enable()
-        ModuleManager.getModule(Baritone::class.java)!!.enable()
+        ModuleManager.getModule(ActiveModules::class.java).enable()
+        ModuleManager.getModule(CommandConfig::class.java).enable()
+        ModuleManager.getModule(InfoOverlay::class.java).enable()
+        ModuleManager.getModule(InventoryViewer::class.java).enable()
+        ModuleManager.getModule(Baritone::class.java).enable()
 
         if (!hasRunCapes.value) {
-            ModuleManager.getModule(Capes::class.java)!!.enable()
+            ModuleManager.getModule(Capes::class.java).enable()
             hasRunCapes.value = true
         }
         if (!hasRunDiscordSettings.value) {
-            ModuleManager.getModule(DiscordRPC::class.java)!!.enable()
+            ModuleManager.getModule(DiscordRPC::class.java).enable()
             hasRunDiscordSettings.value = true
         }
         if (!hasRunFixGui.value) {
-            ModuleManager.getModule(FixGui::class.java)!!.enable()
+            ModuleManager.getModule(FixGui::class.java).enable()
             hasRunFixGui.value = true
         }
         if (!hasRunTooltips.value) {
-            ModuleManager.getModule(Tooltips::class.java)!!.enable()
+            ModuleManager.getModule(Tooltips::class.java).enable()
             hasRunTooltips.value = true
         }
         disable()

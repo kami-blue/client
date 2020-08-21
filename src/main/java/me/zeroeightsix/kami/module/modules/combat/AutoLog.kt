@@ -5,6 +5,7 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems
 import me.zeroeightsix.kami.module.modules.misc.AutoReconnect
 import me.zeroeightsix.kami.setting.Settings
@@ -80,7 +81,7 @@ class AutoLog : Module() {
     }
 
     private fun log() {
-        KamiMod.MODULE_MANAGER.getModule(AutoReconnect::class.java)!!.disable()
+        ModuleManager.getModule(AutoReconnect::class.java).disable()
         shouldLog = true
     }
 }

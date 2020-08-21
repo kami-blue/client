@@ -129,8 +129,8 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModule(clazz: Class<out Module>): Module? {
-        return moduleMap[clazz]
+    fun getModule(clazz: Class<out Module>): Module {
+        return moduleMap[clazz]?: throw(ModuleNotFoundException(clazz.simpleName))
     }
 
     /**
