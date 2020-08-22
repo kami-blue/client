@@ -172,13 +172,21 @@ object BlockUtils {
             if (checkLiquid) {
                 for (x in 0..1) for (z in 0..1) {
                     val blockPos = BlockPos(xArray[x], (mc.player.posY + yOffset).toInt(), zArray[z])
-                    if (mc.world.getBlockState(blockPos).block.material.isLiquid) return -999.0
+                    if (isLiquid(blockPos)) return -999.0
                 }
             }
             yOffset -= 0.05
             if (mc.player.posY + yOffset < 0.0f) return -999.0
         }
         return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY
+    }
+
+    fun isLiquid(pos: BlockPos): Boolean {
+        return mc.world.getBlockState(pos).block.material.isLiquid
+    }
+
+    fun isWater(pos: BlockPos): Boolean {
+       return mc.world.getBlockState(pos).block == Blocks.WATER
     }
 
     /**
