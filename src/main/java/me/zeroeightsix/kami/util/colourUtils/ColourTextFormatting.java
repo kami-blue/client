@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util;
+package me.zeroeightsix.kami.util.colourUtils;
 
 import net.minecraft.util.text.TextFormatting;
 

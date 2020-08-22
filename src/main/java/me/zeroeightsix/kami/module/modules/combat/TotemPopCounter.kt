@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.event.events.EntityUseTotemEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourTextFormatting
-import me.zeroeightsix.kami.util.ColourTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.MessageSendHelper
 import net.minecraft.network.play.server.SPacketEntityStatus

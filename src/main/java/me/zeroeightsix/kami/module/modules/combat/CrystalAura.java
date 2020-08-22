@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -353,11 +354,11 @@ public class CrystalAura extends Module {
             if (customColours.getValue()) {
                 colour = new ColourHolder(r.getValue(), g.getValue(), b.getValue());
             }
-            ESPRenderer renderer = new ESPRenderer(event.getPartialTicks());
+            ESPRenderer renderer = new ESPRenderer();
             renderer.setAFilled(aBlock.getValue());
             renderer.setATracer(tracerAlpha);
             renderer.add(render, colour);
-            renderer.render();
+            renderer.render(true);
         }
     }
 

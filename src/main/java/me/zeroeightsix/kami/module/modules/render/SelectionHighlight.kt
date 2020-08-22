@@ -4,9 +4,10 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
+import me.zeroeightsix.kami.util.KamiTessellator
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult.Type
 import kotlin.math.floor
@@ -31,31 +32,33 @@ class SelectionHighlight : Module() {
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
     override fun onWorldRender(event: RenderEvent) {
-        val eyePos = mc.player.getPositionEyes(event.partialTicks)
+        val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
         val eyeBlockPos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
-        if (!mc.world.isAirBlock(eyeBlockPos)) return
+        if (!mc.world.isAirBlock(eyeBlockPos) && !mc.player.isInLava && !mc.player.isInWater) return
         val colour = ColourHolder(r.value, g.value, b.value)
         val hitObject = mc.objectMouseOver
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
+
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.through = throughBlocks.value
         renderer.thickness = thickness.value
         renderer.fullOutline = true
+
         if (entity.value && hitObject.typeOfHit == Type.ENTITY) {
             val lookVec = mc.player.lookVec
-            val eyePos = mc.player.getPositionEyes(event.partialTicks)
             val sightEnd = eyePos.add(lookVec.scale(6.0))
             val hitSide = hitObject.entityHit.boundingBox.calculateIntercept(eyePos, sightEnd)!!.sideHit
             val side = if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide]!! else GeometryMasks.Quad.ALL
             renderer.add(hitObject.entityHit, colour, side)
         }
+
         if (block.value && hitObject.typeOfHit == Type.BLOCK) {
             val box = mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos)
                     ?: return
             val side = if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit]!! else GeometryMasks.Quad.ALL
             renderer.add(box.grow(0.002), colour, side)
         }
-        renderer.render()
+        renderer.render(true)
     }
 }

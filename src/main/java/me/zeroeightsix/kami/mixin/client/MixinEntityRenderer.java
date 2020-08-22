@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.google.common.base.Predicate;
+import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
 import me.zeroeightsix.kami.module.modules.render.*;
@@ -89,13 +90,21 @@ public class MixinEntityRenderer {
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
     }
 
-    @Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;isSpectator()Z"))
-    public boolean noclipIsSpectator(AbstractClientPlayer acp) {
+    @Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z"))
+    public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
         // [WebringOfTheDamned]
         // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
         if (MODULE_MANAGER.isModuleEnabled(Freecam.class))
             return true;
-        return acp.isSpectator();
+        return entityPlayerSP.isSpectator();
     }
 
+    @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))
+    public float getEyeHeight(Entity entity) {
+        if (MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
+            return 0.4F;
+        } else {
+           return entity.getEyeHeight();
+        }
+    }
 }

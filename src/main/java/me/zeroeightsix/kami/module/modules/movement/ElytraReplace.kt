@@ -9,11 +9,14 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
 import net.minecraft.inventory.ClickType
+import net.minecraft.item.ItemArmor
+import net.minecraft.item.ItemElytra
+import net.minecraft.item.ItemStack
 
 /**
  * Created by Dewy on the 4th of April, 2020
+ * Modified by Spider 8/14/2020
  */
-// The code here is terrible. Not proud of it. TODO: Make this not suck.
 @Module.Info(
         name = "ElytraReplace",
         description = "Automatically swap and replace your chestplate and elytra.",
@@ -25,119 +28,129 @@ class ElytraReplace : Module() {
     private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
     private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false).build())
     private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value }.build())
-    private val logThreshold = register(Settings.integerBuilder("MissingThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
+    private val logThreshold = register(Settings.integerBuilder("WarningThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
     private val threshold = register(Settings.integerBuilder("Broken%").withRange(1, 100).withValue(7).build())
 
-    private var currentlyMovingElytra = false
-    private var currentlyMovingChestplate = false
     private var elytraCount = 0
-    private var chestplateCount = 0
+    private var chestPlateCount = 0
+    private var shouldSendFinalWarning = true;
 
     override fun onUpdate() {
-        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) return
-
-        elytraCount = 0
-        for (i in 0..44) {
-            if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
-                elytraCount += 1
-            } else if (mc.player.inventory.getStackInSlot(i).getItem() === Items.DIAMOND_CHESTPLATE && !isBroken(i)) {
-                chestplateCount += 1
-            }
+        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
+            return
         }
 
-        if (currentlyMovingElytra) {
-            mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
-            currentlyMovingElytra = false
-            return
-        } else if (currentlyMovingChestplate) {
-            mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
-            currentlyMovingChestplate = false
-            return
+        getElytraChestCount()
+
+        if (elytraCount == 0 && shouldSendFinalWarning) {
+            sendFinalElytraWarning()
         }
 
         if (mc.player.onGround && autoChest.value) {
-            var slot = -420
-
-            if (chestplateCount == 0) {
-                return
+            swapToChest()
+        } else if (shouldAttemptElytraSwap()) {
+            var shouldSwap = isCurrentElytraBroken()
+            if (autoChest.value) {
+                shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
             }
 
-            if (mc.player.inventory.armorInventory[2].isEmpty()) {
-                for (i in 0..44) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() === Items.DIAMOND_CHESTPLATE) {
-                        slot = i
-                        break
-                    }
-                }
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                currentlyMovingElytra = true
-                return
-            } else if (!(mc.player.inventory.armorInventory[2].getItem() === Items.DIAMOND_CHESTPLATE)) {
-                for (i in 0..44) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() === Items.DIAMOND_CHESTPLATE) {
-                        slot = i
-                        break
-                    }
-                }
-
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
-                mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                return
-            }
-        } else if (passElytraFlightCheck()) {
-            var slot = -420
-
-            if (logToChat.value && playSound.value && (elytraCount <= 2 || elytraCount <= logThreshold.value) && isBrokenElytra()) {
-                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-            }
-
-            if (elytraCount == 0) {
-                if (logToChat.value && isBrokenElytra()) {
-                    MessageSendHelper.sendChatMessage("$chatName Your last elytra has reached your threshold. (logging will be turned off)")
-                    logToChat.value = false
-                }
-                return
-            }
-
-            // (if there's no elytra or the elytra is broken) || (no auto chest, only replace if it's broken)
-            if (passAutoChestCheck()) {
-                for (i in 0..44) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() === Items.ELYTRA && !isBroken(i)) {
-                        slot = i
-                        if (logToChat.value && elytraCount == 1) {
-                            MessageSendHelper.sendChatMessage("$chatName You just equipped your last elytra.")
-                        } else if (logToChat.value && elytraCount <= logThreshold.value) {
-                            MessageSendHelper.sendChatMessage("$chatName You have $elytraCount elytras left.")
-                        }
-                        break
-                    }
-                }
-                if (mc.player.inventory.armorInventory[2].isEmpty()) {
-                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                    currentlyMovingElytra = true
-                } else {
-                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
-                    mc.playerController.windowClick(0, 6, 0, ClickType.PICKUP, mc.player)
-                    mc.playerController.windowClick(0, if (slot < 9) slot + 36 else slot, 0, ClickType.PICKUP, mc.player)
+            if (shouldSwap) {
+                val success = swapToElytra()
+                if (success) {
+                    sendEquipNotif()
                 }
             }
         }
     }
 
-    override fun getHudInfo(): String {
-        return elytraCount.toString()
+    private fun getElytraChestCount() {
+        elytraCount = 0
+        chestPlateCount = 0
+        for (i in 0..44) {
+            val stack = mc.player.inventory.getStackInSlot(i)
+            if (stack.getItem() === Items.ELYTRA && !isItemBroken(stack)) {
+                elytraCount += 1
+                if (!shouldSendFinalWarning) { // if we send the final warning but gained elytras afterwards - we can send the message again
+                    shouldSendFinalWarning = true
+                }
+            } else if (stack.getItem() is ItemArmor && !isItemBroken(stack)) {
+                val armor = stack.getItem() as ItemArmor
+                val armorType = armor.armorType.ordinal - 2
+                if (armorType == 2) {
+                    chestPlateCount += 1
+                }
+            }
+        }
     }
 
-    private fun isBroken(i : Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
-        return if (mc.player.inventory.getStackInSlot(i).maxDamage == 0) {
-            false
+    // if we should check elytraflight, then we will swap if it is enabled
+    // if we don't need to check for elytraflight, then just swap
+    private fun shouldAttemptElytraSwap(): Boolean {
+        return if (elytraFlightCheck.value) {
+            KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)
         } else {
-            (100 * mc.player.inventory.getStackInSlot(i).getItemDamage() / mc.player.inventory.getStackInSlot(i).maxDamage) + threshold.value >= 100
+            true
         }
     }
 
-    private fun isBrokenElytra(): Boolean { // (100 * damage / max damage) >= (100 - 70)
+
+    private fun swapToChest() {
+        if (chestPlateCount == 0) {
+            return
+        }
+
+        if (!emptySlotAvailable()) {
+            return
+        }
+
+        var slot = getSlotOfBestChestPlate()
+        if (slot == -1) return // no chest or current chest is better
+
+        if (slot < 9) slot += 36 // hotbar is slots 0 to 8, convert the slot if it's hotbar
+
+        if (mc.player.inventory.armorInventory[2].isEmpty()) { // place chest into empty chest slot
+            mc.playerController.windowClick(0, slot, 0, ClickType.QUICK_MOVE, mc.player)
+            return
+        } else { // swap chestplate from inventory with whatever you were wearing, if you're already wearing non-armor in chest slot
+            mc.playerController.windowClick(0, 6, 0,
+                    ClickType.QUICK_MOVE, mc.player)
+            mc.playerController.windowClick(0, slot, 0,
+                    ClickType.QUICK_MOVE, mc.player)
+            return
+        }
+    }
+
+    private fun swapToElytra(): Boolean { // returns success
+
+        if (elytraCount == 0) {
+            return false
+        }
+
+        if (!emptySlotAvailable()) {
+            return false
+        }
+
+        var slot: Int = getSlotOfNextElytra()
+
+        if (slot == -1) { // this shouldn't happen as we check elytra count earlier, but the check is here for peace of mind.
+            return false
+        }
+
+        if (slot < 9) slot += 36 // hotbar is slots 0 to 8, convert the slot if it's hotbar
+
+        return if (mc.player.inventory.armorInventory[2].isEmpty()) { // place new elytra in empty chest slot
+            mc.playerController.windowClick(0, slot, 0, ClickType.QUICK_MOVE, mc.player)
+            true
+        } else { // switch non-broken elytra with whatever was previously in the chest slot
+            mc.playerController.windowClick(0, 6, 0,
+                    ClickType.QUICK_MOVE, mc.player)
+            mc.playerController.windowClick(0, slot, 0,
+                    ClickType.QUICK_MOVE, mc.player)
+            true
+        }
+    }
+
+    private fun isCurrentElytraBroken(): Boolean { // (100 * damage / max damage) >= (100 - 70)
         return if (mc.player.inventory.armorInventory[2].maxDamage == 0) {
             false
         } else {
@@ -145,17 +158,106 @@ class ElytraReplace : Module() {
         }
     }
 
-    private fun passElytraFlightCheck(): Boolean {
-        return if (elytraFlightCheck.value && KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)) {
-            true
-        } else !elytraFlightCheck.value
+
+    // snagged from AutoArmor
+    private fun getSlotOfBestChestPlate(): Int {
+        var bestArmorSlot = -1
+        var bestArmorValue = -1
+
+        // check armor slot first
+        val chestArmor = mc.player.inventory.armorItemInSlot(2)
+        if (chestArmor.getItem() is ItemArmor) {
+            bestArmorValue = (chestArmor.getItem() as ItemArmor).damageReduceAmount
+        }
+
+        (0..35).forEach { slot ->
+            val stack = mc.player.inventory.getStackInSlot(slot)
+            if (stack.getItem() !is ItemArmor) return@forEach
+
+            val armor = stack.getItem() as ItemArmor
+            val armorType = armor.armorType.ordinal - 2
+
+            if (armorType != 2) return@forEach // not chestplate
+
+            if (stack.count > 1) return@forEach // should this be the case if stacked armor exists on some servers
+
+            val armorValue = armor.damageReduceAmount
+
+            if (armorValue > bestArmorValue) {
+                bestArmorSlot = slot
+                bestArmorValue = armorValue
+            }
+        }
+        return bestArmorSlot
     }
 
-    private fun passAutoChestCheck(): Boolean {
-        return if (autoChest.value) {
-            !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) || isBrokenElytra()
+
+    private fun getSlotOfNextElytra(): Int {
+        (0..44).forEach { slot ->
+            val stack = mc.player.inventory.getStackInSlot(slot)
+            if (stack.getItem() !is ItemElytra) return@forEach
+
+            if (stack.count > 1) return@forEach
+
+            if (!isItemBroken(stack)) {
+                return slot
+            }
+        }
+        return -1
+    }
+
+    private fun isItemBroken(itemStack: ItemStack): Boolean { // (100 * damage / max damage) >= (100 - 70)
+        return if (itemStack.maxDamage == 0) {
+            false
         } else {
-            isBrokenElytra()
+            (100 * itemStack.getItemDamage() / itemStack.maxDamage) + threshold.value >= 100
         }
     }
+
+    private fun emptySlotAvailable(): Boolean {
+        return mc.player.inventory.firstEmptyStack != -1
+    }
+
+    override fun getHudInfo(): String {
+        return elytraCount.toString()
+    }
+
+    private fun sendEquipNotif() {
+        sendAlert()
+        if (logToChat.value && elytraCount == 1) {
+            MessageSendHelper.sendChatMessage("$chatName You equipped your last elytra.")
+        } else if (logToChat.value && elytraCount <= logThreshold.value) {
+            MessageSendHelper.sendChatMessage("$chatName You have $elytraCount elytras left.")
+        }
+    }
+
+
+    private fun sendFinalElytraWarning() {
+
+        if (!isCurrentElytraBroken()) { // check to ensure there is an actual elytra in the chest slot
+            return
+        }
+
+        if (logToChat.value) {
+            MessageSendHelper.sendChatMessage("$chatName Your last elytra has reached your durability threshold.")
+        }
+        if (playSound.value) {
+            sendBadAlert()
+        }
+        shouldSendFinalWarning = false;
+    }
+
+    private fun sendAlert() {
+        if (logToChat.value && playSound.value && (elytraCount <= logThreshold.value)) {
+            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        }
+    }
+
+    private fun sendBadAlert() {
+        if (logToChat.value && playSound.value && (elytraCount <= logThreshold.value)) {
+            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.4f, 1.0f))
+        }
+    }
+
+
 }

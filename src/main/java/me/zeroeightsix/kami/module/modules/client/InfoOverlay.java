@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.movement.TimerSpeed;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.ColourTextFormatting;
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
 import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.util.TimeUtil;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 
-import static me.zeroeightsix.kami.util.ColourTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.InfoCalculator.speed;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
 

@@ -15,12 +15,12 @@ import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.util.Bind;
-import me.zeroeightsix.kami.util.ColourHolder;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Wrapper;
 import org.lwjgl.opengl.GL11;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -28,7 +28,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
-    ColourHolder frameColour = KamiGUI.primaryColour.setA(100);
+    ColourHolder frameColour = KamiGUI.primaryColour;
     ColourHolder outlineColour = frameColour.darker();
 
     Component yLineComponent = null;

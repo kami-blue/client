@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -87,8 +88,8 @@ object KamiTessellator : Tessellator(0x200000) {
      * @return Render Parital Ticks
      */
     @JvmStatic
-    private fun pTicks(): Float {
-        return mc.renderPartialTicks
+    fun pTicks(): Float {
+        return if (mc.isGamePaused) mc.renderPartialTicksPaused else mc.renderPartialTicks
     }
 
     /**
@@ -201,12 +202,7 @@ object KamiTessellator : Tessellator(0x200000) {
         }
     }
 
-    private class SquareVec(minX: Double, maxX: Double, minZ: Double, maxZ: Double, val y: Double, val facing: EnumFacing) {
-        val minX = min(minX, maxX)
-        val maxX = max(minX, maxX)
-        val minZ = min(minZ, maxZ)
-        val maxZ = max(minZ, maxZ)
-
+    private class SquareVec(val minX: Double, val maxX: Double, val minZ: Double, val maxZ: Double, val y: Double, val facing: EnumFacing) {
         fun toLines(): Array<Pair<Vec3d, Vec3d>> {
             val quad = this.toQuad()
             return arrayOf(

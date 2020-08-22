@@ -19,8 +19,8 @@ import java.util.List;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.rgbToInt;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -76,7 +76,6 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
         }
 
         RenderHelper.drawText(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(text) / 2, KamiGUI.fontRenderer.getFontHeight() / 2 - 2, c, text);
-        glDisable(GL_BLEND);
     }
 
     @Override

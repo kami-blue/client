@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -55,7 +56,7 @@ class WaypointRender : Module() {
     override fun onWorldRender(event: RenderEvent) {
         if (mc.player == null || mc.renderManager.options == null || waypoints.isEmpty()) return
         val colour = ColourHolder(r.value, g.value, b.value)
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.aTracer = if (tracer.value) aTracer.value else 0
@@ -72,11 +73,11 @@ class WaypointRender : Module() {
             }
             /* Draw waypoint info box */
             if ((coords.value || name.value || date.value || dist.value) && distance <= infoBoxRange.value) {
-                drawText(waypoint, event.partialTicks)
+                drawText(waypoint, KamiTessellator.pTicks())
             }
         }
         glEndList()
-        renderer.render()
+        renderer.render(true)
         GlStateManager.disableDepth()
         glCallList(glList) /* Render the text after so it will be on top of the ESP */
     }
@@ -103,7 +104,7 @@ class WaypointRender : Module() {
         GlStateManager.rotate(viewerYaw, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(viewerPitch, 1.0f, 0.0f, 0.0f)
 
-        val distance = sqrt(EntityUtils.getInterpolatedPos(mc.player, pTicks).squareDistanceTo(x, y, z))
+        val distance = sqrt(EntityUtils.getInterpolatedPos(mc.player, KamiTessellator.pTicks()).squareDistanceTo(x, y, z))
         val scale = max(distance, 2.0) / 8f * 1.2589254.pow(textScale.value.toDouble())
         GlStateManager.scale(scale, scale, scale)
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)

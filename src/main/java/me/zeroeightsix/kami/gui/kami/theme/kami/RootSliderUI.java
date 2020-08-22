@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
-import static me.zeroeightsix.kami.util.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -51,7 +51,6 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
             smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s), 0, s);
         }
         glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
     }
 
     @Override

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
@@ -122,17 +122,17 @@ class EyeFinder : Module() {
             val box = if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 AxisAlignedBB(result.blockPos).grow(0.002)
             } else {
-                val offset = getInterpolatedAmount(result.entityHit, mc.renderPartialTicks)
+                val offset = getInterpolatedAmount(result.entityHit, KamiTessellator.pTicks())
                 result.entityHit.renderBoundingBox.offset(offset)
             }
             val colour = ColourHolder(r.value, g.value, b.value)
-            val renderer = ESPRenderer(mc.renderPartialTicks)
+            val renderer = ESPRenderer()
             renderer.aFilled = (alpha / 3)
             renderer.aOutline = alpha
             renderer.thickness = (thickness.value)
             renderer.through = false
             renderer.add(box, colour)
-            renderer.render()
+            renderer.render(true)
         }
     }
 }

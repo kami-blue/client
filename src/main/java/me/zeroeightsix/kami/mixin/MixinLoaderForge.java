@@ -45,7 +45,7 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
 
     @Override
     public String getSetupClass() {
-        return "net.shadowfacts.forgelin.preloader.ForgelinSetup";
+        return null;
     }
 
     @Override

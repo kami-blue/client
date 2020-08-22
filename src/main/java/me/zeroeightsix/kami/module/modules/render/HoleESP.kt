@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.surroundOffset
 import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.GeometryMasks
 import net.minecraft.init.Blocks
@@ -95,13 +96,13 @@ class HoleESP : Module() {
         if (mc.player == null || safeHoles.isEmpty()) return
         val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
         else GeometryMasks.Quad.DOWN
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         for ((pos, colour) in safeHoles) {
             val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
             renderer.add(renderPos, colour, side)
         }
-        renderer.render()
+        renderer.render(true)
     }
 }

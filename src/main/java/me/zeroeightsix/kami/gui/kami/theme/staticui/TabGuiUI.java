@@ -109,6 +109,7 @@ public class TabGuiUI extends AbstractComponentUI<TabGUI> {
             GL11.glPopMatrix();
         }
 
+        GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);

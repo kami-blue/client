@@ -22,7 +22,7 @@ import net.minecraft.client.multiplayer.ServerData;
 )
 public class AutoReconnect extends Module {
 
-    private Setting<Integer> seconds = register(Settings.integerBuilder("Seconds").withValue(5).withMinimum(0).build());
+    private final Setting<Double> seconds = register(Settings.doubleBuilder("Seconds").withValue(5.0).withMinimum(0.5).build());
     private static ServerData cServer;
 
     @EventHandler
@@ -39,7 +39,7 @@ public class AutoReconnect extends Module {
 
     private class KamiGuiDisconnected extends GuiDisconnected {
 
-        int millis = seconds.getValue() * 1000;
+        double millis = seconds.getValue() * 1000;
         long cTime;
 
         public KamiGuiDisconnected(GuiDisconnected disconnected) {
@@ -61,7 +61,7 @@ public class AutoReconnect extends Module {
             millis -= a - cTime;
             cTime = a;
 
-            String s = "Reconnecting in " + Math.max(0, Math.floor((double) millis / 100) / 10) + "s";
+            String s = "Reconnecting in " + Math.max(0, Math.floor(millis / 100) / 10) + "s";
             fontRenderer.drawString(s, width / 2 - fontRenderer.getStringWidth(s) / 2, height - 16, 0xffffff, true);
         }
 

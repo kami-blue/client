@@ -48,7 +48,7 @@ class InventoryManager : Module() {
     private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false }.build())
 
     /* Eject list */
-    lateinit var ejectArrayList: ArrayList<String>
+    var ejectArrayList = ejectGetArrayList()
 
     private fun ejectGetArrayList(): ArrayList<String> {
         return ArrayList(ejectList.value.split(","))

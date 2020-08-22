@@ -3,15 +3,15 @@ package me.zeroeightsix.kami.module.modules.client;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.ColourTextFormatting;
+import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.ColourTextFormatting.colourEnumMap;
-import static me.zeroeightsix.kami.util.ColourTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.rgbToInt;
+import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.colourEnumMap;
+import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.MathsUtils.isNumberEven;
 import static me.zeroeightsix.kami.util.MathsUtils.reverseNumber;
 import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;

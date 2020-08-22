@@ -2,7 +2,8 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
+import me.zeroeightsix.kami.util.colourUtils.ColourConverter
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -52,7 +53,7 @@ class ArmourHUD : Module() {
                 val green = (`is`.maxDamage.toFloat() - `is`.getItemDamage().toFloat()) / `is`.maxDamage.toFloat()
                 val red = 1 - green
                 val dmg = 100 - (red * 100).toInt()
-                mc.fontRenderer.drawStringWithShadow(dmg.toString() + "", x + 8 - mc.fontRenderer.getStringWidth(dmg.toString() + "") / 2.toFloat(), y - 11.toFloat(), ColourHolder.toHex((red * 255).toInt(), (green * 255).toInt(), 0))
+                mc.fontRenderer.drawStringWithShadow(dmg.toString() + "", x + 8 - mc.fontRenderer.getStringWidth(dmg.toString() + "") / 2.toFloat(), y - 11.toFloat(), ColourConverter.rgbToInt((red * 255).toInt(), (green * 255).toInt(), 0))
             }
         }
         GlStateManager.enableDepth()
