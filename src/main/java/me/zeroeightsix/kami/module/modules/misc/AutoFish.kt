@@ -19,6 +19,7 @@ import kotlin.math.abs
  * Created by 086 on 22/03/2018.
  * Updated by Qther on 05/03/20
  * Updated by dominikaaaa on 26/05/20
+ * Updated by Xiaro on 22/08/20
  */
 @Module.Info(
         name = "AutoFish",

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.block.Block
-import net.minecraft.block.BlockEnderChest
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
@@ -14,8 +13,9 @@ import net.minecraft.util.math.Vec3d
 import kotlin.math.floor
 
 /**
- * Created by hub on 15 June 2019
- * Last Updated 12 January 2019 by hub
+ * Created by hub on 15/06/19
+ * Updated by hub on 12/01/19
+ * Updated by Xiaro on 22/08/20
  */
 object BlockUtils {
     @JvmField
