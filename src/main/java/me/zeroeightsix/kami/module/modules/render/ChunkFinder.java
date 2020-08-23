@@ -95,7 +95,7 @@ public class ChunkFinder extends Module {
 
     @EventHandler
     public Listener<ChunkEvent> listener = new Listener<>(event -> {
-        if (event.getPacket().isFullChunk()) {
+        if (!event.getPacket().isFullChunk()) {
             chunks.add(event.getChunk());
             if (saveNewChunks.getValue()) {
                 saveNewChunk(event.getChunk());
