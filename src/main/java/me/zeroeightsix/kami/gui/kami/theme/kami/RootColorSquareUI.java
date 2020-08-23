@@ -27,12 +27,12 @@ public class RootColorSquareUI extends AbstractComponentUI<ColorSquare> {
         glShadeModel(GL_SMOOTH);
         glBegin(GL_QUADS);
             glColor3f(1f, 1f, 1f);
-            glVertex2d(0, 0); //White corner
+            glVertex2d(0, 0); // White corner
             glColor3f(0f, 0f, 0f);
-            glVertex2d(0, height); //Bottom left black corner
-            glVertex2d(width, height); //Bottom right black corner
+            glVertex2d(0, height); // Bottom left black corner
+            glVertex2d(width, height); // Bottom right black corner
             glColor3f(toF(raw.getRed()), toF(raw.getGreen()), toF(raw.getBlue()));
-            glVertex2d(width, 0); //Colored corner
+            glVertex2d(width, 0); // Colored corner
         glEnd();
 
         glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
