@@ -73,8 +73,13 @@ public class AntiAFK extends Module {
 
     @Override
     public void onUpdate() {
-        if (inputTimeout.getValue() != 0 && !inputTimer.tick(inputTimeout.getValue())) {
-            return;
+        if (inputTimeout.getValue() != 0) {
+            if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
+                inputTimer.lastTickTime = System.currentTimeMillis();
+            }
+            if (!inputTimer.tick(inputTimeout.getValue())) {
+                return;
+            }
         }
 
         if (mc.playerController.getIsHittingBlock()) return;
