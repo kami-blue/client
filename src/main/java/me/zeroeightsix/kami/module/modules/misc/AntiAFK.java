@@ -75,9 +75,9 @@ public class AntiAFK extends Module {
     public void onUpdate() {
         if (inputTimeout.getValue() != 0) {
             if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
-                inputTimer.lastTickTime = System.currentTimeMillis();
+                inputTimer.reset();
             }
-            if (!inputTimer.tick(inputTimeout.getValue())) {
+            if (!inputTimer.tick(inputTimeout.getValue(), false)) {
                 return;
             }
         }
@@ -130,14 +130,14 @@ public class AntiAFK extends Module {
     @EventHandler
     private final Listener<InputEvent.MouseInputEvent> mouseInputListener = new Listener<>(event -> {
         if (inputTimeout.getValue() != 0 && isInputting()) {
-            inputTimer.lastTickTime = System.currentTimeMillis();
+            inputTimer.reset();
         }
     });
 
     @EventHandler
     private final Listener<InputEvent.KeyInputEvent> keyInputListener = new Listener<>(event -> {
         if (inputTimeout.getValue() != 0 && isInputting()) {
-            inputTimer.lastTickTime = System.currentTimeMillis();
+            inputTimer.reset();
         }
     });
 
