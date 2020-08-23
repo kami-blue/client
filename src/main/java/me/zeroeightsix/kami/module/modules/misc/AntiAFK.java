@@ -39,7 +39,7 @@ public class AntiAFK extends Module {
     private final Setting<Boolean> swing = register(Settings.b("Swing", true));
     private final Setting<Boolean> jump = register(Settings.b("Jump", true));
     private final Setting<Boolean> squareWalk = register(Settings.b("SquareWalk", true));
-    private final Setting<Integer> radius = register(Settings.integerBuilder("Radius").withMinimum(1).withValue(64).build());
+    private final Setting<Integer> radius = register(Settings.integerBuilder("Radius").withMinimum(1).withValue(64).withVisibility(v -> squareWalk.getValue()).build());
     private final Setting<Boolean> turn = register(Settings.b("Turn", true));
     private final Setting<Integer> inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15).build());
 
@@ -118,6 +118,11 @@ public class AntiAFK extends Module {
         if (turn.getValue() && mc.player.ticksExisted % (0.375 * getFrequency()) == 0) {
             mc.player.rotationYaw = random.nextInt(360) - makeNegRandom(180);
         }
+    }
+
+    @Override
+    public String getHudInfo() {
+        return String.valueOf(System.currentTimeMillis() - inputTimer.lastTickTime);
     }
 
     @EventHandler
