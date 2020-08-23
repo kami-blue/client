@@ -34,7 +34,6 @@ class FullBright : Module() {
     }
 
     override fun onUpdate() {
-        sendChatMessage(gammaSetting.toString())
         when {
             isEnabled -> {
                 transition(gamma.value)
