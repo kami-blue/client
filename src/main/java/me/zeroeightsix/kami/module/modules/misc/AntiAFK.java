@@ -50,6 +50,16 @@ public class AntiAFK extends Module {
     private Boolean baritoneDisconnectOnArrival = false;
     private final Timer inputTimer = new Timer(Timer.TimeUnit.MINUTES);
 
+    public AntiAFK() {
+        super();
+
+        squareWalk.settingListener = setting -> {
+            if (isEnabled()) {
+                BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+            }
+        };
+    }
+
     @Override
     public void onEnable() {
         if (mc.player == null || inputTimeout.getValue() != 0)
@@ -67,14 +77,14 @@ public class AntiAFK extends Module {
             return;
 
         BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival;
-        if (isBaritoneActive())
+        if (isBaritoneActive() && squareWalk.getValue())
             BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
     }
 
     @Override
     public void onUpdate() {
         if (inputTimeout.getValue() != 0) {
-            if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
+            if (!squareWalk.getValue() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
                 inputTimer.reset();
             }
             if (!inputTimer.tick(inputTimeout.getValue(), false)) {
