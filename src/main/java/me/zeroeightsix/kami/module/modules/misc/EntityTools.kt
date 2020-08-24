@@ -15,6 +15,7 @@ import org.lwjgl.input.Mouse
  * @author 0x2E | PretendingToCode
  *
  * Inspired by ForgeHax, recreated with expressed permission from creator
+ * Updated by Xiaro on 24/08/20
  *
  * TODO: Fix delay timer because that shit broken
  */
@@ -39,7 +40,7 @@ class EntityTools : Module() {
 
     @EventHandler
     private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent? ->
-        if (Mouse.getEventButton() == 1 && delay == 0) {
+        if (Mouse.getEventButton() == 1 && delay == 0 && mc.objectMouseOver != null) {
             if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY) {
                 if (mode.value == Mode.DELETE) {
                     mc.world.removeEntity(mc.objectMouseOver.entityHit)

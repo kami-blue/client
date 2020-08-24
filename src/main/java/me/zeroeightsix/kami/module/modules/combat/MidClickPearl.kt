@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
 import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
 
@@ -17,6 +17,7 @@ import org.lwjgl.input.Mouse
  * @author Xiaro
  *
  * Created by Xiaro on 12/08/20
+ * Updated by Xiaro on 24/08/20
  */
 @Module.Info(
         name = "MidClickPearl",
@@ -29,7 +30,7 @@ class MidClickPearl : Module() {
 
     @EventHandler
     private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent ->
-        if (mc.player == null || mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) return@EventHook
+        if (mc.player == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit == Type.BLOCK) return@EventHook
 
         if (startTime == -1L && Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {
             /* 368 is ender pearl */

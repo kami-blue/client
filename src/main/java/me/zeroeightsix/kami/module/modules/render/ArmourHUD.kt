@@ -3,13 +3,15 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.colourUtils.ColourConverter
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.GameType
+import kotlin.math.floor
 
 /**
  * Created by 086 on 24/01/2018.
@@ -34,7 +36,7 @@ class ArmourHUD : Module() {
         val resolution = ScaledResolution(mc)
         val i = resolution.scaledWidth / 2
         var iteration = 0
-        val y = resolution.scaledHeight - 55 - if (mc.player.isInWater) 10 else 0
+        val y = resolution.scaledHeight - 55 - if (isEyeInWater()) 10 else 0
         for (`is` in armour) {
             iteration++
             if (`is`.isEmpty()) continue
@@ -58,6 +60,13 @@ class ArmourHUD : Module() {
         }
         GlStateManager.enableDepth()
         GlStateManager.disableLighting()
+    }
+
+    private fun isEyeInWater(): Boolean {
+        val eyePos = mc.player.getPositionEyes(1f)
+        val flooredEyePos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
+        val block = mc.world.getBlockState(flooredEyePos).block
+        return block == Blocks.WATER || block == Blocks.FLOWING_WATER
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.render;
 
-import kotlin.Triple;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.KamiMod;
@@ -9,16 +8,12 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.InfoCalculator;
 import me.zeroeightsix.kami.util.KamiTessellator;
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.SystemUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -28,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
+import static me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos;
 import static me.zeroeightsix.kami.util.MessageSendHelper.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -58,7 +54,7 @@ public class ChunkFinder extends Module {
 
     @Override
     public void onWorldRender(RenderEvent event) {
-        double y = yOffset.getValue() + (relative.getValue()? mc.player.posY : 0.0);
+        double y = (double) yOffset.getValue() + (relative.getValue()? getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y : 0.0);
 
         glLineWidth(2.0F);
         glDisable(GL_DEPTH_TEST);
@@ -73,9 +69,9 @@ public class ChunkFinder extends Module {
             if (Math.sqrt(chunk.getPos().getDistanceSq(mc.player)) > range.getValue()) continue;
             KamiTessellator.begin(GL_LINE_LOOP);
             buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXEnd(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
-            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZEnd()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd() + 1, y, chunk.getPos().getZStart()).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXEnd() + 1, y, chunk.getPos().getZEnd() + 1).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
+            buffer.pos(chunk.getPos().getXStart(), y, chunk.getPos().getZEnd() + 1).color(color.getR(), color.getG(), color.getB(), 255).endVertex();
             KamiTessellator.render();
         }
         glEnable(GL_DEPTH_TEST);

@@ -99,7 +99,7 @@ public class MessageSendHelper {
     }
 
     public static void sendServerMessage(String message) {
-        if (Minecraft.getMinecraft().player != null) {
+        if (!message.isEmpty() && Minecraft.getMinecraft().player != null) {
             Wrapper.getPlayer().connection.sendPacket(new CPacketChatMessage(message));
         } else {
             LogWrapper.warning("Could not send server message: \"" + message + "\"");
