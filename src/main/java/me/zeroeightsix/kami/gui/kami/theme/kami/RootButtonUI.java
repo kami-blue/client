@@ -32,7 +32,6 @@ public class RootButtonUI<T extends Button> extends AbstractComponentUI<Button> 
         glEnable(GL_TEXTURE_2D);
         KamiGUI.fontRenderer.drawString(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(component.getName()) / 2, 0, component.isPressed() ? downColour : idleColour, component.getName());
         glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
+import me.zeroeightsix.kami.gui.kami.component.Potions;
 import me.zeroeightsix.kami.gui.kami.component.Radar;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
@@ -22,10 +23,10 @@ import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -210,38 +211,14 @@ public class KamiGUI extends GUI {
         frames.add(frame);
 
         /*
-         * Testing
+         * Potions
          */
-        /*
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Info2");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-//        Label information2 = new Label("");
-        EnumButton theme = new EnumButton("Theme", new String[] {"Modern", "Modern2", "Kami", "Kami Blue", "Custom"});
-        ColorizedCheckButton checkButton = new ColorizedCheckButton("Button");
-//        checkButton.addTickListener(() -> {
-//            if (checkButton.isFocused()) {
-//                sendChatMessage("focused");
-//            }
-//            else if (checkButton.isHovered()) {
-//                sendChatMessage("hovered");
-//            }
-//            else if (checkButton.isToggled()) {
-//                sendChatMessage("toggled");
-//            }
-//        });
-
-//        information.setShadow(true);
-//        information2.addTickListener(() -> {
-//            information2.setText("");
-//            information2.addLine(KamiMod.colour + "b" + KamiMod.KAMI_KANJI + KamiMod.colour + "3 " + KamiMod.MODVER);
-//            information2.addLine(KamiMod.colour + "b" + Math.round(LagCompensator.INSTANCE.getTickRate()) + KamiMod.colour + "3 tps");
-//            information2.addLine(KamiMod.colour + "b" + Minecraft.debugFPS + KamiMod.colour + "3 fps");
-//        });
-        frame.addChild(theme, checkButton);
-//        information2.setFontRenderer(fontRenderer);
-        frames.add(frame);
-        */
+        Frame frame2 = new Frame(getTheme(), new Stretcherlayout(1), "Potion Effects");
+        frame2.setCloseable(false);
+        frame2.setMinimizeable(true);
+        frame2.setPinnable(true);
+        frame2.addChild(new Potions());
+        frames.add(frame2);
 
         /*
          * Information Overlay / InfoOverlay
@@ -284,7 +261,7 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinnable(false);
         frame.setMinimizeable(true);
-        frame.setMinimumWidth(60);
+        frame.setMinimumWidth(80);
         frame.setMinimumHeight(10);
         Label friends = new Label("");
         friends.setShadow(true);
@@ -306,7 +283,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setMinimumWidth(70);
+        frame.setMinimumWidth(85);
         Label processes = new Label("");
         processes.setShadow(true);
 
@@ -394,7 +371,7 @@ public class KamiGUI extends GUI {
         });
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setMinimumWidth(75);
+        frame.setMinimumWidth(100);
         list.setShadow(true);
         frame.addChild(list);
         list.setFontRenderer(fontRenderer);
@@ -406,7 +383,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
         Label entityLabel = new Label("");
         frame.setCloseable(false);
-        frame.setMinimumWidth(60);
+        frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
             Minecraft mc = Wrapper.getMinecraft();

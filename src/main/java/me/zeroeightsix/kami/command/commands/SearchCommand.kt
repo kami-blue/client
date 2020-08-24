@@ -61,7 +61,7 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
                                 sendChatMessage("<$blockName> has been added to the ${search.name} block list")
                             } else {
                                 sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to add it." +
-                                        " If you are sure you want to add it run &7${commandPrefix.value} search +? $name")
+                                        " If you are sure you want to add it run &7${commandPrefix.value}search +?$name")
                             }
                         }
                         search.searchArrayList.contains(blockName) -> {
@@ -104,7 +104,7 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
                                 sendChatMessage("${search.name} block list has been set to <$blockName>")
                             } else {
                                 sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to set to it." +
-                                        " If you are sure you want to set to it run &7${commandPrefix.value} search +? $name")
+                                        " If you are sure you want to set to it run &7${commandPrefix.value}search +?$name")
                             }
                         }
                         else -> {

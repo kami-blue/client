@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import static org.lwjgl.opengl.GL11.*;
+
 /**
  * Created by 086 on 26/06/2017.
  */
@@ -65,16 +67,17 @@ public class RootFontRenderer implements FontRenderer {
     }
 
     private void prepare(int x, int y) {
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(fontsize, fontsize, 1);
-        GL11.glColor4f(1, 1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glTranslatef(x, y, 0);
+        glScalef(fontsize, fontsize, 1);
+        glColor4f(1, 1, 1, 1);
     }
 
     private void pop(int x, int y) {
-        GL11.glScalef(1f / fontsize, 1f / fontsize, 1);
-        GL11.glTranslatef(-x, -y, 0);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        glScalef(1f / fontsize, 1f / fontsize, 1);
+        glTranslatef(-x, -y, 0);
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
     }
 }

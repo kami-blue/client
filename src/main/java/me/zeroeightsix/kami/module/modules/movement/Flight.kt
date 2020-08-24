@@ -15,8 +15,10 @@ import net.minecraft.network.play.client.CPacketPlayer.PositionRotation
         description = "Makes the player fly"
 )
 class Flight : Module() {
-    private val speed = register(Settings.f("Speed", 10f))
-    private val mode = register(Settings.e<FlightMode>("Mode", FlightMode.VANILLA))
+    private val mode = register(Settings.enumBuilder(FlightMode::class.java).withName("Mode").withValue(FlightMode.VANILLA).build())
+    private val speed = register(Settings.floatBuilder("Speed").withValue(10f).withMinimum(0f).build())
+    private val modifyGliding = register(Settings.booleanBuilder("ModifyGliding").withValue(true).withVisibility { mode.value == FlightMode.VANILLA }.build())
+    private val glideSpeed = register(Settings.floatBuilder("GlideSpeed").withValue(0.25f).withRange(0f, 5f).withVisibility { mode.value != FlightMode.PACKET }.build())
 
     override fun onEnable() {
         if (mc.player == null) return
@@ -32,7 +34,7 @@ class Flight : Module() {
             FlightMode.STATIC -> {
                 mc.player.capabilities.isFlying = false
                 mc.player.motionX = 0.0
-                mc.player.motionY = 0.0
+                mc.player.motionY = getGlideSpeed()
                 mc.player.motionZ = 0.0
                 mc.player.jumpMovementFactor = speed.value
 
@@ -40,6 +42,7 @@ class Flight : Module() {
                 if (mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY -= speed.value
             }
             FlightMode.VANILLA -> {
+                if (modifyGliding.value) mc.player.motionY = getGlideSpeed()
                 mc.player.capabilities.flySpeed = speed.value / 100f
                 mc.player.capabilities.isFlying = true
                 if (mc.player.capabilities.isCreativeMode) return
@@ -69,6 +72,13 @@ class Flight : Module() {
         }
     }
 
+    fun getGlideSpeed(): Double {
+        if (glideSpeed.value <= 0) {
+            return 0.0
+        }
+        return -glideSpeed.value / 20.0
+    }
+
     override fun onDisable() {
         if (mode.value == FlightMode.VANILLA) {
             mc.player.capabilities.isFlying = false
@@ -76,10 +86,6 @@ class Flight : Module() {
             if (mc.player.capabilities.isCreativeMode) return
             mc.player.capabilities.allowFlying = false
         }
-    }
-
-    fun moveLooking(): DoubleArray {
-        return doubleArrayOf(mc.player.rotationYaw * 360.0f / 360.0f * 180.0f / 180.0f.toDouble(), 0.0)
     }
 
     enum class FlightMode {

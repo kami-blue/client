@@ -44,7 +44,7 @@ class BreakingESP : Module() {
 
     override fun onWorldRender(event: RenderEvent) {
         val colour = ColourHolder(r.value, g.value, b.value)
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.aTracer = if (tracer.value) aTracer.value else 0
@@ -61,12 +61,12 @@ class BreakingESP : Module() {
             }
             renderer.add(resizedBox, colour)
         }
-        renderer.render()
+        renderer.render(true)
 
         if (selfBreaking != null) {
             renderer.aTracer = 0
             renderer.add(selfBreaking, colour)
-            renderer.render()
+            renderer.render(true)
         }
     }
 

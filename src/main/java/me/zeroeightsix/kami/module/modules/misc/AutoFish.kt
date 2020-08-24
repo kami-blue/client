@@ -3,119 +3,156 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BlockUtils.isWater
 import me.zeroeightsix.kami.util.MessageSendHelper
-import net.minecraft.item.ItemFishingRod
+import me.zeroeightsix.kami.util.Timer
+import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent
-import java.util.*
+import java.lang.Math.random
+import kotlin.math.abs
 
 /**
  * Created by 086 on 22/03/2018.
  * Updated by Qther on 05/03/20
  * Updated by dominikaaaa on 26/05/20
+ * Updated by Xiaro on 22/08/20
  */
 @Module.Info(
         name = "AutoFish",
         category = Module.Category.MISC,
-        description = "Automatically catch fish",
-        alwaysListening = true
+        description = "Automatically catch fish"
 )
 class AutoFish : Module() {
+    private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
     private val defaultSetting = register(Settings.b("Defaults", false))
-    private val baseDelay = register(Settings.integerBuilder("ThrowDelay").withValue(450).withMinimum(50).withMaximum(1000).build())
-    private val extraDelay = register(Settings.integerBuilder("CatchDelay").withValue(300).withMinimum(0).withMaximum(1000).build())
-    private val variation = register(Settings.integerBuilder("Variation").withValue(50).withMinimum(0).withMaximum(1000).build())
-    private val recastOnReconnect = register(Settings.booleanBuilder("CastOnReconnect").withValue(true).build())
+    private val autoCast = register(Settings.b("AutoCast", true))
+    private val castDelay = register(Settings.integerBuilder("AutoCastDelay(s)").withValue(5).withRange(1, 20).withVisibility { autoCast.value }.build())
+    private val catchDelay = register(Settings.integerBuilder("CatchDelay(ms)").withValue(300).withRange(50, 2000).build())
+    private val recastDelay = register(Settings.integerBuilder("RecastDelay(ms)").withValue(450).withRange(50, 2000).build())
+    private val variation = register(Settings.integerBuilder("Variation(ms)").withValue(100).withRange(0, 1000).build())
 
-    var random: Random? = null
-    private var recast = false
-    private var looking = arrayOf(0, 0) // pitch, yaw
+    private enum class Mode {
+        BOUNCE, SPLASH, ANY_SPLASH, ALL
+    }
 
-    @EventHandler
-    var localPlayerUpdateEventListener = Listener(EventHook { event: LocalPlayerUpdateEvent? ->
-        if (mc.player != null && recast && recastOnReconnect.value && mc.player.heldItemMainhand.item is ItemFishingRod) {
-            mc.player.rotationPitch = looking[0].toFloat()
-            mc.player.rotationYaw = looking[1].toFloat()
-            Thread(Runnable {
-                try {
-                    Thread.sleep(500)
-                } catch (ignored: InterruptedException) { }
-
-                mc.rightClickMouse()
-                looking[0] = mc.player.rotationPitch.toInt()
-                looking[1] = mc.player.rotationYaw.toInt()
-            }).start()
-            recast = false
-        }
-    })
+    private var looking = Pair(0.0f, 0.0f) // <Yaw, Pitch>
+    private var catching = false
+    private var recasting = false
+    private val timer = Timer()
 
     @EventHandler
-    var clientDisconnect = Listener(EventHook { event: ClientDisconnectionFromServerEvent? ->
-        if (isDisabled) return@EventHook
-        recast = true
-    })
+    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
+        if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@EventHook
 
-    @EventHandler
-    var serverDisconnect = Listener(EventHook { event: ServerDisconnectionFromClientEvent? ->
-        if (isDisabled) return@EventHook
-        recast = true
-    })
-
-    @EventHandler
-    private val receiveListener = Listener(EventHook { e: PacketEvent.Receive ->
-        if (isEnabled && e.packet is SPacketSoundEffect) {
-            val pck = e.packet as SPacketSoundEffect
-            if (pck.getSound().soundName.toString().toLowerCase().contains("entity.bobber.splash")) {
-                if (mc.player.fishEntity == null) return@EventHook
-
-                val soundX = pck.x.toInt()
-                val soundZ = pck.z.toInt()
-                val fishX = mc.player.fishEntity!!.posX.toInt()
-                val fishZ = mc.player.fishEntity!!.posZ.toInt()
-
-                if (kindaEquals(soundX, fishX) && kindaEquals(fishZ, soundZ)) {
-                    Thread(Runnable {
-                        random = Random()
-
-                        try {
-                            Thread.sleep(extraDelay.value + random!!.ints(1, -variation.value, variation.value).findFirst().asInt.toLong())
-                        } catch (ignored: InterruptedException) { }
-
-                        looking[0] = mc.player.rotationPitch.toInt()
-                        looking[1] = mc.player.rotationYaw.toInt()
-                        mc.rightClickMouse()
-                        random = Random()
-
-                        try {
-                            Thread.sleep(baseDelay.value + random!!.ints(1, -variation.value, variation.value).findFirst().asInt.toLong())
-                        } catch (e1: InterruptedException) {
-                            e1.printStackTrace()
-                        }
-
-                        looking[0] = mc.player.rotationPitch.toInt()
-                        looking[1] = mc.player.rotationYaw.toInt()
-                        mc.rightClickMouse()
-                    }).start()
-                }
+        if (mode.value != Mode.BOUNCE && event.packet is SPacketSoundEffect) {
+            if (isSplash(event.packet as SPacketSoundEffect)) {
+                catch()
             }
         }
     })
 
-    private fun kindaEquals(kara: Int, ni: Int): Boolean {
-        return ni == kara || ni == kara - 1 || ni == kara + 1
+    override fun onUpdate() {
+        if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
+            reset()
+            return
+        }
+
+        if (mc.player.fishEntity == null) {
+            if (recasting) { // Recast the fishing rod
+                if (timer.tick(recastDelay.value.toLong())) {
+                    mc.rightClickMouse()
+                    reset()
+                }
+            } else if (autoCast.value && timer.tick(castDelay.value * 1000L)) { // Cast the fishing rod if a fishing rod is in hand and not fishing
+                mc.rightClickMouse()
+                reset()
+            }
+        } else if (isStabled() && isOnWater()) {
+            if (catching) { // Catch the fish
+                if (timer.tick(catchDelay.value.toLong())) {
+                    mc.rightClickMouse()
+                    recast()
+                }
+            } else {// Bounce detection
+                if ((mode.value == Mode.BOUNCE || mode.value == Mode.ALL) && isBouncing()) {
+                    catch()
+                }
+            }
+        } else if (isStabled()) {// If the fishing rod is not in air and not in water (ex. hooked a block), then we recast it with extra delay
+            mc.rightClickMouse()
+            reset()
+        }
+    }
+
+    override fun onToggle() {
+        reset()
+    }
+
+    private fun isStabled(): Boolean {
+        if (mc.player.fishEntity == null || mc.player.fishEntity!!.isAirBorne || recasting) return false
+        return abs(mc.player.fishEntity!!.motionX) + abs(mc.player.fishEntity!!.motionZ) < 0.01
+    }
+
+    private fun isOnWater(): Boolean {
+        if (mc.player.fishEntity == null || mc.player.fishEntity!!.isAirBorne) return false
+        val pos = mc.player.fishEntity!!.position
+        return isWater(pos) || isWater(pos.down())
+    }
+
+    private fun isSplash(packet: SPacketSoundEffect): Boolean {
+        if (mode.value == Mode.SPLASH && mc.player.fishEntity!!.getDistance(packet.x, packet.y, packet.z) > 2) return false
+        val soundName = packet.sound.soundName.toString().toLowerCase()
+        return (mode.value != Mode.SPLASH && isAnySplash(soundName)) || soundName.contains("entity.bobber.splash")
+    }
+
+    private fun isAnySplash(soundName: String): Boolean {
+        return soundName.contains("entity.generic.splash")
+                || soundName.contains("entity.generic.splash")
+                || soundName.contains("entity.hostile.splash")
+                || soundName.contains("entity.player.splash")
+    }
+
+    private fun isBouncing(): Boolean {
+        if (mc.player.fishEntity == null || !isOnWater()) return false
+        return mc.player.fishEntity!!.motionY !in -0.05..0.05
+    }
+
+    private fun catch() {
+        if (catching) return
+        resetTimer()
+        catching = true
+        recasting = false
+    }
+
+    private fun recast(extraDelay: Long = 0L) {
+        if (recasting) return
+        resetTimer()
+        timer.lastTickTime += extraDelay
+        catching = false
+        recasting = true
+    }
+
+    private fun reset() {
+        resetTimer()
+        catching = false
+        recasting = false
+    }
+
+    private fun resetTimer() {
+        timer.lastTickTime = System.currentTimeMillis()
+        if (variation.value > 0) timer.lastTickTime += (random() * (variation.value * 2) - variation.value).toLong()
     }
 
     private fun defaults() {
-        baseDelay.value = 450
-        extraDelay.value = 300
-        variation.value = 50
-        recastOnReconnect.value = true
+        autoCast.value = true
+        castDelay.value = 5
+        catchDelay.value = 300
+        recastDelay.value = 450
+        variation.value = 100
         defaultSetting.value = false
         MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
     }

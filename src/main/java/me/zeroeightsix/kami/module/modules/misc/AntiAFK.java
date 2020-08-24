@@ -43,12 +43,15 @@ public class AntiAFK extends Module {
 
     private final int[] squareStartCoords = {0, 0};
     private int squareStep = 0;
+    private Boolean baritoneDisconnectOnArrival = false;
 
     @Override
     public void onEnable() {
         if (mc.player == null)
             return;
 
+        baritoneDisconnectOnArrival = BaritoneAPI.getSettings().disconnectOnArrival.value;
+        BaritoneAPI.getSettings().disconnectOnArrival.value = false;
         squareStartCoords[0] = (int) mc.player.posX;
         squareStartCoords[1] = (int) mc.player.posZ;
     }
@@ -58,6 +61,7 @@ public class AntiAFK extends Module {
         if (mc.player == null)
             return;
 
+        BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival;
         if (isBaritoneActive())
             BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
     }

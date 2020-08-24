@@ -64,30 +64,32 @@ class KamiMoji {
 
     @Throws(IOException::class)
     fun updateEmojis() {
-        val zip = ZipInputStream(URL(ZIP_URL).openStream())
-        var entry = zip.nextEntry
+        Thread(Runnable {
+            val zip = ZipInputStream(URL(ZIP_URL).openStream())
+            var entry = zip.nextEntry
 
-        while (entry != null) {
-            val filePath = FOLDER + File.separator + entry.name.substring(entry.name.indexOf("/"))
+            while (entry != null) {
+                val filePath = FOLDER + File.separator + entry.name.substring(entry.name.indexOf("/"))
 
-            if (!entry.isDirectory) {
-                val bos = BufferedOutputStream(FileOutputStream(filePath))
-                val bytesIn = ByteArray(4096)
-                var read: Int
+                if (!entry.isDirectory) {
+                    val bos = BufferedOutputStream(FileOutputStream(filePath))
+                    val bytesIn = ByteArray(4096)
+                    var read: Int
 
-                while (zip.read(bytesIn).also { read = it } != -1) {
-                    bos.write(bytesIn, 0, read)
+                    while (zip.read(bytesIn).also { read = it } != -1) {
+                        bos.write(bytesIn, 0, read)
+                    }
+
+                    bos.close()
                 }
 
-                bos.close()
+                zip.closeEntry()
+
+                entry = zip.nextEntry
             }
 
-            zip.closeEntry()
-
-            entry = zip.nextEntry
-        }
-
-        zip.close()
+            zip.close()
+        }).start()
     }
 
     fun addEmoji(file: File) {

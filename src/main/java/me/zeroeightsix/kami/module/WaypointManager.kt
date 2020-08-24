@@ -12,18 +12,16 @@ object WaypointManager {
     /**
      * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
      */
-    fun registerWaypoints() {
-        KamiMod.log.info("Registering waypoints...")
-        Waypoint.readFileToMemory()
-        KamiMod.log.info("Waypoints registered")
+    fun loadWaypoints(): Boolean {
+        KamiMod.log.info("Loading waypoints...")
+        return Waypoint.readFileToMemory()
     }
 
     /**
      * Saves waypoints from the waypoints ArrayList into KAMIBlueWaypoints.json
      */
-    fun saveWaypoints() {
+    fun saveWaypoints(): Boolean {
         KamiMod.log.info("Saving waypoints...")
-        Waypoint.writeMemoryToFile()
-        KamiMod.log.info("Waypoints saved")
+        return Waypoint.writeMemoryToFile()
     }
 }

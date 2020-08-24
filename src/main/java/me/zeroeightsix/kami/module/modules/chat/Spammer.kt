@@ -87,7 +87,9 @@ class Spammer : Module() {
     }
 
     private fun getRandom(array: ArrayList<String>, LastLine: Int): String {
-        while (currentLine == LastLine) currentLine = Random.nextInt(array.size) /* Avoids sending the same message */
+        while (array.size != 1 && currentLine == LastLine) {
+            currentLine = Random.nextInt(array.size)
+        } /* Avoids sending the same message */
         return array[currentLine]
     }
 }
