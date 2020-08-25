@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentString
 
 /**
  * Created by 0x2E | PretendingToCode
+ * Updated by Xiaro on 24/08/20
  */
 @Module.Info(
         name = "EndTeleport",
@@ -20,7 +21,8 @@ import net.minecraft.util.text.TextComponentString
         description = "Allows for teleportation when going through end portals"
 )
 class EndTeleport : Module() {
-    private val confirmed = register(Settings.b("Confirm", true))
+    private val confirmed = register(Settings.b("Confirm", false))
+
     public override fun onEnable() {
         if (mc.getCurrentServerData() == null) {
             MessageSendHelper.sendWarningMessage("$chatName This module does not work in singleplayer")
