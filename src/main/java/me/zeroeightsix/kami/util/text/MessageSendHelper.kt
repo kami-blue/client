@@ -105,7 +105,7 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendServerMessage(message: String?) {
-        if (message == null) return
+        if (message.isNullOrBlank()) return
         if (Minecraft.getMinecraft().player != null) {
             player!!.connection.sendPacket(CPacketChatMessage(message))
         } else {

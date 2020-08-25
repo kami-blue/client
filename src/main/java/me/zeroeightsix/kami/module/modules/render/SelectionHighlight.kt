@@ -41,7 +41,7 @@ class SelectionHighlight : Module() {
         val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
         val eyeBlockPos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
         if (!mc.world.isAirBlock(eyeBlockPos) && !mc.player.isInLava && !mc.player.isInWater) return
-        val colour = ColourHolder(r.value, g.value, b.value)
+        val colour = ColorHolder(r.value, g.value, b.value)
         val hitObject = mc.objectMouseOver ?: return
         val renderer = ESPRenderer()
 

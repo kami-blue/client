@@ -2,11 +2,8 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.round
 
 /**
  * Created by 086 on 12/12/2017
