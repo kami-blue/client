@@ -33,12 +33,14 @@ class Fastuse : Module() {
     private val bowCharge = register(Settings.integerBuilder("BowCharge").withMinimum(0).withMaximum(20).withValue(3).withVisibility { allItems.value || bow.value }.build())
     private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(5).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
 
+    private var randomVariation = 0
     private var time = 0
 
     override fun onUpdate() {
         if (mc.player.isSpectator) return
 
         if ((allItems.value || bow.value) && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= getBowCharge()) {
+            randomVariation = 0
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
             mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
             mc.player.stopActiveHand()
@@ -63,8 +65,10 @@ class Fastuse : Module() {
     }
 
     private fun getBowCharge(): Int {
-        val variation = if (chargeVariation.value == 0) 0 else (0..chargeVariation.value).random()
-        return bowCharge.value + variation
+        if (randomVariation == 0) {
+            randomVariation = if (chargeVariation.value == 0) 0 else (0..chargeVariation.value).random()
+        }
+        return bowCharge.value + randomVariation
     }
 
     private fun passItemCheck(item: Item): Boolean {
