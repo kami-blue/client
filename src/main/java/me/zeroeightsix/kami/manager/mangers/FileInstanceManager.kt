@@ -11,7 +11,6 @@ import kotlin.collections.ArrayList
 
 /**
  * @author dominikaaaa
- * Lazy fix used for Java instance of [me.zeroeightsix.kami.util.Macro] and [MacroManager]
  */
 object FileInstanceManager : Manager() {
     /*

@@ -11,8 +11,7 @@ import org.lwjgl.input.Keyboard
 @Module.Info(
         name = "ClickGUI",
         description = "Opens the Click GUI",
-        category = Module.Category.CLIENT,
-        alwaysListening = true
+        category = Module.Category.CLIENT
 )
 class ClickGUI : Module() {
 
