@@ -66,11 +66,6 @@ public class UIRenderer {
         }
         GlStateManager.disableBlend();
         GlStateManager.enableTexture2D();
-//        GlStateManager.pushMatrix();
-//        ScaledResolution scaledResolution = new ScaledResolution(Wrapper.getMinecraft());
-//        scaledResolution.getScaleFactor()
-//        GlStateManager.scale();
-//        GlStateManager.popMatrix();
     }
 
 }
