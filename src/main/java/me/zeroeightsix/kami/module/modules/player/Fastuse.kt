@@ -31,7 +31,7 @@ class Fastuse : Module() {
     private val fireworks = register(Settings.booleanBuilder().withName("Fireworks").withValue(false).withVisibility { !allItems.value }.build())
     private val bow = register(Settings.booleanBuilder().withName("Bow").withValue(true).withVisibility { !allItems.value }.build())
     private val bowCharge = register(Settings.integerBuilder("BowCharge").withMinimum(0).withMaximum(20).withValue(3).withVisibility { allItems.value || bow.value }.build())
-    private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(2).withRange(0, 10).withVisibility { allItems.value || bow.value }.build())
+    private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(5).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
 
     private var time = 0
 
@@ -68,10 +68,10 @@ class Fastuse : Module() {
     }
 
     private fun passItemCheck(item: Item): Boolean {
-        return (allItems.value && item !is ItemBlock)
+        return item !is ItemAir && ((allItems.value && item !is ItemBlock)
                 || (blocks.value && item is ItemBlock)
                 || (expBottles.value && item is ItemExpBottle)
                 || (endCrystals.value && item is ItemEndCrystal)
-                || (fireworks.value && item is ItemFirework)
+                || (fireworks.value && item is ItemFirework))
     }
 }
