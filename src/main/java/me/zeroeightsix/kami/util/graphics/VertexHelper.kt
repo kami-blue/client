@@ -24,16 +24,25 @@ class VertexHelper(private val useVbo: Boolean) {
         put(pos.x, pos.y, pos.z, color)
     }
 
-    fun put(pos: Vec2d, color: ColourHolder) {
-        put(pos.x, pos.y, 0.0, color)
-    }
-
     fun put(x: Double, y: Double, z: Double, color: ColourHolder) {
         if (useVbo) {
             buffer.pos(x, y, z).color(color.r, color.g, color.b, color.a).endVertex()
         } else {
             color.setGLColour()
             glVertex3d(x, y, z)
+        }
+    }
+
+    fun put(pos: Vec2d, color: ColourHolder) {
+        put(pos.x, pos.y, color)
+    }
+
+    fun put(x: Double, y: Double, color: ColourHolder) {
+        if (useVbo) {
+            buffer.pos(x, y, 0.0).color(color.r, color.g, color.b, color.a).endVertex()
+        } else {
+            color.setGLColour()
+            glVertex2d(x, y)
         }
     }
 
