@@ -8,10 +8,12 @@ import org.lwjgl.opengl.GL11.*
 
 object GlStateUtils : Tessellator(0x200000) {
 
+    @JvmStatic
     fun useVbo(): Boolean {
         return Wrapper.getMinecraft().gameSettings.useVbo
     }
 
+    @JvmStatic
     fun blend(state: Boolean) {
         if (state) {
             glEnable(GL_BLEND)
@@ -21,6 +23,7 @@ object GlStateUtils : Tessellator(0x200000) {
         }
     }
 
+    @JvmStatic
     fun smooth(state: Boolean) {
         if (state) {
             glShadeModel(GL_SMOOTH)
@@ -29,6 +32,7 @@ object GlStateUtils : Tessellator(0x200000) {
         }
     }
 
+    @JvmStatic
     fun lineSmooth(state: Boolean) {
         if (state) {
             glEnable(GL_LINE_SMOOTH)
@@ -38,6 +42,7 @@ object GlStateUtils : Tessellator(0x200000) {
         }
     }
 
+    @JvmStatic
     fun depth(state: Boolean) {
         if (state) {
             glEnable(GL_DEPTH_TEST)
@@ -46,10 +51,12 @@ object GlStateUtils : Tessellator(0x200000) {
         }
     }
 
+    @JvmStatic
     fun beginBuffer(mode: Int, vertexFormats: VertexFormat = DefaultVertexFormats.POSITION_COLOR) {
         buffer.begin(mode, vertexFormats)
     }
 
+    @JvmStatic
     fun endBuffer() {
         draw()
     }
