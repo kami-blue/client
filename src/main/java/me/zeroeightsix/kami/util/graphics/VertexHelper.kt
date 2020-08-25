@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.graphics.RenderUtils.beginBuffer
-import me.zeroeightsix.kami.util.graphics.RenderUtils.endBuffer
+import me.zeroeightsix.kami.util.graphics.GlStateUtils.beginBuffer
+import me.zeroeightsix.kami.util.graphics.GlStateUtils.endBuffer
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.Vec3d
@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11.*
 
 class VertexHelper(private val useVbo: Boolean) {
 
-    private val buffer = RenderUtils.buffer
+    private val buffer = GlStateUtils.buffer
 
     fun begin(mode: Int) {
         if (useVbo) {
