@@ -54,7 +54,7 @@ object Macro {
     }
 
     fun addMacroToKey(keycode: Int?, macro: String?) {
-        if (keycode == null || macro == null) return  // prevent trying to add a null macro
+        if (keycode == null || macro.isNullOrBlank()) return  // prevent trying to add a null macro
         FileInstanceManager.macros.getOrPut(keycode, ::arrayListOf).add(macro)
     }
 
