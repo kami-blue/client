@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.module.modules.render.NoRender;
 import me.zeroeightsix.kami.util.HungerOverlayRenderHelper;
 import me.zeroeightsix.kami.util.HungerOverlayUtils;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.graphics.ProjectionUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
@@ -137,6 +138,7 @@ public class ForgeEventProcessor {
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         if (event.isCanceled()) return;
+        ProjectionUtils.INSTANCE.updateMatrix();
         MODULE_MANAGER.onWorldRender(event);
     }
 
