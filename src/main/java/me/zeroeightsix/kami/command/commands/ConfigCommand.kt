@@ -45,11 +45,11 @@ class ConfigCommand : Command("config", ChunkBuilder()
 
 
             "path" -> if (args[1] == null) {
-                val file = Paths.get(KamiMod.getConfigName())
+                val file = Paths.get(ConfigUtils.getConfigName())
                 MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
             } else {
                 val newPath = args[1]!!
-                if (!KamiMod.isFilenameValid(newPath)) {
+                if (!ConfigUtils.isFilenameValid(newPath)) {
                     MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                 }
                 try {
