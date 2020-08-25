@@ -5,21 +5,18 @@ import net.minecraft.util.math.Vec3d
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class Vec2d() : Vec2d() {
+class Vec2d : Vec2d {
 
     constructor(x: Double, y: Double) {
-        this.x = x
-        this.y = y
+        Vec2d(x, y)
     }
 
     constructor(vec3d: Vec3d) {
-        this.x = vec3d.x
-        this.y = vec3d.y
+        Vec2d(vec3d.x, vec3d.y)
     }
 
     constructor(vec2d: Vec2d) {
-        this.x = vec2d.x
-        this.y = vec2d.y
+        Vec2d(vec2d.x, vec2d.y)
     }
 
     fun length(): Double {
