@@ -71,17 +71,6 @@ public class MixinEntityRenderer {
         if (NoHurtCam.shouldDisable()) info.cancel();
     }
 
-    @Redirect(method = "updateLightmap", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isPotionActive(Lnet/minecraft/potion/Potion;)Z"))
-    public boolean isPotionActive(EntityPlayerSP player, Potion potion) {
-        return (nightVision = Brightness.shouldBeActive()) || player.isPotionActive(potion);
-    }
-
-    @Redirect(method = "updateLightmap", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;getNightVisionBrightness(Lnet/minecraft/entity/EntityLivingBase;F)F"))
-    public float getNightVisionBrightnessMixin(EntityRenderer renderer, EntityLivingBase entity, float partialTicks) {
-        if (nightVision) return Brightness.getCurrentBrightness();
-        return renderer.getNightVisionBrightness(entity, partialTicks);
-    }
-
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
     public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate predicate) {
         if (NoEntityTrace.shouldBlock())

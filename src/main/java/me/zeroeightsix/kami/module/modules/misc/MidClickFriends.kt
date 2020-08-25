@@ -15,7 +15,9 @@ import org.lwjgl.input.Mouse
 
 /**
  * @author Indrit
+ *
  * Updated by Indrit on 02/03/20
+ * Updated by Xiaro on 24/08/20
  */
 @Module.Info(
         name = "MidClickFriends",
@@ -34,16 +36,14 @@ class MidClickFriends : Module() {
 
     @EventHandler
     var mouseListener = Listener(EventHook<InputEvent.MouseInputEvent> { event: InputEvent.MouseInputEvent? ->
-        if (delay == 0) {
-            if (Mouse.getEventButton() == 2) { // 0 is left, 1 is right, 2 is middle
-                if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY) {
-                    val lookedAtEntity = mc.objectMouseOver.entityHit as? EntityOtherPlayerMP
-                            ?: return@EventHook
-                    if (Friends.isFriend(lookedAtEntity.name)) {
-                        remove(lookedAtEntity.name)
-                    } else {
-                        add(lookedAtEntity.name)
-                    }
+        if (delay == 0 && Mouse.getEventButton() == 2 && mc.objectMouseOver != null) { // 0 is left, 1 is right, 2 is middle
+            if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY) {
+                val lookedAtEntity = mc.objectMouseOver.entityHit as? EntityOtherPlayerMP
+                        ?: return@EventHook
+                if (Friends.isFriend(lookedAtEntity.name)) {
+                    remove(lookedAtEntity.name)
+                } else {
+                    add(lookedAtEntity.name)
                 }
             }
         }

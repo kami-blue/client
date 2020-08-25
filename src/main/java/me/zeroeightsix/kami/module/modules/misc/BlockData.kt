@@ -32,7 +32,7 @@ class BlockData : Module() {
 
     @EventHandler
     private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent? ->
-        if (Mouse.getEventButton() == 1 && delay == 0) {
+        if (Mouse.getEventButton() == 1 && delay == 0 && mc.objectMouseOver != null) {
             if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 val blockPos = mc.objectMouseOver.blockPos
                 val iBlockState = mc.world.getBlockState(blockPos)

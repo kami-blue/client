@@ -17,6 +17,7 @@ import net.minecraft.network.play.client.CPacketPlayer.PositionRotation
 class Flight : Module() {
     private val mode = register(Settings.enumBuilder(FlightMode::class.java).withName("Mode").withValue(FlightMode.VANILLA).build())
     private val speed = register(Settings.floatBuilder("Speed").withValue(10f).withMinimum(0f).build())
+    private val modifyGliding = register(Settings.booleanBuilder("ModifyGliding").withValue(true).withVisibility { mode.value == FlightMode.VANILLA }.build())
     private val glideSpeed = register(Settings.floatBuilder("GlideSpeed").withValue(0.25f).withRange(0f, 5f).withVisibility { mode.value != FlightMode.PACKET }.build())
 
     override fun onEnable() {
@@ -33,7 +34,7 @@ class Flight : Module() {
             FlightMode.STATIC -> {
                 mc.player.capabilities.isFlying = false
                 mc.player.motionX = 0.0
-                mc.player.motionY = -glideSpeed.value / 20.0
+                mc.player.motionY = getGlideSpeed()
                 mc.player.motionZ = 0.0
                 mc.player.jumpMovementFactor = speed.value
 
@@ -41,7 +42,7 @@ class Flight : Module() {
                 if (mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY -= speed.value
             }
             FlightMode.VANILLA -> {
-                mc.player.motionY = -glideSpeed.value / 20.0
+                if (modifyGliding.value) mc.player.motionY = getGlideSpeed()
                 mc.player.capabilities.flySpeed = speed.value / 100f
                 mc.player.capabilities.isFlying = true
                 if (mc.player.capabilities.isCreativeMode) return
@@ -69,6 +70,13 @@ class Flight : Module() {
                 mc.player.connection.sendPacket(PositionRotation(mc.player.posX + mc.player.motionX, mc.player.posY - 42069, mc.player.posZ + mc.player.motionZ, mc.player.rotationYaw, mc.player.rotationPitch, true))
             }
         }
+    }
+
+    fun getGlideSpeed(): Double {
+        if (glideSpeed.value <= 0) {
+            return 0.0
+        }
+        return -glideSpeed.value / 20.0
     }
 
     override fun onDisable() {

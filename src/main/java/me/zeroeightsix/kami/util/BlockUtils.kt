@@ -15,8 +15,9 @@ import kotlin.math.floor
 import kotlin.math.sqrt
 
 /**
- * Created by hub on 15 June 2019
- * Last Updated 12 January 2019 by hub
+ * Created by hub on 15/06/19
+ * Updated by hub on 12/01/19
+ * Updated by Xiaro on 22/08/20
  */
 object BlockUtils {
     @JvmField
@@ -53,6 +54,16 @@ object BlockUtils {
             Blocks.RED_SHULKER_BOX,
             Blocks.BLACK_SHULKER_BOX
     )
+
+    @JvmField
+    val surroundOffset = arrayOf(
+            BlockPos(0, -1, 0),  // down
+            BlockPos(0, 0, -1),  // north
+            BlockPos(1, 0, 0),  // east
+            BlockPos(0, 0, 1),  // south
+            BlockPos(-1, 0, 0) // west
+    )
+
     private val mc = Minecraft.getMinecraft()
 
     fun placeBlockScaffold(pos: BlockPos) {
@@ -173,13 +184,21 @@ object BlockUtils {
             if (checkLiquid) {
                 for (x in 0..1) for (z in 0..1) {
                     val blockPos = BlockPos(xArray[x], (mc.player.posY + yOffset).toInt(), zArray[z])
-                    if (mc.world.getBlockState(blockPos).block.material.isLiquid) return -999.0
+                    if (isLiquid(blockPos)) return -999.0
                 }
             }
             yOffset -= 0.05
             if (mc.player.posY + yOffset < 0.0f) return -999.0
         }
         return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY
+    }
+
+    fun isLiquid(pos: BlockPos): Boolean {
+        return mc.world.getBlockState(pos).block.material.isLiquid
+    }
+
+    fun isWater(pos: BlockPos): Boolean {
+       return mc.world.getBlockState(pos).block == Blocks.WATER
     }
 
     /**

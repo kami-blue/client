@@ -535,6 +535,7 @@ class ElytraFlight : Module() {
 
             easyTakeOff.value = true
             timerControl.value = true
+            highPingOptimize.value = false
             minTakeoffHeight.value = 0.5f
 
             accelerateStartSpeed.value = 100
@@ -544,6 +545,10 @@ class ElytraFlight : Module() {
             spoofPitch.value = true
             blockInteract.value = false
             forwardPitch.value = 0
+
+            elytraSounds.value = true
+            swingSpeed.value = 1.0f
+            swingAmount.value = 0.8f
 
             speedBoost.value = 1.0f
             upSpeedBoost.value = 1.0f
