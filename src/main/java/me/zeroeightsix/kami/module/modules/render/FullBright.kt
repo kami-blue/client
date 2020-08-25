@@ -43,6 +43,10 @@ class FullBright : Module() {
             isDisabled && gammaSetting != oldValue.value -> {
                 transition(oldValue.value)
             }
+
+            else -> {
+                alwaysListening = false
+            }
         }
     }
 
