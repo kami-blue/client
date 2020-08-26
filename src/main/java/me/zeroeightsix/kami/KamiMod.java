@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
@@ -12,11 +10,6 @@ import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.emoji.KamiMoji;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
-import me.zeroeightsix.kami.gui.rgui.component.Component;
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
-import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
@@ -29,7 +22,6 @@ import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
-import me.zeroeightsix.kami.setting.config.Configuration;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.RichPresence;
@@ -44,20 +36,10 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
 
