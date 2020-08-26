@@ -19,7 +19,8 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
-import me.zeroeightsix.kami.module.*;
+import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
@@ -29,7 +30,9 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.config.Configuration;
-import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.ConfigUtils;
+import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.RichPresence;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -267,8 +270,8 @@ public class KamiMod {
             Files.createFile(outputFile);
         Configuration.saveConfiguration(outputFile);
         Module[] modules = ModuleManager.getModules();
-        for (int i = 0; i < modules.length; i++) {
-            modules[i].destroy();
+        for (Module module : modules) {
+            module.destroy();
         }
     }
 
