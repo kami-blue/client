@@ -30,15 +30,15 @@ class Vec2d {
     }
 
     fun divide(vec3d: Vec3d): Vec2d {
-        return add(vec3d.x, vec3d.y)
+        return divide(vec3d.x, vec3d.y)
     }
 
     fun divide(vec2d: Vec2d): Vec2d {
-        return add(vec2d.x, vec2d.y)
+        return divide(vec2d.x, vec2d.y)
     }
 
-    fun divide(add: Double): Vec2d {
-        return add(add, add)
+    fun divide(divider: Double): Vec2d {
+        return divide(divider, divider)
     }
 
     fun divide(x: Double, y: Double): Vec2d {
@@ -46,15 +46,15 @@ class Vec2d {
     }
 
     fun multiply(vec3d: Vec3d): Vec2d {
-        return add(vec3d.x, vec3d.y)
+        return multiply(vec3d.x, vec3d.y)
     }
 
     fun multiply(vec2d: Vec2d): Vec2d {
-        return add(vec2d.x, vec2d.y)
+        return multiply(vec2d.x, vec2d.y)
     }
 
-    fun multiply(add: Double): Vec2d {
-        return add(add, add)
+    fun multiply(mulitplier: Double): Vec2d {
+        return multiply(mulitplier, mulitplier)
     }
 
     fun multiply(x: Double, y: Double): Vec2d {
