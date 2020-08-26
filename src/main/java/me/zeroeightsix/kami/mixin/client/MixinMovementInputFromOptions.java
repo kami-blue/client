@@ -3,19 +3,12 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent;
 import me.zeroeightsix.kami.module.modules.movement.InventoryMove;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.MovementInputFromOptions;
-import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 
 /**
  * @author ionar2

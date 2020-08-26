@@ -12,13 +12,16 @@ public class ModuleParser extends AbstractParser {
         if (chunkValue == null)
             return getDefaultChunk(thisChunk);
 
-        Module chosen = MODULE_MANAGER.getModules().stream()
-                .filter(module -> module.getName().toLowerCase().startsWith(chunkValue.toLowerCase()))
-                .filter(Module::isProduction)
-                .findFirst()
-                .orElse(null);
+        Module chosen = null;
+        for (Module module : MODULE_MANAGER.getModules()) {
+            if (!module.isProduction()) continue;
+            if (!module.name.getValue().toLowerCase().startsWith(chunkValue.toLowerCase())) continue;
+            chosen = module;
+            break;
+        }
+
         if (chosen == null) return null;
-        return chosen.getName().substring(chunkValue.length());
+        return chosen.name.getValue().substring(chunkValue.length());
     }
 
 }

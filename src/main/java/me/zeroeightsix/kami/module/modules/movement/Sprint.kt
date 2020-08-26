@@ -20,6 +20,7 @@ class Sprint : Module() {
 
         try {
             mc.player.isSprinting = !mc.player.collidedHorizontally && mc.player.moveForward > 0
-        } catch (ignored: Exception) { }
+        } catch (ignored: Exception) {
+        }
     }
 }

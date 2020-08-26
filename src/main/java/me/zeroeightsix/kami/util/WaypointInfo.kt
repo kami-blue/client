@@ -1,41 +1,30 @@
 package me.zeroeightsix.kami.util
 
 import com.google.gson.annotations.SerializedName
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import net.minecraft.util.math.BlockPos
 
 /**
  * @author wnuke
  * Created by wnuke on 17/04/20
+ * Updated by Xiaro on 20/08/20
  */
-class WaypointInfo {
-    @JvmField
-    @SerializedName("position")
-    var pos: Coordinate
+class WaypointInfo(
+        @SerializedName("position")
+        var pos: BlockPos,
 
-    @JvmField
-    @SerializedName("name")
-    var name: String
+        @SerializedName("name")
+        var name: String,
 
-    @JvmField
-    @SerializedName("time") // NEEDS to stay "time" to maintain backwards compat
-    var date: String
+        @SerializedName("time") // NEEDS to stay "time" to maintain backwards compat
+        var date: String
+) {
 
-    @JvmField
     @SerializedName("id")
-    var id: Int
+    var id: Int = genID()
 
-    constructor(x: Int, y: Int, z: Int, nameSet: String, timeSet: String) {
-        pos = Coordinate(x, y, z)
-        name = nameSet
-        date = timeSet
-        id = genID()
-    }
-
-    constructor(posSet: Coordinate, nameSet: String, timeSet: String) {
-        pos = posSet
-        name = nameSet
-        date = timeSet
-        id = genID()
+    fun asString(): String {
+        return "${pos.x}, ${pos.y}, ${pos.z}"
     }
 
     private fun genID(): Int {
@@ -46,6 +35,5 @@ class WaypointInfo {
         }
     }
 
-    val idString: String
-        get() = id.toString()
+    val idString: String get() = id.toString()
 }

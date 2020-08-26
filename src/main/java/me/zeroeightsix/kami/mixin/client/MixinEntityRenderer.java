@@ -4,18 +4,18 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
-import me.zeroeightsix.kami.module.modules.render.*;
+import me.zeroeightsix.kami.module.modules.render.AntiFog;
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
+import me.zeroeightsix.kami.module.modules.render.CameraClip;
+import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -93,7 +93,7 @@ public class MixinEntityRenderer {
         if (MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
             return 0.4F;
         } else {
-           return entity.getEyeHeight();
+            return entity.getEyeHeight();
         }
     }
 }

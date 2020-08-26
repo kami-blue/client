@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
+import me.zeroeightsix.kami.util.math.MathUtils
 
 /**
  * @author TBM
@@ -40,9 +40,10 @@ class TimerSpeed : Module() {
 
     companion object {
         private var curSpeed = 0.0f
+
         @JvmStatic
         fun returnGui(): String {
-            return "" + MathsUtils.round(curSpeed.toDouble(), 2)
+            return "" + MathUtils.round(curSpeed.toDouble(), 2)
         }
     }
 }

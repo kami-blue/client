@@ -17,7 +17,10 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
-import me.zeroeightsix.kami.module.*;
+import me.zeroeightsix.kami.manager.ManagerLoader;
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
+import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
@@ -27,7 +30,9 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.config.Configuration;
-import me.zeroeightsix.kami.util.*;
+import me.zeroeightsix.kami.util.ConfigUtils;
+import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.RichPresence;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -38,17 +43,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
@@ -88,7 +96,12 @@ public class KamiMod {
     public static final Logger log = LogManager.getLogger("KAMI Blue");
 
     public static final EventBus EVENT_BUS = new EventManager();
-    public static final ModuleManager MODULE_MANAGER = new ModuleManager();
+
+    /**
+     * @deprecated Use ModuleManger instead
+     */
+    @Deprecated
+    public static final ModuleManager MODULE_MANAGER = ModuleManager.INSTANCE;
 
     public static final KamiMoji KAMIMOJI = new KamiMoji();
 
@@ -102,16 +115,16 @@ public class KamiMod {
     @Mod.Instance
     private static KamiMod INSTANCE;
 
-    public KamiGUI guiManager;
+    private KamiGUI guiManager;
     public CommandManager commandManager;
     public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
         @Override
-        protected JsonObject doForward(JsonObject jsonObject) {
+        protected JsonObject doForward(@Nullable JsonObject jsonObject) {
             return jsonObject;
         }
 
         @Override
-        protected JsonObject doBackward(JsonObject jsonObject) {
+        protected JsonObject doBackward(@Nullable JsonObject jsonObject) {
             return jsonObject;
         }
     }).buildAndRegister("");
@@ -119,6 +132,8 @@ public class KamiMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         updateCheck();
+        ModuleManager.preLoad();
+        ManagerLoader.preLoad();
 
         pauseProcess = new TemporaryPauseProcess();
         autoObsidianProcess = new AutoObsidianProcess();
@@ -131,7 +146,7 @@ public class KamiMod {
         log.info("Initialising KamiMoji...");
         KAMIMOJI.start();
 
-        if (MODULE_MANAGER.getModuleT(CommandConfig.class).customTitle.getValue()) {
+        if (Objects.requireNonNull(ModuleManager.getModuleT(CommandConfig.class)).customTitle.getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
     }
@@ -140,17 +155,13 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         log.info("\n\nInitializing " + MODNAME + " " + VER_FULL_BETA);
 
-        MODULE_MANAGER.register();
+        ModuleManager.load();
+        ManagerLoader.load();
 
-        MODULE_MANAGER.getModules().stream().filter(module -> module.alwaysListening).forEach(EVENT_BUS::subscribe);
         MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
-        LagCompensator.INSTANCE = new LagCompensator();
-
-        Wrapper.init();
 
         guiManager = new KamiGUI();
         guiManager.initializeGUI();
-
         commandManager = new CommandManager();
 
         Friends.initFriends();
@@ -163,13 +174,17 @@ public class KamiMod {
         ConfigUtils.INSTANCE.loadAll();
 
         new RichPresence();
-        log.info("Rich Presence Users init!\n");
+        log.info("Rich Presence Users init!");
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
-        MODULE_MANAGER.getModules().stream().filter(Module::isEnabled).forEach(Module::enable);
+        Module[] modules = ModuleManager.getModules();
+        for (Module module : modules) {
+            if (module.alwaysListening) EVENT_BUS.subscribe(module);
+            if (module.isEnabled()) module.enable();
+        }
 
         // load modules that are on by default // autoenable
-        MODULE_MANAGER.getModule(RunConfig.class).enable();
+        Objects.requireNonNull(ModuleManager.getModule(RunConfig.class)).enable();
 
         log.info(MODNAME + " Mod initialized!\n");
     }
@@ -254,7 +269,10 @@ public class KamiMod {
         if (!Files.exists(outputFile))
             Files.createFile(outputFile);
         Configuration.saveConfiguration(outputFile);
-        MODULE_MANAGER.getModules().forEach(Module::destroy);
+        Module[] modules = ModuleManager.getModules();
+        for (Module module : modules) {
+            module.destroy();
+        }
     }
 
     public static boolean isFilenameValid(String file) {
@@ -272,7 +290,11 @@ public class KamiMod {
     }
 
     public KamiGUI getGuiManager() {
-        return guiManager;
+        return this.guiManager;
+    }
+
+    public void setGuiManager(KamiGUI guiManager) {
+        this.guiManager = guiManager;
     }
 
     public CommandManager getCommandManager() {
@@ -284,7 +306,7 @@ public class KamiMod {
             KamiMod.log.info("Attempting KAMI Blue update check...");
 
             JsonParser parser = new JsonParser();
-            String latestVersion = parser.parse(IOUtils.toString(new URL(DOWNLOADS_API))).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
+            String latestVersion = parser.parse(IOUtils.toString(new URL(DOWNLOADS_API), Charset.defaultCharset())).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
 
             isLatest = latestVersion.equals(VER_STABLE);
             latest = latestVersion;

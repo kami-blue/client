@@ -27,18 +27,18 @@ class AutoObsidianProcess : IBaritoneProcess {
     override fun onLostControl() {}
 
     override fun displayName0(): String {
-        return "AutoObsidian: " + KamiMod.MODULE_MANAGER.getModuleT(AutoObsidian::class.java).state.toString().toLowerCase()
+        return "AutoObsidian: " + KamiMod.MODULE_MANAGER.getModuleT(AutoObsidian::class.java)?.state.toString().toLowerCase()
     }
 
     override fun isActive(): Boolean {
         return (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoObsidian::class.java)
-                && KamiMod.MODULE_MANAGER.getModuleT(AutoObsidian::class.java).active)
+                && KamiMod.MODULE_MANAGER.getModuleT(AutoObsidian::class.java)!!.active)
     }
 
     override fun onTick(p0: Boolean, p1: Boolean): PathingCommand? {
         baritone = BaritoneAPI.getProvider().primaryBaritone
         val autoObsidian = KamiMod.MODULE_MANAGER.getModuleT(AutoObsidian::class.java)
-        return if (autoObsidian.pathing && autoObsidian.goal != null) {
+        return if (autoObsidian != null && autoObsidian.pathing && autoObsidian.goal != null) {
             PathingCommand(GoalNear(autoObsidian.goal, 0), PathingCommandType.SET_GOAL_AND_PATH)
         } else PathingCommand(null, PathingCommandType.REQUEST_PAUSE)
     }

@@ -17,8 +17,10 @@ import net.minecraft.inventory.EntityEquipmentSlot
 class ArmourHide : Module() {
     @JvmField
     var player: Setting<Boolean> = register(Settings.b("Players", false))
+
     @JvmField
     var armourstand: Setting<Boolean> = register(Settings.b("ArmourStands", true))
+
     @JvmField
     var mobs: Setting<Boolean> = register(Settings.b("Mobs", true))
     var helmet: Setting<Boolean> = register(Settings.b("Helmet", false))
@@ -29,6 +31,7 @@ class ArmourHide : Module() {
     companion object {
         @JvmField
         var INSTANCE: ArmourHide? = null
+
         @JvmStatic
         fun shouldRenderPiece(slotIn: EntityEquipmentSlot): Boolean {
             return if (slotIn == EntityEquipmentSlot.HEAD && INSTANCE!!.helmet.value) {

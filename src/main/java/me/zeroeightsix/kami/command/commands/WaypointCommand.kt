@@ -4,17 +4,17 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.util.Coordinate
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage
 import me.zeroeightsix.kami.util.Waypoint.createWaypoint
 import me.zeroeightsix.kami.util.Waypoint.getWaypoint
 import me.zeroeightsix.kami.util.Waypoint.removeWaypoint
 import me.zeroeightsix.kami.util.Waypoint.writePlayerCoords
 import me.zeroeightsix.kami.util.WaypointInfo
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import net.minecraft.util.math.BlockPos
 import java.util.function.Consumer
 
 /**
@@ -35,7 +35,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                                 return
                             }
                             val split = args[2]!!.split(",").toTypedArray()
-                            val coordinate = Coordinate(split[0].toInt(), split[1].toInt(), split[2].toInt())
+                            val coordinate = BlockPos(split[0].toInt(), split[1].toInt(), split[2].toInt())
                             confirm(args[1]!!, createWaypoint(coordinate, args[1]!!))
                         } else {
                             confirm(args[1]!!, writePlayerCoords(args[1]!!))
@@ -51,7 +51,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                         val current = getWaypoint(args[1]!!)
                         if (current != null) {
                             if (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk::class.java)) {
-                                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk::class.java).disable()
+                                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk::class.java)?.disable()
                             }
                             MessageSendHelper.sendBaritoneCommand("goto", current.x.toString(), current.y.toString(), current.z.toString())
                         } else {
@@ -152,12 +152,12 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
     }
 
     private fun format(waypoint: WaypointInfo, search: String): String {
-        val message = "   [" + waypoint.id + "] " + waypoint.name + " (" + waypoint.pos.asString() + ")"
+        val message = "   [${waypoint.id}] ${waypoint.name} (${waypoint.pos})"
         return message.replace(search.toRegex(), "&7$search&f")
     }
 
-    private fun confirm(name: String, coord: Coordinate) {
-        sendChatMessage("Added waypoint at ${coord.asString()} with name '&7$name&f'.")
+    private fun confirm(name: String, pos: BlockPos) {
+        sendChatMessage("Added waypoint at ${pos} with name '&7$name&f'.")
     }
 
 }

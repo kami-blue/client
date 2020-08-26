@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.CenterPlayer
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.Block
 import net.minecraft.block.BlockObsidian
 import net.minecraft.block.state.IBlockState
@@ -162,8 +162,9 @@ class Surround : Module() {
             placeBlockExecute(blockPos)
         }
 
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation::class.java)) {
-            (KamiMod.MODULE_MANAGER.getModule(NoBreakAnimation::class.java) as NoBreakAnimation).resetMining()
+        val noBreakAnimation = KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java)!!
+        if (noBreakAnimation.isEnabled) {
+            noBreakAnimation.resetMining()
         }
     }
 

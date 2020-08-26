@@ -3,18 +3,18 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
@@ -128,7 +128,7 @@ class ElytraFlight : Module() {
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return@EventHook
         if (event.packet is CPacketPlayer) {
-            val packet = event.packet as CPacketPlayer
+            val packet = event.packet
             if (autoLanding.value) {
                 packet.pitch = -20.0f
             } else if (mode.value != ElytraFlightMode.BOOST) {
@@ -154,13 +154,13 @@ class ElytraFlight : Module() {
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying || mode.value == ElytraFlightMode.BOOST) return@EventHook
         if (event.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
-            val packet = event.packet as SPacketPlayerPosLook
+            val packet = event.packet
             packet.pitch = mc.player.rotationPitch
         }
 
         /* Cancels the elytra opening animation */
         if (event.packet is SPacketEntityMetadata && isPacketFlying) {
-            val packet = event.packet as SPacketEntityMetadata
+            val packet = event.packet
             if (packet.entityId == mc.player.getEntityId()) event.cancel()
         }
     })
@@ -279,7 +279,7 @@ class ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            MODULE_MANAGER.getModuleT(LagNotifier::class.java).paused -> {
+            ModuleManager.getModuleT(LagNotifier::class.java)!!.paused -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
@@ -313,7 +313,7 @@ class ElytraFlight : Module() {
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
         val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.integratedServerIsRunning
-        val lagNotifier = MODULE_MANAGER.getModuleT(LagNotifier::class.java)
+        val lagNotifier = ModuleManager.getModuleT(LagNotifier::class.java)!!
         if (!easyTakeOff.value || lagNotifier.paused || mc.player.onGround) {
             if (lagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
@@ -402,7 +402,7 @@ class ElytraFlight : Module() {
     private fun controlMode(event: PlayerTravelEvent) {
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
-        val inventoryMove = MODULE_MANAGER.getModuleT(InventoryMove::class.java)
+        val inventoryMove = ModuleManager.getModuleT(InventoryMove::class.java)!!
         val moveUp = if (!legacyLookBoost.value) mc.player.movementInput.jump else mc.player.rotationPitch < -10.0f && !isStandingStillH
         val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
 

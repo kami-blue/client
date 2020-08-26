@@ -5,11 +5,11 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.color.ColorTextFormatting
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -56,6 +56,6 @@ class FriendHighlight : Module() {
     }
 
     private fun colour(): String {
-        return ColourTextFormatting.toTextMap[colour.value].toString()
+        return ColorTextFormatting.toTextMap[colour.value].toString()
     }
 }

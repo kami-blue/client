@@ -55,7 +55,7 @@ class AutoEat : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || (MODULE_MANAGER.isModuleEnabled(Aura::class.java) && MODULE_MANAGER.getModuleT(Aura::class.java).isAttacking)) return
+        if (mc.player == null || (MODULE_MANAGER.isModuleEnabled(Aura::class.java) && MODULE_MANAGER.getModuleT(Aura::class.java)!!.isAttacking)) return
 
         if (eating && !mc.player.isHandActive) {
             if (lastSlot != -1) {
@@ -83,7 +83,7 @@ class AutoEat : Module() {
             }
 
             eating = true
-            BaritoneAPI.getSettings().allowInventory.value = MODULE_MANAGER.getModuleT(Baritone::class.java).allowInventory.value
+            BaritoneAPI.getSettings().allowInventory.value = MODULE_MANAGER.getModuleT(Baritone::class.java)!!.allowInventory.value
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
@@ -106,7 +106,7 @@ class AutoEat : Module() {
         }
     }
 
-    override fun disable() {
+    override fun onDisable() {
         unpause()
     }
 }

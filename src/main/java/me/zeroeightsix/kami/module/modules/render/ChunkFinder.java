@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.KamiTessellator;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.KamiTessellator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.world.chunk.Chunk;
@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import static me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos;
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -54,15 +54,15 @@ public class ChunkFinder extends Module {
 
     @Override
     public void onWorldRender(RenderEvent event) {
-        double y = (double) yOffset.getValue() + (relative.getValue()? getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y : 0.0);
+        double y = (double) yOffset.getValue() + (relative.getValue() ? getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y : 0.0);
 
         glLineWidth(2.0F);
         glDisable(GL_DEPTH_TEST);
-        ColourHolder color;
+        ColorHolder color;
         if (mc.player.dimension == -1) { /* Nether */
-            color = new ColourHolder(25, 225, 50);
+            color = new ColorHolder(25, 225, 50);
         } else {
-            color = new ColourHolder(255, 25, 50);
+            color = new ColorHolder(255, 25, 50);
         }
         BufferBuilder buffer = KamiTessellator.INSTANCE.getBuffer();
         for (Chunk chunk : chunks) {

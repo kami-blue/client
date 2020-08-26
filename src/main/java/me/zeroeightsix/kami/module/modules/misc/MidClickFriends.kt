@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.command.commands.FriendCommand
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.InputEvent

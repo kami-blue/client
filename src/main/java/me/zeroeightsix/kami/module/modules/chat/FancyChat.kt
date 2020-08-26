@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.network.play.client.CPacketChatMessage
 import java.util.*
 
@@ -42,6 +42,7 @@ class FancyChat : Module() {
     private fun greenConverter(input: String): String {
         return "> $input"
     }
+
     private fun blueConverter(input: String): String {
         return "`$input"
     }
@@ -103,7 +104,7 @@ class FancyChat : Module() {
             var inputChar = input[i].toString() + ""
             var rand = 0
             if (randomSetting.value) rand = if (random.nextBoolean()) 1 else 0
-            inputChar = if (!MathsUtils.isNumberEven(i + rand)) inputChar.toUpperCase() else inputChar.toLowerCase()
+            inputChar = if (!MathUtils.isNumberEven(i + rand)) inputChar.toUpperCase() else inputChar.toLowerCase()
             message.append(inputChar)
         }
         return message.toString()

@@ -3,11 +3,11 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.GeometryMasks
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.colourUtils.DyeColors
-import me.zeroeightsix.kami.util.colourUtils.HueCycler
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.color.DyeColors
+import me.zeroeightsix.kami.util.color.HueCycler
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
@@ -60,10 +60,10 @@ class StorageESP : Module() {
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDER }.build())
 
     private enum class Page {
-        TYPE, COLOR ,RENDER
+        TYPE, COLOR, RENDER
     }
 
-    private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColourHolder, Int>>()
+    private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
@@ -89,7 +89,7 @@ class StorageESP : Module() {
                     || tileEntity is TileEntityFurnace && furnace.value
                     || tileEntity is TileEntityHopper && hopper.value) {
                 val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
-                val color = getTileEntityColor(tileEntity)?: continue
+                val color = getTileEntityColor(tileEntity) ?: continue
                 var side = GeometryMasks.Quad.ALL
                 if (tileEntity is TileEntityChest) {
                     // Leave only the colliding face and then flip the bits (~) to have ALL but that face
@@ -108,13 +108,13 @@ class StorageESP : Module() {
                             || entity is EntityMinecartHopper
                             || entity is EntityMinecartFurnace) && cart.value) {
                 val box = entity.renderBoundingBox
-                val color = getEntityColor(entity)?: continue
+                val color = getEntityColor(entity) ?: continue
                 renderList[box] = Pair(color, GeometryMasks.Quad.ALL)
             }
         }
     }
 
-    private fun getTileEntityColor(tileEntity: TileEntity): ColourHolder? {
+    private fun getTileEntityColor(tileEntity: TileEntity): ColorHolder? {
         val color = (when (tileEntity) {
             is TileEntityChest -> colorChest
             is TileEntityDispenser -> colorDispenser
@@ -129,8 +129,8 @@ class StorageESP : Module() {
         } else color
     }
 
-    private fun getEntityColor(entity: Entity): ColourHolder? {
-        val color =  (when (entity) {
+    private fun getEntityColor(entity: Entity): ColorHolder? {
+        val color = (when (entity) {
             is EntityMinecartContainer -> colorCart
             is EntityItemFrame -> colorFrame
             else -> return null

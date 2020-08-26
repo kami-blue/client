@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketChatMessage
 
 /**
@@ -28,6 +28,7 @@ class CustomChat : Module() {
     var textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
+
     @JvmField
     var customText: Setting<String> = register(Settings.s("CustomText", "unchanged"))
 

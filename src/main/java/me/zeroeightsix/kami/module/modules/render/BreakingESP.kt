@@ -7,9 +7,9 @@ import me.zeroeightsix.kami.event.events.BlockBreakEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
@@ -43,7 +43,7 @@ class BreakingESP : Module() {
     private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Boolean>>() /* <BreakerID, <Position, Progress, Warned> */
 
     override fun onWorldRender(event: RenderEvent) {
-        val colour = ColourHolder(r.value, g.value, b.value)
+        val colour = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0

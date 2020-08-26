@@ -3,7 +3,8 @@ package me.zeroeightsix.kami.util
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 import java.util.*
 
@@ -33,7 +34,7 @@ object Macro {
         var success = false
         try {
             try {
-                FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<HashMap<Int?, List<String?>?>?>() {}.type)!!
+                FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<LinkedHashMap<Int?, List<String?>?>?>() {}.type)!!
                 KamiMod.log.info("Macro loaded")
                 success = true
             } catch (e: FileNotFoundException) {
@@ -48,25 +49,17 @@ object Macro {
     }
 
     fun getMacrosForKey(keycode: Int): List<String?>? {
-        for ((key, value) in FileInstanceManager.macros) {
-            if (keycode == key.toInt()) {
-                return value
-            }
-        }
-        return null
+        val entry = FileInstanceManager.macros.entries.find { it.key == keycode } ?: return null
+        return entry.value
     }
 
     fun addMacroToKey(keycode: Int?, macro: String?) {
-        if (macro == null) return  // prevent trying to add a null macro
-        FileInstanceManager.macros.getOrPut(keycode, ::mutableListOf).add(macro)
+        if (keycode == null || macro.isNullOrBlank()) return  // prevent trying to add a null macro
+        FileInstanceManager.macros.getOrPut(keycode, ::arrayListOf).add(macro)
     }
 
     fun removeMacro(keycode: Int) {
-        for (entry in FileInstanceManager.macros.entries) {
-            if (entry.key == keycode) {
-                entry.setValue(null)
-            }
-        }
+        FileInstanceManager.macros.keys.removeIf { it == keycode }
     }
 
     fun sendMacrosToChat(messages: Array<String?>) {

@@ -24,7 +24,8 @@ public class LayerCape implements LayerRenderer<AbstractClientPlayer> {
         ResourceLocation rl = Capes.getCapeResource(player);
 
         ItemStack itemstack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-        if (!player.hasPlayerInfo() || player.isInvisible() || !player.isWearing(EnumPlayerModelParts.CAPE) || itemstack.getItem() == Items.ELYTRA || rl == null) return;
+        if (!player.hasPlayerInfo() || player.isInvisible() || !player.isWearing(EnumPlayerModelParts.CAPE) || itemstack.getItem() == Items.ELYTRA || rl == null)
+            return;
 
         float f9 = 0.14f;
         float f10 = 0.0f;

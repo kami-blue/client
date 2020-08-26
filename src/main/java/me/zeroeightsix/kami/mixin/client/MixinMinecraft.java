@@ -3,8 +3,6 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.DiscordPresence;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
-import me.zeroeightsix.kami.module.MacroManager;
-import me.zeroeightsix.kami.module.WaypointManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
@@ -100,8 +98,8 @@ public class MixinMinecraft {
     @Inject(method = "run", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
     public void displayCrashReport(CallbackInfo _info) {
-       save();
-       DiscordPresence.end();
+        save();
+        DiscordPresence.end();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))

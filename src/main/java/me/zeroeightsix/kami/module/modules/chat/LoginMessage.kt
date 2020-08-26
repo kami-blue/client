@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import java.io.*
 

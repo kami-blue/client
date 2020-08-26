@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.surroundOffset
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.GeometryMasks
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
@@ -39,7 +39,7 @@ class HoleESP : Module() {
     private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
     private val holeType = register(Settings.e<HoleType>("HoleType", HoleType.BOTH))
 
-    private var safeHoles = ConcurrentHashMap<BlockPos, ColourHolder>()
+    private var safeHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT
@@ -60,7 +60,7 @@ class HoleESP : Module() {
     override fun onUpdate() {
         safeHoles.clear()
         val range = ceil(renderDistance.value).toInt()
-        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)
+        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)!!
         val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
         for (pos in blockPosList) {
             if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air
@@ -82,10 +82,10 @@ class HoleESP : Module() {
 
             if (isSafe) {
                 if (!isBedrock && shouldAddObby()) {
-                    safeHoles[pos] = ColourHolder(r1.value, g1.value, b1.value)
+                    safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
                 }
                 if (isBedrock && shouldAddBedrock()) {
-                    safeHoles[pos] = ColourHolder(r2.value, g2.value, b2.value)
+                    safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
                 }
             }
         }

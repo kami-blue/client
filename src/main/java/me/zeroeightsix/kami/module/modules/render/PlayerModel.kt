@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.KamiTessellator
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase

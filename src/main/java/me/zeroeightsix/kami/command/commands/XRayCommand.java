@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.render.XRay;
 import net.minecraft.block.Block;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
  * Created by 20kdc on 17/02/2020.
@@ -28,16 +28,16 @@ public class XRayCommand extends Command {
             return;
         }
         if (!xr.isEnabled()) {
-            sendWarningMessage("&6Warning: The " + xr.getName() + " module is not enabled!");
+            sendWarningMessage("&6Warning: The " + xr.name.getValue() + " module is not enabled!");
             sendWarningMessage("These commands will still have effect, but will not visibly do anything.");
         }
         for (String s : args) {
             if (s == null)
                 continue;
             if (s.equalsIgnoreCase("help")) {
-                sendChatMessage("The " + xr.getName() + " module has a list of blocks");
-                sendChatMessage("Normally, the " + xr.getName() + " module hides these blocks");
-                sendChatMessage("When the Invert setting is on, the " + xr.getName() + " only shows these blocks");
+                sendChatMessage("The " + xr.name.getValue() + " module has a list of blocks");
+                sendChatMessage("Normally, the " + xr.name.getValue() + " module hides these blocks");
+                sendChatMessage("When the Invert setting is on, the " + xr.name.getValue() + " only shows these blocks");
                 sendChatMessage("This command is a convenient way to quickly edit the list");
                 sendChatMessage("Available options: \n" +
                         "+block: Adds a block to the list\n" +
@@ -45,28 +45,28 @@ public class XRayCommand extends Command {
                         "=block: Changes the list to only that block\n" +
                         "list: Prints the list of selected blocks\n" +
                         "defaults: Resets the list to the default list\n" +
-                        "clear: Removes all blocks from the " + xr.getName() + " block list\n" +
+                        "clear: Removes all blocks from the " + xr.name.getValue() + " block list\n" +
                         "invert: Quickly toggles the invert setting");
             } else if (s.equalsIgnoreCase("clear")) {
                 xr.extClear();
-                sendWarningMessage("Cleared the " + xr.getName() + " block list");
+                sendWarningMessage("Cleared the " + xr.name.getValue() + " block list");
             } else if (s.equalsIgnoreCase("defaults")) {
                 xr.extDefaults();
-                sendChatMessage("Reset the " + xr.getName() + " block list to default");
+                sendChatMessage("Reset the " + xr.name.getValue() + " block list to default");
             } else if (s.equalsIgnoreCase("list")) {
                 sendChatMessage("\n" + xr.extGet());
             } else if (s.equalsIgnoreCase("invert")) {
                 if (xr.invert.getValue()) {
                     xr.invert.setValue(false);
-                    sendChatMessage("Disabled " + xr.getName() + " Invert");
+                    sendChatMessage("Disabled " + xr.name.getValue() + " Invert");
                 } else {
                     xr.invert.setValue(true);
-                    sendChatMessage("Enabled " + xr.getName() + " Invert");
+                    sendChatMessage("Enabled " + xr.name.getValue() + " Invert");
                 }
             } else if (s.startsWith("=")) {
-                String sT = s.replace("=" ,"");
+                String sT = s.replace("=", "");
                 xr.extSet(sT);
-                sendChatMessage("Set the " + xr.getName() + " block list to " + sT);
+                sendChatMessage("Set the " + xr.name.getValue() + " block list to " + sT);
             } else if (s.startsWith("+") || s.startsWith("-")) {
                 String name = s.substring(1);
                 Block b = Block.getBlockFromName(name);
@@ -74,10 +74,10 @@ public class XRayCommand extends Command {
                     sendChatMessage("&cInvalid block name <" + name + ">");
                 } else {
                     if (s.startsWith("+")) {
-                        sendChatMessage("Added <" + name + "> to the " + xr.getName() + " block list");
+                        sendChatMessage("Added <" + name + "> to the " + xr.name.getValue() + " block list");
                         xr.extAdd(name);
                     } else {
-                        sendChatMessage("Removed <" + name + "> from the " + xr.getName() + " block list");
+                        sendChatMessage("Removed <" + name + "> from the " + xr.name.getValue() + " block list");
                         xr.extRemove(name);
                     }
                 }

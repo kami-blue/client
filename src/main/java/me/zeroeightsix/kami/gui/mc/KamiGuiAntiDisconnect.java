@@ -53,18 +53,13 @@ public class KamiGuiAntiDisconnect extends GuiScreen {
                 mc.world.sendQuittingDisconnectingPacket();
                 mc.loadWorld(null);
 
-                if (single)
-                {
+                if (single) {
                     mc.displayGuiScreen(new GuiMainMenu());
-                }
-                else if (connectedToRealms)
-                {
+                } else if (connectedToRealms) {
                     RealmsBridge realmsbridge = new RealmsBridge();
 
                     realmsbridge.switchToRealms(new GuiMainMenu());
-                }
-                else
-                {
+                } else {
                     mc.displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
                 }
         }
