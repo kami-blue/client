@@ -15,8 +15,12 @@ import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.util.Bind;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.math.Vec2d;
 import org.lwjgl.opengl.GL11;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
@@ -27,9 +31,6 @@ import static org.lwjgl.opengl.GL11.*;
  * Created by 086 on 26/06/2017.
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
-
-    ColourHolder frameColour = KamiGUI.primaryColour;
-    ColourHolder outlineColour = frameColour.darker();
 
     Component yLineComponent = null;
     Component xLineComponent = null;
@@ -47,11 +48,9 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             return;
         glDisable(GL_TEXTURE_2D);
 
-        glColor4f(.17f, .17f, .18f, .9f);
-        RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight()); // Main window
-        glColor3f(toF(GuiC.windowOutline.color.getRed()), toF(GuiC.windowOutline.color.getGreen()), toF(GuiC.windowOutline.color.getBlue()));
-        glLineWidth(GuiC.windowOutlineWidth.aFloat);
-        RenderHelper.drawRectangle(0, 0, component.getWidth(), component.getHeight()); // Border / Outline
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColourHolder(43, 43, 46, 230));
+        RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColourHolder(GuiC.windowOutline.color));
 
         GL11.glColor3f(1, 1, 1);
         ff.drawString(component.getWidth() / 2 - ff.getStringWidth(component.getTitle()) / 2, 1, component.getTitle());
