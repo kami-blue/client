@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.BetterArrayList
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.ActiveRenderInfo
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -11,7 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL32
-import kotlin.math.*
 
 
 /**
@@ -143,22 +144,9 @@ object KamiTessellator : Tessellator(0x200000) {
      */
     @JvmStatic
     fun drawLineTo(position: Vec3d, color: ColorHolder, a: Int, thickness: Float) {
-        var eyePos = mc.player.getLook(pTicks()).add(mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ)
-        if (mc.gameSettings.viewBobbing) { /* This why bobbing is so annoying */
-            val yawRad = Math.toRadians(mc.player.rotationYaw.toDouble())
-            val pitchRad = Math.toRadians(mc.player.rotationPitch.toDouble())
-            val distance = -(mc.player.distanceWalkedModified + (mc.player.distanceWalkedModified - mc.player.prevDistanceWalkedModified) * pTicks().toDouble())
-            val cameraYaw = mc.player.prevCameraYaw + (mc.player.cameraYaw - mc.player.prevCameraYaw) * pTicks().toDouble()
-            val cameraPitch = mc.player.prevCameraPitch + (mc.player.cameraPitch - mc.player.prevCameraPitch) * pTicks().toDouble()
-            val xOffsetScreen = sin(distance * PI) * cameraYaw * 0.5
-            val yOffsetScreen = (((abs(cos(distance * PI - 0.2) * cameraYaw) * 5.0) + cameraPitch) * PI / 180.0) - abs(cos(distance * PI) * cameraYaw)
-            val xOffset = (-cos(yawRad) * xOffsetScreen) + (-sin(yawRad) * sin(pitchRad) * yOffsetScreen)
-            val yOffset = cos(pitchRad) * yOffsetScreen
-            val zOffset = (-sin(yawRad) * xOffsetScreen) + (cos(yawRad) * sin(pitchRad) * yOffsetScreen)
-            eyePos = eyePos.subtract(xOffset, yOffset, zOffset)
-        }
         GlStateManager.glLineWidth(thickness)
-        buffer.pos(eyePos.x, eyePos.y + mc.player.getEyeHeight(), eyePos.z).color(color.r, color.g, color.b, a).endVertex()
+        val camPos = EntityUtils.getInterpolatedPos(mc.player, pTicks()).add(ActiveRenderInfo.getCameraPosition())
+        buffer.pos(camPos.x, camPos.y, camPos.z).color(color.r, color.g, color.b, a).endVertex()
         buffer.pos(position.x, position.y, position.z).color(color.r, color.g, color.b, a).endVertex()
     }
 
