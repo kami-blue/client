@@ -162,6 +162,8 @@ public class KamiMod {
 
         Friends.initFriends();
 
+        FileInstanceManager.fixEmptyFiles();
+
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
         SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
