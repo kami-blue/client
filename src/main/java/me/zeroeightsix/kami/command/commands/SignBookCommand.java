@@ -42,7 +42,7 @@ public class SignBookCommand extends Command {
             ArrayList<String> toAdd = new ArrayList<>(Arrays.asList(args));
 
             String futureTitle = String.join(" ", toAdd);
-            futureTitle = futureTitle.replaceAll("&", Character.toString((char)c));
+            futureTitle = futureTitle.replaceAll("&", Character.toString((char) c));
             futureTitle = futureTitle.replaceAll("#n", "\n");
             futureTitle = futureTitle.replaceAll("null", ""); // Random extra null added sometimes
 

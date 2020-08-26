@@ -64,7 +64,7 @@ public class XRayCommand extends Command {
                     sendChatMessage("Enabled " + xr.name.getValue() + " Invert");
                 }
             } else if (s.startsWith("=")) {
-                String sT = s.replace("=" ,"");
+                String sT = s.replace("=", "");
                 xr.extSet(sT);
                 sendChatMessage("Set the " + xr.name.getValue() + " block list to " + sT);
             } else if (s.startsWith("+") || s.startsWith("-")) {

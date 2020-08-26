@@ -35,7 +35,7 @@ public class TroubleshootCommand extends Command {
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";
 
-        for(Module module : mods) {
+        for (Module module : mods) {
             if (args[0] == null) {
                 if (module.isEnabled()) {
                     enabled.set(enabled + module.name.getValue() + ", ");

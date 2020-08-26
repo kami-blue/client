@@ -32,8 +32,10 @@ import net.minecraftforge.client.event.InputUpdateEvent
 class NoSlowDown : Module() {
     private val ncpStrict: Setting<Boolean> = register(Settings.b("NCPStrict", true))
     private val sneak: Setting<Boolean> = register(Settings.b("Sneak", true))
+
     @JvmField
     var soulSand: Setting<Boolean> = register(Settings.b("SoulSand", true))
+
     @JvmField
     var cobweb: Setting<Boolean> = register(Settings.b("Cobweb", true))
     private val slime = register(Settings.b("Slime", true))

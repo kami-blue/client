@@ -42,6 +42,7 @@ class FancyChat : Module() {
     private fun greenConverter(input: String): String {
         return "> $input"
     }
+
     private fun blueConverter(input: String): String {
         return "`$input"
     }

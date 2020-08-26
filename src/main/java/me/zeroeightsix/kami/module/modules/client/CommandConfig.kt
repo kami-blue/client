@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * @author dominikaaaa
@@ -36,7 +35,7 @@ class CommandConfig : Module() {
 
     override fun onUpdate() {
         if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
-            Thread{
+            Thread {
                 Thread.currentThread().name = "Auto Saving Thread"
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
                 ConfigUtils.saveConfiguration()

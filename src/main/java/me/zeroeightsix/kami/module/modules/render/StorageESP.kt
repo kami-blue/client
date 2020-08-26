@@ -60,7 +60,7 @@ class StorageESP : Module() {
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.RENDER }.build())
 
     private enum class Page {
-        TYPE, COLOR ,RENDER
+        TYPE, COLOR, RENDER
     }
 
     private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
@@ -89,7 +89,7 @@ class StorageESP : Module() {
                     || tileEntity is TileEntityFurnace && furnace.value
                     || tileEntity is TileEntityHopper && hopper.value) {
                 val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
-                val color = getTileEntityColor(tileEntity)?: continue
+                val color = getTileEntityColor(tileEntity) ?: continue
                 var side = GeometryMasks.Quad.ALL
                 if (tileEntity is TileEntityChest) {
                     // Leave only the colliding face and then flip the bits (~) to have ALL but that face
@@ -108,7 +108,7 @@ class StorageESP : Module() {
                             || entity is EntityMinecartHopper
                             || entity is EntityMinecartFurnace) && cart.value) {
                 val box = entity.renderBoundingBox
-                val color = getEntityColor(entity)?: continue
+                val color = getEntityColor(entity) ?: continue
                 renderList[box] = Pair(color, GeometryMasks.Quad.ALL)
             }
         }
@@ -130,7 +130,7 @@ class StorageESP : Module() {
     }
 
     private fun getEntityColor(entity: Entity): ColorHolder? {
-        val color =  (when (entity) {
+        val color = (when (entity) {
             is EntityMinecartContainer -> colorCart
             is EntityItemFrame -> colorFrame
             else -> return null

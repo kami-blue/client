@@ -6,7 +6,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.InfoCalculator.*
+import me.zeroeightsix.kami.util.InfoCalculator.playerDimension
+import me.zeroeightsix.kami.util.InfoCalculator.tps
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.EnumHand

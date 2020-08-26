@@ -40,6 +40,7 @@ class TimerSpeed : Module() {
 
     companion object {
         private var curSpeed = 0.0f
+
         @JvmStatic
         fun returnGui(): String {
             return "" + MathUtils.round(curSpeed.toDouble(), 2)

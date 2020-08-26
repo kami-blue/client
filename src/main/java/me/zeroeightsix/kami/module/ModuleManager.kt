@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.RenderEvent
-import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
@@ -37,7 +36,7 @@ object ModuleManager {
 
     @JvmStatic
     fun preLoad() {
-        preLoadingThread = Thread{
+        preLoadingThread = Thread {
             moduleClassList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
             KamiMod.log.info("${moduleClassList!!.size} modules found")
         }
@@ -130,7 +129,7 @@ object ModuleManager {
 
     @JvmStatic
     fun getModule(clazz: Class<out Module>): Module {
-        return moduleMap[clazz]?: throw(ModuleNotFoundException(clazz.simpleName))
+        return moduleMap[clazz] ?: throw(ModuleNotFoundException(clazz.simpleName))
     }
 
     /**

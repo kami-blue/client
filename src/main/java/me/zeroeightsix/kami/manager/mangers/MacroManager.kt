@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.manager.mangers
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
@@ -19,7 +18,7 @@ import org.lwjgl.input.Keyboard
 object MacroManager : Manager() {
 
     @EventHandler
-    private val onKeyInput = Listener(EventHook{ event: InputEvent.KeyInputEvent ->
+    private val onKeyInput = Listener(EventHook { event: InputEvent.KeyInputEvent ->
         sendMacro(Keyboard.getEventKey())
     })
 

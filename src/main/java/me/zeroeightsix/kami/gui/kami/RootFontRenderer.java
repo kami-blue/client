@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.gui.kami;
 
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 

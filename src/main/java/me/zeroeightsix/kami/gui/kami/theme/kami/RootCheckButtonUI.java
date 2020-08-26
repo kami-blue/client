@@ -48,9 +48,11 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
             c = (c & GuiC.buttonHoveredN.color.getRGB()) << 1; // hovered text color
             if (component.hasDescription() && !isSettingsOpen() && ModuleManager.isModuleEnabled(Tooltips.class)) {
                 Component componentAt = KamiMod.getInstance().getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
-                if (componentAt.getHeight() != 11) return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
+                if (componentAt.getHeight() != 11)
+                    return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
 
-                if (componentAt.getWidth() != component.getWidth()) return; // prevent drawing 2 different categories when overlapped
+                if (componentAt.getWidth() != component.getWidth())
+                    return; // prevent drawing 2 different categories when overlapped
 
                 glDisable(GL_SCISSOR_TEST); // let it draw outside of the container
                 glDepthRange(0, 0.01); // set render priority to the top

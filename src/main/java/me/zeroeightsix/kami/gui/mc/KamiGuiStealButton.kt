@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiButton
 class KamiGuiStealButton(x: Int, y: Int) :
         GuiButton(6969, x, y, 50, 20, "Steal") {
     override fun mouseReleased(mouseX: Int, mouseY: Int) {
-        val chestStealer = KamiMod.MODULE_MANAGER.getModuleT(ChestStealer::class.java)?: return
+        val chestStealer = KamiMod.MODULE_MANAGER.getModuleT(ChestStealer::class.java) ?: return
         if (chestStealer.stealMode.value === ChestStealer.StealMode.MANUAL) {
             chestStealer.stealing = false
             playPressSound(Wrapper.minecraft.soundHandler)

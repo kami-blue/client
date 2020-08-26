@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
 
 @Module.Info(

@@ -5,10 +5,10 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
+import me.zeroeightsix.kami.util.color.ColorTextFormatting
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting

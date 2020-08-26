@@ -27,27 +27,27 @@ class CreditsCommand : Command("credits", null) {
     companion object {
         const val localList: String =
                 "\nName (Github if not same as name)" +
-                "\n&l&9Author:" +
-                "\n    086 (zeroeightysix)" +
-                "\n&l&9Contributors:" +
-                "\n    Dominika (dominikaaaa)" +
-                "\n    hub (blockparole)" +
-                "\n    Dewy (iBuyMountainDew)" +
-                "\n    Sasha (EmotionalLove)" +
-                "\n    Qther (d1gress / Vonr)" +
-                "\n    cats (Cuhnt)" +
-                "\n    Jack (jacksonellsworth03)" +
-                "\n    TheBritishMidget (TBM)" +
-                "\n    Hamburger (Hamburger2k)" +
-                "\n    0x2E (PretendingToCode)" +
-                "\n    Battery Settings (Bluskript)" +
-                "\n    An-En (AnotherEntity)" +
-                "\n    Arisa (Arisa-Snowbell)" +
-                "\n    Jamie (jamie27)" +
-                "\n    Waizy (WaizyNet)" +
-                "\n    It is the end (Itistheend)" +
-                "\n    Robeart (Ropro2002/Potentia-Public)" +
-                "\n    Xiaro"
+                        "\n&l&9Author:" +
+                        "\n    086 (zeroeightysix)" +
+                        "\n&l&9Contributors:" +
+                        "\n    Dominika (dominikaaaa)" +
+                        "\n    hub (blockparole)" +
+                        "\n    Dewy (iBuyMountainDew)" +
+                        "\n    Sasha (EmotionalLove)" +
+                        "\n    Qther (d1gress / Vonr)" +
+                        "\n    cats (Cuhnt)" +
+                        "\n    Jack (jacksonellsworth03)" +
+                        "\n    TheBritishMidget (TBM)" +
+                        "\n    Hamburger (Hamburger2k)" +
+                        "\n    0x2E (PretendingToCode)" +
+                        "\n    Battery Settings (Bluskript)" +
+                        "\n    An-En (AnotherEntity)" +
+                        "\n    Arisa (Arisa-Snowbell)" +
+                        "\n    Jamie (jamie27)" +
+                        "\n    Waizy (WaizyNet)" +
+                        "\n    It is the end (Itistheend)" +
+                        "\n    Robeart (Ropro2002/Potentia-Public)" +
+                        "\n    Xiaro"
 
         val exceptions = hashSetOf(
                 17222512,  // dominikaaaa / dominika

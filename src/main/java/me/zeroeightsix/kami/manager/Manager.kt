@@ -13,6 +13,6 @@ open class Manager {
      * Dummy method for instance creation
      */
     fun new() {
-            KamiMod.EVENT_BUS.subscribe(this)
+        KamiMod.EVENT_BUS.subscribe(this)
     }
 }

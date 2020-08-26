@@ -106,7 +106,10 @@ public class AutoSpawner extends Module {
 
     @Override
     protected void onEnable() {
-        if (mc.player == null) { disable(); return; }
+        if (mc.player == null) {
+            disable();
+            return;
+        }
 
         buildStage = 1;
         delayStep = 1;

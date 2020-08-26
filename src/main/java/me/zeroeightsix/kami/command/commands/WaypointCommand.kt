@@ -6,14 +6,14 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import me.zeroeightsix.kami.util.Waypoint.createWaypoint
 import me.zeroeightsix.kami.util.Waypoint.getWaypoint
 import me.zeroeightsix.kami.util.Waypoint.removeWaypoint
 import me.zeroeightsix.kami.util.Waypoint.writePlayerCoords
 import me.zeroeightsix.kami.util.WaypointInfo
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraft.util.math.BlockPos
 import java.util.function.Consumer
 

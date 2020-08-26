@@ -21,6 +21,7 @@ class AntiFog : Module() {
         @JvmField
         var mode: Setting<VisionMode> = Settings.e("Mode", VisionMode.NO_FOG)
         private var INSTANCE = AntiFog()
+
         @JvmStatic
         fun enabled(): Boolean {
             return INSTANCE.isEnabled

@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.module.modules.ClickGUI;
 
 import java.util.Arrays;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.KamiMod.WEBSITE_LINK;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage;
@@ -60,12 +59,10 @@ public class HelpCommand extends Command {
             String subject = args[0];
             if (subject.equals("subjects")) {
                 sendChatMessage("Subjects: " + subjectsList);
-            }
-            else if (subject.equals("bind")) {
+            } else if (subject.equals("bind")) {
                 sendChatMessage("You can also use &7.bind&r modifiers on to allow modules to be bound to keybinds with modifiers, e.g &7ctrl + shift + w or ctrl + c.&r");
                 sendChatMessage("You can unbind modules with backspace in the GUI or by running &7.bind <module> none&r");
-            }
-            else {
+            } else {
                 Subject subject1 = Arrays.stream(subjects).filter(subject2 -> {
                     for (String name : subject2.names)
                         if (name.equalsIgnoreCase(subject))

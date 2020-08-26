@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat

@@ -93,7 +93,7 @@ class Aura : Module() {
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val cacheList = getTargetList(player, mob, ignoreWalls.value,  invisible.value, range.value)
+        val cacheList = getTargetList(player, mob, ignoreWalls.value, invisible.value, range.value)
         val targetList = ArrayList<Entity>()
         for (target in cacheList) {
             if (target.ticksExisted < minExistTime.value * 20) continue

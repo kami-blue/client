@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.graphics.KamiTessellator;
 import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.KamiTessellator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.world.chunk.Chunk;
@@ -54,7 +54,7 @@ public class ChunkFinder extends Module {
 
     @Override
     public void onWorldRender(RenderEvent event) {
-        double y = (double) yOffset.getValue() + (relative.getValue()? getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y : 0.0);
+        double y = (double) yOffset.getValue() + (relative.getValue() ? getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y : 0.0);
 
         glLineWidth(2.0F);
         glDisable(GL_DEPTH_TEST);

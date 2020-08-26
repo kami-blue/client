@@ -198,7 +198,7 @@ object BlockUtils {
     }
 
     fun isWater(pos: BlockPos): Boolean {
-       return mc.world.getBlockState(pos).block == Blocks.WATER
+        return mc.world.getBlockState(pos).block == Blocks.WATER
     }
 
     /**

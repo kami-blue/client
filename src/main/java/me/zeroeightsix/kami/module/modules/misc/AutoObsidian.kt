@@ -14,7 +14,6 @@ import me.zeroeightsix.kami.util.InventoryUtils.getSlotsHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.getSlotsNoHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.moveToHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
-import me.zeroeightsix.kami.util.math.RotationUtils.getRotationFromVec
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox

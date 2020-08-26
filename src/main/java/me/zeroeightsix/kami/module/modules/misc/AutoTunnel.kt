@@ -53,8 +53,7 @@ class AutoTunnel : Module() {
     private fun sendTunnel() {
         val current: Array<String> = if (height.value == 2 && width.value == 1) {
             arrayOf("tunnel")
-        }
-        else {
+        } else {
             arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
         }
 

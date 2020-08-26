@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.manager.mangers
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Waypoint
 

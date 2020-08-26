@@ -207,7 +207,7 @@ object KamiTessellator : Tessellator(0x200000) {
                 val quad = this.to2DQuad()
                 Array(4) { i ->
                     val vec = quad[i]
-                    if(facing.axis == EnumFacing.Axis.X) {
+                    if (facing.axis == EnumFacing.Axis.X) {
                         Vec3d(vec.y, vec.x, vec.z)
                     } else {
                         Vec3d(vec.x, vec.z, vec.y)

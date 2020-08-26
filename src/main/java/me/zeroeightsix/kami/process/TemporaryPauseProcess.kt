@@ -4,12 +4,8 @@ import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.modules.combat.Aura
 import me.zeroeightsix.kami.module.modules.player.AutoEat
-import me.zeroeightsix.kami.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.util.BaritoneUtils
-import net.minecraft.client.Minecraft
 
 /**
  * Created by Dewy on the 17th of May, 2020

@@ -34,9 +34,9 @@ public class EntityStatsCommand extends Command {
             String ownerId = horse.getOwnerUniqueId() == null ? "Not tamed." : horse.getOwnerUniqueId().toString();
 
             String builder = "&6Entity Statistics:" + "\n&cMax Health: " + maxHealth +
-                      "\n&cSpeed: " + speed +
-                      "\n&cJump: " + jump +
-                      "\n&cOwner: " + Objects.requireNonNull(EntityUtils.getNameFromUUID(ownerId)).replace("\"", "");
+                    "\n&cSpeed: " + speed +
+                    "\n&cJump: " + jump +
+                    "\n&cOwner: " + Objects.requireNonNull(EntityUtils.getNameFromUUID(ownerId)).replace("\"", "");
             sendChatMessage(builder);
         } else if (mc.player.getRidingEntity() instanceof EntityLivingBase) {
             EntityLivingBase entity = (EntityLivingBase) mc.player.getRidingEntity();

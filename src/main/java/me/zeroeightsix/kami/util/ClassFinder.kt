@@ -7,7 +7,7 @@ import org.reflections.Reflections
  */
 object ClassFinder {
     @JvmStatic
-    fun<T> findClasses(pack: String?, subType: Class<T>?): Array<Class<out T>> {
+    fun <T> findClasses(pack: String?, subType: Class<T>?): Array<Class<out T>> {
         val reflections = Reflections(pack)
         return reflections.getSubTypesOf(subType).toTypedArray()
     }

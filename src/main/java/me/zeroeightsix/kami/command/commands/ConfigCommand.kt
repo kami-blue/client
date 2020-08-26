@@ -28,7 +28,7 @@ class ConfigCommand : Command("config", ChunkBuilder()
 
         when (args[0]!!.toLowerCase()) {
             "reload" -> {
-                Thread{
+                Thread {
                     val loaded = ConfigUtils.loadAll()
                     if (loaded) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints reloaded!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")

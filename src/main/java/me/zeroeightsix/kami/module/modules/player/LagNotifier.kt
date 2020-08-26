@@ -8,9 +8,11 @@ import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.WebHelper
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat

@@ -88,8 +88,7 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
         if (isBoolean && value.equalsIgnoreCase("toggle") && this.getValue().equals(true)) {
             setValue(this.converter().reverse().convert(jp.parse("false")));
             return;
-        }
-        else if (isBoolean && value.equalsIgnoreCase("toggle")) {
+        } else if (isBoolean && value.equalsIgnoreCase("toggle")) {
             setValue(this.converter().reverse().convert(jp.parse("true")));
             return;
         }

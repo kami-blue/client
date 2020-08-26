@@ -15,7 +15,7 @@ class SetBuildingBlockCommand : Command("setbuildingblock", null) {
 
     override fun call(args: Array<out String>?) {
         if (mc.player == null || mc.player.isSpectator) return
-        val inventoryManger = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java)?: return
+        val inventoryManger = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java) ?: return
         val heldItem = mc.player.inventory.getCurrentItem()
         when {
             heldItem.isEmpty -> {
