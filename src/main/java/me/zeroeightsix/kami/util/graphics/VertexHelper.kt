@@ -1,20 +1,19 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.beginBuffer
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.endBuffer
 import me.zeroeightsix.kami.util.math.Vec2d
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 
 class VertexHelper(private val useVbo: Boolean) {
-
-    private val buffer = GlStateUtils.buffer
+    private val tessellator = Tessellator.getInstance()
+    private val buffer = tessellator.buffer
 
     fun begin(mode: Int) {
         if (useVbo) {
-            beginBuffer(mode, DefaultVertexFormats.POSITION_COLOR)
+            buffer.begin(mode, DefaultVertexFormats.POSITION_COLOR)
         } else {
             glBegin(mode)
         }
@@ -48,7 +47,7 @@ class VertexHelper(private val useVbo: Boolean) {
 
     fun end() {
         if (useVbo) {
-            endBuffer()
+            tessellator.draw()
         } else {
             glEnd()
         }
