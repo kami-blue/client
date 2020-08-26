@@ -10,10 +10,10 @@ import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector4f
 
 /**
- * This file is adapted from forgehax/util/math/VectorUtils.java which is licensed under MIT.
+ * This file is adapted from forgehax/util/math/VectorUtils.java, which is licensed under MIT.
  *
  * You can find a copy of the original license here:
- * https://github.com/fr1kin/ForgeHax/blob/master/src/main/java/com/matt/forgehax/util/math/VectorUtils.java
+ * https://github.com/fr1kin/ForgeHax/blob/2011740/src/main/java/com/matt/forgehax/util/math/VectorUtils.java
  *
  * @author Seth
  * 4/16/2019 @ 3:28 AM.
