@@ -7,7 +7,7 @@ object GlStateUtils {
 
     @JvmStatic
     fun useVbo(): Boolean {
-        return Wrapper.getMinecraft().gameSettings.useVbo
+        return Wrapper.minecraft.gameSettings.useVbo
     }
 
     @JvmStatic

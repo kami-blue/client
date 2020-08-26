@@ -32,6 +32,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
+    private static final RootFontRenderer ff = new RootLargeFontRenderer();
     Component yLineComponent = null;
     Component xLineComponent = null;
     Component centerXComponent = null;
@@ -40,8 +41,6 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     boolean centerY = false;
     int xLineOffset = 0;
 
-    private static final RootFontRenderer ff = new RootLargeFontRenderer();
-
     @Override
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
         if (component.getOpacity() == 0)
@@ -49,8 +48,8 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
         glDisable(GL_TEXTURE_2D);
 
         VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
-        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColourHolder(43, 43, 46, 230));
-        RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColourHolder(GuiC.windowOutline.color));
+        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColorHolder(43, 43, 46, 230));
+        RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColorHolder(GuiC.windowOutline.color));
 
         GL11.glColor3f(1, 1, 1);
         ff.drawString(component.getWidth() / 2 - ff.getStringWidth(component.getTitle()) / 2, 1, component.getTitle());

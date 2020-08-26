@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.util.KamiTessellator
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.ActiveRenderInfo
@@ -22,7 +21,7 @@ import org.lwjgl.util.vector.Vector4f
  * Adapted by Xiaro on 17/08/20
  */
 object ProjectionUtils {
-    private val mc = Wrapper.getMinecraft()
+    private val mc = Wrapper.minecraft
     private val modelMatrix = Matrix4f()
     private val projectionMatrix = Matrix4f()
     private var resolution = ScaledResolution(mc)

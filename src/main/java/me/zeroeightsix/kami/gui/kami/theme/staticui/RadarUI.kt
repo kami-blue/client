@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.EntityUtils.isCurrentlyNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassiveMob
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawCircleFilled
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawCircleOutline
@@ -34,23 +34,25 @@ class RadarUI : AbstractComponentUI<Radar?>() {
     }
 
     override fun renderComponent(component: Radar?, fontRenderer: FontRenderer?) {
+        Wrapper.player ?: return
+        Wrapper.world ?: return
         component!!
 
         GlStateManager.pushMatrix()
         glTranslated(component.width / 2.0, component.height / 2.0, 0.0)
 
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
-        drawCircleFilled(vertexHelper, radius = radius, color = ColourHolder(28, 28, 28, 200))
-        drawCircleOutline(vertexHelper, radius = radius, lineWidth = 1.8f, color = ColourHolder(155, 144, 255, 255))
-        drawCircleFilled(vertexHelper, radius = 2.0 / scale, color = ColourHolder(255, 255, 255, 224))
+        drawCircleFilled(vertexHelper, radius = radius, color = ColorHolder(28, 28, 28, 200))
+        drawCircleOutline(vertexHelper, radius = radius, lineWidth = 1.8f, color = ColorHolder(155, 144, 255, 255))
+        drawCircleFilled(vertexHelper, radius = 2.0 / scale, color = ColorHolder(255, 255, 255, 224))
 
-        glRotatef(Wrapper.getPlayer().rotationYaw + 180, 0f, 0f, -1f)
-        for (entity in Wrapper.getWorld().loadedEntityList) {
-            if (entity == null || entity.isDead || entity == Wrapper.getPlayer()) continue
-            val dX = entity.posX - Wrapper.getPlayer().posX
-            val dZ = entity.posZ - Wrapper.getPlayer().posZ
+        glRotatef(Wrapper.player!!.rotationYaw + 180, 0f, 0f, -1f)
+        for (entity in Wrapper.world!!.loadedEntityList) {
+            if (entity == null || entity.isDead || entity == Wrapper.player) continue
+            val dX = entity.posX - Wrapper.player!!.posX
+            val dZ = entity.posZ - Wrapper.player!!.posZ
             val distance = sqrt(dX.pow(2) + dZ.pow(2))
-            if (distance > radius * scale || abs(Wrapper.getPlayer().posY - entity.posY) > 30) continue
+            if (distance > radius * scale || abs(Wrapper.player!!.posY - entity.posY) > 30) continue
             val color = getColor(entity)
 
             drawCircleFilled(vertexHelper, Vec2d(dX / scale, dZ / scale), 2.5 / scale, color = color)
@@ -67,13 +69,13 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         GlStateManager.popMatrix()
     }
 
-    private fun getColor(entity: Entity): ColourHolder {
+    private fun getColor(entity: Entity): ColorHolder {
         return if (isPassiveMob(entity) || Friends.isFriend(entity.name)) { // green
-            ColourHolder(32, 224, 32, 224)
+            ColorHolder(32, 224, 32, 224)
         } else if (isCurrentlyNeutral(entity)) { // yellow
-            ColourHolder(255, 240, 32)
+            ColorHolder(255, 240, 32)
         } else { // red
-            ColourHolder(255, 32, 32)
+            ColorHolder(255, 32, 32)
         }
     }
 

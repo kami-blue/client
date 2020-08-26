@@ -44,16 +44,8 @@ class ColorHolder {
         return ColorHolder(max(r - 10, 0), max(g - 10, 0), max(b - 10, 0), a)
     }
 
-    fun setGLColour() {
-        setGLColour(-1, -1, -1, -1)
-    }
-
-    fun setGLColour(dr: Int, dg: Int, db: Int, da: Int) {
-        val red = if (dr == -1) this.r else dr
-        val green = if (dg == -1) this.g else dg
-        val blue = if (db == -1) this.b else db
-        val alpha = if (da == -1) this.a else da
-        glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
+    fun setGLColor() {
+        glColor4f(this.r / 255f, this.g / 255f, this.b / 255f, this.a / 255f)
     }
 
     fun becomeHex(hex: Int) {

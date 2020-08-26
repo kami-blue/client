@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -19,28 +19,28 @@ class VertexHelper(private val useVbo: Boolean) {
         }
     }
 
-    fun put(pos: Vec3d, color: ColourHolder) {
+    fun put(pos: Vec3d, color: ColorHolder) {
         put(pos.x, pos.y, pos.z, color)
     }
 
-    fun put(x: Double, y: Double, z: Double, color: ColourHolder) {
+    fun put(x: Double, y: Double, z: Double, color: ColorHolder) {
         if (useVbo) {
             buffer.pos(x, y, z).color(color.r, color.g, color.b, color.a).endVertex()
         } else {
-            color.setGLColour()
+            color.setGLColor()
             glVertex3d(x, y, z)
         }
     }
 
-    fun put(pos: Vec2d, color: ColourHolder) {
+    fun put(pos: Vec2d, color: ColorHolder) {
         put(pos.x, pos.y, color)
     }
 
-    fun put(x: Double, y: Double, color: ColourHolder) {
+    fun put(x: Double, y: Double, color: ColorHolder) {
         if (useVbo) {
             buffer.pos(x, y, 0.0).color(color.r, color.g, color.b, color.a).endVertex()
         } else {
-            color.setGLColour()
+            color.setGLColor()
             glVertex2d(x, y)
         }
     }
