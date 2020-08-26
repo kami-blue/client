@@ -8,10 +8,10 @@ import me.zeroeightsix.kami.event.events.EntityUseTotemEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.color.ColorTextFormatting
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
 import java.util.*
@@ -174,6 +174,6 @@ class TotemPopCounter : Module() {
     })
 
     private fun setToText(colourCode: ColourCode): TextFormatting? {
-        return ColourTextFormatting.toTextMap[colourCode]
+        return ColorTextFormatting.toTextMap[colourCode]
     }
 }

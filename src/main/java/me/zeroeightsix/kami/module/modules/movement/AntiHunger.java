@@ -15,7 +15,7 @@ import static net.minecraft.network.play.client.CPacketEntityAction.Action.STOP_
 /**
  * Created by 086 on 8/04/2018.
  * Code tweaked by coderynx & OverFloyd.
- * 
+ * <p>
  * Movement taken from Seppuku
  * https://github.com/seppukudevelopment/seppuku/blob/005e2da/src/main/java/me/rigamortis/seppuku/impl/module/player/NoHungerModule.java
  */

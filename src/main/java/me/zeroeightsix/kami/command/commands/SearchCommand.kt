@@ -5,7 +5,9 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.modules.render.Search
-import me.zeroeightsix.kami.util.MessageSendHelper.*
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
 import net.minecraft.block.Block
 
 /**

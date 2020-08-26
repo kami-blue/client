@@ -16,6 +16,7 @@ class TabFriends : Module() {
     companion object {
         @JvmField
         var INSTANCE: TabFriends? = null
+
         @JvmStatic
         fun getPlayerName(networkPlayerInfoIn: NetworkPlayerInfo): String {
             val dname = if (networkPlayerInfoIn.displayName != null) networkPlayerInfoIn.displayName!!.formattedText else ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.playerTeam, networkPlayerInfoIn.gameProfile.name)

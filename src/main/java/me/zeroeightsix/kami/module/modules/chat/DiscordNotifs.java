@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.TimeUtil;
+import me.zeroeightsix.kami.util.TimeUtils;
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
@@ -22,8 +22,8 @@ import net.minecraft.network.play.server.SPacketChat;
 
 import static me.zeroeightsix.kami.KamiMod.EVENT_BUS;
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageDetectionHelper.*;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageDetectionHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author dominikaaaa
@@ -83,9 +83,11 @@ public class DiscordNotifs extends Module {
 
     /* Getters for messages */
     private static long startTime = 0;
+
     private boolean timeout(String message) {
         if (!timeout.getValue()) return true;
-        else if (isRestart(restart.getValue(), message) || isDirect(direct.getValue(), message) || isDirectOther(directSent.getValue(), message)) return true;
+        else if (isRestart(restart.getValue(), message) || isDirect(direct.getValue(), message) || isDirectOther(directSent.getValue(), message))
+            return true;
         if (startTime == 0) startTime = System.currentTimeMillis();
         if (startTime + (timeoutTime.getValue() * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
             startTime = System.currentTimeMillis();
@@ -96,8 +98,10 @@ public class DiscordNotifs extends Module {
 
     /* Text formatting and misc methods */
     private String getPingID(String message) {
-        if (isRestart(restart.getValue(), message) || isDirect(direct.getValue(), message) || isDirectOther(directSent.getValue(), message) || isImportantQueue(importantPings.getValue(), message)) return formatPingID();
-        else if ((message.equals("KamiBlueMessageType1")) || (message.equals("KamiBlueMessageType2"))) return formatPingID();
+        if (isRestart(restart.getValue(), message) || isDirect(direct.getValue(), message) || isDirectOther(directSent.getValue(), message) || isImportantQueue(importantPings.getValue(), message))
+            return formatPingID();
+        else if ((message.equals("KamiBlueMessageType1")) || (message.equals("KamiBlueMessageType2")))
+            return formatPingID();
         else return "";
     }
 
@@ -114,7 +118,7 @@ public class DiscordNotifs extends Module {
     private String getTime() {
         if (!time.getValue()) return "";
         InfoOverlay info = MODULE_MANAGER.getModuleT(InfoOverlay.class);
-        return "[" + TimeUtil.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
+        return "[" + TimeUtils.getFinalTime(info.timeUnitSetting.getValue(), info.timeTypeSetting.getValue(), info.doLocale.getValue()) + "] ";
     }
 
     private void sendMessage(String content, String avatarUrl) {
@@ -129,8 +133,7 @@ public class DiscordNotifs extends Module {
         if (url.getValue().equals("unchanged")) {
             sendErrorMessage(getChatName() + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command");
             disable();
-        }
-        else if (pingID.getValue().equals("unchanged") && importantPings.getValue()) {
+        } else if (pingID.getValue().equals("unchanged") && importantPings.getValue()) {
             sendErrorMessage(getChatName() + " For Pings to work, you must set a Discord ID with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command");
             disable();
         }

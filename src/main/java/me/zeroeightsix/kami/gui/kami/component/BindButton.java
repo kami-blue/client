@@ -22,7 +22,7 @@ public class BindButton extends EnumButton {
         super(name, description, none);
         this.m = m;
 
-        Bind bind = m.getBind();
+        Bind bind = m.bind.getValue();
         modes = new String[]{bind.toString()};
 
         addKeyListener(new KeyListener() {
@@ -41,18 +41,18 @@ public class BindButton extends EnumButton {
                     alt = true;
                     modes = new String[]{(ctrl ? "Ctrl+" : "") + "Alt+" + (shift ? "Shift+" : "")};
                 } else if (key == Keyboard.KEY_BACK || key == Keyboard.KEY_DELETE) {
-                    m.getBind().setCtrl(false);
-                    m.getBind().setShift(false);
-                    m.getBind().setAlt(false);
-                    m.getBind().setKey(-1);
-                    modes = new String[]{m.getBind().toString()};
+                    m.bind.getValue().setCtrl(false);
+                    m.bind.getValue().setShift(false);
+                    m.bind.getValue().setAlt(false);
+                    m.bind.getValue().setKey(-1);
+                    modes = new String[]{m.getBindName()};
                     waiting = false;
                 } else {
-                    m.getBind().setCtrl(ctrl);
-                    m.getBind().setShift(shift);
-                    m.getBind().setAlt(alt);
-                    m.getBind().setKey(key);
-                    modes = new String[]{m.getBind().toString()};
+                    m.bind.getValue().setCtrl(ctrl);
+                    m.bind.getValue().setShift(shift);
+                    m.bind.getValue().setAlt(alt);
+                    m.bind.getValue().setKey(key);
+                    modes = new String[]{m.getBindName()};
                     ctrl = alt = shift = false;
                     waiting = false;
                 }

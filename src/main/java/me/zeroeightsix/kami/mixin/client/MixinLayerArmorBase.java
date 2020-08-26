@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(LayerArmorBase.class)
 public abstract class MixinLayerArmorBase {
-    @Inject(method = "renderArmorLayer", at=@At("HEAD"), cancellable = true)
+    @Inject(method = "renderArmorLayer", at = @At("HEAD"), cancellable = true)
     public void onRenderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn, CallbackInfo ci) {
         if (ArmourHide.INSTANCE.isEnabled()) {
             if (!(ArmourHide.INSTANCE.player.getValue()) && entityLivingBaseIn instanceof EntityPlayer) {

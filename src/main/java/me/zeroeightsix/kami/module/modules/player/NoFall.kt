@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.VectorUtil
+import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
@@ -70,7 +70,8 @@ class NoFall : Module() {
                         Thread(Runnable {
                             try { // this is just pozzed and should be properly calculating it based on velocity but I cba to do it
                                 Thread.sleep(pickupDelay.value.toLong())
-                            } catch (ignored: InterruptedException) { }
+                            } catch (ignored: InterruptedException) {
+                            }
                             mc.player.rotationPitch = 90f
                             mc.rightClickMouse()
                         }).start()
@@ -101,7 +102,7 @@ class NoFall : Module() {
                         }
                     }
                     CatchMode.TP -> {
-                        val pos = VectorUtil.getHighestTerrainPos(mc.player.position)
+                        val pos = VectorUtils.getHighestTerrainPos(mc.player.position)
                         TeleportCommand.teleport(mc, Vec3d(pos), false)
                     }
                     CatchMode.MOTION -> {

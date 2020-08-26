@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.module.modules.render.ExtraTab;
 import me.zeroeightsix.kami.module.modules.render.TabFriends;
-import me.zeroeightsix.kami.util.MathsUtils;
+import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +32,7 @@ public class MixinGuiPlayerTabOverlay {
             }
 
             // only update every 2 seconds
-            if (MathsUtils.isNumberEven(Calendar.getInstance().get(Calendar.SECOND))) {
+            if (MathUtils.isNumberEven(Calendar.getInstance().get(Calendar.SECOND))) {
                 new Thread(() -> {
                     list1.set(list.subList(fromIndex, Math.min(ExtraTab.INSTANCE.tabSize.getValue(), list.size())));
                 }).start();

@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -84,7 +83,7 @@ class Jesus : Module() {
             val y = entity.posY - 0.01
             for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
                 val pos = BlockPos(x, MathHelper.floor(y), z)
-                if (Wrapper.getWorld().getBlockState(pos).block.isFullBlock(Wrapper.getWorld().getBlockState(pos))) return true
+                if (mc.world.getBlockState(pos).isFullBlock) return true
             }
             return false
         }

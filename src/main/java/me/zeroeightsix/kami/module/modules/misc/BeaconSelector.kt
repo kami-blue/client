@@ -6,7 +6,6 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.CPacketCustomPayload
 
@@ -33,7 +32,7 @@ class BeaconSelector : Module() {
             val buf = PacketBuffer(Unpooled.buffer())
             buf.writeInt(effect)
             buf.writeInt(k1)
-            Wrapper.getPlayer().connection.sendPacket(CPacketCustomPayload("MC|Beacon", buf))
+            mc.player.connection.sendPacket(CPacketCustomPayload("MC|Beacon", buf))
             doCancelPacket = true
         }
     })

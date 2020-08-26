@@ -45,7 +45,8 @@ public class KamiGuiUpdateNotification extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {}
+    protected void keyTyped(char typedChar, int keyCode) {
+    }
 
     @Override
     protected void actionPerformed(GuiButton button) {

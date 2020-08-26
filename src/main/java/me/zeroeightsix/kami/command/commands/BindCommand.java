@@ -9,15 +9,10 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
-import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.Wrapper;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.*;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
  * Created by 086 on 12/11/2017.
@@ -46,12 +41,12 @@ public class BindCommand extends Command {
         String rkey = args[1];
 
         if (module.equalsIgnoreCase("list")) {
-            Collection<Module> modules = MODULE_MANAGER.getModules().stream().filter(module1 -> !module1.getBindName().equals("None")).collect(Collectors.toList());
-            if (modules.isEmpty()) return;
+            Module[] modules = MODULE_MANAGER.getModules();
 
             sendChatMessage("You have the following binds: ");
             for (Module module1 : modules) {
-                sendRawChatMessage(module1.getBindName() + ": " + module1.getName());
+                if (module1.getBindName().equals("None")) continue;
+                sendRawChatMessage(module1.getBindName() + ": " + module1.name.getValue());
             }
             return;
         } else if (module.equalsIgnoreCase("modifiers")) {
@@ -75,7 +70,7 @@ public class BindCommand extends Command {
         try {
             Module m = MODULE_MANAGER.getModule(module);
             if (rkey == null) {
-                sendChatMessage(m.getName() + " is bound to &b" + m.getBindName());
+                sendChatMessage(m.name.getValue() + " is bound to &b" + m.getBindName());
                 return;
             }
             int key = Wrapper.getKey(rkey);
@@ -86,8 +81,8 @@ public class BindCommand extends Command {
                 sendErrorMessage("Unknown key '&7" + rkey + "&f'! Left alt is &7lmenu&f, left Control is &7lcontrol&f and ` is &7grave&f. You cannot bind the &7meta&f key.");
                 return;
             }
-            m.getBind().setKey(key);
-            sendChatMessage("Bind for &b" + m.getName() + "&r set to &b" + rkey.toUpperCase());
+            m.bind.getValue().setKey(key);
+            sendChatMessage("Bind for &b" + m.name.getValue() + "&r set to &b" + rkey.toUpperCase());
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + module + "'!");
         }

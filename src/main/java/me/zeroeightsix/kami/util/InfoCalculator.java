@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util;
 
+import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -58,7 +59,7 @@ public class InfoCalculator {
         float currentTps = mc.timer.tickLength / 1000.0f;
         double multiply = 1.0;
         if (useUnitKmH) multiply = 3.6; // convert mps to kmh
-        return "" + MathsUtils.round(((MathHelper.sqrt(Math.pow(coordsDiff('x', mc), 2) + Math.pow(coordsDiff('z', mc), 2)) / currentTps)) * multiply, places);
+        return "" + MathUtils.round(((MathHelper.sqrt(Math.pow(coordsDiff('x', mc), 2) + Math.pow(coordsDiff('z', mc), 2)) / currentTps)) * multiply, places);
     }
 
     private static double coordsDiff(char s, Minecraft mc) {
@@ -88,7 +89,7 @@ public class InfoCalculator {
 
     // Ticks Per Second {
     public static double tps(int places) {
-        return MathsUtils.round(LagCompensator.INSTANCE.getTickRate(), places);
+        return MathUtils.round(LagCompensator.INSTANCE.getTickRate(), places);
     }
     // }
 

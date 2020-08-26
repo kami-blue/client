@@ -3,24 +3,24 @@ package me.zeroeightsix.kami.gui.kami;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
-
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 /**
  * Created by 086 on 3/08/2017.
  * Updated by dominikaaaa on 13/12/19
+ * Updated by Xiaro on 18/08/20
  */
 public class DisplayGuiScreen extends GuiScreen {
 
@@ -95,25 +95,23 @@ public class DisplayGuiScreen extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (MODULE_MANAGER.getModule(ClickGUI.class).getBind().isDown(keyCode) || keyCode == Keyboard.KEY_ESCAPE) {
-            mc.displayGuiScreen(lastScreen);
+    protected void keyTyped(char typedChar, int keyCode) {
+        ClickGUI clickGUI = ModuleManager.getModuleT(ClickGUI.class);
+        assert clickGUI != null;
+        if (clickGUI.isEnabled() && (keyCode == Keyboard.KEY_ESCAPE || clickGUI.bind.getValue().isDown(keyCode))) {
+            clickGUI.disable();
         } else {
             gui.handleKeyDown(keyCode);
             gui.handleKeyUp(keyCode);
         }
     }
-    
+
+    public void closeGui() {
+        mc.displayGuiScreen(lastScreen);
+    }
+
     public static int getScale() {
-        int scaleFactor = 0;
-        int scale = Wrapper.getMinecraft().gameSettings.guiScale;
-        if (scale == 0)
-            scale = 1000;
-        while (scaleFactor < scale && Wrapper.getMinecraft().displayWidth / (scaleFactor + 1) >= 320 && Wrapper.getMinecraft().displayHeight / (scaleFactor + 1) >= 240)
-            scaleFactor++;
-        if (scaleFactor == 0)
-            scaleFactor = 1;
-        return scaleFactor;
+        return new ScaledResolution(Wrapper.getMinecraft()).getScaleFactor();
     }
 
     private void calculateMouse() {

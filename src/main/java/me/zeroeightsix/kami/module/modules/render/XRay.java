@@ -75,22 +75,33 @@ public class XRay extends Module {
     public String extGet() {
         return extGetInternal(null);
     }
+
     // Add entry by arbitrary user-provided string
     public void extAdd(String s) {
         hiddenBlockNames.setValue(extGetInternal(null) + ", " + s);
     }
+
     // Remove entry by arbitrary user-provided string
     public void extRemove(String s) {
         hiddenBlockNames.setValue(extGetInternal(Block.getBlockFromName(s)));
     }
+
     // Clears the list.
     public void extClear() {
         hiddenBlockNames.setValue("");
     }
+
     // Resets the list to default
-    public void extDefaults() { extClear(); extAdd(DEFAULT_XRAY_CONFIG); }
+    public void extDefaults() {
+        extClear();
+        extAdd(DEFAULT_XRAY_CONFIG);
+    }
+
     // Set the list to 1 value
-    public void extSet(String s) { extClear(); extAdd(s); }
+    public void extSet(String s) {
+        extClear();
+        extAdd(s);
+    }
 
     private String extGetInternal(Block filter) {
         StringBuilder sb = new StringBuilder();
@@ -124,11 +135,13 @@ public class XRay extends Module {
             public BlockRenderLayer getRenderLayer() {
                 return BlockRenderLayer.CUTOUT;
             }
+
             // Not opaque so other materials (such as, of course, ores) will render
             @Override
             public boolean isOpaqueCube(IBlockState blah) {
                 return false;
             }
+
             // Essentially, the hidden-block world should be a projected grid-like thing...?
             @Override
             public boolean shouldSideBeRendered(IBlockState blah, IBlockAccess w, BlockPos pos, EnumFacing side) {

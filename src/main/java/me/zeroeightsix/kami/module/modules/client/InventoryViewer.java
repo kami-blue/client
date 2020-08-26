@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.colourUtils.ColourConverter;
+import me.zeroeightsix.kami.util.color.ColorConverter;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -13,8 +13,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import static me.zeroeightsix.kami.util.GuiFrameUtil.getFrameByName;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
+import static me.zeroeightsix.kami.util.graphics.GuiFrameUtil.getFrameByName;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * Updated by dominikaaaa on 21/02/20
@@ -67,7 +67,7 @@ public class InventoryViewer extends Module {
         GlStateManager.disableDepth();
         // }
         if (coloredBackground.getValue()) { // 1 == 2 px in game
-            Gui.drawRect(x, y, x + 162, y + 54, ColourConverter.rgbToInt(r.getValue(), g.getValue(), b.getValue(), a.getValue()));
+            Gui.drawRect(x, y, x + 162, y + 54, ColorConverter.rgbToInt(r.getValue(), g.getValue(), b.getValue(), a.getValue()));
         }
         ResourceLocation box = getBox();
         mc.renderEngine.bindTexture(box);
@@ -121,5 +121,7 @@ public class InventoryViewer extends Module {
         GlStateManager.popMatrix();
     }
 
-    public void onDisable() { sendDisableMessage(this.getClass()); }
+    public void onDisable() {
+        sendDisableMessage(this.getClass());
+    }
 }

@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 public class RenameModuleCommand extends Command {
 
@@ -25,15 +25,15 @@ public class RenameModuleCommand extends Command {
 
         try {
             Module module = MODULE_MANAGER.getModule(args[0]);
-            String name = args.length == 1 ? module.getOriginalName() : args[1];
+            String name = args.length == 1 ? module.originalName : args[1];
 
             if (!(name.matches("[a-zA-Z]+"))) {
                 sendChatMessage("Name must be alphabetic!");
                 return;
             }
 
-            sendChatMessage("&b" + module.getName() + "&r renamed to &b" + name);
-            module.setName(name);
+            sendChatMessage("&b" + module.name.getValue() + "&r renamed to &b" + name);
+            module.name.setValue(name);
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + args[0] + "'!");
         }

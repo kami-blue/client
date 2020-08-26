@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isWater
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Timer
+import me.zeroeightsix.kami.util.TimerUtils.TickTimer
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import java.lang.Math.random
@@ -42,7 +42,7 @@ class AutoFish : Module() {
     private var looking = Pair(0.0f, 0.0f) // <Yaw, Pitch>
     private var catching = false
     private var recasting = false
-    private val timer = Timer()
+    private val timer = TickTimer()
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->

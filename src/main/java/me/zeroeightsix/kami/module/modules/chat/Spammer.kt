@@ -2,7 +2,9 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper.*
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.client.gui.GuiChat
 import java.io.*
 import kotlin.random.Random

@@ -22,6 +22,7 @@ class CleanGUI : Module() {
         @JvmField
         var chatGlobal: Setting<Boolean> = Settings.b("Chat", false)
         private var INSTANCE = CleanGUI()
+
         @JvmStatic
         fun enabled(): Boolean {
             return INSTANCE.isEnabled

@@ -10,8 +10,8 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author d1gress/Qther
