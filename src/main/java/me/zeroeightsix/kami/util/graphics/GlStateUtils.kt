@@ -1,12 +1,9 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.Wrapper
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.vertex.VertexFormat
 import org.lwjgl.opengl.GL11.*
 
-object GlStateUtils : Tessellator(0x200000) {
+object GlStateUtils {
 
     @JvmStatic
     fun useVbo(): Boolean {
@@ -47,17 +44,25 @@ object GlStateUtils : Tessellator(0x200000) {
         if (state) {
             glEnable(GL_DEPTH_TEST)
         } else {
-            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_DEPTH_TEST)
         }
     }
 
     @JvmStatic
-    fun beginBuffer(mode: Int, vertexFormats: VertexFormat = DefaultVertexFormats.POSITION_COLOR) {
-        buffer.begin(mode, vertexFormats)
+    fun texture2d(state: Boolean) {
+        if (state) {
+            glEnable(GL_TEXTURE_2D)
+        } else {
+            glDisable(GL_TEXTURE_2D)
+        }
     }
 
     @JvmStatic
-    fun endBuffer() {
-        draw()
+    fun cull(state: Boolean) {
+        if (state) {
+            glEnable(GL_CULL_FACE)
+        } else {
+            glDisable(GL_CULL_FACE)
+        }
     }
 }
