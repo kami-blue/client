@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.colourUtils
 
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -49,7 +49,11 @@ class ColourHolder {
     }
 
     fun setGLColour(dr: Int, dg: Int, db: Int, da: Int) {
-        GL11.glColor4f((if (dr == -1) r else dr).toFloat() / 255, (if (dg == -1) g else dg).toFloat() / 255, (if (db == -1) b else db).toFloat() / 255, (if (da == -1) a else da).toFloat() / 255)
+        val red = if (dr == -1) this.r else dr
+        val green = if (dg == -1) this.g else dg
+        val blue = if (db == -1) this.b else db
+        val alpha = if (da == -1) this.a else da
+        glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
     fun becomeHex(hex: Int) {
