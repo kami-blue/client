@@ -21,7 +21,7 @@ class MountBypass : Module() {
     private val onPacketEventSend = Listener(EventHook { event: PacketEvent.Send ->
         if (event.packet is CPacketUseEntity) {
             val packet = event.packet as CPacketUseEntity
-            
+
             if (packet.getEntityFromWorld(mc.world) is AbstractChestHorse) {
                 if (packet.action == CPacketUseEntity.Action.INTERACT_AT) {
                     event.cancel()

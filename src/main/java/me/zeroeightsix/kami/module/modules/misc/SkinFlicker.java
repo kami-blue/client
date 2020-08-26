@@ -65,7 +65,7 @@ public class SkinFlicker extends Module {
     }
 
     public void onDisable() {
-        for (int i = 0 ; i < EnumPlayerModelParts.values().length - 1 ; i++) {
+        for (int i = 0; i < EnumPlayerModelParts.values().length - 1; i++) {
             mc.gameSettings.setModelPartEnabled(PARTS_VERTICAL[i], true);
         }
     }

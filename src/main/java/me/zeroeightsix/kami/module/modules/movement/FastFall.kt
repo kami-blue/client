@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.TIMER
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.VectorUtil
+import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 
@@ -47,7 +47,7 @@ class FastFall : Module() {
         }
 
         if (holeOnly.value) {
-            val aboveHole = VectorUtil.getHighestTerrainPos(BlockPos(mc.player.posX.toInt(), mc.player.posY.toInt(), mc.player.posZ.toInt()))
+            val aboveHole = VectorUtils.getHighestTerrainPos(BlockPos(mc.player.posX.toInt(), mc.player.posY.toInt(), mc.player.posZ.toInt()))
 
             var safe = true
             for (offset in BlockUtils.surroundOffset) {

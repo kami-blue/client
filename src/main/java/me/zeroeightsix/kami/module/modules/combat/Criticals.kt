@@ -66,17 +66,17 @@ class Criticals : Module() {
     private fun delayModeAttack(event: PacketEvent) {
         /* Cancels attack packet and jump when you hit an entity */
         val packet = event.packet as CPacketUseEntity
-            if (delayTick == 0) {
-                attackPacket = packet
-                event.cancel()
-                delayTick = 1
-                mc.player.jump()
-                if (miniJump.value) {
-                    mc.player.motionY = 0.25
-                }
-            } else if (!sendingPacket) {
-                event.cancel()
+        if (delayTick == 0) {
+            attackPacket = packet
+            event.cancel()
+            delayTick = 1
+            mc.player.jump()
+            if (miniJump.value) {
+                mc.player.motionY = 0.25
             }
+        } else if (!sendingPacket) {
+            event.cancel()
+        }
     }
 
     private fun delayModeSwing(event: PacketEvent) {

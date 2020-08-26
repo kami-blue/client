@@ -7,8 +7,6 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.client.CPacketPlayerDigging
-import net.minecraft.util.EnumHand
-import java.util.concurrent.TimeUnit
 
 /**
  * @author 086
@@ -30,7 +28,7 @@ class Fastbreak : Module() {
 
         if (packet.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK) {
             /* Spams stop digging packets so the blocks will actually be mined after the server side breaking animation */
-            Thread(Runnable{
+            Thread(Runnable {
                 val startTime = System.currentTimeMillis()
                 while (!mc.world.isAirBlock(packet.position) && System.currentTimeMillis() - startTime < 10000L) { /* Stops running if the block is mined or it took too long */
                     mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, packet.position, packet.facing))

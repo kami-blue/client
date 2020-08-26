@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtils;
-import me.zeroeightsix.kami.util.MathsUtils;
+import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityTameable;
@@ -13,13 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * I see you also watch FitMC :eyes:
+ *
  * @author cookiedragon234
  * Taken from Backdoored 1.8.2 source
- *
+ * <p>
  * UUID to username method and caching methods added by dominikaaaa
  */
 @Module.Info(
@@ -36,7 +37,8 @@ public class MobOwner extends Module {
     private Setting<Boolean> debug = register(Settings.b("Debug", true));
 
     /* First String is your key / uuid, second String is the value / username */
-    private Map<String, String> cachedUUIDs = new HashMap<String, String>(){{ }};
+    private Map<String, String> cachedUUIDs = new HashMap<String, String>() {{
+    }};
     private int apiRequests = 0;
     private String invalidText = "Offline or invalid UUID!";
 
@@ -73,6 +75,7 @@ public class MobOwner extends Module {
 
     /* Periodically try to re-request invalid UUIDs */
     private static long startTime = 0;
+
     private void resetCache() {
         if (startTime == 0) startTime = System.currentTimeMillis();
         if (startTime + (requestTime.getValue() * 1000) <= System.currentTimeMillis()) { // 1 requestTime = 1 second = 1000 ms
@@ -89,6 +92,7 @@ public class MobOwner extends Module {
 
     /* Super safe method to limit requests to the Mojang API in case you load more then 10 different UUIDs */
     private static long startTime1 = 0;
+
     private void resetRequests() {
         if (startTime1 == 0) startTime1 = System.currentTimeMillis();
         if (startTime1 + (10 * 1000) <= System.currentTimeMillis()) { // 10 seconds
@@ -102,22 +106,22 @@ public class MobOwner extends Module {
 
     private String getSpeed(AbstractHorse horse) {
         if (!speed.getValue()) return "";
-        return " S: " + MathsUtils.round(43.17 * horse.getAIMoveSpeed(), 2);
+        return " S: " + MathUtils.round(43.17 * horse.getAIMoveSpeed(), 2);
     }
 
     private String getJump(AbstractHorse horse) {
         if (!jump.getValue()) return "";
-        return " J: " + MathsUtils.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 2);
+        return " J: " + MathUtils.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 2);
     }
 
     private String getHealth(AbstractHorse horse) {
         if (!hp.getValue()) return "";
-        return " HP: " + MathsUtils.round(horse.getHealth(), 2);
+        return " HP: " + MathUtils.round(horse.getHealth(), 2);
     }
 
     private String getHealth(EntityTameable tameable) {
         if (!hp.getValue()) return "";
-        return " HP: " + MathsUtils.round(tameable.getHealth(), 2);
+        return " HP: " + MathUtils.round(tameable.getHealth(), 2);
     }
 
     public void onUpdate() {
@@ -153,8 +157,8 @@ public class MobOwner extends Module {
             }
             try {
                 entity.setAlwaysRenderNameTag(false);
+            } catch (Exception ignored) {
             }
-            catch (Exception ignored) {}
         }
     }
 }

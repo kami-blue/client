@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.movement.TimerSpeed;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
+import me.zeroeightsix.kami.util.color.ColorTextFormatting;
 import me.zeroeightsix.kami.util.InfoCalculator;
-import me.zeroeightsix.kami.util.TimeUtil;
+import me.zeroeightsix.kami.util.TimeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -16,9 +16,9 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 
-import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.InfoCalculator.speed;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * @author dominikaaaa
@@ -55,17 +55,17 @@ public class InfoOverlay extends Module {
     private Setting<Boolean> speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
     private Setting<SpeedUnit> speedUnit = register(Settings.enumBuilder(SpeedUnit.class).withName("SpeedUnit").withValue(SpeedUnit.KMH).withVisibility(v -> page.getValue().equals(Page.THREE) && speed.getValue()).build());
     private Setting<Boolean> time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
-    public Setting<TimeUtil.TimeType> timeTypeSetting = register(Settings.enumBuilder(TimeUtil.TimeType.class).withName("TimeFormat").withValue(TimeUtil.TimeType.HHMMSS).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
-    public Setting<TimeUtil.TimeUnit> timeUnitSetting = register(Settings.enumBuilder(TimeUtil.TimeUnit.class).withName("TimeUnit").withValue(TimeUtil.TimeUnit.H12).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
-    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue() && timeUnitSetting.getValue().equals(TimeUtil.TimeUnit.H12)).build());
-    public Setting<ColourTextFormatting.ColourCode> firstColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("FirstColour").withValue(ColourTextFormatting.ColourCode.WHITE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
-    public Setting<ColourTextFormatting.ColourCode> secondColour = register(Settings.enumBuilder(ColourTextFormatting.ColourCode.class).withName("SecondColour").withValue(ColourTextFormatting.ColourCode.BLUE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
+    public Setting<TimeUtils.TimeType> timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType.class).withName("TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
+    public Setting<TimeUtils.TimeUnit> timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit.class).withName("TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue()).build());
+    public Setting<Boolean> doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility(v -> page.getValue().equals(Page.THREE) && time.getValue() && timeUnitSetting.getValue().equals(TimeUtils.TimeUnit.H12)).build());
+    public Setting<ColorTextFormatting.ColourCode> firstColour = register(Settings.enumBuilder(ColorTextFormatting.ColourCode.class).withName("FirstColour").withValue(ColorTextFormatting.ColourCode.WHITE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
+    public Setting<ColorTextFormatting.ColourCode> secondColour = register(Settings.enumBuilder(ColorTextFormatting.ColourCode.class).withName("SecondColour").withValue(ColorTextFormatting.ColourCode.BLUE).withVisibility(v -> page.getValue().equals(Page.THREE)).build());
 
     public static String getStringColour(TextFormatting c) {
         return c.toString();
     }
 
-    private TextFormatting setToText(ColourTextFormatting.ColourCode colourCode) {
+    private TextFormatting setToText(ColorTextFormatting.ColourCode colourCode) {
         return toTextMap.get(colourCode);
     }
 
@@ -76,7 +76,7 @@ public class InfoOverlay extends Module {
         } if (username.getValue()) {
             infoContents.add(getStringColour(setToText(firstColour.getValue())) + "Welcome" + getStringColour(setToText(secondColour.getValue())) + " " + mc.getSession().getUsername() + "!");
         } if (time.getValue()) {
-            infoContents.add(getStringColour(setToText(firstColour.getValue())) + TimeUtil.getFinalTime(setToText(secondColour.getValue()), setToText(firstColour.getValue()), timeUnitSetting.getValue(), timeTypeSetting.getValue(), doLocale.getValue()));
+            infoContents.add(getStringColour(setToText(firstColour.getValue())) + TimeUtils.getFinalTime(setToText(secondColour.getValue()), setToText(firstColour.getValue()), timeUnitSetting.getValue(), timeTypeSetting.getValue(), doLocale.getValue()));
         } if (tps.getValue()) {
             infoContents.add(getStringColour(setToText(firstColour.getValue())) + InfoCalculator.tps(decimalPlaces.getValue()) + getStringColour(setToText(secondColour.getValue())) + " tps");
         } if (fps.getValue()) {

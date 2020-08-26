@@ -11,11 +11,11 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtils.faceEntity
-import me.zeroeightsix.kami.util.EntityUtils.getFaceEntityRotation
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayer
@@ -93,7 +93,7 @@ class Aura : Module() {
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val cacheList = getTargetList(player, mob, ignoreWalls.value,  invisible.value, range.value)
+        val cacheList = getTargetList(player, mob, ignoreWalls.value, invisible.value, range.value)
         val targetList = ArrayList<Entity>()
         for (target in cacheList) {
             if (target.ticksExisted < minExistTime.value * 20) continue
@@ -117,9 +117,9 @@ class Aura : Module() {
             } else {
                 val target = getPrioritizedTarget(targetList.toTypedArray(), priority.value)
                 if (spoofRotation.value) {
-                    val rotation = getFaceEntityRotation(target)
-                    yaw = rotation[0]
-                    pitch = rotation[1]
+                    val rotation = getRotationToEntity(target)
+                    yaw = rotation.first.toFloat()
+                    pitch = rotation.second.toFloat()
                 }
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
@@ -139,7 +139,7 @@ class Aura : Module() {
             val shield = mc.player.heldItemOffhand.getItem() == Items.SHIELD && mc.player.activeHand == EnumHand.OFF_HAND
             if (mc.player.isHandActive && !shield) return false
         }
-        val adjustTicks = if (!sync.value) 0f else (LagCompensator.INSTANCE.tickRate - 20f)
+        val adjustTicks = if (!sync.value) 0f else (LagCompensator.adjustTicks)
         return if (delayMode.value == WaitMode.DELAY) {
             (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
         } else {

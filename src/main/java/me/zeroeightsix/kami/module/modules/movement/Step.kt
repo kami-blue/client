@@ -38,7 +38,7 @@ class Step : Module() {
     private val mode: Setting<Mode> = register(Settings.e("Mode", Mode.PACKET))
     private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
     private val speed = register(Settings.integerBuilder("Speed").withMinimum(1).withMaximum(100).withValue(40).withVisibility { mode.value == Mode.VANILLA }.build())
-    private val height= register(Settings.floatBuilder("Height").withRange(0.0f, 10.0f).withValue(1.0f).withVisibility { mode.value == Mode.PACKET }.build())
+    private val height = register(Settings.floatBuilder("Height").withRange(0.0f, 10.0f).withValue(1.0f).withVisibility { mode.value == Mode.PACKET }.build())
     private val downStep = register(Settings.booleanBuilder("DownStep").withValue(false).build())
     private val entityStep = register(Settings.booleanBuilder("Entities").withValue(true).withVisibility { mode.value == Mode.PACKET }.build())
 
@@ -133,7 +133,7 @@ class Step : Module() {
                     val z = previousPositionPacket!!.getZ(0.0)
                     sendList.add(CPacketPlayer.Position(x, y + 0.419, z, true))
                     sendList.add(CPacketPlayer.Position(x, y + 0.753, z, true))
-                    sendList.add(CPacketPlayer.Position(packetPlayer.getX(0.0), packetPlayer.getY(0.0),packetPlayer.getZ(0.0),packetPlayer.isOnGround))
+                    sendList.add(CPacketPlayer.Position(packetPlayer.getX(0.0), packetPlayer.getY(0.0), packetPlayer.getZ(0.0), packetPlayer.isOnGround))
 
                     for (toSend in sendList) {
                         PacketHelper.ignore(toSend)

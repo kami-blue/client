@@ -48,13 +48,11 @@ public class HungerOverlayUtils {
         }
     }
 
-    public static boolean isFood(ItemStack itemStack)
-    {
+    public static boolean isFood(ItemStack itemStack) {
         return itemStack.getItem() instanceof ItemFood;
     }
 
-    public static BasicFoodValues getDefaultFoodValues(ItemStack itemStack)
-    {
+    public static BasicFoodValues getDefaultFoodValues(ItemStack itemStack) {
         ItemFood itemFood = (ItemFood) itemStack.getItem();
 
         int hunger = itemFood.getHealAmount(itemStack);

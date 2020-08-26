@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
@@ -96,7 +95,7 @@ public class Capes extends Module {
         return result.location;
     }
 
-    private static BufferedImage parseCape(BufferedImage img)  {
+    private static BufferedImage parseCape(BufferedImage img) {
         int imageWidth = 64;
         int imageHeight = 32;
 
@@ -147,10 +146,11 @@ public class Capes extends Module {
                 }
 
                 @Override
-                public void skinAvailable() {}
+                public void skinAvailable() {
+                }
             };
 
-            TextureManager textureManager = Wrapper.getMinecraft().getTextureManager();
+            TextureManager textureManager = mc.getTextureManager();
             textureManager.getTexture(location);
             ThreadDownloadImageData textureCape = new ThreadDownloadImageData(null, url, null, iib);
             textureManager.loadTexture(location, textureCape);

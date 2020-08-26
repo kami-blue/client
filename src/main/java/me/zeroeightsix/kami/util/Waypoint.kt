@@ -4,8 +4,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.util.math.BlockPos
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -64,30 +66,30 @@ object Waypoint {
         return success
     }
 
-    fun getCurrentCoord(): Coordinate {
+    fun getCurrentCoord(): BlockPos {
         val mc = Minecraft.getMinecraft()
-        return Coordinate(mc.player.posX.toInt(), mc.player.posY.toInt(), mc.player.posZ.toInt())
+        return MathUtils.mcPlayerPosFloored(mc)
     }
 
-    fun writePlayerCoords(locationName: String): Coordinate {
-        val coord = getCurrentCoord()
-        createWaypoint(coord, locationName)
-        return coord
+    fun writePlayerCoords(locationName: String): BlockPos {
+        val coords = getCurrentCoord()
+        createWaypoint(coords, locationName)
+        return coords
     }
 
-    fun createWaypoint(xyz: Coordinate, locationName: String): Coordinate {
-        FileInstanceManager.waypoints.add(dateFormatter(xyz, locationName))
+    fun createWaypoint(pos: BlockPos, locationName: String): BlockPos {
+        FileInstanceManager.waypoints.add(dateFormatter(pos, locationName))
 
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.UpdateType.CREATE)
-        return xyz
+        return pos
     }
 
-    fun removeWaypoint(coordinate: Coordinate): Boolean {
+    fun removeWaypoint(pos: BlockPos): Boolean {
         var removed = false
         val waypoints = FileInstanceManager.waypoints
 
         for (waypoint in waypoints) {
-            if (waypoint.pos.x == coordinate.x && waypoint.pos.y == coordinate.y && waypoint.pos.z == coordinate.z) {
+            if (waypoint.pos.x == pos.x && waypoint.pos.y == pos.y && waypoint.pos.z == pos.z) {
                 waypoints.remove(waypoint)
                 removed = true
                 break
@@ -110,7 +112,7 @@ object Waypoint {
         return removed
     }
 
-    fun getWaypoint(id: String): Coordinate? {
+    fun getWaypoint(id: String): BlockPos? {
         val waypoints = FileInstanceManager.waypoints
         for (waypoint in waypoints) {
             if (waypoint.idString == id) {
@@ -130,8 +132,8 @@ object Waypoint {
         return oldFile.exists() && !file.exists()
     }
 
-    private fun dateFormatter(xyz: Coordinate, locationName: String): WaypointInfo {
+    private fun dateFormatter(pos: BlockPos, locationName: String): WaypointInfo {
         val date = sdf.format(Date())
-        return WaypointInfo(xyz, locationName, date)
+        return WaypointInfo(pos, locationName, date)
     }
 }

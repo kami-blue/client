@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.command.commands;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by dominikaaaa on 01/12/2019.

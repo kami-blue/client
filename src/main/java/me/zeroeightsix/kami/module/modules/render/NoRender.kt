@@ -24,12 +24,14 @@ class NoRender : Module() {
     private val sand = register(Settings.b("Sand", false))
     private val gEntity = register(Settings.b("GEntity", false))
     private val `object` = register(Settings.b("Object", false))
+
     @JvmField
     var items: Setting<Boolean> = register(Settings.b("Items", false))
     private val xp = register(Settings.b("XP", false))
     private val paint = register(Settings.b("Paintings", false))
     private val fire = register(Settings.b("Fire", true))
     private val explosion = register(Settings.b("Explosions", true))
+
     @JvmField
     var beacon: Setting<Boolean> = register(Settings.b("BeaconBeams", false))
     var skylight: Setting<Boolean> = register(Settings.b("SkyLightUpdates", true))

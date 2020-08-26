@@ -15,7 +15,7 @@ import net.minecraft.network.play.client.CPacketCustomPayload;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * @author 0x2E | PretendingToCode
@@ -42,7 +42,7 @@ public class SignBookCommand extends Command {
             ArrayList<String> toAdd = new ArrayList<>(Arrays.asList(args));
 
             String futureTitle = String.join(" ", toAdd);
-            futureTitle = futureTitle.replaceAll("&", Character.toString((char)c));
+            futureTitle = futureTitle.replaceAll("&", Character.toString((char) c));
             futureTitle = futureTitle.replaceAll("#n", "\n");
             futureTitle = futureTitle.replaceAll("null", ""); // Random extra null added sometimes
 

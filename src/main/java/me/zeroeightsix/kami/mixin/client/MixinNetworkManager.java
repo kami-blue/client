@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendWarningMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage;
 
 /**
  * Created by 086 on 13/11/2017.

@@ -5,22 +5,19 @@ import me.zeroeightsix.kami.command.commands.BindCommand;
 import me.zeroeightsix.kami.util.ClassFinder;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static me.zeroeightsix.kami.util.CommandUtil.runAliases;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 public class CommandManager {
 
-    private ArrayList<Command> commands;
+    private final ArrayList<Command> commands;
 
     public CommandManager() {
         commands = new ArrayList<>();
 
-        Set<Class> classList = ClassFinder.findClasses(BindCommand.class.getPackage().getName(), Command.class);
-        for (Class s : classList) {
+        for (Class<? extends Command> s : ClassFinder.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
             if (Command.class.isAssignableFrom(s)) {
                 try {
                     Command command = (Command) s.getConstructor().newInstance();
@@ -60,15 +57,14 @@ public class CommandManager {
     }
 
     private static String[] removeElement(String[] input, int indexToDelete) {
-        List result = new LinkedList();
+        List<String> result = new ArrayList<>();
 
         for (int i = 0; i < input.length; i++) {
             if (i != indexToDelete) result.add(input[i]);
         }
 
-        return (String[]) result.toArray(input);
+        return result.toArray(input);
     }
-
 
     private static String strip(String str, String key) {
         if (str.startsWith(key) && str.endsWith(key)) return str.substring(key.length(), str.length() - key.length());

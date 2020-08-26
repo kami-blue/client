@@ -1,15 +1,20 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
+import kotlin.Pair;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.*;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.EntityUtils;
+import me.zeroeightsix.kami.util.Friends;
+import me.zeroeightsix.kami.util.InfoCalculator;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.ESPRenderer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,10 +41,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
-import static me.zeroeightsix.kami.util.EntityUtils.calculateLookAt;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
  * Created by 086 on 28/12/2017.
@@ -145,13 +149,13 @@ public class CrystalAura extends Module {
                 if (antiWeakness.getValue() && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
                     if (!isAttacking) {
                         // save initial player hand
-                        oldSlot = Wrapper.getPlayer().inventory.currentItem;
+                        oldSlot = mc.player.inventory.currentItem;
                         isAttacking = true;
                     }
                     // search for sword and tools in hotbar
                     int newSlot = -1;
                     for (int i = 0; i < 9; i++) {
-                        ItemStack stack = Wrapper.getPlayer().inventory.getStackInSlot(i);
+                        ItemStack stack = mc.player.inventory.getStackInSlot(i);
                         if (stack == ItemStack.EMPTY) {
                             continue;
                         }
@@ -166,7 +170,7 @@ public class CrystalAura extends Module {
                     }
                     // check if any swords or tools were found
                     if (newSlot != -1) {
-                        Wrapper.getPlayer().inventory.currentItem = newSlot;
+                        mc.player.inventory.currentItem = newSlot;
                         switchCoolDown = true;
                     }
                 }
@@ -201,7 +205,7 @@ public class CrystalAura extends Module {
                     explode(crystal);
                 }
                 if (sneakEnable.getValue() && mc.player.isSneaking() && holeBlocks != 5) {
-                    MODULE_MANAGER.getModule(Surround.class).enable();
+                    ModuleManager.getModule(Surround.class).enable();
                 }
                 return;
             }
@@ -209,7 +213,7 @@ public class CrystalAura extends Module {
         } else {
             resetRotation();
             if (oldSlot != -1) {
-                Wrapper.getPlayer().inventory.currentItem = oldSlot;
+                mc.player.inventory.currentItem = oldSlot;
                 oldSlot = -1;
             }
             isAttacking = false;
@@ -316,7 +320,7 @@ public class CrystalAura extends Module {
                 }
                 return;
             }
-            lookAtPacket(q.x + .5, q.y - .5, q.z + .5, mc.player);
+            lookAtPacket(new Vec3d(q.x + .5, q.y - .5, q.z + .5));
             RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(q.x + .5, q.y - .5d, q.z + .5));
             EnumFacing f;
             if (result == null || result.sideHit == null) {
@@ -350,9 +354,9 @@ public class CrystalAura extends Module {
             if (tracer.getValue()) {
                 tracerAlpha = aTracer.getValue();
             }
-            ColourHolder colour = new ColourHolder(255, 255, 255);
+            ColorHolder colour = new ColorHolder(255, 255, 255);
             if (customColours.getValue()) {
-                colour = new ColourHolder(r.getValue(), g.getValue(), b.getValue());
+                colour = new ColorHolder(r.getValue(), g.getValue(), b.getValue());
             }
             ESPRenderer renderer = new ESPRenderer();
             renderer.setAFilled(aBlock.getValue());
@@ -362,9 +366,9 @@ public class CrystalAura extends Module {
         }
     }
 
-    private void lookAtPacket(double px, double py, double pz, EntityPlayer me) {
-        double[] v = calculateLookAt(px, py, pz, me);
-        setYawAndPitch((float) v[0], (float) v[1]+1f);
+    private void lookAtPacket(Vec3d pos) {
+        Pair<Double, Double> lookAt = getRotationTo(pos, true);
+        setYawAndPitch((float) (double) lookAt.getFirst(), (float) (double) lookAt.getSecond());
     }
 
     private boolean canPlaceCrystal(BlockPos blockPos) {
@@ -510,7 +514,7 @@ public class CrystalAura extends Module {
                 ignoredCrystals.add(crystal);
                 hitTries = 0;
             } else {
-                lookAtPacket(crystal.posX, crystal.posY, crystal.posZ, mc.player);
+                lookAtPacket(crystal.getPositionVector());
                 mc.playerController.attackEntity(mc.player, crystal);
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             }

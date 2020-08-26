@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author dominikaaaa

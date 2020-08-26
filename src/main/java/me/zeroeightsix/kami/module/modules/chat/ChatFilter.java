@@ -11,10 +11,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import static me.zeroeightsix.kami.util.MessageDetectionHelper.isDirect;
-import static me.zeroeightsix.kami.util.MessageDetectionHelper.isDirectOther;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect;
+import static me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirectOther;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author dominikaaaa

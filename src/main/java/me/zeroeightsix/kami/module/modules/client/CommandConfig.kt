@@ -1,17 +1,12 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Timer
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * @author dominikaaaa
@@ -36,11 +31,11 @@ class CommandConfig : Module() {
         NONE, ERROR, WARN, ALL
     }
 
-    val timer = Timer(Timer.TimeUnit.MINUTES)
+    val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     override fun onUpdate() {
         if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
-            Thread{
+            Thread {
                 Thread.currentThread().name = "Auto Saving Thread"
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
                 ConfigUtils.saveConfiguration()
@@ -53,7 +48,7 @@ class CommandConfig : Module() {
     }
 
     private fun sendDisableMessage() {
-        MessageSendHelper.sendErrorMessage("Error: The " + KamiMod.MODULE_MANAGER.getModule(this.javaClass).name + " module is only for configuring command options, disabling it doesn't do anything.")
-        KamiMod.MODULE_MANAGER.getModule(this.javaClass).enable()
+        MessageSendHelper.sendErrorMessage("Error: The $name module is only for configuring command options, disabling it doesn't do anything.")
+        enable()
     }
 }

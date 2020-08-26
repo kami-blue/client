@@ -22,13 +22,19 @@ class PacketLogger : Module() {
     private val lines: MutableList<String> = ArrayList()
     private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
 
-    public override fun onEnable() { if (mc.player == null) disable() else readToList() }
+    public override fun onEnable() {
+        if (mc.player == null) disable() else readToList()
+    }
 
-    public override fun onDisable() { if (mc.player == null) return else write() }
+    public override fun onDisable() {
+        if (mc.player == null) return else write()
+    }
 
     @EventHandler
-    var packetListener = Listener( EventHook { event: PacketEvent.Send ->
-        if (mc.player == null) { disable(); return@EventHook }
+    var packetListener = Listener(EventHook { event: PacketEvent.Send ->
+        if (mc.player == null) {
+            disable(); return@EventHook
+        }
         addLine(event.packet)
     })
 
@@ -59,7 +65,7 @@ class PacketLogger : Module() {
 
     private fun readToList() {
         val bufferedReader: BufferedReader
-        
+
         try {
             bufferedReader = BufferedReader(InputStreamReader(FileInputStream(filename), StandardCharsets.UTF_8))
             var line: String
@@ -68,6 +74,7 @@ class PacketLogger : Module() {
                 lines.add(line)
             }
             bufferedReader.close()
-        } catch (ignored: IOException) { }
+        } catch (ignored: IOException) {
+        }
     }
 }

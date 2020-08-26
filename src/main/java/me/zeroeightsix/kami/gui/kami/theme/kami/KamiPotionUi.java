@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.util.PotionInfo;
 import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.colourUtils.ColourConverter;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.color.ColorConverter;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -63,7 +63,7 @@ public class KamiPotionUi extends AbstractComponentUI<Potions> {
 
         for (PotionInfo potion : potions) {
             int color = potion.getPotionEffect().getPotion().getLiquidColor();
-            ColourHolder ch = ColourConverter.intToRgb(color);
+            ColorHolder ch = ColorConverter.intToRgb(color);
             String text = potion.formattedName(component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
             int textWidth = renderer.getStringWidth(text);
             int textHeight = renderer.getFontHeight() + 1;

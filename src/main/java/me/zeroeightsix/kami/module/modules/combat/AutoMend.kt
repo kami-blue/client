@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils.reverseNumber
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
 

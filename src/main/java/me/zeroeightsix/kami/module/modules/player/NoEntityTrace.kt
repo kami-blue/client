@@ -20,6 +20,7 @@ class NoEntityTrace : Module() {
 
     companion object {
         private var INSTANCE: NoEntityTrace? = null
+
         @JvmStatic
         fun shouldBlock(): Boolean {
             return INSTANCE!!.isEnabled && (INSTANCE!!.mode.value == TraceMode.STATIC || mc.playerController.isHittingBlock)

@@ -7,18 +7,18 @@ import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.ActiveModules;
 import me.zeroeightsix.kami.util.Wrapper;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.glDisable;
+import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 4/08/2017.
@@ -29,17 +29,17 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
     @Override
     public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component, FontRenderer f) {
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
 
-        activeMods = MODULE_MANAGER.getModuleT(ActiveModules.class);
+        activeMods = Objects.requireNonNull(MODULE_MANAGER.getModuleT(ActiveModules.class));
         FontRenderer renderer = Wrapper.getFontRenderer();
 
-        List<Module> mods = MODULE_MANAGER.getModules().stream()
+        List<Module> mods = Arrays.stream(MODULE_MANAGER.getModules())
                 .filter(Module::isEnabled)
                 .filter(Module -> (activeMods.hidden.getValue() || Module.isOnArray()))
-                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.getName() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
+                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
         final int[] y = {2};
@@ -63,7 +63,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 break;
         }
 
-        for (int i = 0 ; i < mods.size() ; i++) {
+        for (int i = 0; i < mods.size(); i++) {
             Module module = mods.get(i);
             int rgb;
 
@@ -85,7 +85,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             }
 
             String hudInfo = module.getHudInfo();
-            String text = activeMods.getAlignedText(module.getName(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
+            String text = activeMods.getAlignedText(module.name.getValue(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
             int textWidth = renderer.getStringWidth(text);
             int textHeight = renderer.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;
@@ -99,7 +99,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
         component.setHeight(y[0]);
 
-        GL11.glEnable(GL11.GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         glDisable(GL_BLEND);
     }
 

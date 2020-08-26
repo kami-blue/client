@@ -1,20 +1,20 @@
 package me.zeroeightsix.kami.module.modules.client;
 
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting;
+import me.zeroeightsix.kami.util.color.ColorTextFormatting;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.rgbToInt;
-import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.colourEnumMap;
-import static me.zeroeightsix.kami.util.colourUtils.ColourTextFormatting.toTextMap;
-import static me.zeroeightsix.kami.util.MathsUtils.isNumberEven;
-import static me.zeroeightsix.kami.util.MathsUtils.reverseNumber;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
+import static me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt;
+import static me.zeroeightsix.kami.util.color.ColorTextFormatting.colourEnumMap;
+import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
+import static me.zeroeightsix.kami.util.math.MathUtils.isNumberEven;
+import static me.zeroeightsix.kami.util.math.MathUtils.reverseNumber;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * @author dominikaaaa
@@ -28,17 +28,17 @@ import static me.zeroeightsix.kami.util.MessageSendHelper.sendDisableMessage;
         showOnArray = Module.ShowOnArray.OFF
 )
 public class ActiveModules extends Module {
-    private Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
-    public Setting<Boolean> potion = register(Settings.b("PotionsMove", false));
-    public Setting<Boolean> hidden = register(Settings.b("ShowHidden", false));
-    public Setting<Mode> mode = register(Settings.e("Mode", Mode.RAINBOW));
-    private Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("SpeedR").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> saturationR = register(Settings.integerBuilder().withName("SaturationR").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> brightnessR = register(Settings.integerBuilder().withName("BrightnessR").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
-    public Setting<Integer> hueC = register(Settings.integerBuilder().withName("HueC").withValue(178).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
-    public Setting<Integer> saturationC = register(Settings.integerBuilder().withName("SaturationC").withValue(156).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
-    public Setting<Integer> brightnessC = register(Settings.integerBuilder().withName("BrightnessC").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
-    private Setting<Boolean> alternate = register(Settings.booleanBuilder().withName("Alternate").withValue(true).withVisibility(v -> mode.getValue().equals(Mode.INFO_OVERLAY)).build());
+    private final Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
+    public  final Setting<Boolean> potion = register(Settings.b("PotionsMove", false));
+    public  final Setting<Boolean> hidden = register(Settings.b("ShowHidden", false));
+    public  final Setting<Mode> mode = register(Settings.e("Mode", Mode.RAINBOW));
+    private final Setting<Integer> rainbowSpeed = register(Settings.integerBuilder().withName("SpeedR").withValue(30).withMinimum(0).withMaximum(100).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public  final Setting<Integer> saturationR = register(Settings.integerBuilder().withName("SaturationR").withValue(117).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public  final Setting<Integer> brightnessR = register(Settings.integerBuilder().withName("BrightnessR").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.RAINBOW)).build());
+    public  final Setting<Integer> hueC = register(Settings.integerBuilder().withName("HueC").withValue(178).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    public  final Setting<Integer> saturationC = register(Settings.integerBuilder().withName("SaturationC").withValue(156).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    public  final Setting<Integer> brightnessC = register(Settings.integerBuilder().withName("BrightnessC").withValue(255).withMinimum(0).withMaximum(255).withVisibility(v -> mode.getValue().equals(Mode.CUSTOM)).build());
+    private final Setting<Boolean> alternate = register(Settings.booleanBuilder().withName("Alternate").withValue(true).withVisibility(v -> mode.getValue().equals(Mode.INFO_OVERLAY)).build());
 
     public Setting<String> chat = register(Settings.s("Chat", "162,136,227"));
     public Setting<String> combat = register(Settings.s("Combat", "229,68,109"));
@@ -82,18 +82,19 @@ public class ActiveModules extends Module {
     }
 
     private TextFormatting infoGetSetting(boolean isOne) {
-        InfoOverlay infoOverlay = (InfoOverlay) MODULE_MANAGER.getModule(InfoOverlay.class);
+        InfoOverlay infoOverlay = ModuleManager.getModuleT(InfoOverlay.class);
+        assert infoOverlay != null;
         if (isOne) return setToText(infoOverlay.firstColour.getValue());
         else return setToText(infoOverlay.secondColour.getValue());
 
     }
 
-    private TextFormatting setToText(ColourTextFormatting.ColourCode colourCode) {
+    private TextFormatting setToText(ColorTextFormatting.ColourCode colourCode) {
         return toTextMap.get(colourCode);
     }
 
     public int getCategoryColour(Module module) {
-        switch (module.getCategory()) {
+        switch (module.category) {
             case CHAT: return rgbToInt(getRgb(chat.getValue(), 0), getRgb(chat.getValue(), 1), getRgb(chat.getValue(), 2));
             case COMBAT: return rgbToInt(getRgb(combat.getValue(), 0), getRgb(combat.getValue(), 1), getRgb(combat.getValue(), 2));
             case EXPERIMENTAL: return rgbToInt(getRgb(experimental.getValue(), 0), getRgb(experimental.getValue(), 1), getRgb(experimental.getValue(), 2));

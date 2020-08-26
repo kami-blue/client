@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.BlockObsidian
@@ -202,8 +202,9 @@ class AutoFeetPlace : Module() {
         mc.player.swingArm(EnumHand.MAIN_HAND)
         mc.rightClickDelayTimer = 4
 
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation::class.java)) {
-            KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java).resetMining()
+        val noBreakAnimation = KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java)!!
+        if (noBreakAnimation.isEnabled) {
+            noBreakAnimation.resetMining()
         }
         return true
     }

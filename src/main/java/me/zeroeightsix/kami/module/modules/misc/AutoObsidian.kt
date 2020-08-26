@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
-import me.zeroeightsix.kami.util.EntityUtils.getRotationFromVec3d
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.countItem
 import me.zeroeightsix.kami.util.InventoryUtils.getSlots
@@ -15,7 +14,8 @@ import me.zeroeightsix.kami.util.InventoryUtils.getSlotsHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.getSlotsNoHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.moveToHotbar
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiShulkerBox
@@ -253,10 +253,10 @@ class AutoObsidian : Module() {
     }
 
     private fun lookAtBlock(pos: BlockPos) {
-        val vec3d = Vec3d((pos.x + 0.5) - mc.player.posX, pos.y - (mc.player.eyeHeight + mc.player.posY), (pos.z + 0.5) - mc.player.posZ)
-        val lookAt = getRotationFromVec3d(vec3d)
-        mc.player.rotationYaw = lookAt[0].toFloat()
-        mc.player.rotationPitch = lookAt[1].toFloat()
+        val vec3d = Vec3d(pos).add(0.5, 0.0, 0.5)
+        val lookAt = getRotationTo(vec3d, true)
+        mc.player.rotationYaw = lookAt.first.toFloat()
+        mc.player.rotationPitch = lookAt.first.toFloat()
     }
 
     /* Tasks */

@@ -2,9 +2,8 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Coordinate
-import me.zeroeightsix.kami.util.MessageSendHelper
 import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.tileentity.*
@@ -58,9 +57,9 @@ class StashFinder : Module() {
             return intArrayOf(x, y, z)
         }
 
-        fun getBlockPos(): Coordinate {
+        fun getBlockPos(): BlockPos {
             val xyz = this.getPosition()
-            return Coordinate(xyz[0], xyz[1], xyz[2])
+            return BlockPos(xyz[0], xyz[1], xyz[2])
         }
 
         override fun toString(): String {

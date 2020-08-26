@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * Created by Dewy on the 21st of April, 2020

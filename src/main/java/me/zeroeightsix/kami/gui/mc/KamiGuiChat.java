@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
+import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 
 public class KamiGuiChat extends GuiChat {
 

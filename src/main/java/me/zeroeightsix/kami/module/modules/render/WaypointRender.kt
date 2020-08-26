@@ -1,11 +1,15 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderEvent
-import me.zeroeightsix.kami.module.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
+import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.WaypointInfo
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -26,10 +30,10 @@ class WaypointRender : Module() {
     private val page = register(Settings.e<Page>("Page", Page.INFOBOX))
 
     /* Page one */
-    private val name = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val date = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val coords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
-    private val dist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showName = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
+    private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFOBOX }.build())
     private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.INFOBOX }.build())
     private val infoBoxRange = register(Settings.integerBuilder("InfoBoxRange").withValue(512).withRange(128, 2048).withVisibility { page.value == Page.INFOBOX }.build())
 
@@ -55,7 +59,7 @@ class WaypointRender : Module() {
 
     override fun onWorldRender(event: RenderEvent) {
         if (mc.player == null || mc.renderManager.options == null || waypoints.isEmpty()) return
-        val colour = ColourHolder(r.value, g.value, b.value)
+        val colour = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
@@ -72,8 +76,8 @@ class WaypointRender : Module() {
                 drawVerticalLines(pos, colour, aOutline.value) /* Draw lines from y 0 to y 256 */
             }
             /* Draw waypoint info box */
-            if ((coords.value || name.value || date.value || dist.value) && distance <= infoBoxRange.value) {
-                drawText(waypoint, KamiTessellator.pTicks())
+            if ((showCoords.value || showName.value || showDate.value || showDist.value) && distance <= infoBoxRange.value) {
+                drawText(waypoint)
             }
         }
         glEndList()
@@ -82,15 +86,15 @@ class WaypointRender : Module() {
         glCallList(glList) /* Render the text after so it will be on top of the ESP */
     }
 
-    private fun drawVerticalLines(pos: BlockPos, colour: ColourHolder, a: Int) {
+    private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
         val box = AxisAlignedBB(pos.x.toDouble(), 0.0, pos.z.toDouble(),
                 pos.x + 1.0, 256.0, pos.z + 1.0)
         KamiTessellator.begin(GL_LINES)
-        KamiTessellator.drawOutline(box, colour, a, GeometryMasks.Quad.ALL, thickness.value)
+        KamiTessellator.drawOutline(box, color, a, GeometryMasks.Quad.ALL, thickness.value)
         KamiTessellator.render()
     }
 
-    private fun drawText(waypoint: WaypointInfo, pTicks: Float) {
+    private fun drawText(waypoint: WaypointInfo) {
         GlStateManager.pushMatrix()
 
         val x = (waypoint.pos.x + 0.5)
@@ -110,10 +114,10 @@ class WaypointRender : Module() {
         GlStateManager.scale(-0.025f, -0.025f, 0.025f)
 
         var str = ""
-        if (name.value) str += "${'\n'}${waypoint.name}"
-        if (date.value) str += "${'\n'}${waypoint.date}"
-        if (coords.value) str += "${'\n'}${waypoint.pos.asString()}"
-        if (dist.value) str += "${'\n'}${distance.toInt()} m"
+        if (showName.value) str += "${'\n'}${waypoint.name}"
+        if (showDate.value) str += "${'\n'}${waypoint.date}"
+        if (showCoords.value) str += "${'\n'}${waypoint.asString()}"
+        if (showDist.value) str += "${'\n'}${distance.toInt()} m"
 
         val fontRenderer = mc.fontRenderer
         var longestLine = ""
