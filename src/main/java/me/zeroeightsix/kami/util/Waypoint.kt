@@ -32,8 +32,10 @@ object Waypoint {
             gson.toJson(FileInstanceManager.waypoints, fw)
             fw.flush()
             fw.close()
+            KamiMod.log.info("Friend saved")
             true
         } catch (e: IOException) {
+            KamiMod.log.info("Failed saving friend")
             e.printStackTrace()
             false
         }

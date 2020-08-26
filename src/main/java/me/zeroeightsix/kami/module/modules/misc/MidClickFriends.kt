@@ -3,10 +3,13 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
+import me.zeroeightsix.kami.util.Friends.addFriend
 import me.zeroeightsix.kami.util.Friends.getFriendByName
+import me.zeroeightsix.kami.util.Friends.removeFriend
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
@@ -51,23 +54,19 @@ class MidClickFriends : Module() {
 
     private fun remove(name: String) {
         delay = 20
-        val friend = Friends.friends.value.stream().filter { friend1: Friend -> friend1.username.equals(name, ignoreCase = true) }.findFirst().get()
-        Friends.friends.value.remove(friend)
-        MessageSendHelper.sendChatMessage("&b" + friend.username + "&r has been unfriended.")
+        if (removeFriend(name)) {
+            MessageSendHelper.sendChatMessage("&b$name&r has been unfriended.")
+        }
     }
 
     private fun add(name: String) {
         delay = 20
-        Thread(Runnable {
-            val f = getFriendByName(name)
-
-            if (f == null) {
+        Thread {
+            if (addFriend(name)) {
                 MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
-                return@Runnable
+            } else {
+                MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
             }
-
-            Friends.friends.value.add(f)
-            MessageSendHelper.sendChatMessage("&b" + f.username + "&r has been friended.")
-        }).start()
+        }.start()
     }
 }

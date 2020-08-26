@@ -3,9 +3,10 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
+import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.Friends.friends
-import me.zeroeightsix.kami.util.Friends.getFriendByName
+import me.zeroeightsix.kami.util.Friends.addFriend
+import me.zeroeightsix.kami.util.Friends.removeFriend
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
@@ -13,64 +14,59 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
  * Updated by Xiaro on 14/08/20
  */
 class FriendCommand : Command("friend", ChunkBuilder()
-        .append("mode", true, EnumParser(arrayOf("add", "del", "list", "\$toggle", "clear"))) /* toggle has a $ in it in order to allow friending on the user named 'toggle'. stupid edge case */
+        .append("mode", true, EnumParser(arrayOf("is", "add", "del", "list", "toggle", "clear")))
         .append("name")
         .build(), "f") {
     private var confirmTime = 0L
 
     override fun call(args: Array<String?>) {
         val subCommand = getSubCommand(args)
-        if (!Friends.enabled && subCommand != SubCommands.NULL && subCommand != SubCommands.TOGGLE) {
+        if (!FriendManager.friendFile.enabled && subCommand != SubCommands.NULL && subCommand != SubCommands.TOGGLE) {
             MessageSendHelper.sendWarningMessage("&6Warning: Friends is disabled!")
             MessageSendHelper.sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
         }
         when (subCommand) {
+            SubCommands.IS_FRIEND -> {
+                MessageSendHelper.sendChatMessage(String.format(
+                        if (Friends.isFriend(args[1]!!)) "Yes, %s is your friend."
+                        else "No, %s isn't a friend of yours.",
+                        args[1]))
+            }
+
             SubCommands.ADD -> {
-                if (Friends.isFriend(args[1])) {
+                if (Friends.isFriend(args[1]!!)) {
                     MessageSendHelper.sendChatMessage("That player is already your friend.")
                 } else {
                     // New thread because of potential internet connection made
                     Thread {
-                        val f = getFriendByName(args[1])
-                        if (f == null) {
-                            MessageSendHelper.sendChatMessage("Failed to find UUID of " + args[1])
+                        if (addFriend(args[1]!!)) {
+                            MessageSendHelper.sendChatMessage("&7${args[1]}&r has been friended.")
                         } else {
-                            friends.value.add(f)
-                            MessageSendHelper.sendChatMessage("&7${f.username}&r has been friended.")
+                            MessageSendHelper.sendChatMessage("Failed to find UUID of ${args[1]}")
                         }
                     }.start()
                 }
             }
 
             SubCommands.DEL -> {
-                val removed = friends.value.removeIf { friend ->
-                    friend.username.equals(args[1], ignoreCase = true)
-                }
-                if (removed) MessageSendHelper.sendChatMessage("&7${args[1]}&r has been unfriended.")
+                if (removeFriend(args[1]!!)) MessageSendHelper.sendChatMessage("&7${args[1]}&r has been unfriended.")
                 else MessageSendHelper.sendChatMessage("That player isn't your friend.")
             }
 
             SubCommands.LIST -> {
-                if (friends.value.isEmpty()) {
+                if (FriendManager.friendFile.friends.isEmpty()) {
                     MessageSendHelper.sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
                 } else {
-                    val f = friends.value.joinToString(prefix = "\n    ", separator = "\n    ") { friend ->
+                    val f = FriendManager.friendFile.friends.joinToString(prefix = "\n    ", separator = "\n    ") { friend ->
                         friend.username
                     } // nicely format the chat output
                     MessageSendHelper.sendChatMessage("Your friends: $f")
                 }
             }
 
-            SubCommands.IS_FRIEND -> {
-                MessageSendHelper.sendChatMessage(String.format(
-                        if (Friends.isFriend(args[0])) "Yes, %s is your friend."
-                        else "No, %s isn't a friend of yours.",
-                        args[0]))
-            }
-
             SubCommands.TOGGLE -> {
-                Friends.enabled = !Friends.enabled
-                if (Friends.enabled) {
+                FriendManager.friendFile.enabled = !FriendManager.friendFile.enabled
+                if (FriendManager.friendFile.enabled) {
                     MessageSendHelper.sendChatMessage("Friends have been &aenabled")
                 } else {
                     MessageSendHelper.sendChatMessage("Friends have been &cdisabled")
@@ -83,21 +79,29 @@ class FriendCommand : Command("friend", ChunkBuilder()
                     MessageSendHelper.sendChatMessage("This will delete ALL your friends, run &7${commandPrefix.value}friend clear&f again to confirm")
                 } else {
                     confirmTime = 0L
-                    friends.value.clear()
+                    FriendManager.friendFile.friends.clear()
                     MessageSendHelper.sendChatMessage("Friends have been &ccleared")
                 }
             }
 
             SubCommands.NULL -> {
                 val commands = args.joinToString(separator = " ")
-                MessageSendHelper.sendChatMessage("Invalid sub command $commands!")
+                MessageSendHelper.sendChatMessage("Invalid command &7${commandPrefix.value}${label} $commands&f!")
             }
         }
     }
 
     private fun getSubCommand(args: Array<String?>): SubCommands {
         return when {
-            args[0] == null || args[0]?.equals("list", ignoreCase = true) == true -> SubCommands.LIST
+            args[0].isNullOrBlank() || args[0]?.equals("list", ignoreCase = true) == true -> SubCommands.LIST
+
+            args[0].equals("toggle", ignoreCase = true) -> SubCommands.TOGGLE
+
+            args[0].equals("clear", ignoreCase = true) -> SubCommands.CLEAR
+
+            args[1].isNullOrBlank() -> SubCommands.NULL // All the commands below requires a name, so add the check here
+
+            args[0].equals("is", ignoreCase = true) -> SubCommands.IS_FRIEND
 
             args[0].equals("add", ignoreCase = true)
                     || args[0].equals("new", ignoreCase = true) -> SubCommands.ADD
@@ -105,12 +109,6 @@ class FriendCommand : Command("friend", ChunkBuilder()
             args[0].equals("del", ignoreCase = true)
                     || args[0].equals("remove", ignoreCase = true)
                     || args[0].equals("delete", ignoreCase = true) -> SubCommands.DEL
-
-            args[0].equals("\$toggle", ignoreCase = true) -> SubCommands.TOGGLE
-
-            args[0].equals("clear", ignoreCase = true) -> SubCommands.CLEAR
-
-            args[1] == null -> SubCommands.IS_FRIEND
 
             else -> SubCommands.NULL
         }

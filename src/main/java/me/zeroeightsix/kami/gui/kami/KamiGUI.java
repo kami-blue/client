@@ -20,6 +20,8 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Label;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
+import me.zeroeightsix.kami.manager.mangers.FriendManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
@@ -269,8 +271,11 @@ public class KamiGUI extends GUI {
         friends.addTickListener(() -> {
             friends.setText("");
             if (!finalFrame.isMinimized()) {
-                if (Friends.enabled) {
-                    Friends.friends.getValue().forEach(friend -> friends.addLine(friend.getUsername()));
+                if (FriendManager.INSTANCE.getFriendFile().enabled) {
+                    for (Friends.Friend friend : FriendManager.INSTANCE.getFriendFile().friends) {
+                        if (friend.getUsername() == null || friend.getUsername().isEmpty()) continue;
+                        friends.addLine(friend.getUsername());
+                    }
                 } else {
                     friends.addLine(KamiMod.colour + "cDisabled");
                 }

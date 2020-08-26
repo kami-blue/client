@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.gui.rgui.component.Component
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
 import me.zeroeightsix.kami.gui.rgui.util.Docking
+import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.manager.mangers.MacroManager
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
@@ -31,6 +32,10 @@ object ConfigUtils {
                 Thread {
                     Thread.currentThread().name = "Waypoint Loading Thread"
                     success = WaypointManager.loadWaypoints() && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Friend Loading Thread"
+                    success = FriendManager.loadFriends() && success
                 },
                 Thread {
                     Thread.currentThread().name = "Config Loading Thread"
@@ -65,6 +70,10 @@ object ConfigUtils {
                 Thread {
                     Thread.currentThread().name = "Waypoint Saving Thread"
                     success = WaypointManager.saveWaypoints() && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Friend Saving Thread"
+                    success = FriendManager.saveFriends() && success
                 },
                 Thread {
                     Thread.currentThread().name = "Config Saving Thread"

@@ -3,9 +3,10 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.Friend
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
@@ -26,7 +27,7 @@ class FriendHighlight : Module() {
     private val colour = register(Settings.e<ColourCode>("Colour", ColourCode.GRAY))
 
     public override fun onEnable() {
-        if (Friends.friends.value.size > 100) {
+        if (FriendManager.friendFile.friends.size > 100) {
             MessageSendHelper.sendErrorMessage("$chatName Your friends list is bigger then 100, disabling as it would cause too much of a performance impact.")
             disable()
         }
@@ -37,18 +38,24 @@ class FriendHighlight : Module() {
     private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
         if (mc.player == null || noFriendsCheck()) return@EventHook
         var converted = event.message.formattedText
-        Friends.friends.value.forEach(Consumer { friend: Friend -> converted = converted.replace(friend.username.toRegex(RegexOption.IGNORE_CASE), colour() + bold() + friend.username + TextFormatting.RESET.toString()) })
+        for (friend in FriendManager.friendFile.friends) {
+            converted = converted.replace(friend.username.toRegex(RegexOption.IGNORE_CASE), getReplacement(friend.username) + TextFormatting.RESET.toString())
+        }
         val message = TextComponentString(converted)
         event.message = message
     })
 
     private fun noFriendsCheck(): Boolean {
-        if (Friends.friends.value.size == 0) {
+        if (FriendManager.friendFile.friends.size == 0) {
             MessageSendHelper.sendErrorMessage("$chatName You don't have any friends added, silly! Go add some friends before using the module")
             disable()
             return true
         }
         return false
+    }
+
+    private fun getReplacement(name: String): String {
+        return colour() + bold() + name
     }
 
     private fun bold(): String {

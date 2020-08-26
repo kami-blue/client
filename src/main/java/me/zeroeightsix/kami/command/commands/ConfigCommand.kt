@@ -30,7 +30,7 @@ class ConfigCommand : Command("config", ChunkBuilder()
             "reload" -> {
                 Thread {
                     val loaded = ConfigUtils.loadAll()
-                    if (loaded) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints reloaded!")
+                    if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
                 }.start()
             }
@@ -38,7 +38,7 @@ class ConfigCommand : Command("config", ChunkBuilder()
             "save" -> {
                 Thread {
                     val saved = ConfigUtils.saveAll()
-                    if (saved) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints saved!")
+                    if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
                 }.start()
             }

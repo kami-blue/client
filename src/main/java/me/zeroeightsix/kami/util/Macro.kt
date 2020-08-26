@@ -23,8 +23,10 @@ object Macro {
             gson.toJson(FileInstanceManager.macros, fw)
             fw.flush()
             fw.close()
+            KamiMod.log.info("Macro saved")
             true
         } catch (e: IOException) {
+            KamiMod.log.info("Failed saving macro")
             e.printStackTrace()
             false
         }
