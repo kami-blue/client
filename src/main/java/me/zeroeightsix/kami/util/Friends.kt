@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive
 import com.mojang.util.UUIDTypeAdapter
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.BufferedInputStream
 import java.io.BufferedReader
 import java.io.InputStream
@@ -36,7 +37,7 @@ object Friends {
 
     fun getFriendByName(input: String?): Friend? {
         if (input == null) return null
-        val infoMap = ArrayList(Wrapper.getMinecraft().connection!!.playerInfoMap)
+        val infoMap = ArrayList(Wrapper.minecraft.connection!!.playerInfoMap)
         val profile = infoMap.find { info ->
             info!!.gameProfile.name.equals(input, ignoreCase = true)
         }

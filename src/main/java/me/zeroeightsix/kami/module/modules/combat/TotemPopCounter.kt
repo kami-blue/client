@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.event.events.EntityUseTotemEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.isFriend
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
@@ -42,7 +41,7 @@ class TotemPopCounter : Module() {
         CLIENT, EVERYONE
     }
 
-    private var playerList: HashMap<String?, Int?>? = HashMap<String?, Int?>()
+    private var playerList = HashMap<String, Int>()
     private var isDead = false
 
     override fun onUpdate() {
@@ -51,7 +50,7 @@ class TotemPopCounter : Module() {
                 && 0 >= mc.player.health) {
             sendMessage(formatName(mc.player.name) + " died and " + grammar(mc.player.name) + " pop list was reset!")
             isDead = true
-            playerList!!.clear()
+            playerList.clear()
             return
         }
         if (isDead && 0 < mc.player.health) isDead = false
@@ -60,24 +59,23 @@ class TotemPopCounter : Module() {
             if (resetDeaths.value
                     && 0 >= player.health && friendCheck(player.name)
                     && selfCheck(player.name)
-                    && playerList!!.containsKey(player.name)) {
+                    && playerList.containsKey(player.name)) {
                 /* To note: if they died after popping 1 totem it's going to say totems, but I cba to fix it */
-                sendMessage(formatName(player.name) + " died after popping " + formatNumber(playerList!![player.name]!!) + " totems" + ending())
-                playerList!!.remove(player.name, playerList!![player.name])
+                sendMessage(formatName(player.name) + " died after popping " + formatNumber(playerList[player.name]!!) + " totems" + ending())
+                playerList.remove(player.name, playerList[player.name])
             }
         }
     }
 
     @EventHandler
     private val listListener = Listener(EventHook { event: EntityUseTotemEvent ->
-        if (playerList == null) playerList = HashMap()
-        if (playerList!![event.entity.name] == null) {
-            playerList!![event.entity.name] = 1
+        if (playerList[event.entity.name] == null) {
+            playerList[event.entity.name] = 1
             sendMessage(formatName(event.entity.name) + " popped " + formatNumber(1) + " totem" + ending())
-        } else if (playerList!![event.entity.name] != null) {
-            var popCounter = playerList!![event.entity.name]!!
+        } else if (playerList[event.entity.name] != null) {
+            var popCounter = playerList[event.entity.name]!!
             popCounter += 1
-            playerList!![event.entity.name] = popCounter
+            playerList[event.entity.name] = popCounter
             sendMessage(formatName(event.entity.name) + " popped " + formatNumber(popCounter) + " totems" + ending())
         }
     })
@@ -151,7 +149,7 @@ class TotemPopCounter : Module() {
     private val popListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (mc.player == null) return@EventHook
         if (event.packet is SPacketEntityStatus) {
-            val packet = event.packet as SPacketEntityStatus
+            val packet = event.packet
 
             if (packet.opCode.toInt() == 35) {
                 val entity = packet.getEntity(mc.world)
@@ -164,6 +162,6 @@ class TotemPopCounter : Module() {
     })
 
     private fun setToText(colourCode: ColourCode): TextFormatting? {
-        return ColourTextFormatting.toTextMap[colourCode]
+        return ColorTextFormatting.toTextMap[colourCode]
     }
 }

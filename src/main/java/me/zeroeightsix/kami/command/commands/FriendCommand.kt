@@ -6,8 +6,7 @@ import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.friends
 import me.zeroeightsix.kami.util.Friends.getFriendByName
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * Created by 086 on 14/12/2017.
@@ -28,18 +27,18 @@ class FriendCommand : Command("friend", ChunkBuilder()
         when (subCommand) {
             SubCommands.ADD -> {
                 if (Friends.isFriend(args[1])) {
-                    sendChatMessage("That player is already your friend.")
+                    MessageSendHelper.sendChatMessage("That player is already your friend.")
                 } else {
                     // New thread because of potential internet connection made
-                    Thread(Runnable {
+                    Thread {
                         val f = getFriendByName(args[1])
                         if (f == null) {
-                            sendChatMessage("Failed to find UUID of " + args[1])
+                            MessageSendHelper.sendChatMessage("Failed to find UUID of " + args[1])
                         } else {
                             friends.value.add(f)
-                            sendChatMessage("&7${f.username}&r has been friended.")
+                            MessageSendHelper.sendChatMessage("&7${f.username}&r has been friended.")
                         }
-                    }).start()
+                    }.start()
                 }
             }
 
@@ -47,23 +46,23 @@ class FriendCommand : Command("friend", ChunkBuilder()
                 val removed = friends.value.removeIf { friend ->
                     friend.username.equals(args[1], ignoreCase = true)
                 }
-                if (removed) sendChatMessage("&7${args[1]}&r has been unfriended.")
-                else sendChatMessage("That player isn't your friend.")
+                if (removed) MessageSendHelper.sendChatMessage("&7${args[1]}&r has been unfriended.")
+                else MessageSendHelper.sendChatMessage("That player isn't your friend.")
             }
 
             SubCommands.LIST -> {
                 if (friends.value.isEmpty()) {
-                    sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
+                    MessageSendHelper.sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
                 } else {
                     val f = friends.value.joinToString(prefix = "\n    ", separator = "\n    ") { friend ->
                         friend.username
                     } // nicely format the chat output
-                    sendChatMessage("Your friends: $f")
+                    MessageSendHelper.sendChatMessage("Your friends: $f")
                 }
             }
 
             SubCommands.IS_FRIEND -> {
-                sendChatMessage(String.format(
+                MessageSendHelper.sendChatMessage(String.format(
                         if (Friends.isFriend(args[0])) "Yes, %s is your friend."
                         else "No, %s isn't a friend of yours.",
                         args[0]))
@@ -72,26 +71,26 @@ class FriendCommand : Command("friend", ChunkBuilder()
             SubCommands.TOGGLE -> {
                 Friends.enabled = !Friends.enabled
                 if (Friends.enabled) {
-                    sendChatMessage("Friends have been &aenabled")
+                    MessageSendHelper.sendChatMessage("Friends have been &aenabled")
                 } else {
-                    sendChatMessage("Friends have been &cdisabled")
+                    MessageSendHelper.sendChatMessage("Friends have been &cdisabled")
                 }
             }
 
             SubCommands.CLEAR -> {
                 if (System.currentTimeMillis() - confirmTime > 15000L) {
                     confirmTime = System.currentTimeMillis()
-                    sendChatMessage("This will delete ALL your friends, run &7${commandPrefix.value}friend clear&f again to confirm")
+                    MessageSendHelper.sendChatMessage("This will delete ALL your friends, run &7${commandPrefix.value}friend clear&f again to confirm")
                 } else {
                     confirmTime = 0L
                     friends.value.clear()
-                    sendChatMessage("Friends have been &ccleared")
+                    MessageSendHelper.sendChatMessage("Friends have been &ccleared")
                 }
             }
 
             SubCommands.NULL -> {
                 val commands = args.joinToString(separator = " ")
-                sendChatMessage("Invalid sub command $commands!")
+                MessageSendHelper.sendChatMessage("Invalid sub command $commands!")
             }
         }
     }
