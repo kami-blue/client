@@ -18,6 +18,7 @@ import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.manager.ManagerLoader;
+import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.module.*;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
@@ -174,8 +175,7 @@ public class KamiMod {
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         Module[] modules = ModuleManager.getModules();
-        for (int i = 0; i < modules.length; i++) {
-            Module module = modules[i];
+        for (Module module : modules) {
             if (module.alwaysListening) EVENT_BUS.subscribe(module);
             if (module.isEnabled()) module.enable();
         }

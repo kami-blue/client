@@ -27,6 +27,7 @@ object FileInstanceManager : Manager() {
     /**
      * Super lazy fix for Windows users sometimes saving empty files
      */
+    @JvmStatic
     fun fixEmptyFiles() {
         if (!Waypoint.file.exists()) {
             try {
