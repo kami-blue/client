@@ -30,10 +30,10 @@ class BreakingESP : Module() {
     private val espSelf = register(Settings.b("ESPSelf", true))
     private val warnSelf = register(Settings.b("WarnSelf", false))
     private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
-    private val warning = register(Settings.b("Warning", false))
-    private val warningProgress = register(Settings.integerBuilder("Warning Progress").withMinimum(0).withValue(4).withMaximum(9).build())
+    private val warning = register(Settings.b("Warn", false))
+    private val warningProgress = register(Settings.integerBuilder("Warn Progress").withMinimum(0).withValue(4).withMaximum(9).build())
     private val chatWarn = register(Settings.b("Chat Warning", true))
-    private val screenWarn = register(Settings.b("Title Warning", true))
+    private val screenWarn = register(Settings.b("HUD Warning", false))
     private val soundWarn = register(Settings.b("Sound Warning", false))
     private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withRange(0.0f, 64.0f).build())
     private val filled = register(Settings.b("Filled", true))
@@ -98,10 +98,7 @@ class BreakingESP : Module() {
         if (mc.player == null || mc.player.getDistanceSq(event.position) > range.value * range.value) return@EventHook
         val breaker = mc.world.getEntityByID(event.breakId) ?: return@EventHook
         if (event.progress in 0..9) {
-            var render = false
-            if (mc.player != breaker || espSelf.value) {
-                render = true
-            }
+            val render = mc.player != breaker || espSelf.value
             breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, Pair(false, render)))
             breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third) }
             if (warning.value && (mc.player != breaker || warnSelf.value) && event.progress >= warningProgress.value && !breakingBlockList[event.breakId]!!.third.first
