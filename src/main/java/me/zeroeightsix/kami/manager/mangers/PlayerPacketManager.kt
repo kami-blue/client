@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.manager.mangers
 
+import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
@@ -18,9 +19,11 @@ object PlayerPacketManager : Manager() {
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
     private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })
 
+    @EventHandler
     private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
         if (packetList.isEmpty()) return@EventHook
-        packetList.values.first().apply(event)
+        packetList.values.first().apply(event) // Apply the packet from the module that has the highest priority
+        packetList.clear()
     })
 
     /**
