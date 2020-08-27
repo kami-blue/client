@@ -38,13 +38,13 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
     public void closeScreen(EntityPlayerSP entityPlayerSP) {
-        if (MODULE_MANAGER.isModuleEnabled(PortalChat.class)) return;
+        if (ModuleManager.isModuleEnabled(PortalChat.class)) return;
     }
 
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
     public void closeScreen(Minecraft minecraft, GuiScreen screen) {
-        if (MODULE_MANAGER.isModuleEnabled(PortalChat.class)) return;
+        if (ModuleManager.isModuleEnabled(PortalChat.class)) return;
     }
 
     /**
@@ -53,7 +53,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
      */
     @Inject(method = "displayGUIChest", at = @At("HEAD"), cancellable = true)
     public void onDisplayGUIChest(IInventory chestInventory, CallbackInfo ci) {
-        if (MODULE_MANAGER.isModuleEnabled(BeaconSelector.class)) {
+        if (ModuleManager.isModuleEnabled(BeaconSelector.class)) {
             if (chestInventory instanceof IInteractionObject) {
                 if ("minecraft:beacon".equals(((IInteractionObject) chestInventory).getGuiID())) {
                     Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
