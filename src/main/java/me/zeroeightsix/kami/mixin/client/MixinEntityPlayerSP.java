@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.mixin.client;
 
 import com.mojang.authlib.GameProfile;
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
+import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
@@ -25,7 +25,6 @@ import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -102,20 +101,15 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         super.setSprinting(sprinting);
     }
 
-    /**
-     * @author Xiaro
-     *
-     * @reason For PlayerPacketManager
-     */
-    @Overwrite
-    private void onUpdateWalkingPlayer() {
-        ++this.positionUpdateTicks;
+    @Redirect(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;onUpdateWalkingPlayer()V"))
+    private void onUpdateWalkingPlayer(EntityPlayerSP player) {
 
         // Setup flags
-        boolean sprinting = this.isSprinting();
-        boolean sneaking = this.isSneaking();
+        ++this.positionUpdateTicks;
         boolean moving = isMoving();
         boolean rotating = isRotating();
+        boolean sprinting = this.isSprinting();
+        boolean sneaking = this.isSneaking();
         boolean onGround = this.onGround;
         Vec3d pos = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
         Vec2f rotation = new Vec2f(this.rotationYaw, this.rotationPitch);
@@ -128,10 +122,10 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         }
 
         // Copy flags from event
-        sprinting = event.getSprinting();
-        sneaking = event.getSneaking();
         moving = event.getMoving();
         rotating = event.getRotating();
+        sprinting = event.getSprinting();
+        sneaking = event.getSneaking();
         onGround = event.getOnGround();
         pos = event.getPos();
         rotation = event.getRotation();
