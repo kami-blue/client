@@ -43,11 +43,11 @@ object PlayerPacketManager : Manager() {
      * the packet
      */
     class PlayerPacket(
-            val sprinting: Boolean? = null,
-            val sneaking: Boolean? = null,
-            val onGround: Boolean? = null,
-            val pos: Vec3d? = null,
-            val rotation: Vec2f? = null
+            var sprinting: Boolean? = null,
+            var sneaking: Boolean? = null,
+            var onGround: Boolean? = null,
+            var pos: Vec3d? = null,
+            var rotation: Vec2f? = null
     ) {
 
         /**
