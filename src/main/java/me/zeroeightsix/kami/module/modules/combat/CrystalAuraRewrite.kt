@@ -249,9 +249,9 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun lookAtPacket(px: Double, py: Double, pz: Double) {
-        val rotation = RotationUtils.getRotationTo(Vec3d(px, py, pz))
-        yaw = rotation[0].toFloat()
-        pitch = rotation[1].toFloat()
+        val rotation = RotationUtils.getRotationTo(Vec3d(px, py, pz), true)
+        yaw = rotation.first.toFloat()
+        pitch = rotation.second.toFloat()
         spoofing = true
     }
 
