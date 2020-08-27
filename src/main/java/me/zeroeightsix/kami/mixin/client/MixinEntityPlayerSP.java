@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
+import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -19,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
@@ -112,7 +112,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         boolean sneaking = this.isSneaking();
         boolean onGround = this.onGround;
         Vec3d pos = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
-        Vec2f rotation = new Vec2f(this.rotationYaw, this.rotationPitch);
+        Vec2f rotation = new Vec2f(this);
 
         OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, sprinting, sneaking, onGround, pos, rotation);
         KamiMod.EVENT_BUS.post(event);

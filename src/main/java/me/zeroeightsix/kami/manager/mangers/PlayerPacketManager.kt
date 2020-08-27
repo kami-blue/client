@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
-import net.minecraft.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
@@ -43,12 +43,25 @@ object PlayerPacketManager : Manager() {
      * the packet
      */
     class PlayerPacket(
+            var moving: Boolean? = null,
+            var rotating: Boolean? = null,
             var sprinting: Boolean? = null,
             var sneaking: Boolean? = null,
             var onGround: Boolean? = null,
-            var pos: Vec3d? = null,
-            var rotation: Vec2f? = null
+            pos: Vec3d? = null,
+            rotation: Vec2f? = null
     ) {
+        var pos: Vec3d? = pos
+            set(value) {
+                moving = true
+                field = value
+            }
+
+        var rotation: Vec2f? = rotation
+            set(value) {
+                rotating = true
+                field = value
+            }
 
         /**
          * Checks whether this packet contains values
@@ -56,7 +69,13 @@ object PlayerPacketManager : Manager() {
          * @return True if all values in this packet is null
          */
         fun isEmpty(): Boolean {
-            return sprinting == null && sneaking == null && onGround == null && pos == null && rotation == null
+            return moving == null
+                    && rotating == null
+                    && sprinting == null
+                    && sneaking == null
+                    && onGround == null
+                    && pos == null
+                    && rotation == null
         }
 
         /**
@@ -66,6 +85,8 @@ object PlayerPacketManager : Manager() {
          */
         fun apply(event: OnUpdateWalkingPlayerEvent) {
             if (this.isEmpty()) return
+            this.moving?.let { event.moving = it }
+            this.rotating?.let { event.rotating = it }
             this.sprinting?.let { event.sprinting = it }
             this.sneaking?.let { event.sneaking = it }
             this.onGround?.let { event.onGround = it }
