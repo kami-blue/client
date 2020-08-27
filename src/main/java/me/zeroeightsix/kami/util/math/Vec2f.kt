@@ -12,11 +12,9 @@ import kotlin.math.sqrt
 class Vec2f(@JvmField var x: Float, @JvmField var y: Float) {
 
     /**
-     * Create a Vec2f of this entity's rotation
+     * Create a Vec2f from this entity's rotations
      */
-    constructor(entity: Entity) {
-        Vec2f(entity.rotationYaw, entity.rotationPitch)
-    }
+    constructor(entity: Entity): this(entity.rotationYaw, entity.rotationPitch)
 
     fun toRadians(): Vec2d {
         return Vec2d(this.x / 180.0 * Math.PI, this.y  / 180.0 * Math.PI)
