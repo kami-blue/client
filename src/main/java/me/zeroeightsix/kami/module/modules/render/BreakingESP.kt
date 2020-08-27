@@ -31,10 +31,10 @@ class BreakingESP : Module() {
     private val warnSelf = register(Settings.b("WarnSelf", false))
     private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
     private val warning = register(Settings.b("Warn", false))
-    private val warningProgress = register(Settings.integerBuilder("Warn Progress").withMinimum(0).withValue(4).withMaximum(9).build())
-    private val chatWarn = register(Settings.b("Chat Warning", true))
-    private val screenWarn = register(Settings.b("HUD Warning", false))
-    private val soundWarn = register(Settings.b("Sound Warning", false))
+    private val warningProgress = register(Settings.integerBuilder("WarnProgress").withMinimum(0).withValue(4).withMaximum(9).build())
+    private val chatWarn = register(Settings.b("ChatWarning", true))
+    private val screenWarn = register(Settings.b("HUDWarning", false))
+    private val soundWarn = register(Settings.b("SoundWarning", false))
     private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withRange(0.0f, 64.0f).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
@@ -88,7 +88,8 @@ class BreakingESP : Module() {
         if (screenWarn.value && warn) {
             if (delay++ > 100) warn = false
             val textRenderer = Wrapper.fontRenderer
-            val divider = DisplayGuiScreen.getScale()
+            val scale = DisplayGuiScreen.getScale()
+            val divider = if (scale == 0) 1 else scale
             textRenderer.drawStringWithShadow(mc.displayWidth / divider / 2 - textRenderer.getStringWidth(warningText) / 2, mc.displayHeight / divider / 2 - 16, 240, 87, 70, warningText)
         }
     }
