@@ -16,7 +16,8 @@ import net.minecraft.item.ItemBow
 @Module.Info(
         name = "AimBot",
         description = "Automatically aims at entities for you.",
-        category = Module.Category.COMBAT
+        category = Module.Category.COMBAT,
+        modulePriority = 20
 )
 class AimBot : Module() {
     private val priority = register(Settings.e<EntityPriority>("Priority", EntityPriority.DISTANCE))

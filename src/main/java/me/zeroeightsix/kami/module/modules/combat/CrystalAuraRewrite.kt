@@ -34,7 +34,8 @@ import kotlin.collections.HashMap
 @Module.Info(
         name = "CrystalAuraRewrite",
         description = "A reborn of the CrystalAura",
-        category = Module.Category.COMBAT
+        category = Module.Category.COMBAT,
+        modulePriority = 80
 )
 // TODO: AutoSwap
 // TODO: AutoOffhand
@@ -111,15 +112,17 @@ class CrystalAuraRewrite : Module() {
         forceExplode = false
         placing = false
         exploding = false
-        CombatManager.moduleStates[this.javaClass] = false
     }
 
     override fun onUpdate() {
-        CombatManager.moduleStates[this.javaClass] = placing || exploding
         if (spoofing) {
             mc.player.rotationYaw += random().toFloat() * 0.005f - 0.0025f
             mc.player.rotationPitch += random().toFloat() * 0.005f - 0.0025f
         }
+    }
+
+    override fun isActive(): Boolean {
+        return placing || exploding
     }
 
     @EventHandler

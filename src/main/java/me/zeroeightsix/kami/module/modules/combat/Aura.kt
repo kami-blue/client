@@ -32,7 +32,8 @@ import net.minecraft.util.EnumHand
 @Module.Info(
         name = "Aura",
         category = Module.Category.COMBAT,
-        description = "Hits entities around you"
+        description = "Hits entities around you",
+        modulePriority = 2
 )
 class Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
