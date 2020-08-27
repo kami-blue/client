@@ -16,6 +16,7 @@ import java.util.*
  * Created by Xiaro on 27/08/20
  */
 object PlayerPacketManager : Manager() {
+
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
     private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })
 
@@ -29,7 +30,7 @@ object PlayerPacketManager : Manager() {
     /**
      * Adds a packet to the packet list
      *
-     * @param packet Packet to be add
+     * @param packet Packet to be added
      */
     fun addPacket(caller: Module, packet: PlayerPacket) {
         if (packet.isEmpty()) return
