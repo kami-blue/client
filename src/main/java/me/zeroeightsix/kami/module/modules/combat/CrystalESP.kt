@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.mangers.CombatManager
+import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.CombatUtils.CrystalUtils

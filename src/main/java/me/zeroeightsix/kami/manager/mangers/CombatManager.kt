@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.mangers
+package me.zeroeightsix.kami.manager.mangers
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
