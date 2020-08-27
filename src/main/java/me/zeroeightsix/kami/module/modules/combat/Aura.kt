@@ -13,10 +13,10 @@ import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
+import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.Vec2f
 
 /**
  * Created by 086 on 12/12/2017.
@@ -104,7 +104,7 @@ class Aura : Module() {
                     val rotation = getRotationToEntity(target)
                     val yaw = rotation.first.toFloat()
                     val pitch = rotation.second.toFloat()
-                    val packet = PlayerPacketManager.PlayerPacket(rotation = Vec2f(yaw, pitch))
+                    val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(yaw, pitch))
                     PlayerPacketManager.addPacket(this, packet)
                 }
                 if (lockView.value) faceEntity(target)
