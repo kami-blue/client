@@ -1,9 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
@@ -18,8 +15,8 @@ import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
-import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.Vec2f
 
 /**
  * Created by 086 on 12/12/2017.
@@ -31,7 +28,8 @@ import net.minecraft.util.EnumHand
 @Module.Info(
         name = "Aura",
         category = Module.Category.COMBAT,
-        description = "Hits entities around you"
+        description = "Hits entities around you",
+        modulePriority = 50
 )
 class Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
@@ -60,8 +58,6 @@ class Aura : Module() {
     private val disableOnDeath = register(Settings.b("DisableOnDeath", false))
 
     private var startTime: Long = 0
-    private var yaw = 0f
-    private var pitch = 0f
     private var tickCount = 0
     var isAttacking = false // returned to AutoEat
 
@@ -73,22 +69,10 @@ class Aura : Module() {
         SWORD, AXE, NONE
     }
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null || !spoofRotation.value || !isAttacking || event.packet !is CPacketPlayer) return@EventHook
-        val packet = event.packet as CPacketPlayer
-        packet.yaw = yaw
-        packet.pitch = pitch
-    })
-
     override fun onUpdate() {
         if (mc.player == null || mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()
             return
-        }
-        if (spoofRotation.value) {
-            mc.player.rotationYaw += Math.random().toFloat() * 0.005f - 0.0025f
-            mc.player.rotationPitch += Math.random().toFloat() * 0.005f - 0.0025f
         }
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
@@ -118,8 +102,10 @@ class Aura : Module() {
                 val target = getPrioritizedTarget(targetList.toTypedArray(), priority.value)
                 if (spoofRotation.value) {
                     val rotation = getRotationToEntity(target)
-                    yaw = rotation.first.toFloat()
-                    pitch = rotation.second.toFloat()
+                    val yaw = rotation.first.toFloat()
+                    val pitch = rotation.second.toFloat()
+                    val packet = PlayerPacketManager.PlayerPacket(rotation = Vec2f(yaw, pitch))
+                    PlayerPacketManager.addPacket(this, packet)
                 }
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
