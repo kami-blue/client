@@ -36,7 +36,7 @@ class FriendHighlight : Module() {
 
     @EventHandler
     private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
-        if (mc.player == null || noFriendsCheck()) return@EventHook
+        if (mc.player == null || noFriendsCheck() || !FriendManager.friendFile.enabled) return@EventHook
         var converted = event.message.formattedText
         for (friend in FriendManager.friendFile.friends) {
             converted = converted.replace(friend.username.toRegex(RegexOption.IGNORE_CASE), getReplacement(friend.username) + TextFormatting.RESET.toString())
