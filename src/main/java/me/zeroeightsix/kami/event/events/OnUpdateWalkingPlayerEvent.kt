@@ -5,8 +5,8 @@ import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 
 class OnUpdateWalkingPlayerEvent(
-        var moving: Boolean,
-        var rotating: Boolean,
+        private var moving: Boolean,
+        private var rotating: Boolean,
         var sprinting: Boolean,
         var sneaking: Boolean,
         var onGround: Boolean,
@@ -16,7 +16,7 @@ class OnUpdateWalkingPlayerEvent(
 
     var pos: Vec3d = initPos
         set(value) {
-            if (value.subtract(initPos).lengthSquared() > 0.0009) {
+            if (moving || value.subtract(initPos).lengthSquared() > 0.0009) {
                 moving = true
                 field = value
             }
@@ -24,10 +24,18 @@ class OnUpdateWalkingPlayerEvent(
 
     var rotation: Vec2f = initRotation
         set(value) {
-            if (value.x - initRotation.x != 0f || value.y - initRotation.y != 0f) {
+            if (rotating || value.x - initRotation.x != 0f || value.y - initRotation.y != 0f) {
                 rotating = true
                 field = value
             }
         }
+
+    fun getMoving(): Boolean {
+        return moving
+    }
+
+    fun getRotating(): Boolean {
+        return rotating
+    }
 
 }
