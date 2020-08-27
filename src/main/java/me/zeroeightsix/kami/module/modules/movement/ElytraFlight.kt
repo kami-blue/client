@@ -5,6 +5,7 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
@@ -14,6 +15,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Items
@@ -22,7 +24,6 @@ import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
-import java.lang.Math.random
 import kotlin.math.*
 
 /**
@@ -35,7 +36,8 @@ import kotlin.math.*
 @Module.Info(
         name = "ElytraFlight",
         description = "Allows infinite and way easier Elytra flying",
-        category = Module.Category.MOVEMENT
+        category = Module.Category.MOVEMENT,
+        modulePriority = 1000
 )
 class ElytraFlight : Module() {
     private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL).build())
@@ -124,32 +126,6 @@ class ElytraFlight : Module() {
     private var boostingTick = 0
 
     /* Event Handlers */
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return@EventHook
-        if (event.packet is CPacketPlayer) {
-            val packet = event.packet
-            if (autoLanding.value) {
-                packet.pitch = -20.0f
-            } else if (mode.value != ElytraFlightMode.BOOST) {
-                if (spoofPitch.value) {
-                    /* Cancels rotation packets if player is not moving and not clicking */
-                    val cancelPacket = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract.value) || !blockInteract.value)
-                    if (event.packet !is CPacketPlayer.Position && cancelPacket) {
-                        event.cancel()
-                        if (event.packet is CPacketPlayer.PositionRotation) { /* Resend the packet as position packet if it is position & rotation packet */
-                            mc.connection!!.sendPacket(CPacketPlayer.Position(packet.x, packet.y, packet.z, packet.onGround))
-                        }
-                        return@EventHook
-                    }
-
-                    if (!isStandingStill) packet.pitch = packetPitch
-                }
-                if (mode.value != ElytraFlightMode.CREATIVE) packet.yaw = packetYaw
-            }
-        }
-    })
-
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying || mode.value == ElytraFlightMode.BOOST) return@EventHook
@@ -505,11 +481,23 @@ class ElytraFlight : Module() {
     }
 
     override fun onUpdate() {
-        /* Continuously update server side rotation */
-        if ((mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.CREATIVE) && isFlying && spoofPitch.value || autoLanding.value) {
-            mc.player.rotationYaw += random().toFloat() * 0.005f - 0.0025f
-            mc.player.rotationPitch += random().toFloat() * 0.005f - 0.0025f
+        if (mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return
+        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(mc.player))
+        if (autoLanding.value) {
+            packet.rotation!!.y = -20f
+        } else if (mode.value != ElytraFlightMode.BOOST) {
+            if (!isStandingStill && mode.value != ElytraFlightMode.CREATIVE) packet.rotation!!.x = packetYaw
+            if (spoofPitch.value) {
+                if (!isStandingStill) packet.rotation!!.y = packetPitch
+
+                /* Cancels rotation packets if player is not moving and not clicking */
+                val cancelRotation = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract.value) || !blockInteract.value)
+                if (cancelRotation) {
+                    packet.rotating = false
+                }
+            }
         }
+        PlayerPacketManager.addPacket(this, packet)
     }
 
     override fun onDisable() {
