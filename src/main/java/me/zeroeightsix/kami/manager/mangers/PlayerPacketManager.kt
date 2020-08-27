@@ -28,7 +28,7 @@ object PlayerPacketManager : Manager() {
      *
      * @param packet Packet to be add
      */
-    private fun addPacket(caller: Module, packet: PlayerPacket) {
+    fun addPacket(caller: Module, packet: PlayerPacket) {
         if (packet.isEmpty()) return
         packetList[caller] = packet
     }
