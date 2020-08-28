@@ -19,11 +19,17 @@ import kotlin.math.round
         alwaysListening = true
 )
 class ClickGUI : Module() {
-    private val scaleSetting = register(Settings.integerBuilder("GuiScale").withValue(100).withRange(10, 250).build())
+    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 250).build())
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
     private val settingTimer = TimerUtils.TickTimer()
+
+    fun resetScale() {
+        scaleSetting.value = 100
+        prevScale = 1.0
+        scale = 1.0
+    }
 
     fun getScaleFactor(): Double {
         return (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
