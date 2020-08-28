@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.input.Keyboard;
@@ -64,7 +64,9 @@ public class DisplayGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         calculateMouse();
+        GlStateUtils.rescaleKami();
         gui.drawGUI();
+        GlStateUtils.rescaleMc();
         glEnable(GL_TEXTURE_2D);
         GlStateManager.color(1, 1, 1);
     }
@@ -110,15 +112,20 @@ public class DisplayGuiScreen extends GuiScreen {
         mc.displayGuiScreen(lastScreen);
     }
 
-    public static int getScale() {
-        return new ScaledResolution(Wrapper.getMinecraft()).getScaleFactor();
+    public static double getScale() {
+        ClickGUI clickGUI = ModuleManager.getModuleT(ClickGUI.class);
+        if (clickGUI == null) {
+            return 2.0;
+        } else {
+            return clickGUI.getScaleFactor();
+        }
     }
 
     private void calculateMouse() {
         Minecraft minecraft = Minecraft.getMinecraft();
-        int scaleFactor = getScale();
-        mouseX = Mouse.getX() / scaleFactor;
-        mouseY = minecraft.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1;
+        double scaleFactor = getScale();
+        mouseX = (int) (Mouse.getX() / scaleFactor);
+        mouseY = (int) (minecraft.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1);
     }
 
 }

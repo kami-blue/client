@@ -16,6 +16,7 @@ import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.ScaledResolution
 
 /**
  * @author dominikaaaa
@@ -66,7 +67,7 @@ class LagNotifier : Module() {
         }
         text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
         val renderer = Wrapper.fontRenderer
-        val divider = DisplayGuiScreen.getScale()
+        val divider = ScaledResolution(mc).scaleFactor
 
         /* 217 is the offset to make it go high, bigger = higher, with 0 being center */
         renderer.drawStringWithShadow(mc.displayWidth / divider / 2 - renderer.getStringWidth(text) / 2, mc.displayHeight / divider / 2 - 217, 255, 85, 85, text)

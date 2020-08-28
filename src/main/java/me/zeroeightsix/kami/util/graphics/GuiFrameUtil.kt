@@ -40,10 +40,10 @@ object GuiFrameUtil {
         for (frame in frames) {
             val divider = DisplayGuiScreen.getScale()
             if (frame.x > Display.getWidth() / divider) {
-                frame.x = Display.getWidth() / divider - frame.width
+                frame.x = (Display.getWidth() / divider - frame.width).toInt()
             }
             if (frame.y > Display.getHeight() / divider) {
-                frame.y = Display.getHeight() / divider - frame.height
+                frame.y = (Display.getHeight() / divider - frame.height).toInt()
             }
             if (frame.x < 0) frame.x = 0
             if (frame.y < 0) frame.y = 0

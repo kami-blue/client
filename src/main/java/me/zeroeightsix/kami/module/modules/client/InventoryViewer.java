@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.color.ColorConverter;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -84,9 +85,11 @@ public class InventoryViewer extends Module {
         if (frame == null)
             return;
         if (frame.isPinned() && !frame.isMinimized()) {
+            GlStateUtils.rescaleKami();
             final NonNullList<ItemStack> items = mc.player.inventory.mainInventory;
             boxRender(frame.getX(), frame.getY());
             itemRender(items, frame.getX(), frame.getY());
+            GlStateUtils.rescaleMc();
         }
     }
 

@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.command.commands.PeekCommand
 import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
@@ -17,6 +18,7 @@ import me.zeroeightsix.kami.module.modules.render.NoRender
 import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
 import me.zeroeightsix.kami.util.HungerOverlayUtils
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
@@ -161,9 +163,11 @@ open class ForgeEventProcessor {
 
         if (event.type == target) {
             ModuleManager.onRender()
+            GlStateUtils.rescaleKami()
             GlStateManager.pushMatrix()
             UIRenderer.renderAndUpdateFrames()
             GlStateManager.popMatrix()
+            GlStateUtils.rescaleMc()
         } else if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
             BossStack.render(event)
         }

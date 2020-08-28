@@ -76,8 +76,12 @@ public class InputField extends AbstractComponent {
                     currentState.selection = false;
 
                 int[] real = GUI.calculateRealPosition(InputField.this);
-                int scale = DisplayGuiScreen.getScale();
-                GL11.glScissor(real[0] * scale - getParent().getOriginOffsetX() - 1, Display.getHeight() - getHeight() * scale - real[1] * scale - 1, getWidth() * scale + getParent().getOriginOffsetX() + 1, getHeight() * scale + 1);
+                double scale = DisplayGuiScreen.getScale();
+                GL11.glScissor(
+                        (int) (real[0] * scale - getParent().getOriginOffsetX() - 1),
+                        (int) (Display.getHeight() - getHeight() * scale - real[1] * scale - 1),
+                        (int) (getWidth() * scale + getParent().getOriginOffsetX() + 1),
+                        (int) (getHeight() * scale + 1));
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
                 GL11.glTranslatef(-scrollX, 0, 0);
