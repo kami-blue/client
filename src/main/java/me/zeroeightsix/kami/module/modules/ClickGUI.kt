@@ -19,7 +19,7 @@ import kotlin.math.round
         alwaysListening = true
 )
 class ClickGUI : Module() {
-    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 250).build())
+    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
