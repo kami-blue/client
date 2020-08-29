@@ -7,8 +7,7 @@ import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
-import kotlin.math.atan2
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Utils for calculating angles and rotations
@@ -29,6 +28,24 @@ object RotationUtils {
         val rotation = getRotationToEntity(entity)
         mc.player.rotationYaw = rotation.x.toFloat()
         mc.player.rotationPitch = rotation.y.toFloat()
+    }
+
+    fun getRelativeRotation(entity: Entity): Double {
+        return getRotationDiff(getRotationToEntity(entity), getPlayerRotation())
+    }
+
+    fun getRelativeRotation(posTo: Vec3d): Double {
+        return getRotationDiff(getRotationTo(posTo, true), getPlayerRotation())
+    }
+
+    fun getPlayerRotation(): Vec2d {
+        return Vec2d(mc.player.rotationYaw.toDouble(), mc.player.rotationPitch.toDouble())
+    }
+
+    fun getRotationDiff(r1: Vec2d, r2: Vec2d): Double {
+        val r1Radians = r1.toRadians()
+        val r2Radians = r2.toRadians()
+        return Math.toDegrees(acos(cos(r1Radians.y) * cos(r2Radians.y) * cos(r1Radians.x - r2Radians.x) + sin(r1Radians.y) * sin(r2Radians.y)))
     }
 
     fun getRotationToEntity(entity: Entity): Vec2d {
