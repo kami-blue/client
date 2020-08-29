@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util.math
 
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -16,6 +18,12 @@ import kotlin.math.sqrt
  */
 object RotationUtils {
     val mc = Wrapper.minecraft
+
+    fun faceEntityPacket(caller: Module, entity: Entity) {
+        val rotation = getRotationToEntity(entity)
+        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation.x.toFloat(), rotation.y.toFloat()))
+        PlayerPacketManager.addPacket(caller, packet)
+    }
 
     fun faceEntity(entity: Entity) {
         val rotation = getRotationToEntity(entity)

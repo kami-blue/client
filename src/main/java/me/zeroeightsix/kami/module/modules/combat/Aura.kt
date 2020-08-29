@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
-import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.manager.mangers.CombatManager
+import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -11,8 +10,6 @@ import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
-import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
-import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
@@ -82,13 +79,7 @@ class Aura : Module() {
                 unpauseBaritone()
                 return
             }
-            if (spoofRotation.value) {
-                val rotation = getRotationToEntity(target)
-                val yaw = rotation.first.toFloat()
-                val pitch = rotation.second.toFloat()
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(yaw, pitch))
-                PlayerPacketManager.addPacket(this, packet)
-            }
+            if (spoofRotation.value) RotationUtils.faceEntityPacket(this, target)
             if (lockView.value) faceEntity(target)
             if (canAttack()) attack(target)
         }
