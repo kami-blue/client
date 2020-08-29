@@ -1,17 +1,18 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderEvent
-import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.manager.mangers.CombatManager
+import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ColourHolder
 import me.zeroeightsix.kami.util.CombatUtils.CrystalUtils
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.MathsUtils.convertRange
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentSkipListMap
 import kotlin.collections.HashMap
 import kotlin.math.PI
 import kotlin.math.min
@@ -35,17 +36,13 @@ class CrystalESP : Module() {
     private val thickness = register(Settings.floatBuilder("Thickness").withValue(4.0f).withRange(0.0f, 8.0f).withVisibility { crystalESP.value }.build())
     private val espRange = register(Settings.floatBuilder("ESPRange").withValue(16.0f).withRange(0.0f, 32.0f).build())
 
-    private val damageESPMap = ConcurrentHashMap<Float, BlockPos>()
-    private val crystalList = ConcurrentHashMap<EntityEnderCrystal, Float>()
+    private val damageESPMap = TreeMap<Float, BlockPos>(Comparator.reverseOrder())
+    private val crystalList = HashMap<EntityEnderCrystal, Float>()
 
     override fun onUpdate() {
-        val currentTarget = CombatManager.currentTarget
-        val cacheMap = TreeMap<Float, BlockPos>(Comparator.reverseOrder())
-        cacheMap.putAll(CrystalUtils.getPlacePos(currentTarget, espRange.value.toDouble(), false, false))
-
+        damageESPMap.clear()
         if (damageESP.value) {
-            damageESPMap.clear()
-            damageESPMap.putAll(cacheMap)
+            damageESPMap.putAll(CrystalUtils.getPlacePos(CombatManager.target, CombatManager.target, espRange.value.toDouble()))
         }
 
         if (crystalESP.value) {
@@ -64,18 +61,18 @@ class CrystalESP : Module() {
     }
 
     override fun onWorldRender(event: RenderEvent) {
-        val renderer = ESPRenderer(event.partialTicks)
+        val renderer = ESPRenderer()
 
         /* Damage ESP */
         if (damageESP.value && damageESPMap.isNotEmpty()) {
             renderer.aFilled = 255
             for ((damage, pos) in damageESPMap) {
-                val rgb = convertRange(damage.toInt(), 16, 64, 127, 255)
-                val a = convertRange(damage.toInt(), 16, 64, minAlpha.value, maxAlpha.value)
-                val rgba = ColourHolder(rgb, rgb, rgb, a)
+                val rgb = MathUtils.convertRange(damage.toInt(), 16, 64, 127, 255)
+                val a = MathUtils.convertRange(damage.toInt(), 16, 64, minAlpha.value, maxAlpha.value)
+                val rgba = ColorHolder(rgb, rgb, rgb, a)
                 renderer.add(pos, rgba)
             }
-            renderer.render()
+            renderer.render(true)
         }
 
         /* Crystal ESP */
@@ -87,10 +84,10 @@ class CrystalESP : Module() {
             for ((crystal, alpha) in crystalList) {
                 val sine = sin(alpha * 0.5 * PI).toFloat()
                 val box = crystal.boundingBox.shrink(1.0 - sine)
-                val rgba = ColourHolder(r.value, g.value, b.value, (sine * 255f).toInt())
+                val rgba = ColorHolder(r.value, g.value, b.value, (sine * 255f).toInt())
                 renderer.add(box, rgba)
             }
-            renderer.render()
+            renderer.render(true)
         }
     }
 }

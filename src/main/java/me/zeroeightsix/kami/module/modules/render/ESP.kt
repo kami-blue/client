@@ -120,7 +120,7 @@ class ESP : Module() {
                 entityList.add(entity)
             }
         } else {
-            entityList.addAll(getTargetList(player, mob, true, invisible.value, range.value.toFloat()))
+            entityList.addAll(getTargetList(player, mob, invisible.value, range.value.toFloat()))
             for (entity in mc.world.loadedEntityList) {
                 if (entity == mc.player) continue
                 if (mc.player.getDistance(entity) > range.value) continue
