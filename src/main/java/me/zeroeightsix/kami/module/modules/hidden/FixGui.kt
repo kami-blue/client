@@ -20,8 +20,7 @@ import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 )
 class FixGui : Module() {
     override fun onUpdate() {
-        if (mc.player == null) return
-        ModuleManager.getModuleT(ClickGUI::class.java)?.resetScale() ?:return
+        ModuleManager.getModuleT(ClickGUI::class.java)?.resetScale()
         GuiFrameUtil.fixFrames(mc)
         disable()
     }
