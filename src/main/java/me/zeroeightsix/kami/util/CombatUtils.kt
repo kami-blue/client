@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.manager.mangers.CombatManager
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -11,12 +10,10 @@ import net.minecraft.util.CombatRules
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.collections.set
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.pow
 import kotlin.math.round
 
 /**
@@ -31,23 +28,23 @@ object CombatUtils {
         return calcDamage(entity, 100f, roundDamage)
     }
 
-    fun calcDamage(entity: EntityLivingBase, damage: Float, roundDamage: Boolean): Float {
-        val damage = CombatRules.getDamageAfterAbsorb(damage, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
+    fun calcDamage(entity: EntityLivingBase, damageIn: Float, roundDamage: Boolean): Float {
+        val damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
         return if (roundDamage) round(damage) else damage
     }
 
     object CrystalUtils {
         /* Position Finding */
-        fun getPlacePos(target: Entity?, radius: Double, fastCalc: Boolean, feetLevel: Boolean): Map<Float, BlockPos> {
-            if (target == null) return emptyMap()
-            val feetPosY = target.posY.toInt() - 1
-            val yRange = if (!fastCalc && !feetLevel) getIntRange(target.posY, radius) else IntRange(feetPosY, feetPosY)
+        fun getPlacePos(target: Entity?, center: Entity?, radius: Float, fastCalc: Boolean = false, feetLevel: Boolean = false): Map<Float, BlockPos> {
+            if (target == null || center == null) return emptyMap()
+            val squaredRadius = radius.pow(2).toDouble()
+            val yRange = if (!fastCalc && !feetLevel) getAxisRange(center.posY, radius) else IntRange(target.posY.toInt() - 1, target.posY.toInt() - 1)
             val damagePosMap = HashMap<Float, BlockPos>()
-            for (x in getIntRange(target.posX, radius)) for (y in yRange) for (z in getIntRange(target.posZ, radius)) {
+            for (x in getAxisRange(center.posX, radius)) for (y in yRange) for (z in getAxisRange(center.posZ, radius)) {
                 /* Valid position check */
                 val blockPos = BlockPos(x, y, z)
-                if (target.getDistanceSq(blockPos) > radius * radius) continue
-                if (!canPlace(blockPos)) continue
+                if (center.getDistanceSq(blockPos) > squaredRadius) continue
+                if (!canPlace(blockPos, target)) continue
 
                 /* Damage calculation */
                 val damage = calcExplosionDamage(blockPos, target, fastCalc)
@@ -56,50 +53,45 @@ object CombatUtils {
             return damagePosMap
         }
 
-        fun getCrystalList(range: Float): Map<EntityEnderCrystal, Float> {
-            val crystalList = HashMap<EntityEnderCrystal, Float>()
+        fun getAxisRange(d1: Double, d2: Float): IntRange {
+            return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
+        }
+
+        fun getCrystalList(range: Float): ArrayList<EntityEnderCrystal> {
+            val crystalList = ArrayList<EntityEnderCrystal>()
             val entityList = ArrayList<Entity>()
-            try {
+            synchronized(mc.world.loadedEntityList) {
                 entityList.addAll(mc.world.loadedEntityList)
-                for (entity in entityList) {
-                    if (entity !is EntityEnderCrystal) continue
-                    if (entity.isDead) continue
-                    if (mc.player.getDistance(entity) > range) continue
-                    crystalList[entity] = 0.5f
-                }
-            } catch (ignored: ConcurrentModificationException) {
+            }
+            for (entity in entityList) {
+                if (entity.isDead) continue
+                if (entity !is EntityEnderCrystal) continue
+                if (mc.player.getDistance(entity) > range) continue
+                crystalList.add(entity)
             }
             return crystalList
         }
 
-        /* Checks blocks and target colliding only */
-        fun canPlace(blockPos: BlockPos): Boolean {
-            val pos1 = blockPos.up()
-            val pos2 = pos1.up()
-            val bBox = CombatManager.currentTarget?.boundingBox ?: return false
-            val xArray = arrayOf(floor(bBox.minX).toInt(), floor(bBox.maxX).toInt())
-            val yArray = arrayOf(floor(bBox.minY).toInt(), floor(bBox.maxY).toInt())
-            val zArray = arrayOf(floor(bBox.minZ).toInt(), floor(bBox.maxZ).toInt())
-            for (x in xArray) for (y in yArray) for (z in zArray) {
-                if (pos1 == BlockPos(x, y, z)
-                        || pos2 == BlockPos(x, y, z)) return false
-            }
-            return (mc.world.getBlockState(blockPos).block == Blocks.BEDROCK || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
-                    && mc.world.isAirBlock(pos1) && mc.world.isAirBlock(pos2)
+        /* Checks colliding with blocks and given entity only */
+        fun canPlace(blockPos: BlockPos, entity: Entity): Boolean {
+            val entityBB = entity.boundingBox
+            val placingBB = getCrystalPlacingBB(blockPos.up())
+            return !entityBB.intersects(placingBB)
+                    && (mc.world.getBlockState(blockPos).block == Blocks.BEDROCK
+                    || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
+                    && !mc.world.checkBlockCollision(placingBB)
         }
+
+        private fun getCrystalPlacingBB(blockPos: BlockPos): AxisAlignedBB {
+            return crystalPlacingBB.offset(Vec3d(blockPos).add(0.5, 0.0, 0.5))
+        }
+
+        private val crystalPlacingBB: AxisAlignedBB get() = AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 2.0, 0.5)
 
         /* Checks crystal colliding */
         fun canPlaceCollide(blockPos: BlockPos): Boolean {
-            val pos = blockPos.up()
-            return try {
-                mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
-            } catch (ignored: ConcurrentModificationException) {
-                false
-            }
-        }
-
-        fun getIntRange(d1: Double, d2: Double): IntRange {
-            return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
+            val placingBB = getCrystalPlacingBB(blockPos.up())
+            return mc.world.checkNoEntityCollision(placingBB)
         }
         /* End of position findind */
 
