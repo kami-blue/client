@@ -1,20 +1,23 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityEnderCrystal
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.potion.Potion
 import net.minecraft.util.CombatRules
+import net.minecraft.util.DamageSource
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.Explosion
 import kotlin.collections.set
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.pow
-import kotlin.math.round
+import kotlin.math.*
 
 /**
  * @author Xiaro
@@ -35,7 +38,7 @@ object CombatUtils {
 
     object CrystalUtils {
         /* Position Finding */
-        fun getPlacePos(target: Entity?, center: Entity?, radius: Float, fastCalc: Boolean = false, feetLevel: Boolean = false): Map<Float, BlockPos> {
+        fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float, fastCalc: Boolean = false, feetLevel: Boolean = false): Map<Float, BlockPos> {
             if (target == null || center == null) return emptyMap()
             val squaredRadius = radius.pow(2).toDouble()
             val yRange = if (!fastCalc && !feetLevel) getAxisRange(center.posY, radius) else IntRange(target.posY.toInt() - 1, target.posY.toInt() - 1)
@@ -96,21 +99,40 @@ object CombatUtils {
         /* End of position findind */
 
         /* Damage calculation */
-        fun calcExplosionDamage(blockPos: BlockPos, entity: Entity, fastCalc: Boolean): Float {
-            val posX = blockPos.x + 0.5
-            val posY = blockPos.y + 1.0
-            val posZ = blockPos.z + 0.5
-            val vec3d = Vec3d(posX, posY, posZ)
-            return calcExplosionDamage(vec3d, entity, fastCalc)
+
+        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = false): Float {
+            val pos = crystal.positionVector
+            val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
+            return if (fastCalc || !calcBlastReduction) rawDamage
+            else calcBlastReduction(rawDamage, pos, entity)
         }
 
-        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: Entity, fastCalc: Boolean): Float {
-            val vec3d = crystal.positionVector
-            return calcExplosionDamage(vec3d, entity, fastCalc)
+        fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = false): Float {
+            val pos = Vec3d(blockPos).add(0.5, 0.0, 0.5)
+            val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
+            return if (fastCalc || !calcBlastReduction) rawDamage
+            else calcBlastReduction(rawDamage, pos, entity)
         }
 
-        fun calcExplosionDamage(pos: Vec3d, entity: Entity, fastCalc: Boolean): Float {
-            val distance = entity.getDistance(pos.x, pos.y, pos.z)
+        private fun calcBlastReduction(damageIn: Float, damagePos: Vec3d, entity: EntityLivingBase): Float {
+            var damage = damageIn
+            if (entity is EntityPlayer) {
+                val damageSource = DamageSource.causeExplosionDamage(Explosion(mc.world, null, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
+                damage = calcDamage(entity, damage, false)
+                val k = EnchantmentHelper.getEnchantmentModifierDamage(entity.armorInventoryList, damageSource)
+                val f = MathHelper.clamp(k.toFloat(), 0.0f, 20.0f)
+                damage *= (1.0f - f / 25.0f)
+                if (entity.isPotionActive(Potion.getPotionById(11)!!)) {
+                    damage -= damage / 5
+                }
+                damage = max(damage, 0.0f)
+                return damage
+            }
+            return calcDamage(entity, damage, false)
+        }
+
+        private fun calcExplosionDamage(pos: Vec3d, entity: Entity, fastCalc: Boolean): Float {
+            val distance = pos.distanceTo(entity.positionVector)
             return if (!fastCalc) {
                 val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
                 ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
