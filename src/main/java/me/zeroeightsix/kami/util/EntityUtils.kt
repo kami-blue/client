@@ -201,7 +201,7 @@ object EntityUtils {
         DISTANCE, HEALTH
     }
 
-    fun getPrioritizedTarget(targetList: ArrayList<Entity>, priority: EntityPriority): Entity {
+    fun getPrioritizedTarget(targetList: ArrayList<EntityLivingBase>, priority: EntityPriority): EntityLivingBase {
         var entity = targetList[0]
         when (priority) {
             EntityPriority.DISTANCE -> {
@@ -215,9 +215,9 @@ object EntityUtils {
                 }
             }
             EntityPriority.HEALTH -> {
-                var health = (targetList[0] as EntityLivingBase).health
+                var health = targetList[0].health
                 for (i in targetList.indices) {
-                    val currentHealth = (targetList[i] as EntityLivingBase).health
+                    val currentHealth = targetList[i].health
                     if (currentHealth < health) {
                         health = currentHealth
                         entity = targetList[i]
@@ -228,12 +228,12 @@ object EntityUtils {
         return entity
     }
 
-    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, invisible: Boolean, range: Float): ArrayList<Entity> {
-        if (mc.world.loadedEntityList == null) return emptyList<Entity>() as ArrayList<Entity>
-        val entityList = ArrayList<Entity>()
+    fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, invisible: Boolean, range: Float): ArrayList<EntityLivingBase> {
+        if (mc.world.loadedEntityList == null) return ArrayList()
+        val entityList = ArrayList<EntityLivingBase>()
         for (entity in mc.world.loadedEntityList) {
             /* Entity type check */
-            if (!isLiving(entity)) continue
+            if (entity !is EntityLivingBase) continue
             if (entity == mc.player) continue
             if (entity is EntityPlayer) {
                 if (!player[0]) continue
@@ -242,7 +242,7 @@ object EntityUtils {
 
             if (mc.player.isRiding && entity == mc.player.ridingEntity) continue // Riding entity check
             if (mc.player.getDistance(entity) > range) continue // Distance check
-            if ((entity as EntityLivingBase).health <= 0) continue // HP check
+            if (entity.health <= 0) continue // HP check
             if (!invisible && entity.isInvisible) continue
             entityList.add(entity)
         }

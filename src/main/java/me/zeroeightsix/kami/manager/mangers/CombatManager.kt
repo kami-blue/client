@@ -28,11 +28,8 @@ object CombatManager {
     var yaw: Float? = null
     var pitch: Float? = null
 
-    private fun spoofRotation(yawIn: Float, pitchIn: Float, priority: Int) {
-        if (priority < getTopPriority(true)) return
-        yaw = yawIn
-        pitch = pitchIn
-    }
+    var targetList = ArrayList<EntityLivingBase>()
+    var target: EntityLivingBase? = null
 
     private fun resetRotation() {
         yaw = null
