@@ -1,12 +1,16 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.manager.CombatManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 /**
  * Created by Xiaro on 26/07/20
@@ -19,8 +23,9 @@ import net.minecraft.entity.EntityLivingBase
         alwaysListening = true
 )
 class CombatSetting : Module() {
-    private val mainPriority = register(Settings.e<MainPriority>("MainPriority", MainPriority.ALL))
-    private val subPriority = register(Settings.e<SubPriority>("SubPriority", SubPriority.DISTANCE))
+    private val filter = register(Settings.enumBuilder(TargetFilter::class.java).withName("Filter").withValue(TargetFilter.ALL).build())
+    private val priority = register(Settings.enumBuilder(TargetPriority::class.java).withName("Priority").withValue(TargetPriority.DISTANCE).build())
+    private val fov = register(Settings.floatBuilder("FOV").withValue(90f).withRange(0f, 180f).withVisibility { filter.value == TargetFilter.FOV })
     private val players = register(Settings.b("Players", true))
     private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
     private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { players.value }.build())
@@ -30,133 +35,121 @@ class CombatSetting : Module() {
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { mobs.value }.build())
     private val invisible = register(Settings.b("Invisible", false))
     private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).build())
-    private val range = register(Settings.floatBuilder("TargetRange").withValue(12.0f).withRange(0.0f, 48.0f).build())
+    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).build())
 
-    private enum class MainPriority {
+    private enum class TargetFilter {
         ALL, FOV, MANUAL
     }
 
-    private enum class SubPriority {
-        DISTANCE, HEALTH, DAMAGE
-    }
-
-    override fun onUpdate() {
-        val player = arrayOf(players.value, friends.value, sleeping.value)
-        val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = EntityUtils.getTargetList(player, mob, invisible.value, range.value)
-        val toRemove = ArrayList<Entity>()
-        if (!shouldIgnoreWall()) for (entity in targetList) {
-            if (mc.player.canEntityBeSeen(entity) || EntityUtils.canEntityFeetBeSeen(entity)) continue
-            toRemove.add(entity)
-        }
-        targetList.removeAll(toRemove)
-        CombatManager.targetList = targetList
-        CombatManager.currentTarget = if (targetList.isEmpty()) {
-            null
-        } else {
-            getTarget(targetList)
-        }
+    private enum class TargetPriority {
+        DAMAGE, HEALTH, DISTANCE
     }
 
     override fun onDisable() {
         enable()
     }
 
-    private fun getTarget(targetList: ArrayList<Entity>): Entity? {
-        val mainPriorityList = getByMainPriority(targetList)
-
-        return getBySubPriority(mainPriorityList)
-    }
-
-    private fun getByMainPriority(targetList: ArrayList<Entity>): ArrayList<Entity> {
-        val toRemove = ArrayList<Entity>()
-
-        when (mainPriority.value) {
-            MainPriority.ALL -> {
-
-            }
-
-            MainPriority.FOV -> {
-                //TODO
-            }
-
-            MainPriority.MANUAL -> {
-                if (!mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown) {
-                    return if (CombatManager.currentTarget != null && targetList.contains(CombatManager.currentTarget!!)) {
-                        arrayListOf(CombatManager.currentTarget!!)
-                    } else emptyList<Entity>() as ArrayList
-                }
-                val eyePos = mc.player.getPositionEyes(mc.renderPartialTicks)
-                val lookVec = mc.player.lookVec.scale(range.value.toDouble())
-                val sightEndPos = eyePos.add(lookVec)
-                for (e in targetList) {
-                    e.boundingBox.calculateIntercept(eyePos, sightEndPos)
-                            ?: toRemove.add(e)
-                }
-            }
-
-            else -> { }
+    override fun onUpdate() {
+        if (isDisabled) {
+            enable()
         }
-
-        targetList.removeAll(toRemove)
-        return targetList
-    }
-
-    private fun getBySubPriority(targetList: ArrayList<Entity>): Entity? {
-        var entity = targetList.getOrNull(0) ?: return null
-        val toKeep = ArrayList<Entity>(targetList)
-
-        if (subPriority.value == SubPriority.DAMAGE) {
-            var damage = CombatUtils.calcDamage(targetList[0] as EntityLivingBase, true)
-            for (e in targetList) {
-                val currentDamage = CombatUtils.calcDamage(e as EntityLivingBase, true)
-                if (currentDamage >= damage) {
-                    if (currentDamage > damage) {
-                        damage = currentDamage
-                        toKeep.clear()
-                    }
-                    toKeep.add(e)
-                }
-            }
-            targetList.clear()
-            targetList.addAll(toKeep)
-            toKeep.clear()
+        val player = arrayOf(players.value, friends.value, sleeping.value)
+        val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
+        val targetList = EntityUtils.getTargetList(player, mob, invisible.value, range.value)
+        if (!shouldIgnoreWall()) {
+            targetList.removeIf { EntityUtils.canEntityHitboxBeSeen(it) == null }
         }
-
-        if (subPriority.value == SubPriority.DAMAGE || subPriority.value == SubPriority.HEALTH) {
-            var health = (targetList[0] as EntityLivingBase).health
-            for (e in targetList) {
-                val currentHealth = (e as EntityLivingBase).health
-                if (currentHealth <= health) {
-                    if (currentHealth < health) {
-                        health = currentHealth
-                        toKeep.clear()
-                    }
-                    toKeep.add(e)
-                }
-            }
-            targetList.clear()
-            targetList.addAll(toKeep)
-        }
-
-        var distance = mc.player.getDistance(targetList[0])
-        for (e in targetList) {
-            val currentDistance = mc.player.getDistance(e)
-            if (currentDistance < distance) {
-                distance = currentDistance
-                entity = e
-            }
-        }
-
-        return entity
+        CombatManager.targetList = targetList
+        CombatManager.target = getTarget(targetList)
     }
 
     private fun shouldIgnoreWall(): Boolean {
-        val module = CombatManager.getTopModule(true)
-        return if (module is Aura || module is AimBot) ignoreWalls.value else true
+        val module = CombatManager.getTopModule()
+        return if (module is Aura || module is AimBot) ignoreWalls.value
+        else true
     }
 
-    init {
-        this.enable()
+    private fun getTarget(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+        val copiedList = ArrayList(listIn)
+        return filterTargetList(copiedList) ?: CombatManager.target?.let { entity ->
+            if (!entity.isDead && listIn.contains(entity)) entity
+            else null
+        }
+    }
+
+    private fun filterTargetList(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+        if (listIn.isEmpty()) return null
+        return filterByPriority(filterByFilter(listIn))
+    }
+
+    private fun filterByFilter(listIn: ArrayList<EntityLivingBase>): ArrayList<EntityLivingBase> {
+
+        when (filter.value) {
+            TargetFilter.ALL -> {
+
+            }
+
+            TargetFilter.FOV -> {
+                listIn.removeIf { RotationUtils.getRelativeRotation(it) > fov.value }
+            }
+
+            TargetFilter.MANUAL -> {
+                if (!mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown) {
+                    return ArrayList()
+                }
+                val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
+                val lookVec = mc.player.lookVec.scale(range.value.toDouble())
+                val sightEndPos = eyePos.add(lookVec)
+                listIn.removeIf { it.boundingBox.calculateIntercept(eyePos, sightEndPos) == null }
+            }
+        }
+
+        return listIn
+    }
+
+    private fun filterByPriority(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+        if (listIn.isEmpty()) return null
+
+        if (priority.value == TargetPriority.DAMAGE) filterByDamage(listIn)
+
+        if (priority.value == TargetPriority.DAMAGE || priority.value == TargetPriority.HEALTH) filterByHealth(listIn)
+
+        return filterByDistance(listIn)
+    }
+
+    private fun filterByDamage(listIn: ArrayList<EntityLivingBase>) {
+        var damage = Float.MIN_VALUE
+        val toKeep = HashSet<Entity>()
+        for (entity in listIn) {
+            val currentDamage = CombatUtils.calcDamage(entity as EntityLivingBase, true)
+            if (currentDamage >= damage) {
+                if (currentDamage > damage) {
+                    damage = currentDamage
+                    toKeep.clear()
+                }
+                toKeep.add(entity)
+            }
+        }
+        listIn.removeIf { !toKeep.contains(it) }
+    }
+
+    private fun filterByHealth(listIn: ArrayList<EntityLivingBase>) {
+        var health = Float.MAX_VALUE
+        val toKeep = HashSet<Entity>()
+        for (e in listIn) {
+            val currentHealth = e.health
+            if (currentHealth <= health) {
+                if (currentHealth < health) {
+                    health = currentHealth
+                    toKeep.clear()
+                }
+                toKeep.add(e)
+            }
+        }
+        listIn.removeIf { !toKeep.contains(it) }
+    }
+
+    private fun filterByDistance(targetList: ArrayList<EntityLivingBase>): EntityLivingBase {
+        return targetList.sortedBy { it.getDistance(mc.player) }[0]
     }
 }
