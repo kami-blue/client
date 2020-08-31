@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.manager.mangers.CombatManager
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
@@ -10,6 +11,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
+import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
@@ -58,11 +60,11 @@ class Aura : Module() {
     }
 
     override fun onUpdate() {
-        if (CombatManager.getTopModule() !is Aura) return
         if (mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()
             return
         }
+        if (CombatManager.getTopPriority() > modulePriority) return
         if (autoTool.value) equipBestWeapon(prefer.value)
         if (multi.value) {
             val targetList = CombatManager.targetList
@@ -74,12 +76,16 @@ class Aura : Module() {
                 attack(target)
             }
         } else {
-            val target = CombatManager.currentTarget
+            val target = CombatManager.target
             if (target == null) {
                 unpauseBaritone()
                 return
             }
-            if (spoofRotation.value) RotationUtils.faceEntityPacket(this, target)
+            if (spoofRotation.value) {
+                val rotation = RotationUtils.getRotationToEntityClosed(target)
+                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation.x.toFloat(), rotation.y.toFloat()))
+                PlayerPacketManager.addPacket(this, packet)
+            }
             if (lockView.value) faceEntity(target)
             if (canAttack()) attack(target)
         }

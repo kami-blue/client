@@ -1,12 +1,9 @@
 package me.zeroeightsix.kami.manager.mangers
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.combat.AimBot
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.combat.AntiBot
-import me.zeroeightsix.kami.module.modules.combat.Aura
-import me.zeroeightsix.kami.module.modules.combat.CrystalAuraRewrite
-import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 
 /**
  * @author Xiaro
@@ -14,52 +11,31 @@ import net.minecraft.entity.Entity
  * Created by Xiaro on 06/08/20
  */
 object CombatManager {
-    val moduleList = hashMapOf(
-            Pair(AntiBot::class.java, true),
-            Pair(CrystalAuraRewrite::class.java, false),
-            Pair(Aura::class.java, false),
-            Pair(AimBot::class.java, true)
-    )
-    val ka = KamiMod.MODULE_MANAGER.getModuleT(Aura::class.java)
-    val ca = KamiMod.MODULE_MANAGER.getModuleT(CrystalAuraRewrite::class.java)
-
-    var targetList = ArrayList<Entity>()
-    var currentTarget: Entity? = null
-    var yaw: Float? = null
-    var pitch: Float? = null
+    val combatModules = ArrayList<Module>()
 
     var targetList = ArrayList<EntityLivingBase>()
     var target: EntityLivingBase? = null
 
-    private fun resetRotation() {
-        yaw = null
-        pitch = null
+    fun getTopPriority(ignoreAntiBot: Boolean = true): Int {
+        return getTopModule(ignoreAntiBot)?.modulePriority ?: -1
     }
 
-    fun getTopPriority(ignoreAntiBot: Boolean): Int {
-        return getPriority(getTopModule(ignoreAntiBot))
-    }
-
-    fun getTopModule(ignoreAntiBot: Boolean): Module? {
-        var module: Module? = null
-        for ((clazz, active) in moduleList) {
-            if (!active) continue
-            val currentModule = KamiMod.MODULE_MANAGER.getModuleT(clazz) ?: continue
-            if (currentModule.isDisabled) continue
-            if (ignoreAntiBot && currentModule is AntiBot) continue
-            if (getPriority(currentModule) < getPriority(module)) continue
-            module = currentModule
+    fun getTopModule(ignoreAntiBot: Boolean = true): Module? {
+        var topModule: Module? = null
+        for (module in combatModules) {
+            if (!module.isActive()) continue
+            if (ignoreAntiBot && module is AntiBot) continue
+            if (module.modulePriority < topModule?.modulePriority ?: 0) continue
+            topModule = module
         }
-        return module
+        return topModule
     }
 
-    private fun getPriority(module: Module?): Int {
-        return when (module) {
-            is AntiBot -> 4
-            is CrystalAuraRewrite -> 3
-            is Aura -> 2
-            is AimBot -> 1
-            else -> 0
+    init {
+        for (module in ModuleManager.getModules()) {
+            if (module.category != Module.Category.COMBAT) continue
+            if (module.modulePriority == -1) continue
+            combatModules.add(module)
         }
     }
 }
