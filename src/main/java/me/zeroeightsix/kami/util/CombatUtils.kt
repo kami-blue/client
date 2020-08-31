@@ -100,14 +100,14 @@ object CombatUtils {
 
         /* Damage calculation */
 
-        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = false): Float {
+        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = true): Float {
             val pos = crystal.positionVector
             val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
             return if (fastCalc || !calcBlastReduction) rawDamage
             else calcBlastReduction(rawDamage, pos, entity)
         }
 
-        fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = false): Float {
+        fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = true): Float {
             val pos = Vec3d(blockPos).add(0.5, 0.0, 0.5)
             val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
             return if (fastCalc || !calcBlastReduction) rawDamage

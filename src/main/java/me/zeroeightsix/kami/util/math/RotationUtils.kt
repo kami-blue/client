@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.util.math
 
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
-import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import kotlin.math.*
 
@@ -18,10 +17,10 @@ import kotlin.math.*
 object RotationUtils {
     val mc = Wrapper.minecraft
 
-    fun faceEntityPacket(caller: Module, entity: Entity) {
-        val rotation = getRotationToEntity(entity)
-        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation.x.toFloat(), rotation.y.toFloat()))
-        PlayerPacketManager.addPacket(caller, packet)
+    fun faceEntityClosed(entity: Entity) {
+        val rotation = getRotationToEntityClosed(entity)
+        mc.player.rotationYaw = rotation.x.toFloat()
+        mc.player.rotationPitch = rotation.y.toFloat()
     }
 
     fun faceEntity(entity: Entity) {
@@ -46,6 +45,16 @@ object RotationUtils {
         val r1Radians = r1.toRadians()
         val r2Radians = r2.toRadians()
         return Math.toDegrees(acos(cos(r1Radians.y) * cos(r2Radians.y) * cos(r1Radians.x - r2Radians.x) + sin(r1Radians.y) * sin(r2Radians.y)))
+    }
+
+    fun getRotationToEntityClosed(entity: Entity): Vec2d {
+        val box = entity.boundingBox
+        val eyePos = mc.player.getPositionEyes(1f)
+        val x = MathHelper.clamp(eyePos.x, box.minX, box.maxX)
+        val y = MathHelper.clamp(eyePos.y, box.minY, box.maxY)
+        val z = MathHelper.clamp(eyePos.z, box.minZ, box.maxZ)
+        val hitVec = Vec3d(x, y, z)
+        return getRotationTo(hitVec, true)
     }
 
     fun getRotationToEntity(entity: Entity): Vec2d {
