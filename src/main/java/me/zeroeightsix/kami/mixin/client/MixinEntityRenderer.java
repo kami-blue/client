@@ -4,15 +4,16 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
-import me.zeroeightsix.kami.module.modules.render.AntiFog;
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
-import me.zeroeightsix.kami.module.modules.render.CameraClip;
-import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
+import me.zeroeightsix.kami.module.modules.render.*;
+import me.zeroeightsix.kami.util.FakeMapItemRenderer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -20,7 +21,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -36,6 +39,9 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
  */
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
+
+    @Shadow @Final
+    public MapItemRenderer mapItemRenderer;
 
     private boolean nightVision = false;
 
@@ -95,5 +101,10 @@ public class MixinEntityRenderer {
         } else {
             return entity.getEyeHeight();
         }
+    }
+
+    @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
+    public void onInit(Minecraft mcIn, IResourceManager resourceManagerIn, CallbackInfo callbackInfo) {
+        this.mapItemRenderer = new FakeMapItemRenderer(mcIn.getTextureManager());
     }
 }
