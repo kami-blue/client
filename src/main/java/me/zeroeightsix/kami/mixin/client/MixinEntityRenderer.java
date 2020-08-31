@@ -4,16 +4,16 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
-import me.zeroeightsix.kami.module.modules.render.*;
-import me.zeroeightsix.kami.util.FakeMapItemRenderer;
+import me.zeroeightsix.kami.module.modules.render.AntiFog;
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
+import me.zeroeightsix.kami.module.modules.render.CameraClip;
+import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -103,8 +103,4 @@ public class MixinEntityRenderer {
         }
     }
 
-    @Inject(method = "<init>", at = @At(value = "RETURN"), cancellable = true)
-    public void onInit(Minecraft mcIn, IResourceManager resourceManagerIn, CallbackInfo callbackInfo) {
-        this.mapItemRenderer = new FakeMapItemRenderer(mcIn.getTextureManager());
-    }
 }

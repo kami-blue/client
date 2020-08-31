@@ -42,6 +42,7 @@
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
     "MixinVisGraph",
-    "MixinWorld"
+    "MixinWorld",
+    "MixinMapItemRenderer"
   ]
 }
