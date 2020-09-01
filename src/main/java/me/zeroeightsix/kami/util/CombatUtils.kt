@@ -91,12 +91,12 @@ object CombatUtils {
 
         private val crystalPlacingBB: AxisAlignedBB get() = AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 2.0, 0.5)
 
-        /* Checks crystal colliding */
+        /* Checks colliding with all entity */
         fun canPlaceCollide(blockPos: BlockPos): Boolean {
             val placingBB = getCrystalPlacingBB(blockPos.up())
             return mc.world.checkNoEntityCollision(placingBB)
         }
-        /* End of position findind */
+        /* End of position finding */
 
         /* Damage calculation */
 
@@ -108,7 +108,7 @@ object CombatUtils {
         }
 
         fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = true): Float {
-            val pos = Vec3d(blockPos).add(0.5, 0.0, 0.5)
+            val pos = Vec3d(blockPos).add(0.5, 1.0, 0.5)
             val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
             return if (fastCalc || !calcBlastReduction) rawDamage
             else calcBlastReduction(rawDamage, pos, entity)
