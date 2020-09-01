@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.module.Module
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
@@ -199,6 +200,15 @@ object BlockUtils {
 
     fun isWater(pos: BlockPos): Boolean {
         return mc.world.getBlockState(pos).block == Blocks.WATER
+    }
+
+    fun getHitSide(blockPos: BlockPos): EnumFacing {
+        val result = Module.mc.world.rayTraceBlocks(Module.mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
+        return if (result?.sideHit == null) {
+            EnumFacing.UP
+        } else {
+            result.sideHit
+        }
     }
 
     /**
