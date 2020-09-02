@@ -1,13 +1,20 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.combat.Aura
+import me.zeroeightsix.kami.module.modules.misc.AutoTool
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.EnumCreatureAttribute
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.item.ItemAxe
+import net.minecraft.item.ItemSword
+import net.minecraft.item.ItemTool
 import net.minecraft.potion.Potion
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
@@ -34,6 +41,42 @@ object CombatUtils {
     fun calcDamage(entity: EntityLivingBase, damageIn: Float, roundDamage: Boolean): Float {
         val damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
         return if (roundDamage) round(damage) else damage
+    }
+
+    fun equipBestWeapon(hitMode: PreferWeapon = PreferWeapon.NONE) {
+        var bestSlot = -1
+        var maxDamage = 0.0
+        for (i in 0..8) {
+            val stack = Module.mc.player.inventory.getStackInSlot(i)
+            if (stack.isEmpty) continue
+            if (stack.getItem() !is ItemAxe && hitMode == PreferWeapon.AXE) continue
+            if (stack.getItem() !is ItemSword && hitMode == PreferWeapon.SWORD) continue
+
+            if (stack.getItem() is ItemSword && (hitMode == PreferWeapon.SWORD || hitMode == PreferWeapon.NONE)) {
+                val damage = (stack.getItem() as ItemSword).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+                if (damage > maxDamage) {
+                    maxDamage = damage
+                    bestSlot = i
+                }
+            } else if (stack.getItem() is ItemAxe && (hitMode == PreferWeapon.AXE || hitMode == PreferWeapon.NONE)) {
+                val damage = (stack.getItem() as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+                if (damage > maxDamage) {
+                    maxDamage = damage
+                    bestSlot = i
+                }
+            } else if (stack.getItem() is ItemTool) {
+                val damage = (stack.getItem() as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+                if (damage > maxDamage) {
+                    maxDamage = damage
+                    bestSlot = i
+                }
+            }
+        }
+        if (bestSlot != -1) InventoryUtils.swapSlot(bestSlot)
+    }
+
+    enum class PreferWeapon {
+        SWORD, AXE, NONE
     }
 
     object CrystalUtils {

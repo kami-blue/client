@@ -3,11 +3,11 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
@@ -40,7 +40,7 @@ class Aura : Module() {
     private val pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
     private val timeAfterAttack = register(Settings.integerBuilder("ResumeDelay").withRange(1, 10).withValue(3).withVisibility { pauseBaritone.value }.build())
     private val autoTool = register(Settings.b("AutoWeapon", true))
-    private val prefer = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
+    private val prefer = register(Settings.enumBuilder(CombatUtils.PreferWeapon::class.java).withName("Prefer").withValue(CombatUtils.PreferWeapon.SWORD).withVisibility { autoTool.value }.build())
     private val disableOnDeath = register(Settings.b("DisableOnDeath", false))
 
     private var startTime: Long = 0
@@ -49,10 +49,6 @@ class Aura : Module() {
 
     private enum class WaitMode {
         DELAY, SPAM
-    }
-
-    enum class HitMode {
-        SWORD, AXE, NONE
     }
 
     override fun isActive(): Boolean {
@@ -65,7 +61,7 @@ class Aura : Module() {
             return
         }
         if (CombatManager.getTopPriority() > modulePriority) return
-        if (autoTool.value) equipBestWeapon(prefer.value)
+        if (autoTool.value) CombatUtils.equipBestWeapon(prefer.value as CombatUtils.PreferWeapon)
         if (multi.value) {
             val targetList = CombatManager.targetList
             if (targetList.isEmpty()) {
