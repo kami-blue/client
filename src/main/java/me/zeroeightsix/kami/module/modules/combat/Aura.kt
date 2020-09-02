@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.modules.combat.AntiFriendHit
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationFromVec
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
