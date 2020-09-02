@@ -1,8 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.combat.Aura
-import me.zeroeightsix.kami.module.modules.misc.AutoTool
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -169,9 +167,13 @@ object CombatUtils {
                     damage -= damage / 5
                 }
                 damage = max(damage, 0.0f)
-                return damage
+                return damage * getDamageMultiplier()
             }
             return calcDamage(entity, damage, false)
+        }
+
+        private fun getDamageMultiplier(): Float {
+            return mc.world.difficulty.id * 0.5f
         }
 
         private fun calcExplosionDamage(pos: Vec3d, entity: Entity, fastCalc: Boolean): Float {

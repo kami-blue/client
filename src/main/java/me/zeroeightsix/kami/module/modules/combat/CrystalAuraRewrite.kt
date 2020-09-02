@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.CombatUtils.CrystalUtils
+import me.zeroeightsix.kami.util.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.LagCompensator
@@ -17,6 +18,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
+import net.minecraft.init.MobEffects
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.network.play.server.SPacketSoundEffect
@@ -49,33 +51,41 @@ class CrystalAuraRewrite : Module() {
     /* General */
     private val tpsSync = register(Settings.booleanBuilder("TpsSync").withValue(false).withVisibility { page.value == Page.GENERAL }.build())
     private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.GENERAL }.build())
+    private val noSuicide = register(Settings.booleanBuilder("NoSuicide").withValue(false).withVisibility { page.value == Page.GENERAL }.build())
 
-    /* Place */
-    private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE }.build())
-    private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE }.build())
-    private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE }.build())
-    private val fastCalc = register(Settings.booleanBuilder("FastCalculation").withValue(false).withVisibility { page.value == Page.PLACE }.build())
-    private val feetOnly = register(Settings.booleanBuilder("FeetOnly").withValue(false).withVisibility { page.value == Page.PLACE && !fastCalc.value }.build())
-    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE && !fastCalc.value }.build())
-    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE && !fastCalc.value }.build())
-    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(1).withRange(1, 5).withVisibility { page.value == Page.PLACE }.build())
-    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE }.build())
+    /* Place page one */
+    private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val fastCalc = register(Settings.booleanBuilder("FastCalculation").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val feetOnly = register(Settings.booleanBuilder("FeetOnly").withValue(false).withVisibility { page.value == Page.PLACE_ONE && !fastCalc.value }.build())
 
-    /* Explode */
-    private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE }.build())
-    private val forceExplode = register(Settings.booleanBuilder("LeftClickForceExplode").withValue(false).withVisibility { page.value == Page.EXPLODE }.build())
-    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE }.build())
-    private val checkImmune = register(Settings.booleanBuilder("CheckImmune").withValue(false).withVisibility { page.value == Page.EXPLODE }.build())
-    private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(false).withVisibility { page.value == Page.EXPLODE }.build())
-    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE && checkDamage.value }.build())
-    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0 ,20).withVisibility { page.value == Page.EXPLODE && checkDamage.value }.build())
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(2).withRange(1, 10).withVisibility { page.value == Page.EXPLODE }.build())
-    private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE }.build())
-    private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE }.build())
+    /* Place page two */
+    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
+    private val minEfficiencyP = register(Settings.integerBuilder("MinEfficiencyPlace").withValue(2).withRange(-10, 10).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
+    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
+    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(1).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
+    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
+
+    /* Explode page one */
+    private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+    private val forceExplode = register(Settings.booleanBuilder("LeftClickForceExplode").withValue(false).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+    private val antiWeakness = register(Settings.booleanBuilder("AntiWeakness").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+    private val checkImmune = register(Settings.booleanBuilder("CheckImmune").withValue(false).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+
+    /* Explode page two */
+    private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(false).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
+    private val minEfficiencyE = register(Settings.integerBuilder("MinEfficiencyExplode").withValue(4).withRange(-10, 10).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
+    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
+    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(2).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     /* End of settings */
 
     private enum class Page {
-        GENERAL, PLACE, EXPLODE
+        GENERAL, PLACE_ONE, PLACE_TWO, EXPLODE_ONE, EXPLODE_TWO
     }
 
     /* Variables */
@@ -139,7 +149,6 @@ class CrystalAuraRewrite : Module() {
     private fun updateTickCounts() {
         if (getCrystalHand() == null) {
             swapTimer = 0
-            if (autoSwap.value && canPlace()) InventoryUtils.swapSlotToItem(426)
         } else {
             swapTimer++
         }
@@ -160,6 +169,8 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun place() {
+        if (autoSwap.value && getCrystalHand() == null) InventoryUtils.swapSlotToItem(426)
+        if (swapTimer < 1) return
         getPlacingPos()?.let { pos ->
             getCrystalHand()?.let { hand ->
                 lastRotation = Vec2f(RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 1.0, 0.5), true))
@@ -169,61 +180,20 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun explode() {
+        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS)) equipBestWeapon()
+        if(mc.player.getCooledAttackStrength(0f) < 0.1f) return
         getExplodingCrystal()?.let { crystal ->
             hitTimer = 0
-            val lookAtPos = if (mc.player.canEntityBeSeen(crystal)) {
-                crystal.getPositionEyes(1f) // If we can see the eyes then we look at the eye pos
-            } else if (EntityUtils.canEntityFeetBeSeen(crystal)) {
-                crystal.positionVector // If we can see the feet then we look at the feet pos
-            } else {
-                EntityUtils.canEntityHitboxBeSeen(crystal) // If we can it any vertex of the hit box then we look at it
-            }?: crystal.getPositionEyes(1f)  // If now then just look at the eye pos
-
-            lastRotation = Vec2f(RotationUtils.getRotationTo(lookAtPos, true))
+            lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(crystal), true))
             mc.playerController.attackEntity(mc.player, crystal)
             mc.player.swingArm(EnumHand.MAIN_HAND)
         }
     }
     /* End of main functions */
 
-    /* General */
-    private fun shouldFacePlace(): Boolean {
-        return facePlaceThreshold.value > 0f && CombatManager.target?.let {
-            it.health <= facePlaceThreshold.value
-        } ?: false
-    }
-
-    private fun getHitDelay(): Int {
-        return if (!tpsSync.value) {
-            hitDelay.value
-        } else {
-            ceil(hitDelay.value * (20f / LagCompensator.tickRate)).toInt()
-        }
-
-    }
-
-    private fun countValidCrystal(): Int {
-        var count = 0
-        CombatManager.target?.let { target ->
-            for (crystal in crystalList) {
-                if (crystal.getDistance(mc.player) > placeRange.value) continue
-                if (!fastCalc.value && !shouldForcePlace()) {
-                    val damage = CrystalUtils.calcExplosionDamage(crystal, target)
-                    val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
-                    if (!checkDamagePlace(damage, selfDamage)) continue
-                }
-                count++
-            }
-        }
-        return count
-    }
-    /* End of general */
-
     /* Placing */
     private fun canPlace(): Boolean {
         return doPlace.value
-                && getCrystalHand() != null
-                && swapTimer > 2
                 && getPlacingPos() != null
                 && countValidCrystal() < maxCrystal.value
     }
@@ -243,6 +213,7 @@ class CrystalAuraRewrite : Module() {
             if (!CrystalUtils.canPlaceCollide(pos)) continue
             if (!fastCalc.value && !shouldForcePlace()) {
                 val selfDamage = CrystalUtils.calcExplosionDamage(pos, mc.player)
+                if (noSuicide.value && !noSuicideCheck(selfDamage)) continue
                 if (!checkDamagePlace(damage, selfDamage)) continue
             }
             return pos
@@ -260,11 +231,19 @@ class CrystalAuraRewrite : Module() {
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float): Boolean {
-        return (damage >= minDamageP.value) && (selfDamage <= maxSelfDamageP.value)
+        return (damage >= minDamageP.value) && (damage - selfDamage >= minEfficiencyP.value) && (selfDamage <= maxSelfDamageP.value)
     }
     /* End of placing */
 
     /* Exploding */
+    private fun getHitDelay(): Int {
+        return if (!tpsSync.value) {
+            hitDelay.value
+        } else {
+            ceil(hitDelay.value * (20f / LagCompensator.tickRate)).toInt()
+        }
+    }
+
     private fun canExplode(): Boolean {
         return doExplode.value && getExplodingCrystal() != null && CombatManager.target?.let { target ->
             if (checkImmune.value && target.isInvulnerable) return false
@@ -275,10 +254,27 @@ class CrystalAuraRewrite : Module() {
                     maxDamage = max(maxDamage, CrystalUtils.calcExplosionDamage(crystal, target))
                     maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcExplosionDamage(crystal, mc.player))
                 }
+                if (noSuicide.value && !noSuicideCheck(maxSelfDamage)) return false
                 if (!checkDamageExplode(maxDamage, maxSelfDamage)) return false
             }
             return true
         } ?: false
+    }
+
+    private fun getExplodingCrystal(): EntityEnderCrystal? {
+        if (crystalList.isEmpty()) return null
+        return crystalList.firstOrNull { (mc.player.canEntityBeSeen(it) || EntityUtils.canEntityFeetBeSeen(it)) && it.getDistance(mc.player) < explodeRange.value }
+                ?: crystalList.firstOrNull { EntityUtils.canEntityHitboxBeSeen(it) != null && it.getDistance(mc.player) < wallExplodeRange.value }
+    }
+
+    private fun getExplodingHitPos(crystal: EntityEnderCrystal): Vec3d {
+        return if (mc.player.canEntityBeSeen(crystal)) {
+            crystal.getPositionEyes(1f) // If we can see the eyes then we look at the eye pos
+        } else if (EntityUtils.canEntityFeetBeSeen(crystal)) {
+            crystal.positionVector // If we can see the feet then we look at the feet pos
+        } else {
+            EntityUtils.canEntityHitboxBeSeen(crystal) // If we can it any vertex of the hit box then we look at it
+        } ?: crystal.getPositionEyes(1f)  // If not then just look at the eye pos
     }
 
     private fun shouldForceExplode(): Boolean {
@@ -293,15 +289,37 @@ class CrystalAuraRewrite : Module() {
      * @return True if passed exploding damage check
      */
     private fun checkDamageExplode(damage: Float, selfDamage: Float): Boolean {
-        return (damage >= minDamageE.value) && (selfDamage <= maxSelfDamageE.value)
-    }
-
-    private fun getExplodingCrystal(): EntityEnderCrystal? {
-        if (crystalList.isEmpty()) return null
-        return crystalList.firstOrNull { (mc.player.canEntityBeSeen(it) || EntityUtils.canEntityFeetBeSeen(it)) && it.getDistance(mc.player) < explodeRange.value }
-                ?: crystalList.firstOrNull { EntityUtils.canEntityHitboxBeSeen(it) != null && it.getDistance(mc.player) < wallExplodeRange.value }
+        return (damage >= minDamageE.value) && (damage - selfDamage >= minEfficiencyE.value) && (selfDamage <= maxSelfDamageE.value)
     }
     /* End of exploding */
+
+    /* General */
+    private fun noSuicideCheck(selfDamage: Float): Boolean {
+        return (mc.player.health + mc.player.absorptionAmount) - selfDamage > 4f
+    }
+
+    private fun shouldFacePlace(): Boolean {
+        return facePlaceThreshold.value > 0f && CombatManager.target?.let {
+            it.health <= facePlaceThreshold.value
+        } ?: false
+    }
+
+    private fun countValidCrystal(): Int {
+        var count = 0
+        CombatManager.target?.let { target ->
+            for (crystal in crystalList) {
+                if (crystal.getDistance(mc.player) > placeRange.value) continue
+                if (!fastCalc.value && !shouldForcePlace()) {
+                    val damage = CrystalUtils.calcExplosionDamage(crystal, target)
+                    val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
+                    if (!checkDamagePlace(damage, selfDamage)) continue
+                }
+                count++
+            }
+        }
+        return count
+    }
+    /* End of general */
 
     /* Rotation spoof */
     private var lastRotation = Vec2f(0f, 0f)
