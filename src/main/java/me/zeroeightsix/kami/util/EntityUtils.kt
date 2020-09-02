@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.module.modules.combat.AntiFriendHit
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationFromVec
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
@@ -237,7 +238,7 @@ object EntityUtils {
             if (entity == mc.player) continue
             if (entity is EntityPlayer) {
                 if (!player[0]) continue
-                if (!player[1] && Friends.isFriend(entity.name)) continue
+                if ((!player[1] || KamiMod.MODULE_MANAGER.isModuleEnabled(AntiFriendHit::class.java)) && Friends.isFriend(entity.name)) continue
                 if (!player[2] && entity.isPlayerSleeping) continue
             } else if (!mobTypeSettings(entity, mobs[0], mobs[1], mobs[2], mobs[3])) continue
 
