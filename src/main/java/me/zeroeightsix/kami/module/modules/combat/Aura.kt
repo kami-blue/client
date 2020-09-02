@@ -41,7 +41,7 @@ class Aura : Module() {
     private val waitTick = register(Settings.floatBuilder("SpamDelay").withMinimum(0.1f).withValue(2.0f).withMaximum(40.0f).withVisibility { delayMode.value == WaitMode.SPAM }.build())
     private val eat = register(Settings.b("WhileEating", true))
     private val players = register(Settings.b("Players", true))
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value && !KamiMod.MODULE_MANAGER.isModuleEnabled(AntiFriendHit::class.java) }.build())
+    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
     private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { players.value }.build())
     private val mobs = register(Settings.b("Mobs", false))
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
