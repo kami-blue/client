@@ -50,9 +50,9 @@ object RotationUtils {
     fun getRotationToEntityClosed(entity: Entity): Vec2d {
         val box = entity.boundingBox
         val eyePos = mc.player.getPositionEyes(1f)
-        val x = MathHelper.clamp(eyePos.x, box.minX, box.maxX)
-        val y = MathHelper.clamp(eyePos.y, box.minY, box.maxY)
-        val z = MathHelper.clamp(eyePos.z, box.minZ, box.maxZ)
+        val x = MathHelper.clamp(eyePos.x, box.minX + 0.1, box.maxX - 0.1)
+        val y = MathHelper.clamp(eyePos.y, box.minY + 0.1, box.maxY - 0.1)
+        val z = MathHelper.clamp(eyePos.z, box.minZ + 0.1, box.maxZ - 0.1)
         val hitVec = Vec3d(x, y, z)
         return getRotationTo(hitVec, true)
     }
