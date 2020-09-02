@@ -24,6 +24,7 @@ import me.zeroeightsix.kami.util.Bind;
 import me.zeroeightsix.kami.util.HSBColourHolder;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.util.Arrays;
 
 /**
@@ -144,8 +145,9 @@ public class SettingsPanel extends OrganisedContainer {
                 } else if (isColor) {
                     ColorSetting colorSetting = (ColorSetting) setting;
                     HSBColourHolder value = colorSetting.getValue();
-                    //Color input
+                    // Color input
                     ColorInput colorInput = new ColorInput(value, name);
+                    colorInput.setToggled(colorSetting.isToggled());
                     colorInput.addPoof(new ColorInput.ColorInputPoof<ColorInput, ColorInput.ColorInputPoof.ColorInputPoofInfo>() {
                         @Override
                         public void execute(ColorInput component, ColorInputPoofInfo info) {
@@ -153,29 +155,40 @@ public class SettingsPanel extends OrganisedContainer {
                             setModule(module);
                         }
                     });
+                    colorInput.addPoof(new ColorInput.ColorTogglePoof<ColorInput, ColorInput.ColorTogglePoof.ColorTogglePoofInfo>() {
+                        @Override
+                        public void execute(ColorInput component, ColorTogglePoofInfo info) {
+                            if (info.getAction() == ColorTogglePoofInfo.ColorTogglePoofInfoAction.TOGGLE) {
+                                colorSetting.setToggled(colorInput.isToggled());
+                                setModule(module);
+                            }
+                        }
+                    });
                     addChild(colorInput);
                     value = colorInput.getValue();
-                    //Color slider
-                    ColorSlider colorSlider = new ColorSlider(value, name);
-                    colorSlider.addPoof(new ColorSlider.ColorPoof<ColorSlider, ColorSlider.ColorPoof.ColorPoofInfo>() {
-                        @Override
-                        public void execute(ColorSlider component, ColorPoofInfo info) {
-                            setting.setValue(info.getNewValue());
-                        }
-                    });
-                    addChild(colorSlider);
-                    value = colorSetting.getValue();
-                    //Color saturation square
-                    ColorSquare colorSquare = new ColorSquare(value, name);
-                    colorSquare.addPoof(new ColorSquare.ColorPoof<ColorSquare, ColorSquare.ColorPoof.ColorPoofInfo>() {
-                        @Override
-                        public void execute(ColorSquare component, ColorPoofInfo info) {
-                            setting.setValue(info.getNewValue());
-                        }
-                    });
-                    colorSquare.setWidth(getWidth() - 30);
-                    colorSquare.setHeight(getWidth() - 30);
-                    addChild(colorSquare);
+                    if (colorSetting.isToggled()) {
+                        // Color slider
+                        ColorSlider colorSlider = new ColorSlider(value, name);
+                        colorSlider.addPoof(new ColorSlider.ColorPoof<ColorSlider, ColorSlider.ColorPoof.ColorPoofInfo>() {
+                            @Override
+                            public void execute(ColorSlider component, ColorPoofInfo info) {
+                                setting.setValue(info.getNewValue());
+                            }
+                        });
+                        addChild(colorSlider);
+                        value = colorSetting.getValue();
+                        // Color saturation square
+                        ColorSquare colorSquare = new ColorSquare(value, name);
+                        colorSquare.addPoof(new ColorSquare.ColorPoof<ColorSquare, ColorSquare.ColorPoof.ColorPoofInfo>() {
+                            @Override
+                            public void execute(ColorSquare component, ColorPoofInfo info) {
+                                setting.setValue(info.getNewValue());
+                            }
+                        });
+                        colorSquare.setWidth(getWidth() - 30);
+                        colorSquare.setHeight(getWidth() - 30);
+                        addChild(colorSquare);
+                    }
                 }
             }
         }
@@ -193,14 +206,13 @@ public class SettingsPanel extends OrganisedContainer {
         setMinimumWidth((int) (getParent().getWidth() * .9f));
         prepare();
         //This probably isn't the best solution but it's the easiest
-        int i = 0;
-        int h = 0;
+        int i = 0, h = 0;
         setAffectLayout(false);
         for (Component component : children) {
             component.setWidth(getWidth() - 10);
             component.setX(5);
-            if (i == 0) { component.setY(component.getY()); }
-            else { component.setY(h); }
+            if (i == 0) component.setY(component.getY());
+            else component.setY(h);
             h += component.getHeight() + 4;
             i++;
         }

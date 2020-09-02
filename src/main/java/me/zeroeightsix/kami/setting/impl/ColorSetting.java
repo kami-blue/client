@@ -12,6 +12,8 @@ import java.util.function.Predicate;
  */
 public class ColorSetting extends Setting<HSBColourHolder> {
 
+    boolean toggled = false;
+
     private static final ColorConverter converter = new ColorConverter();
 
     public ColorSetting(HSBColourHolder value, Predicate<HSBColourHolder> restriction, BiConsumer<HSBColourHolder, HSBColourHolder> consumer, String name, Predicate<HSBColourHolder> visibilityPredicate) {
@@ -21,5 +23,13 @@ public class ColorSetting extends Setting<HSBColourHolder> {
     @Override
     public ColorConverter converter() {
         return converter;
+    }
+
+    public boolean isToggled() {
+        return toggled;
+    }
+
+    public void setToggled(boolean toggled) {
+        this.toggled = toggled;
     }
 }

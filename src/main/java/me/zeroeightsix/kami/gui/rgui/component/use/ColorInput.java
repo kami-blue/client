@@ -60,6 +60,11 @@ public class ColorInput extends AbstractComponent {
 
     RootSmallFontRenderer smallFontRenderer = null;
 
+    // toggle settings
+    boolean toggled;
+    boolean doToggle = true;
+    int boxSize = 8;
+
     public FontRenderer getFontRenderer() {
         return smallFontRenderer == null ? getTheme().getFontRenderer() : smallFontRenderer;
     }
@@ -154,7 +159,7 @@ public class ColorInput extends AbstractComponent {
                 String s = getDisplayText();
                 if (s.isEmpty()) s = " ";
                 glEnable(GL_BLEND);
-                smallFontRenderer.drawString(0, 1, s);
+                smallFontRenderer.drawString(0, 2, s);
 
                 glDisable(GL_TEXTURE_2D);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -287,10 +292,18 @@ public class ColorInput extends AbstractComponent {
         addMouseListener(new MouseListener() {
             @Override
             public void onMouseDown(MouseButtonEvent event) {
-                currentState.selection = false;
-                if (getText().equals(label)) {
-                    setText("");
+                if (event.getX() > getWidth() - boxSize - 4 && event.getButton() == 0) {
+                    setToggled(!toggled);
+                    callPoof(ColorInput.ColorTogglePoof.class, new ColorInput.ColorTogglePoof.ColorTogglePoofInfo(ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction.TOGGLE));
+                    if (toggled) {
+                        callPoof(ColorInput.ColorTogglePoof.class, new ColorInput.ColorTogglePoof.ColorTogglePoofInfo(ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction.ENABLE));
+                    } else {
+                        callPoof(ColorInput.ColorTogglePoof.class, new ColorInput.ColorTogglePoof.ColorTogglePoofInfo(ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction.DISABLE));
+                    }
+                    return;
                 }
+                currentState.selection = false;
+                if (getText().equals(label)) setText("");
                 int x = -scrollX;
                 int i = 0;
                 for (char c : getText().toCharArray()) {
@@ -486,7 +499,7 @@ public class ColorInput extends AbstractComponent {
 
     public String sanitizeHex(String value) {
         String digits = value.toLowerCase();
-        String validValues = "1234567890abcdef";
+        String validValues = "0123456789abcdef";
         ArrayList<Character> chars = new ArrayList();
         for (int i = 0; i < Math.max(digits.length(), (digits.startsWith("#") ? 7 : 6)); i++) {
             char c = i < digits.length() ? digits.charAt(i) : 'y';
@@ -496,6 +509,22 @@ public class ColorInput extends AbstractComponent {
             } else { chars.add('0'); }
         }
         return "#" + Joiner.on("").join(chars);
+    }
+
+    public int getSize() {
+        return boxSize;
+    }
+
+    public void setSize(int size) {
+        this.boxSize = size;
+    }
+
+    public void setToggled(boolean toggled) {
+        this.toggled = toggled;
+    }
+
+    public boolean isToggled() {
+        return toggled;
     }
 
     public class InputState {
@@ -578,6 +607,26 @@ public class ColorInput extends AbstractComponent {
             }
 
             public void setNewValue(HSBColourHolder newValue) { this.newValue = newValue; }
+        }
+    }
+
+    public static abstract class ColorTogglePoof<T extends ColorInput, S extends ColorInput.ColorTogglePoof.ColorTogglePoofInfo> extends Poof<T, S> {
+        ColorInput.ColorTogglePoof.ColorTogglePoofInfo info;
+
+        public static class ColorTogglePoofInfo extends PoofInfo {
+            ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction action;
+
+            public ColorTogglePoofInfo(ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction action) {
+                this.action = action;
+            }
+
+            public enum ColorTogglePoofInfoAction {
+                TOGGLE, ENABLE, DISABLE
+            }
+
+            public ColorInput.ColorTogglePoof.ColorTogglePoofInfo.ColorTogglePoofInfoAction getAction() {
+                return action;
+            }
         }
     }
 }

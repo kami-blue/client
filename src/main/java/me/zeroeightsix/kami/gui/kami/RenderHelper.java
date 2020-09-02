@@ -162,6 +162,20 @@ public class RenderHelper {
         glDisable(GL_BLEND);
     }
 
+    public static void drawTriangle(double x, double y, int width, int height, float rotation) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glPushMatrix();
+            glRotatef(rotation, 0, 0, 1);
+            glBegin(GL_TRIANGLES);
+                glVertex2d(x, y + height/2);
+                glVertex2d(x + width/2, y - height/2);
+                glVertex2d(x - width/2, y - height/2);
+            glEnd();
+        glPopMatrix();
+        glDisable(GL_BLEND);
+    }
+
     public static void drawText(int x, int y, int color, String text) {
         glColor3f(1, 1, 1);
         glEnable(GL_TEXTURE_2D);

@@ -30,27 +30,25 @@ public class RootColorSliderUI extends AbstractComponentUI<ColorSlider> {
         float downscale = 2f;
         glShadeModel(GL_SMOOTH);
         glBegin(GL_LINE_STRIP);
-            glColor3f(255, 0, 0); //Red
+            glColor3f(1f, 0f, 0f); //Red
             glVertex2d(0, height / downscale);
-            glColor3f(255, 255, 0); //Yellow
+            glColor3f(1f, 1f, 0f); //Yellow
             glVertex2d(width / 6, height / downscale);
-            glColor3f(0, 255, 0); //Green
+            glColor3f(0f, 1f, 0f); //Green
             glVertex2d(width / 3, height / downscale);
-            glColor3f(0, 255, 255); //Light blue
+            glColor3f(0f, 1f, 1f); //Light blue
             glVertex2d(width / 2, height / downscale);
-            glColor3f(0, 0, 255); //Blue
+            glColor3f(0f, 0f, 1f); //Blue
             glVertex2d(width / 1.5, height / downscale);
-            glColor3f(255, 0, 255); //Purple
+            glColor3f(1f, 0f, 1f); //Purple
             glVertex2d(width / 1.2, height / downscale);
-            glColor3f(255, 0, 0); //Red
+            glColor3f(1f, 0f, 0f); //Red
             glVertex2d(width, height / downscale);
         glEnd();
 
+        glColor3f(1f, 1f, 1f);
+        RenderHelper.drawTriangle( w, height / downscale - 3, 5, 5, 0);
         glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        RenderHelper.drawCircle((int) w, height / downscale, 2f);
-        glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
     }
 
     @Override

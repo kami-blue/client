@@ -7,6 +7,9 @@ import me.zeroeightsix.kami.gui.rgui.component.use.ColorInput;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glLineWidth;
+
 /**
  * Created by Guac on 18/08/2020.
  */
@@ -16,8 +19,11 @@ public class RootColorInputUI extends AbstractComponentUI<ColorInput> {
 
     @Override
     public void renderComponent(ColorInput component, FontRenderer aa) {
+        int bSize = component.getSize();
+        glColor3f(.60f, .56f, 1.00f);
+        glLineWidth(1f);
+        RenderHelper.drawRectangle(0, 0, component.getWidth() - bSize - 4, component.getTheme().getFontRenderer().getFontHeight());
         component.getValue().setGLColour();
-        int bSize = 8;
         RenderHelper.drawFilledRectangle(component.getWidth() - bSize, 0, bSize, bSize);
     }
 
