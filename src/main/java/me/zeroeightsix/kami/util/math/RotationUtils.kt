@@ -24,7 +24,18 @@ object RotationUtils {
     }
 
     fun getRotationToEntity(entity: Entity): Vec2d {
-        val posTo = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
+        val posTo : Vec3d;
+        val player = mc.player;
+        val ticks = KamiTessellator.pTicks()
+        val difference = entity.positionVector.subtract(player.positionVector);
+        if (difference.y >= player.eyeHeight) {
+            posTo = EntityUtils.getInterpolatedPos(entity, ticks)
+        } else if (difference.y <= 0) {
+            posTo = entity.getPositionEyes(ticks)
+        } else {
+            val pos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
+            posTo = Vec3d(pos.x,player.getPositionEyes(ticks).y,pos.z)
+        }
         return getRotationTo(posTo, true)
     }
 
