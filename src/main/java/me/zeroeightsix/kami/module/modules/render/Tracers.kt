@@ -86,7 +86,7 @@ class Tracers : Module() {
         val entityList = if (isEnabled) {
             getTargetList(player, mob, invisible.value, range.value.toFloat())
         } else {
-            emptyList<Entity>() as ArrayList<Entity>
+            ArrayList()
         }
 
         val cacheMap = HashMap<Entity, Pair<ColorHolder, Float>>()
