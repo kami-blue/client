@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import kotlin.math.PI
 import kotlin.math.min
 import kotlin.math.sin
@@ -28,9 +29,9 @@ class CrystalESP : Module() {
     private val damageESP = register(Settings.booleanBuilder("DamageESP").withValue(true).withVisibility { page.value == Page.DAMAGE_ESP }.build())
     private val minAlpha = register(Settings.integerBuilder("MinAlpha").withValue(15).withRange(0, 255).withVisibility { page.value == Page.DAMAGE_ESP }.build())
     private val maxAlpha = register(Settings.integerBuilder("MaxAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.DAMAGE_ESP }.build())
-    private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(8.0f).withRange(0.0f, 16.0f).withVisibility { page.value == Page.DAMAGE_ESP }.build())
+    private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(4.0f).withRange(0.0f, 16.0f).withVisibility { page.value == Page.DAMAGE_ESP }.build())
 
-    private val crystalESP = register(Settings.booleanBuilder("CrystalESP").withValue(true).build())
+    private val crystalESP = register(Settings.booleanBuilder("CrystalESP").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP }.build())
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
     private val tracer = register(Settings.booleanBuilder("Tracer").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
@@ -42,31 +43,46 @@ class CrystalESP : Module() {
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value && outline.value }.build())
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value && tracer.value }.build())
     private val thickness = register(Settings.floatBuilder("Thickness").withValue(4.0f).withRange(0.0f, 8.0f).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
-    private val crystalRange = register(Settings.floatBuilder("CrystalESPRange").withValue(16.0f).withRange(0.0f, 32.0f).withVisibility { page.value == Page.CRYSTAL_ESP }.build())
+    private val crystalRange = register(Settings.floatBuilder("CrystalESPRange").withValue(16.0f).withRange(0.0f, 48.0f).withVisibility { page.value == Page.CRYSTAL_ESP }.build())
 
     private enum class Page {
         DAMAGE_ESP, CRYSTAL_ESP
     }
 
     private val damageESPMap = ConcurrentHashMap<Float, BlockPos>()
-    private val crystalList = ConcurrentHashMap<EntityEnderCrystal, Vec2f>() // <Crystal, <PrevAlpha, Alpha>>
+    private val crystalMap = ConcurrentHashMap<EntityEnderCrystal, Vec2f>() // <Crystal, <PrevAlpha, Alpha>>
+    private val threads = arrayOf(Thread { updateDamageESP() }, Thread { updateCrystalESP() })
+    private val threadPool = Executors.newCachedThreadPool()
 
     override fun onUpdate() {
-        damageESPMap.clear()
-        if (damageESP.value) {
-            damageESPMap.putAll(CrystalUtils.getPlacePos(CombatManager.target, CombatManager.target, damageRange.value))
+        for (thread in threads) {
+            threadPool.execute(thread)
         }
+    }
 
+    private fun updateDamageESP() {
+        if (damageESP.value) {
+            val cacheMap = CrystalUtils.getPlacePos(CombatManager.target, CombatManager.target, damageRange.value)
+            damageESPMap.values.removeIf { !cacheMap.containsValue(it) }
+            damageESPMap.putAll(cacheMap)
+        } else {
+            damageESPMap.clear()
+        }
+    }
+
+    private fun updateCrystalESP() {
         if (crystalESP.value) {
             val cacheMap = HashMap(CrystalUtils.getCrystalList(crystalRange.value).map { it to Vec2f(0f, 0f) }.toMap())
 
-            crystalList.values.removeIf { it.x >= 2.0f }
-            for ((crystal, pair) in crystalList) {
+            crystalMap.values.removeIf { it.x >= 2.0f }
+            for ((crystal, pair) in crystalMap) {
                 val scale = 1f / animationScale.value
                 cacheMap.computeIfPresent(crystal) { _, _ -> Vec2f(pair.y, min(pair.y + 0.4f * scale, 1f)) }
                 cacheMap.computeIfAbsent(crystal) { Vec2f(pair.y, min(pair.y + 0.2f * scale, 2f)) }
             }
-            crystalList.putAll(cacheMap)
+            crystalMap.putAll(cacheMap)
+        } else {
+            crystalMap.clear()
         }
     }
 
@@ -91,7 +107,7 @@ class CrystalESP : Module() {
             renderer.aOutline = if (outline.value) aOutline.value else 0
             renderer.aTracer = if (tracer.value) aTracer.value else 0
             renderer.thickness = thickness.value
-            for ((crystal, alpha) in crystalList) {
+            for ((crystal, alpha) in crystalMap) {
                 val interpolatedAlpha = alpha.x + (alpha.y - alpha.x) * KamiTessellator.pTicks()
                 val sine = sin(interpolatedAlpha * 0.5 * PI).toFloat()
                 val box = crystal.boundingBox.shrink(1.0 - sine)
