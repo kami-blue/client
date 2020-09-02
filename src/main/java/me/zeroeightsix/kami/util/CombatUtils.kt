@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -45,7 +44,7 @@ object CombatUtils {
         var bestSlot = -1
         var maxDamage = 0.0
         for (i in 0..8) {
-            val stack = Module.mc.player.inventory.getStackInSlot(i)
+            val stack = mc.player.inventory.getStackInSlot(i)
             if (stack.isEmpty) continue
             if (stack.getItem() !is ItemAxe && hitMode == PreferWeapon.AXE) continue
             if (stack.getItem() !is ItemSword && hitMode == PreferWeapon.SWORD) continue
@@ -158,7 +157,7 @@ object CombatUtils {
         private fun calcBlastReduction(damageIn: Float, damagePos: Vec3d, entity: EntityLivingBase): Float {
             var damage = damageIn
             if (entity is EntityPlayer) {
-                val damageSource = DamageSource.causeExplosionDamage(Explosion(mc.world, null, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
+                val damageSource = DamageSource.causeExplosionDamage(Explosion(mc.world, mc.player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
                 damage = calcDamage(entity, damage, false)
                 val k = EnchantmentHelper.getEnchantmentModifierDamage(entity.armorInventoryList, damageSource)
                 val f = MathHelper.clamp(k.toFloat(), 0.0f, 20.0f)

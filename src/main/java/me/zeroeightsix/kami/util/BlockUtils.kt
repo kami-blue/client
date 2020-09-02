@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.module.Module
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
@@ -10,6 +9,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2
 import kotlin.math.floor
@@ -203,12 +203,11 @@ object BlockUtils {
     }
 
     fun getHitSide(blockPos: BlockPos): EnumFacing {
-        val result = Module.mc.world.rayTraceBlocks(Module.mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
-        return if (result?.sideHit == null) {
-            EnumFacing.UP
-        } else {
-            result.sideHit
-        }
+        return rayTraceTo(blockPos)?.sideHit?: EnumFacing.UP
+    }
+
+    fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
+        return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
     }
 
     /**
