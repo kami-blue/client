@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sin
 
@@ -37,7 +38,7 @@ class CrystalESP : Module() {
     private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(4.0f).withRange(0.0f, 16.0f).withVisibility { page.value == Page.DAMAGE_ESP }.build())
 
     private val crystalESP = register(Settings.booleanBuilder("CrystalESP").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP }.build())
-    private val mode = register(Settings.enumBuilder(Mode::class.java).withName("Mode").withValue(Mode.CRYSTAL).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
+    private val mode = register(Settings.enumBuilder(Mode::class.java).withName("Mode").withValue(Mode.BLOCK).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
     private val tracer = register(Settings.booleanBuilder("Tracer").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value }.build())
@@ -60,7 +61,7 @@ class CrystalESP : Module() {
     }
 
     private enum class Mode {
-        CRYSTAL, BLOCK
+        BLOCK, CRYSTAL
     }
 
     private val damageESPMap = ConcurrentHashMap<Float, BlockPos>()
@@ -117,8 +118,8 @@ class CrystalESP : Module() {
         if (damageESP.value && damageESPMap.isNotEmpty()) {
             renderer.aFilled = 255
             for ((damage, pos) in damageESPMap) {
-                val rgb = MathUtils.convertRange(damage.toInt(), 16, 64, 127, 255)
-                val a = MathUtils.convertRange(damage.toInt(), 16, 64, minAlpha.value, maxAlpha.value)
+                val rgb = MathUtils.convertRange(damage.toInt(), 0, 36, 127, 255)
+                val a = MathUtils.convertRange(damage.toInt(), 0, 36, minAlpha.value, maxAlpha.value)
                 val rgba = ColorHolder(rgb, rgb, rgb, a)
                 renderer.add(pos, rgba)
             }
@@ -159,8 +160,8 @@ class CrystalESP : Module() {
             glTranslated(screenPos.x, screenPos.y, 0.0)
             glScalef(textScale.value * 2f, textScale.value * 2f, 1f)
 
-            val damage = MathUtils.round(pair.first.first, 1)
-            val selfDamage = MathUtils.round(pair.first.second, 1)
+            val damage = abs(MathUtils.round(pair.first.first, 1))
+            val selfDamage = abs(MathUtils.round(pair.first.second, 1))
             val alpha = (getAnimationProgress(pair.second) * 255f).toInt()
             val color = ColorConverter.rgbToInt(255, 255, 255, alpha)
             if (showDamage.value) {
