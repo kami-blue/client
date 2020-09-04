@@ -26,6 +26,7 @@ class CombatSetting : Module() {
     private val priority = register(Settings.enumBuilder(TargetPriority::class.java).withName("Priority").withValue(TargetPriority.DISTANCE).build())
     private val players = register(Settings.b("Players", true))
     private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
+    private val teammates = register(Settings.booleanBuilder("Teammates").withValue(false).withVisibility { players.value }.build())
     private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { players.value }.build())
     private val mobs = register(Settings.b("Mobs", false))
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
@@ -71,6 +72,9 @@ class CombatSetting : Module() {
         }
         if (!shouldIgnoreWall()) targetList.removeIf {
             !mc.player.canEntityBeSeen(it) && EntityUtils.canEntityFeetBeSeen(it) && EntityUtils.canEntityHitboxBeSeen(it) == null
+        }
+        if (!teammates.value) targetList.removeIf {
+            mc.player.isOnSameTeam(it)
         }
         return targetList
     }

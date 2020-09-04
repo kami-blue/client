@@ -118,8 +118,8 @@ class CrystalESP : Module() {
         if (damageESP.value && damageESPMap.isNotEmpty()) {
             renderer.aFilled = 255
             for ((damage, pos) in damageESPMap) {
-                val rgb = MathUtils.convertRange(damage.toInt(), 0, 36, 127, 255)
-                val a = MathUtils.convertRange(damage.toInt(), 0, 36, minAlpha.value, maxAlpha.value)
+                val rgb = MathUtils.convertRange(damage.toInt(), 0, 20, 127, 255)
+                val a = MathUtils.convertRange(damage.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
                 val rgba = ColorHolder(rgb, rgb, rgb, a)
                 renderer.add(pos, rgba)
             }
