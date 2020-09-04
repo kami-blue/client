@@ -1,12 +1,14 @@
-package me.zeroeightsix.kami.module.modules.render;
+package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
-import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
-import net.minecraft.potion.Potion;
-import net.minecraftforge.client.event.RenderBlockOverlayEvent;
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
+import net.minecraft.potion.Potion
+import net.minecraftforge.client.event.RenderBlockOverlayEvent
+import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 /**
  * Created by Dewy on the 20th April, 2020
@@ -16,55 +18,52 @@ import net.minecraftforge.client.event.RenderBlockOverlayEvent;
         description = "Prevents rendering of fire, water and block texture overlays.",
         category = Module.Category.RENDER
 )
-public class AntiOverlay extends Module {
-    private Setting<Boolean> fire = register(Settings.booleanBuilder("Fire").withValue(true).build());
-    private Setting<Boolean> water = register(Settings.booleanBuilder("Water").withValue(true).build());
-    private Setting<Boolean> blocks = register(Settings.booleanBuilder("Blocks").withValue(true).build());
-    public Setting<Boolean> portals = register(Settings.booleanBuilder("Portals").withValue(true).build());
-    public Setting<Boolean> blindness = register(Settings.booleanBuilder("Blindness").withValue(true).build());
-    public Setting<Boolean> nausea = register(Settings.booleanBuilder("Nausea").withValue(true).build());
-    public Setting<Boolean> totems = register(Settings.booleanBuilder("Totems").withValue(true).build());
+class AntiOverlay : Module() {
+    private val fire = register(Settings.b("Fire",true))
+    private val water = register(Settings.b("Water",true))
+    private val blocks = register(Settings.b("Blocks",true))
+    private val portals = register(Settings.b("Portals",true))
+    private val blindness = register(Settings.b("Blindness",true))
+    private val nausea = register(Settings.b("Nausea",true))
+    @JvmField
+    val totems = register(Settings.b("Totems",true))
+    private val vignette = register(Settings.b("Vignette",true))
+    private val helmet = register(Settings.b("Helmet",true))
 
     @EventHandler
-    public Listener<RenderBlockOverlayEvent> renderBlockOverlayEventListener = new Listener<>(event -> {
-        boolean shouldCancel = false;
-
-        if (!isEnabled()) {
-            return;
+    var renderBlockOverlayEventListener = Listener(EventHook { event: RenderBlockOverlayEvent ->
+        var shouldCancel = false
+        if (!isEnabled) {
+            return@EventHook
         }
-
-        switch (event.getOverlayType()) {
-            case FIRE:
-                if (fire.getValue()) {
-                    shouldCancel = true;
-                }
-
-                break;
-            case WATER:
-                if (water.getValue()) {
-                    shouldCancel = true;
-                }
-
-                break;
-            case BLOCK:
-                if (blocks.getValue()) {
-                    shouldCancel = true;
-                }
-
-                break;
+        when (event.overlayType) {
+            OverlayType.FIRE -> shouldCancel = fire.value
+            OverlayType.WATER -> shouldCancel = water.value
+            OverlayType.BLOCK -> shouldCancel = blocks.value
         }
+        event.isCanceled = shouldCancel
+    })
 
-        event.setCanceled(shouldCancel);
-    });
-
-    @Override
-    public void onUpdate() {
-        if (blindness.getValue()) {
-            mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("blindness"));
+    @EventHandler
+    var renderPreGameOverlayEventListener = Listener(EventHook { event: RenderGameOverlayEvent.Pre ->
+        var shouldCancel = false
+        if (!isEnabled) {
+            return@EventHook
         }
+        when (event.type) {
+            RenderGameOverlayEvent.ElementType.VIGNETTE -> shouldCancel = vignette.value
+            RenderGameOverlayEvent.ElementType.PORTAL -> shouldCancel = portals.value
+            RenderGameOverlayEvent.ElementType.HELMET -> shouldCancel = helmet.value
+        }
+        event.isCanceled = shouldCancel
+    })
 
-        if (nausea.getValue()) {
-            mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("nausea"));
+    override fun onUpdate() {
+        if (blindness.value) {
+            mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("blindness"))
+        }
+        if (nausea.value) {
+            mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("nausea"))
         }
     }
 }

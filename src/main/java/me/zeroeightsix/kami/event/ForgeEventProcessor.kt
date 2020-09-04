@@ -6,12 +6,10 @@ import me.zeroeightsix.kami.command.commands.PeekCommand
 import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay
 import me.zeroeightsix.kami.module.modules.render.BossStack
 import me.zeroeightsix.kami.module.modules.render.HungerOverlay
 import me.zeroeightsix.kami.module.modules.render.NoRender
@@ -118,7 +116,6 @@ open class ForgeEventProcessor {
             }
         }
 
-        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay::class.java) || !ModuleManager.getModuleT(AntiOverlay::class.java)!!.portals.value
         ModuleManager.onUpdate()
         KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
     }
@@ -132,7 +129,8 @@ open class ForgeEventProcessor {
 
     @SubscribeEvent
     fun onRenderPre(event: RenderGameOverlayEvent.Pre) {
-        if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
+        KamiMod.EVENT_BUS.post(event)
+        if ((event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java))) {
             event.isCanceled = true
         }
         if (event.isCanceled) return
