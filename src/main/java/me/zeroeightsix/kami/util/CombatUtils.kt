@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -9,10 +10,10 @@ import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.init.MobEffects
 import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
-import net.minecraft.potion.Potion
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.AxisAlignedBB
@@ -35,9 +36,24 @@ object CombatUtils {
         return calcDamage(entity, 100f, roundDamage)
     }
 
-    fun calcDamage(entity: EntityLivingBase, damageIn: Float, roundDamage: Boolean): Float {
+    fun calcDamage(entity: EntityLivingBase, damageIn: Float, roundDamage: Boolean = false): Float {
         val damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
         return if (roundDamage) round(damage) else damage
+    }
+
+    fun getProtectionModifier(entity: EntityPlayer, damageSource: DamageSource): Float {
+        var modifier = 0
+        for (armor in entity.armorInventoryList) {
+            if (armor.isEmpty()) continue // Skip if item stack is empty
+            val nbtTagList = armor.enchantmentTagList
+            for (i in 0 until nbtTagList.tagCount()) {
+                val id = nbtTagList.getCompoundTagAt(i).getShort("id").toInt()
+                val level = nbtTagList.getCompoundTagAt(i).getShort("lvl").toInt()
+                Enchantment.getEnchantmentByID(id)?.let { modifier += it.calcModifierDamage(level, damageSource) }
+            }
+        }
+        modifier = MathHelper.clamp(modifier, 0, 20)
+        return (1.0f - modifier / 25.0f)
     }
 
     fun equipBestWeapon(hitMode: PreferWeapon = PreferWeapon.NONE) {
@@ -155,20 +171,16 @@ object CombatUtils {
         }
 
         private fun calcBlastReduction(damageIn: Float, damagePos: Vec3d, entity: EntityLivingBase): Float {
-            var damage = damageIn
             if (entity is EntityPlayer) {
-                val damageSource = DamageSource.causeExplosionDamage(Explosion(mc.world, mc.player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
-                damage = calcDamage(entity, damage, false)
-                val k = EnchantmentHelper.getEnchantmentModifierDamage(entity.armorInventoryList, damageSource)
-                val f = MathHelper.clamp(k.toFloat(), 0.0f, 20.0f)
-                damage *= (1.0f - f / 25.0f)
-                if (entity.isPotionActive(Potion.getPotionById(11)!!)) {
-                    damage -= damage / 5
-                }
-                damage = max(damage, 0.0f)
-                return damage * getDamageMultiplier()
+                var damage = calcDamage(entity, damageIn) * getProtectionModifier(entity, getDamageSource(damagePos))
+                if (entity.isPotionActive(MobEffects.RESISTANCE)) damage *= 0.8f
+                return max(damage * getDamageMultiplier(), 0.0f)
             }
-            return calcDamage(entity, damage, false)
+            return calcDamage(entity, damageIn, false)
+        }
+
+        private fun getDamageSource(damagePos: Vec3d): DamageSource {
+            return DamageSource.causeExplosionDamage(Explosion(mc.world, mc.player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
         }
 
         private fun getDamageMultiplier(): Float {

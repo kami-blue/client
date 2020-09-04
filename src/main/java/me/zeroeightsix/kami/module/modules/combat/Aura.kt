@@ -35,6 +35,7 @@ class Aura : Module() {
     private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value }.build())
     private val lockView = register(Settings.booleanBuilder("LockView").withValue(false).withVisibility { !multi.value }.build())
     private val waitTick = register(Settings.floatBuilder("SpamDelay").withMinimum(0.1f).withValue(2.0f).withMaximum(40.0f).withVisibility { delayMode.value == WaitMode.SPAM }.build())
+    private val range = register(Settings.floatBuilder("Range").withValue(5f).withRange(0f, 10f).build())
     private val eat = register(Settings.b("WhileEating", true))
     private val sync = register(Settings.b("TPSSync", false))
     private val pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
@@ -69,11 +70,12 @@ class Aura : Module() {
                 return
             }
             if (canAttack()) for (target in targetList) {
+                if (mc.player.getDistance(target) > range.value) continue
                 attack(target)
             }
         } else {
             val target = CombatManager.target
-            if (target == null) {
+            if (target == null || mc.player.getDistance(target) > range.value) {
                 unpauseBaritone()
                 return
             }
@@ -139,5 +141,9 @@ class Aura : Module() {
             startTime = System.currentTimeMillis()
             true
         } else false
+    }
+
+    fun getRange(): Float {
+        return range.value
     }
 }
