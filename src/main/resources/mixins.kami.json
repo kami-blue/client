@@ -38,6 +38,7 @@
     "MixinPlayerControllerMP",
     "MixinRenderGlobal",
     "MixinRenderLiving",
+    "MixinRenderManager",
     "MixinRenderPlayer",
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
