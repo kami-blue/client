@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.mangers
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.combat.AntiBot
+import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
 
 /**
@@ -11,10 +12,15 @@ import net.minecraft.entity.EntityLivingBase
  * Created by Xiaro on 06/08/20
  */
 object CombatManager {
-    val combatModules = ArrayList<Module>()
+    private val combatModules = ArrayList<Module>()
 
     var targetList = ArrayList<EntityLivingBase>()
     var target: EntityLivingBase? = null
+    set(value) {
+        motionTracker.target = value
+        field = value
+    }
+    val motionTracker = MotionTracker(null)
 
     fun getTopPriority(ignoreAntiBot: Boolean = true): Int {
         return getTopModule(ignoreAntiBot)?.modulePriority ?: -1

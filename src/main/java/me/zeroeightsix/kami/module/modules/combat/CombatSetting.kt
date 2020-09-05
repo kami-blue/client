@@ -1,14 +1,22 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.InfoCalculator
+import me.zeroeightsix.kami.util.MotionTracker
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import org.lwjgl.opengl.GL11.*
+import kotlin.math.ceil
 
 /**
  * Created by Xiaro on 26/07/20
@@ -35,6 +43,9 @@ class CombatSetting : Module() {
     private val invisible = register(Settings.b("Invisible", false))
     private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).build())
     private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).build())
+    private val renderPredictedPos = register(Settings.b("RenderPredictedPosition", false))
+    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { renderPredictedPos.value }.build())
+    private val tickAhead = register(Settings.integerBuilder("TickAhead").withValue(5).withRange(0, 20).withVisibility { renderPredictedPos.value && !pingSync.value }.build())
 
     private enum class TargetFilter {
         ALL, FOV, MANUAL
@@ -45,6 +56,25 @@ class CombatSetting : Module() {
     }
 
     private var overrideRange = range.value
+
+    @EventHandler
+    private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Post ->
+        if (!renderPredictedPos.value || event.entity == null || event.entity != CombatManager.target) return@EventHook
+        val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else tickAhead.value
+        CombatManager.motionTracker.calcPositionAhead(ticks)?.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)?.let { pos ->
+            mc.renderManager.getEntityRenderObject<Entity>(event.entity)?.let { renderer ->
+                glDisable(GL_TEXTURE_2D)
+                glDisable(GL_LIGHTING)
+                glDisable(GL_ALPHA_TEST)
+                glColor4f(1f, 1f, 1f, 0.1f)
+                renderer.doRender(event.entity, pos.x, pos.y, pos.z, event.yaw, event.partialTicks)
+                glColor4f(1f, 1f, 1f, 1f)
+                glEnable(GL_TEXTURE_2D)
+                glEnable(GL_LIGHTING)
+                glEnable(GL_ALPHA_TEST)
+            }
+        }
+    })
 
     override fun onDisable() {
         enable()

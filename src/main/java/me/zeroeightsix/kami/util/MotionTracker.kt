@@ -5,12 +5,20 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
-class MotionTracker(target: Entity?, var trackLength: Int = 20) {
-    var target: Entity? = target
+/**
+ * @author Xiaro
+ *
+ * Tracking the motion of an Entity tick by tick
+ *
+ * Created by Xiaro on 04/09/20
+ */
+class MotionTracker(targetIn: Entity?, var trackLength: Int = 40) {
+    var target: Entity? = targetIn
         set(value) {
             if (field != value) {
                 motionLog.clear()
@@ -18,28 +26,30 @@ class MotionTracker(target: Entity?, var trackLength: Int = 20) {
             }
         }
     private val motionLog = LinkedList<Vec3d>()
-    private var skipTicks = 0
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
         target?.let {
-            val motionVec = it.positionVector.subtract(it.prevPosX, it.prevPosY, it.prevPosZ)
-            if (motionVec.length() < 0.0001 && skipTicks < 2) { // Only logging every 2 ticks if target is not moving
-                skipTicks++
-            } else {
-                skipTicks = 0
-                motionLog.add(motionVec)
-            }
-            while (motionLog.size > trackLength) {
-                motionLog.pollFirst()
-            }
+            motionLog.add(it.positionVector.subtract(it.prevPosX, it.prevPosY, it.prevPosZ))
+            while (motionLog.size > trackLength) motionLog.pollFirst()
         }
     })
 
+    /**
+     * Calculate the predicted position of the target entity based on [calcAverageMotion]
+     *
+     * @param [ticksAhead] Amount of prediction ahead
+     * @return Predicted position of the target entity
+     */
     fun calcPositionAhead(ticksAhead: Int): Vec3d? {
-        return target?.positionVector?.add(calcAverageMotion().scale(ticksAhead.toDouble()))
+        return target?.let { EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks()).add(calcAverageMotion().scale(ticksAhead.toDouble())) }
     }
 
+    /**
+     * Calculate the average motion of the target entity in [trackLength]
+     *
+     * @return Average motion vector
+     */
     fun calcAverageMotion(): Vec3d {
         var sumX = 0.0
         var sumY = 0.0
