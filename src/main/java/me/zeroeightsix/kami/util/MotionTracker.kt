@@ -17,7 +17,7 @@ import java.util.*
  *
  * Created by Xiaro on 04/09/20
  */
-class MotionTracker(targetIn: Entity?, var trackLength: Int = 40) {
+class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     var target: Entity? = targetIn
         set(value) {
             if (field != value) {
@@ -39,12 +39,24 @@ class MotionTracker(targetIn: Entity?, var trackLength: Int = 40) {
      * Calculate the predicted position of the target entity based on [calcAverageMotion]
      *
      * @param [ticksAhead] Amount of prediction ahead
+     * @param [interpolation] Whether to return interpolated position or not, default value is false (no interpolation)
      * @return Predicted position of the target entity
      */
-    fun calcPositionAhead(ticksAhead: Int): Vec3d? {
-        return target?.let { EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks()).add(calcAverageMotion().scale(ticksAhead.toDouble())) }
-    }
+    fun calcPositionAhead(ticksAhead: Int, interpolation: Boolean = false): Vec3d? {
+        return Wrapper.world?.let { world ->
+            target?.let {
+                val averageMotion = calcAverageMotion()
+                var movedTicks = 0
+                for (ticks in 0..ticksAhead) {
+                    if (world.collidesWithAnyBlock(it.boundingBox.offset(averageMotion.scale(ticks.toDouble())))) break
+                    movedTicks = ticks
+                }
+                val startingPos = if (interpolation) EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks()) else it.positionVector
+                startingPos.add(calcAverageMotion().scale(movedTicks.toDouble()))
+            }
 
+        }
+    }
     /**
      * Calculate the average motion of the target entity in [trackLength]
      *

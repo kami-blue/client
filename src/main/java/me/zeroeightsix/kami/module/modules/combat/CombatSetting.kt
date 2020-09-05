@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.MotionTracker
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.entity.Entity
@@ -59,21 +58,22 @@ class CombatSetting : Module() {
 
     @EventHandler
     private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Post ->
-        if (!renderPredictedPos.value || event.entity == null || event.entity != CombatManager.target) return@EventHook
+        if (!renderPredictedPos.value || event.entity == null || event.entity != CombatManager.motionTracker.target) return@EventHook
         val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else tickAhead.value
-        CombatManager.motionTracker.calcPositionAhead(ticks)?.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)?.let { pos ->
-            mc.renderManager.getEntityRenderObject<Entity>(event.entity)?.let { renderer ->
-                glDisable(GL_TEXTURE_2D)
-                glDisable(GL_LIGHTING)
-                glDisable(GL_ALPHA_TEST)
-                glColor4f(1f, 1f, 1f, 0.1f)
-                renderer.doRender(event.entity, pos.x, pos.y, pos.z, event.yaw, event.partialTicks)
-                glColor4f(1f, 1f, 1f, 1f)
-                glEnable(GL_TEXTURE_2D)
-                glEnable(GL_LIGHTING)
-                glEnable(GL_ALPHA_TEST)
-            }
-        }
+        CombatManager.motionTracker.calcPositionAhead(ticks)
+                ?.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)?.let { pos ->
+                    mc.renderManager.getEntityRenderObject<Entity>(event.entity)?.let { renderer ->
+                        glDisable(GL_TEXTURE_2D)
+                        glDisable(GL_LIGHTING)
+                        glDisable(GL_ALPHA_TEST)
+                        glColor4f(1f, 1f, 1f, 0.25f)
+                        renderer.doRender(event.entity, pos.x, pos.y, pos.z, event.yaw, event.partialTicks)
+                        glColor4f(1f, 1f, 1f, 1f)
+                        glEnable(GL_TEXTURE_2D)
+                        glEnable(GL_LIGHTING)
+                        glEnable(GL_ALPHA_TEST)
+                    }
+                }
     })
 
     override fun onDisable() {
@@ -83,9 +83,10 @@ class CombatSetting : Module() {
     override fun onUpdate() {
         if (isDisabled) enable()
         updateRange()
-        val targetList = getTargetList()
-        CombatManager.targetList = targetList
-        CombatManager.target = getTarget(targetList)
+        getTargetList().let {
+            CombatManager.targetList = it
+            CombatManager.target = getTarget(it)
+        }
     }
 
     private fun updateRange() {
