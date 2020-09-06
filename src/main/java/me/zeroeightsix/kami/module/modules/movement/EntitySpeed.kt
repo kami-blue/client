@@ -61,8 +61,10 @@ class EntitySpeed : Module() {
         val right = mc.gameSettings.keyBindRight.isKeyDown
         val back = mc.gameSettings.keyBindBack.isKeyDown
 
-        if (!(forward && back)&&flight.value) boat.motionY = 0.0
-        if (mc.gameSettings.keyBindJump.isKeyDown&&flight.value) boat.motionY += speed.value / 2f.toDouble()
+        if (flight.value) {
+            if (!(forward && back)) boat.motionY = 0.0
+            if (mc.gameSettings.keyBindJump.isKeyDown) boat.motionY += speed.value / 2f.toDouble()
+        }
         if (!forward && !left && !right && !back) return
         if (left && right) angle = if (forward) 0 else if (back) 180 else -1 else if (forward && back) angle = if (left) -90 else if (right) 90 else -1 else {
             angle = if (left) -90 else if (right) 90 else 0
