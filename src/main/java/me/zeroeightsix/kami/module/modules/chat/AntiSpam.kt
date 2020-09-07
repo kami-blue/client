@@ -34,7 +34,8 @@ import java.util.stream.Collectors
 )
 class AntiSpam : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))
-    private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java).withName("ReplaceMode").withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE }.build())
+    private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java).withName("ReplaceMode")
+            .withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE }.build())
     private val p = register(Settings.e<Page>("Page", Page.TYPE))
 
     /* Page One */
@@ -48,19 +49,16 @@ class AntiSpam : Module() {
     private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE }.build())
 
     /* Page Two */
-    private val ownsMeAndAll = register(Settings.booleanBuilder("OwnsMeAndAll").withValue(true).withVisibility { p.value == Page.TWO }.build())
-    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val numberSuffix = register(Settings.booleanBuilder("NumberEnding").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val numberPrefix = register(Settings.booleanBuilder("NumberBegin").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.TWO }.build())
+    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
+    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
     private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withMinimum(1).withValue(30).withMaximum(600)
-            .withVisibility { duplicates.value && p.value == Page.TWO }.build())
-    private val webLinks = register(Settings.booleanBuilder("WebLinks").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.TWO }.build())
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked").withValue(ShowBlocked.LOG_FILE)
-            .withVisibility { p.value == Page.TWO }.build())
+            .withVisibility { duplicates.value && p.value == Page.SETTINGS }.build())
+    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
+    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
+    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
+    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked")
+            .withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.SETTINGS }.build())
+
     private var messageHistory: ConcurrentHashMap<String, Long>? = null
 
     private enum class Mode {
@@ -89,9 +87,22 @@ class AntiSpam : Module() {
                 .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 10 * 60 * 1000 } // 10 is delay in minutes
                 .collect(Collectors.toList())
                 .forEach(Consumer { entry: Map.Entry<String, Long> -> messageHistory!!.remove(entry.key) })
-        if (isSpam(event.message.unformattedText)) {
-            event.isCanceled = true
+
+        val pattern = isSpam(event.message.unformattedText)
+        if (pattern != null) { // null means no pattern found
+            if (mode.value == Mode.HIDE) {
+                event.isCanceled = true
+            } else if (mode.value == Mode.REPLACE) {
+                event.message = TextComponentString(sanitize(event.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
+            }
         }
+
+        if (duplicates.value) {
+            if(checkDupes(event.message.unformattedText)){
+                event.isCanceled = true
+            }
+        }
+        //check for duplicate here
     })
 
     public override fun onEnable() {
@@ -102,13 +113,21 @@ class AntiSpam : Module() {
         messageHistory = null
     }
 
-    private fun isSpam(message: String): Boolean {
+    private fun sanitize(toClean: String, matcher: String, replacement: String): String {
+        return if (!aggressiveFiltering.value) {
+            toClean.replace("\\b$matcher|$matcher\\b".toRegex(), replacement) // only check for start or end of a word
+        } else { // We might encounter the scunthorpe problem, so aggressive mode is off by default.
+            toClean.replace(matcher.toRegex(), replacement)
+        }
+    }
+
+    private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
                 || MessageDetectionHelper.isDirect(!filterDMs.value, message)
                 || MessageDetectionHelper.isDirectOther(!filterDMs.value, message)
                 || MessageDetectionHelper.isQueue(!filterServer.value, message)
                 || MessageDetectionHelper.isRestart(!filterServer.value, message)) {
-            false
+            null
         } else {
             detectSpam(removeUsername(message))
         }
@@ -126,11 +145,7 @@ class AntiSpam : Module() {
                 return pattern
             }
         }
-
-        if (duplicates.value) {
-            return checkDupes(message)
-        }
-        return false
+        return null
     }
 
     private fun checkDupes(message: String): Boolean {
@@ -145,6 +160,7 @@ class AntiSpam : Module() {
         }
         return isDuplicate
     }
+
 
     private fun isOwn(message: String): Boolean {
         /* mc.player is null when the module is being registered, so this matcher isn't added alongside the other FilterPatterns */
