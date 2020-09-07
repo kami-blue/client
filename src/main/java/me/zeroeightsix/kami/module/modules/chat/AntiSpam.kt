@@ -47,6 +47,8 @@ class AntiSpam : Module() {
     private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE }.build())
+    private val experimental = register(Settings.b("Experimental", false))
+    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { experimental.value }.build())
 
     /* Page Two */
     private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
@@ -98,11 +100,26 @@ class AntiSpam : Module() {
         }
 
         if (duplicates.value) {
-            if(checkDupes(event.message.unformattedText)){
+            if (checkDupes(event.message.unformattedText)) {
                 event.isCanceled = true
             }
         }
-        //check for duplicate here
+
+        var message = ""
+        if (fancyChat.value && experimental.value) {
+            message = sanitizeFancyChat(event.message.unformattedText)
+            if (message.trim { it <= ' ' }.isEmpty()) { // todo remove this if going for intelligent de-fancy
+                message = "[Fancychat]"
+            }
+        }
+
+        val oldMessage = event.message.unformattedText
+        if (oldMessage != message) {
+            if (message.length > 256) { // I'm not sure if message length matters at this point, but this is just for peace of mind
+                message = message.substring(0, 256)
+            }
+            event.message = TextComponentString(message)
+        }
     })
 
     public override fun onEnable() {
@@ -178,6 +195,11 @@ class AntiSpam : Module() {
         }
         return null
     }
+
+    private fun sanitizeFancyChat(toClean: String): String {
+        return toClean.replace("[^\\u0000-\\u007F]".toRegex(), "") //todo make this more intelligent bc wnuke said there was a way
+    }
+
 
     private val settingMap: HashMap<Setting<Boolean>, Array<String>> = object : HashMap<Setting<Boolean>, Array<String>>() {
         init {
@@ -334,6 +356,7 @@ class AntiSpam : Module() {
                 "fa(g |g.{0,2}",
                 "reta.{0,3}"
         )
+        // fairly simple - anarchy servers shouldn't have a chat filter so there isn't an attempt to check for bypasses
         val SWEARS = arrayOf(
                 "fuck(er)?",
                 "shit",
