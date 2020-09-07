@@ -47,8 +47,7 @@ class AntiSpam : Module() {
     private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE }.build())
-    private val experimental = register(Settings.booleanBuilder("Experimental").withValue(false).withVisibility { p.value == Page.TYPE }.build())
-    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { experimental.value && p.value == Page.TYPE }.build())
+    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { p.value == Page.TYPE }.build())
 
     /* Page Two */
     private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
@@ -90,6 +89,12 @@ class AntiSpam : Module() {
                 .collect(Collectors.toList())
                 .forEach(Consumer { entry: Map.Entry<String, Long> -> messageHistory!!.remove(entry.key) })
 
+        if (duplicates.value) {
+            if (checkDupes(event.message.unformattedText)) {
+                event.isCanceled = true
+            }
+        }
+
         val pattern = isSpam(event.message.unformattedText)
         if (pattern != null) { // null means no pattern found
             if (mode.value == Mode.HIDE) {
@@ -99,13 +104,7 @@ class AntiSpam : Module() {
             }
         }
 
-        if (duplicates.value) {
-            if (checkDupes(event.message.unformattedText)) {
-                event.isCanceled = true
-            }
-        }
-
-        if (fancyChat.value && experimental.value) {
+        if (fancyChat.value) {
             var message = sanitizeFancyChat(event.message.unformattedText)
             if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
                 event.message = TextComponentString(getUsername(event.message.unformattedText) + " [Fancychat]")
