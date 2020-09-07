@@ -116,6 +116,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         if (event.isCancelled()) {
             ci.cancel();
 
+            ++this.positionUpdateTicks;
+
             // Copy flags from event
             moving = event.getMoving();
             rotating = event.getRotating();
