@@ -105,20 +105,11 @@ class AntiSpam : Module() {
             }
         }
 
-        var message = ""
         if (fancyChat.value && experimental.value) {
-            message = sanitizeFancyChat(event.message.unformattedText)
-            if (message.trim { it <= ' ' }.isEmpty()) { // todo remove this if going for intelligent de-fancy
-                message = "[Fancychat]"
+            var message = sanitizeFancyChat(event.message.unformattedText)
+            if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
+                event.message = TextComponentString(getUsername(event.message.unformattedText) + " [Fancychat]")
             }
-        }
-
-        val oldMessage = event.message.unformattedText
-        if (oldMessage != message) {
-            if (message.length > 256) { // I'm not sure if message length matters at this point, but this is just for peace of mind
-                message = message.substring(0, 256)
-            }
-            event.message = TextComponentString(message)
         }
     })
 
@@ -152,6 +143,15 @@ class AntiSpam : Module() {
 
     private fun removeUsername(username: String): String {
         return username.replace("<[^>]*> ".toRegex(), "")
+    }
+
+    private fun getUsername(rawMessage: String): String? {
+        val matcher = Pattern.compile("<[^>]*>", Pattern.CASE_INSENSITIVE).matcher(rawMessage)
+        return if (matcher.find()) {
+            matcher.group()
+        } else {
+            rawMessage.substring(0, rawMessage.indexOf(">")) // a bit hacky
+        }
     }
 
     private fun detectSpam(message: String): String? {
@@ -197,7 +197,7 @@ class AntiSpam : Module() {
     }
 
     private fun sanitizeFancyChat(toClean: String): String {
-        return toClean.replace("[^\\u0000-\\u007F]".toRegex(), "") //todo make this more intelligent bc wnuke said there was a way
+        return toClean.replace("[^\\u0000-\\u007F]".toRegex(), "") // this has the potential to be intelligent and convert to ascii instead of just delete
     }
 
 
