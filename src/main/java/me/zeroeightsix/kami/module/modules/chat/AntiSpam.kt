@@ -47,8 +47,8 @@ class AntiSpam : Module() {
     private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE }.build())
     private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE }.build())
-    private val experimental = register(Settings.b("Experimental", false))
-    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { experimental.value }.build())
+    private val experimental = register(Settings.booleanBuilder("Experimental").withValue(false).withVisibility { p.value == Page.TYPE }.build())
+    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { experimental.value && p.value == Page.TYPE }.build())
 
     /* Page Two */
     private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
@@ -350,10 +350,10 @@ class AntiSpam : Module() {
                 "[/@#^()\\[\\]{}<>|\\-+=\\\\]$")
         val SLURS = arrayOf(
                 "nigg.{0,3}",
-                "chi.k",
+                "chi[^c]k",
                 "tra.{0,1}n(y|ie)",
                 "kik.{1,2}",
-                "fa(g |g.{0,2}",
+                "fa(g |g.{0,2})",
                 "reta.{0,3}"
         )
         // fairly simple - anarchy servers shouldn't have a chat filter so there isn't an attempt to check for bypasses
