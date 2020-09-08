@@ -53,7 +53,7 @@ class CrystalAuraRewrite : Module() {
     /* General */
     private val tpsSync = register(Settings.booleanBuilder("TpsSync").withValue(false).withVisibility { page.value == Page.GENERAL }.build())
     private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
-    private val noSuicide = register(Settings.booleanBuilder("NoSuicide").withValue(true).withVisibility { page.value == Page.GENERAL }.build())
+    private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
 
     /* Place page one */
     private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
@@ -64,7 +64,6 @@ class CrystalAuraRewrite : Module() {
 
     /* Place page two */
     private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
-    private val minEfficiencyP = register(Settings.integerBuilder("MinEfficiencyPlace").withValue(2).withRange(-10, 10).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
     private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
     private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
@@ -80,7 +79,6 @@ class CrystalAuraRewrite : Module() {
     /* Explode page two */
     private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
-    private val minEfficiencyE = register(Settings.integerBuilder("MinEfficiencyExplode").withValue(4).withRange(-10, 10).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
     private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
     private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(2).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(4).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
@@ -230,7 +228,7 @@ class CrystalAuraRewrite : Module() {
             if (BlockUtils.rayTraceTo(pos) == null && dist > wallPlaceRange.value) continue
             if (!fastCalc.value && !shouldForcePlace()) {
                 val selfDamage = CrystalUtils.calcExplosionDamage(pos, mc.player)
-                if (noSuicide.value && !noSuicideCheck(selfDamage)) continue
+                if (!noSuicideCheck(selfDamage)) continue
                 if (!checkDamagePlace(damage, selfDamage)) continue
             }
             return pos
@@ -248,7 +246,7 @@ class CrystalAuraRewrite : Module() {
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float): Boolean {
-        return (damage >= minDamageP.value) && (damage - selfDamage >= minEfficiencyP.value) && (selfDamage <= maxSelfDamageP.value)
+        return (damage >= minDamageP.value || shouldFacePlace()) && (selfDamage <= maxSelfDamageP.value)
     }
     /* End of placing */
 
@@ -271,7 +269,7 @@ class CrystalAuraRewrite : Module() {
                     maxDamage = max(maxDamage, CrystalUtils.calcExplosionDamage(crystal, target))
                     maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcExplosionDamage(crystal, mc.player))
                 }
-                if (noSuicide.value && !noSuicideCheck(maxSelfDamage)) return false
+                if (!noSuicideCheck(maxSelfDamage)) return false
                 if (!checkDamageExplode(maxDamage, maxSelfDamage)) return false
             }
             return true
@@ -298,8 +296,7 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun shouldForceExplode(): Boolean {
-        return shouldFacePlace()
-                || (autoForceExplode.value && placeMap.isNotEmpty() && placeMap.firstKey() > minDamageE.value)
+        return (autoForceExplode.value && placeMap.isNotEmpty() && placeMap.firstKey() > minDamageE.value)
                 || (forceExplode.value && mc.gameSettings.keyBindAttack.isKeyDown
                 && mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE
                 && mc.player.heldItemMainhand.getItem() != Items.GOLDEN_APPLE)
@@ -309,13 +306,13 @@ class CrystalAuraRewrite : Module() {
      * @return True if passed exploding damage check
      */
     private fun checkDamageExplode(damage: Float, selfDamage: Float): Boolean {
-        return (damage >= minDamageE.value) && (damage - selfDamage >= minEfficiencyE.value) && (selfDamage <= maxSelfDamageE.value)
+        return (damage >= minDamageE.value || shouldFacePlace()) && (selfDamage <= maxSelfDamageE.value)
     }
     /* End of exploding */
 
     /* General */
     private fun noSuicideCheck(selfDamage: Float): Boolean {
-        return (mc.player.health + mc.player.absorptionAmount) - selfDamage > 5f
+        return mc.player.health - selfDamage > noSuicideThreshold.value
     }
 
     private fun isHoldingTool(): Boolean {
