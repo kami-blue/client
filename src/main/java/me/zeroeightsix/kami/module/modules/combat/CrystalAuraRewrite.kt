@@ -237,9 +237,8 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun shouldForcePlace(): Boolean {
-        return shouldFacePlace()
-                || (forcePlace.value && mc.gameSettings.keyBindUseItem.isKeyDown
-                && mc.player.heldItemMainhand.getItem() == Items.END_CRYSTAL)
+        return forcePlace.value && mc.gameSettings.keyBindUseItem.isKeyDown
+                && mc.player.heldItemMainhand.getItem() == Items.END_CRYSTAL
     }
 
     /**
