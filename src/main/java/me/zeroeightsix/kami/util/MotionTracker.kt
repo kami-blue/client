@@ -7,7 +7,9 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 import java.util.*
 
 /**
@@ -32,12 +34,22 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     @EventHandler
     private val onUpdateListener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
         target?.let {
-            motionLog.add(it.positionVector.subtract(it.prevPosX, it.prevPosY, it.prevPosZ))
+            motionLog.add(calcActualMotion(it))
             while (motionLog.size > trackLength) motionLog.pollFirst()
             prevMotion = motion
             motion = calcAverageMotion()
         }
     })
+
+    /**
+     * Calculate the actual motion of given entity
+     *
+     * @param entity The entity for motion calculation
+     * @return Actual motion vector
+     */
+    private fun calcActualMotion(entity: Entity): Vec3d {
+        return entity.positionVector.subtract(entity.prevPosX, entity.prevPosY, entity.prevPosZ)
+    }
 
     /**
      * Calculate the average motion of the target entity in [trackLength]
@@ -64,19 +76,41 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
      * @return Predicted position of the target entity
      */
     fun calcPositionAhead(ticksAhead: Int, interpolation: Boolean = false): Vec3d? {
+        return target?.let { target ->
+            calcMovedVectorAhead(ticksAhead, interpolation)?.let {
+                val partialTicks = if (interpolation) KamiTessellator.pTicks() else 1f
+                EntityUtils.getInterpolatedPos(target, partialTicks).add(it)
+            }
+        }
+    }
+
+    /**
+     * Calculate the predicted moved vector of the target entity based on [calcAverageMotion]
+     *
+     * @param [ticksAhead] Amount of prediction ahead
+     * @param [interpolation] Whether to return interpolated position or not, default value is false (no interpolation)
+     * @return Predicted moved vector of the target entity
+     */
+    fun calcMovedVectorAhead(ticksAhead: Int, interpolation: Boolean = false): Vec3d? {
         return Wrapper.world?.let { world ->
             target?.let {
                 val partialTicks = if (interpolation) KamiTessellator.pTicks() else 1f
-                val startingPos = EntityUtils.getInterpolatedPos(it, partialTicks)
                 val averageMotion = prevMotion.add(motion.subtract(prevMotion).scale(partialTicks.toDouble()))
-                var movedTicks = 0
+                var movedVec = Vec3d(0.0, 0.0, 0.0)
                 for (ticks in 0..ticksAhead) {
-                    if (world.collidesWithAnyBlock(it.boundingBox.offset(averageMotion.scale(ticks.toDouble())))) break
-                    movedTicks = ticks
+                    movedVec = if (canMove(world, it.boundingBox, movedVec.add(averageMotion))) { // Attempt to move with full motion
+                        movedVec.add(averageMotion)
+                    } else if (canMove(world, it.boundingBox, movedVec.add(averageMotion.x, 0.0, averageMotion.z))) { // Attempt to move horizontally
+                        movedVec.add(averageMotion.x, 0.0, averageMotion.z)
+                    } else break
                 }
-                startingPos.add(calcAverageMotion().scale(movedTicks.toDouble()))
+                movedVec
             }
         }
+    }
+
+    private fun canMove(world: World, bbox: AxisAlignedBB, offset: Vec3d): Boolean {
+        return !world.collidesWithAnyBlock(bbox.offset(offset))
     }
 
     /**
