@@ -22,6 +22,7 @@ import net.minecraft.init.MobEffects
 import net.minecraft.init.SoundEvents
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
+import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.EnumHand
@@ -88,11 +89,16 @@ class CrystalAuraRewrite : Module() {
         GENERAL, PLACE_ONE, PLACE_TWO, EXPLODE_ONE, EXPLODE_TWO
     }
 
+    private enum class State {
+        NONE, PLACE, EXPLODE
+    }
+
     /* Variables */
     private val placeMap = TreeMap<Float, BlockPos>(Comparator.reverseOrder())
     private val crystalList = TreeSet<EntityEnderCrystal>(compareBy { it.getDistance(mc.player) })
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
+    private var state = State.NONE
     private var hitCount = 0
     private var hitTimer = 0
     private var inactiveTicks = 0
@@ -127,17 +133,25 @@ class CrystalAuraRewrite : Module() {
         }
     })
 
+    // CA is very order sensitive for some reasons so we have to make sure that we spoof the rotations before placing or exploding
+    @EventHandler
+    private val sendListener = Listener(EventHook { event: PacketEvent.PostSend ->
+        if (event.packet !is CPacketPlayer) return@EventHook
+        if (state == State.PLACE) place()
+        else if (state == State.EXPLODE) explode()
+    })
+
     override fun onUpdate() {
         if (CombatManager.getTopPriority() > modulePriority) return
         updateTickCounts()
         updateMap()
 
-        if (hitTimer >= getHitDelay()) {
-            if (canExplode()) explode()
-            else if (canPlace()) place()
+        if (hitTimer > getHitDelay()) {
+            if (canExplode()) preExplode()
+            else if (canPlace()) prePlace()
         } else {
             hitTimer++
-            if (canPlace()) place()
+            if (canPlace()) prePlace()
         }
         spoofRotation()
     }
@@ -163,17 +177,24 @@ class CrystalAuraRewrite : Module() {
         if (getExplodingCrystal() == null && ignoredList.isNotEmpty()) ignoredList.clear()
     }
 
-    private fun place() {
+    private fun prePlace() {
         if (autoSwap.value && getCrystalHand() == null) InventoryUtils.swapSlotToItem(426)
         getPlacingPos()?.let { pos ->
-            getCrystalHand()?.let { hand ->
                 lastRotation = Vec2f(RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 0.5, 0.5), true))
-                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0F, 0F, 0F))
-            }
+                state = State.PLACE
         }
     }
 
-    private fun explode() {
+    private fun place() {
+        getPlacingPos()?.let { pos ->
+            getCrystalHand()?.let { hand ->
+                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0F, 0F, 0F))
+            }
+        }
+        state = State.NONE
+    }
+
+    private fun preExplode() {
         if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
             if (!isHoldingTool()) equipBestWeapon()
             if (mc.player.getCooledAttackStrength(0f) < 0.5f) return
@@ -181,9 +202,6 @@ class CrystalAuraRewrite : Module() {
         getExplodingCrystal()?.let {
             hitTimer = 0
             lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(it), true))
-            mc.playerController.attackEntity(mc.player, it)
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.player.setLastAttackedEntity(CombatManager.target!!)
 
             if (it == lastCrystal) {
                 if (hitAttempts.value != 0) {
@@ -198,7 +216,17 @@ class CrystalAuraRewrite : Module() {
                 lastCrystal = it
                 hitCount = 0
             }
+            state = State.EXPLODE
         }
+    }
+
+    private fun explode() {
+        getExplodingCrystal()?.let {
+            mc.playerController.attackEntity(mc.player, it)
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.player.setLastAttackedEntity(CombatManager.target!!)
+        }
+        state = State.NONE
     }
     /* End of main functions */
 
