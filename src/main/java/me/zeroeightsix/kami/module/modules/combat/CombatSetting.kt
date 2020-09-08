@@ -1,17 +1,15 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
@@ -56,28 +54,26 @@ class CombatSetting : Module() {
 
     private var overrideRange = range.value
 
-    @EventHandler
-    private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Post ->
-        if (!renderPredictedPos.value || event.entity == null || event.entity != CombatManager.motionTracker.target) return@EventHook
-        val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else tickAhead.value
-        CombatManager.motionTracker.calcPositionAhead(ticks)
-                ?.subtract(mc.renderManager.renderPosX, mc.renderManager.renderPosY, mc.renderManager.renderPosZ)?.let { pos ->
-                    mc.renderManager.getEntityRenderObject<Entity>(event.entity)?.let { renderer ->
-                        glDisable(GL_TEXTURE_2D)
-                        glDisable(GL_LIGHTING)
-                        glDisable(GL_ALPHA_TEST)
-                        glColor4f(1f, 1f, 1f, 0.25f)
-                        renderer.doRender(event.entity, pos.x, pos.y, pos.z, event.yaw, event.partialTicks)
-                        glColor4f(1f, 1f, 1f, 1f)
-                        glEnable(GL_TEXTURE_2D)
-                        glEnable(GL_LIGHTING)
-                        glEnable(GL_ALPHA_TEST)
-                    }
-                }
-    })
-
     override fun onDisable() {
         enable()
+    }
+
+    override fun onRender() {
+        if (!renderPredictedPos.value) return
+        CombatManager.target?.let {
+            val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else tickAhead.value
+            val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
+            val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
+            val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
+            val posCurrentScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posCurrent))
+            val posAheadScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAhead))
+            val posAheadEyeScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAheadEye))
+            val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+            val vertices = arrayOf(posCurrentScreen, posAheadScreen, posAheadEyeScreen)
+            glDisable(GL_TEXTURE_2D)
+            RenderUtils2D.drawLineStrip(vertexHelper, vertices, 2f, ColorHolder(80, 255, 80))
+            glEnable(GL_TEXTURE_2D)
+        }
     }
 
     override fun onUpdate() {

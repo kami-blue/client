@@ -20,20 +20,41 @@ import java.util.*
 class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     var target: Entity? = targetIn
         set(value) {
-            if (field != value) {
-                motionLog.clear()
+            if (value != field) {
+                reset()
                 field = value
             }
         }
     private val motionLog = LinkedList<Vec3d>()
+    private var prevMotion = Vec3d(0.0, 0.0, 0.0)
+    private var motion = Vec3d(0.0, 0.0, 0.0)
 
     @EventHandler
-    private val receiveListener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
+    private val onUpdateListener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
         target?.let {
             motionLog.add(it.positionVector.subtract(it.prevPosX, it.prevPosY, it.prevPosZ))
             while (motionLog.size > trackLength) motionLog.pollFirst()
+            prevMotion = motion
+            motion = calcAverageMotion()
         }
     })
+
+    /**
+     * Calculate the average motion of the target entity in [trackLength]
+     *
+     * @return Average motion vector
+     */
+    private fun calcAverageMotion(): Vec3d {
+        var sumX = 0.0
+        var sumY = 0.0
+        var sumZ = 0.0
+        for (motion in motionLog) {
+            sumX += motion.x
+            sumY += motion.y
+            sumZ += motion.z
+        }
+        return Vec3d(sumX, sumY, sumZ).scale(1.0 / motionLog.size)
+    }
 
     /**
      * Calculate the predicted position of the target entity based on [calcAverageMotion]
@@ -45,33 +66,26 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     fun calcPositionAhead(ticksAhead: Int, interpolation: Boolean = false): Vec3d? {
         return Wrapper.world?.let { world ->
             target?.let {
-                val averageMotion = calcAverageMotion()
+                val partialTicks = if (interpolation) KamiTessellator.pTicks() else 1f
+                val startingPos = EntityUtils.getInterpolatedPos(it, partialTicks)
+                val averageMotion = prevMotion.add(motion.subtract(prevMotion).scale(partialTicks.toDouble()))
                 var movedTicks = 0
                 for (ticks in 0..ticksAhead) {
                     if (world.collidesWithAnyBlock(it.boundingBox.offset(averageMotion.scale(ticks.toDouble())))) break
                     movedTicks = ticks
                 }
-                val startingPos = if (interpolation) EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks()) else it.positionVector
                 startingPos.add(calcAverageMotion().scale(movedTicks.toDouble()))
             }
-
         }
     }
+
     /**
-     * Calculate the average motion of the target entity in [trackLength]
-     *
-     * @return Average motion vector
+     * Reset motion tracker
      */
-    fun calcAverageMotion(): Vec3d {
-        var sumX = 0.0
-        var sumY = 0.0
-        var sumZ = 0.0
-        for (motion in motionLog) {
-            sumX += motion.x
-            sumY += motion.y
-            sumZ += motion.z
-        }
-        return Vec3d(sumX, sumY, sumZ).scale(1.0 / motionLog.size)
+    fun reset() {
+        motionLog.clear()
+        prevMotion = Vec3d(0.0, 0.0, 0.0)
+        motion = Vec3d(0.0, 0.0, 0.0)
     }
 
     init {
