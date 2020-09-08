@@ -199,7 +199,7 @@ class CrystalAuraRewrite : Module() {
             lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(it), true))
             mc.playerController.attackEntity(mc.player, it)
             mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.player.setLastAttackedEntity(CombatManager.target)
+            mc.player.setLastAttackedEntity(CombatManager.target!!)
 
             if (it == lastCrystal) {
                 if (hitAttempts.value != 0) {

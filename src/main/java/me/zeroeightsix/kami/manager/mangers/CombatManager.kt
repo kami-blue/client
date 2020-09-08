@@ -16,10 +16,10 @@ object CombatManager {
 
     var targetList = ArrayList<EntityLivingBase>()
     var target: EntityLivingBase? = null
-    set(value) {
-        motionTracker.target = value
-        field = value
-    }
+        set(value) {
+            motionTracker.target = value
+            field = value
+        }
     val motionTracker = MotionTracker(null)
 
     fun getTopPriority(ignoreAntiBot: Boolean = true): Int {
