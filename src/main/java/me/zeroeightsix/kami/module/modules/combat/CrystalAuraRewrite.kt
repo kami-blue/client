@@ -52,7 +52,7 @@ class CrystalAuraRewrite : Module() {
 
     /* General */
     private val tpsSync = register(Settings.booleanBuilder("TpsSync").withValue(false).withVisibility { page.value == Page.GENERAL }.build())
-    private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.GENERAL }.build())
+    private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
     private val noSuicide = register(Settings.booleanBuilder("NoSuicide").withValue(true).withVisibility { page.value == Page.GENERAL }.build())
 
     /* Place page one */
@@ -66,7 +66,7 @@ class CrystalAuraRewrite : Module() {
     private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
     private val minEfficiencyP = register(Settings.integerBuilder("MinEfficiencyPlace").withValue(2).withRange(-10, 10).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
     private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
-    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(1).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
+    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
 
@@ -98,7 +98,6 @@ class CrystalAuraRewrite : Module() {
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var hitCount = 0
-    private var swapTimer = 0
     private var hitTimer = 0
     private var inactiveTicks = 0
 
@@ -111,16 +110,12 @@ class CrystalAuraRewrite : Module() {
             this.disable()
             return
         }
-        if (getCrystalHand() != null && mc.player.getCooledAttackStrength(0f) >= 0.2f) {
-            swapTimer = 3
-        }
     }
 
     override fun onDisable() {
         placeMap.clear()
         crystalList.clear()
         ignoredList.clear()
-        swapTimer = 0
         hitTimer = 0
         inactiveTicks = 0
     }
@@ -155,12 +150,6 @@ class CrystalAuraRewrite : Module() {
 
     /* Main functions */
     private fun updateTickCounts() {
-        if (getCrystalHand() == null) {
-            swapTimer = 0
-        } else {
-            swapTimer++
-        }
-
         if (isActive()) {
             inactiveTicks = 0
         } else {
@@ -180,7 +169,6 @@ class CrystalAuraRewrite : Module() {
 
     private fun place() {
         if (autoSwap.value && getCrystalHand() == null) InventoryUtils.swapSlotToItem(426)
-        if (swapTimer < 1) return
         getPlacingPos()?.let { pos ->
             getCrystalHand()?.let { hand ->
                 lastRotation = Vec2f(RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 0.5, 0.5), true))
