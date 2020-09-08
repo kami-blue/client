@@ -163,6 +163,8 @@ class CrystalAuraRewrite : Module() {
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
 
         ignoredList.removeIf { it.isDead }
+
+        if (getExplodingCrystal() == null && ignoredList.isNotEmpty()) ignoredList.clear()
     }
 
     private fun place() {
@@ -346,10 +348,9 @@ class CrystalAuraRewrite : Module() {
     /* Rotation spoof */
     private var lastRotation = Vec2f(0f, 0f)
 
-    private fun spoofRotation(rotation: Vec2f = lastRotation) {
-        if (inactiveTicks > 50) return
-        lastRotation = rotation
-        PlayerPacketManager.addPacket(this, (PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)))
+    private fun spoofRotation() {
+        if (inactiveTicks > 10) return
+        PlayerPacketManager.addPacket(this, (PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)))
     }
     /* End of rotation spoof */
 }
