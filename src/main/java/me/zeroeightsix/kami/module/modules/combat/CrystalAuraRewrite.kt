@@ -195,10 +195,7 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun preExplode() {
-        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS)) {
-            if (!isHoldingTool()) equipBestWeapon()
-            if (mc.player.getCooledAttackStrength(0f) < 0.5f) return
-        }
+        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) equipBestWeapon()
         getExplodingCrystal()?.let {
             hitTimer = 0
             lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(it), true))
