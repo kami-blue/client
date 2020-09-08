@@ -59,12 +59,10 @@ class CrystalAuraRewrite : Module() {
     private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
     private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
     private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
-    private val fastCalc = register(Settings.booleanBuilder("FastCalculation").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
-    private val feetOnly = register(Settings.booleanBuilder("FeetOnly").withValue(false).withVisibility { page.value == Page.PLACE_ONE && !fastCalc.value }.build())
 
     /* Place page two */
-    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
-    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO && !fastCalc.value }.build())
+    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO }.build())
+    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
     private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
@@ -80,7 +78,7 @@ class CrystalAuraRewrite : Module() {
     private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
     private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(2).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(4).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
@@ -104,16 +102,15 @@ class CrystalAuraRewrite : Module() {
     }
 
     override fun onEnable() {
-        if (mc.player == null) {
-            this.disable()
-            return
-        }
+        if (mc.player == null) this.disable()
     }
 
     override fun onDisable() {
         placeMap.clear()
         crystalList.clear()
         ignoredList.clear()
+        lastCrystal = null
+        hitCount = 0
         hitTimer = 0
         inactiveTicks = 0
     }
@@ -121,11 +118,10 @@ class CrystalAuraRewrite : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
-        val packet = event.packet
-        if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+        if (event.packet.getCategory() == SoundCategory.BLOCKS && event.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
             val crystalList = CrystalUtils.getCrystalList(10f)
             for (crystal in crystalList) {
-                if (crystal.getDistance(packet.x, packet.y, packet.z) > 5) continue
+                if (crystal.getDistance(event.packet.x, event.packet.y, event.packet.z) > 5) continue
                 crystal.setDead()
             }
         }
@@ -157,7 +153,7 @@ class CrystalAuraRewrite : Module() {
 
     private fun updateMap() {
         placeMap.clear()
-        placeMap.putAll(CrystalUtils.getPlacePos(CombatManager.target, mc.player, placeRange.value, fastCalc.value, feetOnly.value))
+        placeMap.putAll(CrystalUtils.getPlacePos(CombatManager.target, mc.player, placeRange.value))
 
         crystalList.clear()
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
@@ -228,7 +224,7 @@ class CrystalAuraRewrite : Module() {
             if (dist > placeRange.value) continue
             if (!CrystalUtils.canPlaceCollide(pos)) continue
             if (BlockUtils.rayTraceTo(pos) == null && dist > wallPlaceRange.value) continue
-            if (!fastCalc.value && !shouldForcePlace()) {
+            if (!shouldForcePlace()) {
                 val selfDamage = CrystalUtils.calcExplosionDamage(pos, mc.player)
                 if (!noSuicideCheck(selfDamage)) continue
                 if (!checkDamagePlace(damage, selfDamage)) continue
@@ -333,7 +329,7 @@ class CrystalAuraRewrite : Module() {
             for (crystal in crystalList) {
                 if (ignoredList.contains(crystal)) continue
                 if (crystal.getDistance(mc.player) > placeRange.value) continue
-                if (!fastCalc.value && !shouldForcePlace()) {
+                if (!shouldForcePlace()) {
                     val damage = CrystalUtils.calcExplosionDamage(crystal, target)
                     val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
                     if (!checkDamagePlace(damage, selfDamage)) continue

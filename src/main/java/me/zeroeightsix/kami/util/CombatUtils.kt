@@ -94,19 +94,18 @@ object CombatUtils {
 
     object CrystalUtils {
         /* Position Finding */
-        fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float, fastCalc: Boolean = false, feetLevel: Boolean = false): Map<Float, BlockPos> {
+        fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float): Map<Float, BlockPos> {
             if (target == null || center == null) return emptyMap()
             val squaredRadius = radius.pow(2).toDouble()
-            val yRange = if (!fastCalc && !feetLevel) getAxisRange(center.posY, radius) else IntRange(target.posY.toInt() - 1, target.posY.toInt() - 1)
             val damagePosMap = HashMap<Float, BlockPos>()
-            for (x in getAxisRange(center.posX, radius)) for (y in yRange) for (z in getAxisRange(center.posZ, radius)) {
+            for (x in getAxisRange(center.posX, radius)) for (y in getAxisRange(center.posY, radius)) for (z in getAxisRange(center.posZ, radius)) {
                 /* Valid position check */
                 val blockPos = BlockPos(x, y, z)
                 if (center.getDistanceSq(blockPos) > squaredRadius) continue
                 if (!canPlace(blockPos, target)) continue
 
                 /* Damage calculation */
-                val damage = calcExplosionDamage(blockPos, target, fastCalc)
+                val damage = calcExplosionDamage(blockPos, target)
                 damagePosMap[damage] = blockPos
             }
             return damagePosMap
@@ -156,17 +155,17 @@ object CombatUtils {
 
         /* Damage calculation */
 
-        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = true): Float {
+        fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
             val pos = crystal.positionVector
-            val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
-            return if (fastCalc || !calcBlastReduction) rawDamage
+            val rawDamage = calcExplosionDamage(pos, entity)
+            return if (!calcBlastReduction) rawDamage
             else calcBlastReduction(rawDamage, pos, entity)
         }
 
-        fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, fastCalc: Boolean = false, calcBlastReduction: Boolean = true): Float {
+        fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
             val pos = Vec3d(blockPos).add(0.5, 1.0, 0.5)
-            val rawDamage = calcExplosionDamage(pos, entity, fastCalc)
-            return if (fastCalc || !calcBlastReduction) rawDamage
+            val rawDamage = calcExplosionDamage(pos, entity)
+            return if (!calcBlastReduction) rawDamage
             else calcBlastReduction(rawDamage, pos, entity)
         }
 
@@ -187,14 +186,10 @@ object CombatUtils {
             return mc.world.difficulty.id * 0.5f
         }
 
-        private fun calcExplosionDamage(pos: Vec3d, entity: Entity, fastCalc: Boolean): Float {
+        private fun calcExplosionDamage(pos: Vec3d, entity: Entity): Float {
             val distance = pos.distanceTo(entity.positionVector)
-            return if (!fastCalc) {
-                val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
-                ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
-            } else {
-                1f / distance.toFloat() /* Use the reciprocal number so it can be sorted correctly */
-            }
+            val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
+            return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
         }
         /* End of damage calculation */
     }
