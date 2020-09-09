@@ -1,23 +1,20 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils.surroundOffset
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
-import net.minecraft.init.Blocks
+import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.ceil
 
 /**
  * Created 16 November 2019 by hub
  * Updated by dominikaaaa on 15/12/19
- * Updated by Xiarooo on 08/08/20
+ * Updated by Xiaro on 08/09/20
  */
 @Module.Info(
         name = "HoleESP",
@@ -59,34 +56,16 @@ class HoleESP : Module() {
 
     override fun onUpdate() {
         safeHoles.clear()
-        val range = ceil(renderDistance.value).toInt()
-        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)!!
-        val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
+        val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
         for (pos in blockPosList) {
-            if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air
-                    || mc.world.getBlockState(pos.up()).block != Blocks.AIR // block 1 above gotta be air
-                    || mc.world.getBlockState(pos.up().up()).block != Blocks.AIR) continue // block 2 above gotta be air
+            val holeType = SurroundUtils.checkHole(pos)
+            if (holeType == SurroundUtils.HoleType.NONE) continue
 
-            var isSafe = true
-            var isBedrock = true
-            for (offset in surroundOffset) {
-                val block = mc.world.getBlockState(pos.add(offset)).block
-                if (block !== Blocks.BEDROCK && block !== Blocks.OBSIDIAN && block !== Blocks.ENDER_CHEST && block !== Blocks.ANVIL) {
-                    isSafe = false
-                    break
-                }
-                if (block !== Blocks.BEDROCK) {
-                    isBedrock = false
-                }
+            if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
+                safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
             }
-
-            if (isSafe) {
-                if (!isBedrock && shouldAddObby()) {
-                    safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
-                }
-                if (isBedrock && shouldAddBedrock()) {
-                    safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
-                }
+            if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
+                safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
             }
         }
     }

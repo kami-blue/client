@@ -55,16 +55,6 @@ object BlockUtils {
             Blocks.RED_SHULKER_BOX,
             Blocks.BLACK_SHULKER_BOX
     )
-
-    @JvmField
-    val surroundOffset = arrayOf(
-            BlockPos(0, -1, 0),  // down
-            BlockPos(0, 0, -1),  // north
-            BlockPos(1, 0, 0),  // east
-            BlockPos(0, 0, 1),  // south
-            BlockPos(-1, 0, 0) // west
-    )
-
     private val mc = Minecraft.getMinecraft()
 
     fun placeBlockScaffold(pos: BlockPos) {

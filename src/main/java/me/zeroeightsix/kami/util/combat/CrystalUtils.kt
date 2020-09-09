@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -15,7 +16,6 @@ import net.minecraft.world.Explosion
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
-import kotlin.math.pow
 
 /**
  * @author Xiaro
@@ -29,22 +29,16 @@ object CrystalUtils {
     @JvmStatic
     fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float): Map<Float, BlockPos> {
         if (target == null || center == null) return emptyMap()
-        val squaredRadius = radius.pow(2).toDouble()
+        val centerPos = if (center == mc.player) center.getPositionEyes(1f) else center.positionVector
+        val posList = VectorUtils.getBlockPosInSphere(centerPos, radius)
         val damagePosMap = HashMap<Float, BlockPos>()
-        for (x in getAxisRange(center.posX, radius)) for (y in getAxisRange(center.posY, radius)) for (z in getAxisRange(center.posZ, radius)) {
-            /* Valid position check */
-            val blockPos = BlockPos(x, y, z)
-            if (center.getDistanceSq(blockPos) > squaredRadius) continue
-            if (!canPlace(blockPos, target)) continue
-
-            /* Damage calculation */
-            val damage = calcExplosionDamage(blockPos, target)
-            damagePosMap[damage] = blockPos
+        for (pos in posList) {
+            if (!canPlace(pos, target)) continue
+            damagePosMap[calcExplosionDamage(pos, target)] = pos
         }
         return damagePosMap
     }
 
-    @JvmStatic
     fun getAxisRange(d1: Double, d2: Float): IntRange {
         return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
     }
