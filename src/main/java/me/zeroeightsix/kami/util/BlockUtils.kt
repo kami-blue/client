@@ -152,6 +152,27 @@ object BlockUtils {
         return false
     }
 
+    fun getNeighbour(blockPos: BlockPos, maxAttempt: Int = 3, attempt: Int = 0): Pair<EnumFacing, BlockPos>? {
+        for (side in EnumFacing.values()) {
+            val neighbour = blockPos.offset(side)
+            if (mc.world.getBlockState(neighbour).material.isReplaceable) continue
+            return Pair(side.opposite, neighbour)
+        }
+        if (attempt < maxAttempt) {
+            for (side in EnumFacing.values()) {
+                return getNeighbour(blockPos.offset(side), maxAttempt, attempt + 1)
+            }
+        }
+        return null
+    }
+
+    fun getHitSide(blockPos: BlockPos): EnumFacing {
+        return rayTraceTo(blockPos)?.sideHit ?: EnumFacing.UP
+    }
+
+    fun getHitVecOffset(facing: EnumFacing): Vec3d {
+        return Vec3d(facing.directionVec).scale(0.5).add(0.5, 0.5, 0.5)
+    }
 
     /**
      * @return true if there is liquid below
@@ -190,10 +211,6 @@ object BlockUtils {
 
     fun isWater(pos: BlockPos): Boolean {
         return mc.world.getBlockState(pos).block == Blocks.WATER
-    }
-
-    fun getHitSide(blockPos: BlockPos): EnumFacing {
-        return rayTraceTo(blockPos)?.sideHit?: EnumFacing.UP
     }
 
     fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
