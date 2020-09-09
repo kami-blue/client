@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
-import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
 import me.zeroeightsix.kami.util.math.Vec2f

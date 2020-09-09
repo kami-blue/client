@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CombatUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d

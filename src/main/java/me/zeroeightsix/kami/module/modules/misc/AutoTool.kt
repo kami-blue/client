@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CombatUtils
+import me.zeroeightsix.kami.util.combat.CombatUtils
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Enchantments

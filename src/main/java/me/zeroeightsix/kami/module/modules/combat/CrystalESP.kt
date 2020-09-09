@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.CombatUtils.CrystalUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator

@@ -9,11 +9,11 @@ import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.CombatUtils.CrystalUtils
-import me.zeroeightsix.kami.util.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -195,7 +195,7 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun preExplode() {
-        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) equipBestWeapon()
+        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) CombatUtils.equipBestWeapon()
         getExplodingCrystal()?.let {
             hitTimer = 0
             lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(it), true))
