@@ -43,7 +43,7 @@ class DiscordRPC : Module() {
         return when (line) {
             LineInfo.VERSION -> KamiMod.VER_SMALL
             LineInfo.WORLD -> if (mc.isIntegratedServerRunning) "Singleplayer" else if (mc.getCurrentServerData() != null) "Multiplayer" else "Main Menu"
-            LineInfo.DIMENSION -> dimension(mc.player.dimension)
+            LineInfo.DIMENSION -> mc.player?.let { dimension(it.dimension) } ?: "No Dimension"
             LineInfo.USERNAME -> if (mc.player != null) mc.player.name else mc.getSession().username
             LineInfo.HEALTH -> if (mc.player != null) mc.player.health.toInt().toString() + " HP" else "No HP"
             LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
