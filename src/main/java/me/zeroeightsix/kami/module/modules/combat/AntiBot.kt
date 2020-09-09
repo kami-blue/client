@@ -10,8 +10,7 @@ import me.zeroeightsix.kami.module.Module
 @Module.Info(
         name = "AntiBot",
         description = "Avoid attacking fake entity",
-        category = Module.Category.COMBAT,
-        modulePriority = 100
+        category = Module.Category.COMBAT
 )
 class AntiBot : Module() {
 

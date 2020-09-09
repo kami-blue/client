@@ -2,8 +2,10 @@ package me.zeroeightsix.kami.util.combat
 
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.Block
+import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
+import kotlin.math.floor
 
 /**
  * @author Xiaro
@@ -29,6 +31,11 @@ object SurroundUtils {
             BlockPos(0, -1, 1),  // south
             BlockPos(-1, -1, 0)  // west
     )
+
+    @JvmStatic
+    fun checkHole(entity: Entity): HoleType {
+        return checkHole(BlockPos(floor(entity.posX).toInt(), floor(entity.posY).toInt(), floor(entity.posZ).toInt()))
+    }
 
     @JvmStatic
     fun checkHole(pos: BlockPos): HoleType {
