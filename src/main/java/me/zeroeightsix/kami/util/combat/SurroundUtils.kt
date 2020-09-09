@@ -23,15 +23,6 @@ object SurroundUtils {
             BlockPos(0, 0, 1),  // south
             BlockPos(-1, 0, 0)  // west
     )
-
-    @JvmStatic
-    val surroundPlaceOffset = arrayOf(
-            BlockPos(0, -1, -1), // north
-            BlockPos(1, -1, 0),  // east
-            BlockPos(0, -1, 1),  // south
-            BlockPos(-1, -1, 0)  // west
-    )
-
     @JvmStatic
     fun checkHole(entity: Entity): HoleType {
         return checkHole(BlockPos(floor(entity.posX).toInt(), floor(entity.posY).toInt(), floor(entity.posZ).toInt()))

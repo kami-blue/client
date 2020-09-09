@@ -1,295 +1,236 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.KamiMod
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
-import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.CenterPlayer
+import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.math.MathUtils
+import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.block.Block
-import net.minecraft.block.BlockObsidian
-import net.minecraft.block.state.IBlockState
-import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.CPacketAnimation
-import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import kotlin.math.atan2
-import kotlin.math.sqrt
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import kotlin.math.round
 
 /**
- * @author hub
- * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
- * Updated by Polymer on 09/01/20
- * Updated by dominikaaaa on 28/01/20
- * Updated by Xiaro on 08/07/20
+ * @author Xiaro
+ *
+ * Rewritten by Xiaro on 08/07/20
  */
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,
-        description = "Surrounds you with obsidian to take less damage"
+        description = "Surrounds you with obsidian to take less damage",
+        modulePriority = 100
 )
 class Surround : Module() {
-    @JvmField
-    var autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
-    private val spoofRotations = register(Settings.b("SpoofRotations", true))
-    private val spoofHotbar = register(Settings.b("SpoofHotbar", false))
-    private val blockPerTick = register(Settings.doubleBuilder("BlocksPerTick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build())
-    private val debugMsgs = register(Settings.e<DebugMsgs>("DebugMessages", DebugMsgs.IMPORTANT))
-    private val autoCenter = register(Settings.b("AutoCenter", true))
-    private val placeAnimation = register(Settings.b("PlaceAnimation", false))
+    private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
+    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0f, 10f))
+    private val autoDisable = register(Settings.e<AutoDisableMode>("AutoDisable", AutoDisableMode.OUT_OF_HOLE))
+    private val outOfHoleTimeout = register(Settings.integerBuilder("OutOfHoleTimeout(t)").withValue(20).withRange(1, 50).withVisibility { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
+    private val enableInHole = register(Settings.b("EnableInHole", true))
+    private val inHoleTimeout = register(Settings.integerBuilder("InHoleTimeout(t)").withValue(50).withRange(1, 100).withVisibility { enableInHole.value })
 
-    private val surroundTargets = arrayOf(Vec3d(0.0, 0.0, 0.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0), Vec3d(1.0, 0.0, 0.0), Vec3d(0.0, 0.0, 1.0), Vec3d(-1.0, 0.0, 0.0), Vec3d(0.0, 0.0, -1.0), Vec3d(1.0, 1.0, 0.0), Vec3d(0.0, 1.0, 1.0), Vec3d(-1.0, 1.0, 0.0), Vec3d(0.0, 1.0, -1.0))
+    enum class AutoCenterMode {
+        OFF, TP, MOTION
+    }
 
-    private var basePos: BlockPos? = null
-    private var offsetStep = 0
-    private var playerHotbarSlot = -1
-    private var lastHotbarSlot = -1
+    enum class AutoDisableMode {
+        ONE_TIME, OUT_OF_HOLE
+    }
 
-    private enum class DebugMsgs {
-        NONE, IMPORTANT, ALL
+    private var holePos: BlockPos? = null
+    private var toggleTimer = TimerUtils.StopTimer(TimerUtils.TimeUnit.TICKS)
+    private val placeThread = Thread { runSurround() }.apply { name = "Surround" }
+    private val threadPool = Executors.newSingleThreadExecutor()
+    private var future: Future<*>? = null
+    private var prevSlot = -1
+
+    @EventHandler
+    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
+        if (future?.isDone != false || event.packet !is CPacketHeldItemChange) return@EventHook
+        if (event.packet.slotId != getObby()) { // If player changed slot during placing, cancel it and assign it to prevSlot
+            prevSlot = event.packet.slotId
+            event.cancel()
+        }
+    })
+
+    override fun onEnable() {
+        toggleTimer.reset()
+    }
+
+    override fun onDisable() {
+        syncItem()
+        toggleTimer.reset()
+        holePos = null
+    }
+
+    // Runs the codes on rendering for more immediate reaction
+    override fun onRender() {
+        if (mc.world == null || mc.player == null) return
+        if (getObby() == -1) return
+        if (isDisabled) {
+            enableInHoleCheck()
+            return
+        }
+
+        // Following codes will not run if disabled
+        if (!mc.player.onGround || MathUtils.mcPlayerPosFloored(mc) != holePos) { // Out of hole check
+            outOfHoleCheck()
+            return
+        } else {
+            toggleTimer.reset()
+        }
+        if (!isPlaceable() || !centerPlayer()) { // Placeable & Centered check
+            if (!isPlaceable() && autoDisable.value == AutoDisableMode.ONE_TIME) disable()
+            return
+        }
+        if (future?.isDone != false) future = threadPool.submit(placeThread)
     }
 
     override fun onUpdate() {
-        if (autoCenter.value && (mc.player.posX != CenterPlayer.getPosX(1.0f) || mc.player.posZ != CenterPlayer.getPosZ(1.0f))) {
-            CenterPlayer.centerPlayer(1.0f)
-            if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
+        if (isEnabled && holePos == null) holePos = MathUtils.mcPlayerPosFloored(mc)
+        if (future?.isDone == false) PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(sprinting = false, moving = false, rotating = false))
+        if ((future?.isDone == true || future?.isCancelled == true) && prevSlot != -1) syncItem()
+    }
+
+    private fun syncItem() {
+        mc.playerController?.let {
+            if (prevSlot != -1) mc.connection!!.sendPacket(CPacketHeldItemChange(prevSlot))
+            prevSlot = -1
+        }
+    }
+
+    private fun enableInHoleCheck() {
+        if (enableInHole.value && mc.player.onGround && MovementUtils.getSpeed() < 0.15 && SurroundUtils.checkHole(mc.player) != SurroundUtils.HoleType.NONE) {
+            if (toggleTimer.stop() > inHoleTimeout.value) {
+                MessageSendHelper.sendChatMessage("$chatName You are in hole for longer than ${inHoleTimeout.value} ticks, enabling")
+                enable()
+            }
         } else {
-            if (mc.player != null && !KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-                if (offsetStep == 0) {
-                    basePos = BlockPos(mc.player.positionVector).down()
-                    playerHotbarSlot = mc.player.inventory.currentItem
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
-                    }
-                    if (!spoofHotbar.value) {
-                        lastHotbarSlot = mc.player.inventory.currentItem
-                    }
-                }
-                for (i in 0 until Math.floor(blockPerTick.value).toInt()) {
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
-                    }
-                    if (offsetStep >= surroundTargets.size) {
-                        endLoop()
-                        return
-                    }
-                    val offset = surroundTargets[offsetStep]
-                    placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
-                    ++offsetStep
-                }
+            toggleTimer.reset()
+        }
+    }
+
+    private fun outOfHoleCheck() {
+        if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
+            if (toggleTimer.stop() > outOfHoleTimeout.value) {
+                MessageSendHelper.sendChatMessage("$chatName You are out of hole for longer than ${outOfHoleTimeout.value} ticks, disabling")
+                disable()
             }
         }
     }
 
-    public override fun onEnable() {
-        if (mc.player == null) return
-
-        if (autoCenter.value) {
-            CenterPlayer.centerPlayer(0.5f)
-            if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
+    private fun getObby(): Int {
+        val slots = InventoryUtils.getSlotsHotbar(49)
+        if (slots == null) { // Obsidian check
+            if (isEnabled) {
+                MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
+                disable()
+            }
+            return -1
         }
-
-        playerHotbarSlot = mc.player.inventory.currentItem
-        lastHotbarSlot = -1
-
-        if (debugMsgs.value == DebugMsgs.ALL) {
-            MessageSendHelper.sendChatMessage("$chatName Saving initial Slot = $playerHotbarSlot")
-        }
+        return slots[0]
     }
 
-    public override fun onDisable() {
-        if (mc.player != null) {
-            if (debugMsgs.value == DebugMsgs.ALL) {
-                MessageSendHelper.sendChatMessage("$chatName Disabling")
-            }
+    private fun isPlaceable(): Boolean {
+        val playerPos = MathUtils.mcPlayerPosFloored(mc)
+        for (offset in SurroundUtils.surroundOffset) {
+            val pos = playerPos.add(offset)
+            if (mc.world.getBlockState(pos).material.isReplaceable) return true
+        }
+        return false
+    }
 
-            if (lastHotbarSlot != playerHotbarSlot && playerHotbarSlot != -1) {
-                if (spoofHotbar.value) {
-                    mc.player.connection.sendPacket(CPacketHeldItemChange(playerHotbarSlot))
+    private fun centerPlayer(): Boolean {
+        return if (autoCenter.value == AutoCenterMode.OFF) {
+            true
+        } else {
+            val centerDiff = getCenterDiff()
+            if (!isCentered()) {
+                if (autoCenter.value == AutoCenterMode.TP) {
+                    val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.25, 0.25)
+                    val posZ = mc.player.posZ + MathHelper.clamp(centerDiff.z, -0.25, 0.25)
+                    mc.player.setPosition(posX, mc.player.posY, posZ)
                 } else {
-                    mc.player.inventory.currentItem = playerHotbarSlot
+                    mc.player.motionX = centerDiff.x / 2.0
+                    mc.player.motionZ = centerDiff.z / 2.0
                 }
             }
-
-            playerHotbarSlot = -1
-            lastHotbarSlot = -1
+            isCentered()
         }
     }
 
-    private fun endLoop() {
-        offsetStep = 0
+    private fun isCentered(): Boolean {
+        return getCenterDiff().length() < 0.2
+    }
 
-        if (debugMsgs.value == DebugMsgs.ALL) {
-            MessageSendHelper.sendChatMessage("$chatName Ending Loop")
-        }
+    private fun getCenterDiff(): Vec3d {
+        return Vec3d(roundToCenter(mc.player.posX), mc.player.posY, roundToCenter(mc.player.posZ)).subtract(mc.player.positionVector)
+    }
 
-        if (lastHotbarSlot != playerHotbarSlot && playerHotbarSlot != -1) {
-            if (debugMsgs.value == DebugMsgs.ALL) {
-                MessageSendHelper.sendChatMessage("$chatName Setting Slot back to  = $playerHotbarSlot")
-            }
-            if (spoofHotbar.value) {
-                mc.player.connection.sendPacket(CPacketHeldItemChange(playerHotbarSlot))
-            } else {
-                mc.player.inventory.currentItem = playerHotbarSlot
-            }
-            lastHotbarSlot = playerHotbarSlot
-        }
+    private fun roundToCenter(doubleIn: Double): Double {
+        return round(doubleIn + 0.5) - 0.5
+    }
 
-        if (autoDisable.value) {
-            disable()
+    private fun runSurround() {
+        val slot = getObby()
+        if (slot == -1) return
+        prevSlot = mc.playerController.currentPlayerItem
+        mc.connection!!.sendPacket(CPacketHeldItemChange(slot))
+        val placed = ArrayList<BlockPos>()
+        while (isEnabled) {
+            val pos = getPlacingPos(placed) ?: break
+            val neighbor = BlockUtils.getNeighbour(pos, 1) ?: break
+            placed.add(pos)
+            doPlace(neighbor.second, neighbor.first)
         }
     }
 
-    private fun placeBlock(blockPos: BlockPos) {
-        if (!mc.world.getBlockState(blockPos).material.isReplaceable) {
-            if (debugMsgs.value == DebugMsgs.ALL) {
-                MessageSendHelper.sendChatMessage("$chatName Block is already placed, skipping")
-            }
-        } else if (!BlockUtils.checkForNeighbours(blockPos) && debugMsgs.value == DebugMsgs.ALL) {
-            MessageSendHelper.sendChatMessage("$chatName !checkForNeighbours(blockPos), disabling! ")
-        } else {
-            if (placeAnimation.value) mc.player.connection.sendPacket(CPacketAnimation(mc.player.activeHand))
-            placeBlockExecute(blockPos)
+    private fun getPlacingPos(toIgnore: ArrayList<BlockPos>): BlockPos? {
+        val playerPos = MathUtils.mcPlayerPosFloored(mc)
+        for (offset in SurroundUtils.surroundOffset) {
+            val pos = playerPos.add(offset)
+            if (toIgnore.contains(pos)) continue
+            if (!mc.world.getBlockState(pos).material.isReplaceable) continue
+            if (BlockUtils.hasNeighbour(pos)) return pos
+            if (!toIgnore.contains(pos.down())) return pos.down()
         }
-
-        val noBreakAnimation = KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java)!!
-        if (noBreakAnimation.isEnabled) {
-            noBreakAnimation.resetMining()
-        }
+        return null
     }
 
-    private fun findObiInHotbar(): Int {
-        var slot = -1
-        for (i in 0..8) {
-            val stack = mc.player.inventory.getStackInSlot(i)
-            if (stack != ItemStack.EMPTY && stack.getItem() is ItemBlock) {
-                val block = (stack.getItem() as ItemBlock).block
-                if (block is BlockObsidian) {
-                    slot = i
-                    break
-                }
-            }
-        }
-        return slot
+    private fun doPlace(pos: BlockPos, facing: EnumFacing) {
+        val hitVecOffset = BlockUtils.getHitVecOffset(facing)
+        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
+        val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
+        val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
+        mc.connection!!.sendPacket(rotationPacket)
+        Thread.sleep((25f / placeSpeed.value).toLong())
+        mc.connection!!.sendPacket(placePacket)
+        mc.player.swingArm(EnumHand.MAIN_HAND)
+        Thread.sleep((25f / placeSpeed.value).toLong())
     }
 
-    private fun placeBlockExecute(pos: BlockPos) {
-        val eyesPos = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
-        val var3 = EnumFacing.values()
-        for (side in var3) {
-            val neighbor = pos.offset(side)
-            val side2 = side.opposite
-
-            if (!canBeClicked(neighbor)) {
-                if (debugMsgs.value == DebugMsgs.ALL) {
-                    MessageSendHelper.sendChatMessage("$chatName No neighbor to click at!")
-                }
-            } else {
-                val hitVec = Vec3d(neighbor).add(0.5, 0.5, 0.5).add(Vec3d(side2.directionVec).scale(0.5))
-
-                if (eyesPos.squareDistanceTo(hitVec) <= 18.0625) {
-                    if (spoofRotations.value) {
-                        faceVectorPacketInstant(hitVec)
-                    }
-
-                    var needSneak = false
-                    val blockBelow = mc.world.getBlockState(neighbor).block
-
-                    if (BlockUtils.blackList.contains(blockBelow) || BlockUtils.shulkerList.contains(blockBelow)) {
-                        if (debugMsgs.value == DebugMsgs.IMPORTANT) {
-                            MessageSendHelper.sendChatMessage("$chatName Sneak enabled!")
-                        }
-                        needSneak = true
-                    }
-
-                    if (needSneak) {
-                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
-                    }
-
-                    val obiSlot = findObiInHotbar()
-
-                    if (obiSlot == -1) {
-                        if (debugMsgs.value == DebugMsgs.IMPORTANT) {
-                            MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
-                        }
-                        disable()
-                        return
-                    }
-
-                    if (lastHotbarSlot != obiSlot) {
-                        if (debugMsgs.value == DebugMsgs.ALL) {
-                            MessageSendHelper.sendChatMessage("$chatName Setting Slot to obsidian at  = $obiSlot")
-                        }
-
-                        if (spoofHotbar.value) {
-                            mc.player.connection.sendPacket(CPacketHeldItemChange(obiSlot))
-                        } else {
-                            mc.player.inventory.currentItem = obiSlot
-                        }
-                        lastHotbarSlot = obiSlot
-                    }
-
-                    mc.playerController.processRightClickBlock(mc.player, mc.world, neighbor, side2, hitVec, EnumHand.MAIN_HAND)
-                    mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
-
-                    if (needSneak) {
-                        if (debugMsgs.value == DebugMsgs.IMPORTANT) {
-                            MessageSendHelper.sendChatMessage("$chatName Sneak disabled!")
-                        }
-                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
-                    }
-                    return
-                }
-
-                if (debugMsgs.value == DebugMsgs.ALL) {
-                    MessageSendHelper.sendChatMessage("$chatName Distance > 4.25 blocks!")
-                }
-            }
+    init {
+        alwaysListening = enableInHole.value
+        enableInHole.settingListener = Setting.SettingListeners {
+            alwaysListening = enableInHole.value
         }
-    }
-
-    companion object {
-        private fun canBeClicked(pos: BlockPos): Boolean {
-            return getBlock(pos).canCollideCheck(getState(pos), false)
-        }
-
-        fun getBlock(pos: BlockPos): Block {
-            return getState(pos).block
-        }
-
-        private fun getState(pos: BlockPos): IBlockState {
-            return mc.world.getBlockState(pos)
-        }
-
-        private fun faceVectorPacketInstant(vec: Vec3d) {
-            val rotations = getLegitRotations(vec)
-            mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
-        }
-
-        private fun getLegitRotations(vec: Vec3d): FloatArray {
-            val eyesPos = eyesPos
-            val diffX = vec.x - eyesPos.x
-            val diffY = vec.y - eyesPos.y
-            val diffZ = vec.z - eyesPos.z
-
-            val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-            val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
-            val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
-
-            return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
-        }
-
-        private val eyesPos: Vec3d
-            get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
     }
 }

@@ -6,6 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.init.Items
@@ -51,17 +52,13 @@ class AntiChainPop : Module() {
     private fun itemMode() {
         val old = totems
         if (InfoOverlay.getItems(Items.TOTEM_OF_UNDYING) < old) {
-            val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)!!
-            surround.autoDisable.value = true
-            surround.enable()
+            ModuleManager.getModuleT(Surround::class.java)!!.enable()
         }
         totems = InfoOverlay.getItems(Items.TOTEM_OF_UNDYING)
     }
 
     private fun packetMode() {
-        val surround = KamiMod.MODULE_MANAGER.getModuleT(Surround::class.java)!!
-        surround.autoDisable.value = true
-        surround.enable()
+        ModuleManager.getModuleT(Surround::class.java)!!.enable()
     }
 
     public override fun onToggle() {
