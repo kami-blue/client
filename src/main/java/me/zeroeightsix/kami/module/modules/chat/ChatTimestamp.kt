@@ -41,7 +41,7 @@ class ChatTimestamp : Module() {
     val formattedTime: String
         get() = "<" + TimeUtils.getFinalTime(setToText(secondColour.value), setToText(firstColour.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value) + TextFormatting.RESET + "> "
 
-    private fun setToText(colourCode: ColourCode): TextFormatting? {
-        return ColorTextFormatting.toTextMap[colourCode]
+    private fun setToText(colourCode: ColourCode): TextFormatting {
+        return ColorTextFormatting.toTextMap[colourCode]!!
     }
 }

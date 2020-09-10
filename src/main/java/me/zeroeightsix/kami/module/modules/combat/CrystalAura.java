@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.InfoCalculator;
+import me.zeroeightsix.kami.util.InventoryUtils;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.ESPRenderer;
 import me.zeroeightsix.kami.util.math.Vec2d;
@@ -41,7 +42,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
@@ -530,7 +530,7 @@ public class CrystalAura extends Module {
 
     @Override
     public String getHudInfo() {
-        return String.valueOf(getItems(Items.END_CRYSTAL));
+        return "" + InventoryUtils.countItemAll(426);
     }
 
     private boolean ignored(Entity e) {

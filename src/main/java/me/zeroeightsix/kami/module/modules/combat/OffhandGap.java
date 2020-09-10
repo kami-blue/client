@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.InventoryUtils;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
@@ -18,7 +19,6 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 
 /**
  * @author polymer (main listener switch function xd)
@@ -164,6 +164,6 @@ public class OffhandGap extends Module {
 
 	@Override
 	public String getHudInfo() {
-		return String.valueOf(getItems(Items.GOLDEN_APPLE));
+		return "" + InventoryUtils.countItemAll(322);
 	}
 }
