@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
@@ -17,7 +18,6 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -188,12 +188,7 @@ class WaypointRender : Module() {
     })
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        currentServer = null
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         currentServer = null
     })
 

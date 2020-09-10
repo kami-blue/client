@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.commands.PeekCommand
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
@@ -298,12 +299,17 @@ open class ForgeEventProcessor {
 
     @SubscribeEvent
     fun onServerDisconnect(event: FMLNetworkEvent.ServerDisconnectionFromClientEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
     fun onClientDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
+    }
+
+    @SubscribeEvent
+    fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Connect())
     }
 
     @SubscribeEvent
