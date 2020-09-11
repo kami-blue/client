@@ -10,10 +10,12 @@ import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.util.text.TextFormatting
 import java.util.*
+import kotlin.math.max
 
 /**
  * @author dominikaaaa
@@ -53,6 +55,7 @@ class InfoOverlay : Module() {
     /* Page Three */
     private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withMinimum(0).withMaximum(10).withVisibility { page.value == Page.THREE })
     private val speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility { page.value == Page.THREE })
+    private val averageSpeed = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
     private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java).withName("SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value }) as Setting<SpeedUnit>
     private val time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility { page.value == Page.THREE })
     @JvmField val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java).withName("TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeType>
@@ -69,7 +72,10 @@ class InfoOverlay : Module() {
     private enum class SpeedUnit(val displayName: String) {
         MPS("m/s"),
         KMH("km/h")
+        // No retarded imperial unit here
     }
+
+    private val speedList = LinkedList<Double>()
 
     public override fun onDisable() {
         sendDisableMessage(this.javaClass)
@@ -99,10 +105,10 @@ class InfoOverlay : Module() {
             infoContents.add(getStringColour(setToText(firstColour.value)) + 50f / mc.timer.tickLength + getStringColour(setToText(secondColour.value)) + " x")
         }
         if (ping.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.ping(mc) + getStringColour(setToText(secondColour.value)) + " ms")
+            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.ping() + getStringColour(setToText(secondColour.value)) + " ms")
         }
         if (durability.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.dura(mc) + getStringColour(setToText(secondColour.value)) + " dura")
+            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.dura() + getStringColour(setToText(secondColour.value)) + " dura")
         }
         if (biome.value) {
             infoContents.add(getStringColour(setToText(firstColour.value)) + mc.world.getBiome(mc.player.position).biomeName + getStringColour(setToText(secondColour.value)) + " biome")
@@ -130,7 +136,16 @@ class InfoOverlay : Module() {
     }
 
     fun calcSpeed(): String {
-        return InfoCalculator.speed(speedUnit.value == SpeedUnit.KMH, mc, decimalPlaces.value)
+        updateSpeedList()
+        val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
+        return MathUtils.round(averageSpeed, decimalPlaces.value).toString()
+    }
+
+    private fun updateSpeedList() {
+        val speed = InfoCalculator.speed(speedUnit.value == SpeedUnit.KMH)
+        if (speed > 0.0 || mc.player.ticksExisted % 4 == 0) speedList.add(speed) // Only adding it every 4 ticks if speed is 0
+        else speedList.poll()
+        while (speedList.size > max((averageSpeed.value * 20).toInt(), 1)) speedList.poll()
     }
 
     companion object {

@@ -32,7 +32,7 @@ class AutoRespawn : Module() {
         }
 
         if (deathCoords.value && mc.player.health <= 0) {
-            Waypoint.writePlayerCoords("Death - " + InfoCalculator.getServerType(mc))
+            Waypoint.writePlayerCoords("Death - " + InfoCalculator.getServerType())
             MessageSendHelper.sendChatMessage(String.format("You died at x %d y %d z %d",
                     mc.player.posX.toInt(),
                     mc.player.posY.toInt(),

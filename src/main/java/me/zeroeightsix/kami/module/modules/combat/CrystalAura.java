@@ -580,7 +580,7 @@ public class CrystalAura extends Module {
         if (!autoDelay.getValue()) {
             return delay.getValue();
         }
-        int ping = InfoCalculator.ping(mc);
+        int ping = InfoCalculator.ping();
         return 2 * ping * (InfoCalculator.tps(2) / 20) + (ping / 10.0);
     }
 
