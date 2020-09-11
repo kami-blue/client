@@ -5,13 +5,14 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.glColor4f
+import org.lwjgl.opengl.GL11.glScalef
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -39,7 +40,8 @@ class BossStack : Module() {
         bossInfoMap.clear()
         val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return
         when (mode.value as BossStackMode) {
-            BossStackMode.REMOVE -> { }
+            BossStackMode.REMOVE -> {
+            }
             BossStackMode.MINIMIZE -> {
                 val closest = bossInfoList.minBy { findMatchBoss(it)?.getDistance(mc.player) ?: Float.MAX_VALUE }
                         ?: return
@@ -59,7 +61,6 @@ class BossStack : Module() {
                 }
             }
         }
-        println(bossInfoMap.size)
     }
 
     private fun findMatchBoss(bossInfo: BossInfoClient): EntityLivingBase? {
@@ -86,14 +87,12 @@ class BossStack : Module() {
         if (event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH) return@EventHook
         event.isCanceled = true
 
-        if (bossInfoMap.isEmpty()) return@EventHook
+        mc.profiler.startSection("bossHealth")
         val width = ScaledResolution(mc).scaledWidth
         var posY = 12
-
-        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-        glEnable(GL_BLEND)
+        GlStateUtils.blend(true)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        for ((bossInfo, count) in bossInfoMap) {
+        if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
             val posX = (width / scale.value / 2.0f - 91f).roundToInt()
             val text = bossInfo.name.formattedText + if (count != -1) " x$count" else ""
             val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
@@ -107,6 +106,7 @@ class BossStack : Module() {
 
             posY += 10 + mc.fontRenderer.FONT_HEIGHT
         }
-        glDisable(GL_BLEND)
+        GlStateUtils.blend(false)
+        mc.profiler.endSection()
     })
 }
