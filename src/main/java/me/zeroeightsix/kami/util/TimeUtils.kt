@@ -48,7 +48,7 @@ object TimeUtils {
                 "am"
             }
         }
-        return InfoOverlay.getStringColour(colourCode1) + time(dateFormatter(timeUnit, timeType)) + InfoOverlay.getStringColour(colourCode2) + locale
+        return colourCode1.toString() + time(dateFormatter(timeUnit, timeType)) + colourCode2.toString() + locale
     }
 
     @JvmStatic

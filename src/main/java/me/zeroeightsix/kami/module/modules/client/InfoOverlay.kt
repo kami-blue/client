@@ -55,7 +55,7 @@ class InfoOverlay : Module() {
     /* Page Three */
     private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withMinimum(0).withMaximum(10).withVisibility { page.value == Page.THREE })
     private val speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility { page.value == Page.THREE })
-    private val averageSpeed = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
+    private val averageSpeedTime = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
     private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java).withName("SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value }) as Setting<SpeedUnit>
     private val time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility { page.value == Page.THREE })
     @JvmField val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java).withName("TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeType>
@@ -81,52 +81,56 @@ class InfoOverlay : Module() {
         sendDisableMessage(this.javaClass)
     }
 
+    override fun onUpdate() {
+        updateSpeedList()
+    }
+
     fun infoContents(): ArrayList<String> {
         val infoContents = ArrayList<String>()
         if (version.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + KamiMod.KAMI_KANJI + getStringColour(setToText(secondColour.value)) + " " + KamiMod.VER_SMALL)
+            infoContents.add(setToText(firstColour.value).toString() + KamiMod.KAMI_KANJI + setToText(secondColour.value).toString() + " " + KamiMod.VER_SMALL)
         }
         if (username.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + "Welcome" + getStringColour(setToText(secondColour.value)) + " " + mc.getSession().username + "!")
+            infoContents.add(setToText(firstColour.value).toString() + "Welcome" + setToText(secondColour.value).toString() + " " + mc.getSession().username + "!")
         }
         if (time.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + getFinalTime(setToText(secondColour.value), setToText(firstColour.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value))
+            infoContents.add(setToText(firstColour.value).toString() + getFinalTime(setToText(secondColour.value), setToText(firstColour.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value))
         }
         if (tps.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.tps(decimalPlaces.value) + getStringColour(setToText(secondColour.value)) + " tps")
+            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.tps(decimalPlaces.value) + setToText(secondColour.value).toString() + " tps")
         }
         if (fps.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + Minecraft.debugFPS + getStringColour(setToText(secondColour.value)) + " fps")
+            infoContents.add(setToText(firstColour.value).toString() + Minecraft.debugFPS + setToText(secondColour.value).toString() + " fps")
         }
         if (speed.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + calcSpeed() + getStringColour(setToText(secondColour.value)) + " " + speedUnit.value.displayName)
+            infoContents.add(setToText(firstColour.value).toString() + calcSpeed(decimalPlaces.value) + setToText(secondColour.value).toString() + " " + speedUnit.value.displayName)
         }
         if (timerSpeed.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + 50f / mc.timer.tickLength + getStringColour(setToText(secondColour.value)) + " x")
+            infoContents.add(setToText(firstColour.value).toString() + 50f / mc.timer.tickLength + setToText(secondColour.value).toString() + " x")
         }
         if (ping.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.ping() + getStringColour(setToText(secondColour.value)) + " ms")
+            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.ping() + setToText(secondColour.value).toString() + " ms")
         }
         if (durability.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.dura() + getStringColour(setToText(secondColour.value)) + " dura")
+            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.dura() + setToText(secondColour.value).toString() + " dura")
         }
         if (biome.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + mc.world.getBiome(mc.player.position).biomeName + getStringColour(setToText(secondColour.value)) + " biome")
+            infoContents.add(setToText(firstColour.value).toString() + mc.world.getBiome(mc.player.position).biomeName + setToText(secondColour.value).toString() + " biome")
         }
         if (memory.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InfoCalculator.memory() + getStringColour(setToText(secondColour.value)) + " mB free")
+            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.memory() + setToText(secondColour.value).toString() + " mB free")
         }
         if (totems.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InventoryUtils.countItemAll(449) + getStringColour(setToText(secondColour.value)) + " Totems")
+            infoContents.add(setToText(firstColour.value).toString() + InventoryUtils.countItemAll(449) + setToText(secondColour.value).toString() + " Totems")
         }
         if (endCrystals.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InventoryUtils.countItemAll(426) + getStringColour(setToText(secondColour.value)) + " Crystals")
+            infoContents.add(setToText(firstColour.value).toString() + InventoryUtils.countItemAll(426) + setToText(secondColour.value).toString() + " Crystals")
         }
         if (expBottles.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InventoryUtils.countItemAll(384) + getStringColour(setToText(secondColour.value)) + " EXP Bottles")
+            infoContents.add(setToText(firstColour.value).toString() + InventoryUtils.countItemAll(384) + setToText(secondColour.value).toString() + " EXP Bottles")
         }
         if (godApples.value) {
-            infoContents.add(getStringColour(setToText(firstColour.value)) + InventoryUtils.countItemAll(322) + getStringColour(setToText(secondColour.value)) + " God Apples")
+            infoContents.add(setToText(firstColour.value).toString() + InventoryUtils.countItemAll(322) + setToText(secondColour.value).toString() + " God Apples")
         }
         return infoContents
     }
@@ -135,23 +139,15 @@ class InfoOverlay : Module() {
         return ColorTextFormatting.toTextMap[colourCode]!!
     }
 
-    fun calcSpeed(): String {
-        updateSpeedList()
+    fun calcSpeed(place: Int): String {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
-        return MathUtils.round(averageSpeed, decimalPlaces.value).toString()
+        return MathUtils.round(averageSpeed, place).toString()
     }
 
     private fun updateSpeedList() {
         val speed = InfoCalculator.speed(speedUnit.value == SpeedUnit.KMH)
         if (speed > 0.0 || mc.player.ticksExisted % 4 == 0) speedList.add(speed) // Only adding it every 4 ticks if speed is 0
         else speedList.poll()
-        while (speedList.size > max((averageSpeed.value * 20).toInt(), 1)) speedList.poll()
-    }
-
-    companion object {
-        @JvmStatic
-        fun getStringColour(c: TextFormatting): String {
-            return c.toString()
-        }
+        while (speedList.size > max((averageSpeedTime.value * 20).toInt(), 1)) speedList.poll()
     }
 }
