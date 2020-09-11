@@ -23,8 +23,6 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.util.ConfigUtils;
-import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.RichPresence;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -40,8 +38,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Objects;
-
-import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
 
 /**
  * Created by 086 on 7/11/2017.
@@ -123,8 +119,6 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        setCustomIcons();
-
         log.info("Initialising KamiMoji...");
         KAMIMOJI.start();
 
@@ -152,9 +146,6 @@ public class KamiMod {
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
         SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
         ConfigUtils.INSTANCE.loadAll();
-
-        new RichPresence();
-        log.info("Rich Presence Users init!");
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         Module[] modules = ModuleManager.getModules();

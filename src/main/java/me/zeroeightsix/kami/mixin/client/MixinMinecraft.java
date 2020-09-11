@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.DiscordPresence;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
+import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
@@ -99,13 +99,13 @@ public class MixinMinecraft {
             target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
     public void displayCrashReport(CallbackInfo _info) {
         save();
-        DiscordPresence.end();
+        DiscordRPC.Companion.getINSTANCE().end();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
         save();
-        DiscordPresence.end();
+        DiscordRPC.Companion.getINSTANCE().end();
     }
 
     private void save() {

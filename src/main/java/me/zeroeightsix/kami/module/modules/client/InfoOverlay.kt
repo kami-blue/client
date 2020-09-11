@@ -28,7 +28,8 @@ import kotlin.math.max
         name = "InfoOverlay",
         category = Module.Category.CLIENT,
         description = "Configures the game information overlay",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysListening = true
 )
 @Suppress("UNCHECKED_CAST")
 class InfoOverlay : Module() {
@@ -139,9 +140,11 @@ class InfoOverlay : Module() {
         return ColorTextFormatting.toTextMap[colourCode]!!
     }
 
-    fun calcSpeed(place: Int): String {
+    fun calcSpeedWithUnit(place: Int) = "${calcSpeed(place)} ${speedUnit.value.displayName}"
+
+    private fun calcSpeed(place: Int): Double {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
-        return MathUtils.round(averageSpeed, place).toString()
+        return MathUtils.round(averageSpeed, place)
     }
 
     private fun updateSpeedList() {

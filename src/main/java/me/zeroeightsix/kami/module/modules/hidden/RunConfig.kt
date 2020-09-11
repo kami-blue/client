@@ -25,7 +25,6 @@ class RunConfig : Module() {
     public override fun onEnable() {
         ModuleManager.getModule(ActiveModules::class.java).enable()
         ModuleManager.getModule(CommandConfig::class.java).enable()
-        ModuleManager.getModule(InfoOverlay::class.java).enable()
         ModuleManager.getModule(InventoryViewer::class.java).enable()
         ModuleManager.getModule(Baritone::class.java).enable()
 
