@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 
 import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
@@ -15,7 +16,7 @@ public class ChatEncryptionCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        ChatEncryption ce = MODULE_MANAGER.getModuleT(ChatEncryption.class);
+        ChatEncryption ce = ModuleManager.getModuleT(ChatEncryption.class);
         if (ce == null) {
             sendErrorMessage("&cThe ChatEncryption module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!");
             return;
@@ -31,7 +32,7 @@ public class ChatEncryptionCommand extends Command {
                 sendErrorMessage("Delimiter can only be 1 character long");
                 return;
             }
-            ChatEncryption.delimiterValue.setValue(s);
+            ce.getDelimiterValue().setValue(s);
             sendChatMessage("Set the delimiter to <" + s + ">");
         }
     }

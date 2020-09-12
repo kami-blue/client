@@ -137,7 +137,6 @@ public class KamiMod {
 
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
-        SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
         ConfigUtils.INSTANCE.loadAll();
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
