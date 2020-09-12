@@ -81,6 +81,10 @@ class Surround : Module() {
         holePos = null
     }
 
+    override fun isActive(): Boolean {
+        return isEnabled && future?.isDone == false
+    }
+
     // Runs the codes on rendering for more immediate reaction
     override fun onRender() {
         if (mc.world == null || mc.player == null) return
