@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
@@ -128,7 +127,7 @@ class AutoObsidian : Module() {
     override fun onDisable() {
         InventoryUtils.inProgress = false
         val baritoneProcess = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
-        if (baritoneProcess.isPresent && baritoneProcess.get() is AutoObsidianProcess) {
+        if (baritoneProcess.isPresent && baritoneProcess.get() == AutoObsidianProcess) {
             baritoneProcess.get().onLostControl()
         }
         reset()
@@ -143,7 +142,7 @@ class AutoObsidian : Module() {
 
         if (!active && state != State.DONE) {
             active = true
-            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(KamiMod.autoObsidianProcess)
+            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(AutoObsidianProcess)
         }
 
         /* Tell baritone to get you back to position */

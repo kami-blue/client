@@ -86,9 +86,6 @@ public class KamiMod {
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
 
-    public static TemporaryPauseProcess pauseProcess;
-    public static AutoObsidianProcess autoObsidianProcess;
-
     @Mod.Instance
     private static KamiMod INSTANCE;
 
@@ -111,9 +108,6 @@ public class KamiMod {
         updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
-
-        pauseProcess = new TemporaryPauseProcess();
-        autoObsidianProcess = new AutoObsidianProcess();
     }
 
     @Mod.EventHandler

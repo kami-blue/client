@@ -20,11 +20,12 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Label;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.manager.mangers.FriendManager;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
+import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorHolder;
@@ -302,8 +303,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                AutoWalk autoWalk = MODULE_MANAGER.getModuleT(AutoWalk.class);
-                if (process.get() != KamiMod.pauseProcess && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
+                AutoWalk autoWalk = ModuleManager.getModuleT(AutoWalk.class);
+                if (process.get() != TemporaryPauseProcess.INSTANCE && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
                     processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
