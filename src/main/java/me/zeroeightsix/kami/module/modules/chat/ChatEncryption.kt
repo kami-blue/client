@@ -18,6 +18,7 @@ import java.nio.CharBuffer
 import java.util.*
 import java.util.regex.Pattern
 import java.util.stream.Collectors
+import kotlin.math.sqrt
 
 /**
  * Created by 086 on 9/04/2018.
@@ -32,7 +33,8 @@ import java.util.stream.Collectors
 class ChatEncryption : Module() {
     private val self = register(Settings.b("DecryptOwn", true))
     private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
-    private val key = register(Settings.i("Key", 6))
+    private val keyA = register(Settings.i("KeyA", 3))
+    private val keyB = register(Settings.i("KeyB", 10))
     private val delimiterSetting = register(Settings.b("Delimiter", true))
     val delimiterValue = register(Settings.s("delimiterV", "unchanged"))
 
@@ -63,11 +65,11 @@ class ChatEncryption : Module() {
         val builder = StringBuilder()
         when (mode.value as EncryptionMode) {
             EncryptionMode.SHUFFLE -> {
-                builder.append(shuffle(key.value, s))
+                builder.append(shuffle(getKey(), s))
                 builder.append("\uD83D\uDE4D")
             }
             EncryptionMode.SHIFT -> {
-                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + key.value).toChar())) key.value else 0).toChar()) }
+                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
                 builder.append("\uD83D\uDE48")
             }
         }
@@ -99,12 +101,12 @@ class ChatEncryption : Module() {
             EncryptionMode.SHUFFLE -> {
                 if (!s.endsWith("\uD83D\uDE4D")) return@EventHook
                 s = substring
-                builder.append(unShuffle(key.value, s))
+                builder.append(unShuffle(getKey(), s))
             }
             EncryptionMode.SHIFT -> {
                 if (!s.endsWith("\uD83D\uDE48")) return@EventHook
                 s = substring
-                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -key.value else 0).toChar()) }
+                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
             }
         }
         event.packet.chatComponent = TextComponentString("<" + username + "> " + KamiMod.colour + "lDECRYPTED" + KamiMod.colour + "r: " + builder.toString())
@@ -149,5 +151,9 @@ class ChatEncryption : Module() {
 
     private fun isOwn(message: String): Boolean {
         return Pattern.compile("^<" + mc.player.name + "> ", Pattern.CASE_INSENSITIVE).matcher(message).find()
+    }
+
+    private fun getKey(): Int {
+        return sqrt((keyA.value * keyB.value).toDouble()).toInt()
     }
 }

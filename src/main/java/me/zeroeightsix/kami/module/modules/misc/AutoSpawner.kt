@@ -42,7 +42,7 @@ class AutoSpawner : Module() {
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(3.5f).withRange(2f, 10f))
     private val delay = register(Settings.integerBuilder("Delay").withValue(20).withRange(10, 100).withVisibility { useMode.value == UseMode.SPAM })
     private val rotate = register(Settings.b("Rotate", true))
-    private val debug = register(Settings.b("Debug", false))
+    private val debug = register(Settings.b("Info", true))
 
     private enum class UseMode {
         SINGLE, SPAM
