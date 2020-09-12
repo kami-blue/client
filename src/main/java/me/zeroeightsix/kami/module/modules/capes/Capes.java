@@ -30,7 +30,8 @@ import java.util.Map;
         name = "Capes",
         category = Module.Category.CLIENT,
         description = "Controls the display of KAMI Blue capes",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        enabledByDefault = true
 )
 public class Capes extends Module {
 

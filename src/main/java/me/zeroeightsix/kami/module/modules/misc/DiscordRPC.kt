@@ -31,7 +31,8 @@ import javax.net.ssl.HttpsURLConnection
 @Module.Info(
         name = "DiscordRPC",
         category = Module.Category.MISC,
-        description = "Discord Rich Presence"
+        description = "Discord Rich Presence",
+        enabledByDefault = true
 )
 class DiscordRPC : Module() {
     private val line1Left: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left

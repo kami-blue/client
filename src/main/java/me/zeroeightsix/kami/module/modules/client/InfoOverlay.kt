@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.math.MathUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.util.text.TextFormatting
 import java.util.*
@@ -29,7 +28,7 @@ import kotlin.math.max
         category = Module.Category.CLIENT,
         description = "Configures the game information overlay",
         showOnArray = Module.ShowOnArray.OFF,
-        alwaysListening = true
+        alwaysEnabled = true
 )
 @Suppress("UNCHECKED_CAST")
 class InfoOverlay : Module() {
@@ -77,10 +76,6 @@ class InfoOverlay : Module() {
     }
 
     private val speedList = LinkedList<Double>()
-
-    public override fun onDisable() {
-        sendDisableMessage(this.javaClass)
-    }
 
     override fun onUpdate() {
         updateSpeedList()

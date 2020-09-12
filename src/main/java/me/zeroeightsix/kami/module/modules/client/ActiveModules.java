@@ -14,7 +14,6 @@ import static me.zeroeightsix.kami.util.color.ColorTextFormatting.colourEnumMap;
 import static me.zeroeightsix.kami.util.color.ColorTextFormatting.toTextMap;
 import static me.zeroeightsix.kami.util.math.MathUtils.isNumberEven;
 import static me.zeroeightsix.kami.util.math.MathUtils.reverseNumber;
-import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage;
 
 /**
  * @author dominikaaaa
@@ -25,7 +24,8 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessag
         name = "ActiveModules",
         category = Module.Category.CLIENT,
         description = "Configures ActiveModules colours and modes",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysEnabled = true
 )
 public class ActiveModules extends Module {
     private final Setting<Boolean> forgeHax = register(Settings.b("ForgeHax", false));
@@ -131,5 +131,4 @@ public class ActiveModules extends Module {
     }
 
     public enum Mode { RAINBOW, CUSTOM, CATEGORY, INFO_OVERLAY }
-    public void onDisable() { sendDisableMessage(this.getClass()); }
 }

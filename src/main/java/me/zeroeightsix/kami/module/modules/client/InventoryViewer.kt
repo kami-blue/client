@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleKami
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleMc
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil.getFrameByName
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendDisableMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -20,7 +19,13 @@ import org.lwjgl.opengl.GL11
  * Slight updates by 20kdc, 19/02/20
  * Everything except somethingRender() methods was written by dominikaaaa
  */
-@Module.Info(name = "InventoryViewer", category = Module.Category.CLIENT, description = "Configures Inventory Viewer's options", showOnArray = Module.ShowOnArray.OFF)
+@Module.Info(
+        name = "InventoryViewer",
+        category = Module.Category.CLIENT,
+        description = "Configures Inventory Viewer's options",
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysEnabled = true
+)
 class InventoryViewer : Module() {
     private val mcTexture = register(Settings.b("UseResourcePack", false))
     private val showIcon = register(Settings.booleanBuilder("ShowIcon").withValue(false).withVisibility { !mcTexture.value }.build())
@@ -49,10 +54,6 @@ class InventoryViewer : Module() {
         } else {
             ResourceLocation("null")
         }
-
-    public override fun onDisable() {
-        sendDisableMessage(this.javaClass)
-    }
 
     private fun boxRender(x: Int, y: Int) {
         // SET UNRELIABLE DEFAULTS (Don't restore these) {

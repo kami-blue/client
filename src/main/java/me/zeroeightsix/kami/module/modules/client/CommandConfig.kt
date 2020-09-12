@@ -15,7 +15,8 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         name = "CommandConfig",
         category = Module.Category.CLIENT,
         description = "Configures client chat related stuff",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysEnabled = true
 )
 class CommandConfig : Module() {
     @JvmField val aliasInfo: Setting<Boolean> = register(Settings.b("AliasInfo", true))
