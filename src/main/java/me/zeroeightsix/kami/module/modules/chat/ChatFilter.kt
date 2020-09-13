@@ -33,7 +33,7 @@ class ChatFilter : Module() {
     private val chatFilter = ArrayList<Pattern>()
 
     @EventHandler
-    var listener = Listener(EventHook { event: ClientChatReceivedEvent ->
+    private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
         if (mc.player == null) return@EventHook
         if (isDetected(event.message.unformattedText)) event.isCanceled = true
     })
@@ -60,14 +60,14 @@ class ChatFilter : Module() {
         return Pattern.compile(filter, Pattern.CASE_INSENSITIVE).matcher(message).find()
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         val bufferedReader: BufferedReader
         try {
             sendChatMessage("$chatName Trying to find '&7chat_filter.txt&f'")
             bufferedReader = BufferedReader(InputStreamReader(FileInputStream("chat_filter.txt"), "UTF-8"))
-            var line: String
+            var line = bufferedReader.readLine()
             chatFilter.clear()
-            while (bufferedReader.readLine().also { line = it } != null) {
+            while (line != null) {
                 while (customMatch("[ ]$", line)) { /* remove trailing spaces */
                     line = line.substring(0, line.length - 1)
                 }
@@ -76,6 +76,7 @@ class ChatFilter : Module() {
                 }
                 if (line.isEmpty()) return
                 chatFilter.add(Pattern.compile("\\b$line\\b", Pattern.CASE_INSENSITIVE))
+                line = bufferedReader.readLine()
             }
             bufferedReader.close()
             sendChatMessage("$chatName Found '&7chat_filter.txt&f'!")
