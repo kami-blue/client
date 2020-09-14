@@ -21,8 +21,8 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 class AntiFriendHit : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: ClientPlayerAttackEvent ->
-        if (event.targetEntity == null) return@EventHook
-        val e = event.targetEntity
+        if (mc.objectMouseOver == null) return@EventHook
+        val e = mc.objectMouseOver.entityHit
         if (e is EntityOtherPlayerMP && Friends.isFriend(e.getName())) {
             event.cancel()
         }
