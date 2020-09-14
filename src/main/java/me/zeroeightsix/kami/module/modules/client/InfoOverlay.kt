@@ -58,11 +58,11 @@ object InfoOverlay : Module() {
     private val averageSpeedTime = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
     private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java).withName("SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value }) as Setting<SpeedUnit>
     private val time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility { page.value == Page.THREE })
-    @JvmField val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java).withName("TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeType>
-    @JvmField val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java).withName("TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeUnit>
-    @JvmField val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
-    @JvmField val firstColour = register(Settings.enumBuilder(ColourCode::class.java).withName("FirstColour").withValue(ColourCode.WHITE).withVisibility { page.value == Page.THREE }) as Setting<ColourCode>
-    @JvmField val secondColour = register(Settings.enumBuilder(ColourCode::class.java).withName("SecondColour").withValue(ColourCode.BLUE).withVisibility { page.value == Page.THREE }) as Setting<ColourCode>
+    val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java).withName("TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeType>
+    val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java).withName("TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility { page.value == Page.THREE && time.value }) as Setting<TimeUtils.TimeUnit>
+    val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
+    val firstColour = register(Settings.enumBuilder(ColourCode::class.java).withName("FirstColour").withValue(ColourCode.WHITE).withVisibility { page.value == Page.THREE }) as Setting<ColourCode>
+    val secondColour = register(Settings.enumBuilder(ColourCode::class.java).withName("SecondColour").withValue(ColourCode.BLUE).withVisibility { page.value == Page.THREE }) as Setting<ColourCode>
 
     private enum class Page {
         ONE, TWO, THREE

@@ -28,7 +28,7 @@ object FormatChat : Module() {
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (event.packet is CPacketChatMessage) {
-            var message = (event.packet as CPacketChatMessage).message
+            var message = event.packet.message
 
             if (message.contains("&") || message.contains("#n")) {
                 message = message.replace("&".toRegex(), KamiMod.colour.toString() + "")

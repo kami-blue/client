@@ -125,7 +125,7 @@ class DiscordRPC : Module() {
             LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
             LineInfo.SERVER_IP -> InfoCalculator.getServerType()
             LineInfo.COORDS -> if (mc.player != null && coordsConfirm.value) "(" + mc.player.posX.toInt() + " " + mc.player.posY.toInt() + " " + mc.player.posZ.toInt() + ")" else "No Coords"
-            LineInfo.SPEED -> if (mc.player != null) ModuleManager.getModuleT(InfoOverlay::class.java)?.calcSpeedWithUnit(1)
+            LineInfo.SPEED -> if (mc.player != null) InfoOverlay.calcSpeedWithUnit(1)
                     ?: "No Speed" else "No Speed"
             LineInfo.HELD_ITEM -> "Holding " + if (mc.player != null) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName else "No Item"
             LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"

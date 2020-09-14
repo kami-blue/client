@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager.getModuleT
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt
@@ -43,7 +42,7 @@ object ActiveModules : Module() {
     private val render = register(Settings.s("Render", "105,48,109"))
 
     fun setColor(category: Category, color: IntArray) {
-        val setting = getSettingForCategory(category)?: return
+        val setting = getSettingForCategory(category) ?: return
         val r = color[0]
         val g = color[1]
         val b = color[2]
@@ -77,15 +76,15 @@ object ActiveModules : Module() {
 
     private fun settingsToColour(isOne: Boolean): Int {
         val localColor = when (infoGetSetting(isOne)) {
-            TextFormatting.UNDERLINE, TextFormatting.ITALIC, TextFormatting.RESET, TextFormatting.STRIKETHROUGH, TextFormatting.OBFUSCATED, TextFormatting.BOLD -> ColorTextFormatting.colourEnumMap[TextFormatting.WHITE]?.colorLocal?: Color.WHITE
-            else -> ColorTextFormatting.colourEnumMap[infoGetSetting(isOne)]?.colorLocal?: Color.WHITE
+            TextFormatting.UNDERLINE, TextFormatting.ITALIC, TextFormatting.RESET, TextFormatting.STRIKETHROUGH, TextFormatting.OBFUSCATED, TextFormatting.BOLD -> ColorTextFormatting.colourEnumMap[TextFormatting.WHITE]?.colorLocal
+                    ?: Color.WHITE
+            else -> ColorTextFormatting.colourEnumMap[infoGetSetting(isOne)]?.colorLocal ?: Color.WHITE
         }
         return rgbToInt(localColor.red, localColor.green, localColor.blue)
     }
 
     private fun infoGetSetting(isOne: Boolean): TextFormatting {
-        val infoOverlay = getModuleT(InfoOverlay::class.java)!!
-        return if (isOne) setToText(infoOverlay.firstColour.value) else setToText(infoOverlay.secondColour.value)
+        return if (isOne) setToText(InfoOverlay.firstColour.value) else setToText(InfoOverlay.secondColour.value)
     }
 
     private fun setToText(colourCode: ColourCode): TextFormatting {

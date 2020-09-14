@@ -1,15 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import baritone.api.BaritoneAPI
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
  * Created by Dewy on the 21st of April, 2020

@@ -26,7 +26,7 @@ object AutoReply : Module() {
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (ModuleManager.isModuleEnabled(AntiAFK::class.java) && ModuleManager.getModuleT(AntiAFK::class.java)!!.autoReply.value) return@EventHook
 
-        if (event.packet is SPacketChat && MessageDetectionHelper.isDirect(true, (event.packet as SPacketChat).getChatComponent().unformattedText)) {
+        if (event.packet is SPacketChat && MessageDetectionHelper.isDirect(true, event.packet.getChatComponent().unformattedText)) {
             if (customMessage.value) {
                 MessageSendHelper.sendServerMessage("/r " + message.value)
             } else {

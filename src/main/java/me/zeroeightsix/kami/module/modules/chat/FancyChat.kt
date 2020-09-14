@@ -45,13 +45,13 @@ object FancyChat : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: PacketEvent.Send ->
         if (event.packet is CPacketChatMessage) {
-            var s = (event.packet as CPacketChatMessage).getMessage()
+            var s = event.packet.getMessage()
 
             if (!commands.value && isCommand(s)) return@EventHook
             s = getText(s)
 
             if (s.length >= 256) s = s.substring(0, 256)
-            (event.packet as CPacketChatMessage).message = s
+            event.packet.message = s
         }
     })
 

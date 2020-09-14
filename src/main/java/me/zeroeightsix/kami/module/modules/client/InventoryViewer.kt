@@ -29,11 +29,11 @@ import org.lwjgl.opengl.GL11
 object InventoryViewer : Module() {
     private val mcTexture = register(Settings.b("UseResourcePack", false))
     private val showIcon = register(Settings.booleanBuilder("ShowIcon").withValue(false).withVisibility { !mcTexture.value }.build())
-    private val viewSizeSetting = register(Settings.enumBuilder(ViewSize::class.java).withName("IconSize").withValue(ViewSize.LARGE).withVisibility {showIcon.value && !mcTexture.value }.build())
+    private val viewSizeSetting = register(Settings.enumBuilder(ViewSize::class.java).withName("IconSize").withValue(ViewSize.LARGE).withVisibility { showIcon.value && !mcTexture.value }.build())
     private val coloredBackground = register(Settings.booleanBuilder("ColoredBackground").withValue(true).withVisibility { !mcTexture.value }.build())
     private val a = register(Settings.integerBuilder("Transparency").withMinimum(0).withValue(32).withMaximum(255).withVisibility { coloredBackground.value && !mcTexture.value }.build())
     private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { coloredBackground.value && !mcTexture.value }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility {  coloredBackground.value && !mcTexture.value }.build())
+    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { coloredBackground.value && !mcTexture.value }.build())
     private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { coloredBackground.value && !mcTexture.value }.build())
 
     private enum class ViewSize {

@@ -38,7 +38,7 @@ object BaritoneRemote : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (event.packet !is SPacketChat) return@EventHook
-        val message = (event.packet as SPacketChat).getChatComponent().unformattedText
+        val message = event.packet.getChatComponent().unformattedText
 
         if (MessageDetectionHelper.isDirect(true, message)) {
             /* side note: this won't work if some glitched account has spaces in their username, but in all honesty, like 3 people globally have those */

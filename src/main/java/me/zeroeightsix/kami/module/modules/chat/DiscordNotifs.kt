@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
@@ -106,8 +105,7 @@ object DiscordNotifs : Module() {
 
     private fun getTime(): String {
         if (!time.value) return ""
-        val info = ModuleManager.getModuleT(InfoOverlay::class.java)
-        return "[" + getFinalTime(info!!.timeUnitSetting.value, info.timeTypeSetting.value, info.doLocale.value) + "] "
+        return "[" + getFinalTime(InfoOverlay.timeUnitSetting.value, InfoOverlay.timeTypeSetting.value, InfoOverlay.doLocale.value) + "] "
     }
 
     private fun sendMessage(content: String, avatarUrl: String) {

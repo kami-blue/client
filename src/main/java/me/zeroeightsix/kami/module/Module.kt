@@ -107,7 +107,7 @@ open class Module {
         if (!alwaysListening) KamiMod.EVENT_BUS.unsubscribe(this)
     }
     private fun sendToggleMessage() {
-        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
+        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && CommandConfig.toggleMessages.value) {
             MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
         }
     }

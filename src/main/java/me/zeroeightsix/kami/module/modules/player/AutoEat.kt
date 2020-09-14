@@ -83,7 +83,7 @@ class AutoEat : Module() {
             }
 
             eating = true
-            BaritoneAPI.getSettings().allowInventory.value = MODULE_MANAGER.getModuleT(Baritone::class.java)!!.allowInventory.value
+            BaritoneAPI.getSettings().allowInventory.value = Baritone.allowInventory.value
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
