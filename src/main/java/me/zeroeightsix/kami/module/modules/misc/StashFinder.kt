@@ -11,15 +11,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import kotlin.math.roundToInt
 
-/**
- * @author Nucleus
- */
 @Module.Info(
         name = "StashFinder",
         category = Module.Category.MISC,
         description = "Logs storage units in render distance."
 )
-class StashFinder : Module() {
+object StashFinder : Module() {
     private val logToChat = register(Settings.b("LogToChat"))
     private val playSound = register(Settings.b("PlaySound"))
 
@@ -91,8 +88,6 @@ class StashFinder : Module() {
     }
 
     override fun onUpdate() {
-        super.onUpdate()
-
         mc.world.loadedTileEntityList
                 .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) }
                 .forEach { logTileEntity(it) }

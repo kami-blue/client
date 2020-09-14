@@ -8,16 +8,12 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 29/07/20
- */
 @Module.Info(
         name = "TeleportLogger",
         category = Module.Category.MISC,
         description = "Logs when a player teleports somewhere"
 )
-class TeleportLogger : Module() {
+object TeleportLogger : Module() {
     private var saveToFile = register(Settings.b("SaveToFile", true))
     private var remove = register(Settings.b("RemoveInRange", true))
     private var printAdd = register(Settings.b("PrintAdd", true))
@@ -27,7 +23,6 @@ class TeleportLogger : Module() {
     private val teleportedPlayers = HashMap<String, BlockPos>()
 
     override fun onUpdate() {
-        if (mc.player == null) return
         for (player in mc.world.loadedEntityList.filterIsInstance<EntityPlayer>()) {
             if (player.name == mc.player.name) continue
 

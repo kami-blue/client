@@ -22,18 +22,12 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
-/**
- * Created 26 November 2019 by hub
- * Updated 27 November 2019 by hub
- * Updated by dominikaaaa on 16/04/20
- * Updated by Xiaro on 10/09/20
- */
 @Module.Info(
         name = "AutoSpawner",
         category = Module.Category.MISC,
         description = "Automatically spawns Withers, Iron Golems and Snowmen"
 )
-class AutoSpawner : Module() {
+object AutoSpawner : Module() {
     private val useMode = register(Settings.e<UseMode>("UseMode", UseMode.SPAM))
     private val party = register(Settings.b("Party", false))
     private val partyWithers = register(Settings.booleanBuilder("Withers").withValue(false).withVisibility { party.value })

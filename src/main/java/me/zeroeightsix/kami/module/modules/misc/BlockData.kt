@@ -12,8 +12,6 @@ import org.lwjgl.input.Mouse
 import java.util.*
 
 /**
- * @author 0x2E | PretendingToCode
- *
  * TODO: Fix delay timer because that shit broken
  */
 @Module.Info(
@@ -21,7 +19,7 @@ import java.util.*
         category = Module.Category.MISC,
         description = "Right click blocks to display their data"
 )
-class BlockData : Module() {
+object BlockData : Module() {
     private var delay = 0
 
     override fun onUpdate() {

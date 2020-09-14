@@ -5,16 +5,12 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.entity.player.EnumPlayerModelParts
 
-/**
- * Created by 086 on 30/01/2018.
- * Updated by Xiaro on 09/09/20
- */
 @Module.Info(
         name = "SkinFlicker",
         description = "Toggle your skin layers rapidly for a cool skin effect",
         category = Module.Category.MISC
 )
-class SkinFlicker : Module() {
+object SkinFlicker : Module() {
     private val mode = register(Settings.e<FlickerMode>("Mode", FlickerMode.HORIZONTAL))
     private val delay = register(Settings.integerBuilder("Delay(ms)").withValue(10).withRange(0, 500).build())
 

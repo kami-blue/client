@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.world.GameType
 
 /**
- * Created by @dominikaaaa on 20/11/19
  * Yes, this is 100% original code. Go away
  */
 @Module.Info(
@@ -13,12 +12,12 @@ import net.minecraft.world.GameType
         description = "Fakes your current gamemode client side",
         category = Module.Category.MISC
 )
-class FakeGamemode : Module() {
+object FakeGamemode : Module() {
     private val gamemode = register(Settings.e<GamemodeChanged>("Mode", GamemodeChanged.CREATIVE))
+
     private var gameType: GameType? = null
 
     override fun onUpdate() {
-        if (mc.player == null) return
         when (gamemode.value) {
             GamemodeChanged.CREATIVE -> {
                 mc.playerController.setGameType(gameType)

@@ -12,11 +12,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
 
 /**
- * @author 0x2E | PretendingToCode
- *
- * Inspired by ForgeHax, recreated with expressed permission from creator
- * Updated by Xiaro on 24/08/20
- *
  * TODO: Fix delay timer because that shit broken
  */
 @Module.Info(
@@ -24,13 +19,14 @@ import org.lwjgl.input.Mouse
         category = Module.Category.MISC,
         description = "Right click entities to perform actions on them"
 )
-class EntityTools : Module() {
+object EntityTools : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.INFO))
-    private var delay = 0
 
     private enum class Mode {
         DELETE, INFO
     }
+
+    private var delay = 0
 
     override fun onUpdate() {
         if (delay > 0) {

@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos
 @Module.Info(
         name = "CoordsLog",
         description = "Automatically logs your coords, based on actions",
-        category = Module.Category.MISC, showOnArray = Module.ShowOnArray.ON
+        category = Module.Category.MISC
 )
-class CoordsLog : Module() {
+object CoordsLog : Module() {
     private val forceLogOnDeath = register(Settings.b("SaveDeathCoords", true))
     private val deathInChat = register(Settings.b("LogInChat", true))
     private val autoLog = register(Settings.b("Delay", false))
@@ -24,7 +24,6 @@ class CoordsLog : Module() {
     private var startTime: Long = 0
 
     override fun onUpdate() {
-        if (mc.player == null) return
         if (autoLog.value) {
             timeout()
         }
@@ -66,7 +65,7 @@ class CoordsLog : Module() {
         return Waypoint.writePlayerCoords(name)
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         startTime = 0
     }
 }

@@ -47,13 +47,15 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Shadow private float lastReportedPitch;
     @Shadow private boolean serverSprintState;
     @Shadow private boolean serverSneakState;
-    @Shadow protected abstract boolean isCurrentViewEntity();
     @Shadow private boolean prevOnGround;
     @Shadow private boolean autoJumpEnabled;
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
     }
+
+    @Shadow
+    protected abstract boolean isCurrentViewEntity();
 
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
@@ -73,7 +75,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
      */
     @Inject(method = "displayGUIChest", at = @At("HEAD"), cancellable = true)
     public void onDisplayGUIChest(IInventory chestInventory, CallbackInfo ci) {
-        if (ModuleManager.isModuleEnabled(BeaconSelector.class)) {
+        if (BeaconSelector.INSTANCE.isEnabled()) {
             if (chestInventory instanceof IInteractionObject) {
                 if ("minecraft:beacon".equals(((IInteractionObject) chestInventory).getGuiID())) {
                     Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));

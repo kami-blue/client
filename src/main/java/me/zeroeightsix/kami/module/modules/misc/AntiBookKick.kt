@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent.PostSend
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWrittenBook
@@ -22,11 +22,11 @@ import net.minecraft.network.play.client.CPacketClickWindow
         description = "Prevents being kicked by clicking on books",
         showOnArray = Module.ShowOnArray.OFF
 )
-class AntiBookKick : Module() {
+object AntiBookKick : Module() {
     @EventHandler
-    var listener = Listener(EventHook { event: PostSend ->
+    private val listener = Listener(EventHook { event: PacketEvent.PostSend ->
         if (event.packet !is CPacketClickWindow) return@EventHook
-        val packet = event.packet as CPacketClickWindow
+        val packet = event.packet
         if (packet.clickedItem.getItem() !is ItemWrittenBook) return@EventHook
 
         event.cancel()

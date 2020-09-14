@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
+import me.zeroeightsix.kami.module.modules.misc.AutoTool
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
@@ -86,7 +86,7 @@ object Aura : Module() {
                 }
             }
 
-            if (autoTool.value) equipBestWeapon(prefer.value)
+            if (autoTool.value) AutoTool.equipBestWeapon(prefer.value)
             if (multi.value) {
                 if (canAttack()) for (target in targetList) {
                     attack(target)
