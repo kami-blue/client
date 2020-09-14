@@ -17,11 +17,6 @@ import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 import java.util.*
 
-/**
- * Created by 086 on 23/08/2017.
- * Updated by dominikaaaa on 15/04/20
- * Updated by Xiaro on 11/09/20
- */
 open class Module {
     /* Annotations */
     @JvmField val originalName: String = annotation.name
@@ -189,7 +184,7 @@ open class Module {
     }
     /* End of key binding */
 
-    companion object {
+    protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()
     }
 }

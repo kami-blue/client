@@ -11,16 +11,12 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 
-/*
- * @author dominikaaaa
- * Updated by dominikaaaa on 07/05/20
- */
 @Module.Info(
         name = "AutoTPA",
         description = "Automatically accept or decline /TPAs",
         category = Module.Category.CHAT
 )
-class AutoTPA : Module() {
+object AutoTPA : Module() {
     private val friends = register(Settings.b("AlwaysAcceptFriends", true))
     private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
 

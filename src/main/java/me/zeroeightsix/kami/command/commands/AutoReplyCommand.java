@@ -19,18 +19,17 @@ public class AutoReplyCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        AutoReply autoReply = MODULE_MANAGER.getModuleT(AutoReply.class);
-        if (autoReply == null) {
+        if (AutoReply.INSTANCE == null) {
             sendErrorMessage("&cThe AutoReply module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!");
             return;
         }
 
         if (args[0] == null) return;
 
-        autoReply.message.setValue(args[0]);
+        AutoReply.INSTANCE.getMessage().setValue(args[0]);
         sendChatMessage("Set the AutoReply message to '&7" + args[0] + "&f'");
 
-        if (!autoReply.customMessage.getValue()) {
+        if (!AutoReply.INSTANCE.getCustomMessage().getValue()) {
             sendWarningMessage("&6Warning:&f You don't have '&7Custom Message&f' enabled in AutoReply!");
             sendWarningMessage("The command will still work, but will not visibly do anything.");
         }

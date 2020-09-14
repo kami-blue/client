@@ -12,17 +12,14 @@ import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 
-/**
- * @author dominikaaaa
- * Updated by dominikaaaa on 19/04/20
- */
+
 @Module.Info(
         name = "ChatTimestamp",
         category = Module.Category.CHAT,
         description = "Shows the time a message was sent beside the message",
         showOnArray = Module.ShowOnArray.OFF
 )
-class ChatTimestamp : Module() {
+object ChatTimestamp : Module() {
     private val firstColour = register(Settings.e<ColourCode>("FirstColour", ColourCode.GRAY))
     private val secondColour = register(Settings.e<ColourCode>("SecondColour", ColourCode.GRAY))
     private val timeTypeSetting = register(Settings.e<TimeUtils.TimeType>("TimeFormat", TimeUtils.TimeType.HHMM))

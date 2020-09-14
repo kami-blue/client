@@ -10,16 +10,13 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.network.play.client.CPacketChatMessage
 
-/**
- * Created on 16 December by 0x2E | PretendingToCode
- */
 @Module.Info(
         name = "FormatChat",
         description = "Add colour and linebreak support to upstream chat packets",
         category = Module.Category.CHAT
 )
-class FormatChat : Module() {
-    public override fun onEnable() {
+object FormatChat : Module() {
+    override fun onEnable() {
         if (Minecraft.getMinecraft().getCurrentServerData() == null) {
             MessageSendHelper.sendWarningMessage("$chatName &6&lWarning: &r&6This does not work in singleplayer")
             disable()

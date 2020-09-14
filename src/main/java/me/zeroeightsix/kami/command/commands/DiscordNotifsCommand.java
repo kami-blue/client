@@ -20,27 +20,26 @@ public class DiscordNotifsCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        DiscordNotifs df = MODULE_MANAGER.getModuleT(DiscordNotifs.class);
         if (args[0] != null && !args[0].equals("")) {
-            df.url.setValue(args[0]);
-            sendChatMessage(df.getChatName() + " Set URL to \"" + args[0] + "\"!");
+            DiscordNotifs.INSTANCE.getUrl().setValue(args[0]);
+            sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Set URL to \"" + args[0] + "\"!");
         } else if (args[0] == null) {
-            sendErrorMessage(df.getChatName() + " Error: you must specify a URL or \"\" for the first parameter when running the command");
+            sendErrorMessage(DiscordNotifs.INSTANCE.getChatName() + " Error: you must specify a URL or \"\" for the first parameter when running the command");
         }
 
         if (args[1] == null) return;
         if (!args[1].equals("")) {
-            df.pingID.setValue(args[1]);
-            sendChatMessage(df.getChatName() + " Set Discord ID to \"" + df.pingID.getValue() + "\"!");
+            DiscordNotifs.INSTANCE.getPingID().setValue(args[1]);
+            sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Set Discord ID to \"" + DiscordNotifs.INSTANCE.getPingID().getValue() + "\"!");
         }
 
         if (args[2] == null) return;
         if (!args[2].equals("")) {
-            df.avatar.setValue(args[2]);
-            sendChatMessage(df.getChatName() + " Set Avatar to \"" + args[2] + "\"!");
+            DiscordNotifs.INSTANCE.getAvatar().setValue(args[2]);
+            sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Set Avatar to \"" + args[2] + "\"!");
         } else {
-            df.avatar.setValue(KamiMod.GITHUB_LINK + "raw/assets/assets/icons/kami.png");
-            sendChatMessage(df.getChatName() + " Reset Avatar!");
+            DiscordNotifs.INSTANCE.getAvatar().setValue(KamiMod.GITHUB_LINK + "raw/assets/assets/icons/kami.png");
+            sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Reset Avatar!");
         }
     }
 }

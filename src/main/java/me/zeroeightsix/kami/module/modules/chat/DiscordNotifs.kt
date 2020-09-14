@@ -24,18 +24,12 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraft.client.multiplayer.ServerData
 import net.minecraft.network.play.server.SPacketChat
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 26/03/20
- * Updated by dominikaaaa on 28/03/20
- * Updated by Xiaro on 10/09/20
- */
 @Module.Info(
         name = "DiscordNotifs",
         category = Module.Category.CHAT,
         description = "Sends your chat to a set Discord channel"
 )
-class DiscordNotifs : Module() {
+object DiscordNotifs : Module() {
     private val timeout = register(Settings.b("Timeout", true))
     private val timeoutTime = register(Settings.integerBuilder("Seconds").withValue(10).withRange(0, 120).withVisibility { timeout.value }.build())
     private val time = register(Settings.b("Timestamp", true))
@@ -47,9 +41,9 @@ class DiscordNotifs : Module() {
     private val direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility { !all.value }.build())
     private val directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility { !all.value }.build())
 
-    @JvmField val url = register(Settings.s("URL", "unchanged"))
-    @JvmField val pingID = register(Settings.s("PingID", "unchanged"))
-    @JvmField val avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
+    val url = register(Settings.s("URL", "unchanged"))
+    val pingID = register(Settings.s("PingID", "unchanged"))
+    val avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
 
     private var cServer: ServerData? = null
 

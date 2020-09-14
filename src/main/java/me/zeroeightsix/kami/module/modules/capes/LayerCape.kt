@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.capes
 
-import me.zeroeightsix.kami.module.modules.capes.Capes.Companion.getCapeResource
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.entity.RenderPlayer
@@ -17,7 +16,7 @@ import kotlin.math.sin
 class LayerCape(private val playerRenderer: RenderPlayer) : LayerRenderer<AbstractClientPlayer> {
 
     override fun doRenderLayer(player: AbstractClientPlayer, limbSwing: Float, limbSwingAmount: Float, partialTicks: Float, ageInTicks: Float, netHeadYaw: Float, headPitch: Float, scale: Float) {
-        val resourceLocation = getCapeResource(player)
+        val resourceLocation = Capes.getCapeResource(player)
         val itemStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST)
         if (!player.hasPlayerInfo() || player.isInvisible || !player.isWearing(EnumPlayerModelParts.CAPE) || itemStack.getItem() === Items.ELYTRA || resourceLocation == null) return
 

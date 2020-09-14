@@ -8,19 +8,14 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.network.play.client.CPacketChatMessage
-import java.util.*
 
-/**
- * @author dominikaaaa
- * Updated by dominikaaaa on 12/03/20
- */
 @Module.Info(
         name = "FancyChat",
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
         showOnArray = Module.ShowOnArray.OFF
 )
-class FancyChat : Module() {
+object FancyChat : Module() {
     private val uwu = register(Settings.b("uwu", true))
     private val leet = register(Settings.b("1337", false))
     private val mock = register(Settings.b("mOcK", false))

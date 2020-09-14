@@ -13,11 +13,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
-/**
- * Created by 086 on 23/08/2017.
- * Updated by Sasha
- * Updated by Xiaro on 18/08/20
- */
 @Suppress("UNCHECKED_CAST")
 object ModuleManager {
     private val mc = Minecraft.getMinecraft()
@@ -52,15 +47,15 @@ object ModuleManager {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
-            try {
+            try { // Backward compatibility
                 val module = clazz.getConstructor().newInstance() as Module
                 moduleMap[module.javaClass] = module
-            } catch (e: InvocationTargetException) {
-                e.cause!!.printStackTrace()
-                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
+            } catch (noSuchMethodException :NoSuchMethodException) {
+                val module = clazz.getDeclaredField("INSTANCE")[null] as Module
+                moduleMap[module.javaClass] = module
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
             }
         }
         initSortedList()
@@ -157,12 +152,12 @@ object ModuleManager {
 
     @JvmStatic
     fun isModuleEnabled(clazz: Class<out Module>): Boolean {
-        return getModule(clazz)?.isEnabled ?: false
+        return getModule(clazz).isEnabled
     }
 
     @JvmStatic
     fun isModuleListening(clazz: Class<out Module>): Boolean {
-        val module = getModule(clazz) ?: return false
+        val module = getModule(clazz)
         return isModuleListening(module)
     }
 
