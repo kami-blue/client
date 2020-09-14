@@ -73,6 +73,7 @@ class Surround : Module() {
 
     override fun onEnable() {
         toggleTimer.reset()
+        mc.player?.setVelocity(0.0, -5.0, 0.0)
     }
 
     override fun onDisable() {
@@ -168,6 +169,7 @@ class Surround : Module() {
         } else {
             val centerDiff = getCenterDiff()
             if (!isCentered()) {
+                mc.player.setVelocity(0.0, -5.0, 0.0)
                 if (autoCenter.value == AutoCenterMode.TP) {
                     val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.25, 0.25)
                     val posZ = mc.player.posZ + MathHelper.clamp(centerDiff.z, -0.25, 0.25)
