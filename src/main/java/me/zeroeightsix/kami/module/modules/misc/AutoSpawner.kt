@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockDeadBush
 import net.minecraft.block.BlockSoulSand
@@ -67,12 +66,9 @@ class AutoSpawner : Module() {
 
     override fun getHudInfo(): String? {
         return if (party.value) {
-            if (partyWithers.value) {
-                "PARTY WITHER"
-            } else "PARTY"
-        } else {
-            entityMode.value.toString()
-        }
+            if (partyWithers.value) "PARTY WITHER"
+            else "PARTY"
+        } else entityMode.value.toString()
     }
 
     override fun onEnable() {
@@ -104,7 +100,7 @@ class AutoSpawner : Module() {
                     }
                     return
                 }
-                val blockPosList = ModuleManager.getModuleT(CrystalAura::class.java)!!.getSphere(mc.player.position, placeRange.value, placeRange.value.toInt(), false, true, 0)
+                val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
                 var noPositionInArea = true
 
                 for (pos in blockPosList) {
@@ -117,8 +113,9 @@ class AutoSpawner : Module() {
 
                 if (noPositionInArea) {
                     if (useMode.value == UseMode.SINGLE) {
-                        if (debug.value) sendChatMessage("$chatName Position not valid, disabling.")
+                        if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
                         disable()
+                        return
                     }
                 }
 
@@ -168,6 +165,7 @@ class AutoSpawner : Module() {
                 if (useMode.value == UseMode.SINGLE) disable()
 
                 buildStage = Stage.DELAY
+                timer.reset()
             }
             Stage.DELAY -> {
                 if (timer.tick(delay.value.toLong())) buildStage = Stage.PRE
@@ -237,7 +235,7 @@ class AutoSpawner : Module() {
             // dont place on grass
             val block = mc.world.getBlockState(it).block
             if (block is BlockTallGrass || block is BlockDeadBush) return false
-            if (getPlaceableSide(it.up()) == null) return false
+            if (getPlaceableSide(it) == null) return false
 
             for (pos in BodyParts.bodyBase) {
                 if (placingIsBlocked(it.add(pos))) return false
@@ -251,12 +249,10 @@ class AutoSpawner : Module() {
 
             if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.WITHER) {
                 for (pos in BodyParts.ArmsX) {
-                    if (placingIsBlocked(it.add(pos))
-                            || placingIsBlocked(it.add(pos.down()))) rotationPlaceableX = false
+                    if (placingIsBlocked(it.add(pos))) rotationPlaceableX = false
                 }
                 for (pos in BodyParts.ArmsZ) {
-                    if (placingIsBlocked(it.add(pos))
-                            || placingIsBlocked(it.add(pos.down()))) rotationPlaceableZ = false
+                    if (placingIsBlocked(it.add(pos))) rotationPlaceableZ = false
                 }
             }
 
@@ -301,7 +297,7 @@ class AutoSpawner : Module() {
     }
 
     private fun placingIsBlocked(pos: BlockPos): Boolean {
-        return mc.world.isAirBlock(pos) && mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
+        return !mc.world.isAirBlock(pos) || !mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
     }
 
     private fun placeBlock(pos: BlockPos, rotate: Boolean) {
