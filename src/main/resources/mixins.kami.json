@@ -29,6 +29,7 @@
     "MixinGuiPlayerTabOverlay",
     "MixinGuiScreen",
     "MixinLayerArmorBase",
+    "MixinMapItemRenderer",
     "MixinMinecraft",
     "MixinModelBiped",
     "MixinModelBoat",
@@ -42,7 +43,6 @@
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
     "MixinVisGraph",
-    "MixinWorld",
-    "MixinMapItemRenderer"
+    "MixinWorld"
   ]
 }
