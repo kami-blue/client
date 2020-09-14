@@ -45,6 +45,11 @@ object CrystalUtils {
 
     @JvmStatic
     fun getCrystalList(range: Float): ArrayList<EntityEnderCrystal> {
+        return getCrystalList(mc.player.positionVector, range)
+    }
+
+    @JvmStatic
+    fun getCrystalList(center: Vec3d, range: Float): ArrayList<EntityEnderCrystal> {
         val crystalList = ArrayList<EntityEnderCrystal>()
         val entityList = ArrayList<Entity>()
         synchronized(mc.world.loadedEntityList) {
@@ -53,7 +58,7 @@ object CrystalUtils {
         for (entity in entityList) {
             if (entity.isDead) continue
             if (entity !is EntityEnderCrystal) continue
-            if (mc.player.getDistance(entity) > range) continue
+            if (center.distanceTo(entity.positionVector) > range) continue
             crystalList.add(entity)
         }
         return crystalList

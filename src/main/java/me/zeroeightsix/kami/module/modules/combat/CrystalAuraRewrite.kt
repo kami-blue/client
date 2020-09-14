@@ -11,10 +11,10 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -31,7 +31,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import java.util.*
 import kotlin.collections.HashSet
-import kotlin.math.ceil
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -52,14 +52,15 @@ class CrystalAuraRewrite : Module() {
     private val page = register(Settings.e<Page>("Page", Page.GENERAL))
 
     /* General */
-    private val tpsSync = register(Settings.booleanBuilder("TpsSync").withValue(false).withVisibility { page.value == Page.GENERAL }.build())
     private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
     private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
+    private val maxYawRate = register(Settings.integerBuilder("MaxYawRate").withValue(50).withRange(10, 100).withVisibility { page.value == Page.GENERAL }.build())
 
     /* Place page one */
     private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
     private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
     private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val placeSwing = register(Settings.booleanBuilder("PlaceSwing").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
 
     /* Place page two */
     private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO }.build())
@@ -80,7 +81,7 @@ class CrystalAuraRewrite : Module() {
     private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
     private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
     private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
-    private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(4).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(2).withRange(0, 5).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(5.0f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.5f).withRange(0.0f, 10.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
     /* End of settings */
@@ -95,20 +96,22 @@ class CrystalAuraRewrite : Module() {
 
     /* Variables */
     private val placeMap = TreeMap<Float, BlockPos>(Comparator.reverseOrder())
-    private val crystalList = TreeSet<EntityEnderCrystal>(compareBy { it.getDistance(mc.player) })
+    private val crystalList = HashSet<EntityEnderCrystal>()
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var state = State.NONE
     private var hitCount = 0
     private var hitTimer = 0
+    private var lastRotation = Vec2d(0.0, 0.0)
     private var inactiveTicks = 0
 
     override fun isActive(): Boolean {
-        return isEnabled && (canPlace() || canExplode())
+        return isEnabled && inactiveTicks <= 10
     }
 
     override fun onEnable() {
-        if (mc.player == null) this.disable()
+        if (mc.player == null) disable()
+        else resetRotation()
     }
 
     override fun onDisable() {
@@ -116,53 +119,48 @@ class CrystalAuraRewrite : Module() {
         crystalList.clear()
         ignoredList.clear()
         lastCrystal = null
+        state = State.NONE
         hitCount = 0
         hitTimer = 0
-        inactiveTicks = 0
+        inactiveTicks = 11
     }
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
+        if (!CombatManager.isOnTopPriority(this) || mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
         if (event.packet.getCategory() == SoundCategory.BLOCKS && event.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-            val crystalList = CrystalUtils.getCrystalList(10f)
+            val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 5f)
             for (crystal in crystalList) {
-                if (crystal.getDistance(event.packet.x, event.packet.y, event.packet.z) > 5) continue
                 crystal.setDead()
             }
+            ignoredList.clear()
+            hitCount = 0
         }
     })
 
     // CA is very order sensitive for some reasons so we have to make sure that we spoof the rotations before placing or exploding
     @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.PostSend ->
-        if (event.packet !is CPacketPlayer) return@EventHook
+    private val postSendListener = Listener(EventHook { event: PacketEvent.PostSend ->
+        if (!CombatManager.isOnTopPriority(this) || event.packet !is CPacketPlayer) return@EventHook
         if (state == State.PLACE) place()
         else if (state == State.EXPLODE) explode()
     })
 
     override fun onUpdate() {
-        if (CombatManager.getTopPriority() > modulePriority) return
-        updateTickCounts()
+        if (!CombatManager.isOnTopPriority(this)) return
+        inactiveTicks++
         updateMap()
 
-        if (hitTimer > getHitDelay()) {
+        if (hitTimer > hitDelay.value) {
             if (canExplode()) preExplode()
             else if (canPlace()) prePlace()
         } else {
             hitTimer++
             if (canPlace()) prePlace()
         }
-        spoofRotation()
-    }
 
-    /* Main functions */
-    private fun updateTickCounts() {
-        if (isActive()) {
-            inactiveTicks = 0
-        } else {
-            inactiveTicks++
-        }
+        if (inactiveTicks > 10) resetRotation()
+        else sendRotation()
     }
 
     private fun updateMap() {
@@ -172,39 +170,43 @@ class CrystalAuraRewrite : Module() {
         crystalList.clear()
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
 
-        ignoredList.removeIf { it.isDead }
-
-        if (getExplodingCrystal() == null && ignoredList.isNotEmpty()) ignoredList.clear()
+        if (getExplodingCrystal() == null && ignoredList.isNotEmpty()) {
+            ignoredList.clear()
+            hitCount = 0
+        }
     }
 
     private fun prePlace() {
         if (autoSwap.value && getCrystalHand() == null) InventoryUtils.swapSlotToItem(426)
-        getPlacingPos()?.let { pos ->
-                lastRotation = Vec2f(RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 0.5, 0.5), true))
-                state = State.PLACE
+        getPlacingPos()?.let {
+            state = State.PLACE
+            inactiveTicks = 0
+            sendRotation(RotationUtils.getRotationTo(Vec3d(it).add(0.5, 1.0, 0.5), true))
         }
     }
 
     private fun place() {
         getPlacingPos()?.let { pos ->
             getCrystalHand()?.let { hand ->
-                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0F, 0F, 0F))
+                state = State.NONE
+                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0.5f, 1f, 0.5f))
+                if (placeSwing.value) mc.player.swingArm(hand)
             }
         }
-        state = State.NONE
     }
 
     private fun preExplode() {
         if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) CombatUtils.equipBestWeapon()
         getExplodingCrystal()?.let {
+            state = State.EXPLODE
             hitTimer = 0
-            lastRotation = Vec2f(RotationUtils.getRotationTo(getExplodingHitPos(it), true))
+            inactiveTicks = 0
+            sendRotation(getExplodingRotation(it))
 
-            if (it == lastCrystal) {
-                if (hitAttempts.value != 0) {
-                    if (hitCount < hitAttempts.value) {
-                        hitCount++
-                    } else if (hitAttempts.value != 0) {
+            if (hitAttempts.value != 0) {
+                if (it == lastCrystal) {
+                    hitCount++
+                    if (hitCount >= hitAttempts.value) {
                         ignoredList.add(it)
                         hitCount = 0
                     }
@@ -213,17 +215,16 @@ class CrystalAuraRewrite : Module() {
                 lastCrystal = it
                 hitCount = 0
             }
-            state = State.EXPLODE
         }
     }
 
     private fun explode() {
         getExplodingCrystal()?.let {
+            state = State.NONE
             mc.playerController.attackEntity(mc.player, it)
-            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.player.swingArm(getCrystalHand() ?: EnumHand.MAIN_HAND)
             mc.player.setLastAttackedEntity(CombatManager.target!!)
         }
-        state = State.NONE
     }
     /* End of main functions */
 
@@ -250,6 +251,8 @@ class CrystalAuraRewrite : Module() {
             if (!CrystalUtils.canPlaceCollide(pos)) continue
             if (BlockUtils.rayTraceTo(pos) == null && dist > wallPlaceRange.value) continue
             if (!shouldForcePlace()) {
+                val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 1.0, 0.5), true)
+                if (abs(rotation.x - lastRotation.x) > maxYawRate.value) continue
                 val selfDamage = CrystalUtils.calcExplosionDamage(pos, mc.player)
                 if (!noSuicideCheck(selfDamage)) continue
                 if (!checkDamagePlace(damage, selfDamage)) continue
@@ -273,14 +276,6 @@ class CrystalAuraRewrite : Module() {
     /* End of placing */
 
     /* Exploding */
-    private fun getHitDelay(): Int {
-        return if (!tpsSync.value) {
-            hitDelay.value
-        } else {
-            ceil(hitDelay.value * (20f / LagCompensator.tickRate)).toInt()
-        }
-    }
-
     private fun canExplode(): Boolean {
         return doExplode.value && getExplodingCrystal() != null && CombatManager.target?.let { target ->
             if (checkImmune.value && target.isInvulnerable) return false
@@ -301,20 +296,27 @@ class CrystalAuraRewrite : Module() {
     private fun getExplodingCrystal(): EntityEnderCrystal? {
         if (crystalList.isEmpty()) return null
         return crystalList.firstOrNull {
-            !ignoredList.contains(it) && (mc.player.canEntityBeSeen(it) || EntityUtils.canEntityFeetBeSeen(it)) && it.getDistance(mc.player) < explodeRange.value
+            !ignoredList.contains(it)
+                    && (mc.player.canEntityBeSeen(it) || EntityUtils.canEntityFeetBeSeen(it))
+                    && it.getDistance(mc.player) < explodeRange.value
+                    && abs(getExplodingRotation(it).x - lastRotation.x) <= maxYawRate.value
         } ?: crystalList.firstOrNull {
-            !ignoredList.contains(it) && EntityUtils.canEntityHitboxBeSeen(it) != null && it.getDistance(mc.player) < wallExplodeRange.value
+            !ignoredList.contains(it)
+                    && EntityUtils.canEntityHitboxBeSeen(it) != null
+                    && it.getDistance(mc.player) < wallExplodeRange.value
         }
     }
 
-    private fun getExplodingHitPos(crystal: EntityEnderCrystal): Vec3d {
-        return if (mc.player.canEntityBeSeen(crystal)) {
-            crystal.getPositionEyes(1f) // If we can see the eyes then we look at the eye pos
-        } else if (EntityUtils.canEntityFeetBeSeen(crystal)) {
+    private fun getExplodingRotation(crystal: EntityEnderCrystal): Vec2d {
+        val hitPos = if (mc.player.canEntityBeSeen(crystal)) {
             crystal.positionVector // If we can see the feet then we look at the feet pos
+        } else if (EntityUtils.canEntityFeetBeSeen(crystal)) {
+            crystal.getPositionEyes(1f) // If we can see the eyes then we look at the eye pos
         } else {
             EntityUtils.canEntityHitboxBeSeen(crystal) // If we can it any vertex of the hit box then we look at it
-        } ?: crystal.getPositionEyes(1f)  // If not then just look at the eye pos
+        } ?: crystal.positionVector  // If not then just look at the eye pos
+
+        return RotationUtils.getRotationTo(hitPos, true)
     }
 
     private fun shouldForceExplode(): Boolean {
@@ -354,11 +356,10 @@ class CrystalAuraRewrite : Module() {
             for (crystal in crystalList) {
                 if (ignoredList.contains(crystal)) continue
                 if (crystal.getDistance(mc.player) > placeRange.value) continue
-                if (!shouldForcePlace()) {
-                    val damage = CrystalUtils.calcExplosionDamage(crystal, target)
-                    val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
-                    if (!checkDamagePlace(damage, selfDamage)) continue
-                }
+                if (abs(getExplodingRotation(crystal).x - lastRotation.x) > maxYawRate.value) continue
+                val damage = CrystalUtils.calcExplosionDamage(crystal, target)
+                val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
+                if (!checkDamagePlace(damage, selfDamage)) continue
                 count++
             }
         }
@@ -366,12 +367,14 @@ class CrystalAuraRewrite : Module() {
     }
     /* End of general */
 
-    /* Rotation spoof */
-    private var lastRotation = Vec2f(0f, 0f)
-
-    private fun spoofRotation() {
-        if (inactiveTicks > 10) return
-        PlayerPacketManager.addPacket(this, (PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)))
+    /* Rotation spoofing */
+    private fun sendRotation(rotation: Vec2d? = null) {
+        if (rotation != null) lastRotation = rotation
+        PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(lastRotation)))
     }
-    /* End of rotation spoof */
+
+    private fun resetRotation() {
+        lastRotation = Vec2d(RotationUtils.normalizeAngle(mc.player.rotationYaw.toDouble()), mc.player.rotationPitch.toDouble())
+    }
+    /* End of rotation spoofing */
 }
