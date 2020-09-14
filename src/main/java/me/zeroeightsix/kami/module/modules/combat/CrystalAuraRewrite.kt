@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
@@ -30,8 +31,10 @@ import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -55,6 +58,9 @@ class CrystalAuraRewrite : Module() {
     private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
     private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
     private val maxYawRate = register(Settings.integerBuilder("MaxYawRate").withValue(50).withRange(10, 100).withVisibility { page.value == Page.GENERAL }.build())
+    private val motionPrediction = register(Settings.booleanBuilder("MotionPrediction").withValue(true).withVisibility { page.value == Page.GENERAL }.build())
+    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.GENERAL && motionPrediction.value }.build())
+    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.GENERAL && motionPrediction.value && !pingSync.value }.build())
 
     /* Place page one */
     private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
@@ -96,7 +102,7 @@ class CrystalAuraRewrite : Module() {
 
     /* Variables */
     private val placeMap = TreeMap<Float, BlockPos>(Comparator.reverseOrder())
-    private val crystalList = HashSet<EntityEnderCrystal>()
+    private val crystalList = ArrayList<EntityEnderCrystal>()
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var state = State.NONE
@@ -104,6 +110,7 @@ class CrystalAuraRewrite : Module() {
     private var hitTimer = 0
     private var lastRotation = Vec2d(0.0, 0.0)
     private var inactiveTicks = 0
+    private var targetPosition = Vec3d(0.0, -999.0, 0.0)
 
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 10
@@ -123,6 +130,7 @@ class CrystalAuraRewrite : Module() {
         hitCount = 0
         hitTimer = 0
         inactiveTicks = 11
+        targetPosition = Vec3d(0.0, -999.0, 0.0)
     }
 
     @EventHandler
@@ -164,8 +172,10 @@ class CrystalAuraRewrite : Module() {
     }
 
     private fun updateMap() {
+        setPosition()
         placeMap.clear()
         placeMap.putAll(CrystalUtils.getPlacePos(CombatManager.target, mc.player, placeRange.value))
+        resetPosition()
 
         crystalList.clear()
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
@@ -282,10 +292,12 @@ class CrystalAuraRewrite : Module() {
             if (checkDamage.value && !shouldForceExplode()) {
                 var maxDamage = 0f
                 var maxSelfDamage = 0f
+                setPosition()
                 for (crystal in crystalList) {
                     maxDamage = max(maxDamage, CrystalUtils.calcExplosionDamage(crystal, target))
                     maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcExplosionDamage(crystal, mc.player))
                 }
+                resetPosition()
                 if (!noSuicideCheck(maxSelfDamage)) return false
                 if (!checkDamageExplode(maxDamage, maxSelfDamage)) return false
             }
@@ -353,6 +365,7 @@ class CrystalAuraRewrite : Module() {
     private fun countValidCrystal(): Int {
         var count = 0
         CombatManager.target?.let { target ->
+            setPosition()
             for (crystal in crystalList) {
                 if (ignoredList.contains(crystal)) continue
                 if (crystal.getDistance(mc.player) > placeRange.value) continue
@@ -362,10 +375,29 @@ class CrystalAuraRewrite : Module() {
                 if (!checkDamagePlace(damage, selfDamage)) continue
                 count++
             }
+            resetPosition()
         }
         return count
     }
     /* End of general */
+
+    /* Motion prediction */
+    private fun setPosition() {
+        if (!motionPrediction.value) return
+        val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else ticksAhead.value
+        val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
+        CombatManager.target?.let {
+            targetPosition = it.positionVector
+            it.setPosition(posAhead.x, posAhead.y, posAhead.z)
+        }
+    }
+
+    private fun resetPosition() {
+        if (!motionPrediction.value) return
+        if (targetPosition.y == -999.0) return
+        CombatManager.target?.setPosition(targetPosition.x, targetPosition.y, targetPosition.z)
+    }
+    /* End of Motion prediction */
 
     /* Rotation spoofing */
     private fun sendRotation(rotation: Vec2d? = null) {

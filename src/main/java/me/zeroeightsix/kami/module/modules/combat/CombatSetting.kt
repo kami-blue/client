@@ -42,7 +42,7 @@ class CombatSetting : Module() {
     private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).build())
     private val renderPredictedPos = register(Settings.b("RenderPredictedPosition", false))
     private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { renderPredictedPos.value }.build())
-    private val tickAhead = register(Settings.integerBuilder("TickAhead").withValue(5).withRange(0, 20).withVisibility { renderPredictedPos.value && !pingSync.value }.build())
+    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { renderPredictedPos.value && !pingSync.value }.build())
 
     private enum class TargetFilter {
         ALL, FOV, MANUAL
@@ -61,7 +61,7 @@ class CombatSetting : Module() {
     override fun onRender() {
         if (!renderPredictedPos.value) return
         CombatManager.target?.let {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else tickAhead.value
+            val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else ticksAhead.value
             val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
             val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
             val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
