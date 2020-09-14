@@ -102,5 +102,4 @@ public class MixinEntityRenderer {
             return entity.getEyeHeight();
         }
     }
-
 }
