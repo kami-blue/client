@@ -26,21 +26,13 @@ import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-/**
- * @author hub
- * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
- * Updated by Polymer on 09/01/20
- * Updated by dominikaaaa on 28/01/20
- * Updated by Xiaro on 08/07/20
- */
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,
         description = "Surrounds you with obsidian to take less damage"
 )
-class Surround : Module() {
-    @JvmField
-    var autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
+object Surround : Module() {
+    val autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
     private val spoofRotations = register(Settings.b("SpoofRotations", true))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", false))
     private val blockPerTick = register(Settings.doubleBuilder("BlocksPerTick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build())
@@ -258,38 +250,37 @@ class Surround : Module() {
         }
     }
 
-    companion object {
-        private fun canBeClicked(pos: BlockPos): Boolean {
-            return getBlock(pos).canCollideCheck(getState(pos), false)
-        }
-
-        fun getBlock(pos: BlockPos): Block {
-            return getState(pos).block
-        }
-
-        private fun getState(pos: BlockPos): IBlockState {
-            return mc.world.getBlockState(pos)
-        }
-
-        private fun faceVectorPacketInstant(vec: Vec3d) {
-            val rotations = getLegitRotations(vec)
-            mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
-        }
-
-        private fun getLegitRotations(vec: Vec3d): FloatArray {
-            val eyesPos = eyesPos
-            val diffX = vec.x - eyesPos.x
-            val diffY = vec.y - eyesPos.y
-            val diffZ = vec.z - eyesPos.z
-
-            val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-            val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
-            val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
-
-            return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
-        }
-
-        private val eyesPos: Vec3d
-            get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
+    private fun canBeClicked(pos: BlockPos): Boolean {
+        return getBlock(pos).canCollideCheck(getState(pos), false)
     }
+
+    fun getBlock(pos: BlockPos): Block {
+        return getState(pos).block
+    }
+
+    private fun getState(pos: BlockPos): IBlockState {
+        return mc.world.getBlockState(pos)
+    }
+
+    private fun faceVectorPacketInstant(vec: Vec3d) {
+        val rotations = getLegitRotations(vec)
+        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
+    }
+
+    private fun getLegitRotations(vec: Vec3d): FloatArray {
+        val eyesPos = eyesPos
+        val diffX = vec.x - eyesPos.x
+        val diffY = vec.y - eyesPos.y
+        val diffZ = vec.z - eyesPos.z
+
+        val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
+        val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
+        val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
+
+        return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
+    }
+
+    private val eyesPos: Vec3d
+        get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
+
 }

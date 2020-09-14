@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.Aura
@@ -55,7 +54,7 @@ class AutoEat : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || (MODULE_MANAGER.isModuleEnabled(Aura::class.java) && MODULE_MANAGER.getModuleT(Aura::class.java)!!.isAttacking)) return
+        if (mc.player == null || Aura.isAttacking) return
 
         if (eating && !mc.player.isHandActive) {
             if (lastSlot != -1) {

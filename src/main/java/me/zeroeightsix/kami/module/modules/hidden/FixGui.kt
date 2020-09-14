@@ -19,7 +19,7 @@ import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
         showOnArray = Module.ShowOnArray.OFF,
         enabledByDefault = true
 )
-class FixGui : Module() {
+object FixGui : Module() {
     override fun onUpdate() {
         ModuleManager.getModuleT(ClickGUI::class.java)?.resetScale()
         GuiFrameUtil.fixFrames(mc)

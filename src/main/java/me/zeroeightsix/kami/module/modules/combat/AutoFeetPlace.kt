@@ -22,16 +22,12 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
-/**
- * @author hub
- * @since 2019-8-13
- */
 @Module.Info(
         name = "AutoFeetPlace",
         category = Module.Category.COMBAT,
         description = "Continually places obsidian around your feet"
 )
-class AutoFeetPlace : Module() {
+object AutoFeetPlace : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.FULL))
     private val triggerable = register(Settings.b("Triggerable", true))
     private val disableNone = register(Settings.b("DisableNoObby", true))
@@ -79,7 +75,7 @@ class AutoFeetPlace : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
+        if (KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
             return
         }
 
@@ -255,19 +251,17 @@ class AutoFeetPlace : Module() {
         )
     }
 
-    companion object {
-        private fun getPlaceableSide(pos: BlockPos): EnumFacing? {
-            for (side in EnumFacing.values()) {
-                val neighbour = pos.offset(side)
-                if (!mc.world.getBlockState(neighbour).block.canCollideCheck(mc.world.getBlockState(neighbour), false)) {
-                    continue
-                }
-                val blockState = mc.world.getBlockState(neighbour)
-                if (!blockState.material.isReplaceable) {
-                    return side
-                }
+    private fun getPlaceableSide(pos: BlockPos): EnumFacing? {
+        for (side in EnumFacing.values()) {
+            val neighbour = pos.offset(side)
+            if (!mc.world.getBlockState(neighbour).block.canCollideCheck(mc.world.getBlockState(neighbour), false)) {
+                continue
             }
-            return null
+            val blockState = mc.world.getBlockState(neighbour)
+            if (!blockState.material.isReplaceable) {
+                return side
+            }
         }
+        return null
     }
 }

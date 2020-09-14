@@ -17,17 +17,13 @@ import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDamageEvent
 
-/**
- * Created by 086 on 9/04/2018.
- * Updated by dominikaaaa on 06/09/20
- */
 @Module.Info(
         name = "AutoLog",
         description = "Automatically log when in danger or on low health",
         category = Module.Category.COMBAT,
         alwaysListening = true
 )
-class AutoLog : Module() {
+object AutoLog : Module() {
     private val health = register(Settings.integerBuilder("Health").withRange(0, 36).withValue(10).build())
     private val crystals = register(Settings.b("Crystals", false))
     private val creeper = register(Settings.b("Creepers", true))
@@ -65,7 +61,7 @@ class AutoLog : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || isDisabled) return
+        if (isDisabled) return
 
         if (mc.player.health < health.value) {
             log(listOf("Health went below ${health.value}!", "Last attacked by: $lastDamageSource"))
