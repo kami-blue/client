@@ -13,19 +13,14 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.util.text.TextFormatting
 import java.awt.Color
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 20/03/20
- * Updated by dominikaaaa on 04/04/20
- * Updated by Xiaro on 11/09/20
- */
 @Module.Info(
         name = "ActiveModules",
         category = Module.Category.CLIENT,
         description = "Configures ActiveModules colours and modes",
         showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true)
-class ActiveModules : Module() {
+        alwaysEnabled = true
+)
+object ActiveModules : Module() {
     private val forgeHax = register(Settings.b("ForgeHax", false))
     val potion = register(Settings.b("PotionsMove", false))
     val hidden = register(Settings.b("ShowHidden", false))

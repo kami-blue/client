@@ -31,7 +31,7 @@ import kotlin.math.max
         alwaysEnabled = true
 )
 @Suppress("UNCHECKED_CAST")
-class InfoOverlay : Module() {
+object InfoOverlay : Module() {
     /* This is so horrible but there's no other way */
     private val page = register(Settings.enumBuilder(Page::class.java).withName("Page").withValue(Page.ONE))
 

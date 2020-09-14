@@ -13,4 +13,4 @@ import me.zeroeightsix.kami.module.Module
         showOnArray = Module.ShowOnArray.OFF,
         enabledByDefault = true
 )
-class Tooltips : Module()
+object Tooltips : Module()
