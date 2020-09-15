@@ -15,7 +15,7 @@ object NoEntityTrace : Module() {
         STATIC, DYNAMIC
     }
 
-
+    @JvmStatic
     fun shouldBlock(): Boolean {
         return isEnabled && (mode.value == TraceMode.STATIC || mc.playerController.isHittingBlock)
     }
