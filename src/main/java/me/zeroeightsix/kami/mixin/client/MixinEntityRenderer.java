@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.google.common.base.Predicate;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -30,12 +29,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
+
+/**
+ * Created by 086 on 11/12/2017.
+ */
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
 
+    private boolean nightVision = false;
+
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     public RayTraceResult rayTraceBlocks(WorldClient world, Vec3d start, Vec3d end) {
-        if (ModuleManager.isModuleEnabled(CameraClip.class))
+        if (MODULE_MANAGER.isModuleEnabled(CameraClip.class))
             return null;
         else
             return world.rayTraceBlocks(start, end);
@@ -43,7 +49,7 @@ public class MixinEntityRenderer {
 
     @Inject(method = "displayItemActivation", at = @At(value = "HEAD"), cancellable = true)
     public void displayItemActivation(ItemStack stack, CallbackInfo callbackInfo) {
-        if (ModuleManager.getModuleT(AntiOverlay.class).isEnabled() && ModuleManager.getModuleT(AntiOverlay.class).totems.getValue()) {
+        if (ModuleManager.getModuleT(AntiOverlay.class).isEnabled() && ModuleManager.getModuleT(AntiOverlay.class).getTotems().getValue()) {
             callbackInfo.cancel();
         }
     }
@@ -67,7 +73,7 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
     public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate predicate) {
-        if (NoEntityTrace.INSTANCE.shouldBlock())
+        if (NoEntityTrace.shouldBlock())
             return new ArrayList<>();
         else
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
@@ -77,13 +83,14 @@ public class MixinEntityRenderer {
     public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
         // [WebringOfTheDamned]
         // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
-        if (Freecam.INSTANCE.isEnabled()) return true;
+        if (MODULE_MANAGER.isModuleEnabled(Freecam.class))
+            return true;
         return entityPlayerSP.isSpectator();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))
     public float getEyeHeight(Entity entity) {
-        if (ElytraFlight.INSTANCE.shouldSwing()) {
+        if (MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
             return 0.4F;
         } else {
             return entity.getEyeHeight();

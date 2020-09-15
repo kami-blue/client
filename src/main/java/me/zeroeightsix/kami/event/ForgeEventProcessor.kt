@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay
 import me.zeroeightsix.kami.module.modules.render.NoRender
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.passive.AbstractHorse
-import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDamageEvent
@@ -92,7 +90,6 @@ class ForgeEventProcessor {
             }
         }
 
-        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay::class.java) || !ModuleManager.getModuleT(AntiOverlay::class.java)!!.portals.value
         ModuleManager.onUpdate()
         KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
     }

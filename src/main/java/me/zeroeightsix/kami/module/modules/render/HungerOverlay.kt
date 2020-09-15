@@ -13,13 +13,14 @@ import net.minecraft.init.MobEffects
 import net.minecraft.item.Item
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
-import net.minecraft.util.FoodStats
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper
-import org.lwjgl.opengl.GL11.*
-import kotlin.math.*
+import org.lwjgl.opengl.GL11.glColor4f
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.min
 
 /**
  * Created (partly) by Dewy on the 19th of April, 2020
@@ -31,12 +32,10 @@ import kotlin.math.*
         category = Module.Category.RENDER
 )
 class HungerOverlay : Module() {
-    private val exhaustionOverlay: Setting<Boolean> = register(Settings.booleanBuilder("ExhaustionOverlay").withValue(true).build())
     private val saturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("SaturationOverlay").withValue(true).build())
     private val foodHungerOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodHungerOverlay").withValue(true).build())
     private val foodSaturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodSaturationOverlay").withValue(true).build())
 
-    private val exhaustion = ObfuscationReflectionHelper.findField(FoodStats::class.java, "foodExhaustionLevel")
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 
     @EventHandler
@@ -44,7 +43,7 @@ class HungerOverlay : Module() {
         if (event.type != RenderGameOverlayEvent.ElementType.FOOD) return@EventHook
 
         val time = (System.currentTimeMillis() % 5000L) / 2500f
-        val flashAlpha = -0.5f * cos( time * 3.1415927f) + 0.5f
+        val flashAlpha = -0.5f * cos(time * 3.1415927f) + 0.5f
         val stats = mc.player.foodStats
         val resolution = ScaledResolution(mc)
         val left = resolution.scaledWidth / 2 + 82
@@ -52,7 +51,6 @@ class HungerOverlay : Module() {
         val foodValues = getFoodValues(mc.player.heldItemMainhand.getItem())
         val newHungerValue = min(stats.foodLevel + foodValues.first, 20)
         val newSaturationValue = min((stats.saturationLevel + foodValues.second), newHungerValue.toFloat())
-        val exhaustionValue = exhaustion.getFloat(mc.player.foodStats)
 
         GlStateUtils.blend(true)
         if (foodHungerOverlay.value && foodValues.first > 0) {
@@ -66,15 +64,11 @@ class HungerOverlay : Module() {
         if (foodSaturationOverlay.value && foodValues.second > 0f) {
             drawSaturationBar(floor(stats.saturationLevel), newSaturationValue, left, top, flashAlpha)
         }
-
-        if (exhaustionOverlay.value && exhaustionValue > 0f) {
-            drawExhaustionBar(exhaustionValue, left, top)
-        }
         GlStateUtils.blend(false)
         mc.textureManager.bindTexture(Gui.ICONS)
     })
 
-            /**
+    /**
      * @return <Hunger, Saturation>
      */
 
@@ -93,15 +87,9 @@ class HungerOverlay : Module() {
         drawBarHalf((start / 2f).toInt(), (end / 2f), left, top, textureX, alpha)
     }
 
-    private fun drawExhaustionBar(exhaustion: Float, left: Int, top: Int) {
-
-        mc.textureManager.bindTexture(icons)
-        drawBarFourth(0, exhaustion * 2.5f, left, top, 9, 0.75f)
-    }
-
     private fun drawSaturationBar(start: Float, end: Float, left: Int, top: Int, alpha: Float) {
         mc.textureManager.bindTexture(icons)
-        drawBarFourth((start / 2f).toInt(), (end / 2f), left, top, 0, alpha)
+        drawBarFourth((start / 2f).toInt(), (end / 2f), left, top, alpha)
     }
 
     private fun drawBarHalf(start: Int, end: Float, left: Int, top: Int, textureX: Int, alpha: Float) {
@@ -117,16 +105,16 @@ class HungerOverlay : Module() {
         glColor4f(1f, 1f, 1f, 1f)
     }
 
-    private fun drawBarFourth(start: Int, end: Float, left: Int, top: Int, textureY: Int, alpha: Float) {
+    private fun drawBarFourth(start: Int, end: Float, left: Int, top: Int, alpha: Float) {
         glColor4f(1f, 1f, 1f, alpha)
         for (currentBar in start..ceil(end).toInt()) {
             val remainBars = min((floor((end - currentBar) * 4f) / 4f), 1f)
             val posX = left - (currentBar * 8)
             when (remainBars) {
-                1.00f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 27, textureY, 9, 9)
-                0.75f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 18, textureY, 9, 9)
-                0.50f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 9, textureY, 9, 9)
-                0.25f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 0, textureY, 9, 9)
+                1.00f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 27, 0, 9, 9)
+                0.75f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 18, 0, 9, 9)
+                0.50f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 9, 0, 9, 9)
+                0.25f -> mc.ingameGUI.drawTexturedModalRect(posX, top, 0, 0, 9, 9)
             }
         }
         glColor4f(1f, 1f, 1f, 1f)
