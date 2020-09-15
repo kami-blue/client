@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.EntitySpeed;
 import net.minecraft.entity.passive.EntityPig;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +15,7 @@ public class MixinEntityPig {
 
     @Inject(method = "canBeSteered", at = @At("HEAD"), cancellable = true)
     public void canBeSteered(CallbackInfoReturnable<Boolean> returnable) {
-        if (ModuleManager.isModuleEnabled(EntitySpeed.class)) {
+        if (EntitySpeed.INSTANCE.isEnabled()) {
             returnable.setReturnValue(true);
             returnable.cancel();
         }

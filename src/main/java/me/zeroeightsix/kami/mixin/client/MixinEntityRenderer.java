@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.google.common.base.Predicate;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -30,48 +29,42 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by 086 on 11/12/2017.
- */
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
 
-    private boolean nightVision = false;
-
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     public RayTraceResult rayTraceBlocks(WorldClient world, Vec3d start, Vec3d end) {
-        if (ModuleManager.isModuleEnabled(CameraClip.class))
-            return null;
-        else
-            return world.rayTraceBlocks(start, end);
+        if (CameraClip.INSTANCE.isEnabled()) return null;
+        else return world.rayTraceBlocks(start, end);
     }
 
     @Inject(method = "displayItemActivation", at = @At(value = "HEAD"), cancellable = true)
     public void displayItemActivation(ItemStack stack, CallbackInfo callbackInfo) {
-        if (ModuleManager.getModuleT(AntiOverlay.class).isEnabled() && ModuleManager.getModuleT(AntiOverlay.class).getTotems().getValue()) {
+        if (AntiOverlay.INSTANCE.isEnabled() && AntiOverlay.INSTANCE.getTotems().getValue()) {
             callbackInfo.cancel();
         }
     }
 
     @Inject(method = "setupFog", at = @At(value = "HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo callbackInfo) {
-        if (AntiFog.enabled() && AntiFog.mode.getValue() == AntiFog.VisionMode.NO_FOG)
+        if (AntiFog.INSTANCE.isEnabled() && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.NO_FOG)
             callbackInfo.cancel();
     }
 
     @Redirect(method = "setupFog", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ActiveRenderInfo;getBlockStateAtEntityViewpoint(Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;F)Lnet/minecraft/block/state/IBlockState;"))
     public IBlockState getBlockStateAtEntityViewpoint(World worldIn, Entity entityIn, float p_186703_2_) {
-        if (AntiFog.enabled() && AntiFog.mode.getValue() == AntiFog.VisionMode.AIR) return Blocks.AIR.defaultBlockState;
+        if (AntiFog.INSTANCE.isEnabled() && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR)
+            return Blocks.AIR.defaultBlockState;
         return ActiveRenderInfo.getBlockStateAtEntityViewpoint(worldIn, entityIn, p_186703_2_);
     }
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     public void hurtCameraEffect(float ticks, CallbackInfo info) {
-        if (NoHurtCam.shouldDisable()) info.cancel();
+        if (NoHurtCam.INSTANCE.isEnabled()) info.cancel();
     }
 
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
-    public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate predicate) {
+    public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate<? super Entity> predicate) {
         if (NoEntityTrace.shouldBlock())
             return new ArrayList<>();
         else
@@ -82,14 +75,14 @@ public class MixinEntityRenderer {
     public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
         // [WebringOfTheDamned]
         // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
-        if (ModuleManager.isModuleEnabled(Freecam.class))
+        if (Freecam.INSTANCE.isEnabled())
             return true;
         return entityPlayerSP.isSpectator();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))
     public float getEyeHeight(Entity entity) {
-        if (ModuleManager.getModuleT(ElytraFlight.class).shouldSwing()) {
+        if (ElytraFlight.INSTANCE.shouldSwing()) {
             return 0.4F;
         } else {
             return entity.getEyeHeight();

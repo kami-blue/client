@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
@@ -13,7 +12,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 object CommandUtil {
     @JvmStatic
     fun runAliases(command: Command) {
-        if (!ModuleManager.getModuleT(CommandConfig::class.java)!!.aliasInfo.value) return
+        if (!CommandConfig.aliasInfo.value) return
         val amount = command.aliases.size
         if (amount > 0) {
             MessageSendHelper.sendChatMessage("'" + command.label + "' has " + grammar1(amount) + "alias" + grammar2(amount))

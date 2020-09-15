@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Objects;
 
 /**
  * Created by 086 on 7/11/2017.
@@ -106,7 +105,7 @@ public class KamiMod {
         log.info("Initialising KamiMoji...");
         KAMIMOJI.start();
 
-        if (Objects.requireNonNull(ModuleManager.getModuleT(CommandConfig.class)).customTitle.getValue()) {
+        if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
     }

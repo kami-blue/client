@@ -13,18 +13,12 @@ import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 12/08/20
- * Updated by Xiaro on 24/08/20
- */
 @Module.Info(
         name = "MidClickPearl",
         category = Module.Category.COMBAT,
         description = "Throws a pearl automatically when you middle click in air"
 )
-class MidClickPearl : Module() {
+object MidClickPearl : Module() {
     private var prevSlot = -1
     private var startTime = -1L
 
@@ -46,7 +40,6 @@ class MidClickPearl : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null) return
         if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
             startTime = System.currentTimeMillis()

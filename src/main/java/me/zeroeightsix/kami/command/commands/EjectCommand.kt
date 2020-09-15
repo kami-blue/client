@@ -3,10 +3,8 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
 import net.minecraft.item.Item
 
@@ -17,16 +15,11 @@ import net.minecraft.item.Item
  */
 class EjectCommand : Command("eject", ChunkBuilder().append("command", true, EnumParser(arrayOf("help", "+item", "-item", "=item", "list", "default", "clear"))).build()) {
     override fun call(args: Array<String?>) {
-        val im = ModuleManager.getModuleT(InventoryManager::class.java)
-        if (im == null) {
-            sendErrorMessage("&cThe module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!")
-            return
-        }
-        if (!im.autoEject.value) {
-            sendWarningMessage("&6Warning: AutoEject in ${im.name} module is not enabled!")
+        if (!InventoryManager.autoEject.value) {
+            sendWarningMessage("&6Warning: AutoEject in ${InventoryManager.name} module is not enabled!")
             sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
-        } else if (im.isDisabled) {
-            sendWarningMessage("&6Warning: The ${im.name} module is not enabled!")
+        } else if (InventoryManager.isDisabled) {
+            sendWarningMessage("&6Warning: The ${InventoryManager.name} module is not enabled!")
             sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
         }
         when {
@@ -46,10 +39,10 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
                     sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
-                    if (im.ejectArrayList.contains(itemName)) {
+                    if (InventoryManager.ejectArrayList.contains(itemName)) {
                         sendChatMessage("&c$itemName already exist")
                     } else {
-                        im.ejectAdd(itemName)
+                        InventoryManager.ejectAdd(itemName)
                         sendChatMessage("$itemName has been added to the AutoEject item list")
                     }
                 }
@@ -61,10 +54,10 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
                     sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
-                    if (!im.ejectArrayList.contains(itemName)) {
+                    if (!InventoryManager.ejectArrayList.contains(itemName)) {
                         sendChatMessage("&c$itemName doesn't exist")
                     } else {
-                        im.ejectRemove(itemName)
+                        InventoryManager.ejectRemove(itemName)
                         sendChatMessage("$itemName has been removed from the AutoEject item list")
                     }
                 }
@@ -76,22 +69,22 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
                     sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
-                    im.ejectSet(itemName)
+                    InventoryManager.ejectSet(itemName)
                     sendChatMessage("AutoEject item list has been to $itemName")
                 }
             }
 
             args[0].equals("list", true) -> {
-                sendChatMessage(im.ejectGetString())
+                sendChatMessage(InventoryManager.ejectGetString())
             }
 
             args[0].equals("default", true) -> {
-                im.ejectDefault()
+                InventoryManager.ejectDefault()
                 sendChatMessage("Reset the AutoEject item list to default")
             }
 
             args[0].equals("clear", true) -> {
-                im.ejectClear()
+                InventoryManager.ejectClear()
                 sendChatMessage("Cleared the AutoEject item list")
             }
 

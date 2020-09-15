@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client;
 import io.netty.channel.ChannelHandlerContext;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.PacketEvent;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.player.NoPacketKick;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -14,10 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage;
 
-/**
- * Created by 086 on 13/11/2017.
- * NoPacketKick fixed by 0x2E | PretendingToCode 4/10/2020
- */
 @Mixin(NetworkManager.class)
 public class MixinNetworkManager {
 
@@ -53,7 +48,7 @@ public class MixinNetworkManager {
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)
     private void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled(NoPacketKick.class)) {
+        if (NoPacketKick.INSTANCE.isEnabled()) {
             sendWarningMessage("[NoPacketKick] Caught exception - " + p_exceptionCaught_2_.toString());
             info.cancel();
         }

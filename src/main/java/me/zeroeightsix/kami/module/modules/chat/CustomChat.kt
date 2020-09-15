@@ -14,18 +14,14 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketChatMessage
 
-/**
- * Created by 086 on 8/04/2018.
- * Updated by dominikaaaa on 12/03/20
- * Updated by Humboldt123 on 16/7/20
- */
+
 @Module.Info(
         name = "CustomChat",
         category = Module.Category.CHAT,
         description = "Add a custom ending to your message!",
         showOnArray = Module.ShowOnArray.OFF
 )
-class CustomChat : Module() {
+object CustomChat : Module() {
     val textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
@@ -83,10 +79,9 @@ class CustomChat : Module() {
         return false
     }
 
-    companion object {
-        val cmdCheck: Array<String>
-            get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
-                    Command.getCommandPrefix(),
-                    ModuleManager.getModuleT(ChatEncryption::class.java)?.delimiterValue?.value ?: "")
-    }
+    val cmdCheck: Array<String>
+        get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
+                Command.getCommandPrefix(),
+                ModuleManager.getModuleT(ChatEncryption::class.java)?.delimiterValue?.value ?: "")
+
 }

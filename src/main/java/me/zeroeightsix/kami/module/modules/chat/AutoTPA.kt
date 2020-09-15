@@ -11,24 +11,20 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 
-/*
- * @author dominikaaaa
- * Updated by dominikaaaa on 07/05/20
- */
 @Module.Info(
         name = "AutoTPA",
         description = "Automatically accept or decline /TPAs",
         category = Module.Category.CHAT
 )
-class AutoTPA : Module() {
+object AutoTPA : Module() {
     private val friends = register(Settings.b("AlwaysAcceptFriends", true))
     private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet is SPacketChat && MessageDetectionHelper.isTPA(true, (event.packet as SPacketChat).getChatComponent().unformattedText)) {
+        if (event.packet is SPacketChat && MessageDetectionHelper.isTPA(true, event.packet.getChatComponent().unformattedText)) {
             /* I tested that getting the first word is compatible with chat timestamp, and it as, as this is Receive and chat timestamp is after Receive */
-            val name = (event.packet as SPacketChat).getChatComponent().unformattedText.split(" ").toTypedArray()[0]
+            val name = event.packet.getChatComponent().unformattedText.split(" ").toTypedArray()[0]
 
             when (mode.value) {
                 Mode.ACCEPT -> MessageSendHelper.sendServerMessage("/tpaccept $name")

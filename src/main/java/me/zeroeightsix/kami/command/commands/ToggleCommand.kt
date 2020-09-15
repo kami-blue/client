@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.ModuleManager.ModuleNotFoundException
 import me.zeroeightsix.kami.module.ModuleManager.getModule
 import me.zeroeightsix.kami.module.modules.ClickGUI
@@ -26,7 +25,7 @@ class ToggleCommand : Command("toggle", ChunkBuilder()
         try {
             getModule(args[0])?.let {
                 it.toggle()
-                if (it !is ClickGUI && !ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
+                if (it !is ClickGUI && !CommandConfig.toggleMessages.value) {
                     sendChatMessage(it.name.value + if (it.isEnabled) " &aenabled" else " &cdisabled")
                 }
             }

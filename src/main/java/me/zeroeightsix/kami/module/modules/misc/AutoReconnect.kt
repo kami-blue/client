@@ -12,18 +12,13 @@ import net.minecraft.client.multiplayer.ServerData
 import kotlin.math.floor
 import kotlin.math.max
 
-/**
- * Created by 086 on 9/04/2018.
- * Updated by Xiaro on 09/09/20
- */
 @Module.Info(
         name = "AutoReconnect",
         description = "Automatically reconnects after being disconnected",
         category = Module.Category.MISC,
-        alwaysListening = true,
-        showOnArray = Module.ShowOnArray.OFF
+        alwaysListening = true
 )
-class AutoReconnect : Module() {
+object AutoReconnect : Module() {
     private val seconds = register(Settings.doubleBuilder("Seconds").withValue(5.0).withMinimum(0.5).build())
 
     private var cServer: ServerData? = null
@@ -41,7 +36,7 @@ class AutoReconnect : Module() {
             }
     })
 
-    private inner class KamiGuiDisconnected(disconnected: GuiDisconnected) : GuiDisconnected(disconnected.parentScreen, disconnected.reason, disconnected.message) {
+    private class KamiGuiDisconnected(disconnected: GuiDisconnected) : GuiDisconnected(disconnected.parentScreen, disconnected.reason, disconnected.message) {
         private var millis = seconds.value * 1000
         private var cTime: Long
 

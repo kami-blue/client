@@ -38,9 +38,6 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sqrt
 
-/**
- * Created by Xiaro on 19/07/20
- */
 // TODO: AutoOffhand
 // TODO: HoleBreaker
 // TODO: HoleTP
@@ -50,7 +47,7 @@ import kotlin.math.sqrt
         category = Module.Category.COMBAT,
         modulePriority = 80
 )
-class CrystalAuraRewrite : Module() {
+object CrystalAuraRewrite : Module() {
     /* Settings */
     private val page = register(Settings.e<Page>("Page", Page.GENERAL))
 

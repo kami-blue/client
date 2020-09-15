@@ -22,16 +22,12 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.min
 
-/**
- * Created (partly) by Dewy on the 19th of April, 2020
- * Updated by Xiaro on 10/09/20
- */
 @Module.Info(
         name = "HungerOverlay",
         description = "Displays a helpful overlay over your hunger bar.",
         category = Module.Category.RENDER
 )
-class HungerOverlay : Module() {
+object HungerOverlay : Module() {
     private val saturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("SaturationOverlay").withValue(true).build())
     private val foodHungerOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodHungerOverlay").withValue(true).build())
     private val foodSaturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodSaturationOverlay").withValue(true).build())
@@ -67,10 +63,6 @@ class HungerOverlay : Module() {
         GlStateUtils.blend(false)
         mc.textureManager.bindTexture(Gui.ICONS)
     })
-
-    /**
-     * @return <Hunger, Saturation>
-     */
 
     /**
      * @return <Hunger, Saturation>

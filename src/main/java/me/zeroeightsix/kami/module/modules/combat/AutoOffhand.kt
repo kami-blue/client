@@ -2,9 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
 
-/**
- * Created by Xiaro on 19/07/20
- */
 // TODO: Merge Auto totem into this
 // TODO: Merge OffhandGap into this
 // TODO: #1329
@@ -18,7 +15,7 @@ import me.zeroeightsix.kami.module.Module
         description = "Manage item in your offhand",
         category = Module.Category.COMBAT
 )
-class AutoOffhand : Module() {
+object AutoOffhand : Module() {
     private val idleItem = null
     private enum class IdleItem {
         TOTEM, SHIELD

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.hidden
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
@@ -19,9 +18,9 @@ import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
         showOnArray = Module.ShowOnArray.OFF,
         enabledByDefault = true
 )
-class FixGui : Module() {
+object FixGui : Module() {
     override fun onUpdate() {
-        ModuleManager.getModuleT(ClickGUI::class.java)?.resetScale()
+        ClickGUI.resetScale()
         GuiFrameUtil.fixFrames(mc)
         disable()
     }

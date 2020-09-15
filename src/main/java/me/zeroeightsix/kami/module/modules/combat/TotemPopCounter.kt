@@ -16,18 +16,12 @@ import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
 import java.util.*
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 25/03/20
- * Listener and stuff reused from CliNet
- * https://github.com/DarkiBoi/CliNet/blob/fd225a5c8cc373974b0c9a3457acbeed206e8cca/src/main/java/me/zeroeightsix/kami/module/modules/combat/TotemPopCounter.java
- */
 @Module.Info(
         name = "TotemPopCounter",
         description = "Counts how many times players pop",
         category = Module.Category.COMBAT
 )
-class TotemPopCounter : Module() {
+object TotemPopCounter : Module() {
     private val countFriends = register(Settings.b("CountFriends", true))
     private val countSelf = register(Settings.b("CountSelf", false))
     private val resetDeaths = register(Settings.b("ResetOnDeath", true))

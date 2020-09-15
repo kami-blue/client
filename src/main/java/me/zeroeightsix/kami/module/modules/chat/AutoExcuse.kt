@@ -10,8 +10,6 @@ import net.minecraft.client.gui.GuiGameOver
 import java.util.*
 
 /**
- * @author sourTaste000
- * @since 7/8/2020
  * most :smoothbrain: code ever
  */
 @Module.Info(
@@ -19,7 +17,7 @@ import java.util.*
         description = "Makes an excuse for you when you die",
         category = Module.Category.CHAT
 )
-class AutoExcuse : Module() {
+object AutoExcuse : Module() {
 
     private val rand = Random()
 
@@ -38,9 +36,10 @@ class AutoExcuse : Module() {
     )
 
     private val clients = arrayOf(
-            "future",
-            "salhack",
-            "impact"
+            "Future",
+            "Salhack",
+            "Pyro",
+            "Impact"
     )
 
     private fun getExcuse(): String {
@@ -55,7 +54,7 @@ class AutoExcuse : Module() {
     /* it's not actually unreachable, thanks intellij */
     @Suppress("UNREACHABLE_CODE")
     @EventHandler
-    var listener = Listener(EventHook { event: Displayed ->
+    private val listener = Listener(EventHook { event: Displayed ->
         if (event.screen is GuiGameOver) {
             do {
                 sendServerMessage(getExcuse())

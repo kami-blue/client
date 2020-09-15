@@ -15,15 +15,12 @@ import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
 import kotlin.math.ceil
 
-/**
- * Created by Xiaro on 7/13/20
- */
 @Module.Info(
         name = "InventoryManager",
         category = Module.Category.PLAYER,
         description = "Manages your inventory automatically"
 )
-class InventoryManager : Module() {
+object InventoryManager : Module() {
     private val defaultEjectList = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone,minecraft:cobblestone"
 
     private val autoRefill = register(Settings.b("AutoRefill", true))

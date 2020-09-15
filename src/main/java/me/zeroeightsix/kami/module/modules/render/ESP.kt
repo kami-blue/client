@@ -15,18 +15,12 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import java.util.function.Consumer
 
-/**
- * Created by 086 on 14/12/2017.
- * Updated by d1gress/Qther on 27/11/2019.
- * Kurisu Makise is cute
- * Updated by dominikaaaa on 19/04/20
- * Updated by Xiaro on 31/07/20
- */
 @Module.Info(
         name = "ESP",
         category = Module.Category.RENDER,
-        description = "Highlights entities")
-class ESP : Module() {
+        description = "Highlights entities"
+)
+object ESP : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
 import me.zeroeightsix.kami.module.modules.render.MapPreview;
 import me.zeroeightsix.kami.module.modules.render.ShulkerPreview;
@@ -26,21 +25,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static org.lwjgl.opengl.GL11.glDepthRange;
 
-/**
- * Created by 086 on 24/12/2017.
- */
 @Mixin(GuiScreen.class)
 public class MixinGuiScreen {
 
-    @Shadow
-    public Minecraft mc;
+    @Shadow public Minecraft mc;
     RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
     FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
     private static final ResourceLocation RES_MAP_BACKGROUND = new ResourceLocation("textures/map/map_background.png");
 
     @Inject(method = "renderToolTip", at = @At("HEAD"), cancellable = true)
     public void renderToolTip(ItemStack stack, int x, int y, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled(ShulkerPreview.class) && stack.getItem() instanceof ItemShulkerBox) {
+        if (ShulkerPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemShulkerBox) {
             NBTTagCompound tagCompound = stack.getTagCompound();
             if (tagCompound != null && tagCompound.hasKey("BlockEntityTag", 10)) {
                 NBTTagCompound blockEntityTag = tagCompound.getCompoundTag("BlockEntityTag");
@@ -48,7 +43,7 @@ public class MixinGuiScreen {
                     // We'll take over!
                     info.cancel();
 
-                    NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
+                    NonNullList<ItemStack> nonnulllist = NonNullList.withSize(27, ItemStack.EMPTY);
                     ItemStackHelper.loadAllItems(blockEntityTag, nonnulllist);
 
                     GlStateManager.enableBlend();
@@ -100,12 +95,11 @@ public class MixinGuiScreen {
                     GlStateManager.enableRescaleNormal();
                 }
             }
-        } else if (ModuleManager.isModuleEnabled(MapPreview.class) && stack.getItem() instanceof ItemMap) {
+        } else if (MapPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemMap) {
             MapData mapData = MapPreview.getMapData(stack);
             if (mapData == null) return;
             info.cancel();
 
-            MapPreview mp = ModuleManager.getModuleT(MapPreview.class);
             int xl = x + 6;
             int yl = y + 6;
 
@@ -116,12 +110,12 @@ public class MixinGuiScreen {
             BufferBuilder bufferbuilder = tessellator.getBuffer();
 
             GlStateManager.translate(xl, yl, 0.0);
-            GlStateManager.scale(mp.getScale().getValue() / 5.0, mp.getScale().getValue() / 5.0, 0.0);
+            GlStateManager.scale(MapPreview.INSTANCE.getScale().getValue() / 5.0, MapPreview.INSTANCE.getScale().getValue() / 5.0, 0.0);
             RenderHelper.enableGUIStandardItemLighting(); // needed to make lighting work inside non inventory containers
             mc.getTextureManager().bindTexture(RES_MAP_BACKGROUND);
 
             /* taken from mc code, draw the maps frame */
-            if (mp.getFrame().getValue()) {
+            if (MapPreview.INSTANCE.getFrame().getValue()) {
                 glDepthRange(0, 0.01); // fix drawing under other layers, just draw over everything
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
                 bufferbuilder.pos(-7.0D, 135.0D, 0.0D).tex(0.0D, 1.0D).endVertex();
@@ -135,7 +129,7 @@ public class MixinGuiScreen {
             /* Draw the map */
             GlStateManager.disableDepth(); // needed to keep it on top of the frame
             glDepthRange(0, 0.01);
-            mc.entityRenderer.getMapItemRenderer().renderMap(mapData, !mp.getFrame().getValue());
+            mc.entityRenderer.getMapItemRenderer().renderMap(mapData, !MapPreview.INSTANCE.getFrame().getValue());
             glDepthRange(0, 1.0);
             GlStateManager.enableDepth(); // originally enabled
 
@@ -155,7 +149,7 @@ public class MixinGuiScreen {
      */
     @Inject(method = "Lnet/minecraft/client/gui/GuiScreen;drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
-        if (this.mc.world != null && ModuleManager.isModuleEnabled(CleanGUI.class) && (ModuleManager.getModuleT(CleanGUI.class).inventoryGlobal.getValue())) {
+        if (this.mc.world != null && CleanGUI.INSTANCE.isEnabled() && (CleanGUI.INSTANCE.getInventoryGlobal().getValue())) {
             ci.cancel();
         }
     }

@@ -16,16 +16,12 @@ import net.minecraft.util.math.RayTraceResult
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
 
-/**
- * @author 086
- * Updated by Xiaro on 02/08/20
- */
 @Module.Info(
         name = "EyeFinder",
         description = "Draw lines from entity's heads to where they are looking",
         category = Module.Category.RENDER
 )
-class EyeFinder : Module() {
+object EyeFinder : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */

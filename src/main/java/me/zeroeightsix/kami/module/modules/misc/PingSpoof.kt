@@ -15,7 +15,7 @@ import java.util.*
         category = Module.Category.MISC,
         description = "Cancels or adds delay to your ping packets"
 )
-class PingSpoof : Module() {
+object PingSpoof : Module() {
     private val cancel = register(Settings.b("Cancel", false))// most servers will kick/time you out for this
     private val delay = register(Settings.integerBuilder("Delay").withValue(100).withRange(0, 2000).withVisibility { !cancel.value }.build())
 

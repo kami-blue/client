@@ -4,7 +4,6 @@ import baritone.api.pathing.goals.GoalNear
 import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.misc.AutoObsidian
 
 /**
@@ -24,18 +23,16 @@ object AutoObsidianProcess : IBaritoneProcess {
     override fun onLostControl() {}
 
     override fun displayName0(): String {
-        return "AutoObsidian: " + ModuleManager.getModuleT(AutoObsidian::class.java)?.state.toString().toLowerCase()
+        return "AutoObsidian: " + AutoObsidian.state.toString().toLowerCase()
     }
 
     override fun isActive(): Boolean {
-        return (ModuleManager.isModuleEnabled(AutoObsidian::class.java)
-                && ModuleManager.getModuleT(AutoObsidian::class.java)!!.active)
+        return AutoObsidian.isActive()
     }
 
     override fun onTick(p0: Boolean, p1: Boolean): PathingCommand? {
-        val autoObsidian = ModuleManager.getModuleT(AutoObsidian::class.java)
-        return if (autoObsidian != null && autoObsidian.pathing && autoObsidian.goal != null) {
-            PathingCommand(GoalNear(autoObsidian.goal, 0), PathingCommandType.SET_GOAL_AND_PATH)
+        return if (AutoObsidian.pathing && AutoObsidian.goal != null) {
+            PathingCommand(GoalNear(AutoObsidian.goal, 0), PathingCommandType.SET_GOAL_AND_PATH)
         } else PathingCommand(null, PathingCommandType.REQUEST_PAUSE)
     }
 }

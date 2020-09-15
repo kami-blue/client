@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
         description = "Prevents rendering of fire, water and block texture overlays.",
         category = Module.Category.RENDER
 )
-class AntiOverlay : Module() {
+object AntiOverlay : Module() {
     private val fire = register(Settings.b("Fire", true))
     private val water = register(Settings.b("Water", true))
     private val blocks = register(Settings.b("Blocks", true))

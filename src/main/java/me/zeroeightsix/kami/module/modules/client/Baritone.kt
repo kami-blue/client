@@ -1,10 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import baritone.api.BaritoneAPI
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
@@ -20,21 +16,21 @@ import me.zeroeightsix.kami.setting.Settings
         showOnArray = Module.ShowOnArray.OFF,
         alwaysEnabled = true
 )
-class Baritone : Module() {
-    private var allowBreak = register(Settings.b("AllowBreak", true))
-    private var allowSprint = register(Settings.b("AllowSprint", true))
-    private var allowPlace = register(Settings.b("AllowPlace", true))
-    var allowInventory: Setting<Boolean> = register(Settings.b("AllowInventory", false))
-    private var freeLook = register(Settings.b("FreeLook", true))
-    private var allowDownwardTunneling = register(Settings.b("DownwardTunneling", true))
-    private var allowParkour = register(Settings.b("AllowParkour", true))
-    private var allowParkourPlace = register(Settings.b("AllowParkour Place", true))
-    private var avoidPortals = register(Settings.b("AvoidPortals", false))
-    private var mapArtMode = register(Settings.b("MapArtMode", false))
-    private var renderGoal = register(Settings.b("RenderGoals", true))
-    private var failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2).build())
-    private var blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f).build())
-    private var hasRun = register(Settings.booleanBuilder("hasRun1").withValue(false).withVisibility { false }.build())
+object Baritone : Module() {
+    private val allowBreak = register(Settings.b("AllowBreak", true))
+    private val allowSprint = register(Settings.b("AllowSprint", true))
+    private val allowPlace = register(Settings.b("AllowPlace", true))
+    val allowInventory: Setting<Boolean> = register(Settings.b("AllowInventory", false))
+    private val freeLook = register(Settings.b("FreeLook", true))
+    private val allowDownwardTunneling = register(Settings.b("DownwardTunneling", true))
+    private val allowParkour = register(Settings.b("AllowParkour", true))
+    private val allowParkourPlace = register(Settings.b("AllowParkour Place", true))
+    private val avoidPortals = register(Settings.b("AvoidPortals", false))
+    private val mapArtMode = register(Settings.b("MapArtMode", false))
+    private val renderGoal = register(Settings.b("RenderGoals", true))
+    private val failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2).build())
+    private val blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f).build())
+    private val hasRun = register(Settings.booleanBuilder("hasRun1").withValue(false).withVisibility { false }.build())
 
     init {
         allowBreak.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowBreak.value = allowBreak.value } }
@@ -52,9 +48,8 @@ class Baritone : Module() {
         blockReachDistance.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().blockReachDistance.value = blockReachDistance.value } }
     }
 
-    @EventHandler // this is done because on first init the settings won't change if null
-    var localPlayerUpdateEvent = Listener(EventHook { event: LocalPlayerUpdateEvent? ->
-        if (!hasRun.value && mc.player != null) { // you can use a setting for this and only run it once because then it'll be updated in game, we're only worried about default settings
+    override fun onUpdate() {
+        if (!hasRun.value) { // you can use a setting for this and only run it once because then it'll be updated in game, we're only worried about default settings
             BaritoneAPI.getSettings().allowBreak.value = allowBreak.value
             BaritoneAPI.getSettings().allowSprint.value = allowSprint.value
             BaritoneAPI.getSettings().allowPlace.value = allowPlace.value
@@ -70,5 +65,5 @@ class Baritone : Module() {
             BaritoneAPI.getSettings().blockReachDistance.value = blockReachDistance.value
             hasRun.value = true
         }
-    })
+    }
 }

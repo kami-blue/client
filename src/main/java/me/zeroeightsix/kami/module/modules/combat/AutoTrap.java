@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation;
 import me.zeroeightsix.kami.setting.Setting;
@@ -38,26 +37,21 @@ import static me.zeroeightsix.kami.util.BlockUtils.canBeClicked;
 import static me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
-/**
- * @author hub
- * @since 2019-8-6
- */
 @Module.Info(
         name = "AutoTrap",
         category = Module.Category.COMBAT,
         description = "Traps your enemies in obsidian"
 )
 public class AutoTrap extends Module {
-
-    private Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(3.5).withValue(5.5).withMaximum(10.0).build());
-    private Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
-    private Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
-    private Setting<Cage> cage = register(Settings.e("Cage", Cage.TRAP));
-    private Setting<Boolean> rotate = register(Settings.b("Rotate", false));
-    private Setting<Boolean> noGlitchBlocks = register(Settings.b("NoGlitchBlocks", true));
-    private Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
-    private Setting<Boolean> selfTrap = register(Settings.b("SelfTrap", false));
-    private Setting<Boolean> infoMessage = register(Settings.b("Debug", false));
+    private final Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(3.5).withValue(5.5).withMaximum(10.0).build());
+    private final Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
+    private final Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
+    private final Setting<Cage> cage = register(Settings.e("Cage", Cage.TRAP));
+    private final Setting<Boolean> rotate = register(Settings.b("Rotate", false));
+    private final Setting<Boolean> noGlitchBlocks = register(Settings.b("NoGlitchBlocks", true));
+    private final Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
+    private final Setting<Boolean> selfTrap = register(Settings.b("SelfTrap", false));
+    private final Setting<Boolean> infoMessage = register(Settings.b("Debug", false));
 
     private EntityPlayer closestTarget;
     private String lastTargetName;
@@ -65,11 +59,17 @@ public class AutoTrap extends Module {
     private int playerHotbarSlot = -1;
     private int lastHotbarSlot = -1;
     private boolean isSneaking = false;
-
     private int delayStep = 0;
     private int offsetStep = 0;
     private boolean firstRun;
     private boolean missingObiDisable = false;
+
+    public static AutoTrap INSTANCE;
+
+    public AutoTrap() {
+        super();
+        INSTANCE = this;
+    }
 
     private static EnumFacing getPlaceableSide(BlockPos pos) {
         for (EnumFacing side : EnumFacing.values()) {
@@ -120,9 +120,9 @@ public class AutoTrap extends Module {
 
     @Override
     public void onUpdate() {
-        if (mc.player == null || mc.player.getHealth() <= 0) return;
+        if (mc.player.getHealth() <= 0) return;
 
-        if (!activeInFreecam.getValue() && ModuleManager.isModuleEnabled(Freecam.class)) return;
+        if (!activeInFreecam.getValue() && Freecam.INSTANCE.isEnabled()) return;
 
         if (firstRun) {
             if (findObiInHotbar() == -1) {
@@ -264,9 +264,7 @@ public class AutoTrap extends Module {
             mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, neighbour, opposite));
         }
 
-        if (ModuleManager.isModuleEnabled(NoBreakAnimation.class)) {
-            ModuleManager.getModuleT(NoBreakAnimation.class).resetMining();
-        }
+        if (NoBreakAnimation.INSTANCE.isEnabled()) NoBreakAnimation.INSTANCE.resetMining();
         return true;
     }
 

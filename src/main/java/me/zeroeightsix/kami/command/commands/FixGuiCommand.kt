@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.module.ModuleManager.getModuleT
 import me.zeroeightsix.kami.module.modules.hidden.FixGui
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 
@@ -15,8 +14,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 class FixGuiCommand : Command("fixgui", ChunkBuilder().build()) {
 
     override fun call(args: Array<String>) {
-        val fixGui = getModuleT(FixGui::class.java) ?: return
-        fixGui.enable()
+        FixGui.enable()
         sendChatMessage(chatLabel + "Ran")
     }
 

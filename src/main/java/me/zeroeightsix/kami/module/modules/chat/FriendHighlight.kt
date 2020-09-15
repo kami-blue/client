@@ -19,11 +19,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )
-class FriendHighlight : Module() {
+object FriendHighlight : Module() {
     private val bold = register(Settings.b("Bold", true))
     private val colour = register(Settings.e<ColourCode>("Colour", ColourCode.GRAY))
 
-    public override fun onEnable() {
+    override fun onEnable() {
         if (FriendManager.friendFile.friends.size > 100) {
             MessageSendHelper.sendErrorMessage("$chatName Your friends list is bigger then 100, disabling as it would cause too much of a performance impact.")
             disable()

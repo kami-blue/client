@@ -33,36 +33,21 @@ import static org.lwjgl.opengl.GL11.*;
 @Mixin(FontRenderer.class)
 public abstract class MixinFontRenderer {
 
-    @Shadow
-    public int FONT_HEIGHT;
-    @Shadow
-    public float alpha;
-    @Shadow
-    public float posX;
-    @Shadow
-    public float posY;
+    @Shadow public int FONT_HEIGHT;
+    @Shadow public float alpha;
+    @Shadow public float posX;
+    @Shadow public float posY;
 
-    @Shadow
-    protected abstract void renderStringAtPos(String text, boolean shadow);
-
-    @Shadow
-    public abstract int getStringWidth(String s);
-
-    @Shadow
-    public abstract int getCharWidth(char character);
+    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
+    @Shadow public abstract int getStringWidth(String s);
+    @Shadow public abstract int getCharWidth(char character);
 
     /**
      * @author Tiger
      */
     @Redirect(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V"))
     private void renderStringAtPos(FontRenderer fontRenderer, String text, boolean shadow) {
-        KamiMoji kamiMoji = null;
-        try { // Mixins runs before module initialization, which would throw exceptions here
-            kamiMoji = ModuleManager.getModuleT(KamiMoji.class);
-        } catch (ModuleManager.ModuleNotFoundException ignored) {
-        }
-
-        if (kamiMoji != null && kamiMoji.isEnabled()) {
+        if (KamiMoji.INSTANCE != null && KamiMoji.INSTANCE.isEnabled()) {
             int size = FONT_HEIGHT;
 
             for (String possible : text.split(":")) {
@@ -87,13 +72,7 @@ public abstract class MixinFontRenderer {
      */
     @Inject(method = "getStringWidth", at = @At("TAIL"), cancellable = true)
     public void getStringWidth(String text, CallbackInfoReturnable<Integer> cir) {
-        KamiMoji kamiMoji;
-        try {
-            kamiMoji = ModuleManager.getModuleT(KamiMoji.class);
-        } catch (ModuleManager.ModuleNotFoundException e) {
-            return;
-        }
-        if (cir.getReturnValue() != 0 && kamiMoji != null && kamiMoji.isEnabled()) {
+        if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE != null && KamiMoji.INSTANCE.isEnabled()) {
             int reducedWidth = cir.getReturnValue();
             for (String possible : text.split(":")) {
                 if (KamiMod.KAMIMOJI.isEmoji(possible)) {

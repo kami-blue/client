@@ -4,7 +4,6 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
@@ -19,10 +18,6 @@ import net.minecraftforge.client.event.InputUpdateEvent
 import kotlin.math.round
 
 /**
- * Created by 086 on 20/01/19
- * Updated by Polymer on 16/01/20
- * Updated by dominikaaaa on 02/03/20
- * Updated by Nucleus on 25/04/20
  * @see me.zeroeightsix.kami.mixin.client.MixinEntity
  */
 @Module.Info(
@@ -30,7 +25,7 @@ import kotlin.math.round
         category = Module.Category.PLAYER,
         description = "Places blocks under you"
 )
-class Scaffold : Module() {
+object Scaffold : Module() {
     private val placeBlocks = register(Settings.b("PlaceBlocks", true))
     private val tower = register(Settings.b("Tower", true))
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
@@ -60,7 +55,7 @@ class Scaffold : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null || ModuleManager.isModuleEnabled(Freecam::class.java)) return
+        if (Freecam.isEnabled) return
         shouldSlow = false
 
         val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value
@@ -167,18 +162,5 @@ class Scaffold : Module() {
         }
 
         return true
-    }
-
-    companion object {
-        private lateinit var INSTANCE: Scaffold
-
-        @JvmStatic
-        fun shouldScaffold(): Boolean {
-            return INSTANCE.isEnabled
-        }
-    }
-
-    init {
-        INSTANCE = this
     }
 }

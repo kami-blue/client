@@ -16,22 +16,13 @@ import java.util.function.Consumer
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
-/**
- * @author hub
- * @author dominikaaaa
- * Created 19 November 2019 by hub
- * Updated 12 January 2020 by hub
- * Updated 19 February 2020 by aUniqueUser
- * Updated by dominikaaaa on 19/04/20
- * Updated by Humboldt123 28/05/20
- */
 @Module.Info(
         name = "AntiSpam",
         category = Module.Category.CHAT,
         description = "Removes spam and advertising from the chat",
         showOnArray = Module.ShowOnArray.OFF
 )
-class AntiSpam : Module() {
+object AntiSpam : Module() {
     private val p = register(Settings.e<Page>("Page", Page.ONE))
 
     /* Page One */

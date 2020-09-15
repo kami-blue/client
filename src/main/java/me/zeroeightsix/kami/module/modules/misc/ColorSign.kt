@@ -12,19 +12,15 @@ import net.minecraft.tileentity.TileEntitySign
 import net.minecraft.util.text.TextComponentString
 import java.io.IOException
 
-/**
- * Created by 086 on 8/04/2018.
- * Updated by Xiaro on 09/09/20
- */
 @Module.Info(
-        name = "ColourSign",
-        description = "Allows ingame colouring of text on signs",
+        name = "ColorSign",
+        description = "Allows ingame coloring of text on signs",
         category = Module.Category.MISC
 )
-class ColourSign : Module() {
+object ColorSign : Module() {
     @EventHandler
     private val eventListener = Listener(EventHook { event: GuiScreenEvent.Displayed ->
-        if (event.screen is GuiEditSign && isEnabled) {
+        if (event.screen is GuiEditSign) {
             event.screen = KamiGuiEditSign((event.screen as GuiEditSign?)!!.tileSign)
         }
     })
@@ -33,7 +29,7 @@ class ColourSign : Module() {
         @Throws(IOException::class)
         override fun actionPerformed(button: GuiButton) {
             if (button.id == 0) {
-                tileSign.signText[editLine] = TextComponentString(tileSign.signText[editLine].formattedText.replace("(" + KamiMod.colour + ")(.)".toRegex(), "$1$1$2$2"))
+                tileSign.signText[editLine] = TextComponentString(tileSign.signText[editLine].formattedText.replace("(${KamiMod.colour})(.)".toRegex(), "$1$1$2$2"))
             }
             super.actionPerformed(button)
         }

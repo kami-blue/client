@@ -15,16 +15,12 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
 
-/**
- * Created by 086 on 2/10/2018.
- * Updated by dominikaaaa on 06/04/20
- */
 @Module.Info(
         name = "AutoTool",
         description = "Automatically switch to the best tools when mining or attacking",
         category = Module.Category.MISC
 )
-class AutoTool : Module() {
+object AutoTool : Module() {
     private val switchBack = register(Settings.b("SwitchBack", true))
     private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value }.build())
     private val preferWeapon = register(Settings.e<CombatUtils.PreferWeapon>("Prefer", CombatUtils.PreferWeapon.SWORD))
@@ -32,10 +28,6 @@ class AutoTool : Module() {
     private var shouldMoveBack = false
     private var lastSlot = 0
     private var lastChange = 0L
-
-    init {
-        switchBack.settingListener = Setting.SettingListeners { if (!switchBack.value) shouldMoveBack = false }
-    }
 
     @EventHandler
     private val leftClickListener = Listener(EventHook { event: LeftClickBlock -> if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos)) })
@@ -80,10 +72,12 @@ class AutoTool : Module() {
         if (bestSlot != -1) equip(bestSlot)
     }
 
-    companion object {
-        private fun equip(slot: Int) {
-            mc.player.inventory.currentItem = slot
-            mc.playerController.syncCurrentPlayItem()
-        }
+    private fun equip(slot: Int) {
+        mc.player.inventory.currentItem = slot
+        mc.playerController.syncCurrentPlayItem()
+    }
+
+    init {
+        switchBack.settingListener = Setting.SettingListeners { if (!switchBack.value) shouldMoveBack = false }
     }
 }

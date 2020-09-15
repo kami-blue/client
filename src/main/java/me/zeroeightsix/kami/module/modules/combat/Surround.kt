@@ -6,6 +6,9 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.module.modules.player.Freecam
+import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -28,18 +31,13 @@ import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import kotlin.math.round
 
-/**
- * @author Xiaro
- *
- * Rewritten by Xiaro on 08/07/20
- */
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,
         description = "Surrounds you with obsidian to take less damage",
         modulePriority = 100
 )
-class Surround : Module() {
+object Surround : Module() {
     private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
     private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0f, 10f))
     private val autoDisable = register(Settings.e<AutoDisableMode>("AutoDisable", AutoDisableMode.OUT_OF_HOLE))

@@ -25,17 +25,12 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.floor
 
-/**
- * Created by Xiaro on 7/12/20
- *
- * Thanks to CorruptedSeal's help with dropped item scanning <3
- */
 @Module.Info(
         name = "AutoObsidian",
         category = Module.Category.MISC,
         description = "Mines ender chest automatically to fill inventory with obsidian"
 )
-class AutoObsidian : Module() {
+object AutoObsidian : Module() {
     private val searchShulker = register(Settings.b("SearchShulker", false))
     private val autoRefill = register(Settings.b("AutoRefill", false))
     private val threshold = register(Settings.integerBuilder("RefillThreshold").withValue(8).withRange(1, 56).withVisibility { autoRefill.value }.build())
@@ -50,11 +45,11 @@ class AutoObsidian : Module() {
         PLACING, OPENING, PRE_MINING, MINING, COLLECTING, DONE
     }
 
-    var active = false
     var pathing = false
     var goal: BlockPos? = null
     var state = State.SEARCHING
 
+    private var active = false
     private var searchingState = SearchingState.PLACING
     private var playerPos = BlockPos(0, -1, 0)
     private var placingPos = BlockPos(0, -1, 0)
@@ -63,6 +58,10 @@ class AutoObsidian : Module() {
     private var obsidianCount = -1
     private var tickCount = 0
     private var openTime = 0L
+
+    override fun isActive(): Boolean {
+        return isEnabled && active
+    }
 
     override fun onEnable() {
         if (mc.player == null) return

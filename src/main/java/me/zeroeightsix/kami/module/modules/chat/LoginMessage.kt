@@ -16,7 +16,7 @@ import java.io.*
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )
-class LoginMessage : Module() {
+object LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false
 

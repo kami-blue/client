@@ -5,7 +5,6 @@ import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.InventoryUtils;
@@ -18,42 +17,47 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import java.util.Comparator;
 import java.util.Objects;
 
-/**
- * @author polymer (main listener switch function xd)
- * @author dominikaaaa (made epic and smooth and cleaned up code <3) (why did i rewrite this 4 times)
- * Created by polymer on 21/02/20
- * Updated by dominikaaaa on 07/03/20
- */
 @Module.Info(
         name = "OffhandGap",
         category = Module.Category.COMBAT,
         description = "Holds a God apple when right clicking your sword!"
 )
 public class OffhandGap extends Module {
-    private Setting<Double> disableHealth = register(Settings.doubleBuilder("DisableHealth").withMinimum(0.0).withValue(4.0).withMaximum(20.0).build());
-    private Setting<Boolean> eatWhileAttacking = register(Settings.b("EatWhileAttacking", false));
-    private Setting<Boolean> swordOrAxeOnly = register(Settings.b("SwordAndAxeOnly", true));
-    private Setting<Boolean> preferBlocks = register(Settings.booleanBuilder("PreferPlacingBlocks").withValue(false).withVisibility(v -> !swordOrAxeOnly.getValue()).build());
-    private Setting<Boolean> crystalCheck = register(Settings.b("CrystalCheck", false));
+    private final Setting<Double> disableHealth = register(Settings.doubleBuilder("DisableHealth").withMinimum(0.0).withValue(4.0).withMaximum(20.0).build());
+    private final Setting<Boolean> eatWhileAttacking = register(Settings.b("EatWhileAttacking", false));
+    private final Setting<Boolean> swordOrAxeOnly = register(Settings.b("SwordAndAxeOnly", true));
+    private final Setting<Boolean> preferBlocks = register(Settings.booleanBuilder("PreferPlacingBlocks").withValue(false).withVisibility(v -> !swordOrAxeOnly.getValue()).build());
+    private final Setting<Boolean> crystalCheck = register(Settings.b("CrystalCheck", false));
 
-    int gaps = -1;
-    boolean autoTotemWasEnabled = false;
-    boolean cancelled = false;
-    boolean isGuiOpened = false;
-    Item usedItem;
-    CrystalAura crystalAura;
+    private int gaps = -1;
+    private boolean autoTotemWasEnabled = false;
+    private boolean cancelled = false;
+    private boolean isGuiOpened = false;
+    private Item usedItem;
+
+    public static OffhandGap INSTANCE;
+
+    public OffhandGap() {
+        super();
+        INSTANCE = this;
+    }
 
     @EventHandler
-    private Listener<PacketEvent.Send> sendListener = new Listener<>(e -> {
+    public Listener<GuiScreenEvent.Displayed> listener = new Listener<>(event ->
+            isGuiOpened = event.getScreen() != null
+    );
+
+    @EventHandler
+    private final Listener<PacketEvent.Send> sendListener = new Listener<>(e -> {
         if (e.getPacket() instanceof CPacketPlayerTryUseItem) {
             if (cancelled) {
                 disableGaps();
                 return;
             }
             if (mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || mc.player.getHeldItemMainhand().getItem() instanceof ItemAxe || passItemCheck()) {
-                if (ModuleManager.isModuleEnabled(AutoTotem.class)) {
+                if (AutoTotem.INSTANCE.isEnabled()) {
                     autoTotemWasEnabled = true;
-                    ModuleManager.getModule(AutoTotem.class).disable();
+                    AutoTotem.INSTANCE.disable();
                 }
                 if (!eatWhileAttacking.getValue()) { /* Save item for later when using preventDesync */
                     usedItem = mc.player.getHeldItemMainhand().getItem();
@@ -77,19 +81,17 @@ public class OffhandGap extends Module {
                 disableGaps();
             }
             /* Disable if there are crystals in the range of CrystalAura */
-            crystalAura = ModuleManager.getModuleT(CrystalAura.class);
-            if (crystalCheck.getValue() && crystalAura.isEnabled()) {
+            if (crystalCheck.getValue() && CrystalAura.INSTANCE.isEnabled()) {
                 EntityEnderCrystal crystal = mc.world.loadedEntityList.stream()
                         .filter(entity -> entity instanceof EntityEnderCrystal)
                         .map(entity -> (EntityEnderCrystal) entity)
                         .min(Comparator.comparing(c -> mc.player.getDistance(c)))
                         .orElse(null);
-                if (Objects.requireNonNull(crystal).getPosition().distanceSq(mc.player.getPosition().x, mc.player.getPosition().y, mc.player.getPosition().z) <= crystalAura.range.getValue()) {
+                if (Objects.requireNonNull(crystal).getPosition().distanceSq(mc.player.getPosition().x, mc.player.getPosition().y, mc.player.getPosition().z) <= CrystalAura.INSTANCE.range.getValue()) {
                     disableGaps();
                 }
             }
-        } catch (NullPointerException ignored) {
-        }
+        } catch (NullPointerException ignored) { }
     });
 
     @Override
@@ -130,15 +132,14 @@ public class OffhandGap extends Module {
             if (item instanceof ItemFishingRod) return false;
             if (item instanceof ItemArmor) return false;
             if (item instanceof ItemExpBottle) return false;
-            if (preferBlocks.getValue() && item instanceof ItemBlock) return false;
+            return !preferBlocks.getValue() || !(item instanceof ItemBlock);
         }
-        return true;
     }
 
     private void disableGaps() {
-        if (autoTotemWasEnabled != ModuleManager.isModuleEnabled(AutoTotem.class)) {
+        if (autoTotemWasEnabled != AutoTotem.INSTANCE.isEnabled()) {
             moveGapsWaitForNoGui();
-            ModuleManager.getModule(AutoTotem.class).enable();
+            AutoTotem.INSTANCE.enable();
             autoTotemWasEnabled = false;
         }
     }
@@ -161,9 +162,6 @@ public class OffhandGap extends Module {
         if (isGuiOpened) return;
         moveGapsToInventory(gaps);
     }
-
-    @EventHandler
-    public Listener<GuiScreenEvent.Displayed> listener = new Listener<>(event -> isGuiOpened = event.getScreen() != null);
 
     @Override
     public String getHudInfo() {

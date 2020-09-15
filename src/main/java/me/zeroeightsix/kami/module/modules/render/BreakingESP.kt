@@ -16,15 +16,12 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
-/**
- * Created by Xiaro on 27/07/20.
- */
 @Module.Info(
         name = "BreakingESP",
         description = "Highlights blocks being broken near you",
         category = Module.Category.RENDER
 )
-class BreakingESP : Module() {
+object BreakingESP : Module() {
     private val ignoreSelf = register(Settings.b("IgnoreSelf", false))
     private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
     private val warning = register(Settings.b("Warning", false))

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.misc.FakeVanillaClient;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.PacketBuffer;
@@ -17,18 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(C00Handshake.class)
 public class MixinC00Handshake {
 
-    @Shadow
-    int protocolVersion;
-    @Shadow
-    String ip;
-    @Shadow
-    int port;
-    @Shadow
-    EnumConnectionState requestedState;
+    @Shadow private int protocolVersion;
+    @Shadow private String ip;
+    @Shadow private int port;
+    @Shadow private EnumConnectionState requestedState;
 
     @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
     public void writePacketData(PacketBuffer buf, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled(FakeVanillaClient.class)) {
+        if (FakeVanillaClient.INSTANCE.isEnabled()) {
             info.cancel();
             buf.writeVarInt(protocolVersion);
             buf.writeString(ip);

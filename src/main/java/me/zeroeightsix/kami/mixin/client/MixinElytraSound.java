@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import net.minecraft.client.audio.ElytraSound;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinElytraSound {
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     public void update(CallbackInfo ci) {
-        ElytraFlight elytraFlight = ModuleManager.getModuleT(ElytraFlight.class);
-        if (elytraFlight.isEnabled() && !elytraFlight.getElytraSounds().getValue()) {
+        if (ElytraFlight.INSTANCE.isEnabled() && !ElytraFlight.INSTANCE.getElytraSounds().getValue()) {
             ci.cancel();
         }
     }

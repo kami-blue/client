@@ -26,20 +26,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
 
-    @Shadow
-    public WorldClient world;
-    @Shadow
-    public EntityPlayerSP player;
-    @Shadow
-    public GuiScreen currentScreen;
-    @Shadow
-    public GameSettings gameSettings;
-    @Shadow
-    public GuiIngame ingameGUI;
-    @Shadow
-    public boolean skipRenderWorld;
-    @Shadow
-    public SoundHandler soundHandler;
+    @Shadow public WorldClient world;
+    @Shadow public EntityPlayerSP player;
+    @Shadow public GuiScreen currentScreen;
+    @Shadow public GameSettings gameSettings;
+    @Shadow public GuiIngame ingameGUI;
+    @Shadow public boolean skipRenderWorld;
+    @Shadow public SoundHandler soundHandler;
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo info) {
@@ -99,13 +92,13 @@ public class MixinMinecraft {
             target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
     public void displayCrashReport(CallbackInfo _info) {
         save();
-        DiscordRPC.Companion.getINSTANCE().end();
+        DiscordRPC.INSTANCE.end();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
         save();
-        DiscordRPC.Companion.getINSTANCE().end();
+        DiscordRPC.INSTANCE.end();
     }
 
     private void save() {

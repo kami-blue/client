@@ -30,17 +30,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.sqrt
 
-/**
- * @author 086 and IronException
- * Rendering bugs fixed by dominikaaaa on 16/05/20
- * Updated by Xiaro on 12/09/20
- */
 @Module.Info(
         name = "NewChunks",
         description = "Highlights newly generated chunks",
         category = Module.Category.RENDER
 )
-class NewChunks : Module() {
+object NewChunks : Module() {
     private val yOffset = register(Settings.i("YOffset", 0))
     private val relative = register(Settings.b("Relative", true))
     private val autoClear = register(Settings.b("AutoClear", true))
@@ -278,7 +273,7 @@ class NewChunks : Module() {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL
     }
 
-    private inner class LastSetting {
+    private class LastSetting {
         var lastSaveOption: SaveOption? = null
         var lastInRegion = false
         var lastSaveNormal = false
@@ -294,20 +289,12 @@ class NewChunks : Module() {
         }
 
         fun testChange(): Boolean {
-            // these somehow include the test wether its null
-            if (saveOption.value != lastSaveOption) {
-                return true
-            }
-            if (saveInRegionFolder.value != lastInRegion) {
-                return true
-            }
-            if (alsoSaveNormalCoords.value != lastSaveNormal) {
-                return true
-            }
-            if (dimension != mc.player.dimension) {
-                return true
-            }
-            return mc.getCurrentServerData()?.serverIP != ip
+            // these somehow include the test whether its null
+            return saveOption.value != lastSaveOption
+                    || saveInRegionFolder.value != lastInRegion
+                    || alsoSaveNormalCoords.value != lastSaveNormal
+                    || dimension != mc.player.dimension
+                    || mc.getCurrentServerData()?.serverIP != ip
         }
 
         private fun update() {

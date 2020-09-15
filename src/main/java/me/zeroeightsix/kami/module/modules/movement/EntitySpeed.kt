@@ -12,23 +12,20 @@ import net.minecraft.world.chunk.EmptyChunk
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * Created by 086 on 16/12/2017.
- * Updated by littlebroto1 on 06/09/2020. (DD-MM-YYYY)
- */
 @Module.Info(
         name = "EntitySpeed",
         category = Module.Category.MOVEMENT,
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
-class EntitySpeed : Module() {
+object EntitySpeed : Module() {
     private val speed = register(Settings.f("Speed", 1f))
     private val antiStuck = register(Settings.b("AntiStuck"))
     private val flight = register(Settings.b("Flight", false))
     private val wobble = register(Settings.booleanBuilder("Wobble").withValue(true).withVisibility { b: Boolean? -> flight.value }.build())
+    private val opacity = register(Settings.f("BoatOpacity", .5f))
 
     override fun onUpdate() {
-        if (mc.world != null && mc.player.getRidingEntity() != null) {
+        if (mc.player.getRidingEntity() != null) {
             val riding = mc.player.getRidingEntity()
             if (riding is EntityPig || riding is AbstractHorse) {
                 steerEntity(riding)
@@ -131,16 +128,6 @@ class EntitySpeed : Module() {
         return antiStuck.value && mc.world.getChunk((entity.posX + motX).toInt() shr 4, (entity.posZ + motZ).toInt() shr 4) is EmptyChunk
     }
 
-    companion object {
-        private val opacity = Settings.f("BoatOpacity", .5f)
-
-        @JvmStatic
-        fun getOpacity(): Float {
-            return opacity.value
-        }
-    }
-
-    init {
-        register(opacity)
-    }
+    @JvmStatic
+    fun getOpacity(): Float = opacity.value
 }

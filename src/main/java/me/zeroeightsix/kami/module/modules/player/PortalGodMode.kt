@@ -7,18 +7,15 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.network.play.client.CPacketConfirmTeleport
 
-/**
- * Created by GlowskiBroski on 10/14/2018.
- */
 @Module.Info(
         name = "PortalGodMode",
         category = Module.Category.PLAYER,
         description = "Don't take damage in portals"
 )
-class PortalGodMode : Module() {
+object PortalGodMode : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (isEnabled && event.packet is CPacketConfirmTeleport) {
+        if (event.packet is CPacketConfirmTeleport) {
             event.cancel()
         }
     })

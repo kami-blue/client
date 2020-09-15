@@ -57,9 +57,8 @@ import java.util.stream.Collectors;
 public class KamiGUI extends GUI {
 
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
-    public Theme theme;
-
     public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
+    public Theme theme;
 
     public KamiGUI() {
         super(new KamiTheme());
@@ -230,9 +229,8 @@ public class KamiGUI extends GUI {
         Label information = new Label("");
         information.setShadow(true);
         information.addTickListener(() -> {
-            InfoOverlay info = ModuleManager.getModuleT(InfoOverlay.class);
             information.setText("");
-            info.infoContents().forEach(information::addLine);
+            InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
         });
         frame.addChild(information);
         information.setFontRenderer(fontRenderer);
@@ -301,9 +299,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                AutoWalk autoWalk = ModuleManager.getModuleT(AutoWalk.class);
-                if (process.get() != TemporaryPauseProcess.INSTANCE && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
-                    processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
+                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
                 }
@@ -394,7 +391,7 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
-            Minecraft mc = Wrapper.getMinecraft();
+            final Minecraft mc = Wrapper.getMinecraft();
 
             @Override
             public void onTick() {
@@ -441,7 +438,7 @@ public class KamiGUI extends GUI {
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
         coordsLabel.addTickListener(new TickListener() {
-            Minecraft mc = Minecraft.getMinecraft();
+            final Minecraft mc = Minecraft.getMinecraft();
 
             @Override
             public void onTick() {
@@ -518,6 +515,11 @@ public class KamiGUI extends GUI {
         }
     }
 
+    @Override
+    public void destroyGUI() {
+        kill();
+    }
+
     private static String getEntityName(@Nonnull Entity entity) {
         if (entity instanceof EntityItem) {
             return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
@@ -557,11 +559,6 @@ public class KamiGUI extends GUI {
             result.put(entry.getKey(), entry.getValue());
         }
         return result;
-    }
-
-    @Override
-    public void destroyGUI() {
-        kill();
     }
 
     private static final int DOCK_OFFSET = 0;

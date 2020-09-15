@@ -16,18 +16,12 @@ import net.minecraft.entity.player.EntityPlayer
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
-/**
- * Created by 086 on 11/12/2017.
- * Kurisu Makise is best girl
- * Updated by Afel on 08/06/20
- * Updated by Xiaro on 09/08/20
- */
 @Module.Info(
         name = "Tracers",
         description = "Draws lines to other living entities",
         category = Module.Category.RENDER
 )
-class Tracers : Module() {
+object Tracers : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */

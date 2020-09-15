@@ -29,7 +29,7 @@ import kotlin.math.sin
         description = "Renders ESP for End Crystals",
         category = Module.Category.COMBAT
 )
-class CrystalESP : Module() {
+object CrystalESP : Module() {
     private val page = register(Settings.e<Page>("Page", Page.DAMAGE_ESP))
 
     private val damageESP = register(Settings.booleanBuilder("DamageESP").withValue(false).withVisibility { page.value == Page.DAMAGE_ESP }.build())

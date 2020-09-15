@@ -13,18 +13,12 @@ import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 
-/**
- * @author dominikaaaa
- * Thanks cookie for teaching me how dumb minecraft is uwu
- * Updated by Xiaro on 11/07/20
- */
-
 @Module.Info(
         name = "Criticals",
         category = Module.Category.COMBAT,
         description = "Always do critical attacks"
 )
-class Criticals : Module() {
+object Criticals : Module() {
     private val mode = register(Settings.e<CriticalMode>("Mode", CriticalMode.PACKET))
     private val miniJump = register(Settings.booleanBuilder("MiniJump").withValue(true).withVisibility { mode.value == CriticalMode.DELAY }.build())
 
@@ -42,8 +36,8 @@ class Criticals : Module() {
         if (mc.player == null || !(event.packet is CPacketAnimation || event.packet is CPacketUseEntity)) return@EventHook
         if (mc.player.isInWater || mc.player.isInLava || !mc.player.onGround) return@EventHook /* Don't run if player is sprinting or weapon is still in cooldown */
 
-        if (event.packet is CPacketUseEntity && (event.packet as CPacketUseEntity).action == CPacketUseEntity.Action.ATTACK) {
-            val target = (event.packet as CPacketUseEntity).getEntityFromWorld(mc.world)
+        if (event.packet is CPacketUseEntity && event.packet.action == CPacketUseEntity.Action.ATTACK) {
+            val target = event.packet.getEntityFromWorld(mc.world)
             if (target == null || !isLiving(target)) return@EventHook
             mc.player.isSprinting = false
             if (getSpeed(mc.player) > 0.2f) resetHSpeed(0.2f, mc.player)

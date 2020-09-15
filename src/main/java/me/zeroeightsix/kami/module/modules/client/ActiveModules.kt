@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager.getModuleT
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToInt
@@ -13,19 +12,14 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.util.text.TextFormatting
 import java.awt.Color
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 20/03/20
- * Updated by dominikaaaa on 04/04/20
- * Updated by Xiaro on 11/09/20
- */
 @Module.Info(
         name = "ActiveModules",
         category = Module.Category.CLIENT,
         description = "Configures ActiveModules colours and modes",
         showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true)
-class ActiveModules : Module() {
+        alwaysEnabled = true
+)
+object ActiveModules : Module() {
     private val forgeHax = register(Settings.b("ForgeHax", false))
     val potion = register(Settings.b("PotionsMove", false))
     val hidden = register(Settings.b("ShowHidden", false))
@@ -90,8 +84,7 @@ class ActiveModules : Module() {
     }
 
     private fun infoGetSetting(isOne: Boolean): TextFormatting {
-        val infoOverlay = getModuleT(InfoOverlay::class.java)!!
-        return if (isOne) setToText(infoOverlay.firstColour.value) else setToText(infoOverlay.secondColour.value)
+        return if (isOne) setToText(InfoOverlay.firstColour.value) else setToText(InfoOverlay.secondColour.value)
     }
 
     private fun setToText(colourCode: ColourCode): TextFormatting {

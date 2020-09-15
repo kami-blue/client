@@ -3,17 +3,12 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 
-/**
- * @author TBM
- * Updated by dominikaaaa on 28/01/20
- */
 @Module.Info(
         name = "TimerSpeed",
         description = "Automatically change your timer to go fast",
         category = Module.Category.MOVEMENT
 )
-class TimerSpeed : Module() {
-
+object TimerSpeed : Module() {
     private val minimumSpeed = register(Settings.floatBuilder("MinimumSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(4.0f).build())
     private val maxSpeed = register(Settings.floatBuilder("MaxSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(7.0f).build())
     private val attemptSpeed = register(Settings.floatBuilder("AttemptSpeed").withMinimum(1.0f).withMaximum(10.0f).withValue(4.2f).build())

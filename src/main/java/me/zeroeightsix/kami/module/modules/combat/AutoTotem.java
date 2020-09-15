@@ -10,28 +10,32 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-/**
- * Created by 086 on 22/01/2018.
- * Updated by dominikaaaa on 25/03/20
- */
 @Module.Info(
         name = "AutoTotem",
         category = Module.Category.COMBAT,
         description = "Refills your offhand with totems or other items"
 )
 public class AutoTotem extends Module {
-    private Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.REPLACE_OFFHAND));
-    private Setting<Boolean> smartOffhand = register(Settings.booleanBuilder("CustomItem").withValue(false).withVisibility(v -> modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
-    private Setting<Double> healthSetting = register(Settings.doubleBuilder("CustomItemHealth").withValue(14.0).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
-    private Setting<CustomItem> smartItemSetting = register(Settings.enumBuilder(CustomItem.class).withName("Item").withValue(CustomItem.GAPPLE).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
+
+    private final Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.REPLACE_OFFHAND));
+    private final Setting<Boolean> smartOffhand = register(Settings.booleanBuilder("CustomItem").withValue(false).withVisibility(v -> modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
+    private final Setting<Double> healthSetting = register(Settings.doubleBuilder("CustomItemHealth").withValue(14.0).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
+    private final Setting<CustomItem> smartItemSetting = register(Settings.enumBuilder(CustomItem.class).withName("Item").withValue(CustomItem.GAPPLE).withVisibility(v -> smartOffhand.getValue() && modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
 
     private enum Mode {NEITHER, REPLACE_OFFHAND, INVENTORY;}
 
     private enum CustomItem {CRYSTAL, GAPPLE}
 
-    int totems;
-    boolean moving = false;
-    boolean returnI = false;
+    private int totems;
+    private boolean moving = false;
+    private boolean returnI = false;
+
+    public static AutoTotem INSTANCE;
+
+    public AutoTotem() {
+        super();
+        INSTANCE = this;
+    }
 
     @Override
     public void onUpdate() {

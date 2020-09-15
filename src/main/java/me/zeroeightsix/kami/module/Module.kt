@@ -17,33 +17,17 @@ import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 import java.util.*
 
-/**
- * Created by 086 on 23/08/2017.
- * Updated by dominikaaaa on 15/04/20
- * Updated by Xiaro on 11/09/20
- */
 open class Module {
     /* Annotations */
-    @JvmField
-    val originalName: String = annotation.name
+    @JvmField val originalName: String = annotation.name
+    @JvmField val category: Category = annotation.category
+    @JvmField val description: String = annotation.description
+    @JvmField val modulePriority: Int = annotation.modulePriority
+    @JvmField var alwaysListening: Boolean = annotation.alwaysListening
 
-    @JvmField
-    val category: Category = annotation.category
+    @JvmField var settingList = ArrayList<Setting<*>>()
 
-    @JvmField
-    val description: String = annotation.description
-
-    @JvmField
-    val modulePriority: Int = annotation.modulePriority
-
-    @JvmField
-    var alwaysListening: Boolean = annotation.alwaysListening
-
-    @JvmField
-    var settingList = ArrayList<Setting<*>>()
-
-    private val annotation: Info
-        get() {
+    private val annotation: Info get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
                 return javaClass.getAnnotation(Info::class.java)
             }
@@ -85,11 +69,8 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField
-    val name = register(Settings.s("Name", originalName))
-
-    @JvmField
-    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
+    @JvmField val name = register(Settings.s("Name", originalName))
+    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
     private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
     private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
     /* End of settings */
@@ -130,7 +111,7 @@ open class Module {
     }
 
     private fun sendToggleMessage() {
-        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
+        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && CommandConfig.toggleMessages.value) {
             MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
         }
     }
@@ -209,8 +190,7 @@ open class Module {
     }
     /* End of key binding */
 
-    companion object {
-        @JvmField
-        val mc: Minecraft = Minecraft.getMinecraft()
+    protected companion object {
+        @JvmField val mc: Minecraft = Minecraft.getMinecraft()
     }
 }

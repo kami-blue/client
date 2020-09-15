@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -20,16 +19,13 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 
-/**
- * Created by 086 on 11/12/2017.
- */
 @Module.Info(
         name = "Jesus",
         description = "Allows you to walk on water",
         category = Module.Category.MOVEMENT
 )
-class Jesus : Module() {
-    private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
+object Jesus : Module() {
+    private val baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
 
     override fun onToggle() {
         if (mc.player != null && baritoneCompat.value) {
@@ -38,7 +34,7 @@ class Jesus : Module() {
     }
 
     override fun onUpdate() {
-        if (!ModuleManager.isModuleEnabled(Freecam::class.java)) {
+        if (!Freecam.isEnabled) {
             if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
                 mc.player.motionY = 0.1
                 if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
@@ -69,27 +65,25 @@ class Jesus : Module() {
             if (event.packet is CPacketPlayer) {
                 if (EntityUtils.isAboveWater(mc.player, true) && !EntityUtils.isInWater(mc.player) && !isAboveLand(mc.player)) {
                     val ticks = mc.player.ticksExisted % 2
-                    if (ticks == 0) (event.packet as CPacketPlayer).y += 0.02
+                    if (ticks == 0) event.packet.y += 0.02
                 }
             }
         }
     })
 
-    companion object {
-        private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
+    private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 
-        private fun isAboveLand(entity: Entity?): Boolean {
-            if (entity == null) return false
-            val y = entity.posY - 0.01
-            for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
-                val pos = BlockPos(x, MathHelper.floor(y), z)
-                if (mc.world.getBlockState(pos).isFullBlock) return true
-            }
-            return false
+    private fun isAboveLand(entity: Entity?): Boolean {
+        if (entity == null) return false
+        val y = entity.posY - 0.01
+        for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
+            val pos = BlockPos(x, MathHelper.floor(y), z)
+            if (mc.world.getBlockState(pos).isFullBlock) return true
         }
+        return false
+    }
 
-        private fun isAboveBlock(entity: Entity, pos: BlockPos): Boolean {
-            return entity.posY >= pos.getY()
-        }
+    private fun isAboveBlock(entity: Entity, pos: BlockPos): Boolean {
+        return entity.posY >= pos.getY()
     }
 }

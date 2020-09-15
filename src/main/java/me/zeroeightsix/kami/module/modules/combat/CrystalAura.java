@@ -101,15 +101,16 @@ public class CrystalAura extends Module {
     private BlockPos render;
     private Entity renderEnt;
     private long systemTime = -1;
-    private static boolean togglePitch = false;
     // we need this cooldown to not place from old hotbar slot, before we have switched to crystals
     private boolean switchCoolDown = false;
     private boolean isAttacking = false;
     private int oldSlot = -1;
 
+    public static CrystalAura INSTANCE;
     private static EntityEnderCrystal lastCrystal;
     private static List<EntityEnderCrystal> ignoredCrystals = new ArrayList<>();
     private static int hitTries = 0;
+    private static boolean togglePitch = false;
 
     public CrystalAura() {
         super();
@@ -117,6 +118,7 @@ public class CrystalAura extends Module {
         defaultSetting.settingListener = setting -> {
             if (defaultSetting.getValue()) defaults();
         };
+        INSTANCE = this;
     }
 
     public void onUpdate() {
@@ -275,7 +277,7 @@ public class CrystalAura extends Module {
                     damage = d;
                     q = blockPos;
                     renderEnt = entity;
-                    PlayerModel.lastAttacked = System.currentTimeMillis();
+                    PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                     mc.player.setLastAttackedEntity(entity);
                 }
             }
@@ -299,7 +301,7 @@ public class CrystalAura extends Module {
                         q = blockPos;
                         damage = d;
                         renderEnt = entity;
-                        PlayerModel.lastAttacked = System.currentTimeMillis();
+                        PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                         mc.player.setLastAttackedEntity(entity);
                     }
                 }

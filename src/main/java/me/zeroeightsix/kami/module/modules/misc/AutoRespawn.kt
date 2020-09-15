@@ -11,25 +11,19 @@ import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 
-/**
- * Created by 086 on 9/04/2018.
- * Updated 16 November 2019 by hub
- */
 @Module.Info(
         name = "AutoRespawn",
         description = "Automatically respawn after dying",
         category = Module.Category.MISC
 )
-class AutoRespawn : Module() {
+object AutoRespawn : Module() {
     private val respawn = register(Settings.b("Respawn", true))
     private val deathCoords = register(Settings.b("SaveDeathCoords", true))
     private val antiGlitchScreen = register(Settings.b("AntiGlitchScreen", true))
 
     @EventHandler
-    var listener = Listener(EventHook { event: Displayed ->
-        if (event.screen !is GuiGameOver) {
-            return@EventHook
-        }
+    private val listener = Listener(EventHook { event: Displayed ->
+        if (event.screen !is GuiGameOver) return@EventHook
 
         if (deathCoords.value && mc.player.health <= 0) {
             Waypoint.writePlayerCoords("Death - " + InfoCalculator.getServerType())

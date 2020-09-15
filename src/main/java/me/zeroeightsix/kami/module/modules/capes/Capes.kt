@@ -14,13 +14,6 @@ import java.net.URL
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
 
-/**
- * @author Crystallinqq
- * Updated by dominikaaaa on 20/12/19
- * Updated by 20kdc on 17/02/20 - changed implementation method, made a module again, made async
- * Updated by 20kdc on 21/02/20 - unbroke things, sorry!
- * Updated by Xiaro on 11/09/20
- */
 @Module.Info(
         name = "Capes",
         category = Module.Category.CLIENT,
@@ -28,9 +21,8 @@ import javax.net.ssl.HttpsURLConnection
         showOnArray = Module.ShowOnArray.OFF,
         enabledByDefault = true
 )
-class Capes : Module() {
+object Capes : Module() {
     // This allows controlling if other capes (Mojang, OptiFine) should override the KAMI Blue cape.
-    @JvmField
     val overrideOtherCapes = register(Settings.b("Override Other Capes", true))
 
     // This starts out null, and then is replaced from another thread if the Capes module is enabled.
@@ -116,23 +108,14 @@ class Capes : Module() {
         }
     }
 
-    companion object {
-        @JvmField
-        var INSTANCE: Capes? = null
-
-        @JvmStatic
-        fun getCapeResource(player: AbstractClientPlayer): ResourceLocation? {
-            val result = INSTANCE?.allCapes?.get(player.uniqueID.toString()) ?: return null
-            result.request()
-            return result.location
-        }
-
-        private fun formatUUID(uuid: String?): String {
-            return uuid!!.replace("-".toRegex(), "")
-        }
+    @JvmStatic
+    fun getCapeResource(player: AbstractClientPlayer): ResourceLocation? {
+        val result = allCapes[player.uniqueID.toString()] ?: return null
+        result.request()
+        return result.location
     }
 
-    init {
-        INSTANCE = this
+    private fun formatUUID(uuid: String?): String {
+        return uuid!!.replace("-".toRegex(), "")
     }
 }

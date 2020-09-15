@@ -15,16 +15,13 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.text.TextFormatting
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 29/06/20
- */
+
 @Module.Info(
         name = "BaritoneRemote",
         description = "Remotely control Baritone with /msg",
         category = Module.Category.CHAT
 )
-class BaritoneRemote : Module() {
+object BaritoneRemote : Module() {
     private val feedback = register(Settings.b("SendFeedback", true))
     private val allow: Setting<Allow> = register(Settings.e("Allow", Allow.FRIENDS))
     private val custom = register(Settings.s("Custom", "unchanged"))
@@ -41,7 +38,7 @@ class BaritoneRemote : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (event.packet !is SPacketChat) return@EventHook
-        val message = (event.packet as SPacketChat).getChatComponent().unformattedText
+        val message = event.packet.getChatComponent().unformattedText
 
         if (MessageDetectionHelper.isDirect(true, message)) {
             /* side note: this won't work if some glitched account has spaces in their username, but in all honesty, like 3 people globally have those */

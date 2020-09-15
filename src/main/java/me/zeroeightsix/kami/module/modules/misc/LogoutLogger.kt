@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.MISC,
         description = "Logs when a player leaves the game"
 )
-class LogoutLogger : Module() {
+object LogoutLogger : Module() {
     private var saveToFile = register(Settings.b("SaveToFile", true))
     private var print = register(Settings.b("PrintToChat", true))
 
@@ -36,8 +36,6 @@ class LogoutLogger : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null) return
-
         ticks++
 
         for (player in mc.world.loadedEntityList.filterIsInstance<EntityPlayer>()) {
@@ -46,7 +44,7 @@ class LogoutLogger : Module() {
         }
 
         if (ticks >= 20) {
-            Thread(Runnable {
+            Thread {
                 updateOnlinePlayers()
                 loggedPlayers.forEach { loggedPlayer ->
                     var found = false
@@ -63,7 +61,7 @@ class LogoutLogger : Module() {
                         loggedPlayers.remove(loggedPlayer.key)
                     }
                 }
-            }).start()
+            }.start()
             ticks = 0
         }
     }

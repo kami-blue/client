@@ -8,31 +8,21 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 
-/**
- * @author polymer
- * @author cookiedragon234
- * Updated by polymer 10 March 2020
- * Updated by dominikaaaa on 12/04/20
- * Updated by humboldt123 on July 3rd, 2020
- */
 @Module.Info(
         name = "AutoEZ",
         category = Module.Category.COMBAT,
         description = "Sends an insult in chat after killing someone"
 )
-class AutoEZ : Module() {
-    @JvmField
-    var mode: Setting<Mode> = register(Settings.e("Mode", Mode.ONTOP))
-
-    @JvmField
-    var customText: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("unchanged").withConsumer { _: String?, _: String? -> }.build())
-
-    var hypixelCensorMessages: Array<String> = arrayOf(
+object AutoEZ : Module() {
+    val mode: Setting<Mode> = register(Settings.e("Mode", Mode.ONTOP))
+    val customText: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("unchanged").withConsumer { _: String?, _: String? -> }.build())
+    private val hypixelCensorMessages: Array<String> = arrayOf(
             "Hey Helper, how play game?",
             "You’re a great person! Do you want to play some Hypixel games with me?",
             "Your personality shines brighter than the sun!",
@@ -68,33 +58,23 @@ class AutoEZ : Module() {
 
     private var focus: EntityPlayer? = null
     private var hasBeenCombat = 0
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
-    enum class Mode {
-
-
+    enum class Mode(val text: String) {
         GG("gg, \$NAME"),
         ONTOP("KAMI BLUE on top! ez \$NAME"),
         EZD("You just got ez'd \$NAME"),
         EZ_HYPIXEL("\$HYPIXEL_MESSAGE \$NAME"),
-        NAENAE("You just got naenae'd by kami blue plus, \$NAME"), CUSTOM;
-
-        var text: String? = null
-
-        constructor(text: String?) {
-            this.text = text
-        }
-
-        constructor() // yes
+        NAENAE("You just got naenae'd by kami blue plus, \$NAME"),
+        CUSTOM("");
     }
 
     private fun getText(m: Mode, playerName: String): String {
         return if (m == Mode.CUSTOM) {
             customText.value.replace("\$NAME", playerName).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
         } else {
-            m.text!!.replace("\$NAME", playerName).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+            m.text.replace("\$NAME", playerName).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
         }
-
-
     }
 
     @EventHandler
@@ -120,24 +100,14 @@ class AutoEZ : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null) return
         if (hasBeenCombat > 0 && (focus!!.health <= 0.0f || focus!!.isDead || !mc.world.playerEntities.contains(focus))) {
             mc.player.sendChatMessage(getText(mode.value, focus!!.name))
             hasBeenCombat = 0
         }
         --hasBeenCombat
 
-        if (customText.value != "unchanged") return
-        if (startTime == 0L) startTime = System.currentTimeMillis()
-        if (startTime + 5000 <= System.currentTimeMillis()) { // 5 seconds in milliseconds
-            if (mode.value == Mode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true) && mc.player != null) {
-                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "autoez&r command to change it, with '&7\$NAME&f' being the username of the killed player")
-            }
-            startTime = System.currentTimeMillis()
+        if (mode.value == Mode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
+            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "autoez&r command to change it, with '&7\$NAME&f' being the username of the killed player")
         }
-    }
-
-    companion object {
-        private var startTime: Long = 0
     }
 }

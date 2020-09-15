@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -13,16 +12,12 @@ import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
 
-/**
- * Created by Dewy on the 4th of April, 2020
- * Modified by Spider 8/14/2020
- */
 @Module.Info(
         name = "ElytraReplace",
         description = "Automatically swap and replace your chestplate and elytra.",
         category = Module.Category.MOVEMENT
 )
-class ElytraReplace : Module() {
+object ElytraReplace : Module() {
     private val inventoryMode = register(Settings.b("Inventory", false))
     private val autoChest = register(Settings.b("AutoChest", false))
     private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
@@ -33,7 +28,7 @@ class ElytraReplace : Module() {
 
     private var elytraCount = 0
     private var chestPlateCount = 0
-    private var shouldSendFinalWarning = true;
+    private var shouldSendFinalWarning = true
 
     override fun onUpdate() {
         if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
@@ -86,11 +81,7 @@ class ElytraReplace : Module() {
     // if we should check elytraflight, then we will swap if it is enabled
     // if we don't need to check for elytraflight, then just swap
     private fun shouldAttemptElytraSwap(): Boolean {
-        return if (elytraFlightCheck.value) {
-            ModuleManager.isModuleEnabled(ElytraFlight::class.java)
-        } else {
-            true
-        }
+        return !elytraFlightCheck.value || ElytraFlight.isEnabled
     }
 
 
@@ -244,7 +235,7 @@ class ElytraReplace : Module() {
         if (playSound.value) {
             sendBadAlert()
         }
-        shouldSendFinalWarning = false;
+        shouldSendFinalWarning = false
     }
 
     private fun sendAlert() {

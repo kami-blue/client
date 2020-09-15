@@ -15,17 +15,14 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.ceil
 
-/**
- * Created by Xiaro on 26/07/20
- */
 @Module.Info(
         name = "CombatSetting",
         description = "Settings for combat module targeting",
         category = Module.Category.COMBAT,
         showOnArray = Module.ShowOnArray.OFF,
-        alwaysListening = true
+        alwaysEnabled = true
 )
-class CombatSetting : Module() {
+object CombatSetting : Module() {
     private val filter = register(Settings.enumBuilder(TargetFilter::class.java).withName("Filter").withValue(TargetFilter.ALL).build())
     private val fov = register(Settings.floatBuilder("FOV").withValue(90f).withRange(0f, 180f).withVisibility { filter.value == TargetFilter.FOV })
     private val priority = register(Settings.enumBuilder(TargetPriority::class.java).withName("Priority").withValue(TargetPriority.DISTANCE).build())

@@ -18,7 +18,7 @@ import net.minecraft.init.Items
         category = Module.Category.PLAYER,
         description = "Automatically steal items from containers"
 )
-class ChestStealer : Module() {
+object ChestStealer : Module() {
     val stealMode: Setting<StealMode> = register(Settings.e<StealMode>("StealMode", StealMode.TOGGLE))
     private val movingMode = register(Settings.e<MovingMode>("MovingMode", MovingMode.QUICK_MOVE))
     private val ignoreEjectItem = register(Settings.b("IgnoresEjectItem", false))

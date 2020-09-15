@@ -10,29 +10,23 @@ import net.minecraft.entity.passive.EntityTameable
 import java.util.*
 import kotlin.math.pow
 
-/**
- * I see you also watch FitMC :eyes:
- *
- * @author cookiedragon234
- * Taken from Backdoored 1.8.2 source
- *
- *
- * UUID to username method and caching methods added by dominikaaaa
- */
-@Module.Info(name = "MobOwner", description = "Displays the owner of tamed mobs", category = Module.Category.RENDER)
-class MobOwner : Module() {
+@Module.Info(
+        name = "MobOwner",
+        description = "Displays the owner of tamed mobs",
+        category = Module.Category.RENDER)
+
+object MobOwner : Module() {
     private val speed = register(Settings.b("Speed", true))
     private val jump = register(Settings.b("Jump", true))
     private val hp = register(Settings.b("Health", true))
     private val requestTime = register(Settings.integerBuilder("CacheReset").withMinimum(10).withValue(20).build())
     private val debug = register(Settings.b("Debug", true))
 
-
     private var startTime = 0L /* Periodically try to re-request invalid UUIDs */
     private var startTime1 = 0L /* Super safe method to limit requests to the Mojang API in case you load more then 10 different UUIDs */
     private val cachedUUIDs = HashMap<String, String>() // <UUID, Username>
     private var apiRequests = 0
-    private val invalidText = "Offline or invalid UUID!"
+    private const val invalidText = "Offline or invalid UUID!"
 
     override fun onUpdate() {
         resetRequests()
@@ -70,9 +64,6 @@ class MobOwner : Module() {
         }
     }
 
-    /**
-     * @author dominikaaaa
-     */
     private fun getUsername(uuid: String): String {
         for ((key, value) in cachedUUIDs) {
             if (key.equals(uuid, ignoreCase = true)) {
@@ -80,16 +71,12 @@ class MobOwner : Module() {
             }
         }
         try {
-            try {
-                if (apiRequests > 10) {
-                    return "Too many API requests"
-                }
-                cachedUUIDs[uuid] = Objects.requireNonNull(getNameFromUUID(uuid))!!.replace("\"", "")
-                apiRequests++
-            } catch (illegal: IllegalStateException) { /* this means the json parsing failed meaning the UUID is invalid */
-                cachedUUIDs[uuid] = invalidText
+            if (apiRequests > 10) {
+                return "Too many API requests"
             }
-        } catch (e: NullPointerException) { /* this means the json parsing failed meaning you're offline */
+            cachedUUIDs[uuid] = getNameFromUUID(uuid)?.replace("\"", "") ?: invalidText
+            apiRequests++
+        } catch (illegal: IllegalStateException) { /* this means the json parsing failed meaning the UUID is invalid */
             cachedUUIDs[uuid] = invalidText
         }
         /* Run this again to reduce the amount of requests made to the Mojang API */for ((key, value) in cachedUUIDs) {

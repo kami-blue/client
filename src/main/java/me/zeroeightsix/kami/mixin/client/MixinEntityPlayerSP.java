@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
@@ -31,41 +30,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by 086 on 12/12/2017.
- */
 @Mixin(value = EntityPlayerSP.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
-    @Shadow
-    @Final
-    public NetHandlerPlayClient connection;
-    @Shadow
-    protected Minecraft mc;
-    @Shadow
-    private double lastReportedPosX;
-    @Shadow
-    private double lastReportedPosY;
-    @Shadow
-    private double lastReportedPosZ;
-    @Shadow
-    private float lastReportedYaw;
-    @Shadow
-    private int positionUpdateTicks;
-    @Shadow
-    private float lastReportedPitch;
-    @Shadow
-    private boolean serverSprintState;
-    @Shadow
-    private boolean serverSneakState;
-
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
-
-    @Shadow
-    private boolean prevOnGround;
-    @Shadow
-    private boolean autoJumpEnabled;
+    @Shadow @Final public NetHandlerPlayClient connection;
+    @Shadow protected Minecraft mc;
+    @Shadow private double lastReportedPosX;
+    @Shadow private double lastReportedPosY;
+    @Shadow private double lastReportedPosZ;
+    @Shadow private float lastReportedYaw;
+    @Shadow private int positionUpdateTicks;
+    @Shadow private float lastReportedPitch;
+    @Shadow private boolean serverSprintState;
+    @Shadow private boolean serverSneakState;
+    @Shadow private boolean prevOnGround;
+    @Shadow private boolean autoJumpEnabled;
+    @Shadow protected abstract boolean isCurrentViewEntity();
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
@@ -74,13 +54,13 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
     public void closeScreen(EntityPlayerSP entityPlayerSP) {
-        if (ModuleManager.isModuleEnabled(PortalChat.class)) return;
+        if (PortalChat.INSTANCE.isEnabled()) return;
     }
 
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
     public void closeScreen(Minecraft minecraft, GuiScreen screen) {
-        if (ModuleManager.isModuleEnabled(PortalChat.class)) return;
+        if (PortalChat.INSTANCE.isEnabled()) return;
     }
 
     /**
@@ -89,7 +69,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
      */
     @Inject(method = "displayGUIChest", at = @At("HEAD"), cancellable = true)
     public void onDisplayGUIChest(IInventory chestInventory, CallbackInfo ci) {
-        if (ModuleManager.isModuleEnabled(BeaconSelector.class)) {
+        if (BeaconSelector.INSTANCE.isEnabled()) {
             if (chestInventory instanceof IInteractionObject) {
                 if ("minecraft:beacon".equals(((IInteractionObject) chestInventory).getGuiID())) {
                     Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
@@ -108,9 +88,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
     @Redirect(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;setSprinting(Z)V"))
     public void setSprinting(AbstractClientPlayer abstractClientPlayer, boolean sprinting) {
-        Sprint sprint = ModuleManager.getModuleT(Sprint.class);
-        if (sprint != null && sprint.isEnabled() && sprint.shouldSprint()) {
-            sprinting = sprint.getSprinting();
+        if (Sprint.INSTANCE.isEnabled() && Sprint.INSTANCE.shouldSprint()) {
+            sprinting = Sprint.INSTANCE.getSprinting();
         }
         super.setSprinting(sprinting);
     }

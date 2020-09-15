@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
@@ -9,17 +8,13 @@ import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
 import net.minecraft.item.ItemBow
 
-/**
- * Created by Dewy on the 16th of April, 2020
- * Updated by Xiaro on 10/07/20
- */
 @Module.Info(
         name = "AimBot",
         description = "Automatically aims at entities for you.",
         category = Module.Category.COMBAT,
         modulePriority = 20
 )
-class AimBot : Module() {
+object AimBot : Module() {
     private val priority = register(Settings.e<EntityPriority>("Priority", EntityPriority.DISTANCE))
     private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withMinimum(4.0f).withMaximum(24.0f).build())
     private val useBow = register(Settings.booleanBuilder("UseBow").withValue(true).build())
@@ -34,7 +29,7 @@ class AimBot : Module() {
     private val invisible = register(Settings.b("Invisible", false))
 
     override fun onUpdate() {
-        if (mc.player == null || ModuleManager.isModuleEnabled(Aura::class.java)) return
+        if (Aura.isDisabled) return
 
         if (useBow.value) {
             var bowSlot = 0

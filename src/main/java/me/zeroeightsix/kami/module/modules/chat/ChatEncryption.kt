@@ -20,17 +20,12 @@ import java.util.regex.Pattern
 import java.util.stream.Collectors
 import kotlin.math.sqrt
 
-/**
- * Created by 086 on 9/04/2018.
- * Updated by dominikaaaa on 20/04/20
- * Updated by Xiaro on 11/09/20
- */
 @Module.Info(
         name = "ChatEncryption",
         description = "Encrypts and decrypts chat messages",
         category = Module.Category.CHAT
 )
-class ChatEncryption : Module() {
+object ChatEncryption : Module() {
     private val self = register(Settings.b("DecryptOwn", true))
     private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
     private val keyA = register(Settings.i("KeyA", 3))

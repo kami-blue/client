@@ -15,30 +15,21 @@ import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.InputUpdateEvent
 
-/**
- * Created by 086 on 16/12/2017.
- * Greatly modified by Dewy on the 10th of May, 2020.
- */
 @Module.Info(
         name = "AutoWalk",
         category = Module.Category.MOVEMENT,
         description = "Automatically walks somewhere"
 )
-class AutoWalk : Module() {
-    @JvmField
-    var mode: Setting<AutoWalkMode> = register(Settings.e("Direction", AutoWalkMode.BARITONE))
-    private var disableBaritone = false
-    private var border = 30000000
+object AutoWalk : Module() {
+    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
 
-    init {
-        mode.settingListener = Setting.SettingListeners {
-            mc.player?.let {
-                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
-                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
-                }
-            }
-        }
+    enum class AutoWalkMode {
+        FORWARD, BACKWARDS, BARITONE
     }
+
+    private var disableBaritone = false
+    private const val border = 30000000
+    var direction: String? = null
 
     @EventHandler
     private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->
@@ -58,6 +49,15 @@ class AutoWalk : Module() {
             }
         }
     })
+
+    @EventHandler
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        disable()
+    })
+
+    override fun onDisable() {
+        if (disableBaritone) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+    }
 
     public override fun onEnable() {
         if (mc.player == null) {
@@ -107,27 +107,13 @@ class AutoWalk : Module() {
         }
     }
 
-    public override fun onDisable() {
-        disableBaritone()
-    }
-
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        disable()
-    })
-
-    private fun disableBaritone() {
-        if (disableBaritone) {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+    init {
+        mode.settingListener = Setting.SettingListeners {
+            mc.player?.let {
+                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
+                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
+                }
+            }
         }
-    }
-
-    enum class AutoWalkMode {
-        FORWARD, BACKWARDS, BARITONE
-    }
-
-    companion object {
-        @JvmField
-        var direction: String? = null
     }
 }

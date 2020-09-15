@@ -21,20 +21,13 @@ import java.io.InputStreamReader
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-/**
- * @author dominikaaaa
- * Updated by dominikaaaa on 13/01/20
- * Updated (slightly) by Dewy on 3rd April 2020
- * Updated (slightly) by sourTaste000 on 13/7/2020 (legit 3 lines)
- * Updated (heavily) by Xiaro on 11/09/20
- */
 @Module.Info(
         name = "DiscordRPC",
         category = Module.Category.MISC,
         description = "Discord Rich Presence",
         enabledByDefault = true
 )
-class DiscordRPC : Module() {
+object DiscordRPC : Module() {
     private val line1Left: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
     private val line1Right: Setting<LineInfo> = register(Settings.e("Line1Right", LineInfo.USERNAME)) // details right
     private val line2Left: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
@@ -125,8 +118,7 @@ class DiscordRPC : Module() {
             LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
             LineInfo.SERVER_IP -> InfoCalculator.getServerType()
             LineInfo.COORDS -> if (mc.player != null && coordsConfirm.value) "(" + mc.player.posX.toInt() + " " + mc.player.posY.toInt() + " " + mc.player.posZ.toInt() + ")" else "No Coords"
-            LineInfo.SPEED -> if (mc.player != null) ModuleManager.getModuleT(InfoOverlay::class.java)?.calcSpeedWithUnit(1)
-                    ?: "No Speed" else "No Speed"
+            LineInfo.SPEED -> if (mc.player != null) InfoOverlay.calcSpeedWithUnit(1) else "No Speed"
             LineInfo.HELD_ITEM -> "Holding " + if (mc.player != null) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName else "No Item"
             LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"
             LineInfo.TPS -> if (mc.player != null) tps(2).toString() + " tps" else "No TPS"
@@ -182,10 +174,6 @@ class DiscordRPC : Module() {
 
     private class CustomUser(val uuid: String?, val type: String?)
 
-    companion object {
-        lateinit var INSTANCE: DiscordRPC
-    }
-
     init {
         try {
             val connection = URL(KamiMod.DONATORS_JSON).openConnection() as HttpsURLConnection
@@ -200,6 +188,5 @@ class DiscordRPC : Module() {
         }
         presence.largeImageKey = "kami"
         presence.largeImageText = "kamiblue.org"
-        INSTANCE = this
     }
 }

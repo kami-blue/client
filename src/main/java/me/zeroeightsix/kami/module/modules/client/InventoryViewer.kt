@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11
         showOnArray = Module.ShowOnArray.OFF,
         alwaysEnabled = true
 )
-class InventoryViewer : Module() {
+object InventoryViewer : Module() {
     private val mcTexture = register(Settings.b("UseResourcePack", false))
     private val showIcon = register(Settings.booleanBuilder("ShowIcon").withValue(false).withVisibility { !mcTexture.value }.build())
     private val viewSizeSetting = register(Settings.enumBuilder(ViewSize::class.java).withName("IconSize").withValue(ViewSize.LARGE).withVisibility { showIcon.value && !mcTexture.value }.build())

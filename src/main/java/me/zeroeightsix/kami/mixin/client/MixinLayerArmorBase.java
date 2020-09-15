@@ -12,23 +12,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by TBM on 30/12/2019.
- */
 @Mixin(LayerArmorBase.class)
 public abstract class MixinLayerArmorBase {
     @Inject(method = "renderArmorLayer", at = @At("HEAD"), cancellable = true)
     public void onRenderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn, CallbackInfo ci) {
         if (ArmourHide.INSTANCE.isEnabled()) {
-            if (!(ArmourHide.INSTANCE.player.getValue()) && entityLivingBaseIn instanceof EntityPlayer) {
-                if (!ArmourHide.shouldRenderPiece(slotIn)) ci.cancel();
-            } else if (!(ArmourHide.INSTANCE.armourstand.getValue()) && entityLivingBaseIn instanceof EntityArmorStand) {
-                if (!ArmourHide.shouldRenderPiece(slotIn)) ci.cancel();
-            } else if (!(ArmourHide.INSTANCE.mobs.getValue()) && entityLivingBaseIn instanceof EntityMob) {
-                if (!ArmourHide.shouldRenderPiece(slotIn)) ci.cancel();
+            if ((ArmourHide.INSTANCE.getPlayer().getValue()) && entityLivingBaseIn instanceof EntityPlayer) {
+                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
+            } else if ((ArmourHide.INSTANCE.getArmourStand().getValue()) && entityLivingBaseIn instanceof EntityArmorStand) {
+                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
+            } else if ((ArmourHide.INSTANCE.getMobs().getValue()) && entityLivingBaseIn instanceof EntityMob) {
+                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
             }
         }
-
     }
-
 }
