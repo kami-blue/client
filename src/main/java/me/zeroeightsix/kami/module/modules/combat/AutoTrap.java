@@ -43,7 +43,6 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
         description = "Traps your enemies in obsidian"
 )
 public class AutoTrap extends Module {
-    public static AutoTrap INSTANCE;
     private final Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(3.5).withValue(5.5).withMaximum(10.0).build());
     private final Setting<Integer> blocksPerTick = register(Settings.integerBuilder("BlocksPerTick").withMinimum(1).withValue(2).withMaximum(23).build());
     private final Setting<Integer> tickDelay = register(Settings.integerBuilder("TickDelay").withMinimum(0).withValue(2).withMaximum(10).build());
@@ -53,6 +52,7 @@ public class AutoTrap extends Module {
     private final Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
     private final Setting<Boolean> selfTrap = register(Settings.b("SelfTrap", false));
     private final Setting<Boolean> infoMessage = register(Settings.b("Debug", false));
+
     private EntityPlayer closestTarget;
     private String lastTargetName;
     private int playerHotbarSlot = -1;
@@ -62,6 +62,9 @@ public class AutoTrap extends Module {
     private int offsetStep = 0;
     private boolean firstRun;
     private boolean missingObiDisable = false;
+
+    public static AutoTrap INSTANCE;
+
     public AutoTrap() {
         super();
         INSTANCE = this;

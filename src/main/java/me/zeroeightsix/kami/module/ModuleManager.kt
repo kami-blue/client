@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -50,7 +49,7 @@ object ModuleManager {
             try { // Backward compatibility
                 val module = clazz.getConstructor().newInstance() as Module
                 moduleMap[module.javaClass] = module
-            } catch (noSuchMethodException :NoSuchMethodException) {
+            } catch (noSuchMethodException: NoSuchMethodException) {
                 val module = clazz.getDeclaredField("INSTANCE")[null] as Module
                 moduleMap[module.javaClass] = module
             } catch (exception: Exception) {

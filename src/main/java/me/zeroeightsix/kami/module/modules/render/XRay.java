@@ -23,6 +23,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * TODO: Rewrite this mess
+ */
 @Module.Info(
         name = "XRay",
         category = Module.Category.RENDER,
@@ -53,6 +56,7 @@ public class XRay extends Module {
         if (isEnabled())
             mc.renderGlobal.loadRenderers();
     }).build());
+
     public XRay() {
         invertStatic = invert.getValue();
         Setting<Boolean> outlines = register(Settings.booleanBuilder("Outlines").withValue(true).withConsumer((old, value) -> {

@@ -27,8 +27,9 @@ import static org.lwjgl.opengl.GL11.*;
         description = "Draws lines to where trajectories are going to fall"
 )
 public class Trajectories extends Module {
-    public static Trajectories INSTANCE;
     private final ArrayList<Vec3d> positions = new ArrayList<>();
+
+    public static Trajectories INSTANCE;
 
     public Trajectories() {
         INSTANCE = this;

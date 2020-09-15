@@ -16,12 +16,6 @@ import net.minecraft.item.ItemStack;
         description = "Refills your offhand with totems or other items"
 )
 public class AutoTotem extends Module {
-    public AutoTotem() {
-        super();
-        INSTANCE = this;
-    }
-
-    public static AutoTotem INSTANCE;
 
     private final Setting<Mode> modeSetting = register(Settings.e("Mode", Mode.REPLACE_OFFHAND));
     private final Setting<Boolean> smartOffhand = register(Settings.booleanBuilder("CustomItem").withValue(false).withVisibility(v -> modeSetting.getValue().equals(Mode.REPLACE_OFFHAND)).build());
@@ -32,9 +26,16 @@ public class AutoTotem extends Module {
 
     private enum CustomItem {CRYSTAL, GAPPLE}
 
-    int totems;
-    boolean moving = false;
-    boolean returnI = false;
+    private int totems;
+    private boolean moving = false;
+    private boolean returnI = false;
+
+    public static AutoTotem INSTANCE;
+
+    public AutoTotem() {
+        super();
+        INSTANCE = this;
+    }
 
     @Override
     public void onUpdate() {

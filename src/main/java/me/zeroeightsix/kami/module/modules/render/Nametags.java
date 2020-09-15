@@ -44,6 +44,17 @@ import static org.lwjgl.opengl.GL11.*;
         category = Module.Category.RENDER
 )
 public class Nametags extends Module {
+    private final Setting<Boolean> players = register(Settings.b("Players", true));
+    private final Setting<Boolean> mobs = register(Settings.b("Mobs", false));
+    private final Setting<Boolean> items = register(Settings.b("Items", false));
+    private final Setting<Boolean> passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
+    private final Setting<Boolean> neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
+    private final Setting<Boolean> hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
+    private final Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(1.0).withValue(200.0));
+    private final Setting<Float> scale = register(Settings.floatBuilder("Scale").withMinimum(.5f).withMaximum(10f).withValue(2.5f).build());
+    private final Setting<Boolean> health = register(Settings.b("Health", true));
+    private final Setting<Boolean> armor = register(Settings.b("Armor", true));
+
     private static final EnchantEntry[] enchants = {
             new EnchantEntry(Enchantments.PROTECTION, "Pro"),
             new EnchantEntry(Enchantments.THORNS, "Thr"),
@@ -76,17 +87,6 @@ public class Nametags extends Module {
             new EnchantEntry(Enchantments.PUNCH, "Pun")
     };
     public static Nametags INSTANCE;
-
-    private final Setting<Boolean> players = register(Settings.b("Players", true));
-    private final Setting<Boolean> mobs = register(Settings.b("Mobs", false));
-    private final Setting<Boolean> items = register(Settings.b("Items", false));
-    private final Setting<Boolean> passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility(v -> mobs.getValue()).build());
-    private final Setting<Boolean> neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
-    private final Setting<Boolean> hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility(v -> mobs.getValue()).build());
-    private final Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(1.0).withValue(200.0));
-    private final Setting<Float> scale = register(Settings.floatBuilder("Scale").withMinimum(.5f).withMaximum(10f).withValue(2.5f).build());
-    private final Setting<Boolean> health = register(Settings.b("Health", true));
-    private final Setting<Boolean> armor = register(Settings.b("Armor", true));
 
     public Nametags() {
         INSTANCE = this;

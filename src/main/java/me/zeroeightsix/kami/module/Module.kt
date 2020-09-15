@@ -19,15 +19,22 @@ import java.util.*
 
 open class Module {
     /* Annotations */
-    @JvmField val originalName: String = annotation.name
-    @JvmField val category: Category = annotation.category
-    @JvmField val description: String = annotation.description
-    @JvmField val modulePriority: Int = annotation.modulePriority
-    @JvmField var alwaysListening: Boolean = annotation.alwaysListening
+    @JvmField
+    val originalName: String = annotation.name
+    @JvmField
+    val category: Category = annotation.category
+    @JvmField
+    val description: String = annotation.description
+    @JvmField
+    val modulePriority: Int = annotation.modulePriority
+    @JvmField
+    var alwaysListening: Boolean = annotation.alwaysListening
 
-    @JvmField var settingList = ArrayList<Setting<*>>()
+    @JvmField
+    var settingList = ArrayList<Setting<*>>()
 
-    private val annotation: Info get() {
+    private val annotation: Info
+        get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
                 return javaClass.getAnnotation(Info::class.java)
             }
@@ -69,8 +76,10 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField val name = register(Settings.s("Name", originalName))
-    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
+    @JvmField
+    val name = register(Settings.s("Name", originalName))
+    @JvmField
+    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
     private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
     private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
     /* End of settings */
@@ -88,9 +97,11 @@ open class Module {
     fun toggle() {
         setEnabled(!isEnabled)
     }
+
     fun setEnabled(state: Boolean) {
         if (isEnabled != state) if (state) enable() else disable()
     }
+
     fun enable() {
         enabled.value = true
         onEnable()
@@ -98,6 +109,7 @@ open class Module {
         sendToggleMessage()
         if (!alwaysListening) KamiMod.EVENT_BUS.subscribe(this)
     }
+
     fun disable() {
         if (annotation.alwaysEnabled) return
         enabled.value = false
@@ -106,6 +118,7 @@ open class Module {
         sendToggleMessage()
         if (!alwaysListening) KamiMod.EVENT_BUS.unsubscribe(this)
     }
+
     private fun sendToggleMessage() {
         if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && CommandConfig.toggleMessages.value) {
             MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
@@ -120,9 +133,11 @@ open class Module {
     open fun isActive(): Boolean {
         return isEnabled || alwaysListening
     }
+
     open fun getHudInfo(): String? {
         return null
     }
+
     open fun onUpdate() {}
     open fun onRender() {}
     open fun onWorldRender(event: RenderEvent) {}
@@ -185,6 +200,7 @@ open class Module {
     /* End of key binding */
 
     protected companion object {
-        @JvmField val mc: Minecraft = Minecraft.getMinecraft()
+        @JvmField
+        val mc: Minecraft = Minecraft.getMinecraft()
     }
 }
