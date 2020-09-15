@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
@@ -43,7 +42,6 @@ class AutoWalk : Module() {
 
     @EventHandler
     private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->
-        if (InventoryUtils.inProgress || !isEnabled) return@EventHook
         when (mode.value) {
             AutoWalkMode.FORWARD -> {
                 disableBaritone = false

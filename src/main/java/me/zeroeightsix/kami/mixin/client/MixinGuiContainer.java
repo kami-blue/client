@@ -17,24 +17,24 @@ import java.io.IOException;
 @Mixin(GuiContainer.class)
 public class MixinGuiContainer extends GuiScreen {
 
-    @Shadow
-    protected int guiLeft;
-    @Shadow
-    protected int guiTop;
-    @Shadow
-    protected int xSize;
+    @Shadow protected int guiLeft;
+    @Shadow protected int guiTop;
+    @Shadow protected int xSize;
 
     private final ChestStealer chestStealer = ModuleManager.getModuleT(ChestStealer.class);
     private final GuiButton stealButton = new KamiGuiStealButton(this.guiLeft + this.xSize + 2, this.guiTop + 2);
 
     @Inject(method = "initGui", at = @At("HEAD"))
     public void initGui(CallbackInfo ci) {
-        this.buttonList.add(stealButton);
+        if (chestStealer.isValidGui()) {
+            this.buttonList.add(stealButton);
+            updateButton();
+        }
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 6969) {
+        if (button.id == 696969) {
             chestStealer.setStealing(!chestStealer.getStealing());
         } else {
             super.actionPerformed(button);
@@ -48,7 +48,7 @@ public class MixinGuiContainer extends GuiScreen {
 
     private void updateButton() {
         if (chestStealer.isEnabled() && chestStealer.isContainerOpen()) {
-            String str = "";
+            String str;
             if (chestStealer.getStealing()) {
                 str = "Stop";
             } else {
