@@ -52,6 +52,7 @@ public class MixinNetworkManager {
             sendWarningMessage("[NoPacketKick] Caught exception - " + p_exceptionCaught_2_.toString());
             info.cancel();
         }
+        return; // DON'T REMOVE THE FUCKING RETURN
     }
 
 }
