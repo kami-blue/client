@@ -24,7 +24,7 @@ class ClickGUI : Module() {
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
-    private val settingTimer = TimerUtils.TickTimer()
+    private val settingTimer = TimerUtils.StopTimer()
 
     fun resetScale() {
         scaleSetting.value = 100
@@ -38,7 +38,7 @@ class ClickGUI : Module() {
 
     override fun onUpdate() {
         prevScale = scale
-        if (System.currentTimeMillis() - settingTimer.lastTickTime > 500L) {
+        if (settingTimer.stop() > 500L) {
             val diff = scale - getRoundedScale()
             when {
                 diff < -0.025 -> scale += 0.025
@@ -67,7 +67,7 @@ class ClickGUI : Module() {
     init {
         bind.value.key = Keyboard.KEY_Y
         scaleSetting.settingListener = Setting.SettingListeners {
-            settingTimer.lastTickTime = System.currentTimeMillis()
+            settingTimer.reset()
         }
     }
 }

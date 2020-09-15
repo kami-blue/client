@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Waypoint
@@ -10,7 +11,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * @author dominikaaaa
@@ -28,6 +28,12 @@ class LogoutLogger : Module() {
     private var loggedPlayers = HashMap<String, BlockPos>()
     private var onlinePlayers = mutableListOf<NetworkPlayerInfo>()
     private var ticks = 0
+
+    @EventHandler
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        loggedPlayers.clear()
+        onlinePlayers.clear()
+    })
 
     override fun onUpdate() {
         if (mc.player == null) return
@@ -61,18 +67,6 @@ class LogoutLogger : Module() {
             ticks = 0
         }
     }
-
-    @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        loggedPlayers.clear()
-        onlinePlayers.clear()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        loggedPlayers.clear()
-        onlinePlayers.clear()
-    })
 
     private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
         return if (saveToFile.value) {

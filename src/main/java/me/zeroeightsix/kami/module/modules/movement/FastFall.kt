@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.TIMER
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Blocks
@@ -22,7 +23,6 @@ import net.minecraft.util.math.BlockPos
 )
 class FastFall : Module() {
     private val mode: Setting<Mode> = register(Settings.e("Mode", MOTION))
-    private val holeOnly = register(Settings.b("HoleOnly", false))
     private val fallSpeed = register(Settings.doubleBuilder("FallSpeed").withMinimum(0.1).withValue(6.0).withMaximum(10.0).build())
     private val fallDistance = register(Settings.integerBuilder("MaxFallDistance").withValue(2).withRange(0, 10).build())
 
@@ -45,26 +45,6 @@ class FastFall : Module() {
             reset()
             return
         }
-
-        if (holeOnly.value) {
-            val aboveHole = VectorUtils.getHighestTerrainPos(BlockPos(mc.player.posX.toInt(), mc.player.posY.toInt(), mc.player.posZ.toInt()))
-
-            var safe = true
-            for (offset in BlockUtils.surroundOffset) {
-                val block = mc.world.getBlockState(aboveHole.add(offset)).block
-                if (block !== Blocks.BEDROCK && block !== Blocks.OBSIDIAN && block !== Blocks.ENDER_CHEST && block !== Blocks.ANVIL) {
-                    safe = false
-                    break
-                }
-            }
-
-            if (!safe) {
-                reset()
-                return
-            }
-        }
-
-        MessageSendHelper.sendChatMessage(System.currentTimeMillis().toString())
 
         when (mode.value) {
             MOTION -> {

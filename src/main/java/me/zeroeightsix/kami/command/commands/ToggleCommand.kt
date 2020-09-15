@@ -1,11 +1,13 @@
 package me.zeroeightsix.kami.command.commands
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.ModuleManager.ModuleNotFoundException
 import me.zeroeightsix.kami.module.ModuleManager.getModule
+import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 
@@ -23,10 +25,11 @@ class ToggleCommand : Command("toggle", ChunkBuilder()
         }
 
         try {
-            val module = getModule(args[0]) ?: return
-            module.toggle()
-            if (ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
-                sendChatMessage(module.name.value + if (module.isEnabled) " &aenabled" else " &cdisabled")
+            getModule(args[0])?.let {
+                it.toggle()
+                if (it !is ClickGUI && !ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
+                    sendChatMessage(it.name.value + if (it.isEnabled) " &aenabled" else " &cdisabled")
+                }
             }
         } catch (x: ModuleNotFoundException) {
             sendChatMessage("Unknown module '" + args[0] + "'")

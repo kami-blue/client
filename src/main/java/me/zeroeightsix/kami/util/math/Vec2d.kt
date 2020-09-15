@@ -4,22 +4,11 @@ import net.minecraft.util.math.Vec3d
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class Vec2d {
-    var x: Double = 0.0
-    var y: Double = 0.0
+class Vec2d(var x: Double = 0.0, var y: Double = 0.0) {
 
-    constructor(x: Double, y: Double) {
-        this.x = x
-        this.y = y
-    }
+    constructor(vec3d: Vec3d): this(vec3d.x, vec3d.y)
 
-    constructor(vec3d: Vec3d) {
-        Vec2d(vec3d.x, vec3d.y)
-    }
-
-    constructor(vec2d: Vec2d) {
-        Vec2d(vec2d.x, vec2d.y)
-    }
+    constructor(vec2d: Vec2d): this(vec2d.x, vec2d.y)
 
     fun length(): Double {
         return sqrt(lengthSquared())

@@ -237,8 +237,7 @@ object EntityUtils {
             if (entity == mc.player) continue
             if (entity is EntityPlayer) {
                 if (!player[0]) continue
-                if (!player[1] && Friends.isFriend(entity.name)) continue
-                if (!player[2] && entity.isPlayerSleeping) continue
+                if (!playerTypeCheck(entity, player[1], player[2])) continue
             } else if (!mobTypeSettings(entity, mobs[0], mobs[1], mobs[2], mobs[3])) continue
 
             if (mc.player.isRiding && entity == mc.player.ridingEntity) continue // Riding entity check
@@ -249,6 +248,11 @@ object EntityUtils {
             entityList.add(entity)
         }
         return entityList.toTypedArray()
+    }
+
+    @JvmStatic
+    fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean): Boolean {
+        return (friend || !Friends.isFriend(player.name)) && (sleeping || !player.isPlayerSleeping)
     }
 
     /**

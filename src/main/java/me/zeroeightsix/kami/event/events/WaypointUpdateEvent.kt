@@ -8,9 +8,8 @@ import me.zeroeightsix.kami.event.KamiEvent
  *
  * Updated by Xiaro on 18/08/20
  */
-class WaypointUpdateEvent(val updateType: UpdateType) : KamiEvent() {
-
-    enum class UpdateType {
-        CREATE, REMOVE
-    }
+open class WaypointUpdateEvent : KamiEvent() {
+    class Get : WaypointUpdateEvent()
+    class Create : WaypointUpdateEvent()
+    class Remove : WaypointUpdateEvent()
 }

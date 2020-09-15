@@ -85,6 +85,7 @@ object PlayerPacketManager : Manager() {
          */
         fun apply(event: OnUpdateWalkingPlayerEvent) {
             if (this.isEmpty()) return
+            event.cancel()
             this.moving?.let { event.moving = it }
             this.rotating?.let { event.rotating = it }
             this.sprinting?.let { event.sprinting = it }

@@ -45,10 +45,33 @@ object ProjectionUtils {
     }
 
     fun toScaledScreenPos(posIn: Vec3d): Vec3d {
-        return toScreenPos(posIn).scale(1.0 / resolution.scaleFactor)
+        val vector4f = getTransformedMatrix(posIn)
+
+        val scaledResolution = ScaledResolution(mc)
+        val width = scaledResolution.scaledWidth
+        val height = scaledResolution.scaledHeight
+
+        vector4f.x = width / 2f + (0.5f * vector4f.x * width + 0.5f)
+        vector4f.y = height / 2f - (0.5f * vector4f.y * height + 0.5f)
+        val posZ = if (isVisible(vector4f, width, height)) 0.0 else -1.0
+
+        return Vec3d(vector4f.x.toDouble(), vector4f.y.toDouble(), posZ)
     }
 
     fun toScreenPos(posIn: Vec3d): Vec3d {
+        val vector4f = getTransformedMatrix(posIn)
+
+        val width = mc.displayWidth
+        val height = mc.displayHeight
+
+        vector4f.x = width / 2f + (0.5f * vector4f.x * width + 0.5f)
+        vector4f.y = height / 2f - (0.5f * vector4f.y * height + 0.5f)
+        val posZ = if (isVisible(vector4f, width, height)) 0.0 else -1.0
+
+        return Vec3d(vector4f.x.toDouble(), vector4f.y.toDouble(), posZ)
+    }
+
+    private fun getTransformedMatrix(posIn: Vec3d): Vector4f {
         val relativePos = camPos.subtract(posIn)
         val vector4f = Vector4f(relativePos.x.toFloat(), relativePos.y.toFloat(), relativePos.z.toFloat(), 1f)
 
@@ -64,14 +87,7 @@ object ProjectionUtils {
             vector4f.y *= invert
         }
 
-        val width = mc.displayWidth
-        val height = mc.displayHeight
-
-        vector4f.x = width / 2f + (0.5f * vector4f.x * width + 0.5f)
-        vector4f.y = height / 2f - (0.5f * vector4f.y * height + 0.5f)
-        val posZ = if (isVisible(vector4f)) 0.0 else -1.0
-
-        return Vec3d(vector4f.x.toDouble(), vector4f.y.toDouble(), posZ)
+        return vector4f
     }
 
     private fun transform(vec: Vector4f, matrix: Matrix4f) {
@@ -84,7 +100,7 @@ object ProjectionUtils {
         vec.w = x * matrix.m03 + y * matrix.m13 + z * matrix.m23 + matrix.m33
     }
 
-    private fun isVisible(pos: Vector4f): Boolean {
-        return pos.x in 0.0..resolution.scaledWidth_double && pos.y in 0.0..resolution.scaledHeight_double
+    private fun isVisible(pos: Vector4f, width: Int, height: Int): Boolean {
+        return pos.x in 0.0..width.toDouble() && pos.y in 0.0..height.toDouble()
     }
 }

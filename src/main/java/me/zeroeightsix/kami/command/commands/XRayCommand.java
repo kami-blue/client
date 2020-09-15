@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.command.commands;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.XRay;
 import net.minecraft.block.Block;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
@@ -22,7 +22,7 @@ public class XRayCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        XRay xr = MODULE_MANAGER.getModuleT(XRay.class);
+        XRay xr = ModuleManager.getModuleT(XRay.class);
         if (xr == null) {
             sendErrorMessage("&cThe module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!");
             return;

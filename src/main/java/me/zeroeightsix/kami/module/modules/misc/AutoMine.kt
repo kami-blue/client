@@ -5,11 +5,11 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * @author dominikaaaa
@@ -71,12 +71,7 @@ class AutoMine : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     })
 }

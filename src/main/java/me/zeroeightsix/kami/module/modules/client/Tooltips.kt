@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
         name = "Tooltips",
         description = "Displays handy module descriptions in the GUI",
         category = Module.Category.CLIENT,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        enabledByDefault = true
 )
 class Tooltips : Module()

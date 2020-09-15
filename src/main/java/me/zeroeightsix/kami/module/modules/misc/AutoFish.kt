@@ -131,7 +131,7 @@ class AutoFish : Module() {
     private fun recast(extraDelay: Long = 0L) {
         if (recasting) return
         resetTimer()
-        timer.lastTickTime += extraDelay
+        timer.reset(extraDelay)
         catching = false
         recasting = true
     }
@@ -143,8 +143,8 @@ class AutoFish : Module() {
     }
 
     private fun resetTimer() {
-        timer.lastTickTime = System.currentTimeMillis()
-        if (variation.value > 0) timer.lastTickTime += (random() * (variation.value * 2) - variation.value).toLong()
+        val offset = if (variation.value > 0) (random() * (variation.value * 2) - variation.value).toLong() else 0
+        timer.reset(offset)
     }
 
     private fun defaults() {

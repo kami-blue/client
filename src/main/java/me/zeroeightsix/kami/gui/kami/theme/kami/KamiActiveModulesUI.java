@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.ActiveModules;
 import me.zeroeightsix.kami.util.Wrapper;
 
@@ -16,7 +17,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -33,19 +33,22 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         glEnable(GL_BLEND);
         glEnable(GL_TEXTURE_2D);
 
-        activeMods = Objects.requireNonNull(MODULE_MANAGER.getModuleT(ActiveModules.class));
+        activeMods = Objects.requireNonNull(ModuleManager.getModuleT(ActiveModules.class));
         FontRenderer renderer = Wrapper.getFontRenderer();
 
-        List<Module> mods = Arrays.stream(MODULE_MANAGER.getModules())
+        List<Module> mods = Arrays.stream(ModuleManager.getModules())
                 .filter(Module::isEnabled)
-                .filter(Module -> (activeMods.hidden.getValue() || Module.isOnArray()))
+                .filter(Module -> (activeMods.getHidden().getValue() || Module.isOnArray()))
                 .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
+
         final int[] y = {2};
 
-        if (activeMods.potion.getValue() && component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
-            y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
+        if (Wrapper.getPlayer() != null) {
+            if (activeMods.getPotion().getValue() && component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
+                y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
+        }
 
         final float[] hue = {(System.currentTimeMillis() % (360 * activeMods.getRainbowSpeed())) / (360f * activeMods.getRainbowSpeed())};
 
@@ -67,15 +70,15 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             Module module = mods.get(i);
             int rgb;
 
-            switch (activeMods.mode.getValue()) {
+            switch (activeMods.getMode().getValue()) {
                 case RAINBOW:
-                    rgb = Color.HSBtoRGB(hue[0], toF(activeMods.saturationR.getValue()), toF(activeMods.brightnessR.getValue()));
+                    rgb = Color.HSBtoRGB(hue[0], toF(activeMods.getSaturationR().getValue()), toF(activeMods.getBrightnessR().getValue()));
                     break;
                 case CATEGORY:
                     rgb = activeMods.getCategoryColour(module);
                     break;
                 case CUSTOM:
-                    rgb = Color.HSBtoRGB(toF(activeMods.hueC.getValue()), toF(activeMods.saturationC.getValue()), toF(activeMods.brightnessC.getValue()));
+                    rgb = Color.HSBtoRGB(toF(activeMods.getHueC().getValue()), toF(activeMods.getSaturationC().getValue()), toF(activeMods.getBrightnessC().getValue()));
                     break;
                 case INFO_OVERLAY:
                     rgb = activeMods.getInfoColour(i);

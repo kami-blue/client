@@ -1,16 +1,19 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
+import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.Waypoint.createWaypoint
 import me.zeroeightsix.kami.util.Waypoint.getWaypoint
 import me.zeroeightsix.kami.util.Waypoint.removeWaypoint
 import me.zeroeightsix.kami.util.Waypoint.writePlayerCoords
 import me.zeroeightsix.kami.util.WaypointInfo
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
+import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
@@ -48,10 +51,10 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                 "del" -> delete(args)
                 "goto" -> {
                     if (args[1] != null) {
-                        val current = getWaypoint(args[1]!!)
+                        val current = getWaypoint(args[1]!!, true)
                         if (current != null) {
-                            if (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk::class.java)) {
-                                KamiMod.MODULE_MANAGER.getModuleT(AutoWalk::class.java)?.disable()
+                            if (ModuleManager.isModuleEnabled(AutoWalk::class.java)) {
+                                ModuleManager.getModuleT(AutoWalk::class.java)?.disable()
                             }
                             MessageSendHelper.sendBaritoneCommand("goto", current.x.toString(), current.y.toString(), current.z.toString())
                         } else {
@@ -152,12 +155,16 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
     }
 
     private fun format(waypoint: WaypointInfo, search: String): String {
-        val message = "   [${waypoint.id}] ${waypoint.name} (${waypoint.pos})"
+        val message = "${formattedID(waypoint.id)} [${waypoint.server}] ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
         return message.replace(search.toRegex(), "&7$search&f")
     }
 
+    private fun formattedID(id: Int): String { // massive meme to format the spaces for the width of id lmao
+        return " ".repeat((5 - id.toString().length).coerceAtLeast(0)) + "[$id]"
+    }
+
     private fun confirm(name: String, pos: BlockPos) {
-        sendChatMessage("Added waypoint at ${pos} with name '&7$name&f'.")
+        sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension()} with name '&7$name&f'.")
     }
 
 }

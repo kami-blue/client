@@ -82,7 +82,7 @@ object ModuleManager {
 
     fun onUpdate() {
         for (module in moduleList) {
-            if (isModuleListening(module)) module.onUpdate()
+            if (isModuleListening(module) && inGame()) module.onUpdate()
         }
     }
 
@@ -169,6 +169,10 @@ object ModuleManager {
     @JvmStatic
     fun isModuleListening(module: Module): Boolean {
         return module.isEnabled || module.alwaysListening
+    }
+
+    private fun inGame(): Boolean {
+        return mc.player != null && mc.world != null
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)

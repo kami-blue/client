@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper.minecraft
 import me.zeroeightsix.kami.util.Wrapper.player
 import net.minecraft.client.Minecraft
@@ -20,32 +19,17 @@ import java.util.regex.Pattern
 object MessageSendHelper {
     @JvmStatic
     fun sendChatMessage(message: String) {
-        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
-        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL) {
-            sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        } else {
-            KamiMod.log.info("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        }
+        sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
     }
 
     @JvmStatic
     fun sendWarningMessage(message: String) {
-        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
-        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL || commandConfig.logLevel.value == CommandConfig.LogLevel.WARN) {
-            sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        } else {
-            KamiMod.log.warn("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        }
+        sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
     }
 
     @JvmStatic
     fun sendErrorMessage(message: String) {
-        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java) ?: return
-        if (commandConfig.logLevel.value == CommandConfig.LogLevel.ALL || commandConfig.logLevel.value == CommandConfig.LogLevel.WARN || commandConfig.logLevel.value == CommandConfig.LogLevel.ERROR) {
-            sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        } else {
-            KamiMod.log.error("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
-        }
+        sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
     }
 
     @JvmStatic
@@ -85,12 +69,6 @@ object MessageSendHelper {
     fun sendStringChatMessage(messages: Array<String?>) {
         sendChatMessage("")
         for (s in messages) sendRawChatMessage(s)
-    }
-
-    @JvmStatic
-    fun sendDisableMessage(clazz: Class<out Module>) {
-        sendErrorMessage("Error: The " + ModuleManager.getModule(clazz).name.value + " module is only for configuring the GUI element. In order to show the GUI element you need to hit the pin in the upper left of the GUI element")
-        ModuleManager.getModule(clazz).enable()
     }
 
     @JvmStatic

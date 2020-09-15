@@ -14,12 +14,14 @@ import me.zeroeightsix.kami.util.math.MathUtils
         category = Module.Category.MOVEMENT
 )
 class TimerSpeed : Module() {
-    private var tickDelay = 0.0f
 
     private val minimumSpeed = register(Settings.floatBuilder("MinimumSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(4.0f).build())
     private val maxSpeed = register(Settings.floatBuilder("MaxSpeed").withMinimum(0.1f).withMaximum(10.0f).withValue(7.0f).build())
     private val attemptSpeed = register(Settings.floatBuilder("AttemptSpeed").withMinimum(1.0f).withMaximum(10.0f).withValue(4.2f).build())
     private val fastSpeed = register(Settings.floatBuilder("FastSpeed").withMinimum(1.0f).withMaximum(10.0f).withValue(5.0f).build())
+
+    private var tickDelay = 0.0f
+    private var curSpeed = 0.0f
 
     override fun onUpdate() {
         if (tickDelay == minimumSpeed.value) {
@@ -34,16 +36,7 @@ class TimerSpeed : Module() {
         ++tickDelay
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         mc.timer.tickLength = 50.0f
-    }
-
-    companion object {
-        private var curSpeed = 0.0f
-
-        @JvmStatic
-        fun returnGui(): String {
-            return "" + MathUtils.round(curSpeed.toDouble(), 2)
-        }
     }
 }

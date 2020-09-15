@@ -18,7 +18,8 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         name = "Baritone",
         category = Module.Category.CLIENT,
         description = "Configures Baritone settings",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysEnabled = true
 )
 class Baritone : Module() {
     private var allowBreak = register(Settings.b("AllowBreak", true))
@@ -71,9 +72,4 @@ class Baritone : Module() {
             hasRun.value = true
         }
     })
-
-    public override fun onDisable() {
-        MessageSendHelper.sendErrorMessage("Error: The Baritone module is for configuring Baritone integration, not toggling it.")
-        enable()
-    }
 }

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -13,7 +14,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -57,13 +57,7 @@ class Breadcrumbs : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent? ->
-        startTime = 0L
-        alphaMultiplier = 0f
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent? ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         startTime = 0L
         alphaMultiplier = 0f
     })

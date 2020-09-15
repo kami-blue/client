@@ -7,8 +7,10 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketChatMessage
 
@@ -24,13 +26,12 @@ import net.minecraft.network.play.client.CPacketChatMessage
         showOnArray = Module.ShowOnArray.OFF
 )
 class CustomChat : Module() {
-    @JvmField
-    var textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
+    val textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
+    val customText: Setting<String> = register(Settings.s("CustomText", "unchanged"))
 
-    @JvmField
-    var customText: Setting<String> = register(Settings.s("CustomText", "unchanged"))
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE
@@ -39,6 +40,23 @@ class CustomChat : Module() {
     enum class TextMode {
         NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM
     }
+
+    override fun onUpdate() {
+        if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
+            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
+        }
+    }
+
+    @EventHandler
+    private val listener = Listener(EventHook { event: PacketEvent.Send ->
+        if (event.packet !is CPacketChatMessage) return@EventHook
+        var s = event.packet.getMessage()
+        if (!commands.value && isCommand(s)) return@EventHook
+        s += getFull(decoMode.value)
+
+        if (s.length >= 256) s = s.substring(0, 256)
+        event.packet.message = s
+    })
 
     private fun getText(t: TextMode): String {
         return when (t) {
@@ -58,18 +76,6 @@ class CustomChat : Module() {
         }
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketChatMessage) {
-            var s = (event.packet as CPacketChatMessage).getMessage()
-            if (!commands.value && isCommand(s)) return@EventHook
-            s += getFull(decoMode.value)
-
-            if (s.length >= 256) s = s.substring(0, 256)
-            (event.packet as CPacketChatMessage).message = s
-        }
-    })
-
     private fun isCommand(s: String): Boolean {
         for (value in cmdCheck) {
             if (s.startsWith(value)) return true
@@ -77,19 +83,10 @@ class CustomChat : Module() {
         return false
     }
 
-    override fun onUpdate() {
-        if (startTime == 0L) startTime = System.currentTimeMillis()
-        if (startTime + 5000 <= System.currentTimeMillis()) { // 5 seconds in milliseconds
-            if (textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true) && mc.player != null) {
-                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
-            }
-            startTime = System.currentTimeMillis()
-        }
-    }
-
     companion object {
-        @JvmField
-        var cmdCheck = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$", Command.getCommandPrefix(), ChatEncryption.delimiterValue.value)
-        private var startTime: Long = 0
+        val cmdCheck: Array<String>
+            get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
+                    Command.getCommandPrefix(),
+                    ModuleManager.getModuleT(ChatEncryption::class.java)?.delimiterValue?.value ?: "")
     }
 }

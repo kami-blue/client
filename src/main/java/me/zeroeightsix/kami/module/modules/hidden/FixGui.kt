@@ -15,8 +15,9 @@ import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 @Module.Info(
         name = "FixGui",
         category = Module.Category.HIDDEN,
+        description = "Reset GUI scale and moves GUI elements back on screen",
         showOnArray = Module.ShowOnArray.OFF,
-        description = "Reset GUI scale and moves GUI elements back on screen"
+        enabledByDefault = true
 )
 class FixGui : Module() {
     override fun onUpdate() {

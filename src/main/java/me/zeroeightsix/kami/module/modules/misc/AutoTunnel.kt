@@ -4,6 +4,7 @@ import baritone.api.BaritoneAPI
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
@@ -12,7 +13,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils.CardinalMain
 import me.zeroeightsix.kami.util.math.MathUtils.getPlayerMainCardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * @author dominikaaaa
@@ -78,12 +78,7 @@ class AutoTunnel : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     })
 }

@@ -168,25 +168,4 @@ public class RenderHelper {
         KamiGUI.fontRenderer.drawString(x, y, color, text);
         glDisable(GL_TEXTURE_2D);
     }
-
-    public static void enableAlpha(float alpha) {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        if (alpha == 1f) {
-            return;
-        }
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
-    }
-
-    public static void disableAlpha(float alpha) {
-        GlStateManager.disableBlend();
-
-        if (alpha == 1f) {
-            return;
-        }
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    }
 }
