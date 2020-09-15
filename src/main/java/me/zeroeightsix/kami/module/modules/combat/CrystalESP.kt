@@ -106,8 +106,8 @@ class CrystalESP : Module() {
     }
 
     private fun calcDamages(crystal: EntityEnderCrystal): Pair<Float, Float> {
-        val damage = CombatManager.target?.let { CrystalUtils.calcExplosionDamage(crystal, it) } ?: -0.0f
-        val selfDamage = mc.player?.let { CrystalUtils.calcExplosionDamage(crystal, mc.player) } ?: -0.0f
+        val damage = CombatManager.target?.let { CrystalUtils.calcDamage(crystal, it) } ?: -0.0f
+        val selfDamage = mc.player?.let { CrystalUtils.calcDamage(crystal, mc.player) } ?: -0.0f
         return Pair(damage, selfDamage)
     }
 

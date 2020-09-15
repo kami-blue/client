@@ -34,7 +34,7 @@ object CrystalUtils {
         val damagePosMap = HashMap<Float, BlockPos>()
         for (pos in posList) {
             if (!canPlace(pos, target)) continue
-            damagePosMap[calcExplosionDamage(pos, target)] = pos
+            damagePosMap[calcDamage(pos, target)] = pos
         }
         return damagePosMap
     }
@@ -92,19 +92,28 @@ object CrystalUtils {
 
     /* Damage calculation */
     @JvmStatic
-    fun calcExplosionDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
-        val pos = crystal.positionVector
-        val rawDamage = calcExplosionDamage(pos, entity)
+    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
+        return calcDamage(crystal.positionVector, entity, calcBlastReduction)
+    }
+
+    @JvmStatic
+    fun calcDamage(blockPos: BlockPos, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
+        return calcDamage(Vec3d(blockPos).add(0.5, 1.0, 0.5), entity, calcBlastReduction)
+    }
+
+    @JvmStatic
+    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
+        if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
+        val rawDamage = calcRawDamage(pos, entity)
         return if (!calcBlastReduction) rawDamage
         else calcBlastReduction(rawDamage, pos, entity)
     }
 
     @JvmStatic
-    fun calcExplosionDamage(blockPos: BlockPos, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
-        val pos = Vec3d(blockPos).add(0.5, 1.0, 0.5)
-        val rawDamage = calcExplosionDamage(pos, entity)
-        return if (!calcBlastReduction) rawDamage
-        else calcBlastReduction(rawDamage, pos, entity)
+    private fun calcRawDamage(pos: Vec3d, entity: Entity): Float {
+        val distance = pos.distanceTo(entity.positionVector)
+        val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
+        return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
     }
 
     @JvmStatic
@@ -125,13 +134,6 @@ object CrystalUtils {
     @JvmStatic
     private fun getDamageMultiplier(): Float {
         return mc.world.difficulty.id * 0.5f
-    }
-
-    @JvmStatic
-    private fun calcExplosionDamage(pos: Vec3d, entity: Entity): Float {
-        val distance = pos.distanceTo(entity.positionVector)
-        val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
-        return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
     }
     /* End of damage calculation */
 }

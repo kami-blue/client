@@ -26,6 +26,7 @@ object CombatUtils {
 
     @JvmStatic
     fun calcDamage(entity: EntityLivingBase, roundDamage: Boolean): Float {
+        if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
         return calcDamage(entity, 100f, roundDamage)
     }
 

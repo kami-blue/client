@@ -263,7 +263,7 @@ class CrystalAuraRewrite : Module() {
             if (!shouldForcePlace()) {
                 val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(0.5, 1.0, 0.5), true)
                 if (abs(rotation.x - lastRotation.x) > maxYawRate.value) continue
-                val selfDamage = CrystalUtils.calcExplosionDamage(pos, mc.player)
+                val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
                 if (!noSuicideCheck(selfDamage)) continue
                 if (!checkDamagePlace(damage, selfDamage)) continue
             }
@@ -294,8 +294,8 @@ class CrystalAuraRewrite : Module() {
                 var maxSelfDamage = 0f
                 setPosition()
                 for (crystal in crystalList) {
-                    maxDamage = max(maxDamage, CrystalUtils.calcExplosionDamage(crystal, target))
-                    maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcExplosionDamage(crystal, mc.player))
+                    maxDamage = max(maxDamage, CrystalUtils.calcDamage(crystal, target))
+                    maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcDamage(crystal, mc.player))
                 }
                 resetPosition()
                 if (!noSuicideCheck(maxSelfDamage)) return false
@@ -370,8 +370,8 @@ class CrystalAuraRewrite : Module() {
                 if (ignoredList.contains(crystal)) continue
                 if (crystal.getDistance(mc.player) > placeRange.value) continue
                 if (abs(getExplodingRotation(crystal).x - lastRotation.x) > maxYawRate.value) continue
-                val damage = CrystalUtils.calcExplosionDamage(crystal, target)
-                val selfDamage = CrystalUtils.calcExplosionDamage(crystal, mc.player)
+                val damage = CrystalUtils.calcDamage(crystal, target)
+                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
                 if (!checkDamagePlace(damage, selfDamage)) continue
                 count++
             }
