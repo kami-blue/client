@@ -24,12 +24,15 @@ public class MixinGuiContainer extends GuiScreen {
 
     @Inject(method = "initGui", at = @At("HEAD"))
     public void initGui(CallbackInfo ci) {
-        this.buttonList.add(stealButton);
+        if (ChestStealer.INSTANCE.isValidGui()) {
+            this.buttonList.add(stealButton);
+            updateButton();
+        }
     }
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 6969) {
+        if (button.id == 696969) {
             ChestStealer.INSTANCE.setStealing(!ChestStealer.INSTANCE.getStealing());
         } else {
             super.actionPerformed(button);
@@ -43,7 +46,7 @@ public class MixinGuiContainer extends GuiScreen {
 
     private void updateButton() {
         if (ChestStealer.INSTANCE.isEnabled() && ChestStealer.INSTANCE.isContainerOpen()) {
-            String str;
+            String str = "";
             if (ChestStealer.INSTANCE.getStealing()) {
                 str = "Stop";
             } else {
