@@ -57,7 +57,6 @@ import java.util.stream.Collectors;
 public class KamiGUI extends GUI {
 
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
-    private static final int DOCK_OFFSET = 0;
     public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
     public Theme theme;
 
