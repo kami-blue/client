@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.gui.kami;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.ClickGUI;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
@@ -47,6 +46,10 @@ public class DisplayGuiScreen extends GuiScreen {
         }
 
         framebuffer = new Framebuffer(Wrapper.getMinecraft().displayWidth, Wrapper.getMinecraft().displayHeight, false);
+    }
+
+    public static double getScale() {
+        return ClickGUI.INSTANCE.getScaleFactor();
     }
 
     @Override
@@ -98,10 +101,8 @@ public class DisplayGuiScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) {
-        ClickGUI clickGUI = ModuleManager.getModuleT(ClickGUI.class);
-        assert clickGUI != null;
-        if (clickGUI.isEnabled() && (keyCode == Keyboard.KEY_ESCAPE || clickGUI.bind.getValue().isDown(keyCode))) {
-            clickGUI.disable();
+        if (ClickGUI.INSTANCE.isEnabled() && (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.INSTANCE.bind.getValue().isDown(keyCode))) {
+            ClickGUI.INSTANCE.disable();
         } else {
             gui.handleKeyDown(keyCode);
             gui.handleKeyUp(keyCode);
@@ -110,15 +111,6 @@ public class DisplayGuiScreen extends GuiScreen {
 
     public void closeGui() {
         mc.displayGuiScreen(lastScreen);
-    }
-
-    public static double getScale() {
-        ClickGUI clickGUI = ModuleManager.getModuleT(ClickGUI.class);
-        if (clickGUI == null) {
-            return 2.0;
-        } else {
-            return clickGUI.getScaleFactor();
-        }
     }
 
     private void calculateMouse() {
