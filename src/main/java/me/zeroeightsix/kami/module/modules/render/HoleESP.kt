@@ -14,17 +14,12 @@ import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 
-/**
- * Created 16 November 2019 by hub
- * Updated by dominikaaaa on 15/12/19
- * Updated by Xiarooo on 08/08/20
- */
 @Module.Info(
         name = "HoleESP",
         category = Module.Category.RENDER,
         description = "Show safe holes for crystal pvp"
 )
-class HoleESP : Module() {
+object HoleESP : Module() {
     private val renderDistance = register(Settings.floatBuilder("RenderDistance").withValue(8.0f).withRange(0.0f, 32.0f).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
@@ -39,7 +34,7 @@ class HoleESP : Module() {
     private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
     private val holeType = register(Settings.e<HoleType>("HoleType", HoleType.BOTH))
 
-    private var safeHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
+    private val safeHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT

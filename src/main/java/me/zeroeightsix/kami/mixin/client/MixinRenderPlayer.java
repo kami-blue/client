@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.render.Nametags;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -21,7 +20,7 @@ public class MixinRenderPlayer {
 
     @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
     public void renderLivingLabel(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo info) {
-        if (ModuleManager.isModuleEnabled(Nametags.class)) info.cancel();
+        if (Nametags.INSTANCE.isEnabled()) info.cancel();
     }
 
     @Inject(method = "applyRotations", at = @At("RETURN"))

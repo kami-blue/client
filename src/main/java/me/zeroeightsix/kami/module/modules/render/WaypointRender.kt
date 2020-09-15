@@ -22,15 +22,12 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-/**
- * Created by Xiaro on 31/07/20.
- */
 @Module.Info(
         name = "WaypointRender",
         description = "Render saved waypoints",
         category = Module.Category.RENDER
 )
-class WaypointRender : Module() {
+object WaypointRender : Module() {
     private val page = register(Settings.e<Page>("Page", Page.INFO_BOX))
 
     /* Page one */

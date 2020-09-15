@@ -16,16 +16,12 @@ import org.lwjgl.opengl.GL11.glScalef
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-/**
- * Created by 086 on 25/01/2018.
- * Updated by Xiaro on 10/09/20
- */
 @Module.Info(
         name = "BossStack",
         description = "Modify the boss health GUI to take up less space",
         category = Module.Category.RENDER
 )
-class BossStack : Module() {
+object BossStack : Module() {
     private val mode = register(Settings.e<BossStackMode>("Mode", BossStackMode.STACK))
     private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.1f, 5.0f))
 

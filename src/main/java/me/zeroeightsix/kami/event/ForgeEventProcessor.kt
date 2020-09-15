@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.NoRender
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
@@ -20,7 +19,6 @@ import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -83,12 +81,6 @@ class ForgeEventProcessor {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (mc.world == null || mc.player == null) return
-
-        if (ModuleManager.isModuleEnabled(NoRender::class.java) && ModuleManager.getModuleT(NoRender::class.java)!!.items.value && event.phase == TickEvent.Phase.START) {
-            for (potentialItem in mc.world.getLoadedEntityList()) {
-                (potentialItem as? EntityItem)?.setDead()
-            }
-        }
 
         ModuleManager.onUpdate()
         KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)

@@ -340,7 +340,7 @@ public class CrystalAura extends Module {
                     damage = d;
                     q = blockPos;
                     renderEnt = entity;
-                    PlayerModel.lastAttacked = System.currentTimeMillis();
+                    PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                     mc.player.setLastAttackedEntity(entity);
                 }
             }
@@ -364,7 +364,7 @@ public class CrystalAura extends Module {
                         q = blockPos;
                         damage = d;
                         renderEnt = entity;
-                        PlayerModel.lastAttacked = System.currentTimeMillis();
+                        PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                         mc.player.setLastAttackedEntity(entity);
                     }
                 }

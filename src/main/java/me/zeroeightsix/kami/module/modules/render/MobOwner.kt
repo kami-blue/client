@@ -12,27 +12,25 @@ import kotlin.math.pow
 
 /**
  * I see you also watch FitMC :eyes:
- *
- * @author cookiedragon234
  * Taken from Backdoored 1.8.2 source
- *
- *
- * UUID to username method and caching methods added by dominikaaaa
  */
-@Module.Info(name = "MobOwner", description = "Displays the owner of tamed mobs", category = Module.Category.RENDER)
-class MobOwner : Module() {
+@Module.Info(
+        name = "MobOwner",
+        description = "Displays the owner of tamed mobs",
+        category = Module.Category.RENDER)
+
+object MobOwner : Module() {
     private val speed = register(Settings.b("Speed", true))
     private val jump = register(Settings.b("Jump", true))
     private val hp = register(Settings.b("Health", true))
     private val requestTime = register(Settings.integerBuilder("CacheReset").withMinimum(10).withValue(20).build())
     private val debug = register(Settings.b("Debug", true))
 
-
     private var startTime = 0L /* Periodically try to re-request invalid UUIDs */
     private var startTime1 = 0L /* Super safe method to limit requests to the Mojang API in case you load more then 10 different UUIDs */
     private val cachedUUIDs = HashMap<String, String>() // <UUID, Username>
     private var apiRequests = 0
-    private val invalidText = "Offline or invalid UUID!"
+    private const val invalidText = "Offline or invalid UUID!"
 
     override fun onUpdate() {
         resetRequests()
