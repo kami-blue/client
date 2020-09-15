@@ -8,19 +8,12 @@ import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.*
 import net.minecraft.util.EnumHand
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 05/04/20
- * updated by ionar2 on 04/05/20
- * Updated by dominikaaaa on 05/06/20
- * Updated by Xiaro on 09/09/20
- */
 @Module.Info(
         name = "AutoRemount",
         description = "Automatically remounts your horse",
         category = Module.Category.MOVEMENT
 )
-class AutoRemount : Module() {
+object AutoRemount : Module() {
     private val boat = register(Settings.b("Boats", true))
     private val horse = register(Settings.b("Horse", true))
     private val skeletonHorse = register(Settings.b("SkeletonHorse", true))

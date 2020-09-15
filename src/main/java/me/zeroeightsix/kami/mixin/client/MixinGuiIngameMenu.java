@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.gui.mc.KamiGuiAntiDisconnect;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -24,8 +23,8 @@ public class MixinGuiIngameMenu {
                 callbackInfo.cancel();
             }
 
-            if (AntiDisconnect.INSTANCE.isEnabled() && ModuleManager.isModuleEnabled(AutoWalk.class) && ModuleManager.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
-                ModuleManager.getModuleT(AutoWalk.class).disable();
+            if (AntiDisconnect.INSTANCE.isEnabled() && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE) {
+                AutoWalk.INSTANCE.disable();
             }
         }
     }

@@ -10,10 +10,6 @@ import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 
 /**
- * Created by 086 on 8/04/2018.
- * Code tweaked by coderynx & OverFloyd.
- * Updated by Xiaro on 09/09/20
- *
  * Movement taken from Seppuku
  * https://github.com/seppukudevelopment/seppuku/blob/005e2da/src/main/java/me/rigamortis/seppuku/impl/module/player/NoHungerModule.java
  */
@@ -22,7 +18,7 @@ import net.minecraft.network.play.client.CPacketPlayer
         category = Module.Category.MOVEMENT,
         description = "Reduces hunger lost when moving around"
 )
-class AntiHunger : Module() {
+object AntiHunger : Module() {
     private val cancelMovementState = register(Settings.b("CancelMovementState", true))
 
     @EventHandler

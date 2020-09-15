@@ -25,20 +25,13 @@ import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import kotlin.math.*
 
-/**
- * Created by 086 on 11/04/2018.
- * Updated by Itistheend on 28/12/19.
- * Updated by pNoName on 28/05/20
- * Updated by dominikaaaa on 06/07/20
- * Updated by Xiaro on 27/08/20
- */
 @Module.Info(
         name = "ElytraFlight",
         description = "Allows infinite and way easier Elytra flying",
         category = Module.Category.MOVEMENT,
         modulePriority = 1000
 )
-class ElytraFlight : Module() {
+object ElytraFlight : Module() {
     private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL).build())
     private val page = register(Settings.e<Page>("Page", Page.GENERIC_SETTINGS))
     private val defaultSetting = register(Settings.b("Defaults", false))

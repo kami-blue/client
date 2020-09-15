@@ -11,9 +11,6 @@ import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 
 /**
- * Created by 086 on 16/11/2017.
- * Updated by Xiaro on 09/09/20
- *
  * @see me.zeroeightsix.kami.mixin.client.MixinBlockLiquid
  */
 @Module.Info(
@@ -21,7 +18,7 @@ import net.minecraft.network.play.server.SPacketExplosion
         description = "Modify knockback impact",
         category = Module.Category.MOVEMENT
 )
-class Velocity : Module() {
+object Velocity : Module() {
     private val noPush = register(Settings.b("NoPush", true))
     private val horizontal = register(Settings.floatBuilder("Horizontal").withValue(0f).withRange(-5f, 5f))
     private val vertical = register(Settings.floatBuilder("Vertical").withValue(0f).withRange(-5f, 5f))

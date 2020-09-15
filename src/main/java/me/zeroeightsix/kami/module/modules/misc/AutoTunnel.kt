@@ -6,7 +6,6 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -32,9 +31,7 @@ object AutoTunnel : Module() {
             disable()
             return
         }
-        if (ModuleManager.isModuleEnabled(AutoWalk::class.java)) {
-            ModuleManager.getModuleT(AutoWalk::class.java)!!.disable()
-        }
+        if (AutoWalk.isEnabled) AutoWalk.disable()
 
         startingDirection = getPlayerMainCardinal(mc)
         sendTunnel()
@@ -50,10 +47,18 @@ object AutoTunnel : Module() {
         if (!current.contentEquals(lastCommand)) {
             lastCommand = current
             when (startingDirection) {
-                CardinalMain.POS_X -> { mc.player.rotationYaw = -90.0f; mc.player.rotationPitch = 0.0f }
-                CardinalMain.NEG_X -> { mc.player.rotationYaw = 90.0f; mc.player.rotationPitch = 0.0f }
-                CardinalMain.POS_Z -> { mc.player.rotationYaw = 0.0f; mc.player.rotationYaw = 0.0f }
-                CardinalMain.NEG_Z -> { mc.player.rotationYaw = 180.0f; mc.player.rotationYaw = 0.0f }
+                CardinalMain.POS_X -> {
+                    mc.player.rotationYaw = -90.0f; mc.player.rotationPitch = 0.0f
+                }
+                CardinalMain.NEG_X -> {
+                    mc.player.rotationYaw = 90.0f; mc.player.rotationPitch = 0.0f
+                }
+                CardinalMain.POS_Z -> {
+                    mc.player.rotationYaw = 0.0f; mc.player.rotationYaw = 0.0f
+                }
+                CardinalMain.NEG_Z -> {
+                    mc.player.rotationYaw = 180.0f; mc.player.rotationYaw = 0.0f
+                }
                 else -> return
             }
             MessageSendHelper.sendBaritoneCommand(*current)

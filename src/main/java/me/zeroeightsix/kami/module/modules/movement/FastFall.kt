@@ -1,28 +1,16 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.MOTION
-import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.TIMER
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
-import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.BlockPos
 
-/**
- * Created August 11th 2020 by historian
- * Updated by dominikaaaa on 21/08/20
- */
 @Module.Info(
         name = "FastFall",
         category = Module.Category.MOVEMENT,
         description = "Makes you fall faster"
 )
-class FastFall : Module() {
-    private val mode: Setting<Mode> = register(Settings.e("Mode", MOTION))
+object FastFall : Module() {
+    private val mode: Setting<Mode> = register(Settings.e("Mode", Mode.MOTION))
     private val fallSpeed = register(Settings.doubleBuilder("FallSpeed").withMinimum(0.1).withValue(6.0).withMaximum(10.0).build())
     private val fallDistance = register(Settings.integerBuilder("MaxFallDistance").withValue(2).withRange(0, 10).build())
 
@@ -47,11 +35,11 @@ class FastFall : Module() {
         }
 
         when (mode.value) {
-            MOTION -> {
+            Mode.MOTION -> {
                 mc.player.motionY -= fallSpeed.value
                 motioning = true
             }
-            TIMER -> {
+            Mode.TIMER -> {
                 mc.timer.tickLength = 50.0f / (fallSpeed.value * 2.0f).toFloat()
                 timering = true
             }

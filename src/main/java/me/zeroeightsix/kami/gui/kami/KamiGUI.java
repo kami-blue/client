@@ -47,8 +47,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
@@ -59,13 +57,71 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 public class KamiGUI extends GUI {
 
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
-    public Theme theme;
-
+    private static final int DOCK_OFFSET = 0;
     public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
+    public Theme theme;
 
     public KamiGUI() {
         super(new KamiTheme());
         theme = getTheme();
+    }
+
+    private static String getEntityName(@Nonnull Entity entity) {
+        if (entity instanceof EntityItem) {
+            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
+        }
+        if (entity instanceof EntityWitherSkull) {
+            return TextFormatting.DARK_GRAY + "Wither skull";
+        }
+        if (entity instanceof EntityEnderCrystal) {
+            return TextFormatting.LIGHT_PURPLE + "End crystal";
+        }
+        if (entity instanceof EntityEnderPearl) {
+            return "Thrown ender pearl";
+        }
+        if (entity instanceof EntityMinecart) {
+            return "Minecart";
+        }
+        if (entity instanceof EntityItemFrame) {
+            return "Item frame";
+        }
+        if (entity instanceof EntityEgg) {
+            return "Thrown egg";
+        }
+        if (entity instanceof EntitySnowball) {
+            return "Thrown snowball";
+        }
+
+        return entity.getName();
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<>(map.entrySet());
+        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    public static void dock(Frame component) {
+        Docking docking = component.getDocking();
+        if (docking.isTop())
+            component.setY(DOCK_OFFSET);
+        if (docking.isBottom())
+            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
+        if (docking.isLeft())
+            component.setX(DOCK_OFFSET);
+        if (docking.isRight())
+            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
+        if (docking.isCenterHorizontal())
+            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
+        if (docking.isCenterVertical())
+            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
+
     }
 
     @Override
@@ -76,7 +132,7 @@ public class KamiGUI extends GUI {
     @Override
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
-        for (Module module : MODULE_MANAGER.getModules()) {
+        for (Module module : ModuleManager.getModules()) {
             if (module.category.isHidden()) continue;
             Module.Category moduleCategory = module.category;
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
@@ -302,9 +358,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                AutoWalk autoWalk = ModuleManager.getModuleT(AutoWalk.class);
-                if (process.get() != TemporaryPauseProcess.INSTANCE && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
-                    processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
+                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
                 }
@@ -395,7 +450,7 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
-            Minecraft mc = Wrapper.getMinecraft();
+            final Minecraft mc = Wrapper.getMinecraft();
 
             @Override
             public void onTick() {
@@ -442,7 +497,7 @@ public class KamiGUI extends GUI {
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
         coordsLabel.addTickListener(new TickListener() {
-            Minecraft mc = Minecraft.getMinecraft();
+            final Minecraft mc = Minecraft.getMinecraft();
 
             @Override
             public void onTick() {
@@ -519,68 +574,8 @@ public class KamiGUI extends GUI {
         }
     }
 
-    private static String getEntityName(@Nonnull Entity entity) {
-        if (entity instanceof EntityItem) {
-            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
-        }
-        if (entity instanceof EntityWitherSkull) {
-            return TextFormatting.DARK_GRAY + "Wither skull";
-        }
-        if (entity instanceof EntityEnderCrystal) {
-            return TextFormatting.LIGHT_PURPLE + "End crystal";
-        }
-        if (entity instanceof EntityEnderPearl) {
-            return "Thrown ender pearl";
-        }
-        if (entity instanceof EntityMinecart) {
-            return "Minecart";
-        }
-        if (entity instanceof EntityItemFrame) {
-            return "Item frame";
-        }
-        if (entity instanceof EntityEgg) {
-            return "Thrown egg";
-        }
-        if (entity instanceof EntitySnowball) {
-            return "Thrown snowball";
-        }
-
-        return entity.getName();
-    }
-
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list =
-                new LinkedList<>(map.entrySet());
-        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
-
-        Map<K, V> result = new LinkedHashMap<K, V>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
-    }
-
     @Override
     public void destroyGUI() {
         kill();
-    }
-
-    private static final int DOCK_OFFSET = 0;
-
-    public static void dock(Frame component) {
-        Docking docking = component.getDocking();
-        if (docking.isTop())
-            component.setY(DOCK_OFFSET);
-        if (docking.isBottom())
-            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
-        if (docking.isLeft())
-            component.setX(DOCK_OFFSET);
-        if (docking.isRight())
-            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
-        if (docking.isCenterHorizontal())
-            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
-        if (docking.isCenterVertical())
-            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
-
     }
 }

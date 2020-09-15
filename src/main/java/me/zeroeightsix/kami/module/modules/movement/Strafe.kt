@@ -7,15 +7,12 @@ import net.minecraft.client.settings.KeyBinding
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * Created july 14th 2020 by historian
- */
 @Module.Info(
         name = "Strafe",
         category = Module.Category.MOVEMENT,
         description = "Improves control in air"
 )
-class Strafe : Module() {
+object Strafe : Module() {
     private val airSpeedBoost = register(Settings.b("AirSpeedBoost", true))
     private val timerBoost = register(Settings.b("TimerBoost", false))
     private val autoJump = register(Settings.b("AutoJump", false))
