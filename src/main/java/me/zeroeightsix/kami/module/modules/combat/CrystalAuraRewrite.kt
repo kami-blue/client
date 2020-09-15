@@ -41,15 +41,15 @@ import kotlin.math.sqrt
 /**
  * Created by Xiaro on 19/07/20
  */
+// TODO: AutoOffhand
+// TODO: HoleBreaker
+// TODO: HoleTP
 @Module.Info(
         name = "CrystalAuraRewrite",
         description = "A reborn of the CrystalAura",
         category = Module.Category.COMBAT,
         modulePriority = 80
 )
-// TODO: AutoOffhand
-// TODO: HoleBreaker
-
 class CrystalAuraRewrite : Module() {
     /* Settings */
     private val page = register(Settings.e<Page>("Page", Page.GENERAL))
