@@ -49,7 +49,7 @@ public class MixinEntityRenderer {
 
     @Inject(method = "displayItemActivation", at = @At(value = "HEAD"), cancellable = true)
     public void displayItemActivation(ItemStack stack, CallbackInfo callbackInfo) {
-        if (MODULE_MANAGER.getModuleT(AntiOverlay.class).isEnabled() && MODULE_MANAGER.getModuleT(AntiOverlay.class).totems.getValue()) {
+        if (MODULE_MANAGER.getModuleT(AntiOverlay.class).isEnabled() && MODULE_MANAGER.getModuleT(AntiOverlay.class).getTotems().getValue()) {
             callbackInfo.cancel();
         }
     }
