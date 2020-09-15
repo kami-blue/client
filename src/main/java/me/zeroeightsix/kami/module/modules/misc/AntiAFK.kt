@@ -15,10 +15,6 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import java.util.*
 
-/**
- * TODO: Path finding to stay inside 1 chunk
- * TODO: Render which chunk is selected
- */
 @Module.Info(
         name = "AntiAFK",
         category = Module.Category.MISC,
