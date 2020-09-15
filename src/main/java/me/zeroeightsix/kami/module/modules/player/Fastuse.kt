@@ -8,13 +8,6 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItem
 import net.minecraft.util.math.BlockPos
 
 /**
- * @author dominikaaaa
- *
- * Created by dominikaaaa on 23/10/2019
- * Updated by dominikaaaa on 03/12/19
- * Updated by d1gress/Qther on 4/12/19
- * Updated by Xiaro on 24/08/20
- *
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
 @Module.Info(
@@ -22,7 +15,7 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.PLAYER,
         description = "Use items faster"
 )
-class Fastuse : Module() {
+object Fastuse : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build())
     private val blocks = register(Settings.b("Blocks", false))
     private val allItems = register(Settings.b("AllItems", false))

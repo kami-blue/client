@@ -5,18 +5,16 @@ import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.util.math.MathHelper
 import kotlin.math.roundToInt
 
-/**
- * Created by 086 on 16/12/2017.
- */
 @Module.Info(
         name = "PitchLock",
         category = Module.Category.PLAYER,
         description = "Locks your camera pitch"
 )
-class PitchLock : Module() {
+object PitchLock : Module() {
     private val auto = register(Settings.b("Auto", true))
     private val pitch = register(Settings.f("Pitch", 180f))
     private val slice = register(Settings.i("Slice", 8))
+
     override fun onUpdate() {
         if (slice.value == 0) return
         if (auto.value) {

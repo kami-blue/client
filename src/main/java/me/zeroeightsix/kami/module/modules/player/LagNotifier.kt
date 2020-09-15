@@ -18,23 +18,20 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11.glColor4f
 
 /**
- * @author dominikaaaa
  * Thanks Brady and cooker and leij for helping me not be completely retarded
- *
- * Updated by dominikaaaa on 19/04/20
- * Updated by Xiaro on 02/08/20
  */
 @Module.Info(
         name = "LagNotifier",
         description = "Displays a warning when the server is lagging",
         category = Module.Category.PLAYER
 )
-class LagNotifier : Module() {
+object LagNotifier : Module() {
     private val pauseTakeoff = register(Settings.b("PauseElytraTakeoff", true))
     private var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
     private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value }.build())
     private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
 
+    private var startTime: Long = 0
     private var serverLastUpdated: Long = 0
     var paused = false
     var text = "Server Not Responding! "
@@ -91,9 +88,5 @@ class LagNotifier : Module() {
             return true
         }
         return false
-    }
-
-    companion object {
-        private var startTime: Long = 0
     }
 }

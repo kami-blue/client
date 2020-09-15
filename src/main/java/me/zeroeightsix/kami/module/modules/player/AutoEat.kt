@@ -14,24 +14,15 @@ import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 
-/**
- * Created by 086 on 8/04/2018.
- * Updated by polymer on 09/03/20
- * Updated by dominikaaaa on 20/03/20
- * Updated by An-En on 24/03/20
- * Updated by Dewy on the 17th of May, 2020
- * Updated by Afel 05/25/20
- * Updated by Xiaro on 02/08/20
- */
 @Module.Info(
         name = "AutoEat",
         description = "Automatically eat when hungry",
         category = Module.Category.PLAYER
 )
-class AutoEat : Module() {
+object AutoEat : Module() {
     private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withMinimum(1).withMaximum(20).build())
     private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withMinimum(1).withMaximum(20).build())
-    private var pauseBaritone = register(Settings.b("PauseBaritone", true))
+    private val pauseBaritone = register(Settings.b("PauseBaritone", true))
 
     private var lastSlot = -1
     var eating = false

@@ -12,21 +12,16 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketPlayer
 import java.util.*
 
-/**
- * Created by 086 on 24/01/2018.
- * Updated by Cuhnt on 30/7/2019
- * Updated by Xiaro on 21/08/20
- */
 @Module.Info(
         name = "Blink",
         category = Module.Category.PLAYER,
         description = "Cancels server side packets"
 )
-class Blink : Module() {
+object Blink : Module() {
     private val autoReset = register(Settings.b("AutoReset", true))
     private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value }.build())
 
-    private val packets: Queue<CPacketPlayer> = LinkedList()
+    private val packets = LinkedList<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
 
@@ -34,7 +29,7 @@ class Blink : Module() {
     private val listener = Listener(EventHook { event: PacketEvent.Send ->
         if (!sending && event.packet is CPacketPlayer) {
             event.cancel()
-            packets.add(event.packet as CPacketPlayer)
+            packets.add(event.packet)
         }
     })
 

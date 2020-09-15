@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
@@ -75,9 +74,7 @@ object AutoFeetPlace : Module() {
     }
 
     override fun onUpdate() {
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-            return
-        }
+        if (Freecam.isEnabled) return
 
         if (triggerable.value && totalTicksRunning >= timeoutTicks.value) {
             totalTicksRunning = 0
@@ -198,10 +195,7 @@ object AutoFeetPlace : Module() {
         mc.player.swingArm(EnumHand.MAIN_HAND)
         mc.rightClickDelayTimer = 4
 
-        val noBreakAnimation = KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java)!!
-        if (noBreakAnimation.isEnabled) {
-            noBreakAnimation.resetMining()
-        }
+        if (NoBreakAnimation.isEnabled) NoBreakAnimation.resetMining()
         return true
     }
 

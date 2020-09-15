@@ -21,28 +21,25 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 
-/**
- * Created by 086 on 19/11/2017.
- * Updated by dominikaaaa on 29/05/20
- */
 @Module.Info(
         name = "NoFall",
         category = Module.Category.PLAYER,
         description = "Prevents fall damage"
 )
-class NoFall : Module() {
+object NoFall : Module() {
     private val distance = register(Settings.integerBuilder("Distance").withValue(3).withMinimum(1).withMaximum(10).build())
     private val mode = register(Settings.e<Mode>("Mode", Mode.CATCH))
     private val fallMode = register(Settings.enumBuilder(FallMode::class.java).withName("Fall").withValue(FallMode.PACKET).withVisibility { mode.value == Mode.FALL }.build())
     private val catchMode = register(Settings.enumBuilder(CatchMode::class.java).withName("Catch").withValue(CatchMode.MOTION).withVisibility { mode.value == Mode.CATCH }.build())
     private val pickup = register(Settings.booleanBuilder("Pickup").withValue(false).withVisibility { fallMode.value == FallMode.BUCKET }.build())
     private val pickupDelay = register(Settings.integerBuilder("PickupDelay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { fallMode.value == FallMode.BUCKET && pickup.value }.build())
+
     private var last: Long = 0
 
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mode.value == Mode.CATCH && fallMode.value == FallMode.PACKET && event.packet is CPacketPlayer && !mc.player.isElytraFlying) {
-            (event.packet as CPacketPlayer).onGround = true
+            event.packet.onGround = true
         }
     })
 
@@ -67,14 +64,15 @@ class NoFall : Module() {
                         mc.playerController.processRightClick(mc.player, mc.world, hand)
                     }
                     if (pickup.value) {
-                        Thread(Runnable {
+                        Thread {
                             try { // this is just pozzed and should be properly calculating it based on velocity but I cba to do it
                                 Thread.sleep(pickupDelay.value.toLong())
                             } catch (ignored: InterruptedException) {
+
                             }
                             mc.player.rotationPitch = 90f
                             mc.rightClickMouse()
-                        }).start()
+                        }.start()
                     }
                 }
             } else if (mode.value == Mode.CATCH) {

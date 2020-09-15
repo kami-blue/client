@@ -30,13 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by 086 on 11/12/2017.
- */
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
-
-    private final boolean nightVision = false;
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     public RayTraceResult rayTraceBlocks(WorldClient world, Vec3d start, Vec3d end) {
@@ -72,7 +67,7 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
     public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate predicate) {
-        if (NoEntityTrace.shouldBlock())
+        if (NoEntityTrace.INSTANCE.shouldBlock())
             return new ArrayList<>();
         else
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
@@ -82,8 +77,7 @@ public class MixinEntityRenderer {
     public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
         // [WebringOfTheDamned]
         // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
-        if (ModuleManager.isModuleEnabled(Freecam.class))
-            return true;
+        if (Freecam.INSTANCE.isEnabled()) return true;
         return entityPlayerSP.isSpectator();
     }
 

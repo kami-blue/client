@@ -12,24 +12,20 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
-/**
- * Created 14 November 2019 by hub
- * Updated 29 November 2019 by hub
- */
 @Module.Info(
         name = "NoBreakAnimation",
         category = Module.Category.PLAYER,
         description = "Prevents block break animation server side"
 )
-class NoBreakAnimation : Module() {
+object NoBreakAnimation : Module() {
     private var isMining = false
     private var lastPos: BlockPos? = null
     private var lastFacing: EnumFacing? = null
 
     @EventHandler
-    var listener = Listener(EventHook { event: PacketEvent.Send ->
+    private val listener = Listener(EventHook { event: PacketEvent.Send ->
         if (event.packet is CPacketPlayerDigging) {
-            val cPacketPlayerDigging = event.packet as CPacketPlayerDigging
+            val cPacketPlayerDigging = event.packet
             // skip crystals and living entities
             for (entity in mc.world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB(cPacketPlayerDigging.position))) {
                 if (entity is EntityEnderCrystal) {

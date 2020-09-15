@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.mc.KamiGuiStealButton;
 import me.zeroeightsix.kami.module.modules.player.ChestStealer;
 import net.minecraft.client.gui.GuiButton;
@@ -21,7 +20,6 @@ public class MixinGuiContainer extends GuiScreen {
     @Shadow protected int guiTop;
     @Shadow protected int xSize;
 
-    private final ChestStealer chestStealer = KamiMod.MODULE_MANAGER.getModuleT(ChestStealer.class);
     private final GuiButton stealButton = new KamiGuiStealButton(this.guiLeft + this.xSize + 2, this.guiTop + 2);
 
     @Inject(method = "initGui", at = @At("HEAD"))
@@ -32,7 +30,7 @@ public class MixinGuiContainer extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 6969) {
-            chestStealer.setStealing(!chestStealer.getStealing());
+            ChestStealer.INSTANCE.setStealing(!ChestStealer.INSTANCE.getStealing());
         } else {
             super.actionPerformed(button);
         }
@@ -44,16 +42,16 @@ public class MixinGuiContainer extends GuiScreen {
     }
 
     private void updateButton() {
-        if (chestStealer.isEnabled() && chestStealer.isContainerOpen()) {
-            String str = "";
-            if (chestStealer.getStealing()) {
+        if (ChestStealer.INSTANCE.isEnabled() && ChestStealer.INSTANCE.isContainerOpen()) {
+            String str;
+            if (ChestStealer.INSTANCE.getStealing()) {
                 str = "Stop";
             } else {
                 str = "Steal";
             }
             stealButton.x = this.guiLeft + this.xSize + 2;
             stealButton.y = this.guiTop + 2;
-            stealButton.enabled = chestStealer.canSteal();
+            stealButton.enabled = ChestStealer.INSTANCE.canSteal();
             stealButton.visible = true;
             stealButton.displayString = str;
         } else {

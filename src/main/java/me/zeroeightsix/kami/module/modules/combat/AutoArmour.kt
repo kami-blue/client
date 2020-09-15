@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.modules.player
+package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -8,15 +8,12 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 
-/**
- * Created by 086 on 24/01/2018.
- */
 @Module.Info(
         name = "AutoArmour",
-        category = Module.Category.PLAYER,
+        category = Module.Category.COMBAT,
         description = "Automatically equips armour"
 )
-class AutoArmour : Module() {
+object AutoArmour : Module() {
     override fun onUpdate() {
         if (mc.player.ticksExisted % 2 == 0) return
 
