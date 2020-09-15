@@ -26,14 +26,13 @@ object AntiBookKick : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: PacketEvent.PostSend ->
         if (event.packet !is CPacketClickWindow) return@EventHook
-        val packet = event.packet
-        if (packet.clickedItem.getItem() !is ItemWrittenBook) return@EventHook
+        if (event.packet.clickedItem.getItem() !is ItemWrittenBook) return@EventHook
 
         event.cancel()
         MessageSendHelper.sendWarningMessage(chatName
                 + " Don't click the book \""
-                + packet.clickedItem.displayName
+                + event.packet.clickedItem.displayName
                 + "\", shift click it instead!")
-        mc.player.openContainer.slotClick(packet.slotId, packet.usedButton, packet.clickType, mc.player)
+        mc.player.openContainer.slotClick(event.packet.slotId, event.packet.usedButton, event.packet.clickType, mc.player)
     })
 }

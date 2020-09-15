@@ -7,9 +7,4 @@ import me.zeroeightsix.kami.module.Module
         category = Module.Category.RENDER,
         description = "Disables the 'hurt' camera effect"
 )
-object NoHurtCam : Module() {
-    @JvmStatic
-    fun shouldDisable(): Boolean {
-        return isEnabled
-    }
-}
+object NoHurtCam : Module()

@@ -10,10 +10,6 @@ import net.minecraft.entity.passive.EntityTameable
 import java.util.*
 import kotlin.math.pow
 
-/**
- * I see you also watch FitMC :eyes:
- * Taken from Backdoored 1.8.2 source
- */
 @Module.Info(
         name = "MobOwner",
         description = "Displays the owner of tamed mobs",
@@ -68,9 +64,6 @@ object MobOwner : Module() {
         }
     }
 
-    /**
-     * @author dominikaaaa
-     */
     private fun getUsername(uuid: String): String {
         for ((key, value) in cachedUUIDs) {
             if (key.equals(uuid, ignoreCase = true)) {
@@ -78,16 +71,12 @@ object MobOwner : Module() {
             }
         }
         try {
-            try {
-                if (apiRequests > 10) {
-                    return "Too many API requests"
-                }
-                cachedUUIDs[uuid] = Objects.requireNonNull(getNameFromUUID(uuid))!!.replace("\"", "")
-                apiRequests++
-            } catch (illegal: IllegalStateException) { /* this means the json parsing failed meaning the UUID is invalid */
-                cachedUUIDs[uuid] = invalidText
+            if (apiRequests > 10) {
+                return "Too many API requests"
             }
-        } catch (e: NullPointerException) { /* this means the json parsing failed meaning you're offline */
+            cachedUUIDs[uuid] = getNameFromUUID(uuid)?.replace("\"", "") ?: invalidText
+            apiRequests++
+        } catch (illegal: IllegalStateException) { /* this means the json parsing failed meaning the UUID is invalid */
             cachedUUIDs[uuid] = invalidText
         }
         /* Run this again to reduce the amount of requests made to the Mojang API */for ((key, value) in cachedUUIDs) {
