@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2
+import kotlin.math.floor
 import kotlin.math.sqrt
 
 @Module.Info(
@@ -46,6 +47,7 @@ object Surround : Module() {
     private var playerHotbarSlot = -1
     private var lastHotbarSlot = -1
 
+    @Suppress("UNUSED")
     private enum class DebugMsgs {
         NONE, IMPORTANT, ALL
     }
@@ -66,7 +68,7 @@ object Surround : Module() {
                         lastHotbarSlot = mc.player.inventory.currentItem
                     }
                 }
-                for (i in 0 until Math.floor(blockPerTick.value).toInt()) {
+                for (i in 0 until floor(blockPerTick.value).toInt()) {
                     if (debugMsgs.value == DebugMsgs.ALL) {
                         MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
                     }
@@ -258,10 +260,10 @@ object Surround : Module() {
         return mc.world.getBlockState(pos)
     }
 
-        private fun faceVectorPacketInstant(vec: Vec3d) {
-            val rotations = getLegitRotations(vec)
-            mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
-        }
+    private fun faceVectorPacketInstant(vec: Vec3d) {
+        val rotations = getLegitRotations(vec)
+        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
+    }
 
     private fun getLegitRotations(vec: Vec3d): FloatArray {
         val eyesPos = eyesPos
@@ -269,14 +271,13 @@ object Surround : Module() {
         val diffY = vec.y - eyesPos.y
         val diffZ = vec.z - eyesPos.z
 
-            val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-            val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
-            val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
+        val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
+        val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
+        val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
 
-            return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
-        }
-
-        private val eyesPos: Vec3d
-            get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
+        return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
     }
+
+    private val eyesPos: Vec3d
+        get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
 }
