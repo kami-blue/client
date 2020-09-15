@@ -13,14 +13,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author Xiaro
- *
+ * <p>
  * Created by Xiaro on 05/09/20
  */
 @Mixin(value = RenderManager.class, priority = 114514)
 public class MixinRenderManager {
 
-    @Shadow public boolean renderOutlines;
-    @Shadow public boolean debugBoundingBox;
+    @Shadow
+    public boolean renderOutlines;
+    @Shadow
+    public boolean debugBoundingBox;
 
     @Inject(method = "renderEntity", at = @At("HEAD"), cancellable = true)
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
@@ -45,7 +47,8 @@ public class MixinRenderManager {
 
     @Inject(method = "renderEntity", at = @At("RETURN"))
     public void renderEntityPostReturn(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
-        if (!this.renderOutlines || (this.debugBoundingBox && !entity.isInvisible() && !debug && !Minecraft.getMinecraft().isReducedDebug())) return;
+        if (!this.renderOutlines || (this.debugBoundingBox && !entity.isInvisible() && !debug && !Minecraft.getMinecraft().isReducedDebug()))
+            return;
         RenderEntityEvent.Post event2 = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
         KamiMod.EVENT_BUS.post(event2);
     }

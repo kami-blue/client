@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.text.TextFormatting;
@@ -14,7 +15,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
@@ -30,7 +30,7 @@ public class TroubleshootCommand extends Command {
     @Override
     public void call(String[] args) {
         AtomicReference<String> enabled = new AtomicReference<>("");
-        Module[] mods = MODULE_MANAGER.getModules();
+        Module[] mods = ModuleManager.getModules();
 
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";

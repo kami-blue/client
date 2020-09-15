@@ -30,9 +30,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Created by 086 on 12/12/2017.
- */
 @Mixin(value = EntityPlayerSP.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
@@ -48,13 +45,11 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Shadow private boolean serverSneakState;
     @Shadow private boolean prevOnGround;
     @Shadow private boolean autoJumpEnabled;
+    @Shadow protected abstract boolean isCurrentViewEntity();
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
     }
-
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
 
     @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))

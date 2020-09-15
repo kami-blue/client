@@ -33,7 +33,8 @@ object InfoCalculator {
      * @return Server type
      */
     @JvmStatic
-    fun getServerType() = if (mc.isIntegratedServerRunning) "Singleplayer" else mc.currentServerData?.serverIP ?: "MainMenu"
+    fun getServerType() = if (mc.isIntegratedServerRunning) "Singleplayer" else mc.currentServerData?.serverIP
+            ?: "MainMenu"
 
     /**
      * @return Ping

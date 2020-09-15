@@ -70,12 +70,6 @@ public class KamiMod {
 
     public static final EventBus EVENT_BUS = new EventManager();
 
-    /**
-     * @deprecated Use ModuleManger instead
-     */
-    @Deprecated
-    public static final ModuleManager MODULE_MANAGER = ModuleManager.INSTANCE;
-
     public static final KamiMoji KAMIMOJI = new KamiMoji();
 
     public static String latest; // latest version (null if no internet or exception occurred)

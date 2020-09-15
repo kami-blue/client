@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 

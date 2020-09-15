@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import net.minecraft.util.text.TextFormatting
 import java.text.SimpleDateFormat
 import java.util.*

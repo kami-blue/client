@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
 import me.zeroeightsix.kami.module.modules.render.MapPreview;
 import me.zeroeightsix.kami.module.modules.render.ShulkerPreview;

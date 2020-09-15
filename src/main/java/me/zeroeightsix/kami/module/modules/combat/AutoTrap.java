@@ -55,6 +55,7 @@ public class AutoTrap extends Module {
 
     private EntityPlayer closestTarget;
     private String lastTargetName;
+
     private int playerHotbarSlot = -1;
     private int lastHotbarSlot = -1;
     private boolean isSneaking = false;

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.kami;
 
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;

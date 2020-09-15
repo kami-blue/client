@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {

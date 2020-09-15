@@ -72,13 +72,7 @@ public abstract class MixinFontRenderer {
      */
     @Inject(method = "getStringWidth", at = @At("TAIL"), cancellable = true)
     public void getStringWidth(String text, CallbackInfoReturnable<Integer> cir) {
-        KamiMoji kamiMoji;
-        try {
-            kamiMoji = ModuleManager.getModuleT(KamiMoji.class);
-        } catch (ModuleManager.ModuleNotFoundException e) {
-            return;
-        }
-        if (cir.getReturnValue() != 0 && kamiMoji != null && kamiMoji.isEnabled()) {
+        if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE != null && KamiMoji.INSTANCE.isEnabled()) {
             int reducedWidth = cir.getReturnValue();
             for (String possible : text.split(":")) {
                 if (KamiMod.KAMIMOJI.isEmoji(possible)) {

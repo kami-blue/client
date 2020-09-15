@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.surroundOffset
@@ -55,7 +55,7 @@ object HoleESP : Module() {
     override fun onUpdate() {
         safeHoles.clear()
         val range = ceil(renderDistance.value).toInt()
-        val crystalAura = KamiMod.MODULE_MANAGER.getModuleT(CrystalAura::class.java)!!
+        val crystalAura = ModuleManager.getModuleT(CrystalAura::class.java)!!
         val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
         for (pos in blockPosList) {
             if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air

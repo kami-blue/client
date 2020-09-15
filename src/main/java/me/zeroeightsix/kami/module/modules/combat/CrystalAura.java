@@ -495,7 +495,9 @@ public class CrystalAura extends Module {
         }
     });
 
-    public void onEnable() { sendMessage("&aENABLED&r"); }
+    public void onEnable() {
+        sendMessage("&aENABLED&r");
+    }
 
     public void onDisable() {
         sendMessage("&cDISABLED&r");
@@ -522,7 +524,8 @@ public class CrystalAura extends Module {
                 mc.playerController.attackEntity(mc.player, crystal);
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             }
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+        }
 
         systemTime = System.nanoTime() / 1000000L;
     }

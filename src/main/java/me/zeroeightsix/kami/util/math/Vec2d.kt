@@ -6,9 +6,9 @@ import kotlin.math.sqrt
 
 class Vec2d(var x: Double = 0.0, var y: Double = 0.0) {
 
-    constructor(vec3d: Vec3d): this(vec3d.x, vec3d.y)
+    constructor(vec3d: Vec3d) : this(vec3d.x, vec3d.y)
 
-    constructor(vec2d: Vec2d): this(vec2d.x, vec2d.y)
+    constructor(vec2d: Vec2d) : this(vec2d.x, vec2d.y)
 
     fun length(): Double {
         return sqrt(lengthSquared())

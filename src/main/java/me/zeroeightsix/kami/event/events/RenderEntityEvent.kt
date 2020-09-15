@@ -2,8 +2,6 @@ package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.KamiEvent
 import net.minecraft.entity.Entity
-import net.minecraft.network.Packet
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 /**
  * Created by 086 on 13/11/2017.

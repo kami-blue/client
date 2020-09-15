@@ -55,7 +55,7 @@ object Surround : Module() {
             CenterPlayer.centerPlayer(1.0f)
             if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
         } else {
-            if (mc.player != null && !Freecam.isEnabled) {
+            if (Freecam.isDisabled) {
                 if (offsetStep == 0) {
                     basePos = BlockPos(mc.player.positionVector).down()
                     playerHotbarSlot = mc.player.inventory.currentItem
@@ -258,10 +258,10 @@ object Surround : Module() {
         return mc.world.getBlockState(pos)
     }
 
-    private fun faceVectorPacketInstant(vec: Vec3d) {
-        val rotations = getLegitRotations(vec)
-        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
-    }
+        private fun faceVectorPacketInstant(vec: Vec3d) {
+            val rotations = getLegitRotations(vec)
+            mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
+        }
 
     private fun getLegitRotations(vec: Vec3d): FloatArray {
         val eyesPos = eyesPos
@@ -269,14 +269,14 @@ object Surround : Module() {
         val diffY = vec.y - eyesPos.y
         val diffZ = vec.z - eyesPos.z
 
-        val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-        val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
-        val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
+            val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
+            val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
+            val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
 
-        return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
+            return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
+        }
+
+        private val eyesPos: Vec3d
+            get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
     }
-
-    private val eyesPos: Vec3d
-        get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
-
 }
