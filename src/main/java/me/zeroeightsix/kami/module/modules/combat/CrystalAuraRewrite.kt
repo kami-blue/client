@@ -384,7 +384,7 @@ class CrystalAuraRewrite : Module() {
     /* Motion prediction */
     private fun setPosition() {
         if (!motionPrediction.value) return
-        val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else ticksAhead.value
+        val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
         val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
         CombatManager.target?.let {
             targetPosition = it.positionVector

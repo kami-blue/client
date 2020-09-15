@@ -46,7 +46,7 @@ class Aura : Module() {
 
     private var startTime: Long = 0
     private var tickCount = 0
-    var active = false // returned to AutoEat
+    private var active = false
 
     private enum class WaitMode {
         DELAY, SPAM

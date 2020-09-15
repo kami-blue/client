@@ -61,7 +61,7 @@ class CombatSetting : Module() {
     override fun onRender() {
         if (!renderPredictedPos.value) return
         CombatManager.target?.let {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping(mc) / 25f).toInt() else ticksAhead.value
+            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
             val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
             val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
             val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)

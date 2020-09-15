@@ -55,7 +55,7 @@ class AutoEat : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || (ModuleManager.isModuleEnabled(Aura::class.java) && ModuleManager.getModuleT(Aura::class.java)!!.isAttacking)) return
+        if (ModuleManager.getModuleT(Aura::class.java)!!.isActive()) return
 
         if (eating && !mc.player.isHandActive) {
             if (lastSlot != -1) {
