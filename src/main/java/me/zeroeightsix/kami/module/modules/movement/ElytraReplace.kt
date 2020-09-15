@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -87,7 +87,7 @@ class ElytraReplace : Module() {
     // if we don't need to check for elytraflight, then just swap
     private fun shouldAttemptElytraSwap(): Boolean {
         return if (elytraFlightCheck.value) {
-            KamiMod.MODULE_MANAGER.isModuleEnabled(ElytraFlight::class.java)
+            ModuleManager.isModuleEnabled(ElytraFlight::class.java)
         } else {
             true
         }

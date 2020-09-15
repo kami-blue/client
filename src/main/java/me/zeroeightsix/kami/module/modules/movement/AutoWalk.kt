@@ -6,7 +6,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.ServerDisconnectedEvent
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -15,7 +15,6 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.InputUpdateEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * Created by 086 on 16/12/2017.
@@ -59,13 +58,6 @@ class AutoWalk : Module() {
             else -> {
                 KamiMod.log.error("Mode is irregular. Value: " + mode.value)
             }
-        }
-    })
-
-    @EventHandler
-    private val kickListener = Listener(EventHook { event: ServerDisconnectedEvent ->
-        if (mode.value == AutoWalkMode.BARITONE && isEnabled) {
-            disable()
         }
     })
 
@@ -122,13 +114,8 @@ class AutoWalk : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        disableBaritone()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        disableBaritone()
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        disable()
     })
 
     private fun disableBaritone() {

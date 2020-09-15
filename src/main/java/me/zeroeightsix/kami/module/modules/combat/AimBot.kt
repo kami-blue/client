@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
@@ -34,7 +34,7 @@ class AimBot : Module() {
     private val invisible = register(Settings.b("Invisible", false))
 
     override fun onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Aura::class.java)) return
+        if (mc.player == null || ModuleManager.isModuleEnabled(Aura::class.java)) return
 
         if (useBow.value) {
             var bowSlot = 0

@@ -14,12 +14,12 @@ class Vec2f(@JvmField var x: Float, @JvmField var y: Float) {
     /**
      * Create a Vec2f from this entity's rotations
      */
-    constructor(entity: Entity): this(entity.rotationYaw, entity.rotationPitch)
+    constructor(entity: Entity) : this(entity.rotationYaw, entity.rotationPitch)
 
     constructor(vec2d: Vec2d): this(vec2d.x.toFloat(), vec2d.y.toFloat())
 
     fun toRadians(): Vec2d {
-        return Vec2d(this.x / 180.0 * Math.PI, this.y  / 180.0 * Math.PI)
+        return Vec2d(this.x / 180.0 * Math.PI, this.y / 180.0 * Math.PI)
     }
 
     fun length(): Float {

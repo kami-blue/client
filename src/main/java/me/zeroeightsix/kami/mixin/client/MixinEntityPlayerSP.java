@@ -37,19 +37,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = EntityPlayerSP.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
-    @Shadow @Final public NetHandlerPlayClient connection;
-    @Shadow protected Minecraft mc;
-    @Shadow private double lastReportedPosX;
-    @Shadow private double lastReportedPosY;
-    @Shadow private double lastReportedPosZ;
-    @Shadow private float lastReportedYaw;
-    @Shadow private int positionUpdateTicks;
-    @Shadow private float lastReportedPitch;
-    @Shadow private boolean serverSprintState;
-    @Shadow private boolean serverSneakState;
-    @Shadow protected abstract boolean isCurrentViewEntity();
-    @Shadow private boolean prevOnGround;
-    @Shadow private boolean autoJumpEnabled;
+    @Shadow
+    @Final
+    public NetHandlerPlayClient connection;
+    @Shadow
+    protected Minecraft mc;
+    @Shadow
+    private double lastReportedPosX;
+    @Shadow
+    private double lastReportedPosY;
+    @Shadow
+    private double lastReportedPosZ;
+    @Shadow
+    private float lastReportedYaw;
+    @Shadow
+    private int positionUpdateTicks;
+    @Shadow
+    private float lastReportedPitch;
+    @Shadow
+    private boolean serverSprintState;
+    @Shadow
+    private boolean serverSneakState;
+
+    @Shadow
+    protected abstract boolean isCurrentViewEntity();
+
+    @Shadow
+    private boolean prevOnGround;
+    @Shadow
+    private boolean autoJumpEnabled;
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);

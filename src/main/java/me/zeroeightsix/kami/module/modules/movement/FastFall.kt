@@ -5,12 +5,6 @@ import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.MOTION
 import me.zeroeightsix.kami.module.modules.movement.FastFall.Mode.TIMER
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
-import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.init.Blocks
-import net.minecraft.util.math.BlockPos
 
 /**
  * Created August 11th 2020 by historian

@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.network.play.client.CPacketChatMessage
-import java.util.*
 
 /**
  * @author dominikaaaa
@@ -102,8 +101,7 @@ class FancyChat : Module() {
         val message = StringBuilder()
         for (i in input.indices) {
             var inputChar = input[i].toString() + ""
-            var rand = 0
-            if (randomSetting.value) rand = if (random.nextBoolean()) 1 else 0
+            val rand = if (randomSetting.value) (0..1).random() else 0
             inputChar = if (!MathUtils.isNumberEven(i + rand)) inputChar.toUpperCase() else inputChar.toLowerCase()
             message.append(inputChar)
         }
@@ -132,9 +130,5 @@ class FancyChat : Module() {
             "t" -> "7"
             else -> i
         }
-    }
-
-    companion object {
-        private val random = Random()
     }
 }

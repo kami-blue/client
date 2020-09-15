@@ -15,7 +15,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 class FixGuiCommand : Command("fixgui", ChunkBuilder().build()) {
 
     override fun call(args: Array<String>) {
-        val fixGui = getModuleT(FixGui::class.java)?: return
+        val fixGui = getModuleT(FixGui::class.java) ?: return
         fixGui.enable()
         sendChatMessage(chatLabel + "Ran")
     }

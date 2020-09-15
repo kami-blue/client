@@ -4,9 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.gui.rgui.component.listen.RenderListener
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.Wrapper.minecraft
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.util.function.Consumer

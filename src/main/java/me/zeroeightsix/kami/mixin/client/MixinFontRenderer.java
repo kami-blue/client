@@ -33,14 +33,23 @@ import static org.lwjgl.opengl.GL11.*;
 @Mixin(FontRenderer.class)
 public abstract class MixinFontRenderer {
 
-    @Shadow public int FONT_HEIGHT;
-    @Shadow public float alpha;
-    @Shadow public float posX;
-    @Shadow public float posY;
+    @Shadow
+    public int FONT_HEIGHT;
+    @Shadow
+    public float alpha;
+    @Shadow
+    public float posX;
+    @Shadow
+    public float posY;
 
-    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
-    @Shadow public abstract int getStringWidth(String s);
-    @Shadow public abstract int getCharWidth(char character);
+    @Shadow
+    protected abstract void renderStringAtPos(String text, boolean shadow);
+
+    @Shadow
+    public abstract int getStringWidth(String s);
+
+    @Shadow
+    public abstract int getCharWidth(char character);
 
     /**
      * @author Tiger
@@ -50,7 +59,8 @@ public abstract class MixinFontRenderer {
         KamiMoji kamiMoji = null;
         try { // Mixins runs before module initialization, which would throw exceptions here
             kamiMoji = ModuleManager.getModuleT(KamiMoji.class);
-        } catch (ModuleManager.ModuleNotFoundException ignored) { }
+        } catch (ModuleManager.ModuleNotFoundException ignored) {
+        }
 
         if (kamiMoji != null && kamiMoji.isEnabled()) {
             int size = FONT_HEIGHT;

@@ -34,7 +34,7 @@ class CoordsLog : Module() {
         }
 
         if (!playerIsDead && 0 >= mc.player.health && forceLogOnDeath.value) {
-            val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType(mc))
+            val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType())
             if (deathInChat.value) {
                 MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")
             }

@@ -164,7 +164,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
     }
 
     private fun confirm(name: String, pos: BlockPos) {
-        sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension(mc.player.dimension)} with name '&7$name&f'.")
+        sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension()} with name '&7$name&f'.")
     }
 
 }

@@ -1,93 +1,205 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.DiscordPresence
+import club.minnced.discord.rpc.DiscordEventHandlers
+import club.minnced.discord.rpc.DiscordRichPresence
+import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.InfoCalculator.dimension
 import me.zeroeightsix.kami.util.InfoCalculator.tps
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.EnumHand
+import java.io.InputStreamReader
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 /**
  * @author dominikaaaa
  * Updated by dominikaaaa on 13/01/20
  * Updated (slightly) by Dewy on 3rd April 2020
- * Updated by Xiaro on 03/07/20
+ * Updated (slightly) by sourTaste000 on 13/7/2020 (legit 3 lines)
+ * Updated (heavily) by Xiaro on 11/09/20
  */
 @Module.Info(
         name = "DiscordRPC",
         category = Module.Category.MISC,
-        description = "Discord Rich Presence"
+        description = "Discord Rich Presence",
+        enabledByDefault = true
 )
 class DiscordRPC : Module() {
-    @JvmField
-    var line1Setting: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
-    @JvmField
-    var line3Setting: Setting<LineInfo> = register(Settings.e("Line1Right", LineInfo.USERNAME)) // details right
-    @JvmField
-    var line2Setting: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
-    @JvmField
-    var line4Setting: Setting<LineInfo> = register(Settings.e("Line2Right", LineInfo.HEALTH)) // state right
+    private val line1Left: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
+    private val line1Right: Setting<LineInfo> = register(Settings.e("Line1Right", LineInfo.USERNAME)) // details right
+    private val line2Left: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
+    private val line2Right: Setting<LineInfo> = register(Settings.e("Line2Right", LineInfo.HEALTH)) // state right
     private val coordsConfirm = register(Settings.booleanBuilder("CoordsConfirm").withValue(false).withVisibility { showCoordsConfirm() })
+    private val updateDelay = register(Settings.floatBuilder("UpdateDelay").withValue(4f).withRange(1f, 10f))
 
     enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
     }
 
-    fun getLine(line: LineInfo?): String {
-        return when (line) {
-            LineInfo.VERSION -> KamiMod.VER_SMALL
-            LineInfo.WORLD -> if (mc.isIntegratedServerRunning) "Singleplayer" else if (mc.getCurrentServerData() != null) "Multiplayer" else "Main Menu"
-            LineInfo.DIMENSION -> mc.player?.let { dimension(it.dimension) } ?: "No Dimension"
-            LineInfo.USERNAME -> if (mc.player != null) mc.player.name else mc.getSession().username
-            LineInfo.HEALTH -> if (mc.player != null) mc.player.health.toInt().toString() + " HP" else "No HP"
-            LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
-            LineInfo.SERVER_IP -> if (mc.getCurrentServerData() != null) mc.getCurrentServerData()!!.serverIP else if (mc.isIntegratedServerRunning) "Offline" else "Main Menu"
-            LineInfo.COORDS -> if (mc.player != null && coordsConfirm.value) "(" + mc.player.posX.toInt() + " " + mc.player.posY.toInt() + " " + mc.player.posZ.toInt() + ")" else "No Coords"
-            LineInfo.SPEED -> if (mc.player != null) ModuleManager.getModuleT(InfoOverlay::class.java)?.speed ?: "No Speed" else "No Speed"
-            LineInfo.HELD_ITEM -> "Holding " + (if (mc.player != null && !mc.player.getHeldItem(EnumHand.MAIN_HAND).isEmpty()) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName.toLowerCase() else "No Items")
-            LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"
-            LineInfo.TPS -> if (mc.player != null) tps(2).toString() + " tps" else "No TPS"
-            else -> ""
-        }
-    }
+    private lateinit var customUsers: Array<CustomUser>
+    private val presence = DiscordRichPresence()
+    private val rpc = club.minnced.discord.rpc.DiscordRPC.INSTANCE
+    private var connected = false
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
-    public override fun onEnable() {
-        DiscordPresence.start()
-    }
-
-    override fun onUpdate() {
-        if (startTime == 0L) startTime = System.currentTimeMillis()
-        if (startTime + 10000 <= System.currentTimeMillis()) { // 10 seconds in milliseconds
-            if (line1Setting.value == LineInfo.COORDS || line2Setting.value == LineInfo.COORDS || line3Setting.value == LineInfo.COORDS || line4Setting.value == LineInfo.COORDS) {
-                if (!coordsConfirm.value && mc.player != null) {
-                    MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. This will display your coords on the discord rpc. Do NOT use this if you do not want your coords displayed")
-                }
-            }
-            startTime = System.currentTimeMillis()
-        }
+    override fun onEnable() {
+        start()
     }
 
     override fun onDisable() {
-        DiscordPresence.end()
+        end()
     }
 
-    private fun showCoordsConfirm(): Boolean {
-        return when {
-            line1Setting.value == LineInfo.COORDS -> true
-            line2Setting.value == LineInfo.COORDS -> true
-            line3Setting.value == LineInfo.COORDS -> true
-            line4Setting.value == LineInfo.COORDS -> true
-            else -> false
+    override fun onUpdate() {
+        if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
+            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
+                    "This will display your coords on the discord rpc. " +
+                    "Do NOT use this if you do not want your coords displayed")
         }
     }
 
+    private fun start() {
+        if (connected) return
+
+        KamiMod.log.info("Starting Discord RPC")
+        connected = true
+        rpc.Discord_Initialize(KamiMod.APP_ID, DiscordEventHandlers(), true, "")
+        presence.startTimestamp = System.currentTimeMillis() / 1000L
+
+        /* update rpc while thread isn't interrupted  */
+        Thread({ setRpcWithDelay() }, "Discord-RPC-Callback-Handler").start()
+
+        KamiMod.log.info("Discord RPC initialised successfully")
+    }
+
+    fun end() {
+        if (!connected) return
+
+        KamiMod.log.info("Shutting down Discord RPC...")
+        connected = false
+        rpc.Discord_Shutdown()
+    }
+
+    private fun showCoordsConfirm(): Boolean {
+        return line1Left.value == LineInfo.COORDS
+                || line2Left.value == LineInfo.COORDS
+                || line1Right.value == LineInfo.COORDS
+                || line2Right.value == LineInfo.COORDS
+    }
+
+    private fun setRpcWithDelay() {
+        val discordRPC = ModuleManager.getModuleT(DiscordRPC::class.java)!!
+        while (!Thread.currentThread().isInterrupted && connected) {
+            try {
+                presence.details = getLine(line1Left.value) + getSeparator(0) + getLine(line1Right.value)
+                presence.state = getLine(line2Left.value) + getSeparator(1) + getLine(line2Right.value)
+                rpc.Discord_UpdatePresence(presence)
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+            }
+            try {
+                Thread.sleep((discordRPC.updateDelay.value * 1000f).toLong())
+            } catch (interruptedException: InterruptedException) {
+                interruptedException.printStackTrace()
+            }
+        }
+    }
+
+    private fun getLine(line: LineInfo): String {
+        return when (line) {
+            LineInfo.VERSION -> KamiMod.VER_SMALL
+            LineInfo.WORLD -> if (mc.isIntegratedServerRunning) "Singleplayer" else if (mc.getCurrentServerData() != null) "Multiplayer" else "Main Menu"
+            LineInfo.DIMENSION -> dimension()
+            LineInfo.USERNAME -> if (mc.player != null) mc.player.name else mc.getSession().username
+            LineInfo.HEALTH -> if (mc.player != null) mc.player.health.toInt().toString() + " HP" else "No HP"
+            LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
+            LineInfo.SERVER_IP -> InfoCalculator.getServerType()
+            LineInfo.COORDS -> if (mc.player != null && coordsConfirm.value) "(" + mc.player.posX.toInt() + " " + mc.player.posY.toInt() + " " + mc.player.posZ.toInt() + ")" else "No Coords"
+            LineInfo.SPEED -> if (mc.player != null) ModuleManager.getModuleT(InfoOverlay::class.java)?.calcSpeedWithUnit(1)
+                    ?: "No Speed" else "No Speed"
+            LineInfo.HELD_ITEM -> "Holding " + if (mc.player != null) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName else "No Item"
+            LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"
+            LineInfo.TPS -> if (mc.player != null) tps(2).toString() + " tps" else "No TPS"
+            else -> " "
+        }
+    }
+
+    private fun getSeparator(line: Int): String {
+        return if (line == 0) {
+            if (line1Left.value == LineInfo.NONE || line1Right.value == LineInfo.NONE) " " else " | "
+        } else {
+            if (line2Left.value == LineInfo.NONE || line2Right.value == LineInfo.NONE) " " else " | "
+        }
+    }
+
+    private fun setCustomIcons() {
+        if (customUsers.isNullOrEmpty()) return
+        for (user in customUsers) {
+            if (user.uuid.isNullOrBlank() || user.type.isNullOrBlank()) continue
+            if (!user.uuid.equals(Wrapper.minecraft.session.profile.id.toString(), ignoreCase = true)) continue
+            when (user.type.toInt()) {
+                0 -> {
+                    presence.smallImageKey = "booster"
+                    presence.smallImageText = "booster uwu"
+                }
+                1 -> {
+                    presence.smallImageKey = "inviter"
+                    presence.smallImageText = "inviter owo"
+                }
+                2 -> {
+                    presence.smallImageKey = "giveaway"
+                    presence.smallImageText = "giveaway winner"
+                }
+                3 -> {
+                    presence.smallImageKey = "contest"
+                    presence.smallImageText = "contest winner"
+                }
+                4 -> {
+                    presence.smallImageKey = "nine"
+                    presence.smallImageText = "900th member"
+                }
+                5 -> {
+                    presence.smallImageKey = "github1"
+                    presence.smallImageText = "contributor!! uwu"
+                }
+                else -> {
+                    presence.smallImageKey = "donator2"
+                    presence.smallImageText = "donator <3"
+                }
+            }
+        }
+    }
+
+    private class CustomUser(val uuid: String?, val type: String?)
+
     companion object {
-        private var startTime: Long = 0
+        lateinit var INSTANCE: DiscordRPC
+    }
+
+    init {
+        try {
+            val connection = URL(KamiMod.DONATORS_JSON).openConnection() as HttpsURLConnection
+            connection.connect()
+            customUsers = Gson().fromJson(InputStreamReader(connection.inputStream), Array<CustomUser>::class.java)
+            connection.disconnect()
+            setCustomIcons()
+            KamiMod.log.info("Rich Presence Users init!")
+        } catch (exception: Exception) {
+            KamiMod.log.error("Failed to load donators")
+            exception.printStackTrace()
+        }
+        presence.largeImageKey = "kami"
+        presence.largeImageText = "kamiblue.org"
+        INSTANCE = this
     }
 }

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.Block.getBlockFromItem
@@ -15,7 +15,7 @@ class SetBuildingBlockCommand : Command("setbuildingblock", null) {
 
     override fun call(args: Array<out String>?) {
         if (mc.player == null || mc.player.isSpectator) return
-        val inventoryManger = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java) ?: return
+        val inventoryManger = ModuleManager.getModuleT(InventoryManager::class.java) ?: return
         val heldItem = mc.player.inventory.getCurrentItem()
         when {
             heldItem.isEmpty -> {

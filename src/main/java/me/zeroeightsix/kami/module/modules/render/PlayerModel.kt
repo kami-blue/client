@@ -47,14 +47,15 @@ class PlayerModel : Module() {
     }
 
     override fun onRender() {
-        if (entity == null) return
-        GlStateManager.pushMatrix()
-        GlStateManager.enableDepth()
-        val yaw = if (emulateYaw.value) interpolateAndWrap(entity!!.prevRotationYaw, entity!!.rotationYaw) else 0.0f
-        val pitch = if (emulatePitch.value) interpolateAndWrap(entity!!.prevRotationPitch, entity!!.rotationPitch) else 0.0f
-        GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, entity!!)
-        GlStateManager.disableDepth()
-        GlStateManager.popMatrix()
+        entity?.let {
+            GlStateManager.pushMatrix()
+            GlStateManager.enableDepth()
+            val yaw = if (emulateYaw.value) interpolateAndWrap(it.prevRotationYaw, it.rotationYaw) else 0.0f
+            val pitch = if (emulatePitch.value) interpolateAndWrap(it.prevRotationPitch, it.rotationPitch) else 0.0f
+            GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, it)
+            GlStateManager.disableDepth()
+            GlStateManager.popMatrix()
+        }
     }
 
     private fun interpolateAndWrap(prev: Float, current: Float): Float {

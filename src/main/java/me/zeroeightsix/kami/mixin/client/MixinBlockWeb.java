@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.NoSlowDown;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.block.state.IBlockState;
@@ -11,8 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * @author 086
  * @see MixinBlockSoulSand
@@ -23,7 +22,7 @@ public class MixinBlockWeb {
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn, CallbackInfo info) {
         // If noslowdown is on, just don't do anything else in this method (slow the player)
-        if (MODULE_MANAGER.isModuleEnabled(NoSlowDown.class) && MODULE_MANAGER.getModuleT(NoSlowDown.class).cobweb.getValue())
+        if (ModuleManager.isModuleEnabled(NoSlowDown.class) && ModuleManager.getModuleT(NoSlowDown.class).cobweb.getValue())
             info.cancel();
     }
 

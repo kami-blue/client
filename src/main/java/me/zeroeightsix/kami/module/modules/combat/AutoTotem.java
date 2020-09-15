@@ -3,13 +3,12 @@ package me.zeroeightsix.kami.module.modules.combat;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.util.InventoryUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 
 /**
  * Created by 086 on 22/01/2018.
@@ -104,6 +103,6 @@ public class AutoTotem extends Module {
 
     @Override
     public String getHudInfo() {
-        return "" + getItems(settingToItem());
+        return "" + InventoryUtils.countItemAll(Item.getIdFromItem(settingToItem()));
     }
 }

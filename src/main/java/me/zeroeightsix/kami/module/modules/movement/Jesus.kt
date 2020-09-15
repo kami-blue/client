@@ -4,11 +4,11 @@ import baritone.api.BaritoneAPI
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -38,7 +38,7 @@ class Jesus : Module() {
     }
 
     override fun onUpdate() {
-        if (!KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
+        if (!ModuleManager.isModuleEnabled(Freecam::class.java)) {
             if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
                 mc.player.motionY = 0.1
                 if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {

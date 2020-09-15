@@ -15,13 +15,21 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         name = "CommandConfig",
         category = Module.Category.CLIENT,
         description = "Configures client chat related stuff",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        alwaysEnabled = true
 )
 class CommandConfig : Module() {
-    @JvmField val aliasInfo: Setting<Boolean> = register(Settings.b("AliasInfo", true))
-    @JvmField val prefixChat: Setting<Boolean> = register(Settings.b("PrefixChat", true))
-    @JvmField val toggleMessages: Setting<Boolean> = register(Settings.b("ToggleMessages", false))
-    @JvmField val customTitle: Setting<Boolean> = register(Settings.b("WindowTitle", true))
+    @JvmField
+    val aliasInfo: Setting<Boolean> = register(Settings.b("AliasInfo", true))
+
+    @JvmField
+    val prefixChat: Setting<Boolean> = register(Settings.b("PrefixChat", true))
+
+    @JvmField
+    val toggleMessages: Setting<Boolean> = register(Settings.b("ToggleMessages", false))
+
+    @JvmField
+    val customTitle: Setting<Boolean> = register(Settings.b("WindowTitle", true))
     private val autoSaving = register(Settings.b("AutoSavingSettings", true))
     private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value }.build())
     private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value }.build())

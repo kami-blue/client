@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
@@ -60,7 +60,7 @@ class Scaffold : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) return
+        if (mc.player == null || ModuleManager.isModuleEnabled(Freecam::class.java)) return
         shouldSlow = false
 
         val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value

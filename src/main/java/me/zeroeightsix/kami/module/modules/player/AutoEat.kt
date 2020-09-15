@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.KamiMod.MODULE_MANAGER
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.Aura
 import me.zeroeightsix.kami.setting.Settings
@@ -55,7 +55,7 @@ class AutoEat : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || (MODULE_MANAGER.isModuleEnabled(Aura::class.java) && MODULE_MANAGER.getModuleT(Aura::class.java)!!.active)) return
+        if (mc.player == null || (ModuleManager.isModuleEnabled(Aura::class.java) && ModuleManager.getModuleT(Aura::class.java)!!.isAttacking)) return
 
         if (eating && !mc.player.isHandActive) {
             if (lastSlot != -1) {
@@ -83,7 +83,7 @@ class AutoEat : Module() {
             }
 
             eating = true
-            BaritoneAPI.getSettings().allowInventory.value = MODULE_MANAGER.getModuleT(Baritone::class.java)!!.allowInventory.value
+            BaritoneAPI.getSettings().allowInventory.value = ModuleManager.getModuleT(Baritone::class.java)!!.allowInventory.value
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)

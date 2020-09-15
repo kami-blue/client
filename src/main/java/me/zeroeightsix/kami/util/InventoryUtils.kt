@@ -102,6 +102,55 @@ object InventoryUtils {
     }
 
     /**
+     * Counts number of item in hotbar
+     *
+     * @return Number of item with given [itemId] in hotbar
+     */
+    fun countItemHotbar(itemId: Int): Int {
+        val itemList = getSlots(0, 8, itemId)
+        var currentCount = 0
+        if (itemList != null) {
+            for (i in itemList) {
+                currentCount += mc.player.inventory.getStackInSlot(i).count
+            }
+        }
+        return currentCount
+    }
+
+    /**
+     * Counts number of item in non hotbar
+     *
+     * @return Number of item with given [itemId] in non hotbar
+     */
+    fun countItemNoHotbar(itemId: Int): Int {
+        val itemList = getSlots(9, 35, itemId)
+        var currentCount = 0
+        if (itemList != null) {
+            for (i in itemList) {
+                currentCount += mc.player.inventory.getStackInSlot(i).count
+            }
+        }
+        return currentCount
+    }
+
+    /**
+     * Counts number of item in inventory
+     *
+     * @return Number of item with given [itemId] in inventory
+     */
+    @JvmStatic
+    fun countItemAll(itemId: Int): Int {
+        val itemList = getSlots(0, 35, itemId)
+        var currentCount = 0
+        if (itemList != null) {
+            for (i in itemList) {
+                currentCount += mc.player.inventory.getStackInSlot(i).count
+            }
+        }
+        return currentCount
+    }
+
+    /**
      * Counts number of item in range of slots
      *
      * @return Number of item with given [itemId] from slot [min] to slot [max]

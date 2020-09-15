@@ -20,19 +20,30 @@ import java.util.*
 /**
  * Created by 086 on 23/08/2017.
  * Updated by dominikaaaa on 15/04/20
- * Updated by Xiaro on 18/08/20
+ * Updated by Xiaro on 11/09/20
  */
 open class Module {
     /* Annotations */
-    @JvmField val originalName: String = annotation.name
-    @JvmField val category: Category = annotation.category
-    @JvmField val description: String = annotation.description
-    @JvmField val modulePriority: Int = annotation.modulePriority
-    @JvmField var alwaysListening: Boolean = annotation.alwaysListening
+    @JvmField
+    val originalName: String = annotation.name
 
-    @JvmField var settingList = ArrayList<Setting<*>>()
+    @JvmField
+    val category: Category = annotation.category
 
-    private val annotation: Info get() {
+    @JvmField
+    val description: String = annotation.description
+
+    @JvmField
+    val modulePriority: Int = annotation.modulePriority
+
+    @JvmField
+    var alwaysListening: Boolean = annotation.alwaysListening
+
+    @JvmField
+    var settingList = ArrayList<Setting<*>>()
+
+    private val annotation: Info
+        get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
                 return javaClass.getAnnotation(Info::class.java)
             }
@@ -46,7 +57,9 @@ open class Module {
             val category: Category,
             val modulePriority: Int = -1,
             val alwaysListening: Boolean = false,
-            val showOnArray: ShowOnArray = ShowOnArray.ON
+            val showOnArray: ShowOnArray = ShowOnArray.ON,
+            val alwaysEnabled: Boolean = false,
+            val enabledByDefault: Boolean = false
     )
 
     enum class ShowOnArray {
@@ -72,14 +85,17 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField val name = register(Settings.s("Name", originalName))
-    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
-    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(false).build())
+    @JvmField
+    val name = register(Settings.s("Name", originalName))
+
+    @JvmField
+    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
+    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
     private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
     /* End of settings */
 
     /* Properties */
-    val isEnabled: Boolean get() = enabled.value
+    val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
     val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name.value}]"
@@ -91,9 +107,11 @@ open class Module {
     fun toggle() {
         setEnabled(!isEnabled)
     }
+
     fun setEnabled(state: Boolean) {
         if (isEnabled != state) if (state) enable() else disable()
     }
+
     fun enable() {
         enabled.value = true
         onEnable()
@@ -101,13 +119,16 @@ open class Module {
         sendToggleMessage()
         if (!alwaysListening) KamiMod.EVENT_BUS.subscribe(this)
     }
+
     fun disable() {
+        if (annotation.alwaysEnabled) return
         enabled.value = false
         onDisable()
         onToggle()
         sendToggleMessage()
         if (!alwaysListening) KamiMod.EVENT_BUS.unsubscribe(this)
     }
+
     private fun sendToggleMessage() {
         if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && ModuleManager.getModuleT(CommandConfig::class.java)!!.toggleMessages.value) {
             MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
@@ -122,9 +143,11 @@ open class Module {
     open fun isActive(): Boolean {
         return isEnabled || alwaysListening
     }
+
     open fun getHudInfo(): String? {
         return null
     }
+
     open fun onUpdate() {}
     open fun onRender() {}
     open fun onWorldRender(event: RenderEvent) {}
@@ -187,6 +210,7 @@ open class Module {
     /* End of key binding */
 
     companion object {
-        @JvmField val mc: Minecraft = Minecraft.getMinecraft()
+        @JvmField
+        val mc: Minecraft = Minecraft.getMinecraft()
     }
 }

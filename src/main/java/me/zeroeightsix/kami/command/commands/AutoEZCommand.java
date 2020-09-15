@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.combat.AutoEZ;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 public class AutoEZCommand extends Command {
@@ -15,7 +15,7 @@ public class AutoEZCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        AutoEZ az = MODULE_MANAGER.getModuleT(AutoEZ.class);
+        AutoEZ az = ModuleManager.getModuleT(AutoEZ.class);
         if (az == null) {
             sendErrorMessage("&cThe AutoEZ module is not available for some reason. Make sure the name you're calling is correct and that you have the module installed!!");
             return;

@@ -5,15 +5,13 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.InventoryUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityCreeper
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -74,7 +72,7 @@ class AutoLog : Module() {
             return
         }
 
-        if (totem.value && totemAmount.value > getItems(Items.TOTEM_OF_UNDYING)) {
+        if (totem.value && totemAmount.value > InventoryUtils.countItemAll(449)) {
             log(listOf("Less then ${totemMessage(totemAmount.value)}!"))
             return
         }

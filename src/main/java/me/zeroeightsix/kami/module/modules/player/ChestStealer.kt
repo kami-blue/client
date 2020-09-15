@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -81,7 +81,7 @@ class ChestStealer : Module() {
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java)!!.ejectArrayList
+        val ejectList = ModuleManager.getModuleT(InventoryManager::class.java)!!.ejectArrayList
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].getItem()
             if (item == Items.AIR) continue

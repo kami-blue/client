@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.model.ModelBase;
@@ -17,21 +17,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ModelBiped.class)
 public abstract class MixinModelBiped extends ModelBase {
-    @Shadow public ModelRenderer bipedHead;
-    @Shadow public ModelRenderer bipedBody;
-    @Shadow public ModelRenderer bipedRightArm;
-    @Shadow public ModelRenderer bipedLeftArm;
-    @Shadow public ModelRenderer bipedRightLeg;
-    @Shadow public ModelRenderer bipedLeftLeg;
-    @Shadow public ModelBiped.ArmPose leftArmPose;
-    @Shadow public ModelBiped.ArmPose rightArmPose;
-    @Shadow protected abstract EnumHandSide getMainHand(Entity entityIn);
-    @Shadow protected abstract ModelRenderer getArmForSide(EnumHandSide side);
-    @Shadow public ModelRenderer bipedHeadwear;
+    @Shadow
+    public ModelRenderer bipedHead;
+    @Shadow
+    public ModelRenderer bipedBody;
+    @Shadow
+    public ModelRenderer bipedRightArm;
+    @Shadow
+    public ModelRenderer bipedLeftArm;
+    @Shadow
+    public ModelRenderer bipedRightLeg;
+    @Shadow
+    public ModelRenderer bipedLeftLeg;
+    @Shadow
+    public ModelBiped.ArmPose leftArmPose;
+    @Shadow
+    public ModelBiped.ArmPose rightArmPose;
+
+    @Shadow
+    protected abstract EnumHandSide getMainHand(Entity entityIn);
+
+    @Shadow
+    protected abstract ModelRenderer getArmForSide(EnumHandSide side);
+
+    @Shadow
+    public ModelRenderer bipedHeadwear;
 
     @Inject(method = "setRotationAngles", at = @At("HEAD"), cancellable = true)
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-        if (entityIn == Wrapper.getMinecraft().player && KamiMod.MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
+        if (entityIn == Wrapper.getMinecraft().player && ModuleManager.getModuleT(ElytraFlight.class).shouldSwing()) {
             ci.cancel();
 
             this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;

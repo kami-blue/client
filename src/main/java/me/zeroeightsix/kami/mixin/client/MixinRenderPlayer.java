@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.render.Nametags;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * Created by 086 on 19/12/2017.
  */
@@ -23,12 +21,12 @@ public class MixinRenderPlayer {
 
     @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
     public void renderLivingLabel(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo info) {
-        if (MODULE_MANAGER.isModuleEnabled(Nametags.class)) info.cancel();
+        if (ModuleManager.isModuleEnabled(Nametags.class)) info.cancel();
     }
 
     @Inject(method = "applyRotations", at = @At("RETURN"))
     protected void applyRotations(AbstractClientPlayer entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
-        if (entityLiving == Wrapper.getMinecraft().player && KamiMod.MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
+        if (entityLiving == Wrapper.getMinecraft().player && ModuleManager.getModuleT(ElytraFlight.class).shouldSwing()) {
             Vec3d vec3d = entityLiving.getLook(partialTicks);
             double d0 = entityLiving.motionX * entityLiving.motionX + entityLiving.motionZ * entityLiving.motionZ;
             double d1 = vec3d.x * vec3d.x + vec3d.z * vec3d.z;

@@ -3,12 +3,9 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.Friends.Friend
 import me.zeroeightsix.kami.util.Friends.addFriend
-import me.zeroeightsix.kami.util.Friends.getFriendByName
 import me.zeroeightsix.kami.util.Friends.removeFriend
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
