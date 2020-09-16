@@ -6,9 +6,6 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.player.Freecam
-import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -24,6 +21,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -156,7 +154,9 @@ object Surround : Module() {
         val playerPos = MathUtils.mcPlayerPosFloored(mc)
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (mc.world.getBlockState(pos).material.isReplaceable) return true
+            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos))) continue
+            if (!mc.world.getBlockState(pos).material.isReplaceable) continue
+            return true
         }
         return false
     }
@@ -212,8 +212,10 @@ object Surround : Module() {
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
             if (toIgnore.contains(pos)) continue
+            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos))) continue
             if (!mc.world.getBlockState(pos).material.isReplaceable) continue
             if (BlockUtils.hasNeighbour(pos)) return pos
+            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos.down()))) continue
             if (!toIgnore.contains(pos.down())) return pos.down()
         }
         return null
