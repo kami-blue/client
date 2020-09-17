@@ -36,6 +36,7 @@
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinPlayerControllerMP",
+    "MixinRender",
     "MixinRenderGlobal",
     "MixinRenderManager",
     "MixinRenderPlayer",
