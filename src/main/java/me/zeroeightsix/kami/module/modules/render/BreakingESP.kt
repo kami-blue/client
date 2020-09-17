@@ -85,7 +85,7 @@ object BreakingESP : Module() {
         if (screenWarn.value && warn) {
             if (delay++ > 100) warn = false
             val textRenderer = Wrapper.fontRenderer
-            val scale = DisplayGuiScreen.getScale()
+            val scale = DisplayGuiScreen.getScale().toInt()
             val divider = if (scale == 0) 1 else scale
             textRenderer.drawStringWithShadow(mc.displayWidth / divider / 2 - textRenderer.getStringWidth(warningText) / 2, mc.displayHeight / divider / 2 - 16, 240, 87, 70, warningText)
         }
