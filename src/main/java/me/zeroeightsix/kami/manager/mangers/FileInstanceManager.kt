@@ -1,8 +1,6 @@
 package me.zeroeightsix.kami.manager.mangers
 
-import com.google.gson.annotations.SerializedName
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.WaypointInfo

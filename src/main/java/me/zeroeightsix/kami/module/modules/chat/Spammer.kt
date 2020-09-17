@@ -9,17 +9,12 @@ import net.minecraft.client.gui.GuiChat
 import java.io.*
 import kotlin.random.Random
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 10/04/20
- * Updated by Xiaro on 27/6/20
- */
 @Module.Info(
         name = "Spammer",
         description = "Spams text from a file on a set delay into the chat",
         category = Module.Category.CHAT
 )
-class Spammer : Module() {
+object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
     private val timeoutTime = register(Settings.integerBuilder("Timeout(s)").withRange(1, 240).withValue(10).build())
 

@@ -17,21 +17,21 @@ import java.util.*
         description = "Logs sent packets to a file",
         category = Module.Category.PLAYER
 )
-class PacketLogger : Module() {
+object PacketLogger : Module() {
     private val filename = "KAMIBluePackets.txt"
-    private val lines: MutableList<String> = ArrayList()
+    private val lines = ArrayList<String>()
     private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
 
-    public override fun onEnable() {
+    override fun onEnable() {
         if (mc.player == null) disable() else readToList()
     }
 
-    public override fun onDisable() {
-        if (mc.player == null) return else write()
+    override fun onDisable() {
+        if (mc.player != null) write()
     }
 
     @EventHandler
-    var packetListener = Listener(EventHook { event: PacketEvent.Send ->
+    private val packetListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mc.player == null) {
             disable(); return@EventHook
         }

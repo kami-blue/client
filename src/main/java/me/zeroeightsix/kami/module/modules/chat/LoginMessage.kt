@@ -4,6 +4,8 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
@@ -15,7 +17,7 @@ import java.io.*
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )
-class LoginMessage : Module() {
+object LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false
 
@@ -49,12 +51,7 @@ class LoginMessage : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        sent = false
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         sent = false
     })
 }

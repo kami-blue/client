@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat;
 
-import kotlin.Pair;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
@@ -13,8 +12,10 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.EntityUtils;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.InfoCalculator;
+import me.zeroeightsix.kami.util.InventoryUtils;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.ESPRenderer;
+import me.zeroeightsix.kami.util.math.Vec2d;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -41,7 +42,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.module.modules.client.InfoOverlay.getItems;
 import static me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
@@ -68,7 +68,7 @@ public class CrystalAura extends Module {
     private Setting<Boolean> place = register(Settings.booleanBuilder("Place").withValue(false).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> explode = register(Settings.booleanBuilder("Explode").withValue(false).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> checkAbsorption = register(Settings.booleanBuilder("CheckAbsorption").withValue(true).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
-    public  Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(1.0).withValue(4.0).withMaximum(10.0).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
+    public Setting<Double> range = register(Settings.doubleBuilder("Range").withMinimum(1.0).withValue(4.0).withMaximum(10.0).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Boolean> autoDelay = register(Settings.booleanBuilder("AutoDelay").withValue(false).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
     private Setting<Double> delay = register(Settings.doubleBuilder("HitDelay").withMinimum(0.0).withValue(5.0).withMaximum(10.0).withVisibility(v -> !autoDelay.getValue() && p.getValue().equals(Page.ONE)).build());
     private Setting<Integer> hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(-1).withMinimum(-1).withMaximum(20).withVisibility(v -> p.getValue().equals(Page.ONE)).build());
@@ -92,22 +92,25 @@ public class CrystalAura extends Module {
     private Setting<Integer> b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility(v -> p.getValue().equals(Page.TWO) && customColours.getValue()).build());
     private Setting<Boolean> statusMessages = register(Settings.booleanBuilder("StatusMessages").withValue(false).withVisibility(v -> p.getValue().equals(Page.TWO)).build());
 
-    private enum ExplodeBehavior { HOLE_ONLY, PREVENT_SUICIDE, LEFT_CLICK_ONLY, ALWAYS }
-    private enum PlaceBehavior { MULTI, TRADITIONAL }
-    private enum Page { ONE, TWO }
+    private enum ExplodeBehavior {HOLE_ONLY, PREVENT_SUICIDE, LEFT_CLICK_ONLY, ALWAYS}
+
+    private enum PlaceBehavior {MULTI, TRADITIONAL}
+
+    private enum Page {ONE, TWO}
 
     private BlockPos render;
     private Entity renderEnt;
     private long systemTime = -1;
-    private static boolean togglePitch = false;
     // we need this cooldown to not place from old hotbar slot, before we have switched to crystals
     private boolean switchCoolDown = false;
     private boolean isAttacking = false;
     private int oldSlot = -1;
 
+    public static CrystalAura INSTANCE;
     private static EntityEnderCrystal lastCrystal;
     private static List<EntityEnderCrystal> ignoredCrystals = new ArrayList<>();
     private static int hitTries = 0;
+    private static boolean togglePitch = false;
 
     public CrystalAura() {
         super();
@@ -115,6 +118,7 @@ public class CrystalAura extends Module {
         defaultSetting.settingListener = setting -> {
             if (defaultSetting.getValue()) defaults();
         };
+        INSTANCE = this;
     }
 
     public void onUpdate() {
@@ -185,7 +189,7 @@ public class CrystalAura extends Module {
                 if (explodeBehavior.getValue() == ExplodeBehavior.ALWAYS) {
                     explode(crystal);
                 }
-                for (Vec3d vecOffset:holeOffset) { /* for placeholder offset for each BlockPos in the list holeOffset */
+                for (Vec3d vecOffset : holeOffset) { /* for placeholder offset for each BlockPos in the list holeOffset */
                     BlockPos offset = new BlockPos(vecOffset.x, vecOffset.y, vecOffset.z);
                     if (mc.world.getBlockState(offset).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(offset).getBlock() == Blocks.BEDROCK) {
                         holeBlocks++;
@@ -197,7 +201,7 @@ public class CrystalAura extends Module {
                     }
                 }
                 if (explodeBehavior.getValue() == ExplodeBehavior.PREVENT_SUICIDE) {
-                    if (mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) <= 0.5 && mc.player.getPosition().getY() == crystal.getPosition().getY()|| mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) >= 2.3 && mc.player.getPosition().getY() == crystal.getPosition().getY()||mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) >= 0.5 && mc.player.getPosition().getY() != crystal.getPosition().getY()) {
+                    if (mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) <= 0.5 && mc.player.getPosition().getY() == crystal.getPosition().getY() || mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) >= 2.3 && mc.player.getPosition().getY() == crystal.getPosition().getY() || mc.player.getPositionVector().distanceTo(crystal.getPositionVector()) >= 0.5 && mc.player.getPosition().getY() != crystal.getPosition().getY()) {
                         explode(crystal);
                     }
                 }
@@ -273,7 +277,7 @@ public class CrystalAura extends Module {
                     damage = d;
                     q = blockPos;
                     renderEnt = entity;
-                    PlayerModel.lastAttacked = System.currentTimeMillis();
+                    PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                     mc.player.setLastAttackedEntity(entity);
                 }
             }
@@ -292,12 +296,12 @@ public class CrystalAura extends Module {
                     }
                     double d = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, entity);
                     double self = calculateDamage(blockPos.x + .5, blockPos.y + 1, blockPos.z + .5, mc.player);
-                    if (self >= mc.player.getHealth()+mc.player.getAbsorptionAmount() || self > d) continue;
+                    if (self >= mc.player.getHealth() + mc.player.getAbsorptionAmount() || self > d) continue;
                     if (b < 10 && d >= 15 || d >= ((EntityLivingBase) entity).getHealth() + ((EntityLivingBase) entity).getAbsorptionAmount() || 6 >= ((EntityLivingBase) entity).getHealth() + ((EntityLivingBase) entity).getAbsorptionAmount() && b < 4 || b < 9 && d >= minDmg.getValue() && minDmg.getValue() > 0.0) {
                         q = blockPos;
                         damage = d;
                         renderEnt = entity;
-                        PlayerModel.lastAttacked = System.currentTimeMillis();
+                        PlayerModel.INSTANCE.setLastAttacked(System.currentTimeMillis());
                         mc.player.setLastAttackedEntity(entity);
                     }
                 }
@@ -367,8 +371,8 @@ public class CrystalAura extends Module {
     }
 
     private void lookAtPacket(Vec3d pos) {
-        Pair<Double, Double> lookAt = getRotationTo(pos, true);
-        setYawAndPitch((float) (double) lookAt.getFirst(), (float) (double) lookAt.getSecond());
+        Vec2d lookAt = getRotationTo(pos, true);
+        setYawAndPitch((float) lookAt.getX(), (float) lookAt.getY());
     }
 
     private boolean canPlaceCrystal(BlockPos blockPos) {
@@ -491,7 +495,9 @@ public class CrystalAura extends Module {
         }
     });
 
-    public void onEnable() { sendMessage("&aENABLED&r"); }
+    public void onEnable() {
+        sendMessage("&aENABLED&r");
+    }
 
     public void onDisable() {
         sendMessage("&cDISABLED&r");
@@ -518,19 +524,21 @@ public class CrystalAura extends Module {
                 mc.playerController.attackEntity(mc.player, crystal);
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             }
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+        }
 
         systemTime = System.nanoTime() / 1000000L;
     }
 
     private boolean passSwordCheck() {
         if (!noToolExplode.getValue() || antiWeakness.getValue()) return true;
-        else return !noToolExplode.getValue() || (!(mc.player.getHeldItemMainhand().getItem() instanceof ItemTool) && !(mc.player.getHeldItemMainhand().getItem() instanceof ItemSword));
+        else
+            return !noToolExplode.getValue() || (!(mc.player.getHeldItemMainhand().getItem() instanceof ItemTool) && !(mc.player.getHeldItemMainhand().getItem() instanceof ItemSword));
     }
 
     @Override
     public String getHudInfo() {
-        return String.valueOf(getItems(Items.END_CRYSTAL));
+        return "" + InventoryUtils.countItemAll(426);
     }
 
     private boolean ignored(Entity e) {
@@ -580,7 +588,7 @@ public class CrystalAura extends Module {
         if (!autoDelay.getValue()) {
             return delay.getValue();
         }
-        int ping = InfoCalculator.ping(mc);
+        int ping = InfoCalculator.ping();
         return 2 * ping * (InfoCalculator.tps(2) / 20) + (ping / 10.0);
     }
 

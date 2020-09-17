@@ -15,14 +15,12 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import java.util.*
 
-/**
- * Created by 086 on 16/12/2017.
- * Updated by dominikaaaa on 21/04/20
- * TODO: Path finding to stay inside 1 chunk
- * TODO: Render which chunk is selected
- */
-@Module.Info(name = "AntiAFK", category = Module.Category.MISC, description = "Prevents being kicked for AFK")
-class AntiAFK : Module() {
+@Module.Info(
+        name = "AntiAFK",
+        category = Module.Category.MISC,
+        description = "Prevents being kicked for AFK"
+)
+object AntiAFK : Module() {
     private val frequency = register(Settings.integerBuilder("ActionFrequency").withMinimum(1).withMaximum(100).withValue(40).build())
     val autoReply = register(Settings.b("AutoReply", true))
     private val swing = register(Settings.b("Swing", true))
@@ -76,8 +74,8 @@ class AntiAFK : Module() {
     }
 
     @EventHandler
-    var receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (autoReply.value && event.packet is SPacketChat && (event.packet as SPacketChat).getChatComponent().unformattedText.contains("whispers: ") && !(event.packet as SPacketChat).getChatComponent().unformattedText.contains(mc.player.name)) {
+    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
+        if (autoReply.value && event.packet is SPacketChat && event.packet.getChatComponent().unformattedText.contains("whispers: ") && !event.packet.getChatComponent().unformattedText.contains(mc.player.name)) {
             sendServerMessage("/r I am currently AFK and using KAMI Blue!")
         }
     })

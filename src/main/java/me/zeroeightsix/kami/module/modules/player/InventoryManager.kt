@@ -7,32 +7,20 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils.pause
-import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.InventoryUtils.countItem
-import me.zeroeightsix.kami.util.InventoryUtils.getSlots
-import me.zeroeightsix.kami.util.InventoryUtils.getSlotsFullInv
-import me.zeroeightsix.kami.util.InventoryUtils.getSlotsFullInvNoHotbar
-import me.zeroeightsix.kami.util.InventoryUtils.getSlotsNoHotbar
-import me.zeroeightsix.kami.util.InventoryUtils.moveToSlot
-import me.zeroeightsix.kami.util.InventoryUtils.quickMoveSlot
-import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
-import me.zeroeightsix.kami.util.InventoryUtils.throwAllInSlot
+import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
 import kotlin.math.ceil
 
-/**
- * Created by Xiaro on 7/13/20
- */
 @Module.Info(
         name = "InventoryManager",
         category = Module.Category.PLAYER,
         description = "Manages your inventory automatically"
 )
-class InventoryManager : Module() {
+object InventoryManager : Module() {
     private val defaultEjectList = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone,minecraft:cobblestone"
 
     private val autoRefill = register(Settings.b("AutoRefill", true))
@@ -44,8 +32,8 @@ class InventoryManager : Module() {
     val autoEject = register(Settings.b("AutoEject", false))
     private val fullOnly = register(Settings.booleanBuilder("OnlyAtFull").withValue(false).withVisibility { autoEject.value })
     private val pauseMovement: Setting<Boolean> = register(Settings.b("PauseMovement", true))
-    private val delayTicks = register(Settings.floatBuilder("DelayTicks").withValue(1.0f).withRange(0.0f, 5.0f).build())
     private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false }.build())
+    private val delay = register(Settings.integerBuilder("DelayTicks").withValue(1).withRange(0, 20))
 
     /* Eject list */
     var ejectArrayList = ejectGetArrayList()
@@ -88,35 +76,39 @@ class InventoryManager : Module() {
         IDLE, SAVING_ITEM, REFILLING_BUILDING, REFILLING, EJECTING
     }
 
-    private var paused = false
     private var currentState = State.IDLE
+    private var paused = false
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
     @EventHandler
     private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (mc.player == null || mc.player.isSpectator || !paused || !pauseMovement.value) return@EventHook
+        if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@EventHook
         mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
+        event.cancel()
     })
+
+    override fun isActive(): Boolean {
+        return isEnabled && currentState != State.IDLE
+    }
 
     override fun onEnable() {
         ejectArrayList = ejectGetArrayList()
     }
 
     override fun onToggle() {
-        InventoryUtils.inProgress = false
-        unpause()
+        BaritoneUtils.unpause()
     }
 
     override fun onUpdate() {
         if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return
         setState()
-        if (InventoryUtils.inProgress) return
+        if (!timer.tick(delay.value.toLong())) return
         when (currentState) {
             State.SAVING_ITEM -> saveItem()
             State.REFILLING_BUILDING -> refillBuilding()
             State.REFILLING -> refill()
             State.EJECTING -> eject()
-            else -> {
-            }
+            else -> { }
         }
         mc.playerController.syncCurrentPlayItem()
     }
@@ -130,11 +122,11 @@ class InventoryManager : Module() {
             else -> State.IDLE
         }
 
-        if (currentState != State.IDLE && currentState != State.EJECTING && !paused && pauseMovement.value) {
-            pause()
+        if (currentState != State.IDLE && pauseMovement.value && !paused) {
+            BaritoneUtils.pause()
             paused = true
         } else if (currentState == State.IDLE && paused) {
-            unpause()
+            BaritoneUtils.unpause()
             paused = false
         }
     }
@@ -149,8 +141,8 @@ class InventoryManager : Module() {
     private fun refillBuildingCheck(): Boolean {
         if (!autoRefill.value || !buildingMode.value || buildingBlockID.value.toInt() == 0) return false
 
-        val totalCount = countItem(0, 35, buildingBlockID.value.toInt())
-        val hotbarCount = countItem(0, 8, buildingBlockID.value.toInt())
+        val totalCount = InventoryUtils.countItem(0, 35, buildingBlockID.value.toInt())
+        val hotbarCount = InventoryUtils.countItem(0, 8, buildingBlockID.value.toInt())
         return totalCount > refillThreshold.value && (hotbarCount <= refillThreshold.value ||
                 (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING))
 
@@ -165,7 +157,7 @@ class InventoryManager : Module() {
     private fun ejectCheck(): Boolean {
         if (!autoEject.value || ejectArrayList.isEmpty()) return false
 
-        return getEjectSlot() != null && ((getSlots(0, 35, 0) == null && fullOnly.value) || !fullOnly.value)
+        return getEjectSlot() != null && ((InventoryUtils.getSlots(0, 35, 0) == null && fullOnly.value) || !fullOnly.value)
     }
     /* End of state checks */
 
@@ -176,16 +168,16 @@ class InventoryManager : Module() {
 
         if (autoRefill.value && getUndamagedItem(currentItemID) != null) { /* Replaces item if autoRefill is on and a undamaged (not reached threshold) item found */
             val targetSlot = getUndamagedItem(currentItemID)!!
-            moveToSlot(currentSlot + 36, targetSlot, (delayTicks.value * 50).toLong())
-        } else if (getSlotsFullInv(9, 44, 0) != null) { /* Moves item to inventory if empty slot found in inventory */
-            moveToSlot(currentSlot + 36, getSlotsFullInv(9, 44, 0)!![0], (delayTicks.value * 50).toLong())
+            InventoryUtils.moveToSlot(currentSlot + 36, targetSlot)
+        } else if (InventoryUtils.getSlotsFullInv(9, 44, 0) != null) { /* Moves item to inventory if empty slot found in inventory */
+            InventoryUtils.moveToSlot(currentSlot + 36, InventoryUtils.getSlotsFullInv(9, 44, 0)!![0])
         } else {
             var hasAvailableSlot = false
             for (i in 0..8) {
                 hasAvailableSlot = !(checkDamage(i) ?: false)
             }
             if (hasAvailableSlot) { /* Swaps to another slot if no empty slot found in hotbar */
-                swapSlot((currentSlot + 1) % 9)
+                InventoryUtils.swapSlot((currentSlot + 1) % 9)
             } else { /* Drops item if all other slots in hotbar contains damaged items */
                 mc.player.dropItem(false)
             }
@@ -193,20 +185,20 @@ class InventoryManager : Module() {
     }
 
     private fun refillBuilding() {
-        val slots = getSlotsFullInvNoHotbar(buildingBlockID.value)
-        quickMoveSlot(slots?.get(0) ?: return, (delayTicks.value * 50).toLong())
+        val slots = InventoryUtils.getSlotsFullInvNoHotbar(buildingBlockID.value)
+        InventoryUtils.quickMoveSlot(slots?.get(0) ?: return)
     }
 
     private fun refill() {
         val slotTo = (getRefillableSlot() ?: return) + 36
         val stackTo = mc.player.inventoryContainer.inventory[slotTo]
         val slotFrom = getCompatibleStack(stackTo) ?: return
-        moveToSlot(slotFrom, slotTo, (delayTicks.value * 50).toLong())
+        InventoryUtils.moveToSlot(slotFrom, slotTo)
     }
 
     private fun eject() {
         val slot = getEjectSlot() ?: return
-        throwAllInSlot(slot, (delayTicks.value * 50).toLong())
+        InventoryUtils.throwAllInSlot(slot)
     }
     /* End of tasks */
 
@@ -248,7 +240,7 @@ class InventoryManager : Module() {
      * @return Full inventory slot if undamaged item found, else return null
      */
     private fun getUndamagedItem(ItemID: Int): Int? {
-        val slots = getSlotsFullInv(9, 44, ItemID) ?: return null
+        val slots = InventoryUtils.getSlotsFullInv(9, 44, ItemID) ?: return null
         for (i in slots.indices) {
             val currentSlot = slots[i]
             if (checkDamageFullInv(currentSlot) == false) return currentSlot
@@ -257,7 +249,7 @@ class InventoryManager : Module() {
     }
 
     private fun getRefillableSlotBuilding(): Int? {
-        if (getSlotsNoHotbar(buildingBlockID.value) == null) return null
+        if (InventoryUtils.getSlotsNoHotbar(buildingBlockID.value) == null) return null
         for (i in 0..8) {
             val currentStack = mc.player.inventory.getStackInSlot(i)
             if (getIdFromItem(currentStack.getItem()) != buildingBlockID.value) continue
@@ -282,7 +274,7 @@ class InventoryManager : Module() {
     }
 
     private fun getCompatibleStack(stack: ItemStack): Int? {
-        val slots = getSlotsFullInvNoHotbar(getIdFromItem(stack.getItem())) ?: return null
+        val slots = InventoryUtils.getSlotsFullInvNoHotbar(getIdFromItem(stack.getItem())) ?: return null
         for (i in slots.indices) {
             val currentSlot = slots[i]
             if (isCompatibleStacks(stack, mc.player.inventoryContainer.inventory[currentSlot])) return currentSlot

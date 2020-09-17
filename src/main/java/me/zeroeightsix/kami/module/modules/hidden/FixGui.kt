@@ -1,21 +1,26 @@
 package me.zeroeightsix.kami.module.modules.hidden
 
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
 /**
  * @author dominikaaaa
  * @see me.zeroeightsix.kami.command.commands.FixGuiCommand
+ *
+ * Created by dominikaaaa on 24/03/20
+ * Updated by Xiaro on 28/08/20
  */
 @Module.Info(
         name = "FixGui",
         category = Module.Category.HIDDEN,
+        description = "Reset GUI scale and moves GUI elements back on screen",
         showOnArray = Module.ShowOnArray.OFF,
-        description = "Moves GUI elements back on screen"
+        enabledByDefault = true
 )
-class FixGui : Module() {
+object FixGui : Module() {
     override fun onUpdate() {
-        if (mc.player == null) return
+        ClickGUI.resetScale()
         GuiFrameUtil.fixFrames(mc)
         disable()
     }

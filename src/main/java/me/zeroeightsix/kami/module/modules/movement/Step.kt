@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.BaritoneAPI
-import com.google.common.collect.Lists
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -13,7 +11,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getRidingEntity
 import me.zeroeightsix.kami.util.PacketHelper
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.Packet
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayer.PositionRotation
 import net.minecraft.util.math.AxisAlignedBB
@@ -23,9 +20,6 @@ import java.util.function.Consumer
 import kotlin.math.max
 
 /**
- * @author dominikaaaa (Mode.VANILLA)
- * @author fr1kin (Mode.PACKET)
- *
  * The packet mode code is licensed under MIT and can be found here:
  * https://github.com/fr1kin/ForgeHax/blob/2011740/src/main/java/com/matt/forgehax/mods/StepMod.java
  */
@@ -34,7 +28,7 @@ import kotlin.math.max
         description = "Changes the vanilla behavior for stepping up blocks",
         category = Module.Category.MOVEMENT
 )
-class Step : Module() {
+object Step : Module() {
     private val mode: Setting<Mode> = register(Settings.e("Mode", Mode.PACKET))
     private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
     private val speed = register(Settings.integerBuilder("Speed").withMinimum(1).withMaximum(100).withValue(40).withVisibility { mode.value == Mode.VANILLA }.build())
@@ -44,11 +38,10 @@ class Step : Module() {
 
     private var previousPositionPacket: CPacketPlayer? = null
     private var wasOnGround = false
-    private val defaultHeight = 0.6f
+    private const val defaultHeight = 0.6f
 
     private enum class Mode {
         VANILLA, PACKET
-
     }
 
     override fun onToggle() {
@@ -61,12 +54,25 @@ class Step : Module() {
      * Vanilla mode.
      */
     override fun onUpdate() {
+        if (mc.player.isElytraFlying || mc.player.capabilities.isFlying) return
         if (mode.value == Mode.VANILLA) {
             if (mc.player.onGround && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava) {
                 if (mc.player.collidedHorizontally) {
                     mc.player.motionY = speed.value / 100.0
                 } else if (downStep.value) {
                     mc.player.motionY = -(speed.value / 100.0)
+                }
+            }
+        }
+        if (mode.value == Mode.PACKET) {
+            updateStepHeight(mc.player)
+            updateUnStep(mc.player)
+
+            if (getRidingEntity() != null) {
+                if (entityStep.value) {
+                    getRidingEntity()?.stepHeight = 256f
+                } else {
+                    getRidingEntity()?.stepHeight = 1f
                 }
             }
         }
@@ -94,23 +100,7 @@ class Step : Module() {
      * Everything onwards is Packet mode
      */
     @EventHandler
-    var listener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
-        if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@EventHook
-        val player = event.entityLiving as EntityPlayer
-        updateStepHeight(player)
-        updateUnStep(player)
-
-        if (getRidingEntity() != null) {
-            if (entityStep.value) {
-                getRidingEntity()?.stepHeight = 256f
-            } else {
-                getRidingEntity()?.stepHeight = 1f
-            }
-        }
-    })
-
-    @EventHandler
-    var packetListener = Listener(EventHook { event: PacketEvent.Send ->
+    private val packetListener = Listener(EventHook { event: PacketEvent.Send ->
         if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@EventHook
 
         if (event.packet is CPacketPlayer.Position || event.packet is PositionRotation) {
@@ -123,7 +113,7 @@ class Step : Module() {
                  * The Y difference must be between 0.6 and 1.25
                  */
                 if (diffY > defaultHeight && diffY <= 1.25) {
-                    val sendList: MutableList<Packet<*>> = Lists.newArrayList()
+                    val sendList = ArrayList<CPacketPlayer.Position>()
 
                     /**
                      * Send additional packets to bypass NCP
@@ -142,7 +132,7 @@ class Step : Module() {
                     event.cancel()
                 }
             }
-            previousPositionPacket = event.packet as CPacketPlayer
+            previousPositionPacket = event.packet
         }
     })
 

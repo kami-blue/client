@@ -1,7 +1,7 @@
 ---
 name: Enhancement to an existing feature
 about: Suggest an idea for a feature
-labels: enhancement/module
+labels: enhancement, -module 
 ---
 
 **Is your feature request related to a problem? Please describe.**

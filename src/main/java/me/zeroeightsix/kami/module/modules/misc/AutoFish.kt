@@ -26,7 +26,7 @@ import kotlin.math.abs
         category = Module.Category.MISC,
         description = "Automatically catch fish"
 )
-class AutoFish : Module() {
+object AutoFish : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
     private val defaultSetting = register(Settings.b("Defaults", false))
     private val autoCast = register(Settings.b("AutoCast", true))
@@ -39,7 +39,6 @@ class AutoFish : Module() {
         BOUNCE, SPLASH, ANY_SPLASH, ALL
     }
 
-    private var looking = Pair(0.0f, 0.0f) // <Yaw, Pitch>
     private var catching = false
     private var recasting = false
     private val timer = TickTimer()
@@ -49,7 +48,7 @@ class AutoFish : Module() {
         if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@EventHook
 
         if (mode.value != Mode.BOUNCE && event.packet is SPacketSoundEffect) {
-            if (isSplash(event.packet as SPacketSoundEffect)) {
+            if (isSplash(event.packet)) {
                 catch()
             }
         }
@@ -131,7 +130,7 @@ class AutoFish : Module() {
     private fun recast(extraDelay: Long = 0L) {
         if (recasting) return
         resetTimer()
-        timer.lastTickTime += extraDelay
+        timer.reset(extraDelay)
         catching = false
         recasting = true
     }
@@ -143,8 +142,8 @@ class AutoFish : Module() {
     }
 
     private fun resetTimer() {
-        timer.lastTickTime = System.currentTimeMillis()
-        if (variation.value > 0) timer.lastTickTime += (random() * (variation.value * 2) - variation.value).toLong()
+        val offset = if (variation.value > 0) (random() * (variation.value * 2) - variation.value).toLong() else 0
+        timer.reset(offset)
     }
 
     private fun defaults() {

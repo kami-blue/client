@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.commands.PeekCommand
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
 import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
@@ -10,24 +11,15 @@ import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.module.modules.render.AntiOverlay
-import me.zeroeightsix.kami.module.modules.render.BossStack
-import me.zeroeightsix.kami.module.modules.render.HungerOverlay
-import me.zeroeightsix.kami.module.modules.render.NoRender
-import me.zeroeightsix.kami.util.HungerOverlayRenderHelper
-import me.zeroeightsix.kami.util.HungerOverlayUtils
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.passive.AbstractHorse
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDamageEvent
@@ -48,18 +40,12 @@ import org.lwjgl.input.Keyboard
  * Created by 086 on 11/11/2017.
  * Updated by Qther on 18/02/20
  * Updated by dominikaaaa on 18/02/20
- * Updated by Xiaro on 04/08/20
- *
- * TODO: Run the HungerOverlay coeds in its own class instead of here
+ * Updated by Xiaro on 10/09/20
  */
-open class ForgeEventProcessor {
+class ForgeEventProcessor {
     private val mc = Wrapper.minecraft
     private var displayWidth = 0
     private var displayHeight = 0
-    private var flashAlpha = 0f
-    private var alphaDir: Byte = 1
-    private var foodIconsOffset = 0
-    private val hungerOverlay: HungerOverlay get() = ModuleManager.getModuleT(HungerOverlay::class.java)!!
 
     @SubscribeEvent
     fun onUpdate(event: LivingEvent.LivingUpdateEvent) {
@@ -96,27 +82,6 @@ open class ForgeEventProcessor {
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (mc.world == null || mc.player == null) return
 
-        if (ModuleManager.isModuleEnabled(NoRender::class.java) && ModuleManager.getModuleT(NoRender::class.java)!!.items.value && event.phase == TickEvent.Phase.START) {
-            for (potentialItem in mc.world.getLoadedEntityList()) {
-                (potentialItem as? EntityItem)?.setDead()
-            }
-        }
-
-        if (hungerOverlay.isEnabled) {
-            if (event.phase != TickEvent.Phase.END) {
-                return
-            }
-            flashAlpha += alphaDir * 0.125f
-            if (flashAlpha >= 1.5f) {
-                flashAlpha = 1f
-                alphaDir = -1
-            } else if (flashAlpha <= -0.5f) {
-                flashAlpha = 0f
-                alphaDir = 1
-            }
-        }
-
-        GuiIngameForge.renderPortal = !ModuleManager.isModuleEnabled(AntiOverlay::class.java) || !ModuleManager.getModuleT(AntiOverlay::class.java)!!.portals.value
         ModuleManager.onUpdate()
         KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
     }
@@ -130,29 +95,13 @@ open class ForgeEventProcessor {
 
     @SubscribeEvent
     fun onRenderPre(event: RenderGameOverlayEvent.Pre) {
-        if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
-            event.isCanceled = true
-        }
+        KamiMod.EVENT_BUS.post(event)
         if (event.isCanceled) return
-
-        if (hungerOverlay.isEnabled) {
-            if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
-                return
-            }
-            if (!hungerOverlay.foodExhaustionOverlay.value) {
-                return
-            }
-            foodIconsOffset = GuiIngameForge.right_height
-            val scale = event.resolution
-            val left = scale.scaledWidth / 2 + 91
-            val top = scale.scaledHeight - foodIconsOffset
-            HungerOverlayRenderHelper.drawExhaustionOverlay(HungerOverlayUtils.getExhaustion(mc.player), mc, left, top, 1f)
-        }
-
     }
 
     @SubscribeEvent
     fun onRender(event: RenderGameOverlayEvent.Post) {
+        KamiMod.EVENT_BUS.post(event)
         if (event.isCanceled) return
         var target = RenderGameOverlayEvent.ElementType.EXPERIENCE
         if (!mc.player.isCreative && mc.player!!.ridingEntity is AbstractHorse) {
@@ -161,50 +110,18 @@ open class ForgeEventProcessor {
 
         if (event.type == target) {
             ModuleManager.onRender()
+            GlStateUtils.rescaleKami()
             GlStateManager.pushMatrix()
             UIRenderer.renderAndUpdateFrames()
             GlStateManager.popMatrix()
-        } else if (event.type == RenderGameOverlayEvent.ElementType.BOSSINFO && ModuleManager.isModuleEnabled(BossStack::class.java)) {
-            BossStack.render(event)
-        }
-
-        if (hungerOverlay.isEnabled) {
-            if (event.type != RenderGameOverlayEvent.ElementType.FOOD) {
-                return
-            }
-            if (!hungerOverlay.foodValueOverlay.value && !hungerOverlay.saturationOverlay.value) {
-                return
-            }
-            val mc = mc
-            val player: EntityPlayer = mc.player
-            val heldItem = player.heldItemMainhand
-            val stats = player.getFoodStats()
-            val scale = event.resolution
-            val left = scale.scaledWidth / 2 + 91
-            val top = scale.scaledHeight - foodIconsOffset
-            if (hungerOverlay.saturationOverlay.value) {
-                HungerOverlayRenderHelper.drawSaturationOverlay(0f, stats.saturationLevel, mc, left, top, 1f)
-            }
-            if (!hungerOverlay.foodValueOverlay.value || heldItem.isEmpty() || !HungerOverlayUtils.isFood(heldItem)) {
-                flashAlpha = 0f
-                alphaDir = 1
-                return
-            }
-            val foodValues = HungerOverlayUtils.getDefaultFoodValues(heldItem)
-            HungerOverlayRenderHelper.drawHungerOverlay(foodValues.hunger, stats.foodLevel, mc, left, top, flashAlpha)
-            if (hungerOverlay.saturationOverlay.value) {
-                val newFoodValue = stats.foodLevel + foodValues.hunger
-                val newSaturationValue = stats.saturationLevel + foodValues.saturationIncrement
-                HungerOverlayRenderHelper.drawSaturationOverlay(if (newSaturationValue > newFoodValue) newFoodValue - stats.saturationLevel else foodValues.saturationIncrement, stats.saturationLevel, mc, left, top, flashAlpha)
-            }
+            GlStateUtils.rescaleMc()
         }
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        val commandConfig = ModuleManager.getModuleT(CommandConfig::class.java)
-        if (commandConfig!!.prefixChat.value && ("" + Keyboard.getEventCharacter()).equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
+        if (CommandConfig.prefixChat.value && ("" + Keyboard.getEventCharacter()).equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
             mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
         } else {
             KamiMod.EVENT_BUS.post(event)
@@ -299,16 +216,21 @@ open class ForgeEventProcessor {
 
     @SubscribeEvent
     fun onServerDisconnect(event: FMLNetworkEvent.ServerDisconnectionFromClientEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
     fun onClientDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
     }
 
-    companion object {
-        @JvmField
-        val icons = ResourceLocation(KamiMod.MODID, "textures/hungeroverlay.png")
+    @SubscribeEvent
+    fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
+        KamiMod.EVENT_BUS.post(ConnectionEvent.Connect())
+    }
+
+    @SubscribeEvent
+    fun onLivingDamage(event: LivingDamageEvent) {
+        KamiMod.EVENT_BUS.post(event)
     }
 }

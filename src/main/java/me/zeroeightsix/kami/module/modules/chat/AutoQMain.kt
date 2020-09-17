@@ -6,18 +6,13 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * @author dominikaaaa
- * Updated by d1gress/Qther on 5/12/2019
- * Updated by dominikaaaa on 26/03/20
- */
 @Module.Info(
         name = "AutoQMain",
         description = "Automatically does '/queue main' on servers",
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )
-class AutoQMain : Module() {
+object AutoQMain : Module() {
     private val showWarns = register(Settings.b("ShowWarnings", true))
     private val connectionWarning = register(Settings.b("ConnectionWarning", true))
     private val dimensionWarning = register(Settings.b("DimensionWarning", true))
@@ -27,8 +22,6 @@ class AutoQMain : Module() {
     private var oldDelay = 0.0
 
     override fun onUpdate() {
-        if (mc.player == null) return
-
         if (oldDelay == 0.0) oldDelay = delay.value else if (oldDelay != delay.value) {
             delayTime = delay.value
             oldDelay = delay.value

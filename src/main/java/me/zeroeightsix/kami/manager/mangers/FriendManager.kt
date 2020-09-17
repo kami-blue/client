@@ -12,7 +12,7 @@ import java.io.*
  * Created by Xiaro on 26/08/20
  */
 object FriendManager {
-    var friendFile = FriendFile(true, ArrayList())
+    var friendFile = FriendFile()
 
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val configName = "KAMIBlueFriends.json"
@@ -27,7 +27,6 @@ object FriendManager {
         try {
             try {
                 friendFile = gson.fromJson(FileReader(file), object : TypeToken<FriendFile>() {}.type)
-                if (friendFile.friends.isNullOrEmpty()) friendFile.friends = ArrayList()
                 KamiMod.log.info("Friend loaded")
                 success = true
             } catch (e: FileNotFoundException) {
@@ -61,14 +60,13 @@ object FriendManager {
         }
     }
 
-    class FriendFile(
-            @JvmField
-            @SerializedName("Enabled")
-            var enabled: Boolean,
+    class FriendFile {
+        @JvmField
+        @SerializedName("Enabled")
+        var enabled = true
 
-            @JvmField
-            @SerializedName("Friends")
-            var
-            friends: ArrayList<Friends.Friend>
-    )
+        @JvmField
+        @SerializedName("Friends")
+        val friends = ArrayList<Friends.Friend>()
+    }
 }

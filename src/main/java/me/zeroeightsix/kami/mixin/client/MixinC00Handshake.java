@@ -10,26 +10,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * Created by 086 on 9/04/2018.
  */
 @Mixin(C00Handshake.class)
 public class MixinC00Handshake {
 
-    @Shadow
-    int protocolVersion;
-    @Shadow
-    String ip;
-    @Shadow
-    int port;
-    @Shadow
-    EnumConnectionState requestedState;
+    @Shadow private int protocolVersion;
+    @Shadow private String ip;
+    @Shadow private int port;
+    @Shadow private EnumConnectionState requestedState;
 
     @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
     public void writePacketData(PacketBuffer buf, CallbackInfo info) {
-        if (MODULE_MANAGER.isModuleEnabled(FakeVanillaClient.class)) {
+        if (FakeVanillaClient.INSTANCE.isEnabled()) {
             info.cancel();
             buf.writeVarInt(protocolVersion);
             buf.writeString(ip);

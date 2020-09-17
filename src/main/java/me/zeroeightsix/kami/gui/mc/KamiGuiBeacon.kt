@@ -19,7 +19,7 @@ import java.io.IOException
  * @author TBM
  */
 class KamiGuiBeacon(playerInventory: InventoryPlayer, tileBeaconIn: IInventory) : GuiBeacon(playerInventory, tileBeaconIn) {
-    var doRenderButtons = false
+    private var doRenderButtons = false
     override fun initGui() {
         super.initGui()
         doRenderButtons = true

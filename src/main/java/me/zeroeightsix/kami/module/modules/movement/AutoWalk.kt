@@ -6,45 +6,33 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.ServerDisconnectedEvent
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.InputUpdateEvent
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
-/**
- * Created by 086 on 16/12/2017.
- * Greatly modified by Dewy on the 10th of May, 2020.
- */
 @Module.Info(
         name = "AutoWalk",
         category = Module.Category.MOVEMENT,
         description = "Automatically walks somewhere"
 )
-class AutoWalk : Module() {
-    @JvmField
-    var mode: Setting<AutoWalkMode> = register(Settings.e("Direction", AutoWalkMode.BARITONE))
-    private var disableBaritone = false
-    private var border = 30000000
+object AutoWalk : Module() {
+    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
 
-    init {
-        mode.settingListener = Setting.SettingListeners {
-            mc.player?.let {
-                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
-                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
-                }
-            }
-        }
+    enum class AutoWalkMode {
+        FORWARD, BACKWARDS, BARITONE
     }
+
+    private var disableBaritone = false
+    private const val border = 30000000
+    var direction: String? = null
 
     @EventHandler
     private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->
-        if (InventoryUtils.inProgress || !isEnabled) return@EventHook
         when (mode.value) {
             AutoWalkMode.FORWARD -> {
                 disableBaritone = false
@@ -63,11 +51,13 @@ class AutoWalk : Module() {
     })
 
     @EventHandler
-    private val kickListener = Listener(EventHook { event: ServerDisconnectedEvent ->
-        if (mode.value == AutoWalkMode.BARITONE && isEnabled) {
-            disable()
-        }
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        disable()
     })
+
+    override fun onDisable() {
+        if (disableBaritone) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+    }
 
     public override fun onEnable() {
         if (mc.player == null) {
@@ -117,32 +107,13 @@ class AutoWalk : Module() {
         }
     }
 
-    public override fun onDisable() {
-        disableBaritone()
-    }
-
-    @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        disableBaritone()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        disableBaritone()
-    })
-
-    private fun disableBaritone() {
-        if (disableBaritone) {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+    init {
+        mode.settingListener = Setting.SettingListeners {
+            mc.player?.let {
+                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
+                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
+                }
+            }
         }
-    }
-
-    enum class AutoWalkMode {
-        FORWARD, BACKWARDS, BARITONE
-    }
-
-    companion object {
-        @JvmField
-        var direction: String? = null
     }
 }

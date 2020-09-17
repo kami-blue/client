@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
@@ -12,27 +10,15 @@ import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.emoji.KamiMoji;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
-import me.zeroeightsix.kami.gui.rgui.component.Component;
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
-import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.chat.ChatEncryption;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.module.modules.hidden.RunConfig;
-import me.zeroeightsix.kami.process.AutoObsidianProcess;
-import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
-import me.zeroeightsix.kami.setting.config.Configuration;
 import me.zeroeightsix.kami.util.ConfigUtils;
-import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.RichPresence;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -44,22 +30,9 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static me.zeroeightsix.kami.DiscordPresence.setCustomIcons;
 
 /**
  * Created by 086 on 7/11/2017.
@@ -97,20 +70,11 @@ public class KamiMod {
 
     public static final EventBus EVENT_BUS = new EventManager();
 
-    /**
-     * @deprecated Use ModuleManger instead
-     */
-    @Deprecated
-    public static final ModuleManager MODULE_MANAGER = ModuleManager.INSTANCE;
-
     public static final KamiMoji KAMIMOJI = new KamiMoji();
 
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
-
-    public static TemporaryPauseProcess pauseProcess;
-    public static AutoObsidianProcess autoObsidianProcess;
 
     @Mod.Instance
     private static KamiMod INSTANCE;
@@ -134,19 +98,14 @@ public class KamiMod {
         updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
-
-        pauseProcess = new TemporaryPauseProcess();
-        autoObsidianProcess = new AutoObsidianProcess();
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        setCustomIcons();
-
         log.info("Initialising KamiMoji...");
         KAMIMOJI.start();
 
-        if (Objects.requireNonNull(ModuleManager.getModuleT(CommandConfig.class)).customTitle.getValue()) {
+        if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
     }
@@ -168,11 +127,7 @@ public class KamiMod {
 
         /* Custom static Settings, which can't register normally if they're static */
         SettingsRegister.register("commandPrefix", Command.commandPrefix);
-        SettingsRegister.register("delimiterV", ChatEncryption.delimiterValue);
         ConfigUtils.INSTANCE.loadAll();
-
-        new RichPresence();
-        log.info("Rich Presence Users init!");
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         Module[] modules = ModuleManager.getModules();
@@ -181,106 +136,7 @@ public class KamiMod {
             if (module.isEnabled()) module.enable();
         }
 
-        // load modules that are on by default // autoenable
-        Objects.requireNonNull(ModuleManager.getModule(RunConfig.class)).enable();
-
         log.info(MODNAME + " Mod initialized!\n");
-    }
-
-    public static String getConfigName() {
-        Path config = Paths.get("KAMIBlueLastConfig.txt");
-        String kamiConfigName = KAMI_CONFIG_NAME_DEFAULT;
-        try (BufferedReader reader = Files.newBufferedReader(config)) {
-            kamiConfigName = reader.readLine();
-            if (!isFilenameValid(kamiConfigName)) kamiConfigName = KAMI_CONFIG_NAME_DEFAULT;
-        } catch (NoSuchFileException e) {
-            try (BufferedWriter writer = Files.newBufferedWriter(config)) {
-                writer.write(KAMI_CONFIG_NAME_DEFAULT);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return kamiConfigName;
-    }
-
-    public static void loadConfiguration() {
-        try {
-            loadConfigurationUnsafe();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void loadConfigurationUnsafe() throws IOException {
-        String kamiConfigName = getConfigName();
-        Path kamiConfig = Paths.get(kamiConfigName);
-        if (!Files.exists(kamiConfig)) return;
-        Configuration.loadConfiguration(kamiConfig);
-
-        JsonObject gui = KamiMod.INSTANCE.guiStateSetting.getValue();
-        for (Map.Entry<String, JsonElement> entry : gui.entrySet()) {
-            Optional<Component> optional = KamiMod.INSTANCE.guiManager.getChildren().stream().filter(component -> component instanceof Frame).filter(component -> ((Frame) component).getTitle().equals(entry.getKey())).findFirst();
-            if (optional.isPresent()) {
-                JsonObject object = entry.getValue().getAsJsonObject();
-                Frame frame = (Frame) optional.get();
-                frame.setX(object.get("x").getAsInt());
-                frame.setY(object.get("y").getAsInt());
-                Docking docking = Docking.values()[object.get("docking").getAsInt()];
-                if (docking.isLeft()) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.LEFT);
-                else if (docking.isRight()) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.RIGHT);
-                else if (docking.isCenterVertical())
-                    ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.CENTER);
-                frame.setDocking(docking);
-                frame.setMinimized(object.get("minimized").getAsBoolean());
-                frame.setPinned(object.get("pinned").getAsBoolean());
-            } else {
-                System.err.println("Found GUI config entry for " + entry.getKey() + ", but found no frame with that name");
-            }
-        }
-        KamiMod.getInstance().getGuiManager().getChildren().stream().filter(component -> (component instanceof Frame) && (((Frame) component).isPinnable()) && component.isVisible()).forEach(component -> component.setOpacity(0f));
-    }
-
-    public static void saveConfiguration() {
-        try {
-            saveConfigurationUnsafe();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void saveConfigurationUnsafe() throws IOException {
-        JsonObject object = new JsonObject();
-        KamiMod.INSTANCE.guiManager.getChildren().stream().filter(component -> component instanceof Frame).map(component -> (Frame) component).forEach(frame -> {
-            JsonObject frameObject = new JsonObject();
-            frameObject.add("x", new JsonPrimitive(frame.getX()));
-            frameObject.add("y", new JsonPrimitive(frame.getY()));
-            frameObject.add("docking", new JsonPrimitive(Arrays.asList(Docking.values()).indexOf(frame.getDocking())));
-            frameObject.add("minimized", new JsonPrimitive(frame.isMinimized()));
-            frameObject.add("pinned", new JsonPrimitive(frame.isPinned()));
-            object.add(frame.getTitle(), frameObject);
-        });
-        KamiMod.INSTANCE.guiStateSetting.setValue(object);
-
-        Path outputFile = Paths.get(getConfigName());
-        if (!Files.exists(outputFile))
-            Files.createFile(outputFile);
-        Configuration.saveConfiguration(outputFile);
-        Module[] modules = ModuleManager.getModules();
-        for (Module module : modules) {
-            module.destroy();
-        }
-    }
-
-    public static boolean isFilenameValid(String file) {
-        File f = new File(file);
-        try {
-            f.getCanonicalPath();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 
     public static KamiMod getInstance() {

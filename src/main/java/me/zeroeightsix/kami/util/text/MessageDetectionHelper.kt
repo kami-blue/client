@@ -20,7 +20,7 @@ object MessageDetectionHelper {
     @JvmStatic
     fun isDirect(direct: Boolean, message: String?): Boolean {
         if (message == null) return false
-        return direct && Pattern.compile("^([0-9A-z_])+ whispers:.*").matcher(message).find()
+        return direct && (Pattern.compile("^([0-9A-z_])+ whispers:.*").matcher(message).find() || Pattern.compile("^\\[.*->.*]").matcher(message).find())
     }
 
     @JvmStatic

@@ -126,12 +126,13 @@ object ConfigUtils {
         }
     }
 
-    fun getConfigName(): String? {
+    fun getConfigName(): String {
         val config = Paths.get("KAMIBlueLastConfig.txt")
         var kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
         try {
             Files.newBufferedReader(config).use { reader ->
-                if (isFilenameValid(reader.readLine())) kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
+                val line = reader.readLine()
+                if (isFilenameValid(line)) kamiConfigName = line
             }
         } catch (e: NoSuchFileException) {
             try {

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -29,11 +28,11 @@ object MovementUtils {
     }
 
     private fun getRoundedMovementInput(input: Float): Float {
-       return when {
-           input > 0f -> 1f
-           input < 0f -> -1f
-           else -> 0f
-       }
+        return when {
+            input > 0f -> 1f
+            input < 0f -> -1f
+            else -> 0f
+        }
     }
 
     /* triangle math tho */

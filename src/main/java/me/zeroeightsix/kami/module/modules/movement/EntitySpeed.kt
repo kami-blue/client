@@ -12,26 +12,24 @@ import net.minecraft.world.chunk.EmptyChunk
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * Created by 086 on 16/12/2017.
- */
 @Module.Info(
         name = "EntitySpeed",
         category = Module.Category.MOVEMENT,
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
-class EntitySpeed : Module() {
+object EntitySpeed : Module() {
     private val speed = register(Settings.f("Speed", 1f))
     private val antiStuck = register(Settings.b("AntiStuck"))
     private val flight = register(Settings.b("Flight", false))
     private val wobble = register(Settings.booleanBuilder("Wobble").withValue(true).withVisibility { b: Boolean? -> flight.value }.build())
+    private val opacity = register(Settings.f("BoatOpacity", .5f))
 
     override fun onUpdate() {
-        if (mc.world != null && mc.player.getRidingEntity() != null) {
+        if (mc.player.getRidingEntity() != null) {
             val riding = mc.player.getRidingEntity()
             if (riding is EntityPig || riding is AbstractHorse) {
                 steerEntity(riding)
-            } else if (riding is EntityBoat) {
+            } else if (riding is EntityBoat && riding.controllingPassenger == mc.player) {
                 steerBoat(boat)
             }
         }
@@ -60,8 +58,10 @@ class EntitySpeed : Module() {
         val right = mc.gameSettings.keyBindRight.isKeyDown
         val back = mc.gameSettings.keyBindBack.isKeyDown
 
-        if (!(forward && back)) boat.motionY = 0.0
-        if (mc.gameSettings.keyBindJump.isKeyDown) boat.motionY += speed.value / 2f.toDouble()
+        if (flight.value) {
+            if (!(forward && back)) boat.motionY = 0.0
+            if (mc.gameSettings.keyBindJump.isKeyDown) boat.motionY += speed.value / 2f.toDouble()
+        }
         if (!forward && !left && !right && !back) return
         if (left && right) angle = if (forward) 0 else if (back) 180 else -1 else if (forward && back) angle = if (left) -90 else if (right) 90 else -1 else {
             angle = if (left) -90 else if (right) 90 else 0
@@ -81,7 +81,7 @@ class EntitySpeed : Module() {
     }
 
     private val boat: EntityBoat?
-        get() = if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() is EntityBoat) mc.player.getRidingEntity() as EntityBoat? else null
+        get() = if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() is EntityBoat && (mc.player.getRidingEntity() as EntityBoat).controllingPassenger == mc.player) mc.player.getRidingEntity() as EntityBoat? else null
 
     private fun moveForward(entity: Entity?, speed: Double) {
         if (entity != null) {
@@ -128,16 +128,6 @@ class EntitySpeed : Module() {
         return antiStuck.value && mc.world.getChunk((entity.posX + motX).toInt() shr 4, (entity.posZ + motZ).toInt() shr 4) is EmptyChunk
     }
 
-    companion object {
-        private val opacity = Settings.f("BoatOpacity", .5f)
-
-        @JvmStatic
-        fun getOpacity(): Float {
-            return opacity.value
-        }
-    }
-
-    init {
-        register(opacity)
-    }
+    @JvmStatic
+    fun getOpacity(): Float = opacity.value
 }

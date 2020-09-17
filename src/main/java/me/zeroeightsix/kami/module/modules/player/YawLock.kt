@@ -5,18 +5,16 @@ import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.util.math.MathHelper
 import kotlin.math.roundToInt
 
-/**
- * Created by 086 on 16/12/2017.
- */
 @Module.Info(
         name = "YawLock",
         category = Module.Category.PLAYER,
         description = "Locks your camera yaw"
 )
-class YawLock : Module() {
+object YawLock : Module() {
     private val auto = register(Settings.b("Auto", true))
     private val yaw = register(Settings.f("Yaw", 180f))
     private val slice = register(Settings.i("Slice", 8))
+
     override fun onUpdate() {
         if (slice.value == 0) return
         if (auto.value) {

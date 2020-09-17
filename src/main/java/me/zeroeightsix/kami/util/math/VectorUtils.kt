@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockAir
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import java.util.*
 import kotlin.math.*
 
 /**
@@ -12,7 +11,7 @@ import kotlin.math.*
  *
  * @author Qther / Vonr
  * Updated by dominikaaaa on 21/04/20.
- * Updated by Xiaro on 20/08/20
+ * Updated by Xiaro on 09/09/20
  */
 object VectorUtils {
 
@@ -119,5 +118,28 @@ object VectorUtils {
             }
         }
         return returnList
+    }
+
+    /**
+     * Get all block positions inside a sphere with given [radius]
+     *
+     * @param center Center of the sphere
+     * @param radius Radius of the sphere
+     * @return block positions inside a sphere with given [radius]
+     */
+    fun getBlockPosInSphere(center: Vec3d, radius: Float): ArrayList<BlockPos> {
+        val squaredRadius = radius.pow(2)
+        val posList = ArrayList<BlockPos>()
+        for (x in getAxisRange(center.x, radius)) for (y in getAxisRange(center.y, radius)) for (z in getAxisRange(center.z, radius)) {
+            /* Valid position check */
+            val blockPos = BlockPos(x, y, z)
+            if (blockPos.distanceSqToCenter(center.x, center.y, center.z) > squaredRadius) continue
+            posList.add(blockPos)
+        }
+        return posList
+    }
+
+    private fun getAxisRange(d1: Double, d2: Float): IntRange {
+        return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
     }
 }

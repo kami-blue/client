@@ -23,6 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -43,7 +44,6 @@ import static org.lwjgl.opengl.GL11.*;
         category = Module.Category.RENDER
 )
 public class Nametags extends Module {
-
     private final Setting<Boolean> players = register(Settings.b("Players", true));
     private final Setting<Boolean> mobs = register(Settings.b("Mobs", false));
     private final Setting<Boolean> items = register(Settings.b("Items", false));
@@ -55,8 +55,45 @@ public class Nametags extends Module {
     private final Setting<Boolean> health = register(Settings.b("Health", true));
     private final Setting<Boolean> armor = register(Settings.b("Armor", true));
 
+    private static final EnchantEntry[] enchants = {
+            new EnchantEntry(Enchantments.PROTECTION, "Pro"),
+            new EnchantEntry(Enchantments.THORNS, "Thr"),
+            new EnchantEntry(Enchantments.SHARPNESS, "Sha"),
+            new EnchantEntry(Enchantments.FIRE_ASPECT, "Fia"),
+            new EnchantEntry(Enchantments.KNOCKBACK, "Knb"),
+            new EnchantEntry(Enchantments.UNBREAKING, "Unb"),
+            new EnchantEntry(Enchantments.POWER, "Pow"),
+            new EnchantEntry(Enchantments.FIRE_PROTECTION, "Fpr"),
+            new EnchantEntry(Enchantments.FEATHER_FALLING, "Fea"),
+            new EnchantEntry(Enchantments.BLAST_PROTECTION, "Bla"),
+            new EnchantEntry(Enchantments.PROJECTILE_PROTECTION, "Ppr"),
+            new EnchantEntry(Enchantments.RESPIRATION, "Res"),
+            new EnchantEntry(Enchantments.AQUA_AFFINITY, "Aqu"),
+            new EnchantEntry(Enchantments.DEPTH_STRIDER, "Dep"),
+            new EnchantEntry(Enchantments.FROST_WALKER, "Fro"),
+            new EnchantEntry(Enchantments.BINDING_CURSE, "Bin"),
+            new EnchantEntry(Enchantments.SMITE, "Smi"),
+            new EnchantEntry(Enchantments.BANE_OF_ARTHROPODS, "Ban"),
+            new EnchantEntry(Enchantments.LOOTING, "Loo"),
+            new EnchantEntry(Enchantments.SWEEPING, "Swe"),
+            new EnchantEntry(Enchantments.EFFICIENCY, "Eff"),
+            new EnchantEntry(Enchantments.SILK_TOUCH, "Sil"),
+            new EnchantEntry(Enchantments.FORTUNE, "For"),
+            new EnchantEntry(Enchantments.FLAME, "Fla"),
+            new EnchantEntry(Enchantments.LUCK_OF_THE_SEA, "Luc"),
+            new EnchantEntry(Enchantments.LURE, "Lur"),
+            new EnchantEntry(Enchantments.MENDING, "Men"),
+            new EnchantEntry(Enchantments.VANISHING_CURSE, "Van"),
+            new EnchantEntry(Enchantments.PUNCH, "Pun")
+    };
+    public static Nametags INSTANCE;
+
+    public Nametags() {
+        INSTANCE = this;
+    }
+
     @Override
-    public void onWorldRender(RenderEvent event) {
+    public void onWorldRender(@NotNull RenderEvent event) {
         if (mc.getRenderManager().options == null) {
             return;
         }
@@ -111,7 +148,6 @@ public class Nametags extends Module {
         // not a player, not an item, so probably a mob
         return EntityUtils.mobTypeSettings(entity, mobs.getValue(), passive.getValue(), neutral.getValue(), hostile.getValue());
     }
-
 
     private void drawNametag(Entity entityIn) {
         GlStateManager.pushMatrix();
@@ -275,8 +311,8 @@ public class Nametags extends Module {
     }
 
     public static class EnchantEntry {
-        private Enchantment enchant;
-        private String name;
+        private final Enchantment enchant;
+        private final String name;
 
         public EnchantEntry(Enchantment enchant, String name) {
             this.enchant = enchant;
@@ -291,36 +327,4 @@ public class Nametags extends Module {
             return this.name;
         }
     }
-
-    private static EnchantEntry[] enchants = {
-            new EnchantEntry(Enchantments.PROTECTION, "Pro"),
-            new EnchantEntry(Enchantments.THORNS, "Thr"),
-            new EnchantEntry(Enchantments.SHARPNESS, "Sha"),
-            new EnchantEntry(Enchantments.FIRE_ASPECT, "Fia"),
-            new EnchantEntry(Enchantments.KNOCKBACK, "Knb"),
-            new EnchantEntry(Enchantments.UNBREAKING, "Unb"),
-            new EnchantEntry(Enchantments.POWER, "Pow"),
-            new EnchantEntry(Enchantments.FIRE_PROTECTION, "Fpr"),
-            new EnchantEntry(Enchantments.FEATHER_FALLING, "Fea"),
-            new EnchantEntry(Enchantments.BLAST_PROTECTION, "Bla"),
-            new EnchantEntry(Enchantments.PROJECTILE_PROTECTION, "Ppr"),
-            new EnchantEntry(Enchantments.RESPIRATION, "Res"),
-            new EnchantEntry(Enchantments.AQUA_AFFINITY, "Aqu"),
-            new EnchantEntry(Enchantments.DEPTH_STRIDER, "Dep"),
-            new EnchantEntry(Enchantments.FROST_WALKER, "Fro"),
-            new EnchantEntry(Enchantments.BINDING_CURSE, "Bin"),
-            new EnchantEntry(Enchantments.SMITE, "Smi"),
-            new EnchantEntry(Enchantments.BANE_OF_ARTHROPODS, "Ban"),
-            new EnchantEntry(Enchantments.LOOTING, "Loo"),
-            new EnchantEntry(Enchantments.SWEEPING, "Swe"),
-            new EnchantEntry(Enchantments.EFFICIENCY, "Eff"),
-            new EnchantEntry(Enchantments.SILK_TOUCH, "Sil"),
-            new EnchantEntry(Enchantments.FORTUNE, "For"),
-            new EnchantEntry(Enchantments.FLAME, "Fla"),
-            new EnchantEntry(Enchantments.LUCK_OF_THE_SEA, "Luc"),
-            new EnchantEntry(Enchantments.LURE, "Lur"),
-            new EnchantEntry(Enchantments.MENDING, "Men"),
-            new EnchantEntry(Enchantments.VANISHING_CURSE, "Van"),
-            new EnchantEntry(Enchantments.PUNCH, "Pun")
-    };
 }

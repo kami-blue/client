@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.builder.SettingBuilder;
 import me.zeroeightsix.kami.util.Wrapper;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
@@ -41,7 +40,7 @@ public class BindCommand extends Command {
         String rkey = args[1];
 
         if (module.equalsIgnoreCase("list")) {
-            Module[] modules = MODULE_MANAGER.getModules();
+            Module[] modules = ModuleManager.getModules();
 
             sendChatMessage("You have the following binds: ");
             for (Module module1 : modules) {
@@ -68,7 +67,7 @@ public class BindCommand extends Command {
         }
 
         try {
-            Module m = MODULE_MANAGER.getModule(module);
+            Module m = ModuleManager.getModule(module);
             if (rkey == null) {
                 sendChatMessage(m.name.getValue() + " is bound to &b" + m.getBindName());
                 return;

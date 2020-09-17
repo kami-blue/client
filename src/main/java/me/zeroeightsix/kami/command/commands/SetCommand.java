@@ -5,13 +5,13 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.ISettingUnknown;
 import me.zeroeightsix.kami.setting.Setting;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage;
 
@@ -37,7 +37,7 @@ public class SetCommand extends Command {
             return;
         }
 
-        Module m = MODULE_MANAGER.getModule(args[0]);
+        Module m = ModuleManager.getModule(args[0]);
         if (m == null) {
             sendChatMessage("Unknown module &b" + args[0] + "&r!");
             return;

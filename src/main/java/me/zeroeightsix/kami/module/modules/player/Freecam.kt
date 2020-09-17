@@ -24,7 +24,7 @@ import net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent
         category = Module.Category.PLAYER,
         description = "Leave your body and transcend into the realm of the gods"
 )
-class Freecam : Module() {
+object Freecam : Module() {
     private val speed = register(Settings.i("Speed", 5)) // /100 in practice
     private val packetCancel = register(Settings.b("PacketCancel", false))
 

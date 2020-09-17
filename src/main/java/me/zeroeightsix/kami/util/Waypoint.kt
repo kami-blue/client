@@ -82,7 +82,7 @@ object Waypoint {
     fun createWaypoint(pos: BlockPos, locationName: String): BlockPos {
         FileInstanceManager.waypoints.add(dateFormatter(pos, locationName))
 
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.UpdateType.CREATE)
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Create())
         return pos
     }
 
@@ -91,12 +91,14 @@ object Waypoint {
         val waypoints = FileInstanceManager.waypoints
 
         for (waypoint in waypoints) {
-            if (waypoint.pos.x == pos.x && waypoint.pos.y == pos.y && waypoint.pos.z == pos.z) {
+            if (waypoint.currentPos().x == pos.x && waypoint.currentPos().y == pos.y && waypoint.currentPos().z == pos.z) {
                 waypoints.remove(waypoint)
                 removed = true
                 break
             }
         }
+
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
         return removed
     }
 
@@ -110,20 +112,66 @@ object Waypoint {
             break
         }
 
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.UpdateType.REMOVE)
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
         return removed
     }
 
-    fun getWaypoint(id: String): BlockPos? {
+    fun getWaypoint(id: String, currentDimension: Boolean): BlockPos? {
         val waypoints = FileInstanceManager.waypoints
         for (waypoint in waypoints) {
             if (waypoint.idString == id) {
-                return waypoint.pos
+                return if (currentDimension) {
+                    waypoint.currentPos()
+                } else {
+                    waypoint.pos
+                }
             }
         }
 
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.UpdateType.REMOVE)
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
         return null
+    }
+
+    fun getWaypoint(pos: BlockPos, currentDimension: Boolean): WaypointInfo? {
+        val waypoints = FileInstanceManager.waypoints
+        for (waypoint in waypoints) {
+            if (currentDimension) {
+                if (waypoint.currentPos().x == pos.x && waypoint.currentPos().y == pos.y && waypoint.currentPos().z == pos.z) {
+                    return waypoint
+                }
+            } else {
+                if (waypoint.pos.x == pos.x && waypoint.pos.y == pos.y && waypoint.pos.z == pos.z) {
+                    return waypoint
+                }
+            }
+        }
+
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
+        return null
+    }
+
+    fun genServer(): String? {
+        val mc = Wrapper.minecraft
+        return when {
+            mc.getCurrentServerData() != null -> {
+                mc.getCurrentServerData()!!.serverIP
+            }
+            mc.isIntegratedServerRunning -> {
+                "Singleplayer"
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
+    fun genDimension(): Int {
+        val mc = Wrapper.minecraft
+        return if (mc.player == null) {
+            -2 /* this shouldn't ever happen at all */
+        } else {
+            mc.player.dimension
+        }
     }
 
     /**

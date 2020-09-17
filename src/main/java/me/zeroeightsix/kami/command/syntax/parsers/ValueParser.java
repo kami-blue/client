@@ -8,8 +8,6 @@ import me.zeroeightsix.kami.setting.Setting;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 public class ValueParser extends AbstractParser {
 
     private int moduleIndex;
@@ -22,7 +20,7 @@ public class ValueParser extends AbstractParser {
         if (moduleIndex > values.length - 1 || chunkValue == null) return getDefaultChunk(thisChunk);
         String module = values[moduleIndex];
         try {
-            Module m = MODULE_MANAGER.getModule(module);
+            Module m = ModuleManager.getModule(module);
             HashMap<String, Setting<?>> possibilities = new HashMap<>();
 
             for (Setting<?> v : m.settingList) {

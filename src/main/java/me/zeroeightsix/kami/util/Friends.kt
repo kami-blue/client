@@ -1,15 +1,12 @@
 package me.zeroeightsix.kami.util
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import com.mojang.util.UUIDTypeAdapter
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets

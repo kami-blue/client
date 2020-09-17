@@ -7,14 +7,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 @Mixin(ElytraSound.class)
 public class MixinElytraSound {
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     public void update(CallbackInfo ci) {
-        ElytraFlight elytraFlight = MODULE_MANAGER.getModuleT(ElytraFlight.class);
-        if (elytraFlight.isEnabled() && !elytraFlight.getElytraSounds().getValue()) {
+        if (ElytraFlight.INSTANCE.isEnabled() && !ElytraFlight.INSTANCE.getElytraSounds().getValue()) {
             ci.cancel();
         }
     }

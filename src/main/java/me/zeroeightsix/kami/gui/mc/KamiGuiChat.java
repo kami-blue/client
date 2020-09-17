@@ -79,7 +79,8 @@ public class KamiGuiChat extends GuiChat {
             if (c.getLabel().startsWith(args[0]) || c.getLabel().equals(args[0]))
                 options.put(c.getLabel(), c);
 
-            if (c.getAliases() != null) c.getAliases().stream().filter(alias -> alias.startsWith(args[0]) || alias.equals(args[0])).forEach(alias -> options.put(alias, c));
+            if (c.getAliases() != null)
+                c.getAliases().stream().filter(alias -> alias.startsWith(args[0]) || alias.equals(args[0])).forEach(alias -> options.put(alias, c));
         }
 
         if (options.isEmpty()) {
@@ -93,9 +94,10 @@ public class KamiGuiChat extends GuiChat {
 
         AtomicBoolean isAlias = new AtomicBoolean(false);
         currentFillinLine = alphaCommand.getAliases().stream().filter(alias ->
-                alias.startsWith(args[0])).findFirst().map(s -> { isAlias.set(true);
-                    return s.substring(args[0].length());
-                }).orElseGet(() ->
+                alias.startsWith(args[0])).findFirst().map(s -> {
+            isAlias.set(true);
+            return s.substring(args[0].length());
+        }).orElseGet(() ->
                 alphaCommand.getLabel().substring(args[0].length()));
 
         if (alphaCommand.getSyntaxChunks() == null || alphaCommand.getSyntaxChunks().length == 0)

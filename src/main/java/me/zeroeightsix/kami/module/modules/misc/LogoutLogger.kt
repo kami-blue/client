@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Waypoint
@@ -10,7 +11,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 /**
  * @author dominikaaaa
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
         category = Module.Category.MISC,
         description = "Logs when a player leaves the game"
 )
-class LogoutLogger : Module() {
+object LogoutLogger : Module() {
     private var saveToFile = register(Settings.b("SaveToFile", true))
     private var print = register(Settings.b("PrintToChat", true))
 
@@ -29,9 +29,13 @@ class LogoutLogger : Module() {
     private var onlinePlayers = mutableListOf<NetworkPlayerInfo>()
     private var ticks = 0
 
-    override fun onUpdate() {
-        if (mc.player == null) return
+    @EventHandler
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        loggedPlayers.clear()
+        onlinePlayers.clear()
+    })
 
+    override fun onUpdate() {
         ticks++
 
         for (player in mc.world.loadedEntityList.filterIsInstance<EntityPlayer>()) {
@@ -40,7 +44,7 @@ class LogoutLogger : Module() {
         }
 
         if (ticks >= 20) {
-            Thread(Runnable {
+            Thread {
                 updateOnlinePlayers()
                 loggedPlayers.forEach { loggedPlayer ->
                     var found = false
@@ -57,22 +61,10 @@ class LogoutLogger : Module() {
                         loggedPlayers.remove(loggedPlayer.key)
                     }
                 }
-            }).start()
+            }.start()
             ticks = 0
         }
     }
-
-    @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        loggedPlayers.clear()
-        onlinePlayers.clear()
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        loggedPlayers.clear()
-        onlinePlayers.clear()
-    })
 
     private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
         return if (saveToFile.value) {

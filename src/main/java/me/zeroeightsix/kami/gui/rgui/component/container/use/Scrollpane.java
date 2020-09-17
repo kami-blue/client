@@ -52,8 +52,12 @@ public class Scrollpane extends OrganisedContainer {
                 translatex = scrolledX;
                 translatey = scrolledY;
                 int[] real = GUI.calculateRealPosition(Scrollpane.this);
-                int scale = DisplayGuiScreen.getScale();
-                GL11.glScissor(getX() * scale + real[0] * scale - getParent().getOriginOffsetX() - 1, Display.getHeight() - getHeight() * scale - real[1] * scale - 1, getWidth() * scale + getParent().getOriginOffsetX() * scale + 1, getHeight() * scale + 1);
+                double scale = DisplayGuiScreen.getScale();
+                GL11.glScissor(
+                        (int) (getX() * scale + real[0] * scale - getParent().getOriginOffsetX() - 1),
+                        (int) (Display.getHeight() - getHeight() * scale - real[1] * scale - 1),
+                        (int) (getWidth() * scale + getParent().getOriginOffsetX() * scale + 1),
+                        (int) (getHeight() * scale + 1));
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
             }
 

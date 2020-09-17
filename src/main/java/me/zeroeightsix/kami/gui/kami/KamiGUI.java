@@ -20,11 +20,12 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Label;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.manager.mangers.FriendManager;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
+import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorHolder;
@@ -46,8 +47,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * Created by 086 on 25/06/2017.
  * Updated by dominikaaaa on 28/01/20
@@ -58,9 +57,8 @@ import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 public class KamiGUI extends GUI {
 
     public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
-    public Theme theme;
-
     public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
+    public Theme theme;
 
     public KamiGUI() {
         super(new KamiTheme());
@@ -75,7 +73,7 @@ public class KamiGUI extends GUI {
     @Override
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
-        for (Module module : MODULE_MANAGER.getModules()) {
+        for (Module module : ModuleManager.getModules()) {
             if (module.category.isHidden()) continue;
             Module.Category moduleCategory = module.category;
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
@@ -231,9 +229,8 @@ public class KamiGUI extends GUI {
         Label information = new Label("");
         information.setShadow(true);
         information.addTickListener(() -> {
-            InfoOverlay info = MODULE_MANAGER.getModuleT(InfoOverlay.class);
             information.setText("");
-            info.infoContents().forEach(information::addLine);
+            InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
         });
         frame.addChild(information);
         information.setFontRenderer(fontRenderer);
@@ -247,7 +244,7 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Inventory Viewer");
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setPinned(true);
+        frame.setPinned(false);
         frame.setMinimumWidth(162);
         frame.setMaximumHeight(12);
         Label inventory = new Label("");
@@ -302,9 +299,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                AutoWalk autoWalk = MODULE_MANAGER.getModuleT(AutoWalk.class);
-                if (process.get() != KamiMod.pauseProcess && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
-                    processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
+                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
                 }
@@ -395,7 +391,7 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
-            Minecraft mc = Wrapper.getMinecraft();
+            final Minecraft mc = Wrapper.getMinecraft();
 
             @Override
             public void onTick() {
@@ -442,7 +438,7 @@ public class KamiGUI extends GUI {
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
         coordsLabel.addTickListener(new TickListener() {
-            Minecraft mc = Minecraft.getMinecraft();
+            final Minecraft mc = Minecraft.getMinecraft();
 
             @Override
             public void onTick() {
@@ -519,6 +515,11 @@ public class KamiGUI extends GUI {
         }
     }
 
+    @Override
+    public void destroyGUI() {
+        kill();
+    }
+
     private static String getEntityName(@Nonnull Entity entity) {
         if (entity instanceof EntityItem) {
             return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
@@ -560,11 +561,6 @@ public class KamiGUI extends GUI {
         return result;
     }
 
-    @Override
-    public void destroyGUI() {
-        kill();
-    }
-
     private static final int DOCK_OFFSET = 0;
 
     public static void dock(Frame component) {
@@ -572,15 +568,15 @@ public class KamiGUI extends GUI {
         if (docking.isTop())
             component.setY(DOCK_OFFSET);
         if (docking.isBottom())
-            component.setY((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET);
+            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
         if (docking.isLeft())
             component.setX(DOCK_OFFSET);
         if (docking.isRight())
-            component.setX((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET);
+            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
         if (docking.isCenterHorizontal())
-            component.setX((Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
+            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
         if (docking.isCenterVertical())
-            component.setY(Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2);
+            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
 
     }
 }

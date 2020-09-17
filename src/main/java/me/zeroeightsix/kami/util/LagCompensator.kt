@@ -24,7 +24,8 @@ object LagCompensator : EventListener {
                     numTicks += 1.0f
                 }
             }
-            return MathHelper.clamp(sumTickRates / numTicks, 0.0f, 20.0f)
+            val calcTickRate = MathHelper.clamp(sumTickRates / numTicks, 0.0f, 20.0f)
+            return if (calcTickRate == 0.0f) 20.0f else calcTickRate
         }
 
     val adjustTicks: Float get() = tickRate - 20f

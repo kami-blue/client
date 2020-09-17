@@ -8,11 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
-/**
- * Created by 20kdc on 14/02/2020.
- */
 @Mixin(Frustum.class)
 public abstract class MixinFrustum {
 
@@ -21,8 +16,7 @@ public abstract class MixinFrustum {
         // [WebringOfTheDamned]
         // This is used because honestly the Mojang frustrum bounding box thing is a mess.
         // This & MixinEntityRenderer get it working on OptiFine, but MixinVisGraph is necessary on Vanilla.
-        if (MODULE_MANAGER.isModuleEnabled(Freecam.class))
-            info.setReturnValue(true);
+        if (Freecam.INSTANCE.isEnabled()) info.setReturnValue(true);
     }
 
 }

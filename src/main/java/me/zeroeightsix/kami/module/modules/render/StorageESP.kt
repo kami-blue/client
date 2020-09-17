@@ -15,18 +15,12 @@ import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Created by 086 on 10/12/2017.
- * Updated by dominikaaaa on 14/12/19
- * Updated by Afel on 08/06/20
- * Updated by Xiaro on 09/08/20
- */
 @Module.Info(
         name = "StorageESP",
         description = "Draws an ESP on top of storage units",
         category = Module.Category.RENDER
 )
-class StorageESP : Module() {
+object StorageESP : Module() {
     private val page = register(Settings.e<Page>("Page", Page.TYPE))
 
     /* Type settings */

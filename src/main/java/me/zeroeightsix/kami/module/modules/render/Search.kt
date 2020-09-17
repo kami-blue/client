@@ -22,18 +22,12 @@ import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.sqrt
 
-/**
- * @author wnuke
- * Updated by dominikaaaa on 20/04/20
- * Updated by Afel on 08/06/20
- * Rewrote by Xiaro on 24/07/20
- */
 @Module.Info(
         name = "Search",
         description = "Highlights blocks in the world",
         category = Module.Category.RENDER
 )
-class Search : Module() {
+object Search : Module() {
     private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).build())
     val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
     private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
@@ -51,7 +45,7 @@ class Search : Module() {
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
     /* Search list */
-    private val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"
+    private const val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"
     private val searchList = register(Settings.stringBuilder("SearchList").withValue(defaultSearchList).withVisibility { false }.build())
 
     var searchArrayList = searchGetArrayList()
@@ -150,7 +144,7 @@ class Search : Module() {
 
     private fun updateLoadedChunkList() {
         /* Removes unloaded chunks from the list */
-        Thread(Runnable {
+        Thread {
             for (chunkPos in loadedChunks) {
                 if (isChunkLoaded(chunkPos)) continue
                 chunkThreads.remove(chunkPos)
@@ -168,15 +162,15 @@ class Search : Module() {
                 if (!chunk.isLoaded) continue
                 loadedChunks.add(chunk.pos)
             }
-        }).start()
+        }.start()
     }
 
     private fun updateMainList() {
-        Thread(Runnable {
+        Thread {
             for (chunkPos in loadedChunks) {
-                val thread = Thread(Runnable {
+                val thread = Thread {
                     findBlocksInChunk(chunkPos, searchArrayList.toHashSet())
-                })
+                }
                 thread.priority = 1
                 chunkThreads.putIfAbsent(chunkPos, thread)
             }
@@ -184,7 +178,7 @@ class Search : Module() {
                 chunkThreadPool.execute(thread)
                 Thread.sleep(5L)
             }
-        }).start()
+        }.start()
     }
 
     private fun findBlocksInChunk(chunkPos: ChunkPos, blocksToFind: HashSet<String>) {

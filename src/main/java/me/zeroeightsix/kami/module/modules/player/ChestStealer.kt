@@ -1,11 +1,12 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
+import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
@@ -17,7 +18,7 @@ import net.minecraft.init.Items
         category = Module.Category.PLAYER,
         description = "Automatically steal items from containers"
 )
-class ChestStealer : Module() {
+object ChestStealer : Module() {
     val stealMode: Setting<StealMode> = register(Settings.e<StealMode>("StealMode", StealMode.TOGGLE))
     private val movingMode = register(Settings.e<MovingMode>("MovingMode", MovingMode.QUICK_MOVE))
     private val ignoreEjectItem = register(Settings.b("IgnoresEjectItem", false))
@@ -32,6 +33,7 @@ class ChestStealer : Module() {
     }
 
     var stealing = false
+    val timer = TimerUtils.TickTimer()
 
     override fun onUpdate() {
         stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
@@ -47,8 +49,11 @@ class ChestStealer : Module() {
 
     fun isContainerOpen(): Boolean {
         return mc.player.openContainer != null
-                && mc.currentScreen is GuiContainer
-                && mc.currentScreen !is GuiEnchantment
+                && isValidGui()
+    }
+
+    fun isValidGui(): Boolean {
+        return mc.currentScreen !is GuiEnchantment
                 && mc.currentScreen !is GuiMerchant
                 && mc.currentScreen !is GuiRepair
                 && mc.currentScreen !is GuiBeacon
@@ -63,25 +68,20 @@ class ChestStealer : Module() {
         val slotTo = getEmptySlotContainer(size, size + 35) ?: return false
         val windowID = mc.player.openContainer.windowId
 
-        when (movingMode.value) {
-            MovingMode.QUICK_MOVE -> {
-                InventoryUtils.quickMoveSlot(windowID, slot, delay.value.toLong())
+        if (timer.tick(delay.value.toLong())) {
+            when (movingMode.value) {
+                MovingMode.QUICK_MOVE -> InventoryUtils.quickMoveSlot(windowID, slot)
+                MovingMode.PICKUP -> InventoryUtils.moveToSlot(windowID, slot, slotTo)
+                MovingMode.THROW -> InventoryUtils.throwAllInSlot(windowID, slot)
+                else -> { }
             }
-            MovingMode.PICKUP -> {
-                InventoryUtils.moveToSlot(windowID, slot, slotTo, delay.value / 3L)
-            }
-            MovingMode.THROW -> {
-                InventoryUtils.throwAllInSlot(windowID, slot, delay.value.toLong())
-            }
-            else -> {
-            } /* This shouldn't be reached */
         }
         return true
     }
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = KamiMod.MODULE_MANAGER.getModuleT(InventoryManager::class.java)!!.ejectArrayList
+        val ejectList = ModuleManager.getModuleT(InventoryManager::class.java)!!.ejectArrayList
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].getItem()
             if (item == Items.AIR) continue

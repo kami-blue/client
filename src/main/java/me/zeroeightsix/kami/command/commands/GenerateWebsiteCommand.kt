@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 
 /**
@@ -14,7 +15,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
  */
 class GenerateWebsiteCommand : Command("genwebsite", null) {
     override fun call(args: Array<String>) {
-        val mods = KamiMod.MODULE_MANAGER.getModules()
+        val mods = ModuleManager.getModules()
         val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
         KamiMod.log.info("\n"
                 + "---\n"

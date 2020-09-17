@@ -12,17 +12,18 @@ import kotlin.math.sqrt
  * Utils for calculating angles and rotations
  *
  * Created by Xiaro on 20/08/20
+ * Updated by Xiaro on 29/08/20
  */
 object RotationUtils {
     val mc = Wrapper.minecraft
 
     fun faceEntity(entity: Entity) {
         val rotation = getRotationToEntity(entity)
-        mc.player.rotationYaw = rotation.first.toFloat()
-        mc.player.rotationPitch = rotation.second.toFloat()
+        mc.player.rotationYaw = rotation.x.toFloat()
+        mc.player.rotationPitch = rotation.y.toFloat()
     }
 
-    fun getRotationToEntity(entity: Entity): Pair<Double, Double> {
+    fun getRotationToEntity(entity: Entity): Vec2d {
         val posTo = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
         return getRotationTo(posTo, true)
     }
@@ -35,7 +36,7 @@ object RotationUtils {
      * @return [Pair]<Yaw, Pitch>
      */
     @JvmStatic
-    fun getRotationTo(posTo: Vec3d, eyeHeight: Boolean): Pair<Double, Double> {
+    fun getRotationTo(posTo: Vec3d, eyeHeight: Boolean): Vec2d {
         val player = mc.player
         val posFrom = if (eyeHeight) player.getPositionEyes(KamiTessellator.pTicks())
         else EntityUtils.getInterpolatedPos(player, KamiTessellator.pTicks())
@@ -49,15 +50,15 @@ object RotationUtils {
      * @param posTo Calculate rotation to this position vector
      * @return [Pair]<Yaw, Pitch>
      */
-    fun getRotationTo(posFrom: Vec3d, posTo: Vec3d): Pair<Double, Double> {
+    fun getRotationTo(posFrom: Vec3d, posTo: Vec3d): Vec2d {
         return getRotationFromVec(posTo.subtract(posFrom))
     }
 
-    fun getRotationFromVec(vec: Vec3d): Pair<Double, Double> {
+    fun getRotationFromVec(vec: Vec3d): Vec2d {
         val xz = sqrt(vec.x * vec.x + vec.z * vec.z)
-        val yaw = normalizeAngle(Math.toDegrees(atan2(vec.z, vec.x)) - 90.0f)
+        val yaw = normalizeAngle(Math.toDegrees(atan2(vec.z, vec.x)) - 90.0)
         val pitch = normalizeAngle(Math.toDegrees(-atan2(vec.y, xz)))
-        return Pair(yaw, pitch)
+        return Vec2d(yaw, pitch)
     }
 
     @JvmStatic

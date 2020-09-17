@@ -160,13 +160,17 @@ public class Installer extends JPanel {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
                 dialog[0].hide();
                 System.out.println(KamiMod.MODNAME + " download finished!");
-            } catch (IOException e) { notifyAndExitWeb(e); }
+            } catch (IOException e) {
+                notifyAndExitWeb(e);
+            }
         } else if (version == VersionType.BETA) {
             try {
                 WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
                 dialog[0].hide();
                 System.out.println(KamiMod.MODNAME + " download finished!");
-            } catch (IOException e) { notifyAndExitWeb(e); }
+            } catch (IOException e) {
+                notifyAndExitWeb(e);
+            }
         } else {
             notify("Error when downloading, invalid VersionType entered!");
             throw new IllegalStateException();
@@ -176,6 +180,7 @@ public class Installer extends JPanel {
 
     /**
      * Deletes all the older KAMI Jars
+     *
      * @param files list of KAMI jar Files
      */
     private static void deleteKamiJars(ArrayList<File> files) {
@@ -207,6 +212,7 @@ public class Installer extends JPanel {
 
     /**
      * Checks if Forge is installed
+     *
      * @return true if Forge is installed
      */
     private static boolean checkForForge() {

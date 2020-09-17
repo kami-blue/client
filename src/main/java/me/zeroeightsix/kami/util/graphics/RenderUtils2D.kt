@@ -167,6 +167,23 @@ object RenderUtils2D {
 
     @JvmStatic
     @JvmOverloads
+    fun drawLineStrip(vertexHelper: VertexHelper, vertices: Array<Vec2d>, lineWidth: Float = 1f, color: ColorHolder) {
+        prepareGl()
+        glLineWidth(lineWidth)
+
+        vertexHelper.begin(GL_LINE_STRIP)
+        for (vertex in vertices) {
+            vertexHelper.put(vertex, color)
+        }
+        vertexHelper.end()
+
+
+        releaseGl()
+        glLineWidth(1f)
+    }
+
+    @JvmStatic
+    @JvmOverloads
     fun drawLine(vertexHelper: VertexHelper, posBegin: Vec2d, posEnd: Vec2d, lineWidth: Float = 1f, color: ColorHolder) {
         prepareGl()
         glLineWidth(lineWidth)

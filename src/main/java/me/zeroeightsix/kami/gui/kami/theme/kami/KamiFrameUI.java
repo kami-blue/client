@@ -257,8 +257,8 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             @Override
             public void execute(Frame component, DragInfo info) {
                 if (Bind.isShiftDown() || Bind.isAltDown() || Bind.isCtrlDown()) return;
-                int x = info.getX();
-                int y = info.getY();
+                double x = info.getX();
+                double y = info.getY();
                 yLineComponent = null;
                 xLineComponent = null;
 
@@ -268,7 +268,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                 for (Component c : rootGUI.getChildren()) {
                     if (c.equals(component)) continue;
 
-                    int yDiff = Math.abs(y - c.getY());
+                    double yDiff = Math.abs(y - c.getY());
                     if (yDiff < 4) {
                         y = c.getY();
                         yLineComponent = component;
@@ -281,7 +281,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                         yLineComponent = component;
                     }
 
-                    int xDiff = Math.abs((x + component.getWidth()) - (c.getX() + c.getWidth()));
+                    double xDiff = Math.abs((x + component.getWidth()) - (c.getX() + c.getWidth()));
                     if (xDiff < 4) {
                         x = c.getX() + c.getWidth();
                         x -= component.getWidth();
@@ -310,7 +310,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     ContainerHelper.setAlignment(component, AlignedComponent.Alignment.LEFT);
                     component.setDocking(Docking.LEFT);
                 }
-                int diff = (x + component.getWidth()) * DisplayGuiScreen.getScale() - Wrapper.getMinecraft().displayWidth;
+                double diff = (x + component.getWidth()) * DisplayGuiScreen.getScale() - Wrapper.getMinecraft().displayWidth;
                 if (-diff < 5) {
                     x = (Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth();
                     ContainerHelper.setAlignment(component, AlignedComponent.Alignment.RIGHT);
@@ -339,11 +339,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                         component.setDocking(Docking.BOTTOM);
                 }
 
-                if (Math.abs(((x + component.getWidth() / 2) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayWidth) < 5) { // Component is center-aligned on the x axis
+                if (Math.abs(((x + component.getWidth() / 2.0) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayWidth) < 5) { // Component is center-aligned on the x axis
                     xLineComponent = null;
                     centerXComponent = component;
                     centerX = true;
-                    x = (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2)) - component.getWidth() / 2;
+                    x = (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2)) - component.getWidth() / 2.0;
                     if (component.getDocking().isTop()) {
                         component.setDocking(Docking.CENTERTOP);
                     } else if (component.getDocking().isBottom()) {
@@ -356,11 +356,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     centerX = false;
                 }
 
-                if (Math.abs(((y + component.getHeight() / 2) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayHeight) < 5) { // Component is center-aligned on the y axis
+                if (Math.abs(((y + component.getHeight() / 2.0) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayHeight) < 5) { // Component is center-aligned on the y axis
                     yLineComponent = null;
                     centerYComponent = component;
                     centerY = true;
-                    y = (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2)) - component.getHeight() / 2;
+                    y = (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2)) - component.getHeight() / 2.0;
                     if (component.getDocking().isLeft()) {
                         component.setDocking(Docking.CENTERLEFT);
                     } else if (component.getDocking().isRight()) {
@@ -374,8 +374,8 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     centerY = false;
                 }
 
-                info.setX(x);
-                info.setY(y);
+                info.setX((int) x);
+                info.setY((int) y);
             }
         });
     }
