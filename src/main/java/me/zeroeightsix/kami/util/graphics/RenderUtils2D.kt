@@ -11,9 +11,7 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
 
 /**
- * @author Xiaro
- *
- * Created by Xiaro on 25/08/20
+ * Utils for basic 2D shapes rendering
  */
 object RenderUtils2D {
 
@@ -23,10 +21,10 @@ object RenderUtils2D {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcOutline(vertexHelper, posBegin.add(radius), radius, Pair(270f, 0f), color = color) // Top left
-        drawArcOutline(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), color = color) // Top right
-        drawArcOutline(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), color = color) // Bottom right
-        drawArcOutline(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), color = color) // Bottom left
+        drawArcOutline(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), lineWidth = lineWidth, color = color) // Top left
+        drawArcOutline(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), lineWidth = lineWidth, color = color) // Top right
+        drawArcOutline(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), lineWidth = lineWidth, color = color) // Bottom right
+        drawArcOutline(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), lineWidth = lineWidth, color = color) // Bottom left
 
         drawLine(vertexHelper, posBegin.add(radius, 0.0), pos2.subtract(radius, 0.0), lineWidth, color) // Top
         drawLine(vertexHelper, posBegin.add(0.0, radius), pos4.subtract(0.0, radius), lineWidth, color) // Left
@@ -40,16 +38,14 @@ object RenderUtils2D {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcFilled(vertexHelper, posBegin.add(radius), radius, Pair(270f, 0f), color = color) // Top left
+        drawArcFilled(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), color = color) // Top left
         drawArcFilled(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), color = color) // Top right
         drawArcFilled(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), color = color) // Bottom right
         drawArcFilled(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), color = color) // Bottom left
 
-        drawRectFilled(vertexHelper, posBegin.add(radius), posEnd.subtract(radius), color) // Center
         drawRectFilled(vertexHelper, posBegin.add(radius, 0.0), pos2.add(-radius, radius), color) // Top
-        drawRectFilled(vertexHelper, posBegin.add(0.0, radius), pos4.add(radius), color) // Left
-        drawRectFilled(vertexHelper, pos2.subtract(radius), posEnd.subtract(0.0, radius), color) // Right
-        drawRectFilled(vertexHelper, pos4.add(radius), posEnd.subtract(radius, 0.0), color) // Bottom
+        drawRectFilled(vertexHelper, posBegin.add(0.0, radius), posEnd.subtract(0.0, radius), color) // Center
+        drawRectFilled(vertexHelper, pos4.add(radius, -radius), posEnd.subtract(radius, 0.0), color) // Bottom
     }
 
     @JvmStatic
@@ -68,7 +64,7 @@ object RenderUtils2D {
     @JvmOverloads
     fun drawArcOutline(vertexHelper: VertexHelper, center: Vec2d = Vec2d(0.0, 0.0), radius: Double, angleRange: Pair<Float, Float>, segments: Int = 0, lineWidth: Float = 1f, color: ColorHolder) {
         val arcVertices = getArcVertices(center, radius, angleRange, segments)
-        drawLineLoop(vertexHelper, arcVertices, lineWidth, color)
+        drawLineStrip(vertexHelper, arcVertices, lineWidth, color)
     }
 
     @JvmStatic
@@ -199,19 +195,17 @@ object RenderUtils2D {
 
     @JvmStatic
     private fun getArcVertices(center: Vec2d, radius: Double, angleRange: Pair<Float, Float>, segments: Int): Array<Vec2d> {
-        val angleBegin = min(angleRange.first, angleRange.second).toDouble()
-        val angleEnd = max(angleRange.first, angleRange.second).toDouble()
-        val range = angleEnd - angleBegin
+        val range = max(angleRange.first, angleRange.second) - min(angleRange.first, angleRange.second)
         val seg = calcSegments(segments, radius, range)
 
-        return Array(seg + 1) { index ->
-            val angle = Math.toRadians(index * (range / seg.toDouble()) + angleBegin)
+        return Array(seg + 1) {
+            val angle = Math.toRadians(it * (range / seg.toDouble()) + angleRange.first)
             Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
         }
     }
 
     @JvmStatic
-    private fun calcSegments(segmentsIn: Int, radius: Double, range: Double): Int {
+    private fun calcSegments(segmentsIn: Int, radius: Double, range: Float): Int {
         if (segmentsIn != -0) return segmentsIn
         val segments = radius * 0.5 * PI * (range / 360.0)
         return max(segments.roundToInt(), 16)
