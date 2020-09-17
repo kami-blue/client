@@ -30,7 +30,6 @@ import kotlin.math.max
 )
 object Step : Module() {
     private val mode: Setting<Mode> = register(Settings.e("Mode", Mode.PACKET))
-    private var baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
     private val speed = register(Settings.integerBuilder("Speed").withMinimum(1).withMaximum(100).withValue(40).withVisibility { mode.value == Mode.VANILLA }.build())
     private val height = register(Settings.floatBuilder("Height").withRange(0.0f, 10.0f).withValue(1.0f).withVisibility { mode.value == Mode.PACKET }.build())
     private val downStep = register(Settings.booleanBuilder("DownStep").withValue(false).build())
@@ -45,9 +44,7 @@ object Step : Module() {
     }
 
     override fun onToggle() {
-        if (mc.player != null && baritoneCompat.value) {
-            BaritoneAPI.getSettings().assumeStep.value = isEnabled
-        }
+        if (mc.player != null) BaritoneAPI.getSettings().assumeStep.value = isEnabled
     }
 
     /**
