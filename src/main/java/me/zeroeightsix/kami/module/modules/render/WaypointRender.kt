@@ -19,6 +19,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
+import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -36,7 +37,7 @@ object WaypointRender : Module() {
     private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.INFO_BOX }.build())
+    private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.INFO_BOX }.build())
     private val infoBoxRange = register(Settings.integerBuilder("InfoBoxRange").withValue(512).withRange(128, 2048).withVisibility { page.value == Page.INFO_BOX }.build())
 
     /* Page two */
@@ -109,7 +110,7 @@ object WaypointRender : Module() {
 
         val pos = Vec3d(waypoint.currentPos()).add(0.5, 0.5, 0.5)
         val screenPos = ProjectionUtils.toScreenPos(pos)
-        glTranslated(screenPos.x, screenPos.y, 0.0)
+        glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
         glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
 
         var str = ""
@@ -137,16 +138,16 @@ object WaypointRender : Module() {
         /* Outline of the rectangle */
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 2f, ColorHolder(80, 80, 80, 232))
 
-        glTranslated(0.0, -stringHeight * 0.5, 0.0)
+        glTranslatef(0f, round(-stringHeight / 2f), 0f)
 
         /* Draw string line by line */
         glEnable(GL_TEXTURE_2D)
         for (line in str.lines()) {
             val strLine = line.replace("${'\n'}", "")
             if (strLine.isBlank()) continue
-            val strLineWidth = fontRenderer.getStringWidth(strLine).toFloat()
-            fontRenderer.drawString(strLine, (strLineWidth / -2f), 0f, 0xffffff, false)
-            glTranslated(0.0, fontRenderer.FONT_HEIGHT + 2.0, 0.0)
+            val strLineWidth = fontRenderer.getStringWidth(strLine)
+            fontRenderer.drawString(strLine, round(strLineWidth / -2f), 0f, 0xffffff, false)
+            glTranslatef(0f, round(fontRenderer.FONT_HEIGHT + 2f), 0f)
         }
 
         glPopMatrix()
