@@ -5,8 +5,10 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -22,9 +24,14 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.RENDER
 )
 object BreakingESP : Module() {
-    private val ignoreSelf = register(Settings.b("IgnoreSelf", false))
+    private val espSelf = register(Settings.b("ESPSelf", true))
+    private val warnSelf = register(Settings.b("WarnSelf", false))
     private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
-    private val warning = register(Settings.b("Warning", false))
+    private val warning = register(Settings.b("Warn", false))
+    private val warningProgress = register(Settings.integerBuilder("WarnProgress").withMinimum(0).withValue(4).withMaximum(9).build())
+    private val chatWarn = register(Settings.b("ChatWarning", false))
+    private val screenWarn = register(Settings.b("HUDWarning", true))
+    private val soundWarn = register(Settings.b("SoundWarning", false))
     private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withRange(0.0f, 64.0f).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
@@ -37,7 +44,9 @@ object BreakingESP : Module() {
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withVisibility { outline.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
-    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Boolean>>() /* <BreakerID, <Position, Progress, Warned> */
+    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
+
+    private var warningText = ""
 
     override fun onWorldRender(event: RenderEvent) {
         val colour = ColorHolder(r.value, g.value, b.value)
@@ -48,15 +57,17 @@ object BreakingESP : Module() {
         renderer.thickness = thickness.value
 
         var selfBreaking: AxisAlignedBB? = null
-        for ((breakID, pair) in breakingBlockList) {
-            val box = mc.world.getBlockState(pair.first).getSelectedBoundingBox(mc.world, pair.first)
-            val progress = pair.second / 9f
-            val resizedBox = box.shrink((1f - progress) * box.averageEdgeLength * 0.5)
-            if (mc.world.getEntityByID(breakID) == mc.player) {
-                selfBreaking = resizedBox
-                continue
+        for ((breakID, triple) in breakingBlockList) {
+            if (triple.third.second) {
+                val box = mc.world.getBlockState(triple.first).getSelectedBoundingBox(mc.world, triple.first)
+                val progress = triple.second / 9f
+                val resizedBox = box.shrink((1f - progress) * box.averageEdgeLength * 0.5)
+                if (mc.world.getEntityByID(breakID) == mc.player) {
+                    selfBreaking = resizedBox
+                    continue
+                }
+                renderer.add(resizedBox, colour)
             }
-            renderer.add(resizedBox, colour)
         }
         renderer.render(true)
 
@@ -67,19 +78,35 @@ object BreakingESP : Module() {
         }
     }
 
+    private var warn = false
+    private var delay = 0
+
+    override fun onRender() {
+        if (screenWarn.value && warn) {
+            if (delay++ > 100) warn = false
+            val textRenderer = Wrapper.fontRenderer
+            val scale = DisplayGuiScreen.getScale().toInt()
+            val divider = if (scale == 0) 1 else scale
+            textRenderer.drawStringWithShadow(mc.displayWidth / divider / 2 - textRenderer.getStringWidth(warningText) / 2, mc.displayHeight / divider / 2 - 16, 240, 87, 70, warningText)
+        }
+    }
+
     @EventHandler
     private val blockBreaklistener = Listener(EventHook { event: BlockBreakEvent ->
         if (mc.player == null || mc.player.getDistanceSq(event.position) > range.value * range.value) return@EventHook
         val breaker = mc.world.getEntityByID(event.breakId) ?: return@EventHook
-        if (ignoreSelf.value && breaker == mc.player) return@EventHook
         if (event.progress in 0..9) {
-            breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, false))
+            val render = mc.player != breaker || espSelf.value
+            breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, Pair(false, render)))
             breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third) }
-            if (warning.value && breaker != mc.player && event.progress > 4 && !breakingBlockList[event.breakId]!!.third
+            if (warning.value && (mc.player != breaker || warnSelf.value) && event.progress >= warningProgress.value && !breakingBlockList[event.breakId]!!.third.first
                     && ((obsidianOnly.value && mc.world.getBlockState(event.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
-                mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                sendChatMessage("${breaker.name} is breaking near you!")
-                breakingBlockList[event.breakId] = Triple(event.position, event.progress, true)
+                if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                warningText = "${breaker.name} is breaking near you!"
+                if (chatWarn.value) sendChatMessage(warningText)
+                delay = 0
+                warn = true
+                breakingBlockList[event.breakId] = Triple(event.position, event.progress, Pair(true, render))
             }
         } else {
             breakingBlockList.remove(event.breakId)
