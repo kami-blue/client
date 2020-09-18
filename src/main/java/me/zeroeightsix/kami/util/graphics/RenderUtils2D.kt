@@ -1,11 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.blend
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.cull
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.depth
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.lineSmooth
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.smooth
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
@@ -17,14 +12,14 @@ object RenderUtils2D {
 
     @JvmStatic
     @JvmOverloads
-    fun drawRoundedRectOutline(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, lineWidth: Float, color: ColorHolder) {
+    fun drawRoundedRectOutline(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, segments: Int = 0, lineWidth: Float, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcOutline(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), lineWidth = lineWidth, color = color) // Top left
-        drawArcOutline(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), lineWidth = lineWidth, color = color) // Top right
-        drawArcOutline(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), lineWidth = lineWidth, color = color) // Bottom right
-        drawArcOutline(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), lineWidth = lineWidth, color = color) // Bottom left
+        drawArcOutline(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), segments, lineWidth, color) // Top left
+        drawArcOutline(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), segments, lineWidth, color) // Top right
+        drawArcOutline(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), segments, lineWidth, color) // Bottom right
+        drawArcOutline(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), segments, lineWidth, color) // Bottom left
 
         drawLine(vertexHelper, posBegin.add(radius, 0.0), pos2.subtract(radius, 0.0), lineWidth, color) // Top
         drawLine(vertexHelper, posBegin.add(0.0, radius), pos4.subtract(0.0, radius), lineWidth, color) // Left
@@ -34,14 +29,14 @@ object RenderUtils2D {
 
     @JvmStatic
     @JvmOverloads
-    fun drawRoundedRectFilled(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, color: ColorHolder) {
+    fun drawRoundedRectFilled(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, segments: Int = 0, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcFilled(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), color = color) // Top left
-        drawArcFilled(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), color = color) // Top right
-        drawArcFilled(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), color = color) // Bottom right
-        drawArcFilled(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), color = color) // Bottom left
+        drawArcFilled(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), segments, color) // Top left
+        drawArcFilled(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), segments, color) // Top right
+        drawArcFilled(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), segments, color) // Bottom right
+        drawArcFilled(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), segments, color) // Bottom left
 
         drawRectFilled(vertexHelper, posBegin.add(radius, 0.0), pos2.add(-radius, radius), color) // Top
         drawRectFilled(vertexHelper, posBegin.add(0.0, radius), posEnd.subtract(0.0, radius), color) // Center
@@ -212,19 +207,21 @@ object RenderUtils2D {
     }
 
     private fun prepareGl() {
-        blend(true)
-        smooth(true)
-        lineSmooth(true)
-        depth(false)
-        cull(false)
+        GlStateUtils.texture2d(false)
+        GlStateUtils.blend(true)
+        GlStateUtils.smooth(true)
+        GlStateUtils.lineSmooth(true)
+        GlStateUtils.depth(false)
+        GlStateUtils.cull(false)
     }
 
     private fun releaseGl() {
-        blend(false)
-        smooth(false)
-        lineSmooth(false)
-        depth(true)
-        cull(true)
+        GlStateUtils.texture2d(true)
+        GlStateUtils.blend(false)
+        GlStateUtils.smooth(false)
+        GlStateUtils.lineSmooth(false)
+        GlStateUtils.depth(true)
+        GlStateUtils.cull(true)
     }
 
 }

@@ -70,6 +70,11 @@ object GlStateUtils {
     }
 
     @JvmStatic
+    fun rescaleActual() {
+        rescale(Wrapper.minecraft.displayWidth.toDouble(), Wrapper.minecraft.displayHeight.toDouble())
+    }
+
+    @JvmStatic
     fun rescaleKami() {
         val guiScale = DisplayGuiScreen.getScale()
         rescale(Wrapper.minecraft.displayWidth / guiScale, Wrapper.minecraft.displayHeight / guiScale)
