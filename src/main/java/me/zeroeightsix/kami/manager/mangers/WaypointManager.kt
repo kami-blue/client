@@ -86,52 +86,47 @@ object WaypointManager : Manager() {
 
     fun get(id: String): Waypoint? {
         val waypoint = waypoints.firstOrNull { it.id.toString() == id }
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
         return waypoint
     }
 
     fun get(pos: BlockPos, currentDimension: Boolean = false): Waypoint? {
         val waypoint = waypoints.firstOrNull { (if (currentDimension) it.currentPos() else it.pos) == pos }
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
         return waypoint
     }
 
     fun add(locationName: String): Waypoint {
         val coords = Wrapper.player?.positionVector?.toBlockPos() ?: BlockPos(0, -6969, 0) // This shouldn't happen
         val waypoint = add(coords, locationName)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Create())
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
         return waypoint
     }
 
     fun add(pos: BlockPos, locationName: String): Waypoint {
         val waypoint = dateFormatter(pos, locationName)
         waypoints.add(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Create())
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
         return waypoint
     }
 
     fun remove(pos: BlockPos, currentDimension: Boolean = false): Boolean {
         val waypoint = get(pos, currentDimension)
         val removed = waypoints.remove(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
     }
 
     fun remove(id: String): Boolean {
-        val waypoint = get(id)
+        val waypoint = get(id)?: return false
         val removed = waypoints.remove(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
     }
 
     fun clear() {
         waypoints.clear()
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
     }
 
     fun genServer(): String? {

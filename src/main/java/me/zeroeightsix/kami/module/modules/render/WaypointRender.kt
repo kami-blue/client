@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -63,7 +63,7 @@ object WaypointRender : Module() {
     }
 
     private val waypointMap = TreeMap<BlockPos, TextComponent>(compareBy {
-        mc.player?.getDistanceSqToCenter(it) ?: it.getDistance(0, 0, 0)
+        it.distanceSq(mc.player?.position?: BlockPos(0, -69420, 0))
     })
     private var currentServer: String? = null
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -137,15 +137,20 @@ object WaypointRender : Module() {
     }
 
     override fun onUpdate() {
-        if (Waypoint.genDimension() != prevDimension || timer.tick(5L, false)) {
-            if (Waypoint.genDimension() != prevDimension)  waypointMap.clear()
+        if (WaypointManager.genDimension() != prevDimension || timer.tick(5L, false)) {
+            if (WaypointManager.genDimension() != prevDimension)  waypointMap.clear()
             updateList()
         }
     }
 
     @EventHandler
-    private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent.Update ->
-        updateList()
+    private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent ->
+        when (event.type) {
+            WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
+            WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
+            WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
+            else -> { }
+        }
     })
 
     @EventHandler
@@ -155,24 +160,26 @@ object WaypointRender : Module() {
 
     private fun updateList() {
         timer.reset()
-        prevDimension = Waypoint.genDimension()
+        prevDimension = WaypointManager.genDimension()
         if (currentServer == null) {
             waypointMap.clear()
-            currentServer = Waypoint.genServer()
+            currentServer = WaypointManager.genServer()
         }
 
-        val cacheList = FileInstanceManager.waypoints.filter { (it.server == null || it.server == currentServer) && (dimension.value == Dimension.ANY || it.dimension == prevDimension) }
+        val cacheList = WaypointManager.waypoints.filter { (it.server == null || it.server == currentServer) && (dimension.value == Dimension.ANY || it.dimension == prevDimension) }
 
         waypointMap.keys.removeIf { pos -> cacheList.firstOrNull { it.pos == pos } != null }
 
-        for (wayPoint in cacheList) {
-            // Don't wanna update this continuously
-            waypointMap.computeIfAbsent(wayPoint.pos) {
-                TextComponent().apply {
-                    if (showName.value) addLine(wayPoint.name)
-                    if (showDate.value) addLine(wayPoint.date)
-                    if (showCoords.value) addLine(wayPoint.asString(true))
-                }
+        for (waypoint in cacheList) updateTextComponent(waypoint)
+    }
+
+    private fun updateTextComponent(waypoint: Waypoint) {
+        // Don't wanna update this continuously
+        waypointMap.computeIfAbsent(waypoint.pos) {
+            TextComponent().apply {
+                if (showName.value) addLine(waypoint.name)
+                if (showDate.value) addLine(waypoint.date)
+                if (showCoords.value) addLine(waypoint.asString(true))
             }
         }
     }
