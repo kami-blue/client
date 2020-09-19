@@ -4,19 +4,14 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.Waypoint
-import me.zeroeightsix.kami.util.Waypoint.createWaypoint
-import me.zeroeightsix.kami.util.Waypoint.getWaypoint
-import me.zeroeightsix.kami.util.Waypoint.removeWaypoint
-import me.zeroeightsix.kami.util.Waypoint.writePlayerCoords
-import me.zeroeightsix.kami.util.WaypointInfo
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
-import java.util.function.Consumer
 
 class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", true, EnumParser(arrayOf("add", "remove", "goto", "list", "clear", "stashes", "del", "help"))).build(), "wp", "pos") {
     private var confirmTime = 0L
@@ -33,19 +28,19 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                             }
                             val split = args[2]!!.split(",").toTypedArray()
                             val coordinate = BlockPos(split[0].toInt(), split[1].toInt(), split[2].toInt())
-                            confirm(args[1]!!, createWaypoint(coordinate, args[1]!!).pos)
+                            confirm(args[1]!!, WaypointManager.add(coordinate, args[1]!!).pos)
                         } else {
-                            confirm(args[1]!!, writePlayerCoords(args[1]!!).pos)
+                            confirm(args[1]!!, WaypointManager.add(args[1]!!).pos)
                         }
                     } else {
-                        confirm("Unnamed", writePlayerCoords("Unnamed").pos)
+                        confirm("Unnamed", WaypointManager.add("Unnamed").pos)
                     }
                 }
                 "remove" -> delete(args)
                 "del" -> delete(args)
                 "goto" -> {
                     if (args[1] != null) {
-                        val waypoint = getWaypoint(args[1]!!)
+                        val waypoint = WaypointManager.get(args[1]!!)
                         if (waypoint != null) {
                             if (AutoWalk.isEnabled) AutoWalk.disable()
                             val pos = waypoint.currentPos()
@@ -70,7 +65,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                         MessageSendHelper.sendChatMessage("This will delete ALL your waypoints, run '&7${commandPrefix.value}wp clear&f' again to confirm")
                     } else {
                         confirmTime = 0L
-                        Waypoint.clearWaypoint()
+                        WaypointManager.clear()
                         MessageSendHelper.sendChatMessage("Waypoints have been &ccleared")
                     }
                 }
@@ -98,7 +93,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
     }
 
     private fun listWaypoints(stashes: Boolean) {
-        val waypoints = FileInstanceManager.waypoints
+        val waypoints = WaypointManager.waypoints
         if (waypoints.isEmpty()) {
             if (!stashes) {
                 MessageSendHelper.sendChatMessage("No waypoints have been saved.")
@@ -112,7 +107,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                 MessageSendHelper.sendChatMessage("List of logged stashes:")
             }
             val stashRegex = Regex("(\\(.* chests, .* shulkers, .* droppers, .* dispensers\\))")
-            waypoints.forEach(Consumer { waypoint: WaypointInfo ->
+            for (waypoint in WaypointManager.waypoints) {
                 if (stashes) {
                     if (waypoint.name.matches(stashRegex)) {
                         MessageSendHelper.sendRawChatMessage(format(waypoint, ""))
@@ -122,7 +117,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
                         MessageSendHelper.sendRawChatMessage(format(waypoint, ""))
                     }
                 }
-            })
+            }
         }
     }
 
@@ -130,7 +125,7 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
         var found = false
         var first = true
 
-        for (waypoint in FileInstanceManager.waypoints) {
+        for (waypoint in WaypointManager.waypoints) {
             if (waypoint.name.contains(search)) {
                 if (first) {
                     MessageSendHelper.sendChatMessage("Result of search for &7$search&f: ")
@@ -147,17 +142,17 @@ class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", tru
 
     private fun delete(args: Array<out String?>) {
         if (args[1] != null) {
-            if (removeWaypoint(args[1]!!)) {
+            if (WaypointManager.remove(args[1]!!)) {
                 MessageSendHelper.sendChatMessage("Removed waypoint with ID " + args[1])
             } else {
                 MessageSendHelper.sendChatMessage("No waypoint with ID " + args[1])
             }
         } else {
-            MessageSendHelper.sendErrorMessage("You must provide a waypoint ID delete a waypoint. Use '&7${getCommandPrefix()}wp list&f' to list saved waypoints and their IDs")
+            MessageSendHelper.sendErrorMessage("You must provide a waypoint ID delete a waypoint. Use '&7${commandPrefix.value}wp list&f' to list saved waypoints and their IDs")
         }
     }
 
-    private fun format(waypoint: WaypointInfo, search: String): String {
+    private fun format(waypoint: Waypoint, search: String): String {
         val message = "${formattedID(waypoint.id)} [${waypoint.server}] ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
         return message.replace(search.toRegex(), "&7$search&f")
     }

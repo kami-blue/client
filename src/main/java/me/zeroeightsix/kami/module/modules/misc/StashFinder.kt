@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
@@ -96,7 +96,7 @@ object StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            Waypoint.createWaypoint(chunkStats.getBlockPos(), chunkStats.toString())
+            WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

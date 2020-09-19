@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
@@ -63,7 +63,7 @@ object CoordsLog : Module() {
     }
 
     private fun logCoordinates(name: String): BlockPos {
-        return Waypoint.writePlayerCoords(name).pos
+        return WaypointManager.add(name).pos
     }
 
     override fun onDisable() {
