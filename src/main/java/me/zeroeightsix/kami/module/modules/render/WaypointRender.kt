@@ -10,16 +10,16 @@ import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Waypoint
-import me.zeroeightsix.kami.util.WaypointInfo
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
-import kotlin.math.round
+import java.util.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -32,9 +32,9 @@ object WaypointRender : Module() {
     private val page = register(Settings.e<Page>("Page", Page.INFO_BOX))
 
     /* Page one */
-    private val dimension = register(Settings.enumBuilder(Dimension::class.java).withName("Dimension").withValue(Dimension.CURRENT).withVisibility { page.value == Page.INFO_BOX })
-    private val showName = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
+    private val dimension = register(Settings.enumBuilder(Dimension::class.java, "Dimension").withValue(Dimension.CURRENT).withVisibility { page.value == Page.INFO_BOX })
+    private val showName = register(Settings.booleanBuilder("ShowName").withValue(false).withVisibility { page.value == Page.INFO_BOX }.build())
+    private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(false).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.INFO_BOX }.build())
@@ -62,38 +62,30 @@ object WaypointRender : Module() {
         INFO_BOX, ESP
     }
 
-    private val waypoints = ArrayList<WaypointInfo>()
+    private val waypointMap = TreeMap<BlockPos, TextComponent>(compareBy {
+        mc.player?.getDistanceSqToCenter(it) ?: it.getDistance(0, 0, 0)
+    })
     private var currentServer: String? = null
-    private var ticks = 0
+    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var prevDimension = -2
 
     override fun onWorldRender(event: RenderEvent) {
-        if (mc.player == null || mc.renderManager.options == null || waypoints.isEmpty()) return
+        if (waypointMap.isEmpty()) return
         val color = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
         renderer.aTracer = if (tracer.value) aTracer.value else 0
         renderer.thickness = thickness.value
-        for (waypoint in waypoints) {
-            val pos = waypoint.currentPos()
+        GlStateUtils.depth(false)
+        for (pos in waypointMap.keys) {
             val distance = sqrt(mc.player.getDistanceSq(pos))
             if (espRangeLimit.value && distance > espRange.value) continue
             renderer.add(AxisAlignedBB(pos), color) /* Adds pos to ESPRenderer list */
             drawVerticalLines(pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
         }
+        GlStateUtils.depth(true)
         renderer.render(true)
-    }
-
-    override fun onRender() {
-        if (!showCoords.value && !showName.value && !showDate.value && !showDist.value) return
-        GlStateUtils.rescale(mc.displayWidth.toDouble(), mc.displayHeight.toDouble())
-        for (waypoint in waypoints) {
-            val pos = waypoint.currentPos()
-            val distance = sqrt(mc.player.getDistanceSq(pos))
-            if (distance > infoBoxRange.value) continue
-            drawText(waypoint)
-        }
-        GlStateUtils.rescaleMc()
     }
 
     private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
@@ -104,61 +96,36 @@ object WaypointRender : Module() {
         KamiTessellator.render()
     }
 
-    private fun drawText(waypoint: WaypointInfo) {
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
+    override fun onRender() {
+        if (!showCoords.value && !showName.value && !showDate.value && !showDist.value) return
+        GlStateUtils.rescaleActual()
+        for ((pos, textComponent) in waypointMap) {
+            val distance = sqrt(mc.player.getDistanceSqToCenter(pos))
+            if (distance > infoBoxRange.value) continue
+            drawText(pos, textComponent, distance.roundToInt())
+        }
+        GlStateUtils.rescaleMc()
+    }
 
-        val pos = Vec3d(waypoint.currentPos()).add(0.5, 0.5, 0.5)
-        val screenPos = ProjectionUtils.toScreenPos(pos)
+    private fun drawText(pos: BlockPos, textComponentIn: TextComponent, distance: Int) {
+        glPushMatrix()
+
+        val screenPos = ProjectionUtils.toScreenPos(pos.toVec3d())
         glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
         glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
 
-        var str = ""
-        if (showName.value) str += "${'\n'}${waypoint.name}"
-        if (showDate.value) str += "${'\n'}${waypoint.date}"
-        if (showCoords.value) str += "${'\n'}${waypoint.asString(true)}"
-        if (showDist.value) str += "${'\n'}${mc.player.getDistance(pos.x, pos.y, pos.z).roundToInt()} m"
-
-        val fontRenderer = mc.fontRenderer
-        var longestLine = ""
-        for (strLine in str.lines()) {
-            if (strLine.length > longestLine.length) {
-                longestLine = strLine
-            }
-        }
-        val stringWidth = fontRenderer.getStringWidth(longestLine)
-        val stringHeight = (fontRenderer.FONT_HEIGHT + 2) * (str.lines().size - 1)
+        val textComponent = TextComponent(textComponentIn).apply { if (showDist.value) add("$distance m") }
+        val stringWidth = textComponent.getWidth()
+        val stringHeight = textComponent.getHeight(2)
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         val pos1 = Vec2d(stringWidth * -0.5 - 4.0, stringHeight * -0.5 - 4.0)
-        val pos2 = Vec2d(stringWidth * 0.5 + 4.0, stringHeight * 0.5 + 2.0)
+        val pos2 = Vec2d(stringWidth * 0.5 + 4.0, stringHeight * 0.5 + 4.0)
 
-        /* Rectangle */
         RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, ColorHolder(32, 32, 32, 172))
-
-        /* Outline of the rectangle */
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 2f, ColorHolder(80, 80, 80, 232))
-
-        glTranslatef(0f, round(-stringHeight / 2f), 0f)
-
-        /* Draw string line by line */
-        glEnable(GL_TEXTURE_2D)
-        for (line in str.lines()) {
-            val strLine = line.replace("${'\n'}", "")
-            if (strLine.isBlank()) continue
-            val strLineWidth = fontRenderer.getStringWidth(strLine)
-            fontRenderer.drawString(strLine, round(strLineWidth / -2f), 0f, 0xffffff, false)
-            glTranslatef(0f, round(fontRenderer.FONT_HEIGHT + 2f), 0f)
-        }
+        textComponent.draw(drawShadow = false, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
 
         glPopMatrix()
-    }
-
-    override fun onUpdate() {
-        ticks++
-        if (ticks >= 20) {
-            updateList()
-            ticks = 0
-        }
     }
 
     override fun onEnable() {
@@ -169,19 +136,15 @@ object WaypointRender : Module() {
         currentServer = null
     }
 
-    init {
-        dimension.settingListener = Setting.SettingListeners {
+    override fun onUpdate() {
+        if (Waypoint.genDimension() != prevDimension || timer.tick(5L, false)) {
+            if (Waypoint.genDimension() != prevDimension)  waypointMap.clear()
             updateList()
         }
     }
 
     @EventHandler
-    private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent.Create ->
-        updateList()
-    })
-
-    @EventHandler
-    private val removeWaypoint = Listener(EventHook { event: WaypointUpdateEvent.Remove ->
+    private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent.Update ->
         updateList()
     })
 
@@ -191,15 +154,36 @@ object WaypointRender : Module() {
     })
 
     private fun updateList() {
+        timer.reset()
+        prevDimension = Waypoint.genDimension()
         if (currentServer == null) {
+            waypointMap.clear()
             currentServer = Waypoint.genServer()
         }
-        waypoints.clear()
-        if (currentServer == null) return
-        waypoints.addAll(
-                FileInstanceManager.waypoints.filter { w ->
-                    (w.server == null || w.server == currentServer) && (dimension.value == Dimension.ANY || w.dimension == Waypoint.genDimension())
+
+        val cacheList = FileInstanceManager.waypoints.filter { (it.server == null || it.server == currentServer) && (dimension.value == Dimension.ANY || it.dimension == prevDimension) }
+
+        waypointMap.keys.removeIf { pos -> cacheList.firstOrNull { it.pos == pos } != null }
+
+        for (wayPoint in cacheList) {
+            // Don't wanna update this continuously
+            waypointMap.computeIfAbsent(wayPoint.pos) {
+                TextComponent().apply {
+                    if (showName.value) addLine(wayPoint.name)
+                    if (showDate.value) addLine(wayPoint.date)
+                    if (showCoords.value) addLine(wayPoint.asString(true))
                 }
-        )
+            }
+        }
+    }
+
+    init {
+        with(Setting.SettingListeners { waypointMap.clear(); updateList() }) {
+            dimension.settingListener = this
+            showName.settingListener = this
+            showDate.settingListener = this
+            showCoords.settingListener = this
+            showDist.settingListener = this
+        }
     }
 }
