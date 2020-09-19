@@ -62,8 +62,8 @@ object WaypointRender : Module() {
         INFO_BOX, ESP
     }
 
-    private val waypointMap = TreeMap<BlockPos, TextComponent>(compareBy {
-        it.distanceSq(mc.player?.position?: BlockPos(0, -69420, 0))
+    private val waypointMap = TreeMap<BlockPos, TextComponent>(compareByDescending {
+        it.distanceSq(mc.player?.position ?: BlockPos(0, -69420, 0)) // This has to be sorted so the further ones doesn't overlaps the closer ones
     })
     private var currentServer: String? = null
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -97,6 +97,7 @@ object WaypointRender : Module() {
     }
 
     override fun onRender() {
+        if (waypointMap.isEmpty()) return
         if (!showCoords.value && !showName.value && !showDate.value && !showDist.value) return
         GlStateUtils.rescaleActual()
         for ((pos, textComponent) in waypointMap) {
@@ -129,7 +130,7 @@ object WaypointRender : Module() {
     }
 
     override fun onEnable() {
-        updateList()
+        timer.reset(-10000L) // Update the map immediately and thread safely
     }
 
     override fun onDisable() {
@@ -137,19 +138,22 @@ object WaypointRender : Module() {
     }
 
     override fun onUpdate() {
-        if (WaypointManager.genDimension() != prevDimension || timer.tick(5L, false)) {
-            if (WaypointManager.genDimension() != prevDimension)  waypointMap.clear()
+        if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
+            if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
             updateList()
         }
     }
 
     @EventHandler
     private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent ->
-        when (event.type) {
-            WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
-            WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
-            WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
-            else -> { }
+        synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
+            when (event.type) {
+                WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
+                WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
+                WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
+                WaypointUpdateEvent.Type.RELOAD -> { waypointMap.clear(); updateList() }
+                else -> { }
+            }
         }
     })
 
@@ -185,7 +189,9 @@ object WaypointRender : Module() {
     }
 
     init {
-        with(Setting.SettingListeners { waypointMap.clear(); updateList() }) {
+        with(Setting.SettingListeners {
+            synchronized(waypointMap) { waypointMap.clear(); updateList() } // This could be called from another thread so we have to synchronize the map
+        }) {
             dimension.settingListener = this
             showName.settingListener = this
             showDate.settingListener = this

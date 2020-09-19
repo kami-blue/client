@@ -42,10 +42,9 @@ object WaypointManager : Manager() {
     fun loadWaypoints(): Boolean {
         /* backwards compatibility for older configs */
         val localFile = if (legacyFormat()) oldFile else file
-        return try {
+        val success = try {
             waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<LinkedHashSet<Waypoint>?>() {}.type)
             KamiMod.log.info("Waypoint loaded")
-            if (legacyFormat()) oldFile.delete()
             true
         } catch (e: FileNotFoundException) {
             KamiMod.log.warn("Could not find file $configName, clearing the waypoints list")
@@ -56,6 +55,8 @@ object WaypointManager : Manager() {
             waypoints.clear()
             false
         }
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
+        return success
     }
 
     /**
