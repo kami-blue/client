@@ -14,23 +14,23 @@ import net.minecraft.util.math.BlockPos
  */
 class WaypointInfo(
         @SerializedName("position")
-        var pos: BlockPos,
+        val pos: BlockPos,
 
         @SerializedName("name")
-        var name: String,
+        val name: String,
 
         @SerializedName("time") // NEEDS to stay "time" to maintain backwards compat
-        var date: String
+        val date: String
 ) {
 
     @SerializedName("id")
-    var id: Int = genID()
+    val id: Int = genID()
 
     @SerializedName("server")
-    var server: String? = genServer() /* can be null from old configs */
+    val server: String? = genServer() /* can be null from old configs */
 
     @SerializedName("dimension")
-    var dimension: Int = genDimension()
+    val dimension: Int = genDimension()
 
     fun asString(currentDimension: Boolean): String {
         return if (currentDimension) {
@@ -51,6 +51,4 @@ class WaypointInfo(
             0 // if you haven't saved coords before, this will throw, because the size() is 0
         }
     }
-
-    val idString: String get() = id.toString()
 }

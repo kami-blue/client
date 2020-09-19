@@ -5,19 +5,13 @@ import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
-import me.zeroeightsix.kami.util.math.MathUtils
-import net.minecraft.client.Minecraft
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.util.math.BlockPos
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 31/07/20
- *
- * Rewritten from former CoordUtil by wnuke (formerly LogUtil)
- */
+//TODO: Merge this into WaypointManager.kt
 object Waypoint {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
@@ -42,12 +36,9 @@ object Waypoint {
     }
 
     fun readFileToMemory(): Boolean {
-        var success = false
-        var localFile = file
         /* backwards compatibility for older configs */
-        if (legacyFormat()) {
-            localFile = oldFile
-        }
+        val localFile = if (legacyFormat()) oldFile else file
+        var success = false
         try {
             try {
                 FileInstanceManager.waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<ArrayList<WaypointInfo>?>() {}.type)!!
@@ -68,110 +59,64 @@ object Waypoint {
         return success
     }
 
-    fun getCurrentCoord(): BlockPos {
-        val mc = Minecraft.getMinecraft()
-        return MathUtils.mcPlayerPosFloored(mc)
-    }
-
-    fun writePlayerCoords(locationName: String): BlockPos {
-        val coords = getCurrentCoord()
-        createWaypoint(coords, locationName)
-        return coords
-    }
-
-    fun createWaypoint(pos: BlockPos, locationName: String): BlockPos {
-        FileInstanceManager.waypoints.add(dateFormatter(pos, locationName))
-
+    fun writePlayerCoords(locationName: String): WaypointInfo {
+        val coords = Wrapper.player?.positionVector?.toBlockPos() ?: BlockPos(0, -6969, 0) // This shouldn't happen
+        val waypoint = createWaypoint(coords, locationName)
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Create())
-        return pos
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        return waypoint
     }
 
-    fun removeWaypoint(pos: BlockPos): Boolean {
-        var removed = false
-        val waypoints = FileInstanceManager.waypoints
+    fun createWaypoint(pos: BlockPos, locationName: String): WaypointInfo {
+        val waypoint = dateFormatter(pos, locationName)
+        FileInstanceManager.waypoints.add(waypoint)
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Create())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
+        return waypoint
+    }
 
-        for (waypoint in waypoints) {
-            if (waypoint.currentPos().x == pos.x && waypoint.currentPos().y == pos.y && waypoint.currentPos().z == pos.z) {
-                waypoints.remove(waypoint)
-                removed = true
-                break
-            }
-        }
-
+    fun removeWaypoint(pos: BlockPos, currentDimension: Boolean = false): Boolean {
+        val waypoint = getWaypoint(pos, currentDimension)
+        val removed = FileInstanceManager.waypoints.remove(waypoint)
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
         return removed
     }
 
     fun removeWaypoint(id: String): Boolean {
-        var removed = false
-        val waypoints = FileInstanceManager.waypoints
-
-        for (waypoint in waypoints) if (waypoint.idString == id) {
-            waypoints.remove(waypoint)
-            removed = true
-            break
-        }
-
+        val waypoint = getWaypoint(id)
+        val removed = FileInstanceManager.waypoints.remove(waypoint)
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
         return removed
     }
 
-    fun getWaypoint(id: String, currentDimension: Boolean): BlockPos? {
-        val waypoints = FileInstanceManager.waypoints
-        for (waypoint in waypoints) {
-            if (waypoint.idString == id) {
-                return if (currentDimension) {
-                    waypoint.currentPos()
-                } else {
-                    waypoint.pos
-                }
-            }
-        }
-
+    fun getWaypoint(id: String): WaypointInfo? {
+        val waypoint = FileInstanceManager.waypoints.firstOrNull { it.id.toString() == id }
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
-        return null
+        return waypoint
     }
 
-    fun getWaypoint(pos: BlockPos, currentDimension: Boolean): WaypointInfo? {
-        val waypoints = FileInstanceManager.waypoints
-        for (waypoint in waypoints) {
-            if (currentDimension) {
-                if (waypoint.currentPos().x == pos.x && waypoint.currentPos().y == pos.y && waypoint.currentPos().z == pos.z) {
-                    return waypoint
-                }
-            } else {
-                if (waypoint.pos.x == pos.x && waypoint.pos.y == pos.y && waypoint.pos.z == pos.z) {
-                    return waypoint
-                }
-            }
-        }
-
+    fun getWaypoint(pos: BlockPos, currentDimension: Boolean = false): WaypointInfo? {
+        val waypoint = FileInstanceManager.waypoints.firstOrNull { (if (currentDimension) it.currentPos() else it.pos) == pos }
         KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Get())
-        return null
+        return waypoint
+    }
+
+    fun clearWaypoint() {
+        FileInstanceManager.waypoints.clear()
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Remove())
+        KamiMod.EVENT_BUS.post(WaypointUpdateEvent.Update())
     }
 
     fun genServer(): String? {
-        val mc = Wrapper.minecraft
-        return when {
-            mc.getCurrentServerData() != null -> {
-                mc.getCurrentServerData()!!.serverIP
-            }
-            mc.isIntegratedServerRunning -> {
-                "Singleplayer"
-            }
-            else -> {
-                null
-            }
-        }
+        return Wrapper.minecraft.currentServerData?.serverIP
+                ?: if (Wrapper.minecraft.isIntegratedServerRunning) "Singleplayer"
+                else null
     }
 
     fun genDimension(): Int {
-        val mc = Wrapper.minecraft
-        return if (mc.player == null) {
-            -2 /* this shouldn't ever happen at all */
-        } else {
-            mc.player.dimension
-        }
+        return Wrapper.player?.dimension ?: -2 /* this shouldn't ever happen at all */
     }
 
     /**
