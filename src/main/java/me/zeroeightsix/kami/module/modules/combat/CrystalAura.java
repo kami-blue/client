@@ -371,7 +371,7 @@ public class CrystalAura extends Module {
     }
 
     private void lookAtPacket(Vec3d pos) {
-        Vec2d lookAt = getRotationTo(pos, true);
+        Vec2d lookAt = getRotationTo(pos, true, 1f);
         setYawAndPitch((float) lookAt.getX(), (float) lookAt.getY());
     }
 
