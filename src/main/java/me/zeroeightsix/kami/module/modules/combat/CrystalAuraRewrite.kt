@@ -104,7 +104,6 @@ object CrystalAuraRewrite : Module() {
     private var hitTimer = 0
     private var hitCount = 0
     private var inactiveTicks = 0
-    private var ran = false
 
     override fun isActive(): Boolean {
         return isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 20
@@ -120,11 +119,12 @@ object CrystalAuraRewrite : Module() {
         crystalList.clear()
         ignoredList.clear()
         lastCrystal = null
-        hitCount = 0
-        hitTimer = 0
-        inactiveTicks = 30
         lastLookAt = Vec3d.ZERO
         targetPosition = Vec3d.ZERO
+        placeTimer = 0
+        hitTimer = 0
+        hitCount = 0
+        inactiveTicks = 30
     }
 
     @EventHandler
@@ -153,7 +153,6 @@ object CrystalAuraRewrite : Module() {
         hitTimer++
         placeTimer++
 
-        if (!CombatManager.isOnTopPriority(this) || ran) return
         updateMap()
         if (canExplode()) explode() else if (canPlace()) place()
         if (inactiveTicks > 20) resetRotation()
@@ -178,7 +177,6 @@ object CrystalAuraRewrite : Module() {
         if (autoSwap.value && getHand() == null) InventoryUtils.swapSlotToItem(426)
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
-                ran = true
                 placeTimer = 0
                 inactiveTicks = 0
                 lastLookAt = Vec3d(pos).add(0.5, 1.0, 0.5)
@@ -191,7 +189,6 @@ object CrystalAuraRewrite : Module() {
     private fun explode() {
         if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) CombatUtils.equipBestWeapon()
         getExplodingCrystal()?.let {
-            ran = true
             hitTimer = 0
             inactiveTicks = 0
             lastLookAt = it.positionVector
@@ -312,7 +309,7 @@ object CrystalAuraRewrite : Module() {
         else -> null
     }
 
-    private fun noSuicideCheck(selfDamage: Float) =  mc.player.health - selfDamage > noSuicideThreshold.value
+    private fun noSuicideCheck(selfDamage: Float) = mc.player.health - selfDamage > noSuicideThreshold.value
 
     private fun isHoldingTool(): Boolean {
         val item = mc.player.heldItemMainhand.getItem()
