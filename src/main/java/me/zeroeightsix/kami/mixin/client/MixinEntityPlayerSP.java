@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.mixin.client;
 
 import com.mojang.authlib.GameProfile;
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEvent;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
@@ -107,6 +108,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
         OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, sprinting, sneaking, onGround, pos, rotation);
         KamiMod.EVENT_BUS.post(event);
+        event.setEra(KamiEvent.Era.PERI);
+        KamiMod.EVENT_BUS.post(event);
 
         if (event.isCancelled()) {
             ci.cancel();
@@ -175,6 +178,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
             }
         }
+        event.setEra(KamiEvent.Era.POST);
+        KamiMod.EVENT_BUS.post(event);
     }
 
     private boolean isMoving() {

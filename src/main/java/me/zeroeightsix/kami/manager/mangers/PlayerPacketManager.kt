@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.mangers
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
@@ -22,7 +23,7 @@ object PlayerPacketManager : Manager() {
 
     @EventHandler
     private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
-        if (packetList.isEmpty()) return@EventHook
+        if (event.era != KamiEvent.Era.PERI || packetList.isEmpty()) return@EventHook
         packetList.values.first().apply(event) // Apply the packet from the module that has the highest priority
         packetList.clear()
     })

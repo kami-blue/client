@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.Wrapper.minecraft
  * Updated by Xiaro on 18/08/20
  */
 open class KamiEvent : Cancellable() {
-    val era = Era.PRE
+    var era: Era = Era.PRE
     open val partialTicks: Float = minecraft.renderPartialTicks
 
     enum class Era {
