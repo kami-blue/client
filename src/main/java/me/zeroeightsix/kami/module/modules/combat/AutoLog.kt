@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
@@ -48,7 +49,7 @@ object AutoLog : Module() {
     private val entityJoinWorldEventListener = Listener(EventHook { event: EntityJoinWorldEvent ->
         if (mc.player == null || !crystals.value || isDisabled) return@EventHook
         if (event.entity is EntityEnderCrystal) {
-            if (mc.player.health - CrystalAura.calculateDamage(event.entity as EntityEnderCrystal, mc.player) < health.value) {
+            if (mc.player.health - CrystalUtils.calcDamage(event.entity as EntityEnderCrystal, mc.player) < health.value) {
                 log(END_CRYSTAL)
             }
         }

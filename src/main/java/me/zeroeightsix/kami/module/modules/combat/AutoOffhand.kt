@@ -24,9 +24,9 @@ import kotlin.math.max
 // TODO: Merge Auto totem into this Y
 // TODO: Merge OffhandGap into this Y
 // TODO: #1329 Y
-// TODO: #1045
+// TODO: #1045 Y
 // TODO: #1049 Y
-// TODO: #1005
+// TODO: #1005 Y
 // TODO: #943 Y
 // TODO: #836 Y
 @Module.Info(
@@ -124,7 +124,7 @@ object AutoOffhand : Module() {
                 || checkWeapon.value && (item is ItemSword || item is ItemAxe)
     }
 
-    private fun checkCrystal() = offhandCrystal.value &&  checkCrystalAura.value && CombatManager.isActiveAndTopPriority(CrystalAuraRewrite)
+    private fun checkCrystal() = offhandCrystal.value &&  checkCrystalAura.value && CombatManager.isActiveAndTopPriority(CrystalAura)
 
     private fun checkOffhandItem(type: Type) = Item.getIdFromItem(mc.player.heldItemOffhand.getItem()) == type.itemId
 

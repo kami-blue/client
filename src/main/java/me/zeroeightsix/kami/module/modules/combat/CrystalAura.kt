@@ -46,7 +46,7 @@ import kotlin.math.max
         category = Module.Category.COMBAT,
         modulePriority = 80
 )
-object CrystalAuraRewrite : Module() {
+object CrystalAura : Module() {
     /* Settings */
     private val page = register(Settings.e<Page>("Page", Page.GENERAL))
 
