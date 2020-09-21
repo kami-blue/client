@@ -155,7 +155,7 @@ object CombatSetting : Module() {
         var damage = Float.MIN_VALUE
         val toKeep = HashSet<Entity>()
         for (entity in listIn) {
-            val currentDamage = CombatUtils.calcDamage(entity, true)
+            val currentDamage = CombatUtils.calcDamage(entity, roundDamage = true)
             if (currentDamage >= damage) {
                 if (currentDamage > damage) {
                     damage = currentDamage

@@ -9,18 +9,35 @@ import net.minecraft.entity.EnumCreatureAttribute
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Enchantments
 import net.minecraft.init.MobEffects
 import net.minecraft.item.ItemAxe
+import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.MathHelper
+import kotlin.concurrent.fixedRateTimer
 import kotlin.math.max
 import kotlin.math.round
 
 object CombatUtils {
     private val mc: Minecraft = Minecraft.getMinecraft()
+
+    @JvmStatic
+    fun calcDamageFromPlayer(entity: EntityPlayer, assumeCritical: Boolean = false): Float {
+        val itemStack = entity.heldItemMainhand
+        var damage = when (val item = itemStack.getItem()) {
+            is ItemSword -> item.attackDamage
+            is ItemTool -> item.attackDamage
+            else -> 1f
+        }
+        val sharpnessLevel = getEnchantmentLevel(itemStack, 16) // 16 is the id for Sharpness
+        damage += sharpnessLevel * 0.5f + 0.5f
+        if (assumeCritical) damage *= 1.5f
+        return damage
+    }
 
     @JvmStatic
     fun calcDamageFromMob(entity: EntityMob): Float {
@@ -59,6 +76,16 @@ object CombatUtils {
         }
         modifier = MathHelper.clamp(modifier, 0, 20)
         return (1.0f - modifier / 25.0f)
+    }
+
+    @JvmStatic
+    fun getEnchantmentLevel(itemStack: ItemStack, enchantmentId: Int): Int {
+        for (i in 0 until itemStack.enchantmentTagList.tagCount()) {
+            val id = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("id").toInt()
+            if (id != enchantmentId) continue
+            return itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("lvl").toInt()
+        }
+        return 0
     }
 
     @JvmStatic
