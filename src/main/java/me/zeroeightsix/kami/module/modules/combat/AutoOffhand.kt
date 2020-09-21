@@ -65,7 +65,7 @@ object AutoOffhand : Module() {
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet !is SPacketConfirmTransaction || event.packet.windowId != 0 || !transactionLog.containsKey(event.packet.actionNumber)) return@EventHook
+        if (mc.player == null || event.packet !is SPacketConfirmTransaction || event.packet.windowId != 0 || !transactionLog.containsKey(event.packet.actionNumber)) return@EventHook
         transactionLog[event.packet.actionNumber] = event.packet.wasAccepted()
         if (!transactionLog.containsValue(false)) movingTimer.reset(-200L) // If all the click packets were accepted then we reset the timer for next moving
     })

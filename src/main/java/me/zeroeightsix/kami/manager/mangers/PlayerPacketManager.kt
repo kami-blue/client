@@ -64,6 +64,7 @@ object PlayerPacketManager : Manager() {
                 if (spoofingHotbar && this.slotId != serverSideHotbar) {
                     if (hotbarResetTimer.tick(1L)) {
                         spoofingHotbar = false
+                        serverSideHotbar = this.slotId
                     } else {
                         event.cancel()
                     }

@@ -37,7 +37,6 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 
-// TODO: AutoOffhand
 // TODO: HoleBreaker
 // TODO: HoleTP
 @Module.Info(
@@ -67,7 +66,7 @@ object CrystalAura : Module() {
 
     /* Place page two */
     private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
-    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
+    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(2).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
     private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
     private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.PLACE_TWO })
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
@@ -81,9 +80,9 @@ object CrystalAura : Module() {
 
     /* Explode page two */
     private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
-    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
+    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(4).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
+    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(4).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO })
     private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(2).withRange(0, 5).withVisibility { page.value == Page.EXPLODE_TWO })
     private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
     private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
@@ -156,7 +155,7 @@ object CrystalAura : Module() {
 
         updateMap()
         if (canExplode()) explode() else if (canPlace()) place()
-        if (inactiveTicks > 5) PlayerPacketManager.resetHotbar()
+        if (inactiveTicks > 5 || getHand() == EnumHand.OFF_HAND) PlayerPacketManager.resetHotbar()
         if (inactiveTicks > 20) resetRotation()
     }
 
@@ -169,7 +168,7 @@ object CrystalAura : Module() {
         crystalList.clear()
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
 
-        if (inactiveTicks > 20 && getExplodingCrystal() == null && ignoredList.isNotEmpty()) {
+        if (inactiveTicks > 10 && getExplodingCrystal() == null && ignoredList.isNotEmpty()) {
             ignoredList.clear()
             hitCount = 0
         }
@@ -203,21 +202,16 @@ object CrystalAura : Module() {
             inactiveTicks = 0
             lastLookAt = it.positionVector
 
-            if (hitAttempts.value != 0) {
-                if (it == lastCrystal) {
-                    hitCount++
-                    if (hitCount >= hitAttempts.value) {
-                        ignoredList.add(it)
-                        hitCount = 0
-                    }
-                }
+            if (hitAttempts.value != 0 && it == lastCrystal) {
+                hitCount++
+                if (hitCount >= hitAttempts.value) ignoredList.add(it)
             } else {
-                lastCrystal = it
                 hitCount = 0
             }
             mc.connection!!.sendPacket(CPacketUseEntity(it))
             mc.player.swingArm(getHand() ?: EnumHand.OFF_HAND)
             mc.player.setLastAttackedEntity(CombatManager.target!!)
+            lastCrystal = it
         }
     }
     /* End of main functions */
@@ -314,10 +308,10 @@ object CrystalAura : Module() {
 
     /* General */
     private fun getHand(): EnumHand? {
-        val serverSideItem = mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem()
+        val serverSideItem = if (spoofHotbar.value) mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() else null
         return when (Items.END_CRYSTAL) {
-            mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
             mc.player.heldItemOffhand.getItem() -> EnumHand.OFF_HAND
+            mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
             serverSideItem -> EnumHand.MAIN_HAND
             else -> null
         }
