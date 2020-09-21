@@ -103,6 +103,7 @@ object InventoryManager : Module() {
         if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return
         setState()
         if (!timer.tick(delay.value.toLong())) return
+        if (currentState != State.IDLE) InventoryUtils.removeHoldingItem()
         when (currentState) {
             State.SAVING_ITEM -> saveItem()
             State.REFILLING_BUILDING -> refillBuilding()
@@ -190,7 +191,7 @@ object InventoryManager : Module() {
     }
 
     private fun refill() {
-        val slotTo = (getRefillableSlot() ?: return) + 36
+        val slotTo = getRefillableSlot() ?: return
         val stackTo = mc.player.inventoryContainer.inventory[slotTo]
         val slotFrom = getCompatibleStack(stackTo) ?: return
         InventoryUtils.moveToSlot(slotFrom, slotTo)
@@ -241,17 +242,16 @@ object InventoryManager : Module() {
      */
     private fun getUndamagedItem(ItemID: Int): Int? {
         val slots = InventoryUtils.getSlotsFullInv(9, 44, ItemID) ?: return null
-        for (i in slots.indices) {
-            val currentSlot = slots[i]
-            if (checkDamageFullInv(currentSlot) == false) return currentSlot
+        for (slot in slots) {
+            if (checkDamageFullInv(slot) == false) return slot
         }
         return null
     }
 
     private fun getRefillableSlotBuilding(): Int? {
         if (InventoryUtils.getSlotsNoHotbar(buildingBlockID.value) == null) return null
-        for (i in 0..8) {
-            val currentStack = mc.player.inventory.getStackInSlot(i)
+        for (i in 36..45) {
+            val currentStack = mc.player.inventoryContainer.inventory[i]
             if (getIdFromItem(currentStack.getItem()) != buildingBlockID.value) continue
             if (!currentStack.isStackable || currentStack.count >= currentStack.maxStackSize) continue
             return i
@@ -260,8 +260,8 @@ object InventoryManager : Module() {
     }
 
     private fun getRefillableSlot(): Int? {
-        for (i in 0..8) {
-            val currentStack = mc.player.inventory.getStackInSlot(i)
+        for (i in 36..45) {
+            val currentStack = mc.player.inventoryContainer.inventory[i]
             val stackTarget = ceil(currentStack.maxStackSize / 64.0f * refillThreshold.value).toInt()
             if (currentStack.isEmpty) continue
             if (!currentStack.isStackable || currentStack.count > stackTarget) continue
@@ -275,9 +275,8 @@ object InventoryManager : Module() {
 
     private fun getCompatibleStack(stack: ItemStack): Int? {
         val slots = InventoryUtils.getSlotsFullInvNoHotbar(getIdFromItem(stack.getItem())) ?: return null
-        for (i in slots.indices) {
-            val currentSlot = slots[i]
-            if (isCompatibleStacks(stack, mc.player.inventoryContainer.inventory[currentSlot])) return currentSlot
+        for (slot in slots) {
+            if (isCompatibleStacks(stack, mc.player.inventoryContainer.inventory[slot])) return slot
         }
         return null
     }
