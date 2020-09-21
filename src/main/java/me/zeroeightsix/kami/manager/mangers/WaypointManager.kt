@@ -99,10 +99,15 @@ object WaypointManager : Manager() {
     }
 
     fun add(locationName: String): Waypoint {
-        val coords = Wrapper.player?.positionVector?.toBlockPos() ?: BlockPos(0, -6969, 0) // This shouldn't happen
-        val waypoint = add(coords, locationName)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
-        return waypoint
+        val pos = Wrapper.player?.positionVector?.toBlockPos()
+        return if (pos != null) {
+            val waypoint = add(pos, locationName)
+            KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
+            waypoint
+        } else {
+            KamiMod.log.error("Error during waypoint adding")
+            dateFormatter(BlockPos(0, -6969, 0), locationName) // This shouldn't happen
+        }
     }
 
     fun add(pos: BlockPos, locationName: String): Waypoint {
