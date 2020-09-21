@@ -98,9 +98,10 @@ object CrystalUtils {
     @JvmStatic
     fun calcDamage(pos: Vec3d, entity: EntityLivingBase, calcBlastReduction: Boolean = true): Float {
         if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
-        val rawDamage = calcRawDamage(pos, entity)
-        return if (!calcBlastReduction) rawDamage
-        else calcBlastReduction(rawDamage, pos, entity)
+        var damage = calcRawDamage(pos, entity)
+        if (calcBlastReduction) damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos))
+        if (entity is EntityPlayer) damage *= getDamageMultiplier()
+        return max(damage, 0f)
     }
 
     @JvmStatic
@@ -108,15 +109,6 @@ object CrystalUtils {
         val distance = pos.distanceTo(entity.positionVector)
         val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entity.boundingBox)
         return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
-    }
-
-    @JvmStatic
-    private fun calcBlastReduction(damageIn: Float, damagePos: Vec3d, entity: EntityLivingBase): Float {
-        if (entity is EntityPlayer) {
-            val damage = CombatUtils.calcDamage(entity, damageIn) * CombatUtils.getProtectionModifier(entity, getDamageSource(damagePos))
-            return max(damage * getDamageMultiplier(), 0.0f)
-        }
-        return CombatUtils.calcDamage(entity, damageIn)
     }
 
     @JvmStatic

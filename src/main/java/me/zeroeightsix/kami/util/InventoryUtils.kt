@@ -108,14 +108,7 @@ object InventoryUtils {
      * @return Number of item with given [itemId] in hotbar
      */
     fun countItemHotbar(itemId: Int): Int {
-        val itemList = getSlots(0, 8, itemId)
-        var currentCount = 0
-        if (itemList != null) {
-            for (i in itemList) {
-                currentCount += mc.player.inventory.getStackInSlot(i).count
-            }
-        }
-        return currentCount
+        return countItem(36, 44, itemId)
     }
 
     /**
@@ -124,14 +117,7 @@ object InventoryUtils {
      * @return Number of item with given [itemId] in non hotbar
      */
     fun countItemNoHotbar(itemId: Int): Int {
-        val itemList = getSlots(9, 35, itemId)
-        var currentCount = 0
-        if (itemList != null) {
-            for (i in itemList) {
-                currentCount += mc.player.inventory.getStackInSlot(i).count
-            }
-        }
-        return currentCount
+        return countItem(0, 35, itemId)
     }
 
     /**
@@ -141,14 +127,7 @@ object InventoryUtils {
      */
     @JvmStatic
     fun countItemAll(itemId: Int): Int {
-        val itemList = getSlots(0, 35, itemId)
-        var currentCount = 0
-        if (itemList != null) {
-            for (i in itemList) {
-                currentCount += mc.player.inventory.getStackInSlot(i).count
-            }
-        }
-        return currentCount
+        return countItem(0, 45, itemId)
     }
 
     /**
@@ -157,12 +136,10 @@ object InventoryUtils {
      * @return Number of item with given [itemId] from slot [min] to slot [max]
      */
     fun countItem(min: Int, max: Int, itemId: Int): Int {
-        val itemList = getSlots(min, max, itemId)
+        val itemList = getSlotsFullInv(min, max, itemId)
         var currentCount = 0
-        if (itemList != null) {
-            for (i in itemList) {
-                currentCount += mc.player.inventory.getStackInSlot(i).count
-            }
+        if (itemList != null) for (i in itemList) {
+            currentCount += mc.player.inventoryContainer.inventory[i].count
         }
         return currentCount
     }
