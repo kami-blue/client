@@ -266,6 +266,17 @@ object InventoryUtils {
         inventoryClick(windowId, slot, 1, ClickType.THROW)
     }
 
+    /**
+     * Put the item currently holding by mouse to somewhere or throw it
+     */
+    fun removeHoldingItem() {
+        if (mc.player.inventory.getItemStack().isEmpty()) return
+        val slot = (getSlotsFullInv(9, 45, 0) // Get empty slots in inventory and offhand
+                ?: getSlotsFullInv(1, 4, 0))?.get(0) // Get empty slots in crafting slot
+                ?: -999 // Throw on the ground
+        inventoryClick(slot = slot, type = ClickType.PICKUP)
+    }
+
     private fun inventoryClick(windowId: Int = 0, slot: Int, mousedButton: Int = 0, type: ClickType) {
         val container = if (windowId == 0) mc.player.inventoryContainer else mc.player.openContainer
         val transactionID = container.getNextTransactionID(mc.player.inventory)

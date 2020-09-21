@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.client.renderer.InventoryEffectRenderer
 import net.minecraft.init.Items
-import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 
@@ -14,69 +14,54 @@ import net.minecraft.item.ItemStack
         description = "Automatically equips armour"
 )
 object AutoArmour : Module() {
+    val timer = TimerUtils.TickTimer()
+
     override fun onUpdate() {
-        if (mc.player.ticksExisted % 2 == 0) return
-
-        // check screen
-        if (mc.currentScreen is GuiContainer
-                && mc.currentScreen !is InventoryEffectRenderer) return
-
-        // store slots and values of best armor pieces
-        val bestArmorSlots = IntArray(4)
-        val bestArmorValues = IntArray(4)
-
-        // initialize with currently equipped armor
-        (0..3).forEach { armorType ->
-            val oldArmor = mc.player.inventory.armorItemInSlot(armorType)
-
-            if (oldArmor != null && oldArmor.getItem() is ItemArmor)
-                bestArmorValues[armorType] =
-                        (oldArmor.getItem() as ItemArmor).damageReduceAmount
-
-            bestArmorSlots[armorType] = -1
+        if (!timer.tick(100L, false)) return
+        if (!mc.player.inventory.getItemStack().isEmpty()) {
+            if (mc.currentScreen is GuiContainer) timer.reset() // Wait for 2 ticks if player is moving item
+            else InventoryUtils.removeHoldingItem()
+            return
         }
+        // store slots and values of best armor pieces, initialize with currently equipped armor
+        // Pair<Slot, Value>
+        val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorItemInSlot(it)) }
 
         // search inventory for better armor
-        (0..35).forEach { slot ->
-            val stack = mc.player.inventory.getStackInSlot(slot)
+        for (slot in 9..44) {
+            val itemStack = mc.player.inventoryContainer.inventory[slot]
+            val item = itemStack.getItem()
+            if (item !is ItemArmor) continue
 
-            if (stack.count > 1) return@forEach
+            val armorType = item.armorType.ordinal - 2
+            if (armorType == 2 && mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
+            val armorValue = getArmorValue(itemStack)
 
-            if (stack == null || stack.getItem() !is ItemArmor) return@forEach
-
-            val armor = stack.getItem() as ItemArmor
-            val armorType = armor.armorType.ordinal - 2
-
-            if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem() == Items.ELYTRA) return@forEach
-
-            val armorValue = armor.damageReduceAmount
-
-            if (armorValue > bestArmorValues[armorType]) {
-                bestArmorSlots[armorType] = slot
-                bestArmorValues[armorType] = armorValue
-            }
+            if (armorValue > bestArmors[armorType].second) bestArmors[armorType] = slot to armorValue
         }
 
         // equip better armor
         for (armorType in 0..3) {
-            // check if better armor was found
-            var slot = bestArmorSlots[armorType]
-            if (slot == -1) continue
-
-            // check if armor can be swapped
-            // needs 1 free slot where it can put the old armor
-            val oldArmor = mc.player.inventory.armorItemInSlot(armorType)
-            if (oldArmor == null || oldArmor != ItemStack.EMPTY || mc.player.inventory.firstEmptyStack != -1) {
-                // hotbar fix
-                if (slot < 9) slot += 36
-
-                // swap armor
-                mc.playerController.windowClick(0, 8 - armorType, 0,
-                        ClickType.QUICK_MOVE, mc.player)
-                mc.playerController.windowClick(0, slot, 0,
-                        ClickType.QUICK_MOVE, mc.player)
-                break
-            }
+            val slot = bestArmors[armorType].first
+            if (slot == -1) continue // Skip if we didn't find a better armor
+            InventoryUtils.moveToSlot(slot, 8 - armorType)
+            timer.reset()
         }
+    }
+
+    private fun getArmorValue(itemStack: ItemStack): Float {
+        val item = itemStack.getItem()
+        return if (item !is ItemArmor) -1f
+        else item.damageReduceAmount * getProtectionModifier(itemStack)
+    }
+
+    private fun getProtectionModifier(itemStack: ItemStack): Float {
+        for (i in 0 until itemStack.enchantmentTagList.tagCount()) {
+            val id = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("id").toInt()
+            val level = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("lvl").toInt()
+            if (id != 0) continue
+            return 1f + 0.04f * level
+        }
+        return 1f
     }
 }

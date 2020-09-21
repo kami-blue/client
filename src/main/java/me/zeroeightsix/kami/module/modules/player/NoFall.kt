@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.command.commands.TeleportCommand
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -27,24 +28,25 @@ import net.minecraft.util.math.Vec3d
         description = "Prevents fall damage"
 )
 object NoFall : Module() {
-    private val distance = register(Settings.integerBuilder("Distance").withValue(3).withMinimum(1).withMaximum(10).build())
+    private val distance = register(Settings.integerBuilder("Distance").withValue(3).withRange(1, 10))
     private val mode = register(Settings.e<Mode>("Mode", Mode.CATCH))
-    private val fallMode = register(Settings.enumBuilder(FallMode::class.java).withName("Fall").withValue(FallMode.PACKET).withVisibility { mode.value == Mode.FALL }.build())
-    private val catchMode = register(Settings.enumBuilder(CatchMode::class.java).withName("Catch").withValue(CatchMode.MOTION).withVisibility { mode.value == Mode.CATCH }.build())
-    private val pickup = register(Settings.booleanBuilder("Pickup").withValue(false).withVisibility { fallMode.value == FallMode.BUCKET }.build())
-    private val pickupDelay = register(Settings.integerBuilder("PickupDelay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { fallMode.value == FallMode.BUCKET && pickup.value }.build())
+    private val fallMode = register(Settings.enumBuilder(FallMode::class.java).withName("Fall").withValue(FallMode.PACKET).withVisibility { mode.value == Mode.FALL })
+    private val catchMode = register(Settings.enumBuilder(CatchMode::class.java).withName("Catch").withValue(CatchMode.MOTION).withVisibility { mode.value == Mode.CATCH })
+    private val pickup = register(Settings.booleanBuilder("Pickup").withValue(false).withVisibility { mode.value == Mode.FALL && fallMode.value == FallMode.BUCKET })
+    private val pickupDelay = register(Settings.integerBuilder("PickupDelay").withValue(300).withMinimum(100).withMaximum(1000).withVisibility { mode.value == Mode.FALL && fallMode.value == FallMode.BUCKET && pickup.value })
+    private val voidOnly = register(Settings.booleanBuilder("VoidOnly").withValue(false).withVisibility { mode.value == Mode.CATCH })
 
     private var last: Long = 0
 
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mode.value == Mode.CATCH && fallMode.value == FallMode.PACKET && event.packet is CPacketPlayer && !mc.player.isElytraFlying) {
+        if ((mode.value == Mode.FALL && fallMode.value == FallMode.PACKET || mode.value == Mode.CATCH) && event.packet is CPacketPlayer && !mc.player.isElytraFlying) {
             event.packet.onGround = true
         }
     })
 
     override fun onUpdate() {
-        if (!mc.player.capabilities.isCreativeMode && mc.player.fallDistance >= distance.value) {
+        if (!mc.player.isCreative && fallDistCheck()) {
             if (mode.value == Mode.FALL) {
                 if (fallMode.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
                     val posVec = mc.player.positionVector
@@ -113,11 +115,12 @@ object NoFall : Module() {
         }
     }
 
+    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || BlockUtils.getGroundPosY(false) == -999.0
+
     private fun placeBlock() {
         val hitVec = Vec3d(BlockPos(mc.player)).add(0.0, -1.0, 0.0)
         mc.playerController.processRightClickBlock(mc.player, mc.world, BlockPos(hitVec), EnumFacing.DOWN, hitVec, EnumHand.MAIN_HAND)
         mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
-        return
     }
 
     private enum class Mode {
