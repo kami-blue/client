@@ -5,9 +5,14 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.Vec2f
+import net.minecraft.network.play.client.CPacketHeldItemChange
+import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
@@ -20,6 +25,16 @@ object PlayerPacketManager : Manager() {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
     private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })
+
+    var serverSidePosition = Vec3d(0.0, 0.0, 0.0)
+        private set
+    var serverSideRotation = Vec2f(0f, 0f)
+        private set
+    var serverSideHotbar = 0
+        private set
+
+    private var spoofingHotbar = false
+    private var hotbarResetTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
     @EventHandler
     private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
@@ -36,6 +51,38 @@ object PlayerPacketManager : Manager() {
     fun addPacket(caller: Module, packet: PlayerPacket) {
         if (packet.isEmpty()) return
         packetList[caller] = packet
+    }
+
+    @EventHandler
+    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
+        with(event.packet) {
+            if (this is CPacketPlayer) {
+                if (this.moving) serverSidePosition = Vec3d(this.x, this.y, this.z)
+                if (this.rotating) serverSideRotation = Vec2f(this.yaw, this.pitch)
+            }
+            if (this is CPacketHeldItemChange) {
+                if (spoofingHotbar && this.slotId != serverSideHotbar) {
+                    if (hotbarResetTimer.tick(1L)) {
+                        spoofingHotbar = false
+                    } else {
+                        event.cancel()
+                    }
+                } else {
+                    serverSideHotbar = this.slotId
+                }
+            }
+        }
+    })
+
+    fun spoofHotbar(slot: Int) {
+        Wrapper.minecraft.connection?.let {
+            it.sendPacket(CPacketHeldItemChange(slot))
+            serverSideHotbar = slot
+        }
+    }
+
+    fun resetHotbar() {
+        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem ?: 0))
     }
 
     /**
