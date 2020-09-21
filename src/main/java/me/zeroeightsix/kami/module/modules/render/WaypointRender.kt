@@ -33,7 +33,7 @@ object WaypointRender : Module() {
 
     /* Page one */
     private val dimension = register(Settings.enumBuilder(Dimension::class.java, "Dimension").withValue(Dimension.CURRENT).withVisibility { page.value == Page.INFO_BOX })
-    private val showName = register(Settings.booleanBuilder("ShowName").withValue(false).withVisibility { page.value == Page.INFO_BOX }.build())
+    private val showName = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(false).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
     private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
@@ -145,7 +145,7 @@ object WaypointRender : Module() {
     }
 
     @EventHandler
-    private val createWaypoint = Listener(EventHook { event: WaypointUpdateEvent ->
+    private val waypointUpdateListener = Listener(EventHook { event: WaypointUpdateEvent ->
         synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
             when (event.type) {
                 WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
