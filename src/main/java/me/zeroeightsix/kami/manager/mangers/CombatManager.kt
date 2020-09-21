@@ -22,8 +22,10 @@ object CombatManager {
         }
     val motionTracker = MotionTracker(null)
 
-    fun isOnTopPriority(caller: Module): Boolean {
-        return getTopPriority() <= caller.modulePriority
+    fun isActiveAndTopPriority(module: Module) = module.isActive() && isOnTopPriority(module)
+
+    fun isOnTopPriority(module: Module): Boolean {
+        return getTopPriority() <= module.modulePriority
     }
 
     fun getTopPriority(ignoreAntiBot: Boolean = true): Int {
