@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.init.MobEffects
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -17,11 +16,6 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 08/09/20
- */
 object CrystalUtils {
     private val mc = Minecraft.getMinecraft()
 
@@ -119,11 +113,10 @@ object CrystalUtils {
     @JvmStatic
     private fun calcBlastReduction(damageIn: Float, damagePos: Vec3d, entity: EntityLivingBase): Float {
         if (entity is EntityPlayer) {
-            var damage = CombatUtils.calcDamage(entity, damageIn) * CombatUtils.getProtectionModifier(entity, getDamageSource(damagePos))
-            if (entity.isPotionActive(MobEffects.RESISTANCE)) damage *= 0.8f
+            val damage = CombatUtils.calcDamage(entity, damageIn) * CombatUtils.getProtectionModifier(entity, getDamageSource(damagePos))
             return max(damage * getDamageMultiplier(), 0.0f)
         }
-        return CombatUtils.calcDamage(entity, damageIn, false)
+        return CombatUtils.calcDamage(entity, damageIn)
     }
 
     @JvmStatic

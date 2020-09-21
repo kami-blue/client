@@ -7,32 +7,41 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.EnumCreatureAttribute
 import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.MobEffects
 import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.MathHelper
+import kotlin.math.max
 import kotlin.math.round
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 06/08/20
- */
 object CombatUtils {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
-    fun calcDamage(entity: EntityLivingBase, roundDamage: Boolean): Float {
-        if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
-        return calcDamage(entity, 100f, roundDamage)
+    fun calcDamageFromMob(entity: EntityMob): Float {
+        var damage = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).attributeValue.toFloat()
+        damage += EnchantmentHelper.getModifierForCreature(entity.heldItemMainhand, mc.player.creatureAttribute)
+        return calcDamage(mc.player, damage)
     }
 
     @JvmStatic
-    fun calcDamage(entity: EntityLivingBase, damageIn: Float, roundDamage: Boolean = false): Float {
-        val damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
+    fun calcDamage(entity: EntityLivingBase, damageIn: Float = 100f, source: DamageSource = DamageSource.GENERIC, roundDamage: Boolean = false): Float {
+        if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
+        var damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
+
+        if (source != DamageSource.OUT_OF_WORLD) {
+            entity.getActivePotionEffect(MobEffects.RESISTANCE)?.let {
+                damage *= max(1f - it.amplifier * 0.2f, 0f)
+            }
+        }
+        if (entity is EntityPlayer) {
+            damage *= getProtectionModifier(entity, source)
+        }
         return if (roundDamage) round(damage) else damage
     }
 
