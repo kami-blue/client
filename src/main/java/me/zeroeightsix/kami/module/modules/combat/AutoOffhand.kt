@@ -48,10 +48,11 @@ object AutoOffhand : Module() {
     private val offhandGapple = register(Settings.booleanBuilder("OffhandGapple").withValue(true).withVisibility { type.value == Type.GAPPLE })
     private val checkAura = register(Settings.booleanBuilder("CheckAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkWeapon = register(Settings.booleanBuilder("CheckWeapon").withValue(false).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkCAGapple = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.CRYSTAL && !offhandCrystal.value && offhandCrystal.value })
 
     // Crystal
-    private val offhandCrystal = register(Settings.booleanBuilder("OffhandCrystal").withValue(true).withVisibility { type.value == Type.CRYSTAL })
-    private val checkCrystalAura = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val offhandCrystal = register(Settings.booleanBuilder("OffhandCrystal").withValue(false).withVisibility { type.value == Type.CRYSTAL })
+    private val checkCACrystal = register(Settings.booleanBuilder("CheckCrystalAura").withValue(false).withVisibility { type.value == Type.CRYSTAL && offhandCrystal.value })
 
     private enum class Type(val itemId: Int) {
         TOTEM(449),
@@ -122,9 +123,10 @@ object AutoOffhand : Module() {
         val item = mc.player.heldItemMainhand.getItem()
         return offhandGapple.value && checkAura.value && CombatManager.isActiveAndTopPriority(Aura)
                 || checkWeapon.value && (item is ItemSword || item is ItemAxe)
+                || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isActiveAndTopPriority(CrystalAura)
     }
 
-    private fun checkCrystal() = offhandCrystal.value &&  checkCrystalAura.value && CombatManager.isActiveAndTopPriority(CrystalAura)
+    private fun checkCrystal() = offhandCrystal.value && checkCACrystal.value && CombatManager.isActiveAndTopPriority(CrystalAura)
 
     private fun checkOffhandItem(type: Type) = Item.getIdFromItem(mc.player.heldItemOffhand.getItem()) == type.itemId
 
