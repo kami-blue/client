@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
+import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.Wrapper;
@@ -9,9 +10,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,6 +40,24 @@ public class MixinMinecraft {
     @Shadow public GuiIngame ingameGUI;
     @Shadow public boolean skipRenderWorld;
     @Shadow public SoundHandler soundHandler;
+    @Shadow public RayTraceResult objectMouseOver;
+    @Shadow public PlayerControllerMP playerController;
+    @Shadow public EntityRenderer entityRenderer;
+
+    @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
+    public void processRightClickBlock(CallbackInfo ci) {
+        if (CrystalAura.INSTANCE.isActive()) {
+            ci.cancel();
+            for (EnumHand enumhand : EnumHand.values()) {
+                ItemStack itemstack = this.player.getHeldItem(enumhand);
+                if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS))
+                    net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
+                if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
+                    this.entityRenderer.itemRenderer.resetEquippedProgress(enumhand);
+                }
+            }
+        }
+    }
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo info) {
