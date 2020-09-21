@@ -51,42 +51,42 @@ object CrystalAuraRewrite : Module() {
     private val page = register(Settings.e<Page>("Page", Page.GENERAL))
 
     /* General */
-    private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
-    private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL }.build())
-    private val maxYawRate = register(Settings.integerBuilder("MaxYawRate").withValue(50).withRange(10, 100).withVisibility { page.value == Page.GENERAL }.build())
-    private val motionPrediction = register(Settings.booleanBuilder("MotionPrediction").withValue(true).withVisibility { page.value == Page.GENERAL }.build())
-    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.GENERAL && motionPrediction.value }.build())
-    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.GENERAL && motionPrediction.value && !pingSync.value }.build())
+    private val facePlaceThreshold = register(Settings.floatBuilder("FacePlace").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL })
+    private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(5.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL })
+    private val maxYawRate = register(Settings.integerBuilder("MaxYawRate").withValue(50).withRange(10, 100).withVisibility { page.value == Page.GENERAL })
+    private val motionPrediction = register(Settings.booleanBuilder("MotionPrediction").withValue(true).withVisibility { page.value == Page.GENERAL })
+    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.GENERAL && motionPrediction.value })
+    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.GENERAL && motionPrediction.value && !pingSync.value })
 
     /* Place page one */
-    private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
-    private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
-    private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE }.build())
-    private val placeSwing = register(Settings.booleanBuilder("PlaceSwing").withValue(false).withVisibility { page.value == Page.PLACE_ONE }.build())
+    private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE })
+    private val forcePlace = register(Settings.booleanBuilder("RightClickForcePlace").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
+    private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE })
+    private val spoofHotbar = register(Settings.booleanBuilder("SpoofHotbar").withValue(true).withVisibility { page.value == Page.PLACE_ONE && autoSwap.value })
+    private val placeSwing = register(Settings.booleanBuilder("PlaceSwing").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO }.build())
-    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO }.build())
-    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO }.build())
-    private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.PLACE_TWO }.build())
-    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
-    private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO }.build())
+    private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
+    private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(8).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
+    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
+    private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.PLACE_TWO })
+    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
+    private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
 
     /* Explode page one */
-    private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
-    private val forceExplode = register(Settings.booleanBuilder("LeftClickForceExplode").withValue(false).withVisibility { page.value == Page.EXPLODE_ONE }.build())
-    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
-    private val antiWeakness = register(Settings.booleanBuilder("AntiWeakness").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE }.build())
-    private val checkImmune = register(Settings.booleanBuilder("CheckImmune").withValue(false).withVisibility { page.value == Page.EXPLODE_ONE }.build())
+    private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
+    private val forceExplode = register(Settings.booleanBuilder("LeftClickForceExplode").withValue(false).withVisibility { page.value == Page.EXPLODE_ONE })
+    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
+    private val antiWeakness = register(Settings.booleanBuilder("AntiWeakness").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
 
     /* Explode page two */
-    private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { page.value == Page.EXPLODE_TWO }.build())
-    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
-    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value }.build())
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO }.build())
-    private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(2).withRange(0, 5).withVisibility { page.value == Page.EXPLODE_TWO }.build())
-    private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
-    private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO }.build())
+    private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val minDamageE = register(Settings.integerBuilder("MinDamageExplode").withValue(8).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
+    private val maxSelfDamageE = register(Settings.integerBuilder("MaxSelfDamageExplode").withValue(6).withRange(0, 20).withVisibility { page.value == Page.EXPLODE_TWO && checkDamage.value })
+    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(2).withRange(0, 5).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
     /* End of settings */
 
     private enum class Page {
@@ -103,7 +103,7 @@ object CrystalAuraRewrite : Module() {
     private var placeTimer = 0
     private var hitTimer = 0
     private var hitCount = 0
-    private var inactiveTicks = 0
+    private var inactiveTicks = 30
 
     override fun isActive(): Boolean {
         return isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 20
@@ -125,6 +125,7 @@ object CrystalAuraRewrite : Module() {
         hitTimer = 0
         hitCount = 0
         inactiveTicks = 30
+        PlayerPacketManager.resetHotbar()
     }
 
     @EventHandler
@@ -155,6 +156,7 @@ object CrystalAuraRewrite : Module() {
 
         updateMap()
         if (canExplode()) explode() else if (canPlace()) place()
+        if (inactiveTicks > 5) PlayerPacketManager.resetHotbar()
         if (inactiveTicks > 20) resetRotation()
     }
 
@@ -167,14 +169,19 @@ object CrystalAuraRewrite : Module() {
         crystalList.clear()
         crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
 
-        if (hitTimer > hitDelay.value && getExplodingCrystal() == null && ignoredList.isNotEmpty()) {
+        if (inactiveTicks > 20 && getExplodingCrystal() == null && ignoredList.isNotEmpty()) {
             ignoredList.clear()
             hitCount = 0
         }
     }
 
     private fun place() {
-        if (autoSwap.value && getHand() == null) InventoryUtils.swapSlotToItem(426)
+        if (autoSwap.value && getHand() == null) {
+            InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
+                if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(it)
+                else InventoryUtils.swapSlot(it)
+            }
+        }
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
                 placeTimer = 0
@@ -187,7 +194,10 @@ object CrystalAuraRewrite : Module() {
     }
 
     private fun explode() {
-        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) CombatUtils.equipBestWeapon()
+        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
+            CombatUtils.equipBestWeapon()
+            PlayerPacketManager.resetHotbar()
+        }
         getExplodingCrystal()?.let {
             hitTimer = 0
             inactiveTicks = 0
@@ -303,10 +313,14 @@ object CrystalAuraRewrite : Module() {
     /* End of exploding */
 
     /* General */
-    private fun getHand() = when (Items.END_CRYSTAL) {
-        mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
-        mc.player.heldItemOffhand.getItem() -> EnumHand.OFF_HAND
-        else -> null
+    private fun getHand(): EnumHand? {
+        val serverSideItem = mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem()
+        return when (Items.END_CRYSTAL) {
+            mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
+            mc.player.heldItemOffhand.getItem() -> EnumHand.OFF_HAND
+            serverSideItem -> EnumHand.MAIN_HAND
+            else -> null
+        }
     }
 
     private fun noSuicideCheck(selfDamage: Float) = mc.player.health - selfDamage > noSuicideThreshold.value

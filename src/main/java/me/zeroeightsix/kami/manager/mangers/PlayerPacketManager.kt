@@ -78,10 +78,13 @@ object PlayerPacketManager : Manager() {
         Wrapper.minecraft.connection?.let {
             it.sendPacket(CPacketHeldItemChange(slot))
             serverSideHotbar = slot
+            spoofingHotbar = true
         }
     }
 
     fun resetHotbar() {
+        if (!spoofingHotbar) return
+        spoofingHotbar = false
         Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem ?: 0))
     }
 
