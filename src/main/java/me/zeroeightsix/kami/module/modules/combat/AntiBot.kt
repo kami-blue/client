@@ -14,7 +14,7 @@ import kotlin.math.abs
 
 @Module.Info(
         name = "AntiBot",
-        description = "Avoid attacking fake playersa",
+        description = "Avoid attacking fake players",
         category = Module.Category.COMBAT,
         alwaysListening = true
 )
