@@ -41,7 +41,7 @@ class TextComponent(val separator: String = " ") {
     }
 
     /**
-     * Adds new text element to current line, and goes to the next line
+     * Adds new text element to [currentLine], and goes to the next line
      */
     fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextStyle = TextStyle.REGULAR) {
         add(text, color, style)
@@ -49,7 +49,7 @@ class TextComponent(val separator: String = " ") {
     }
 
     /**
-     * Adds new text element to current line, and goes to the next line
+     * Adds new text element to [currentLine], and goes to the next line
      */
     fun addLine(text: String, color: Int, styleIn: TextStyle = TextStyle.REGULAR) {
         add(text, color, styleIn)
@@ -57,7 +57,7 @@ class TextComponent(val separator: String = " ") {
     }
 
     /**
-     * Adds new text element to current line, and goes to the next line
+     * Adds new text element to [currentLine], and goes to the next line
      */
     fun addLine(textElement: TextElement) {
         add(textElement)
@@ -65,21 +65,21 @@ class TextComponent(val separator: String = " ") {
     }
 
     /**
-     * Adds new text element to current line
+     * Adds new text element to [currentLine]
      */
     fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextStyle = TextStyle.REGULAR) {
         add(text, color.toHex(), style)
     }
 
     /**
-     * Adds new text element to current line
+     * Adds new text element to [currentLine]
      */
     fun add(text: String, color: Int, style: TextStyle = TextStyle.REGULAR) {
         add(TextElement(text, color, style))
     }
 
     /**
-     * Adds new text element to current line
+     * Adds new text element to [currentLine]
      */
     fun add(textElement: TextElement) {
         // Adds new lines until we reached the current line
@@ -87,6 +87,14 @@ class TextComponent(val separator: String = " ") {
 
         // Add text element to current line, and create new text line object if current line has null
         textLines[currentLine] = (textLines[currentLine] ?: TextLine(separator)).apply { this.add(textElement) }
+    }
+
+    /**
+     * Clear all lines in this component, and reset [currentLine]
+     */
+    fun clear() {
+        textLines.clear()
+        currentLine = 0
     }
 
     /**
