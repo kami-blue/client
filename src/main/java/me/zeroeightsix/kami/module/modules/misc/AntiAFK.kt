@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
@@ -20,10 +21,6 @@ import kotlin.math.max
 import kotlin.random.Random
 
 /**
- * Created by 086 on 16/12/2017.
- * Updated by dominikaaaa on 21/04/20
- * Updated by Xiaro on 09/09/20
- *
  * TODO: Path finding to stay inside 1 chunk
  * TODO: Render which chunk is selected
  */
@@ -32,11 +29,15 @@ import kotlin.random.Random
         category = Module.Category.MISC,
         description = "Prevents being kicked for AFK"
 )
-class AntiAFK : Module() {
+object AntiAFK : Module() {
     private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(0, 100).build())
     private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
-    private val squareWalk = register(Settings.b("SquareWalk", true))
-    private val radius = register(Settings.integerBuilder("Radius").withMinimum(1).withValue(64).build())
+    val autoReply = register(Settings.b("AutoReply", true))
+    private val swing = register(Settings.b("Swing", true))
+    private val jump = register(Settings.b("Jump", true))
+    private val turn = register(Settings.b("Turn", true))
+    private val walk = register(Settings.b("Walk", true))
+    private val radius = register(Settings.integerBuilder("Radius").withValue(64).withRange(1, 128).build())
     private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15).build())
 
     private var startPos = BlockPos(114514, -696969, 404)
@@ -48,8 +49,7 @@ class AntiAFK : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (!autoReply.value || event.packet !is SPacketChat) return@EventHook
-        val text = event.packet.chatComponent.unformattedText
-        if (text.contains("whispers: ") && !text.contains(mc.player.name)) {
+        if (MessageDetectionHelper.isDirect(true, event.packet.getChatComponent().unformattedText)) {
             sendServerMessage("/r I am currently AFK and using KAMI Blue!")
         }
     })
@@ -115,7 +115,7 @@ class AntiAFK : Module() {
                 Action.TURN -> mc.player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
             }
 
-            if (squareWalk.value && !isBaritoneActive) {
+            if (walk.value && !isBaritoneActive) {
                 if (startPos == BlockPos(114514, -696969, 404)) startPos = mc.player.position
                 when (squareStep) {
                     0 -> baritoneGotoXZ(startPos.x, startPos.z + radius.value)
@@ -134,7 +134,7 @@ class AntiAFK : Module() {
         return if (action.setting.value) action else getAction()
     }
 
-    enum class Action(val setting: Setting<Boolean>) {
+    private enum class Action(val setting: Setting<Boolean>) {
         SWING(swing),
         JUMP(jump),
         TURN(turn)
@@ -148,21 +148,12 @@ class AntiAFK : Module() {
     }
 
     private fun baritoneCancel() {
-        if (squareWalk.value && isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    }
-
-    companion object {
-        val autoReply: Setting<Boolean> = (Settings.b("AutoReply", true))
-        var swing: Setting<Boolean> = (Settings.b("Swing", true))
-        var jump: Setting<Boolean> = (Settings.b("Jump", true))
-        var turn: Setting<Boolean> = (Settings.b("Turn", true))
+        if (walk.value && isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     }
 
     init {
-        registerAll(autoReply, swing, jump, turn)
-
-        squareWalk.settingListener = Setting.SettingListeners {
-            if (startPos == BlockPos(114514, -696969, 404)) baritoneCancel()
+        walk.settingListener = Setting.SettingListeners {
+            if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
         }
     }
 }
