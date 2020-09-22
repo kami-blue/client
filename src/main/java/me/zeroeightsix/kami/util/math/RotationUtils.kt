@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util.math
 
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -14,8 +13,8 @@ import kotlin.math.*
 object RotationUtils {
     val mc = Wrapper.minecraft
 
-    fun faceEntityClosed(entity: Entity, pTicks: Float = 1f) {
-        val rotation = getRotationToEntityClosed(entity, pTicks)
+    fun faceEntityClosest(entity: Entity, pTicks: Float = 1f) {
+        val rotation = getRotationToEntityClosest(entity, pTicks)
         mc.player.rotationYaw = rotation.x.toFloat()
         mc.player.rotationPitch = rotation.y.toFloat()
     }
@@ -46,7 +45,7 @@ object RotationUtils {
         return Math.toDegrees(acos(cos(r1Radians.y) * cos(r2Radians.y) * cos(r1Radians.x - r2Radians.x) + sin(r1Radians.y) * sin(r2Radians.y)))
     }
 
-    fun getRotationToEntityClosed(entity: Entity, pTicks: Float = 1f): Vec2d {
+    fun getRotationToEntityClosest(entity: Entity, pTicks: Float = 1f): Vec2d {
         val box = entity.boundingBox
         val eyePos = mc.player.getPositionEyes(1f)
         val x = MathHelper.clamp(eyePos.x, box.minX + 0.1, box.maxX - 0.1)

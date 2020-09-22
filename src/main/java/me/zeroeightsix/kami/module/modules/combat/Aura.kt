@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
@@ -73,11 +73,11 @@ object Aura : Module() {
                 return
             }
             if (spoofRotation.value) {
-                val rotation = RotationUtils.getRotationToEntityClosed(target)
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation.x.toFloat(), rotation.y.toFloat()))
+                val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
+                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
                 PlayerPacketManager.addPacket(this, packet)
             }
-            if (lockView.value) faceEntity(target)
+            if (lockView.value) faceEntityClosest(target)
             if (canAttack()) attack(target)
         }
         pauseBaritone()
