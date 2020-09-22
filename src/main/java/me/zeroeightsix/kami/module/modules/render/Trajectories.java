@@ -11,8 +11,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 28/12/2017.
@@ -24,10 +27,16 @@ import java.util.ArrayList;
         description = "Draws lines to where trajectories are going to fall"
 )
 public class Trajectories extends Module {
-    ArrayList<Vec3d> positions = new ArrayList<>();
+    private final ArrayList<Vec3d> positions = new ArrayList<>();
+
+    public static Trajectories INSTANCE;
+
+    public Trajectories() {
+        INSTANCE = this;
+    }
 
     @Override
-    public void onWorldRender(RenderEvent event) {
+    public void onWorldRender(@NotNull RenderEvent event) {
         try {
             mc.world.loadedEntityList.stream()
                     .filter(entity -> entity instanceof EntityLivingBase)
@@ -63,7 +72,7 @@ public class Trajectories extends Module {
 
                         if (positions.isEmpty()) return;
 
-/*                        GL11.glLineWidth(2F);
+                        glLineWidth(2F);
                         glColor3f(1f, 1f, 1f);
                         glBegin(GL_LINE_STRIP);
                         Vec3d a = positions.get(0);
@@ -71,7 +80,7 @@ public class Trajectories extends Module {
                         for (Vec3d v : positions) {
                             glVertex3d(v.x, v.y, v.z);
                         }
-                        glEnd();*/
+                        glEnd();
                     });
         } catch (Exception e) {
             e.printStackTrace();

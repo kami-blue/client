@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.setting.impl.EnumSetting;
 
 import java.util.List;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage;
 
@@ -33,7 +32,7 @@ public class SettingsCommand extends Command {
         }
 
         try {
-            Module m = MODULE_MANAGER.getModule(args[0]);
+            Module m = ModuleManager.getModule(args[0]);
             List<Setting<?>> settings = m.settingList;
             String[] result = new String[settings.size()];
             for (int i = 0; i < settings.size(); i++) {

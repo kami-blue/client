@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -17,14 +16,8 @@ import kotlin.math.floor
         description = "Highlights object you are looking at",
         category = Module.Category.RENDER
 )
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 07/08/20
- * Updated by Xiaro on 24/08/20
- */
-class SelectionHighlight : Module() {
-    val block: Setting<Boolean> = register(Settings.b("Block", true))
+object SelectionHighlight : Module() {
+    val block = register(Settings.b("Block", true))
     private val entity = register(Settings.b("Entity", false))
     private val hitSideOnly = register(Settings.b("HitSideOnly", false))
     private val throughBlocks = register(Settings.b("ThroughBlocks", false))

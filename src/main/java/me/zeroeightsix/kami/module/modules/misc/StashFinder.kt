@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
@@ -11,15 +11,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import kotlin.math.roundToInt
 
-/**
- * @author Nucleus
- */
 @Module.Info(
         name = "StashFinder",
         category = Module.Category.MISC,
         description = "Logs storage units in render distance."
 )
-class StashFinder : Module() {
+object StashFinder : Module() {
     private val logToChat = register(Settings.b("LogToChat"))
     private val playSound = register(Settings.b("PlaySound"))
 
@@ -91,8 +88,6 @@ class StashFinder : Module() {
     }
 
     override fun onUpdate() {
-        super.onUpdate()
-
         mc.world.loadedTileEntityList
                 .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) }
                 .forEach { logTileEntity(it) }
@@ -101,7 +96,7 @@ class StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            Waypoint.createWaypoint(chunkStats.getBlockPos(), chunkStats.toString())
+            WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

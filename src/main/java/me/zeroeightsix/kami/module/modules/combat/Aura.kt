@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
+import me.zeroeightsix.kami.module.modules.misc.AutoTool
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
@@ -18,20 +18,13 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
 
-/**
- * Created by 086 on 12/12/2017.
- * Updated by hub on 31 October 2019
- * Updated by bot-debug on 10/04/20
- * Baritone compat added by dominikaaaa on 18/05/20
- * Updated by Xiaro on 29/08/20
- */
 @Module.Info(
         name = "Aura",
         category = Module.Category.COMBAT,
         description = "Hits entities around you",
         modulePriority = 50
 )
-class Aura : Module() {
+object Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
     private val priority = register(Settings.e<EntityPriority>("Priority", EntityPriority.DISTANCE))
     private val multi = register(Settings.b("Multi", false))
@@ -70,7 +63,7 @@ class Aura : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || mc.player.isDead) {
+        if (mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()
             return
         }
@@ -93,7 +86,7 @@ class Aura : Module() {
                 }
             }
 
-            if (autoTool.value) equipBestWeapon(prefer.value)
+            if (autoTool.value) AutoTool.equipBestWeapon(prefer.value)
             if (multi.value) {
                 if (canAttack()) for (target in targetList) {
                     attack(target)

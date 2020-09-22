@@ -24,9 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Created by 20kdc on 15/02/2020.
- * Updated by dominikaaaa on 17/02/20
- * Note for anybody using this in a development environment: THIS DOES NOT WORK. It will lag and the texture will break
+ * TODO: Rewrite this mess
  */
 @Module.Info(
         name = "XRay",
@@ -37,28 +35,27 @@ import java.util.Set;
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.
     private static final String DEFAULT_XRAY_CONFIG = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone";
-    // Split by ',' & each element trimmed (this is a bit weird but it works for now?)
-    private Setting<String> hiddenBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_XRAY_CONFIG).withConsumer((old, value) -> {
-        refreshHiddenBlocksSet(value);
-        if (isEnabled())
-            mc.renderGlobal.loadRenderers();
-    }).build());
+    public static XRay INSTANCE;
+    // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
+    // Essentially, the XRay primitive is just a block state transformer.
+    // Then this implements a custom block that the block state transformer can use for hidden blocks.
+    public static Block transparentBlock;
+    // A static mirror of the state.
+    private static final Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
+    private static boolean invertStatic, outlinesStatic = true;
+    // This is the state used for hidden blocks.
+    private static IBlockState transparentState;
     public Setting<Boolean> invert = register(Settings.booleanBuilder("Invert").withValue(false).withConsumer((old, value) -> {
         invertStatic = value;
         if (isEnabled())
             mc.renderGlobal.loadRenderers();
     }).build());
-
-    // A static mirror of the state.
-    private static Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
-    private static boolean invertStatic, outlinesStatic = true;
-
-    // This is the state used for hidden blocks.
-    private static IBlockState transparentState;
-    // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
-    // Essentially, the XRay primitive is just a block state transformer.
-    // Then this implements a custom block that the block state transformer can use for hidden blocks.
-    public static Block transparentBlock;
+    // Split by ',' & each element trimmed (this is a bit weird but it works for now?)
+    private final Setting<String> hiddenBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_XRAY_CONFIG).withConsumer((old, value) -> {
+        refreshHiddenBlocksSet(value);
+        if (isEnabled())
+            mc.renderGlobal.loadRenderers();
+    }).build());
 
     public XRay() {
         invertStatic = invert.getValue();
@@ -69,6 +66,59 @@ public class XRay extends Module {
         }).build());
         outlinesStatic = outlines.getValue();
         refreshHiddenBlocksSet(hiddenBlockNames.getValue());
+        INSTANCE = this;
+    }
+
+    @SubscribeEvent
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
+        transparentBlock = new Block(Material.GLASS) {
+            // did you know this name's new
+            @Override
+            public BlockRenderLayer getRenderLayer() {
+                return BlockRenderLayer.CUTOUT;
+            }
+
+            // Not opaque so other materials (such as, of course, ores) will render
+            @Override
+            public boolean isOpaqueCube(IBlockState blah) {
+                return false;
+            }
+
+            // Essentially, the hidden-block world should be a projected grid-like thing...?
+            @Override
+            public boolean shouldSideBeRendered(IBlockState blah, IBlockAccess w, BlockPos pos, EnumFacing side) {
+                BlockPos adj = pos.offset(side);
+                IBlockState other = w.getBlockState(adj);
+                // this directly adj. to this must never be rendered
+                if (other.getBlock() == this)
+                    return false;
+                // if it contacts something opaque, don't render as we'll probably accidentally make it harder to see
+                return !other.isOpaqueCube();
+            }
+        };
+        transparentBlock.setRegistryName("kami_xray_transparent");
+        transparentState = transparentBlock.getDefaultState();
+        event.getRegistry().registerAll(transparentBlock);
+    }
+
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        // this runs after transparentBlock is set, right?
+        event.getRegistry().registerAll(new ItemBlock(transparentBlock).setRegistryName(Objects.requireNonNull(transparentBlock.getRegistryName())));
+    }
+
+    public static IBlockState transform(IBlockState input) {
+        Block b = input.getBlock();
+        boolean hide = hiddenBlocks.contains(b);
+        if (invertStatic)
+            hide = !hide;
+        if (hide) {
+            IBlockState target = Blocks.AIR.getDefaultState();
+            if (outlinesStatic && (transparentState != null))
+                target = transparentState;
+            return target;
+        }
+        return input;
     }
 
     // Get hidden block list for command display
@@ -125,58 +175,6 @@ public class XRay extends Module {
             if (block != null)
                 hiddenBlocks.add(block);
         }
-    }
-
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        transparentBlock = new Block(Material.GLASS) {
-            // did you know this name's new
-            @Override
-            public BlockRenderLayer getRenderLayer() {
-                return BlockRenderLayer.CUTOUT;
-            }
-
-            // Not opaque so other materials (such as, of course, ores) will render
-            @Override
-            public boolean isOpaqueCube(IBlockState blah) {
-                return false;
-            }
-
-            // Essentially, the hidden-block world should be a projected grid-like thing...?
-            @Override
-            public boolean shouldSideBeRendered(IBlockState blah, IBlockAccess w, BlockPos pos, EnumFacing side) {
-                BlockPos adj = pos.offset(side);
-                IBlockState other = w.getBlockState(adj);
-                // this directly adj. to this must never be rendered
-                if (other.getBlock() == this)
-                    return false;
-                // if it contacts something opaque, don't render as we'll probably accidentally make it harder to see
-                return !other.isOpaqueCube();
-            }
-        };
-        transparentBlock.setRegistryName("kami_xray_transparent");
-        transparentState = transparentBlock.getDefaultState();
-        event.getRegistry().registerAll(transparentBlock);
-    }
-
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event) {
-        // this runs after transparentBlock is set, right?
-        event.getRegistry().registerAll(new ItemBlock(transparentBlock).setRegistryName(Objects.requireNonNull(transparentBlock.getRegistryName())));
-    }
-
-    public static IBlockState transform(IBlockState input) {
-        Block b = input.getBlock();
-        boolean hide = hiddenBlocks.contains(b);
-        if (invertStatic)
-            hide = !hide;
-        if (hide) {
-            IBlockState target = Blocks.AIR.getDefaultState();
-            if (outlinesStatic && (transparentState != null))
-                target = transparentState;
-            return target;
-        }
-        return input;
     }
 
     @Override

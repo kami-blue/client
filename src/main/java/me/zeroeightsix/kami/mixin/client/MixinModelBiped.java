@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.model.ModelBase;
@@ -31,7 +30,7 @@ public abstract class MixinModelBiped extends ModelBase {
 
     @Inject(method = "setRotationAngles", at = @At("HEAD"), cancellable = true)
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-        if (entityIn == Wrapper.getMinecraft().player && KamiMod.MODULE_MANAGER.getModuleT(ElytraFlight.class).shouldSwing()) {
+        if (entityIn == Wrapper.getMinecraft().player && ElytraFlight.INSTANCE.shouldSwing()) {
             ci.cancel();
 
             this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;

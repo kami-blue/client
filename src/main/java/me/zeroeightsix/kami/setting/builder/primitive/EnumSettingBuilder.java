@@ -15,6 +15,11 @@ public class EnumSettingBuilder<T extends Enum> extends SettingBuilder<T> {
     }
 
     @Override
+    public EnumSettingBuilder withName(String name) {
+        return (EnumSettingBuilder) super.withName(name);
+    }
+
+    @Override
     public Setting<T> build() {
         return new EnumSetting<>(initialValue, predicate(), consumer(), name, visibilityPredicate(), clazz);
     }

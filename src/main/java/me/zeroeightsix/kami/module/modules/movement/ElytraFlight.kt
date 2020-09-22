@@ -25,20 +25,13 @@ import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import kotlin.math.*
 
-/**
- * Created by 086 on 11/04/2018.
- * Updated by Itistheend on 28/12/19.
- * Updated by pNoName on 28/05/20
- * Updated by dominikaaaa on 06/07/20
- * Updated by Xiaro on 27/08/20
- */
 @Module.Info(
         name = "ElytraFlight",
         description = "Allows infinite and way easier Elytra flying",
         category = Module.Category.MOVEMENT,
         modulePriority = 1000
 )
-class ElytraFlight : Module() {
+object ElytraFlight : Module() {
     private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL).build())
     private val page = register(Settings.e<Page>("Page", Page.GENERIC_SETTINGS))
     private val defaultSetting = register(Settings.b("Defaults", false))
@@ -255,7 +248,7 @@ class ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            ModuleManager.getModuleT(LagNotifier::class.java)!!.paused -> {
+            LagNotifier.paused -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
@@ -289,9 +282,8 @@ class ElytraFlight : Module() {
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
         val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.integratedServerIsRunning
-        val lagNotifier = ModuleManager.getModuleT(LagNotifier::class.java)!!
-        if (!easyTakeOff.value || lagNotifier.paused || mc.player.onGround) {
-            if (lagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+        if (!easyTakeOff.value || LagNotifier.paused || mc.player.onGround) {
+            if (LagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
             return
         }

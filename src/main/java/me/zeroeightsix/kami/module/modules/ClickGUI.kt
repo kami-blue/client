@@ -8,10 +8,6 @@ import me.zeroeightsix.kami.util.TimerUtils
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
-/**
- * Created by 086 on 23/08/2017.
- * Updated by Xiaro on 28/08/20
- */
 @Module.Info(
         name = "ClickGUI",
         description = "Opens the Click GUI",
@@ -19,7 +15,7 @@ import kotlin.math.round
         category = Module.Category.CLIENT,
         alwaysListening = true
 )
-class ClickGUI : Module() {
+object ClickGUI : Module() {
     private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
 
     private var prevScale = scaleSetting.value / 100.0

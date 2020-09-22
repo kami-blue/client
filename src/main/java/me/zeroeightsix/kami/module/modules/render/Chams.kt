@@ -17,16 +17,12 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import org.lwjgl.opengl.GL11.*
 
-/**
- * Created by 086 on 12/12/2017.
- * Updated by Xiaro on 05/05/20
- */
 @Module.Info(
         name = "Chams",
         category = Module.Category.RENDER,
         description = "Modify entity rendering"
 )
-class Chams : Module() {
+object Chams : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */

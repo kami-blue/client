@@ -5,34 +5,23 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
-/**
- * @author dominikaaaa
- */
 @Module.Info(
         name = "AutoMine",
         description = "Automatically mines chosen ores",
         category = Module.Category.MISC
 )
-class AutoMine : Module() {
-    private var iron = register(Settings.b("Iron", true))
-    private var diamond = register(Settings.b("Diamond", true))
-    private var gold = register(Settings.b("Gold", false))
-    private var coal = register(Settings.b("Coal", false))
-    private var log = register(Settings.b("Logs", false))
-
-    init {
-        iron.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        diamond.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        gold.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        coal.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        log.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-    }
+object AutoMine : Module() {
+    private val iron = register(Settings.b("Iron", true))
+    private val diamond = register(Settings.b("Diamond", true))
+    private val gold = register(Settings.b("Gold", false))
+    private val coal = register(Settings.b("Coal", false))
+    private val log = register(Settings.b("Logs", false))
 
     override fun onEnable() {
         if (mc.player == null) {
@@ -71,12 +60,15 @@ class AutoMine : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     })
 
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    })
+    init {
+        iron.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+        diamond.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+        gold.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+        coal.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+        log.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+    }
 }

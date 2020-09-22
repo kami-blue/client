@@ -6,29 +6,20 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.GuiEditSign
 import org.lwjgl.input.Keyboard
 
-/**
- * @author dominikaaaa
- * @author ionar2
- * Created by dominikaaaa on 06/04/20
- * Updated on 04/05/20 by ionar2
- * https://github.com/ionar2/salhack/blob/fa9e383/src/main/java/me/ionar/salhack/module/movement/NoSlowModule.java
- * @see me.zeroeightsix.kami.mixin.client.MixinMovementInputFromOptions
- */
 @Module.Info(
         name = "InventoryMove",
         description = "Allows you to walk around with GUIs opened",
         category = Module.Category.MOVEMENT
 )
-class InventoryMove : Module() {
+object InventoryMove : Module() {
     private val speed = register(Settings.i("LookSpeed", 10))
-    var sneak: Setting<Boolean> = register(Settings.b("Sneak", false))
+    val sneak = register(Settings.b("Sneak", false))
 
     private var hasSent = false
 

@@ -1,19 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.InventoryUtils.countItem
-import me.zeroeightsix.kami.util.InventoryUtils.getSlots
-import me.zeroeightsix.kami.util.InventoryUtils.getSlotsHotbar
-import me.zeroeightsix.kami.util.InventoryUtils.getSlotsNoHotbar
-import me.zeroeightsix.kami.util.InventoryUtils.moveToHotbar
-import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox
@@ -32,20 +25,15 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.floor
 
-/**
- * Created by Xiaro on 7/12/20
- *
- * Thanks to CorruptedSeal's help with dropped item scanning <3
- */
 @Module.Info(
         name = "AutoObsidian",
         category = Module.Category.MISC,
         description = "Mines ender chest automatically to fill inventory with obsidian"
 )
-class AutoObsidian : Module() {
+object AutoObsidian : Module() {
     private val searchShulker = register(Settings.b("SearchShulker", false))
     private val autoRefill = register(Settings.b("AutoRefill", false))
-    private val thresold = register(Settings.integerBuilder("RefillThresold").withValue(8).withRange(1, 56).withVisibility { autoRefill.value }.build())
+    private val threshold = register(Settings.integerBuilder("RefillThreshold").withValue(8).withRange(1, 56).withVisibility { autoRefill.value }.build())
     private val targetStacks = register(Settings.integerBuilder("TargetStacks").withValue(1).withRange(1, 20).build())
     private val delayTicks = register(Settings.integerBuilder("DelayTicks").withValue(5).withRange(0, 10).build())
 
@@ -57,11 +45,11 @@ class AutoObsidian : Module() {
         PLACING, OPENING, PRE_MINING, MINING, COLLECTING, DONE
     }
 
-    var active = false
     var pathing = false
     var goal: BlockPos? = null
     var state = State.SEARCHING
 
+    private var active = false
     private var searchingState = SearchingState.PLACING
     private var playerPos = BlockPos(0, -1, 0)
     private var placingPos = BlockPos(0, -1, 0)
@@ -71,8 +59,11 @@ class AutoObsidian : Module() {
     private var tickCount = 0
     private var openTime = 0L
 
+    override fun isActive(): Boolean {
+        return isEnabled && active
+    }
+
     override fun onEnable() {
-        InventoryUtils.inProgress = false
         if (mc.player == null) return
         state = State.SEARCHING
     }
@@ -126,9 +117,8 @@ class AutoObsidian : Module() {
     }
 
     override fun onDisable() {
-        InventoryUtils.inProgress = false
         val baritoneProcess = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
-        if (baritoneProcess.isPresent && baritoneProcess.get() is AutoObsidianProcess) {
+        if (baritoneProcess.isPresent && baritoneProcess.get() == AutoObsidianProcess) {
             baritoneProcess.get().onLostControl()
         }
         reset()
@@ -143,7 +133,7 @@ class AutoObsidian : Module() {
 
         if (!active && state != State.DONE) {
             active = true
-            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(KamiMod.autoObsidianProcess)
+            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(AutoObsidianProcess)
         }
 
         /* Tell baritone to get you back to position */
@@ -159,15 +149,15 @@ class AutoObsidian : Module() {
 
         /* Updates ender chest and obsidian counts before placing and mining ender chest */
         if (state == State.SEARCHING) {
-            enderChestCount = countItem(0, 35, 130)
+            enderChestCount = InventoryUtils.countItem(0, 35, 130)
             obsidianCount = countObsidian()
         }
 
         /* Updates main state */
-        val placedEnderChest = enderChestCount - countItem(0, 35, 130)
+        val placedEnderChest = enderChestCount - InventoryUtils.countItem(0, 35, 130)
         val targetEnderChest = (targetStacks.value * 64 - obsidianCount) / 8
         state = when {
-            state == State.DONE && autoRefill.value && countItem(0, 35, 49) <= thresold.value -> {
+            state == State.DONE && autoRefill.value && InventoryUtils.countItem(0, 35, 49) <= threshold.value -> {
                 State.SEARCHING
             }
             state == State.COLLECTING && getDroppedItem(49, 16.0f) == null -> {
@@ -191,20 +181,20 @@ class AutoObsidian : Module() {
         /* Updates searching state */
         if (state == State.SEARCHING && searchingState != SearchingState.DONE) {
             searchingState = when {
-                searchingState == SearchingState.PLACING && countItem(0, 35, 130) > 0 -> {
+                searchingState == SearchingState.PLACING && InventoryUtils.countItem(0, 35, 130) > 0 -> {
                     SearchingState.DONE
                 }
                 searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
                     SearchingState.DONE
                 }
                 searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
-                    if (countItem(0, 35, 130) > 0) {
+                    if (InventoryUtils.countItem(0, 35, 130) > 0) {
                         SearchingState.COLLECTING
                     } else { /* In case if the shulker wasn't placed due to server lag */
                         SearchingState.PLACING
                     }
                 }
-                searchingState == SearchingState.OPENING && (countItem(0, 35, 130) >= 64 || getSlots(0, 35, 0) == null) -> {
+                searchingState == SearchingState.OPENING && (InventoryUtils.countItem(0, 35, 130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
                     SearchingState.PRE_MINING
                 }
                 searchingState == SearchingState.PLACING && !mc.world.isAirBlock(placingPos) -> {
@@ -221,7 +211,7 @@ class AutoObsidian : Module() {
     }
 
     private fun countObsidian(): Int {
-        return ceil(countItem(0, 35, 49).toDouble() / 8.0).toInt() * 8
+        return ceil(InventoryUtils.countItem(0, 35, 49).toDouble() / 8.0).toInt() * 8
     }
 
     private fun setPlacingPos() {
@@ -262,7 +252,7 @@ class AutoObsidian : Module() {
     /* Tasks */
     private fun placeShulker(pos: BlockPos) {
         for (i in 219..234) {
-            if (getSlotsHotbar(i) == null) {
+            if (InventoryUtils.getSlotsHotbar(i) == null) {
                 if (i != 234) continue else {
                     sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
                     mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
@@ -271,7 +261,7 @@ class AutoObsidian : Module() {
                 }
             }
             shulkerBoxId = i
-            swapSlotToItem(i)
+            InventoryUtils.swapSlotToItem(i)
             break
         }
 
@@ -285,10 +275,10 @@ class AutoObsidian : Module() {
     }
 
     private fun placeEnderChest(pos: BlockPos) {
-        if (getSlotsHotbar(130) == null && getSlotsNoHotbar(130) != null) {
-            moveToHotbar(130, 278, (delayTicks.value * 16).toLong())
+        if (InventoryUtils.getSlotsHotbar(130) == null && InventoryUtils.getSlotsNoHotbar(130) != null) {
+            InventoryUtils.moveToHotbar(130, 278)
             return
-        } else if (getSlots(0, 35, 130) == null) {
+        } else if (InventoryUtils.getSlots(0, 35, 130) == null) {
             if (searchShulker.value) {
                 state = State.SEARCHING
             } else {
@@ -298,7 +288,7 @@ class AutoObsidian : Module() {
                 return
             }
         }
-        swapSlotToItem(130)
+        InventoryUtils.swapSlotToItem(130)
 
         lookAtBlock(pos)
         mc.player.isSneaking = true
@@ -338,16 +328,16 @@ class AutoObsidian : Module() {
     }
 
     private fun mineBlock(pos: BlockPos, pre: Boolean) {
-        if (getSlotsHotbar(278) == null && getSlotsNoHotbar(278) != null) {
-            moveToHotbar(278, 130, (delayTicks.value * 16).toLong())
+        if (InventoryUtils.getSlotsHotbar(278) == null && InventoryUtils.getSlotsNoHotbar(278) != null) {
+            InventoryUtils.moveToHotbar(278, 130)
             return
-        } else if (getSlots(0, 35, 278) == null) {
+        } else if (InventoryUtils.getSlots(0, 35, 278) == null) {
             sendChatMessage("$chatName No pickaxe was found in inventory, disabling.")
             mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             this.disable()
             return
         }
-        swapSlotToItem(278)
+        InventoryUtils.swapSlotToItem(278)
         lookAtBlock(pos)
 
         /* Packet mining lol */

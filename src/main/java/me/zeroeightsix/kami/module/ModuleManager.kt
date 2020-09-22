@@ -10,14 +10,8 @@ import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import java.lang.reflect.InvocationTargetException
 import java.util.*
 
-/**
- * Created by 086 on 23/08/2017.
- * Updated by Sasha
- * Updated by Xiaro on 18/08/20
- */
 @Suppress("UNCHECKED_CAST")
 object ModuleManager {
     private val mc = Minecraft.getMinecraft()
@@ -53,14 +47,20 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
+                // First we try to get the constructor of the class and create a new instance with it.
+                // This is for modules that are still in Java.
+                // Because the INSTANCE field isn't assigned yet until the constructor gets called.
                 val module = clazz.getConstructor().newInstance() as Module
                 moduleMap[module.javaClass] = module
-            } catch (e: InvocationTargetException) {
-                e.cause!!.printStackTrace()
-                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + e.javaClass.simpleName + ", message: " + e.message)
+            } catch (noSuchMethodException: NoSuchMethodException) {
+                // If we can't find the constructor for the class then it means it is a Kotlin object class.
+                // We just get the INSTANCE field from it, because Kotlin object class
+                // creates a new INSTANCE automatically when it gets called the first time
+                val module = clazz.getDeclaredField("INSTANCE")[null] as Module
+                moduleMap[module.javaClass] = module
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
             }
         }
         initSortedList()
@@ -93,23 +93,19 @@ object ModuleManager {
     }
 
     fun onWorldRender(event: RenderWorldLastEvent) {
-        mc.profiler.startSection("kami")
-        mc.profiler.startSection("setup")
+        mc.profiler.startSection("KamiWorldRender")
         KamiTessellator.prepareGL()
         GlStateManager.glLineWidth(1f)
         val renderPos = getInterpolatedPos(mc.renderViewEntity!!, event.partialTicks)
         val e = RenderEvent(KamiTessellator, renderPos)
         e.resetTranslation()
-        mc.profiler.endSection()
         for (module in moduleList) {
             if (isModuleListening(module)) {
                 KamiTessellator.prepareGL()
                 module.onWorldRender(e)
                 KamiTessellator.releaseGL()
-                mc.profiler.endSection()
             }
         }
-        mc.profiler.startSection("release")
         GlStateManager.glLineWidth(1f)
         KamiTessellator.releaseGL()
         mc.profiler.endSection()
@@ -157,12 +153,12 @@ object ModuleManager {
 
     @JvmStatic
     fun isModuleEnabled(clazz: Class<out Module>): Boolean {
-        return getModule(clazz)?.isEnabled ?: false
+        return getModule(clazz).isEnabled
     }
 
     @JvmStatic
     fun isModuleListening(clazz: Class<out Module>): Boolean {
-        val module = getModule(clazz) ?: return false
+        val module = getModule(clazz)
         return isModuleListening(module)
     }
 

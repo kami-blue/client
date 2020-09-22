@@ -5,7 +5,6 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.init.Blocks
@@ -18,8 +17,6 @@ import net.minecraftforge.client.event.InputUpdateEvent
 
 
 /**
- * Created by 086 on 15/12/2017.
- * Updated by dominikaaaa on 31/03/20
  * @see me.zeroeightsix.kami.mixin.client.MixinBlockSoulSand
  *
  * @see net.minecraft.client.entity.EntityPlayerSP.onLivingUpdate
@@ -29,15 +26,11 @@ import net.minecraftforge.client.event.InputUpdateEvent
         category = Module.Category.MOVEMENT,
         description = "Prevents being slowed down when using an item or going through cobwebs"
 )
-class NoSlowDown : Module() {
-    private val ncpStrict: Setting<Boolean> = register(Settings.b("NCPStrict", true))
-    private val sneak: Setting<Boolean> = register(Settings.b("Sneak", true))
-
-    @JvmField
-    var soulSand: Setting<Boolean> = register(Settings.b("SoulSand", true))
-
-    @JvmField
-    var cobweb: Setting<Boolean> = register(Settings.b("Cobweb", true))
+object NoSlowDown : Module() {
+    private val ncpStrict = register(Settings.b("NCPStrict", true))
+    private val sneak = register(Settings.b("Sneak", true))
+    val soulSand = register(Settings.b("SoulSand", true))
+    val cobweb = register(Settings.b("Cobweb", true))
     private val slime = register(Settings.b("Slime", true))
     private val allItems = register(Settings.b("AllItems", false))
     private val food = register(Settings.booleanBuilder().withName("Food").withValue(true).withVisibility { !allItems.value }.build())
@@ -74,7 +67,7 @@ class NoSlowDown : Module() {
         else Blocks.SLIME_BLOCK.slipperiness = 0.8f
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         Blocks.SLIME_BLOCK.slipperiness = 0.8f
     }
 

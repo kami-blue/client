@@ -11,10 +11,21 @@ import org.lwjgl.input.Keyboard
  * Created by 086 on 11/11/2017.
  */
 object Wrapper {
-    @JvmStatic val fontRenderer: FontRenderer get() = KamiGUI.fontRenderer
-    @JvmStatic val minecraft: Minecraft get() = Minecraft.getMinecraft()
-    @JvmStatic val player: EntityPlayerSP? get() = minecraft.player
-    @JvmStatic val world: World? get() = minecraft.world
+    @JvmStatic
+    val fontRenderer: FontRenderer
+        get() = KamiGUI.fontRenderer
+
+    @JvmStatic
+    val minecraft: Minecraft
+        get() = Minecraft.getMinecraft()
+
+    @JvmStatic
+    val player: EntityPlayerSP?
+        get() = minecraft.player
+
+    @JvmStatic
+    val world: World?
+        get() = minecraft.world
 
     @JvmStatic
     fun getKey(keyname: String): Int {

@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 public class RenameModuleCommand extends Command {
@@ -24,7 +23,7 @@ public class RenameModuleCommand extends Command {
         }
 
         try {
-            Module module = MODULE_MANAGER.getModule(args[0]);
+            Module module = ModuleManager.getModule(args[0]);
             String name = args.length == 1 ? module.originalName : args[1];
 
             if (!(name.matches("[a-zA-Z]+"))) {

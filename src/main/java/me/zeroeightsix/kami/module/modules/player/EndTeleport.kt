@@ -11,19 +11,15 @@ import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketRespawn
 import net.minecraft.util.text.TextComponentString
 
-/**
- * Created by 0x2E | PretendingToCode
- * Updated by Xiaro on 24/08/20
- */
 @Module.Info(
         name = "EndTeleport",
         category = Module.Category.PLAYER,
         description = "Allows for teleportation when going through end portals"
 )
-class EndTeleport : Module() {
+object EndTeleport : Module() {
     private val confirmed = register(Settings.b("Confirm", false))
 
-    public override fun onEnable() {
+    override fun onEnable() {
         if (mc.getCurrentServerData() == null) {
             MessageSendHelper.sendWarningMessage("$chatName This module does not work in singleplayer")
             disable()
@@ -35,7 +31,7 @@ class EndTeleport : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: Receive ->
         if (event.packet is SPacketRespawn) {
-            if ((event.packet as SPacketRespawn).dimensionID == 1 && confirmed.value) {
+            if (event.packet.dimensionID == 1 && confirmed.value) {
                 mc.connection!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
                 disable()
             }

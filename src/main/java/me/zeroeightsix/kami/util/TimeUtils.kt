@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import net.minecraft.util.text.TextFormatting
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,7 +37,7 @@ object TimeUtils {
     }
 
     @JvmStatic
-    fun getFinalTime(colourCode2: TextFormatting?, colourCode1: TextFormatting?, timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
+    fun getFinalTime(colourCode2: TextFormatting, colourCode1: TextFormatting, timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
         var locale = ""
         val time = time(dateFormatter(TimeUnit.H24, TimeType.HH))
         if (timeUnit == TimeUnit.H12 && doLocale) {
@@ -48,7 +47,7 @@ object TimeUtils {
                 "am"
             }
         }
-        return InfoOverlay.getStringColour(colourCode1) + time(dateFormatter(timeUnit, timeType)) + InfoOverlay.getStringColour(colourCode2) + locale
+        return colourCode1.toString() + time(dateFormatter(timeUnit, timeType)) + colourCode2.toString() + locale
     }
 
     @JvmStatic

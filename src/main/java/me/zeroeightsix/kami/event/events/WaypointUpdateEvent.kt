@@ -1,15 +1,10 @@
 package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.util.Waypoint
 
-/**
- * @author dominikaaaa
- * @since 31/07/20 15:43
- *
- * Updated by Xiaro on 18/08/20
- */
-open class WaypointUpdateEvent : KamiEvent() {
-    class Get : WaypointUpdateEvent()
-    class Create : WaypointUpdateEvent()
-    class Remove : WaypointUpdateEvent()
+class WaypointUpdateEvent(val type: Type, val waypoint: Waypoint?) : KamiEvent() {
+    enum class Type {
+        GET, ADD, REMOVE, CLEAR, RELOAD
+    }
 }

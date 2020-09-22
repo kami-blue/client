@@ -19,7 +19,7 @@ public class MixinAbstractClientPlayer {
     public void getCape(CallbackInfoReturnable<ResourceLocation> callbackInfo) {
         if (Capes.INSTANCE == null)
             return;
-        if ((!Capes.INSTANCE.overrideOtherCapes.getValue()) && (callbackInfo.getReturnValue() != null))
+        if ((!Capes.INSTANCE.getOverrideOtherCapes().getValue()) && (callbackInfo.getReturnValue() != null))
             return;
         // This is weird with a capital W.
         // Essentially, the "mixin class" content is actually aliased over to the actual target class.
