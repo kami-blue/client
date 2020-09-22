@@ -25,8 +25,8 @@ import net.minecraft.util.EnumHand
 object Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
     private val multi = register(Settings.b("Multi", false))
-    private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value }.build())
     private val lockView = register(Settings.booleanBuilder("LockView").withValue(false).withVisibility { !multi.value }.build())
+    private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value && !lockView.value }.build())
     private val waitTick = register(Settings.floatBuilder("SpamDelay").withMinimum(0.1f).withValue(2.0f).withMaximum(40.0f).withVisibility { delayMode.value == WaitMode.SPAM }.build())
     private val range = register(Settings.floatBuilder("Range").withValue(5f).withRange(0f, 10f).build())
     private val eat = register(Settings.b("WhileEating", true))
@@ -72,12 +72,13 @@ object Aura : Module() {
                 unpauseBaritone()
                 return
             }
-            if (spoofRotation.value) {
+            if (lockView.value) {
+                faceEntityClosest(target)
+            } else if (spoofRotation.value) {
                 val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
                 PlayerPacketManager.addPacket(this, packet)
             }
-            if (lockView.value) faceEntityClosest(target)
             if (canAttack()) attack(target)
         }
         pauseBaritone()
