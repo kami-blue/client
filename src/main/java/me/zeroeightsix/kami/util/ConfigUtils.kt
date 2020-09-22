@@ -15,6 +15,7 @@ import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -157,9 +158,24 @@ object ConfigUtils {
         }
     }
 
+    /**
+     * Super lazy fix for Windows users sometimes saving empty files
+     */
+    fun fixEmptyFile(file: File) {
+        if (!file.exists()) {
+            try {
+                val fileWriter = FileWriter(file)
+                fileWriter.write("[]")
+                fileWriter.close()
+            } catch (exception: IOException) {
+                exception.printStackTrace()
+            }
+        }
+    }
+
     @Throws(IOException::class)
     private fun loadConfigurationUnsafe() {
-        val kamiConfigName = getConfigName()!!
+        val kamiConfigName = getConfigName()
         val kamiConfig = Paths.get(kamiConfigName)
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
@@ -206,7 +222,7 @@ object ConfigUtils {
                     `object`.add(frame.title, frameObject)
                 }
         KamiMod.getInstance().guiStateSetting.value = `object`
-        val outputFile = Paths.get(getConfigName()!!)
+        val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)
         for (module in ModuleManager.getModules()) {

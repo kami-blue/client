@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -29,7 +29,7 @@ object TeleportLogger : Module() {
             /* 8 chunk render distance * 16 */
             if (remove.value && 128 > player.getDistance(mc.player)) {
                 if (teleportedPlayers.contains(player.name)) {
-                    val removed = Waypoint.removeWaypoint(teleportedPlayers[player.name]!!)
+                    val removed = WaypointManager.remove(teleportedPlayers[player.name]!!)
                     teleportedPlayers.remove(player.name)
 
                     if (removed) {
@@ -53,7 +53,7 @@ object TeleportLogger : Module() {
 
     private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
         return if (saveToFile.value) {
-            Waypoint.createWaypoint(coordinate, name)
+            WaypointManager.add(coordinate, name).pos
         } else {
             coordinate
         }
