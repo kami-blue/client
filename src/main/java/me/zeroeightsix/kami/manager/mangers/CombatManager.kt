@@ -2,9 +2,10 @@ package me.zeroeightsix.kami.manager.mangers
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.combat.AntiBot
 import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Xiaro
@@ -14,7 +15,7 @@ import net.minecraft.entity.EntityLivingBase
 object CombatManager {
     private val combatModules = ArrayList<Module>()
 
-    var targetList = ArrayList<EntityLivingBase>()
+    var targetList = LinkedList<EntityLivingBase>()
     var target: EntityLivingBase? = null
         set(value) {
             motionTracker.target = value
@@ -28,15 +29,14 @@ object CombatManager {
         return getTopPriority() <= module.modulePriority
     }
 
-    fun getTopPriority(ignoreAntiBot: Boolean = true): Int {
-        return getTopModule(ignoreAntiBot)?.modulePriority ?: -1
+    fun getTopPriority(): Int {
+        return getTopModule()?.modulePriority ?: -1
     }
 
-    fun getTopModule(ignoreAntiBot: Boolean = true): Module? {
+    fun getTopModule(): Module? {
         var topModule: Module? = null
         for (module in combatModules) {
             if (!module.isActive()) continue
-            if (ignoreAntiBot && module is AntiBot) continue
             if (module.modulePriority < topModule?.modulePriority ?: 0) continue
             topModule = module
         }

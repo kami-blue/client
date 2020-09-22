@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent;
 import me.zeroeightsix.kami.module.modules.player.TpsSync;
 import me.zeroeightsix.kami.util.LagCompensator;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,12 +27,10 @@ public class MixinPlayerControllerMP {
     @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity, CallbackInfo ci) {
         if (targetEntity == null) return;
-        if (targetEntity instanceof EntityPlayerSP) {
-            ClientPlayerAttackEvent e = new ClientPlayerAttackEvent(targetEntity);
-            KamiMod.EVENT_BUS.post(e);
-            if (e.isCancelled()) {
-                ci.cancel();
-            }
+        ClientPlayerAttackEvent event = new ClientPlayerAttackEvent(targetEntity);
+        KamiMod.EVENT_BUS.post(event);
+        if (event.isCancelled()) {
+            ci.cancel();
         }
     }
 }

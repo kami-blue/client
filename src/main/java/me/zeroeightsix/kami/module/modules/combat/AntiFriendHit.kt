@@ -6,7 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
-import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.entity.player.EntityPlayer
 
 @Module.Info(
         name = "AntiFriendHit",
@@ -16,10 +16,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 object AntiFriendHit : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: ClientPlayerAttackEvent ->
-        if (mc.objectMouseOver == null) return@EventHook
-        val e = mc.objectMouseOver.entityHit
-        if (e is EntityOtherPlayerMP && Friends.isFriend(e.getName())) {
-            event.cancel()
-        }
+        if (event.entity !is EntityPlayer) return@EventHook
+        if (Friends.isFriend(event.entity.getName())) event.cancel()
     })
 }

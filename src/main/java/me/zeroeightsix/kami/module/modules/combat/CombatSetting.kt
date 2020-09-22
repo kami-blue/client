@@ -13,6 +13,8 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
+import java.util.*
+import kotlin.collections.HashSet
 import kotlin.math.ceil
 
 @Module.Info(
@@ -87,10 +89,10 @@ object CombatSetting : Module() {
         overrideRange = if (topModule is Aura) topModule.getRange() else range.value
     }
 
-    private fun getTargetList(): ArrayList<EntityLivingBase> {
+    private fun getTargetList(): LinkedList<EntityLivingBase> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = EntityUtils.getTargetList(player, mob, invisible.value, overrideRange)
+        val targetList = LinkedList(EntityUtils.getTargetList(player, mob, invisible.value, overrideRange))
         if ((targetList.isEmpty() || getTarget(targetList) == null) && overrideRange != range.value) {
             targetList.addAll(EntityUtils.getTargetList(player, mob, invisible.value, range.value))
         }
@@ -99,6 +101,9 @@ object CombatSetting : Module() {
         }
         if (!teammates.value) targetList.removeIf {
             mc.player.isOnSameTeam(it)
+        }
+        if (AntiBot.isEnabled) targetList.removeIf {
+            AntiBot.botSet.contains(it)
         }
         return targetList
     }
@@ -109,19 +114,19 @@ object CombatSetting : Module() {
         else true
     }
 
-    private fun getTarget(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
-        val copiedList = ArrayList(listIn)
+    private fun getTarget(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+        val copiedList = LinkedList(listIn)
         return filterTargetList(copiedList) ?: CombatManager.target?.let { entity ->
             if (!entity.isDead && listIn.contains(entity)) entity else null
         }
     }
 
-    private fun filterTargetList(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+    private fun filterTargetList(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
         return filterByPriority(filterByFilter(listIn))
     }
 
-    private fun filterByFilter(listIn: ArrayList<EntityLivingBase>): ArrayList<EntityLivingBase> {
+    private fun filterByFilter(listIn: LinkedList<EntityLivingBase>): LinkedList<EntityLivingBase> {
         when (filter.value) {
             TargetFilter.FOV -> {
                 listIn.removeIf { RotationUtils.getRelativeRotation(it) > fov.value }
@@ -129,7 +134,7 @@ object CombatSetting : Module() {
 
             TargetFilter.MANUAL -> {
                 if (!mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown) {
-                    return ArrayList()
+                    return LinkedList()
                 }
                 val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
                 val lookVec = mc.player.lookVec.scale(range.value.toDouble())
@@ -140,7 +145,7 @@ object CombatSetting : Module() {
         return listIn
     }
 
-    private fun filterByPriority(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+    private fun filterByPriority(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
 
         if (priority.value == TargetPriority.DAMAGE) filterByDamage(listIn)
@@ -150,7 +155,7 @@ object CombatSetting : Module() {
         return if (priority.value == TargetPriority.CROSS_HAIR) filterByCrossHair(listIn) else filterByDistance(listIn)
     }
 
-    private fun filterByDamage(listIn: ArrayList<EntityLivingBase>) {
+    private fun filterByDamage(listIn: LinkedList<EntityLivingBase>) {
         if (listIn.isEmpty()) return
         var damage = Float.MIN_VALUE
         val toKeep = HashSet<Entity>()
@@ -167,7 +172,7 @@ object CombatSetting : Module() {
         listIn.removeIf { !toKeep.contains(it) }
     }
 
-    private fun filterByHealth(listIn: ArrayList<EntityLivingBase>) {
+    private fun filterByHealth(listIn: LinkedList<EntityLivingBase>) {
         if (listIn.isEmpty()) return
         var health = Float.MAX_VALUE
         val toKeep = HashSet<Entity>()
@@ -184,12 +189,12 @@ object CombatSetting : Module() {
         listIn.removeIf { !toKeep.contains(it) }
     }
 
-    private fun filterByCrossHair(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+    private fun filterByCrossHair(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
         return listIn.sortedBy { RotationUtils.getRelativeRotation(it) }[0]
     }
 
-    private fun filterByDistance(listIn: ArrayList<EntityLivingBase>): EntityLivingBase? {
+    private fun filterByDistance(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
         return listIn.sortedBy { it.getDistance(mc.player) }[0]
     }

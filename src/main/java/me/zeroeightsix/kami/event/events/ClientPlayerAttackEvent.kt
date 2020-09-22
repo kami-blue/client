@@ -6,4 +6,4 @@ import net.minecraft.entity.Entity
 /**
  * Updated by Xiaro on 18/08/20
  */
-class ClientPlayerAttackEvent(val targetEntity: Entity) : KamiEvent()
+class ClientPlayerAttackEvent(val entity: Entity) : KamiEvent()
