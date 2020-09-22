@@ -11,8 +11,8 @@ import java.util.function.Predicate;
  */
 public class DoubleSettingBuilder extends NumericalSettingBuilder<Double> {
     @Override
-    public NumberSetting build() {
-        return new DoubleSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max);
+    public DoubleSetting build() {
+        return new DoubleSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max, step);
     }
 
     @Override
@@ -38,6 +38,11 @@ public class DoubleSettingBuilder extends NumericalSettingBuilder<Double> {
     @Override
     public DoubleSettingBuilder withRange(Double minimum, Double maximum) {
         return (DoubleSettingBuilder) super.withRange(minimum, maximum);
+    }
+
+    @Override
+    public DoubleSettingBuilder withStep(Double step) {
+        return (DoubleSettingBuilder) super.withStep(step);
     }
 
     @Override

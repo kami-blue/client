@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.setting.impl.numerical;
 
+import kotlin.NumbersKt;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.converter.AbstractBoxedNumberConverter;
 
@@ -13,11 +14,13 @@ public abstract class NumberSetting<T extends Number> extends Setting<T> {
 
     private final T min;
     private final T max;
+    private final T step;
 
-    public NumberSetting(T value, Predicate<T> restriction, BiConsumer<T, T> consumer, String name, Predicate<T> visibilityPredicate, T min, T max) {
+    public NumberSetting(T value, Predicate<T> restriction, BiConsumer<T, T> consumer, String name, Predicate<T> visibilityPredicate, T min, T max, T step) {
         super(value, restriction, consumer, name, visibilityPredicate);
         this.min = min;
         this.max = max;
+        this.step = step;
     }
 
     /**
@@ -41,5 +44,9 @@ public abstract class NumberSetting<T extends Number> extends Setting<T> {
 
     public T getMin() {
         return min;
+    }
+
+    public T getStep() {
+        return step;
     }
 }
