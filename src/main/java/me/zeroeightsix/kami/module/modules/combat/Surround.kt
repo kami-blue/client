@@ -6,6 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -42,6 +43,7 @@ object Surround : Module() {
     private val outOfHoleTimeout = register(Settings.integerBuilder("OutOfHoleTimeout(t)").withValue(20).withRange(1, 50).withVisibility { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
     private val enableInHole = register(Settings.b("EnableInHole", true))
     private val inHoleTimeout = register(Settings.integerBuilder("InHoleTimeout(t)").withValue(50).withRange(1, 100).withVisibility { enableInHole.value })
+    private val disableStrafe = register(Settings.b("DisableStrafe", true))
 
     enum class AutoCenterMode {
         OFF, TP, MOTION
@@ -165,6 +167,7 @@ object Surround : Module() {
         return if (autoCenter.value == AutoCenterMode.OFF) {
             true
         } else {
+            if (disableStrafe.value) Strafe.disable()
             val centerDiff = getCenterDiff()
             if (!isCentered()) {
                 mc.player.setVelocity(0.0, -5.0, 0.0)

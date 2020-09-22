@@ -1,0 +1,67 @@
+package me.zeroeightsix.kami.module.modules.movement
+
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import net.minecraft.util.math.BlockPos
+import kotlin.math.*
+
+@Module.Info(
+        name = "HoleSnap",
+        description = "Move you into the hole nearby",
+        category = Module.Category.MOVEMENT
+)
+object HoleSnap : Module() {
+    private val disableStrafe = register(Settings.b("DisableStrafe",true))
+    private val range = register(Settings.floatBuilder("Range").withValue(2.5f).withRange(0f, 5f))
+
+    override fun onEnable() {
+        if (mc.player == null) disable()
+    }
+
+    override fun onDisable() {
+        mc.timer.tickLength = 50f
+    }
+
+    override fun onUpdate() {
+        if (SurroundUtils.checkHole(mc.player) != SurroundUtils.HoleType.NONE) {
+            disable()
+            return
+        }
+        findHole()?.toVec3d()?.let {
+            if (disableStrafe.value) Strafe.disable()
+            mc.timer.tickLength = 30f
+            if (mc.player.onGround) {
+                val yawRad = Math.toRadians(RotationUtils.getRotationTo(mc.player.positionVector, it).x)
+                val speed = min(0.25, mc.player.positionVector.distanceTo(it) / 4.0)
+                mc.player.motionX = -sin(yawRad) * speed
+                mc.player.motionZ = cos(yawRad) * speed
+            }
+            if (mc.player.motionY <= 0.01) mc.player.motionY = -0.5
+        } ?: run {
+            mc.timer.tickLength = 50f
+        }
+    }
+
+    private fun findHole(): BlockPos? {
+        var closestHole = Pair(69.69, BlockPos.ORIGIN)
+        val playerPos = mc.player.positionVector.toBlockPos()
+        val ceilRange = ceil(range.value).toInt()
+        val posList = VectorUtils.getBlockPositionsInArea(playerPos.add(ceilRange, -1, ceilRange), playerPos.add(-ceilRange, -1, -ceilRange))
+        for (posXZ in posList) {
+            val dist = mc.player.getDistanceSqToCenter(posXZ)
+            if (dist > range.value.pow(2) || dist > closestHole.first) continue
+            for (posY in 0..5) {
+                val pos = posXZ.add(0, -posY, 0)
+                if (!mc.world.isAirBlock(pos.up())) break
+                if (SurroundUtils.checkHole(pos) == SurroundUtils.HoleType.NONE) continue
+                closestHole = dist to pos
+            }
+        }
+        return if (closestHole.second != BlockPos.ORIGIN) closestHole.second else null
+    }
+}
