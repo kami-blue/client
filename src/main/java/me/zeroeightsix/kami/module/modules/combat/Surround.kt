@@ -1,9 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
@@ -14,10 +10,9 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
@@ -58,16 +53,7 @@ object Surround : Module() {
     private val placeThread = Thread { runSurround() }.apply { name = "Surround" }
     private val threadPool = Executors.newSingleThreadExecutor()
     private var future: Future<*>? = null
-    private var prevSlot = -1
-
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (future?.isDone != false || event.packet !is CPacketHeldItemChange) return@EventHook
-        if (event.packet.slotId != getObby()) { // If player changed slot during placing, cancel it and assign it to prevSlot
-            prevSlot = event.packet.slotId
-            event.cancel()
-        }
-    })
+    private var strafeEnabled = false
 
     override fun onEnable() {
         toggleTimer.reset()
@@ -75,9 +61,13 @@ object Surround : Module() {
     }
 
     override fun onDisable() {
-        syncItem()
+        PlayerPacketManager.resetHotbar()
         toggleTimer.reset()
         holePos = null
+        if (strafeEnabled && disableStrafe.value) {
+            Strafe.enable()
+            strafeEnabled = false
+        }
     }
 
     override fun isActive(): Boolean {
@@ -94,7 +84,7 @@ object Surround : Module() {
         }
 
         // Following codes will not run if disabled
-        if (!mc.player.onGround || MathUtils.mcPlayerPosFloored(mc) != holePos) { // Out of hole check
+        if (!mc.player.onGround || mc.player.positionVector.toBlockPos() != holePos) { // Out of hole check
             outOfHoleCheck()
             return
         } else {
@@ -108,15 +98,14 @@ object Surround : Module() {
     }
 
     override fun onUpdate() {
-        if (isEnabled && holePos == null) holePos = MathUtils.mcPlayerPosFloored(mc)
-        if (future?.isDone == false) PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(sprinting = false, moving = false, rotating = false))
-        if ((future?.isDone == true || future?.isCancelled == true) && prevSlot != -1) syncItem()
-    }
-
-    private fun syncItem() {
-        mc.playerController?.let {
-            if (prevSlot != -1) mc.connection!!.sendPacket(CPacketHeldItemChange(prevSlot))
-            prevSlot = -1
+        if (isEnabled && holePos == null) holePos = mc.player.positionVector.toBlockPos()
+        if (future?.isDone == false && future?.isCancelled == false) {
+            val slot = getObby()
+            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+            val moving = autoCenter.value != AutoCenterMode.TP
+            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(sprinting = false, moving = moving, rotating = false))
+        } else {
+            PlayerPacketManager.resetHotbar()
         }
     }
 
@@ -153,10 +142,10 @@ object Surround : Module() {
     }
 
     private fun isPlaceable(): Boolean {
-        val playerPos = MathUtils.mcPlayerPosFloored(mc)
+        val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos))) continue
+            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos), mc.player)) continue
             if (!mc.world.getBlockState(pos).material.isReplaceable) continue
             return true
         }
@@ -167,17 +156,20 @@ object Surround : Module() {
         return if (autoCenter.value == AutoCenterMode.OFF) {
             true
         } else {
-            if (disableStrafe.value) Strafe.disable()
+            if (disableStrafe.value) {
+                strafeEnabled = Strafe.isEnabled
+                Strafe.disable()
+            }
             val centerDiff = getCenterDiff()
             if (!isCentered()) {
                 mc.player.setVelocity(0.0, -5.0, 0.0)
                 if (autoCenter.value == AutoCenterMode.TP) {
-                    val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.25, 0.25)
-                    val posZ = mc.player.posZ + MathHelper.clamp(centerDiff.z, -0.25, 0.25)
+                    val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.2, 0.2)
+                    val posZ = mc.player.posZ + MathHelper.clamp(centerDiff.z, -0.2, 0.2)
                     mc.player.setPosition(posX, mc.player.posY, posZ)
                 } else {
-                    mc.player.motionX = centerDiff.x / 2.0
-                    mc.player.motionZ = centerDiff.z / 2.0
+                    mc.player.motionX = MathHelper.clamp(centerDiff.x / 2.0, -0.2, 0.2)
+                    mc.player.motionZ = MathHelper.clamp(centerDiff.z / 2.0, -0.2, 0.2)
                 }
             }
             isCentered()
@@ -198,9 +190,7 @@ object Surround : Module() {
 
     private fun runSurround() {
         val slot = getObby()
-        if (slot == -1) return
-        prevSlot = mc.playerController.currentPlayerItem
-        mc.connection!!.sendPacket(CPacketHeldItemChange(slot))
+        if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
         val placed = ArrayList<BlockPos>()
         while (isEnabled) {
             val pos = getPlacingPos(placed) ?: break
@@ -211,7 +201,7 @@ object Surround : Module() {
     }
 
     private fun getPlacingPos(toIgnore: ArrayList<BlockPos>): BlockPos? {
-        val playerPos = MathUtils.mcPlayerPosFloored(mc)
+        val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
             if (toIgnore.contains(pos)) continue
