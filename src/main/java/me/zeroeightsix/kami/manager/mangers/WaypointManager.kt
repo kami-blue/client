@@ -106,7 +106,7 @@ object WaypointManager : Manager() {
             waypoint
         } else {
             KamiMod.log.error("Error during waypoint adding")
-            dateFormatter(BlockPos(0, -6969, 0), locationName) // This shouldn't happen
+            dateFormatter(BlockPos(0, 0, 0), locationName) // This shouldn't happen
         }
     }
 
