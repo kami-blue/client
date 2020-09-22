@@ -34,7 +34,7 @@ import kotlin.math.round
         name = "Surround",
         category = Module.Category.COMBAT,
         description = "Surrounds you with obsidian to take less damage",
-        modulePriority = 100
+        modulePriority = 200
 )
 object Surround : Module() {
     private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))

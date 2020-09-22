@@ -58,7 +58,16 @@ object CrystalUtils {
         return crystalList
     }
 
-    /* Checks colliding with blocks and given entity only */
+    @JvmStatic
+    fun canPlace(blockPos: BlockPos): Boolean {
+        val placingBB = getCrystalPlacingBB(blockPos.up())
+        return mc.world.checkNoEntityCollision(placingBB)
+                && (mc.world.getBlockState(blockPos).block == Blocks.BEDROCK
+                || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
+                && !mc.world.checkBlockCollision(placingBB)
+    }
+
+    /** Checks colliding with blocks and given entity only */
     @JvmStatic
     fun canPlace(blockPos: BlockPos, entity: Entity): Boolean {
         val entityBB = entity.boundingBox
@@ -68,6 +77,10 @@ object CrystalUtils {
                 || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
                 && !mc.world.checkBlockCollision(placingBB)
     }
+
+    /** Checks if the block below is valid for placing crystal */
+    @JvmStatic
+    fun canPlaceOn(blockPos: BlockPos) = mc.world.getBlockState(blockPos.down()).block == Blocks.BEDROCK || mc.world.getBlockState(blockPos.down()).block == Blocks.OBSIDIAN
 
     @JvmStatic
     private fun getCrystalPlacingBB(blockPos: BlockPos): AxisAlignedBB {

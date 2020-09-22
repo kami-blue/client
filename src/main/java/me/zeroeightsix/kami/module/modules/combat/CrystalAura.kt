@@ -37,7 +37,6 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 
-// TODO: HoleBreaker
 @Module.Info(
         name = "CrystalAuraRewrite",
         description = "A reborn of the CrystalAura",
