@@ -4,12 +4,14 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.ActiveRenderInfo
 import net.minecraft.client.renderer.RenderHelper
@@ -28,6 +30,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 @Module.Info(
@@ -53,24 +56,26 @@ object Nametags : Module() {
     /* Content */
     private val line1left = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Left").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
     private val line1center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Center").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
-    private val line1right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Right").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
+    private val line1right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Right").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
     private val line2left = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Left").withValue(ContentType.NAME).withVisibility { page.value == Page.CONTENT })
-    private val line2center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2enter").withValue(ContentType.HP).withVisibility { page.value == Page.CONTENT })
-    private val line2right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Right").withValue(ContentType.ABSORPTION).withVisibility { page.value == Page.CONTENT })
+    private val line2center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2enter").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
+    private val line2right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Right").withValue(ContentType.TOTAL_HP).withVisibility { page.value == Page.CONTENT })
     private val itemCount = register(Settings.booleanBuilder("ItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
     private val maxItems = register(Settings.integerBuilder("MaxItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
 
     /* Item */
     private val mainHand = register(Settings.booleanBuilder("MainHand").withValue(true).withVisibility { page.value == Page.ITEM })
     private val offhand = register(Settings.booleanBuilder("OffHand").withValue(true).withVisibility { page.value == Page.ITEM })
-    private val invertHand = register(Settings.booleanBuilder("InvertHand").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value) })
+    private val invertHand = register(Settings.booleanBuilder("InvertHand").withValue(false).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value) })
     private val armor = register(Settings.booleanBuilder("Armor").withValue(true).withVisibility { page.value == Page.ITEM })
+    private val count = register(Settings.booleanBuilder("Count").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val dura = register(Settings.booleanBuilder("Dura").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
     private val enchantment = register(Settings.booleanBuilder("Enchantment").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
     private val itemScale = register(Settings.floatBuilder("ItemScale").withValue(1f).withRange(0.25f, 2f).withStep(0.25f).withVisibility { page.value == Page.ITEM })
 
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
+    private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
@@ -123,6 +128,7 @@ object Nametags : Module() {
     private val itemMap = TreeSet<ItemGroup>(compareByDescending { mc.player.getPositionEyes(1f).distanceTo(it.getCenter(1f)) })
 
     private var updateTick = 0
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
     override fun onRender() {
         if (entityMap.isEmpty() && itemMap.isEmpty()) return
@@ -135,7 +141,7 @@ object Nametags : Module() {
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
 
-            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, nameFrame.value, textComponent)
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, textComponent)
             drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
         }
         for (itemGroup in itemMap) {
@@ -144,7 +150,7 @@ object Nametags : Module() {
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
 
-            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, itemFrame.value, itemGroup.textComponent)
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, itemGroup.textComponent)
         }
         GlStateUtils.rescaleMc()
     }
@@ -154,13 +160,13 @@ object Nametags : Module() {
                 ?: mc.player, KamiTessellator.pTicks()).add(ActiveRenderInfo.getCameraPosition())
     }
 
-    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
+    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, textComponent: TextComponent) {
         glPushMatrix()
         glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
         glScalef(scale, scale, 1f)
         val halfWidth = textComponent.getWidth() / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
-        if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
+        if (nameFrame.value) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
         textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
         textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
         glPopMatrix()
@@ -175,7 +181,7 @@ object Nametags : Module() {
             itemList.add(itemStack to getEnchantmentText(itemStack))
         }
 
-        if (armor.value) for (armor in entity.armorInventoryList) itemList.add(armor to getEnchantmentText(armor)) // Armor
+        if (armor.value) for (armor in entity.armorInventoryList.reversed()) itemList.add(armor to getEnchantmentText(armor)) // Armor
 
         getEnumHand(if (invertHand.value) EnumHandSide.LEFT else EnumHandSide.RIGHT)?.let { // Hand
             val itemStack = entity.getHeldItem(it)
@@ -193,28 +199,50 @@ object Nametags : Module() {
         glScalef((itemScale.value * 2f) / nameTagScale, (itemScale.value * 2f) / nameTagScale, 1f) // Scale to item scale
         glTranslatef(0f, -4f, 0f)
 
+        val drawDura = dura.value && itemList.firstOrNull { it.first.isItemStackDamageable } != null
+
         if (itemFrame.value) {
             glTranslatef(0f, -margins.value, 0f)
-            val maxTextHeight = if (enchantment.value) (itemList.map { it.second.getHeight(3) }.max() ?: 0) + 4 else 0
-            val height = 16 + maxTextHeight / 2f
+            val duraHeight = if (drawDura) mc.fontRenderer.FONT_HEIGHT / 2f + 2f else 0f
+            val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(3) }.max() ?: 0) + 4 else 0
+            val height = 16 + duraHeight + enchantmentHeight / 2f
             val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
             val posEnd = Vec2d(halfWidth + margins.value.toDouble(), margins.value.toDouble())
             drawFrame(vertexHelper, posBegin, posEnd)
         }
 
         glTranslatef(-halfWidth + 4f, -16f, 0f)
+        if (drawDura) glTranslatef(0f, mc.fontRenderer.FONT_HEIGHT / -2f - 2f, 0f)
         RenderHelper.enableGUIStandardItemLighting()
 
         for ((itemStack, enchantmentText) in itemList) {
             if (itemStack.isEmpty()) continue
-            glColor4f(1f, 1f, 1f, 1f)
             GlStateUtils.blend(true)
             mc.renderItem.zLevel = -911f
             mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 0, 0)
-            mc.renderItem.renderItemOverlays(mc.fontRenderer, itemStack, 0, 0)
             mc.renderItem.zLevel = 0f
+            glColor4f(1f, 1f, 1f, 1f)
+
+            if (drawDura && itemStack.isItemStackDamageable) {
+                glPushMatrix()
+                glTranslatef(8f, 17f, 0f)
+                glScalef(0.5f, 0.5f, 1f)
+                val duraPercentage = 100f - (itemStack.itemDamage.toFloat() / itemStack.maxDamage.toFloat()) * 100f
+                val color = healthColorGradient.get(duraPercentage).toHex()
+                val text = duraPercentage.roundToInt().toString()
+                val textWidth = mc.fontRenderer.getStringWidth(text)
+                mc.fontRenderer.drawString(text, -round(textWidth / 2f), 0f, color, textShadow.value)
+                glPopMatrix()
+            }
+
+            if (count.value && itemStack.count > 1) {
+                val itemCount = itemStack.count.toString()
+                mc.fontRenderer.drawStringWithShadow(itemCount, 17f - mc.fontRenderer.getStringWidth(itemCount), 9f, 0xFFFFFF)
+            }
+
             glTranslatef(0f, -2f, 0f)
             if (enchantment.value) enchantmentText.draw(scale = 0.5f, lineSpace = 3, verticalAlign = TextComponent.VAlign.BOTTOM)
+
             glTranslatef(24f, 2f, 0f)
         }
         glColor4f(1f, 1f, 1f, 1f)
@@ -235,7 +263,7 @@ object Nametags : Module() {
 
     private fun getEnumHand(enumHandSide: EnumHandSide) =
             if (mc.gameSettings.mainHand == enumHandSide && mainHand.value) EnumHand.MAIN_HAND
-            else if (offhand.value) EnumHand.OFF_HAND
+            else if (mc.gameSettings.mainHand != enumHandSide && offhand.value) EnumHand.OFF_HAND
             else null
 
     private fun drawFrame(vertexHelper: VertexHelper, posBegin: Vec2d, posEnd: Vec2d) {
@@ -253,6 +281,8 @@ object Nametags : Module() {
     }
 
     override fun onUpdate() {
+        if (timer.tick(5L) && checkSetting()) MessageSendHelper.sendChatMessage("$chatName Totem pops is not yet implemented")
+
         // Updating stuff in different ticks to avoid overloading
         when (updateTick) {
             0 -> { // Adding items
@@ -328,6 +358,18 @@ object Nametags : Module() {
                 }
             }
         }
+    }
+
+    private fun checkSetting(): Boolean {
+        for (setting in line1Settings) {
+            if (setting.value != ContentType.TOTEM_POPS) continue
+            return true
+        }
+        for (setting in line2Settings) {
+            if (setting.value != ContentType.TOTEM_POPS) continue
+            return true
+        }
+        return false
     }
 
     private fun getContent(contentType: ContentType, entity: Entity) = when (contentType) {
