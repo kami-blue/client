@@ -122,6 +122,6 @@ object ActiveModules : Module() {
     }
 
     enum class Mode {
-        RAINBOW, CUSTOM, CATEGORY, INFO_OVERLAY
+        RAINBOW, CUSTOM, CATEGORY, INFO_OVERLAY, TRANS_RIGHTS
     }
 }
