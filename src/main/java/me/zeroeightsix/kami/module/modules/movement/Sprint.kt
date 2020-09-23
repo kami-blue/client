@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 
 /**
  * @see me.zeroeightsix.kami.mixin.client.MixinEntityPlayerSP
@@ -28,7 +29,5 @@ object Sprint : Module() {
         mc.player.isSprinting = sprinting
     }
 
-    fun shouldSprint(): Boolean {
-        return !mc.player.isElytraFlying && !mc.player.capabilities.isFlying
-    }
+    fun shouldSprint() = !mc.player.isElytraFlying && !mc.player.capabilities.isFlying && !BaritoneUtils.isPathing
 }

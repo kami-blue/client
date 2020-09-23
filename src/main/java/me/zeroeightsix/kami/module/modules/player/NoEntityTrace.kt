@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import net.minecraft.item.ItemPickaxe
 
 @Module.Info(
         name = "NoEntityTrace",
@@ -9,14 +10,9 @@ import me.zeroeightsix.kami.setting.Settings
         description = "Blocks entities from stopping you from mining"
 )
 object NoEntityTrace : Module() {
-    private val mode = register(Settings.e<TraceMode>("Mode", TraceMode.DYNAMIC))
+    private val sneakTrigger = register(Settings.b("SneakTrigger", false))
+    private val pickaxeOnly = register(Settings.b("PickaxeOnly", true))
 
-    private enum class TraceMode {
-        STATIC, DYNAMIC
-    }
-
-    @JvmStatic
-    fun shouldBlock(): Boolean {
-        return isEnabled && (mode.value == TraceMode.STATIC || mc.playerController.isHittingBlock)
-    }
+    fun shouldIgnoreEntity() = isEnabled && (!sneakTrigger.value || mc.player?.isSneaking == true)
+            && (!pickaxeOnly.value || mc.player?.heldItemMainhand?.getItem() is ItemPickaxe)
 }

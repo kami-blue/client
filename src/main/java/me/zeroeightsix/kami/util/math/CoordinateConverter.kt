@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.math
 
-import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import net.minecraft.util.math.BlockPos
 
 object CoordinateConverter {
@@ -12,7 +12,7 @@ object CoordinateConverter {
     }
 
     fun toCurrent(dimension: Int, pos: BlockPos): BlockPos {
-        return if (dimension == Waypoint.genDimension()) {
+        return if (dimension == WaypointManager.genDimension()) {
             pos
         } else {
             if (dimension == -1) {

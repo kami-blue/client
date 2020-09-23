@@ -142,4 +142,12 @@ object VectorUtils {
     private fun getAxisRange(d1: Double, d2: Float): IntRange {
         return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
     }
+
+    fun Vec3d.toBlockPos(): BlockPos {
+        return BlockPos(floor(x), floor(y), floor(z))
+    }
+
+    fun BlockPos.toVec3d(): Vec3d {
+        return Vec3d(this).add(0.5, 0.5, 0.5)
+    }
 }

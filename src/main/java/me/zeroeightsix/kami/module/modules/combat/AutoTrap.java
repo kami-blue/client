@@ -89,7 +89,10 @@ public class AutoTrap extends Module {
 
     @Override
     protected void onEnable() {
-        if (mc.player == null || mc.player.getHealth() <= 0) return;
+        if (mc.player == null || mc.player.getHealth() <= 0) {
+            disable();
+            return;
+        }
 
         firstRun = true;
 

@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
@@ -44,7 +44,7 @@ object VisualRange : Module() {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
                     if (logToFile.value) {
-                        Waypoint.writePlayerCoords("$playerName spotted!")
+                        WaypointManager.add("$playerName spotted!")
                     }
                     if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
                     return

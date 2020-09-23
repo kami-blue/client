@@ -10,9 +10,6 @@ import kotlin.math.sqrt
 
 /**
  * Utils for calculating angles and rotations
- *
- * Created by Xiaro on 20/08/20
- * Updated by Xiaro on 29/08/20
  */
 object RotationUtils {
     val mc = Wrapper.minecraft
@@ -70,6 +67,19 @@ object RotationUtils {
         }
         if (angle < -180.0) {
             angle += 360.0
+        }
+        return angle
+    }
+
+    @JvmStatic
+    fun normalizeAngle(angleIn: Float): Float {
+        var angle = angleIn
+        angle %= 360f
+        if (angle >= 180f) {
+            angle -= 360f
+        }
+        if (angle < -180f) {
+            angle += 360f
         }
         return angle
     }

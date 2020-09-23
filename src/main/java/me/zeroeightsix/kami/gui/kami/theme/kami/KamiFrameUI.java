@@ -45,11 +45,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     public void renderComponent(Frame component, FontRenderer fontRenderer) {
         if (component.getOpacity() == 0)
             return;
-        glDisable(GL_TEXTURE_2D);
 
         VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
         RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColorHolder(43, 43, 46, 230));
         RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColorHolder(GuiC.windowOutline.color));
+        glDisable(GL_TEXTURE_2D);
 
         GL11.glColor3f(1, 1, 1);
         ff.drawString(component.getWidth() / 2 - ff.getStringWidth(component.getTitle()) / 2, 1, component.getTitle());

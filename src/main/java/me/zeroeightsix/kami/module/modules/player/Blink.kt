@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketPlayer
 import java.util.*
 
@@ -18,8 +17,9 @@ import java.util.*
         description = "Cancels server side packets"
 )
 object Blink : Module() {
+    private val cancelPacket = register(Settings.b("CancelPackets", false))
     private val autoReset = register(Settings.b("AutoReset", true))
-    private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value }.build())
+    private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value })
 
     private val packets = LinkedList<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
@@ -49,23 +49,28 @@ object Blink : Module() {
     }
 
     private fun begin() {
-        if (mc.player != null) {
-            clonedPlayer = EntityOtherPlayerMP(mc.world, mc.getSession().profile)
-            clonedPlayer!!.copyLocationAndAnglesFrom(mc.player)
-            clonedPlayer!!.rotationYawHead = mc.player.rotationYawHead
-            mc.world.addEntityToWorld(-100, clonedPlayer as Entity)
+        if (mc.player == null) return
+        clonedPlayer = EntityOtherPlayerMP(mc.world, mc.session.profile).apply {
+            copyLocationAndAnglesFrom(mc.player)
+            rotationYawHead = mc.player.rotationYawHead
+            inventory.copyInventory(mc.player.inventory)
+            noClip = true
         }
+        mc.world.addEntityToWorld(-114514, clonedPlayer as Entity)
     }
 
     private fun end() {
-        sending = true
-        while (packets.isNotEmpty()) mc.player.connection.sendPacket(packets.poll())
-        val localPlayer: EntityPlayer? = mc.player
-        if (localPlayer != null) {
-            mc.world.removeEntityFromWorld(-100)
-            clonedPlayer = null
+        if (mc.player == null) return
+        if (cancelPacket.value || mc.connection == null) {
+            packets.peek()?.let { mc.player.setPosition(it.x, it.y, it.z) }
+            packets.clear()
+        } else {
+            sending = true
+            while (packets.isNotEmpty()) mc.connection!!.sendPacket(packets.poll())
+            sending = false
         }
-        sending = false
+        mc.world?.removeEntityFromWorld(-114514)
+        clonedPlayer = null
     }
 
     override fun getHudInfo(): String {

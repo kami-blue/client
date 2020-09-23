@@ -31,17 +31,14 @@ object ManagerLoader {
 
     @JvmStatic
     fun load() {
-        Thread {
-            Thread.currentThread().name = "Managers Loading"
-            preLoadingThread!!.join()
-            val stopTimer = TimerUtils.StopTimer()
-            for (clazz in managerClassList!!) {
-                clazz.getDeclaredField("INSTANCE")[null].also { KamiMod.EVENT_BUS.subscribe(it) }
-            }
-            val time = stopTimer.stop()
-            KamiMod.log.info("${managerClassList!!.size} managers loaded, took ${time}ms")
-            preLoadingThread = null
-            managerClassList = null
-        }.start()
+        preLoadingThread!!.join()
+        val stopTimer = TimerUtils.StopTimer()
+        for (clazz in managerClassList!!) {
+            clazz.getDeclaredField("INSTANCE")[null].also { KamiMod.EVENT_BUS.subscribe(it) }
+        }
+        val time = stopTimer.stop()
+        KamiMod.log.info("${managerClassList!!.size} managers loaded, took ${time}ms")
+        preLoadingThread = null
+        managerClassList = null
     }
 }

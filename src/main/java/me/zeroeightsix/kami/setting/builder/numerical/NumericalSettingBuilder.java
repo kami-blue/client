@@ -12,6 +12,7 @@ public abstract class NumericalSettingBuilder<T extends Number> extends SettingB
 
     protected T min;
     protected T max;
+    protected T step;
 
     public NumericalSettingBuilder<T> withMinimum(T minimum) {
         predicateList.add((t -> t.doubleValue() >= minimum.doubleValue()));
@@ -36,6 +37,11 @@ public abstract class NumericalSettingBuilder<T extends Number> extends SettingB
             min = minimum;
         if (max == null || maximum.doubleValue() < max.doubleValue())
             max = maximum;
+        return this;
+    }
+
+    public NumericalSettingBuilder<T> withStep(T step) {
+        if (step.doubleValue() > 0.0) this.step = step;
         return this;
     }
 

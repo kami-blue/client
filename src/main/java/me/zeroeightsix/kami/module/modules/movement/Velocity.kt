@@ -25,7 +25,10 @@ object Velocity : Module() {
 
     @EventHandler
     private val packetEventListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet is SPacketEntityVelocity) {
+        if (event.packet !is SPacketEntityVelocity && event.packet !is SPacketExplosion) return@EventHook
+        if (horizontal.value == 0f && vertical.value == 0f) {
+            event.cancel()
+        } else if (event.packet is SPacketEntityVelocity) {
             with(event.packet) {
                 if (entityID == mc.player.entityId) {
                     motionX = (motionX * horizontal.value).toInt()
@@ -45,9 +48,12 @@ object Velocity : Module() {
     @EventHandler
     private val entityCollisionListener = Listener(EventHook { event: EntityCollision ->
         if (event.entity != mc.player) return@EventHook
-        if (noPush.value) event.cancel()
-        event.x = event.x * horizontal.value
-        event.y = event.y * vertical.value
-        event.z = event.z * horizontal.value
+        if (noPush.value || horizontal.value == 0f && vertical.value == 0f) {
+            event.cancel()
+        } else {
+            event.x = event.x * horizontal.value
+            event.y = event.y * vertical.value
+            event.z = event.z * horizontal.value
+        }
     })
 }

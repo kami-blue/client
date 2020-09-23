@@ -5,6 +5,8 @@ import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {
     var paused = false
+        private set
+    val isPathing get() = BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.isPathing
 
     fun pause() {
         if (!paused) {

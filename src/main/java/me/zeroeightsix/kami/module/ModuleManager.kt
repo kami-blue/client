@@ -93,23 +93,19 @@ object ModuleManager {
     }
 
     fun onWorldRender(event: RenderWorldLastEvent) {
-        mc.profiler.startSection("kami")
-        mc.profiler.startSection("setup")
+        mc.profiler.startSection("KamiWorldRender")
         KamiTessellator.prepareGL()
         GlStateManager.glLineWidth(1f)
         val renderPos = getInterpolatedPos(mc.renderViewEntity!!, event.partialTicks)
         val e = RenderEvent(KamiTessellator, renderPos)
         e.resetTranslation()
-        mc.profiler.endSection()
         for (module in moduleList) {
             if (isModuleListening(module)) {
                 KamiTessellator.prepareGL()
                 module.onWorldRender(e)
                 KamiTessellator.releaseGL()
-                mc.profiler.endSection()
             }
         }
-        mc.profiler.startSection("release")
         GlStateManager.glLineWidth(1f)
         KamiTessellator.releaseGL()
         mc.profiler.endSection()

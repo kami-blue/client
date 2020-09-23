@@ -42,6 +42,10 @@ public class Settings {
         return new EnumSettingBuilder(clazz);
     }
 
+    public static <T extends Enum> EnumSettingBuilder<T> enumBuilder(Class<T> clazz, String name) {
+        return new EnumSettingBuilder(clazz).withName(name);
+    }
+
     public static Setting<Float> f(String name, float value) {
         return floatBuilder(name).withValue(value).build();
     }

@@ -4,9 +4,9 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
@@ -67,11 +67,8 @@ object LogoutLogger : Module() {
     }
 
     private fun logCoordinates(coordinate: BlockPos, name: String): BlockPos {
-        return if (saveToFile.value) {
-            Waypoint.createWaypoint(coordinate, name)
-        } else {
-            coordinate
-        }
+        return if (saveToFile.value) WaypointManager.add(coordinate, name).pos
+        else coordinate
     }
 
     private fun updateOnlinePlayers() {
