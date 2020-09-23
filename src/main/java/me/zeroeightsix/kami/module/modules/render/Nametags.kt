@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorGradient
@@ -11,16 +12,21 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.ActiveRenderInfo
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumHand
+import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -37,8 +43,6 @@ object Nametags : Module() {
     private val experience = register(Settings.booleanBuilder("Experience").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE })
     private val items = register(Settings.booleanBuilder("Items").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
     private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && players.value })
     private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
@@ -56,18 +60,26 @@ object Nametags : Module() {
     private val itemCount = register(Settings.booleanBuilder("ItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
     private val maxItems = register(Settings.integerBuilder("MaxItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
 
+    /* Item */
+    private val mainHand = register(Settings.booleanBuilder("MainHand").withValue(true).withVisibility { page.value == Page.ITEM })
+    private val offhand = register(Settings.booleanBuilder("OffHand").withValue(true).withVisibility { page.value == Page.ITEM })
+    private val invertHand = register(Settings.booleanBuilder("InvertHand").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value) })
+    private val armor = register(Settings.booleanBuilder("Armor").withValue(true).withVisibility { page.value == Page.ITEM })
+    private val enchantment = register(Settings.booleanBuilder("Enchantment").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val itemScale = register(Settings.floatBuilder("ItemScale").withValue(1f).withRange(0.25f, 2f).withStep(0.25f).withVisibility { page.value == Page.ITEM })
+
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(true).withVisibility { page.value == Page.FRAME && items.value })
+    private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val bFilled = register(Settings.integerBuilder("FilledBlue").withValue(64).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(123).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(114).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val bOutline = register(Settings.integerBuilder("OutlineBlue").withValue(204).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
+    private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
+    private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
+    private val bOutline = register(Settings.integerBuilder("OutlineBlue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(240).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val outlineWidth = register(Settings.floatBuilder("OutlineWidth").withValue(2f).withRange(0f, 5f).withVisibility { page.value == Page.FRAME && outline.value })
     private val margins = register(Settings.floatBuilder("Margins").withValue(2f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
@@ -84,7 +96,7 @@ object Nametags : Module() {
     private val minDistScale = register(Settings.floatBuilder("MinDistanceScale").withValue(0.35f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
 
     private enum class Page {
-        ENTITY_TYPE, CONTENT, FRAME, RENDERING
+        ENTITY_TYPE, CONTENT, ITEM, FRAME, RENDERING
     }
 
     private enum class ContentType {
@@ -118,13 +130,21 @@ object Nametags : Module() {
         val camPos = getCamPos()
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         for ((entity, textComponent) in entityMap) {
-            val interpolatedPos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
-            val nametagPos = interpolatedPos.add(0.0, (entity.height + yOffset.value).toDouble(), 0.0)
-            drawNametag(nametagPos, camPos, vertexHelper, nameFrame.value, textComponent)
+            val pos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks()).add(0.0, (entity.height + yOffset.value).toDouble(), 0.0)
+            val screenPos = ProjectionUtils.toScreenPos(pos)
+            val dist = camPos.distanceTo(pos).toFloat() * 0.2f
+            val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
+
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, nameFrame.value, textComponent)
+            drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
         }
         for (itemGroup in itemMap) {
             val pos = itemGroup.getCenter(KamiTessellator.pTicks()).add(0.0, yOffset.value.toDouble(), 0.0)
-            drawNametag(pos, camPos, vertexHelper, itemFrame.value, itemGroup.textComponent)
+            val screenPos = ProjectionUtils.toScreenPos(pos)
+            val dist = camPos.distanceTo(pos).toFloat() * 0.2f
+            val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
+
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, itemFrame.value, itemGroup.textComponent)
         }
         GlStateUtils.rescaleMc()
     }
@@ -134,19 +154,89 @@ object Nametags : Module() {
                 ?: mc.player, KamiTessellator.pTicks()).add(ActiveRenderInfo.getCameraPosition())
     }
 
-    private fun drawNametag(pos: Vec3d, camPos: Vec3d, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
-        val screenPos = ProjectionUtils.toScreenPos(pos)
-        val dist = camPos.distanceTo(pos).toFloat() * 0.2f
-        val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
+    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
         glPushMatrix()
         glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
-        glScalef((scale.value * 2f) * distFactor, (scale.value * 2f) * distFactor, 1f)
+        glScalef(scale, scale, 1f)
         val halfWidth = textComponent.getWidth() / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
         if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
         textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
+        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
         glPopMatrix()
     }
+
+    private fun drawItems(screenPos: Vec3d, nameTagScale: Float, vertexHelper: VertexHelper, entity: Entity, textComponent: TextComponent) {
+        if (entity !is EntityLivingBase) return
+        val itemList = ArrayList<Pair<ItemStack, TextComponent>>()
+
+        getEnumHand(if (invertHand.value) EnumHandSide.RIGHT else EnumHandSide.LEFT)?.let { // Hand
+            val itemStack = entity.getHeldItem(it)
+            itemList.add(itemStack to getEnchantmentText(itemStack))
+        }
+
+        if (armor.value) for (armor in entity.armorInventoryList) itemList.add(armor to getEnchantmentText(armor)) // Armor
+
+        getEnumHand(if (invertHand.value) EnumHandSide.LEFT else EnumHandSide.RIGHT)?.let { // Hand
+            val itemStack = entity.getHeldItem(it)
+            itemList.add(itemStack to getEnchantmentText(itemStack))
+        }
+
+        if (itemList.isEmpty()) return
+        val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
+        val halfWidth = (itemList.count { !it.first.isEmpty() } * 24) / 2f
+
+        glPushMatrix()
+        glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f) // Translate to nametag pos
+        glScalef(nameTagScale, nameTagScale, 1f) // Scale to nametag scale
+        glTranslated(0.0, -ceil(halfHeight), 0.0) // Translate to top of nametag
+        glScalef((itemScale.value * 2f) / nameTagScale, (itemScale.value * 2f) / nameTagScale, 1f) // Scale to item scale
+        glTranslatef(0f, -4f, 0f)
+
+        if (itemFrame.value) {
+            glTranslatef(0f, -margins.value, 0f)
+            val maxTextHeight = if (enchantment.value) (itemList.map { it.second.getHeight(3) }.max() ?: 0) + 4 else 0
+            val height = 16 + maxTextHeight / 2f
+            val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
+            val posEnd = Vec2d(halfWidth + margins.value.toDouble(), margins.value.toDouble())
+            drawFrame(vertexHelper, posBegin, posEnd)
+        }
+
+        glTranslatef(-halfWidth + 4f, -16f, 0f)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        for ((itemStack, enchantmentText) in itemList) {
+            if (itemStack.isEmpty()) continue
+            glColor4f(1f, 1f, 1f, 1f)
+            GlStateUtils.blend(true)
+            mc.renderItem.zLevel = -911f
+            mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 0, 0)
+            mc.renderItem.renderItemOverlays(mc.fontRenderer, itemStack, 0, 0)
+            mc.renderItem.zLevel = 0f
+            glTranslatef(0f, -2f, 0f)
+            if (enchantment.value) enchantmentText.draw(scale = 0.5f, lineSpace = 3, verticalAlign = TextComponent.VAlign.BOTTOM)
+            glTranslatef(24f, 2f, 0f)
+        }
+        glColor4f(1f, 1f, 1f, 1f)
+
+        RenderHelper.disableStandardItemLighting()
+        glPopMatrix()
+    }
+
+    private fun getEnchantmentText(itemStack: ItemStack): TextComponent {
+        val textComponent = TextComponent()
+        val enchantmentList = EnchantmentUtils.getAllEnchantments(itemStack)
+        for (leveledEnchantment in enchantmentList) {
+            textComponent.add(leveledEnchantment.alias)
+            textComponent.addLine(leveledEnchantment.levelText, 0x9B90FF)
+        }
+        return textComponent
+    }
+
+    private fun getEnumHand(enumHandSide: EnumHandSide) =
+            if (mc.gameSettings.mainHand == enumHandSide && mainHand.value) EnumHand.MAIN_HAND
+            else if (offhand.value) EnumHand.OFF_HAND
+            else null
 
     private fun drawFrame(vertexHelper: VertexHelper, posBegin: Vec2d, posEnd: Vec2d) {
         if (cornerRadius.value == 0f) {
@@ -240,80 +330,74 @@ object Nametags : Module() {
         }
     }
 
-    private fun getContent(contentType: ContentType, entity: Entity): TextComponent.TextElement? {
-        return when (contentType) {
-            ContentType.NONE -> {
+    private fun getContent(contentType: ContentType, entity: Entity) = when (contentType) {
+        ContentType.NONE -> {
+            null
+        }
+        ContentType.NAME -> {
+            val name = entity.displayName.unformattedText
+            TextComponent.TextElement(name, getTextColor())
+        }
+        ContentType.TYPE -> {
+            TextComponent.TextElement(getEntityType(entity), getTextColor())
+        }
+        ContentType.TOTAL_HP -> {
+            if (entity !is EntityLivingBase) {
                 null
+            } else {
+                val totalHp = MathUtils.round(entity.health + entity.absorptionAmount, 1).toString()
+                TextComponent.TextElement(totalHp, getHpColor(entity))
             }
-            ContentType.NAME -> {
-                val name = entity.displayName.unformattedText
-                TextComponent.TextElement(name, getTextColor())
-            }
-            ContentType.TYPE -> {
-                TextComponent.TextElement(getEntityType(entity), getTextColor())
-            }
-            ContentType.TOTAL_HP -> {
-                if (entity !is EntityLivingBase) {
-                    null
-                } else {
-                    val totalHp = MathUtils.round(entity.health + entity.absorptionAmount, 1).toString()
-                    TextComponent.TextElement(totalHp, getHpColor(entity))
-                }
-            }
-            ContentType.HP -> {
-                if (entity !is EntityLivingBase) {
-                    null
-                } else {
-                    val hp = MathUtils.round(entity.health, 1).toString()
-                    TextComponent.TextElement(hp, getHpColor(entity))
-                }
-            }
-            ContentType.ABSORPTION -> {
-                if (entity !is EntityLivingBase || entity.absorptionAmount == 0f) {
-                    null
-                } else {
-                    val absorption = MathUtils.round(entity.absorptionAmount, 1).toString()
-                    TextComponent.TextElement(absorption, 0xEECC20)
-                }
-            }
-            ContentType.PING -> {
-                if (entity !is EntityOtherPlayerMP) {
-                    null
-                } else {
-                    val ping = mc.connection?.getPlayerInfo(entity.uniqueID)?.responseTime ?: 0
-                    TextComponent.TextElement("${ping}ms", pingColorGradient.get(ping.toFloat()).toHex())
-                }
-            }
-            ContentType.DISTANCE -> {
-                val dist = MathUtils.round(mc.player.getDistance(entity), 1).toString()
-                TextComponent.TextElement("${dist}m", getTextColor())
-            }
-            ContentType.TOTEM_POPS -> {
-                //TODO
+        }
+        ContentType.HP -> {
+            if (entity !is EntityLivingBase) {
                 null
+            } else {
+                val hp = MathUtils.round(entity.health, 1).toString()
+                TextComponent.TextElement(hp, getHpColor(entity))
             }
+        }
+        ContentType.ABSORPTION -> {
+            if (entity !is EntityLivingBase || entity.absorptionAmount == 0f) {
+                null
+            } else {
+                val absorption = MathUtils.round(entity.absorptionAmount, 1).toString()
+                TextComponent.TextElement(absorption, 0xEECC20)
+            }
+        }
+        ContentType.PING -> {
+            if (entity !is EntityOtherPlayerMP) {
+                null
+            } else {
+                val ping = mc.connection?.getPlayerInfo(entity.uniqueID)?.responseTime ?: 0
+                TextComponent.TextElement("${ping}ms", pingColorGradient.get(ping.toFloat()).toHex())
+            }
+        }
+        ContentType.DISTANCE -> {
+            val dist = MathUtils.round(mc.player.getDistance(entity), 1).toString()
+            TextComponent.TextElement("${dist}m", getTextColor())
+        }
+        ContentType.TOTEM_POPS -> {
+            //TODO
+            null
         }
     }
 
     private fun getTextColor() = ColorConverter.rgbToInt(rText.value, gText.value, bText.value)
 
-    private fun getEntityType(entity: Entity): String {
-        return entity.javaClass.simpleName.replace("Entity", "")
-                .replace("Other", "")
-                .replace("MP", "")
-                .replace("SP", "")
-                .replace(" ", "")
-    }
+    private fun getEntityType(entity: Entity) = entity.javaClass.simpleName.replace("Entity", "")
+            .replace("Other", "")
+            .replace("MP", "")
+            .replace("SP", "")
+            .replace(" ", "")
 
     private fun getHpColor(entity: EntityLivingBase) = healthColorGradient.get((entity.health / entity.maxHealth) * 100f).toHex()
 
-    fun checkEntityType(entity: Entity): Boolean {
-        return (self.value || entity != mc.player)
-                && (!entity.isInvisible || invisible.value)
-                && (entity is EntityXPOrb && experience.value
-                || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, friends.value, sleeping.value)
-                || EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
-    }
+    fun checkEntityType(entity: Entity) = (self.value || entity != mc.player)
+            && (!entity.isInvisible || invisible.value)
+            && (entity is EntityXPOrb && experience.value
+            || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, true, true)
+            || EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
 
     private class ItemGroup {
         private val itemSet = HashSet<EntityItem>()
@@ -387,7 +471,7 @@ object Nametags : Module() {
             val itemCountMap = TreeMap<String, Int>(Comparator.naturalOrder())
             for (entityItem in itemSet) {
                 val itemStack = entityItem.item
-                val name = itemStack.displayName
+                val name = itemStack.getItem().getItemStackDisplayName(itemStack)
                 val count = itemCountMap.getOrDefault(name, 0) + itemStack.count
                 itemCountMap[name] = count
             }
