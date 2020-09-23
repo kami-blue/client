@@ -188,7 +188,7 @@ object Nametags : Module() {
             itemList.add(itemStack to getEnchantmentText(itemStack))
         }
 
-        if (itemList.isEmpty()) return
+        if (itemList.isEmpty() || itemList.count { !it.first.isEmpty() } == 0) return
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
         val halfWidth = (itemList.count { !it.first.isEmpty() } * 24) / 2f
 
