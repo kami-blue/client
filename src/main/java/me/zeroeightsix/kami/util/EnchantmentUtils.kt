@@ -49,7 +49,7 @@ object EnchantmentUtils {
         val isMax = level >= enchantment.maxLevel
         val is32K = abs(level.toInt()) >= 32000
         val alias = getEnchantmentAlias(enchantment)
-        val levelText = if (isSingleLevel) "" else if (is32K) "32k" else if (isMax) "Max" else "$level"
+        val levelText = if (isSingleLevel) "" else if (is32K) "32K" else if (isMax) "MAX" else "$level"
     }
 
     enum class EnumEnchantments(val enchantment: Enchantment, val alias: String) {
