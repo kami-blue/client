@@ -60,8 +60,8 @@ object Nametags : Module() {
     private val line2left = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Left").withValue(ContentType.NAME).withVisibility { page.value == Page.CONTENT })
     private val line2center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2enter").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
     private val line2right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Right").withValue(ContentType.TOTAL_HP).withVisibility { page.value == Page.CONTENT })
-    private val itemCount = register(Settings.booleanBuilder("ItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
-    private val maxItems = register(Settings.integerBuilder("MaxItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
+    private val dropItemCount = register(Settings.booleanBuilder("DropItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
+    private val maxDropItems = register(Settings.integerBuilder("MaxDropItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
 
     /* Item */
     private val mainHand = register(Settings.booleanBuilder("MainHand").withValue(true).withVisibility { page.value == Page.ITEM })
@@ -519,9 +519,9 @@ object Nametags : Module() {
             }
             textComponent.clear()
             for ((index, entry) in itemCountMap.entries.sortedByDescending { it.value }.withIndex()) {
-                val text = if (itemCount.value) "${entry.key} x${entry.value}" else entry.key
+                val text = if (dropItemCount.value) "${entry.key} x${entry.value}" else entry.key
                 textComponent.addLine(text, getTextColor())
-                if (index + 1 >= maxItems.value) {
+                if (index + 1 >= maxDropItems.value) {
                     val remaining = itemCountMap.size - index - 1
                     if (remaining > 0) textComponent.addLine("...and $remaining more")
                     break
