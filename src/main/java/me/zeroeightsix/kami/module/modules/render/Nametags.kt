@@ -446,7 +446,7 @@ object Nametags : Module() {
             val thisCenter = this.getCenter(1f)
             val otherCenter = other.getCenter(1f)
             val dist = thisCenter.distanceTo(otherCenter)
-            if (dist < 4f) {
+            if (dist < 8f) {
                 val ableToMerge = ArrayList<EntityItem>()
                 for (entityItem in other.itemSet) {
                     val pos = entityItem.positionVector
@@ -462,7 +462,7 @@ object Nametags : Module() {
 
         fun add(item: EntityItem): Boolean {
             for (otherItem in itemSet) {
-                if (otherItem.getDistance(item) > 2.0f) return false
+                if (otherItem.getDistance(item) > 4.0f) return false
             }
             return itemSet.add(item)
         }
@@ -496,7 +496,7 @@ object Nametags : Module() {
                     var remove = false
                     for (otherItem in itemSet) {
                         if (otherItem == entityItem) continue
-                        if (otherItem.getDistance(entityItem) <= 2f) continue
+                        if (otherItem.getDistance(entityItem) <= 4f) continue
                         remove = true
                     }
                     if (remove) toRemove.add(entityItem)
