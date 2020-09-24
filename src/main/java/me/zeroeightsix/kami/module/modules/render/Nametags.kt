@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.ActiveRenderInfo
 import net.minecraft.client.renderer.RenderHelper
@@ -33,6 +32,7 @@ import kotlin.math.max
 import kotlin.math.round
 import kotlin.math.roundToInt
 
+//TODO: Impl Totem pops
 @Module.Info(
         name = "Nametags",
         description = "Draws descriptive nametags above entities",
@@ -105,7 +105,7 @@ object Nametags : Module() {
     }
 
     private enum class ContentType {
-        NONE, NAME, TYPE, TOTAL_HP, HP, ABSORPTION, PING, DISTANCE, TOTEM_POPS
+        NONE, NAME, TYPE, TOTAL_HP, HP, ABSORPTION, PING, DISTANCE
     }
 
     private val pingColorGradient = ColorGradient(
@@ -281,8 +281,6 @@ object Nametags : Module() {
     }
 
     override fun onUpdate() {
-        if (timer.tick(5L) && checkSetting()) MessageSendHelper.sendChatMessage("$chatName Totem pops is not yet implemented")
-
         // Updating stuff in different ticks to avoid overloading
         when (updateTick) {
             0 -> { // Adding items
@@ -357,18 +355,6 @@ object Nametags : Module() {
         }
     }
 
-    private fun checkSetting(): Boolean {
-        for (setting in line1Settings) {
-            if (setting.value != ContentType.TOTEM_POPS) continue
-            return true
-        }
-        for (setting in line2Settings) {
-            if (setting.value != ContentType.TOTEM_POPS) continue
-            return true
-        }
-        return false
-    }
-
     private fun getContent(contentType: ContentType, entity: Entity) = when (contentType) {
         ContentType.NONE -> {
             null
@@ -416,10 +402,9 @@ object Nametags : Module() {
             val dist = MathUtils.round(mc.player.getDistance(entity), 1).toString()
             TextComponent.TextElement("${dist}m", getTextColor())
         }
-        ContentType.TOTEM_POPS -> {
-            //TODO
-            null
-        }
+//        ContentType.TOTEM_POPS -> {
+//            TODO
+//        }
     }
 
     private fun getTextColor() = ColorConverter.rgbToInt(rText.value, gText.value, bText.value)
