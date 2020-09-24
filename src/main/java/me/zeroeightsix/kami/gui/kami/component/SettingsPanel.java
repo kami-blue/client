@@ -85,11 +85,14 @@ public class SettingsPanel extends OrganisedContainer {
                         if (numberSetting.getMin() != null) slider.setMin(numberSetting.getMin().doubleValue());
                         addChild(slider);
                     } else {
-                        double min = Double.parseDouble(numberSetting.getMin().toString());
-                        double max = Double.parseDouble(numberSetting.getMax().toString());
+                        double min = numberSetting.getMin().doubleValue();
+                        double max = numberSetting.getMax().doubleValue();
+                        double step;
+                        if (numberSetting.getStep() != null) step = numberSetting.getStep().doubleValue();
+                        else step = Slider.getDefaultStep(min, max);
                         Slider slider = new Slider(
                                 value, min, max,
-                                Slider.getDefaultStep(min, max),
+                                step,
                                 name,
                                 setting instanceof IntegerSetting);
                         slider.addPoof(new Slider.SliderPoof<Slider, Slider.SliderPoof.SliderPoofInfo>() {

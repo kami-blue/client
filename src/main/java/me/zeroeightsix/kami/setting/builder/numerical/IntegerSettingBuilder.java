@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.setting.builder.numerical;
 
 import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -11,8 +10,8 @@ import java.util.function.Predicate;
  */
 public class IntegerSettingBuilder extends NumericalSettingBuilder<Integer> {
     @Override
-    public NumberSetting build() {
-        return new IntegerSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max);
+    public IntegerSetting build() {
+        return new IntegerSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max, step);
     }
 
     @Override
@@ -21,7 +20,7 @@ public class IntegerSettingBuilder extends NumericalSettingBuilder<Integer> {
     }
 
     @Override
-    public NumericalSettingBuilder withName(String name) {
+    public IntegerSettingBuilder withName(String name) {
         return (IntegerSettingBuilder) super.withName(name);
     }
 
@@ -38,6 +37,11 @@ public class IntegerSettingBuilder extends NumericalSettingBuilder<Integer> {
     @Override
     public IntegerSettingBuilder withRange(Integer minimum, Integer maximum) {
         return (IntegerSettingBuilder) super.withRange(minimum, maximum);
+    }
+
+    @Override
+    public IntegerSettingBuilder withStep(Integer step) {
+        return (IntegerSettingBuilder) super.withStep(step);
     }
 
     @Override

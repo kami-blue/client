@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.module.modules.render.ExtraTab;
 import me.zeroeightsix.kami.module.modules.render.TabFriends;
+import me.zeroeightsix.kami.util.TimerUtils;
 import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MixinGuiPlayerTabOverlay {
 
     private AtomicReference<List<?>> list1 = null;
+    private TimerUtils.TickTimer timer = new TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS);
 
     @SuppressWarnings("unchecked")
     @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE", target = "Ljava/util/List;subList(II)Ljava/util/List;", remap = false))
@@ -33,7 +35,7 @@ public class MixinGuiPlayerTabOverlay {
             }
 
             // only update every 2 seconds
-            if (MathUtils.isNumberEven(Calendar.getInstance().get(Calendar.SECOND))) {
+            if (timer.tick(2L, true)) {
                 new Thread(() -> list1.set(list.subList(fromIndex, Math.min(ExtraTab.INSTANCE.getTabSize().getValue(), list.size())))).start();
             }
             return (List<E>) list1.get();

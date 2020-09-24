@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
+import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
@@ -8,6 +9,8 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.ActiveModules;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.color.ColorGradient;
+import me.zeroeightsix.kami.util.color.ColorHolder;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -24,6 +27,14 @@ import static org.lwjgl.opengl.GL11.*;
  * Updated by dominikaaaa on 20/03/19
  */
 public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kami.gui.kami.component.ActiveModules> {
+
+    final ColorGradient transRights = new ColorGradient(
+            new Pair<>(0f, new ColorHolder(91 , 207 , 250)), new Pair<>(19.9999999999f, new ColorHolder(91, 207, 250)),
+            new Pair<>(20f, new ColorHolder(245 , 170 , 185)), new Pair<>(39.9999999999f, new ColorHolder(245 , 170 , 185)),
+            new Pair<>(40f, new ColorHolder(255 , 255 , 255)), new Pair<>(59.9999999999f, new ColorHolder(255 , 255 , 255)),
+            new Pair<>(60f, new ColorHolder(245 , 170 , 185)), new Pair<>(79.9999999999f, new ColorHolder(245 , 170 , 185)),
+            new Pair<>(80f, new ColorHolder(91 , 207 , 250)), new Pair<>(100f, new ColorHolder(91 , 207 , 250))
+    );
 
     @Override
     public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component, FontRenderer f) {
@@ -79,6 +90,10 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                     break;
                 case INFO_OVERLAY:
                     rgb = ActiveModules.INSTANCE.getInfoColour(i);
+                    break;
+                case TRANS_RIGHTS:
+                    float value = ((float) i + 1.0f) / (float) mods.size();
+                    rgb = transRights.get(value * 100f).toHex();
                     break;
                 default:
                     rgb = 0;

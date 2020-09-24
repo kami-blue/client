@@ -55,10 +55,6 @@ public class Slider extends AbstractComponent {
         });
     }
 
-    public Slider(double value, double minimum, double maximum, String text) {
-        this(value, minimum, maximum, getDefaultStep(minimum, maximum), text, false);
-    }
-
     private double calculateValue(double x) {
         double d1 = x / getWidth();
         double d2 = (maximum - minimum);

@@ -119,28 +119,8 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModules(): Array<Module> {
-        return moduleList
-    }
+    fun getModules() = moduleList
 
-    @JvmStatic
-    fun getModule(clazz: Class<out Module>): Module {
-        return moduleMap[clazz] ?: throw(ModuleNotFoundException(clazz.simpleName))
-    }
-
-    /**
-     * Get typed module object so that no casting is needed afterwards.
-     *
-     * @param clazz Module class
-     * @param [T] Type of module
-     * @return Object <[T]>
-     **/
-    @JvmStatic
-    fun <T : Module> getModuleT(clazz: Class<T>): T? {
-        return getModule(clazz) as? T?
-    }
-
-    @Deprecated("Use `getModule(Class<? extends Module>)` instead")
     @JvmStatic
     fun getModule(name: String?): Module? {
         for (module in moduleMap.entries) {
@@ -149,17 +129,6 @@ object ModuleManager {
             }
         }
         throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
-    }
-
-    @JvmStatic
-    fun isModuleEnabled(clazz: Class<out Module>): Boolean {
-        return getModule(clazz).isEnabled
-    }
-
-    @JvmStatic
-    fun isModuleListening(clazz: Class<out Module>): Boolean {
-        val module = getModule(clazz)
-        return isModuleListening(module)
     }
 
     @JvmStatic

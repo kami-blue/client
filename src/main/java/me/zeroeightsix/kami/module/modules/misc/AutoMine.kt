@@ -32,12 +32,13 @@ object AutoMine : Module() {
     }
 
     private fun run() {
+        if (mc.player == null || isDisabled) return
         var current = ""
         if (iron.value) current += " iron_ore"
         if (diamond.value) current += " diamond_ore"
         if (gold.value) current += " gold_ore"
         if (coal.value) current += " coal_ore"
-        if (log.value) current += " log"
+        if (log.value) current += " log log2"
 
         if (current.startsWith(" ")) {
             current = current.substring(1)
@@ -61,14 +62,14 @@ object AutoMine : Module() {
 
     @EventHandler
     private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        disable()
     })
 
     init {
-        iron.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        diamond.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        gold.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        coal.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        log.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
+        iron.settingListener = Setting.SettingListeners { run() }
+        diamond.settingListener = Setting.SettingListeners { run() }
+        gold.settingListener = Setting.SettingListeners { run() }
+        coal.settingListener = Setting.SettingListeners { run() }
+        log.settingListener = Setting.SettingListeners { run() }
     }
 }
