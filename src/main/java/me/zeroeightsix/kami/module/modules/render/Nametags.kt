@@ -80,7 +80,7 @@ object Nametags : Module() {
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val bFilled = register(Settings.integerBuilder("FilledBlue").withValue(64).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(169).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
@@ -133,6 +133,7 @@ object Nametags : Module() {
     override fun onRender() {
         if (entityMap.isEmpty() && itemMap.isEmpty()) return
         GlStateUtils.rescaleActual()
+        GlStateUtils.depth(false)
         val camPos = getCamPos()
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         for ((entity, textComponent) in entityMap) {
@@ -140,7 +141,6 @@ object Nametags : Module() {
             val screenPos = ProjectionUtils.toScreenPos(pos)
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-
             drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, textComponent)
             drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
         }
@@ -149,9 +149,9 @@ object Nametags : Module() {
             val screenPos = ProjectionUtils.toScreenPos(pos)
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-
             drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, itemGroup.textComponent)
         }
+        GlStateUtils.depth(true)
         GlStateUtils.rescaleMc()
     }
 
@@ -290,7 +290,6 @@ object Nametags : Module() {
                     itemMap.clear()
                 } else {
                     loop@ for (entity in mc.world.loadedEntityList) {
-                        if (entity.ticksExisted < 1) continue // To avoid stupid duplicated entity
                         if (entity !is EntityItem) continue
                         if (mc.player.getDistance(entity) > range.value) continue
                         for (itemGroup in itemMap) {
@@ -303,25 +302,23 @@ object Nametags : Module() {
                     }
                 }
             }
-            1 -> { // Adding Entity
+            1 -> { // Updating Entity
+                entityMap.clear()
                 for (entity in mc.world.loadedEntityList) {
-                    if (entity.ticksExisted < 1) continue // To avoid stupid duplicated entity
                     if (!checkEntityType(entity)) continue
                     if (entity is EntityItem) continue
                     if (mc.player.getDistance(entity) > range.value) continue
-                    else entityMap.putIfAbsent(entity, TextComponent())
+                    entityMap[entity] = TextComponent()
                 }
             }
             2 -> { // Removing items
+                val loadEntitySet = mc.world.loadedEntityList.toHashSet()
                 for (itemGroup in itemMap) {
-                    itemGroup.updateItems()
+                    itemGroup.updateItems(loadEntitySet)
                 }
                 itemMap.removeIf { it.isEmpty() }
             }
-            3 -> { // Removing Entity
-                entityMap.keys.removeIf { !it.isAddedToWorld || it.isDead || !checkEntityType(it) || mc.player.getDistance(it) > range.value }
-            }
-            4 -> { // Merging Items
+            3 -> { // Merging Items
                 for (itemGroup in itemMap) for (otherGroup in itemMap) {
                     if (itemGroup == otherGroup) continue
                     itemGroup.merge(otherGroup)
@@ -329,7 +326,7 @@ object Nametags : Module() {
                 itemMap.removeIf { it.isEmpty() }
             }
         }
-        updateTick = (updateTick + 1) % 5
+        updateTick = (updateTick + 1) % 4
 
         // Update item nametags tick by tick
         for (itemGroup in itemMap) {
@@ -489,11 +486,11 @@ object Nametags : Module() {
             return center
         }
 
-        fun updateItems() {
+        fun updateItems(loadEntitySet: HashSet<Entity>) {
             // Removes items
             val toRemove = ArrayList<EntityItem>()
             for (entityItem in itemSet) {
-                if (!entityItem.isAddedToWorld || entityItem.isDead) {
+                if (!entityItem.isAddedToWorld || entityItem.isDead || !loadEntitySet.contains(entityItem)) {
                     toRemove.add(entityItem)
                 } else {
                     var remove = false
