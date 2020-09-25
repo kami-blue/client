@@ -1,16 +1,15 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.RayTraceResult
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 import kotlin.math.atan2
 import kotlin.math.floor
 import kotlin.math.sqrt
@@ -156,6 +155,7 @@ object BlockUtils {
         for (side in EnumFacing.values()) {
             val neighbour = blockPos.offset(side)
             if (mc.world.getBlockState(neighbour).material.isReplaceable) continue
+            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(neighbour))) continue
             return Pair(side.opposite, neighbour)
         }
         if (attempt < maxAttempt) {
@@ -240,5 +240,20 @@ object BlockUtils {
      */
     fun isPlaceableForChest(pos: BlockPos): Boolean {
         return isPlaceable(pos) && mc.world.isAirBlock(pos.up())
+    }
+
+    /**
+     * Placing function for multithreading only
+     */
+    fun doPlace(pos: BlockPos, facing: EnumFacing, placeSpeed: Float) {
+        val hitVecOffset = getHitVecOffset(facing)
+        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
+        val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
+        val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
+        mc.connection!!.sendPacket(rotationPacket)
+        Thread.sleep((25f / placeSpeed).toLong())
+        mc.connection!!.sendPacket(placePacket)
+        mc.player.swingArm(EnumHand.MAIN_HAND)
+        Thread.sleep((25f / placeSpeed).toLong())
     }
 }

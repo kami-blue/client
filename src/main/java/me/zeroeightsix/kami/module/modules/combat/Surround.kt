@@ -10,13 +10,8 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.network.play.client.CPacketPlayer
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
@@ -33,7 +28,7 @@ import kotlin.math.round
 )
 object Surround : Module() {
     private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
-    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0f, 10f))
+    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
     private val autoDisable = register(Settings.e<AutoDisableMode>("AutoDisable", AutoDisableMode.OUT_OF_HOLE))
     private val outOfHoleTimeout = register(Settings.integerBuilder("OutOfHoleTimeout(t)").withValue(20).withRange(1, 50).withVisibility { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
     private val enableInHole = register(Settings.b("EnableInHole", true))
@@ -192,11 +187,14 @@ object Surround : Module() {
         val slot = getObby()
         if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
         val placed = ArrayList<BlockPos>()
+        var placeCount = 0
         while (isEnabled) {
             val pos = getPlacingPos(placed) ?: break
             val neighbor = BlockUtils.getNeighbour(pos, 1) ?: break
+            placeCount++
             placed.add(pos)
-            doPlace(neighbor.second, neighbor.first)
+            BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
+            if (placeCount >= 4) Thread.sleep(50L)
         }
     }
 
@@ -212,18 +210,6 @@ object Surround : Module() {
             if (!toIgnore.contains(pos.down())) return pos.down()
         }
         return null
-    }
-
-    private fun doPlace(pos: BlockPos, facing: EnumFacing) {
-        val hitVecOffset = BlockUtils.getHitVecOffset(facing)
-        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
-        val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
-        val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
-        mc.connection!!.sendPacket(rotationPacket)
-        Thread.sleep((25f / placeSpeed.value).toLong())
-        mc.connection!!.sendPacket(placePacket)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
-        Thread.sleep((25f / placeSpeed.value).toLong())
     }
 
     init {
