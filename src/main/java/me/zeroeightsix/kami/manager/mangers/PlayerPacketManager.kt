@@ -6,6 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
@@ -23,8 +24,10 @@ object PlayerPacketManager : Manager() {
 
     var serverSidePosition = Vec3d(0.0, 0.0, 0.0)
         private set
-    var serverSideRotation = Vec2f(0f, 0f)
+    var prevServerSideRotation = Vec2f(0f, 0f)
         private set
+    var serverSideRotation = Vec2f(0f, 0f)
+    private var clientSidePitch = Vec2f(0f, 0f)
     var serverSideHotbar = 0
         private set
 
@@ -33,9 +36,12 @@ object PlayerPacketManager : Manager() {
 
     @EventHandler
     private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
-        if (event.era != KamiEvent.Era.PERI || packetList.isEmpty()) return@EventHook
-        packetList.values.first().apply(event) // Apply the packet from the module that has the highest priority
-        packetList.clear()
+        if (event.era != KamiEvent.Era.PERI) return@EventHook
+        prevServerSideRotation = serverSideRotation
+        if (packetList.isNotEmpty()) {
+            packetList.values.first().apply(event) // Apply the packet from the module that has the highest priority
+            packetList.clear()
+        }
     })
 
     /**
@@ -53,7 +59,10 @@ object PlayerPacketManager : Manager() {
         with(event.packet) {
             if (this is CPacketPlayer) {
                 if (this.moving) serverSidePosition = Vec3d(this.x, this.y, this.z)
-                if (this.rotating) serverSideRotation = Vec2f(this.yaw, this.pitch)
+                if (this.rotating) {
+                    serverSideRotation = Vec2f(this.yaw, this.pitch)
+                    Wrapper.player?.let { it.rotationYawHead = this.yaw }
+                }
             }
             if (this is CPacketHeldItemChange) {
                 if (spoofingHotbar && this.slotId != serverSideHotbar) {
@@ -67,6 +76,25 @@ object PlayerPacketManager : Manager() {
                     serverSideHotbar = this.slotId
                 }
             }
+        }
+    })
+
+    @EventHandler
+    private val preRenderListener = Listener(EventHook { event: RenderEntityEvent.Pre ->
+        if (event.entity == null || event.entity != Wrapper.player) return@EventHook
+        with(event.entity) {
+            clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
+            prevRotationPitch = prevServerSideRotation.y
+            rotationPitch = serverSideRotation.y
+        }
+    })
+
+    @EventHandler
+    private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Final ->
+        if (event.entity == null || event.entity != Wrapper.player) return@EventHook
+        with(event.entity) {
+            prevRotationPitch = clientSidePitch.x
+            rotationPitch = clientSidePitch.y
         }
     })
 

@@ -18,4 +18,5 @@ open class RenderEntityEvent(
 
     class Pre(entity: Entity?, x: Double, y: Double, z: Double, yaw: Float, partialTicks: Float, debug: Boolean) : RenderEntityEvent(entity, x, y, z, yaw, partialTicks, debug)
     class Post(entity: Entity?, x: Double, y: Double, z: Double, yaw: Float, partialTicks: Float, debug: Boolean) : RenderEntityEvent(entity, x, y, z, yaw, partialTicks, debug)
+    class Final(entity: Entity?, x: Double, y: Double, z: Double, yaw: Float, partialTicks: Float, debug: Boolean) : RenderEntityEvent(entity, x, y, z, yaw, partialTicks, debug)
 }

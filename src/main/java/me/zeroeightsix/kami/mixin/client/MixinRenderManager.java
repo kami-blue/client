@@ -47,10 +47,13 @@ public class MixinRenderManager {
 
     @Inject(method = "renderEntity", at = @At("RETURN"))
     public void renderEntityPostReturn(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
+        RenderEntityEvent.Final eventFinal = new RenderEntityEvent.Final(entity, x, y, z, yaw, partialTicks, debug);
+        KamiMod.EVENT_BUS.post(eventFinal);
+
         if (!this.renderOutlines || (this.debugBoundingBox && !entity.isInvisible() && !debug && !Minecraft.getMinecraft().isReducedDebug()))
             return;
-        RenderEntityEvent.Post event2 = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(event2);
+        RenderEntityEvent.Post event = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
+        KamiMod.EVENT_BUS.post(event);
     }
 
 }
