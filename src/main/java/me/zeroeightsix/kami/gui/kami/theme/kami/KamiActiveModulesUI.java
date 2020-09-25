@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 4/08/2017.
- * Updated by dominikaaaa on 20/03/19
+ * Updated by l1ving on 20/03/19
  */
 public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kami.gui.kami.component.ActiveModules> {
 

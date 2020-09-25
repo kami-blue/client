@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
 
 /**
  * Created by 086 on 7/11/2017.
- * Updated by dominikaaaa on 25/03/19
+ * Updated by l1ving on 25/03/19
  * Updated by Dewy on 09/04/2020
  */
 @Mod(

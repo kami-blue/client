@@ -17,10 +17,10 @@ import java.util.*
 import kotlin.math.max
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 04/12/19
+ * @author l1ving
+ * Created by l1ving on 04/12/19
  * PVP Information by Polymer on 04/03/20
- * Updated by dominikaaaa on 25/03/20
+ * Updated by l1ving on 25/03/20
  * Updated by Xiaro on 10/09/20
  */
 @Module.Info(

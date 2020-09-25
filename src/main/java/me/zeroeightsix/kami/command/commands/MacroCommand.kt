@@ -13,8 +13,8 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendRawChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 04/05/20
+ * @author l1ving
+ * Created by l1ving on 04/05/20
  */
 class MacroCommand : Command("macro", ChunkBuilder().append("command", true, EnumParser(arrayOf("key", "list"))).append("setting", false, EnumParser(arrayOf("clear", "message|command"))).build(), "m") {
     override fun call(args: Array<out String?>) {

@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.color
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 04/03/20
+ * @author l1ving
+ * Updated by l1ving on 04/03/20
  * Updated by Xiaro on 09/08/20
  */
 object ColorConverter {

@@ -5,15 +5,15 @@ import me.zeroeightsix.kami.util.math.MathUtils.round
 import kotlin.math.hypot
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 18/01/20
- * Updated by dominikaaaa on 06/02/20
+ * @author l1ving
+ * Created by l1ving on 18/01/20
+ * Updated by l1ving on 06/02/20
  * Updated by Xiaro on 11/09/20
  *
  *
  * Speed:
- * @author dominikaaaa
- * Created by dominikaaaa on 18/01/20
+ * @author l1ving
+ * Created by l1ving on 18/01/20
  * Credit to Seppuku for the following calculation I made more efficient and got inspiration from
  * final String bps = "BPS: " + df.format((MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ) / tickRate));
  *

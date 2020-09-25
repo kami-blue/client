@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.client
 import me.zeroeightsix.kami.module.Module
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  * @see me.zeroeightsix.kami.gui.kami.theme.kami.RootCheckButtonUI
  */
 @Module.Info(

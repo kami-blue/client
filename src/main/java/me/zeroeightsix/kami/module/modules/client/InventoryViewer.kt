@@ -15,9 +15,9 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 
 /**
- * Updated by dominikaaaa on 21/02/20
+ * Updated by l1ving on 21/02/20
  * Slight updates by 20kdc, 19/02/20
- * Everything except somethingRender() methods was written by dominikaaaa
+ * Everything except somethingRender() methods was written by l1ving
  */
 @Module.Info(
         name = "InventoryViewer",

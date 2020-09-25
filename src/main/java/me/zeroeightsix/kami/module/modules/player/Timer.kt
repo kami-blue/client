@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.Settings
  * See BowSpam for example. It's just one thing. Anybody can write it the exact same way on accident.
  * There is nothing to credit here.
  * This message is here because clowns decided to argue with me that they should be credited even though they did not come up with the code.
- * Updated by dominikaaaa on 01/03/20
+ * Updated by l1ving on 01/03/20
  */
 @Module.Info(
         name = "Timer",

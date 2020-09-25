@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL32
  *
  *
  * Some is created by 086 on 9/07/2017.
- * Updated by dominikaaaa on 18/02/20
+ * Updated by l1ving on 18/02/20
  * Updated by on Afel 08/06/20
  * Updated by Xiaro on 06/08/20
  */

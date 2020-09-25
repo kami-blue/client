@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  */
 @Module.Info(
         name = "CommandConfig",

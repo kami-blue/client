@@ -9,8 +9,8 @@ import java.io.*
 import java.util.*
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 04/05/20
+ * @author l1ving
+ * Created by l1ving on 04/05/20
  */
 object Macro {
     private val gson = GsonBuilder().setPrettyPrinting().create()

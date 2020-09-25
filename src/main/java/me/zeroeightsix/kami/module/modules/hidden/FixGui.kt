@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  * @see me.zeroeightsix.kami.command.commands.FixGuiCommand
  *
- * Created by dominikaaaa on 24/03/20
+ * Created by l1ving on 24/03/20
  * Updated by Xiaro on 28/08/20
  */
 @Module.Info(

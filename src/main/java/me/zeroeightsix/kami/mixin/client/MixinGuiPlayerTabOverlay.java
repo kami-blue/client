@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by 086 on 8/04/2018.
- * Optimized by dominikaaaa on 28/05/20
+ * Optimized by l1ving on 28/05/20
  */
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {

@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.module.modules.client.ActiveModules
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 05/04/20
+ * @author l1ving
+ * Updated by l1ving on 05/04/20
  */
 class ActiveModulesCommand : Command("activemodules", ChunkBuilder().append("category").append("r").append("g").append("b").build(), "activemods", "modules") {
 

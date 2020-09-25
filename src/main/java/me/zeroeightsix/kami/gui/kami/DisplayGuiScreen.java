@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 /**
  * Created by 086 on 3/08/2017.
- * Updated by dominikaaaa on 13/12/19
+ * Updated by l1ving on 13/12/19
  * Updated by Xiaro on 18/08/20
  */
 public class DisplayGuiScreen extends GuiScreen {

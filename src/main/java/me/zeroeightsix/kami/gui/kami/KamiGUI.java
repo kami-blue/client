@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by 086 on 25/06/2017.
- * Updated by dominikaaaa on 28/01/20
+ * Updated by l1ving on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
  *
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer

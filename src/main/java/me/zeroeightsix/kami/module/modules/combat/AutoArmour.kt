@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -14,18 +15,20 @@ import net.minecraft.item.ItemStack
         description = "Automatically equips armour"
 )
 object AutoArmour : Module() {
-    val timer = TimerUtils.TickTimer()
+    private val delay = register(Settings.integerBuilder("Delay").withValue(5).withRange(1, 10).withStep(1))
+
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
     override fun onUpdate() {
-        if (!timer.tick(100L, false)) return
+        if (!timer.tick(delay.value.toLong(), false)) return
         if (!mc.player.inventory.getItemStack().isEmpty()) {
-            if (mc.currentScreen is GuiContainer) timer.reset() // Wait for 2 ticks if player is moving item
+            if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
             else InventoryUtils.removeHoldingItem()
             return
         }
         // store slots and values of best armor pieces, initialize with currently equipped armor
         // Pair<Slot, Value>
-        val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorItemInSlot(it)) }
+        val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorInventory[it]) }
 
         // search inventory for better armor
         for (slot in 9..44) {
@@ -33,7 +36,7 @@ object AutoArmour : Module() {
             val item = itemStack.getItem()
             if (item !is ItemArmor) continue
 
-            val armorType = item.armorType.ordinal - 2
+            val armorType = item.armorType.index
             if (armorType == 2 && mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
             val armorValue = getArmorValue(itemStack)
 
@@ -41,11 +44,11 @@ object AutoArmour : Module() {
         }
 
         // equip better armor
-        for (armorType in 0..3) {
-            val slot = bestArmors[armorType].first
-            if (slot == -1) continue // Skip if we didn't find a better armor
-            InventoryUtils.moveToSlot(slot, 8 - armorType)
+        for ((index, pair) in bestArmors.withIndex()) {
+            if (pair.first == -1) continue // Skip if we didn't find a better armor
+            InventoryUtils.moveToSlot(pair.first, 8 - index)
             timer.reset()
+            break // Don't move more than one at once
         }
     }
 

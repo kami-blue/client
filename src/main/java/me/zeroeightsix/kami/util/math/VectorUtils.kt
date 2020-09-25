@@ -10,7 +10,7 @@ import kotlin.math.*
  * Utilities for managing and transforming blockPos positions
  *
  * @author Qther / Vonr
- * Updated by dominikaaaa on 21/04/20.
+ * Updated by l1ving on 21/04/20.
  * Updated by Xiaro on 09/09/20
  */
 object VectorUtils {

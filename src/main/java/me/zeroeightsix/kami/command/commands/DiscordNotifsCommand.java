@@ -9,8 +9,8 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 26/03/20
+ * @author l1ving
+ * Created by l1ving on 26/03/20
  */
 public class DiscordNotifsCommand extends Command {
     public DiscordNotifsCommand() {

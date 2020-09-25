@@ -66,7 +66,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
     /**
      * @author TBM
-     * Used with full permission from TBM - dominikaaaa
+     * Used with full permission from TBM - l1ving
      */
     @Inject(method = "displayGUIChest", at = @At("HEAD"), cancellable = true)
     public void onDisplayGUIChest(IInventory chestInventory, CallbackInfo ci) {

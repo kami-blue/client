@@ -23,6 +23,7 @@ import kotlin.math.pow
 object AutoTool : Module() {
     private val switchBack = register(Settings.b("SwitchBack", true))
     private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value }.build())
+    private val swapWeapon = register(Settings.b("SwitchWeapon", false))
     private val preferWeapon = register(Settings.e<CombatUtils.PreferWeapon>("Prefer", CombatUtils.PreferWeapon.SWORD))
 
     private var shouldMoveBack = false
@@ -30,10 +31,15 @@ object AutoTool : Module() {
     private var lastChange = 0L
 
     @EventHandler
-    private val leftClickListener = Listener(EventHook { event: LeftClickBlock -> if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos)) })
+    private val leftClickListener = Listener(EventHook { event: LeftClickBlock ->
+        if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos))
+    })
 
     @EventHandler
-    private val attackListener = Listener(EventHook { event: AttackEntityEvent? -> CombatUtils.equipBestWeapon(preferWeapon.value) })
+    private val attackListener = Listener(EventHook { event: AttackEntityEvent ->
+        if (event.target !is EntityLivingBase) return@EventHook
+        if (swapWeapon.value) CombatUtils.equipBestWeapon(preferWeapon.value)
+    })
 
     override fun onUpdate() {
         if (mc.currentScreen != null || !switchBack.value) return

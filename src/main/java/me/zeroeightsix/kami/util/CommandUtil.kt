@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  *
  * Updated by Xiaro on 08/18/20
  */
