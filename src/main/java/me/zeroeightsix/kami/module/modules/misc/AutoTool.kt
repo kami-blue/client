@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Enchantments
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock

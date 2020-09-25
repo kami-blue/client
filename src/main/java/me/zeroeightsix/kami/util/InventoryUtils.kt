@@ -218,10 +218,7 @@ object InventoryUtils {
      * @return Transaction id
      */
     fun quickMoveSlot(slotFrom: Int): Short {
-        val transactionId = quickMoveSlot(0, slotFrom)
-        return transactionId
-    fun quickMoveSlot(slotFrom: Int) {
-        quickMoveSlot(0, slotFrom)
+        return quickMoveSlot(0, slotFrom)
     }
 
     /**
