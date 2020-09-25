@@ -140,13 +140,13 @@ object CrystalAura : Module() {
 
     @EventHandler
     private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
-        if (inactiveTicks > 20 || event.era != KamiEvent.Era.PRE || lastLookAt == Vec3d.ZERO) return@EventHook
+        if (inactiveTicks > 20 || event.era != KamiEvent.Era.PRE || lastLookAt == Vec3d.ZERO || CombatSetting.pause) return@EventHook
         val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(getLastRotation()))
         PlayerPacketManager.addPacket(this, packet)
     })
 
     override fun onUpdate() {
-        if (!CombatManager.isOnTopPriority(this)) return
+        if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return
         inactiveTicks++
         hitTimer++
         placeTimer++

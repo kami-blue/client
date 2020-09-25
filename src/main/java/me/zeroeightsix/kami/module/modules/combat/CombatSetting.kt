@@ -3,8 +3,10 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InfoCalculator
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.graphics.*
@@ -12,6 +14,9 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.item.ItemFood
+import net.minecraft.item.ItemPickaxe
+import net.minecraft.util.EnumHand
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.HashSet
@@ -25,23 +30,39 @@ import kotlin.math.ceil
         alwaysEnabled = true
 )
 object CombatSetting : Module() {
-    private val filter = register(Settings.enumBuilder(TargetFilter::class.java).withName("Filter").withValue(TargetFilter.ALL).build())
-    private val fov = register(Settings.floatBuilder("FOV").withValue(90f).withRange(0f, 180f).withVisibility { filter.value == TargetFilter.FOV })
-    private val priority = register(Settings.enumBuilder(TargetPriority::class.java).withName("Priority").withValue(TargetPriority.DISTANCE).build())
-    private val players = register(Settings.b("Players", true))
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
-    private val teammates = register(Settings.booleanBuilder("Teammates").withValue(false).withVisibility { players.value }.build())
-    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { players.value }.build())
-    private val mobs = register(Settings.b("Mobs", false))
-    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { mobs.value }.build())
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { mobs.value }.build())
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { mobs.value }.build())
-    private val invisible = register(Settings.b("Invisible", false))
-    private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).build())
-    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).build())
-    private val renderPredictedPos = register(Settings.b("RenderPredictedPosition", false))
-    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { renderPredictedPos.value }.build())
-    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { renderPredictedPos.value && !pingSync.value }.build())
+    private val page = register(Settings.e<Page>("Page", Page.TARGETING))
+
+    /* Targeting */
+    private val filter = register(Settings.enumBuilder(TargetFilter::class.java, "Filter").withValue(TargetFilter.ALL).withVisibility { page.value == Page.TARGETING })
+    private val fov = register(Settings.floatBuilder("FOV").withValue(90f).withRange(0f, 180f).withVisibility { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
+    private val priority = register(Settings.enumBuilder(TargetPriority::class.java, "Priority").withValue(TargetPriority.DISTANCE).withVisibility { page.value == Page.TARGETING })
+    private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.TARGETING })
+    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
+    private val teammates = register(Settings.booleanBuilder("Teammates").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
+    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
+    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.TARGETING })
+    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.TARGETING })
+    private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).withVisibility { page.value == Page.TARGETING })
+    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).withVisibility { page.value == Page.TARGETING })
+
+    /* In Combat */
+    private val pauseForDigging = register(Settings.booleanBuilder("PauseForDigging").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
+    private val pauseForEating = register(Settings.booleanBuilder("PauseForEating").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
+    private val ignoreOffhandEating = register(Settings.booleanBuilder("IgnoreOffhandEating").withValue(true).withVisibility { page.value == Page.IN_COMBAT && pauseForEating.value })
+    private val pauseBaritone = register(Settings.booleanBuilder("PauseBaritone").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
+    private val resumeDelay = register(Settings.integerBuilder("ResumeDelay").withRange(1, 10).withValue(3).withVisibility { page.value == Page.IN_COMBAT && pauseBaritone.value })
+
+    /* Render */
+    private val renderPredictedPos = register(Settings.booleanBuilder("RenderPredictedPosition").withValue(false).withVisibility { page.value == Page.RENDER })
+    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.RENDER && renderPredictedPos.value })
+    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.RENDER && renderPredictedPos.value && !pingSync.value })
+
+    private enum class Page {
+        TARGETING, IN_COMBAT, RENDER
+    }
 
     private enum class TargetFilter {
         ALL, FOV, MANUAL
@@ -52,10 +73,14 @@ object CombatSetting : Module() {
     }
 
     private var overrideRange = range.value
+    private var paused = false
+    private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    val pause
+        get() = pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
+                || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.getItem() is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
 
-    override fun onDisable() {
-        enable()
-    }
+
+    override fun isActive() = Aura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
 
     override fun onRender() {
         if (!renderPredictedPos.value) return
@@ -76,17 +101,21 @@ object CombatSetting : Module() {
     }
 
     override fun onUpdate() {
-        if (isDisabled) enable()
-        updateRange()
+        with(CombatManager.getTopModule()) {
+            overrideRange = if (this is Aura) this.range.value else range.value
+        }
+
         getTargetList().let {
             CombatManager.targetList = it
             CombatManager.target = getTarget(it)
         }
-    }
-
-    private fun updateRange() {
-        val topModule = CombatManager.getTopModule()
-        overrideRange = if (topModule is Aura) topModule.getRange() else range.value
+        if (pauseBaritone.value && !paused && isActive()) {
+            BaritoneUtils.pause()
+            paused = true
+        } else if (paused && resumeTimer.tick(resumeDelay.value.toLong())) {
+            BaritoneUtils.unpause()
+            paused = false
+        }
     }
 
     private fun getTargetList(): LinkedList<EntityLivingBase> {
@@ -141,6 +170,8 @@ object CombatSetting : Module() {
                 val sightEndPos = eyePos.add(lookVec)
                 listIn.removeIf { it.boundingBox.calculateIntercept(eyePos, sightEndPos) == null }
             }
+
+            else -> { }
         }
         return listIn
     }

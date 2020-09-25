@@ -70,7 +70,7 @@ object BedAura : Module() {
 
     @EventHandler
     private val postSendListener = Listener(EventHook { event: PacketEvent.PostSend ->
-        if (!CombatManager.isOnTopPriority(this) || event.packet !is CPacketPlayer || state == State.NONE) return@EventHook
+        if (!CombatManager.isOnTopPriority(this) || event.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@EventHook
         val hand = getBedHand() ?: EnumHand.MAIN_HAND
         val facing = if (state == State.PLACE) EnumFacing.UP else BlockUtils.getHitSide(clickPos)
         val hitVecOffset = BlockUtils.getHitVecOffset(facing)
@@ -81,7 +81,7 @@ object BedAura : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this)) {
+        if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
             state = State.NONE
             resetRotation()
             inactiveTicks = 6
