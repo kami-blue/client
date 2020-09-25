@@ -48,7 +48,7 @@ object AutoOffhand : Module() {
     private val offhandGapple = register(Settings.booleanBuilder("OffhandGapple").withValue(true).withVisibility { type.value == Type.GAPPLE })
     private val checkAura = register(Settings.booleanBuilder("CheckAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkWeapon = register(Settings.booleanBuilder("CheckWeapon").withValue(false).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkCAGapple = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.CRYSTAL && !offhandCrystal.value && offhandCrystal.value })
+    private val checkCAGapple = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
 
     // Crystal
     private val offhandCrystal = register(Settings.booleanBuilder("OffhandCrystal").withValue(false).withVisibility { type.value == Type.CRYSTAL })
