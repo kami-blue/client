@@ -89,7 +89,7 @@ object Scaffold : Module() {
         setSlotToBlocks(belowBlockPos)
 
         /* check if we don't have a block adjacent to the blockPos */
-        if (!BlockUtils.checkForNeighbours(blockPos)) return
+        if (BlockUtils.getNeighbour(blockPos, maxAttempt = 1) == null) return
 
         /* place the block */
         if (placeBlocks.value) BlockUtils.placeBlockScaffold(blockPos)

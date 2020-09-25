@@ -20,7 +20,6 @@ import kotlin.math.sqrt
  * Updated by Xiaro on 22/08/20
  */
 object BlockUtils {
-    @JvmField
     val blackList = listOf(
             Blocks.ENDER_CHEST,
             Blocks.CHEST,
@@ -35,7 +34,6 @@ object BlockUtils {
             Blocks.ENCHANTING_TABLE
     )
 
-    @JvmField
     val shulkerList = listOf(
             Blocks.WHITE_SHULKER_BOX,
             Blocks.ORANGE_SHULKER_BOX,
@@ -54,6 +52,7 @@ object BlockUtils {
             Blocks.RED_SHULKER_BOX,
             Blocks.BLACK_SHULKER_BOX
     )
+
     private val mc = Minecraft.getMinecraft()
 
     fun placeBlockScaffold(pos: BlockPos) {
@@ -65,9 +64,8 @@ object BlockUtils {
             val side2 = side.opposite
 
             // check if neighbor can be right clicked
-            if (!canBeClicked(neighbor)) {
-                continue
-            }
+            if (!isPlaceable(neighbor)) continue
+
             val hitVec = Vec3d(neighbor).add(0.5, 0.5, 0.5)
                     .add(Vec3d(side2.directionVec).scale(0.5))
 
@@ -85,60 +83,15 @@ object BlockUtils {
         }
     }
 
-    private fun getLegitRotations(vec: Vec3d): FloatArray {
-        val eyesPos = eyesPos
-        val diffX = vec.x - eyesPos.x
-        val diffY = vec.y - eyesPos.y
-        val diffZ = vec.z - eyesPos.z
-        val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-        val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90f
-        val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
-        return floatArrayOf(mc.player.rotationYaw
-                + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw),
-                mc.player.rotationPitch + MathHelper
-                        .wrapDegrees(pitch - mc.player.rotationPitch))
-    }
-
-    private val eyesPos = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ)
-
     @JvmStatic
     fun faceVectorPacketInstant(vec: Vec3d) {
-        val rotations = getLegitRotations(vec)
-        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0],
-                rotations[1], mc.player.onGround))
+        val rotation = RotationUtils.getRotationTo(vec, true)
+        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround))
     }
 
     private fun processRightClickBlock(pos: BlockPos, side: EnumFacing, hitVec: Vec3d) {
         mc.playerController.processRightClickBlock(mc.player,
                 mc.world, pos, side, hitVec, EnumHand.MAIN_HAND)
-    }
-
-    @JvmStatic
-    fun canBeClicked(pos: BlockPos): Boolean {
-        return getBlock(pos).canCollideCheck(getState(pos), false)
-    }
-
-    private fun getBlock(pos: BlockPos): Block {
-        return getState(pos).block
-    }
-
-    private fun getState(pos: BlockPos): IBlockState {
-        return mc.world.getBlockState(pos)
-    }
-
-    fun checkForNeighbours(blockPos: BlockPos): Boolean {
-        // check if we don't have a block adjacent to blockpos
-        if (!hasNeighbour(blockPos)) {
-            // find air adjacent to blockpos that does have a block adjacent to it, let's fill this first as to form a bridge between the player and the original blockpos. necessary if the player is going diagonal.
-            for (side in EnumFacing.values()) {
-                val neighbour = blockPos.offset(side)
-                if (hasNeighbour(neighbour)) {
-                    return true
-                }
-            }
-            return false
-        }
-        return true
     }
 
     fun hasNeighbour(blockPos: BlockPos): Boolean {
@@ -154,8 +107,8 @@ object BlockUtils {
     fun getNeighbour(blockPos: BlockPos, maxAttempt: Int = 3, attempt: Int = 0): Pair<EnumFacing, BlockPos>? {
         for (side in EnumFacing.values()) {
             val neighbour = blockPos.offset(side)
-            if (mc.world.getBlockState(neighbour).material.isReplaceable) continue
-            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(neighbour))) continue
+            if (!isPlaceable(neighbour)) continue
+            if (!hasNeighbour(neighbour)) continue
             return Pair(side.opposite, neighbour)
         }
         if (attempt < maxAttempt) {
@@ -222,16 +175,7 @@ object BlockUtils {
      *
      * @return true playing is not colliding with [pos] and there is block below it
      */
-    fun isPlaceable(pos: BlockPos): Boolean {
-        val bBox = mc.player.boundingBox
-        val xArray = arrayOf(floor(bBox.minX).toInt(), floor(bBox.maxX).toInt())
-        val yArray = arrayOf(floor(bBox.minY).toInt(), floor(bBox.maxY).toInt())
-        val zArray = arrayOf(floor(bBox.minZ).toInt(), floor(bBox.maxZ).toInt())
-        for (x in 0..1) for (y in 0..1) for (z in 0..1) {
-            if (pos == BlockPos(xArray[x], yArray[y], zArray[z])) return false
-        }
-        return mc.world.isAirBlock(pos) && !mc.world.isAirBlock(pos.down())
-    }
+    fun isPlaceable(pos: BlockPos) = mc.world.getBlockState(pos).material.isReplaceable && mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
 
     /**
      * Checks if given [pos] is able to chest (air above) block in it
@@ -239,7 +183,7 @@ object BlockUtils {
      * @return true playing is not colliding with [pos] and there is block below it
      */
     fun isPlaceableForChest(pos: BlockPos): Boolean {
-        return isPlaceable(pos) && mc.world.isAirBlock(pos.up())
+        return isPlaceable(pos) && !mc.world.getBlockState(pos.down()).material.isReplaceable && mc.world.isAirBlock(pos.up())
     }
 
     /**
