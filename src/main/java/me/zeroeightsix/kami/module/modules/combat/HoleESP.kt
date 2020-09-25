@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.modules.render
+package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Module.Info(
         name = "HoleESP",
-        category = Module.Category.RENDER,
+        category = Module.Category.COMBAT,
         description = "Show safe holes for crystal pvp"
 )
 object HoleESP : Module() {

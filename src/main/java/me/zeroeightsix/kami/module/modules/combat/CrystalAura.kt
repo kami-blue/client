@@ -38,8 +38,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 
 @Module.Info(
-        name = "CrystalAuraRewrite",
-        description = "A reborn of the CrystalAura",
+        name = "CrystalAura",
+        description = "Places End Crystals to kill enemies",
         category = Module.Category.COMBAT,
         modulePriority = 80
 )

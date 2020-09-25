@@ -1,6 +1,7 @@
-package me.zeroeightsix.kami.module.modules.movement
+package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
@@ -13,7 +14,7 @@ import kotlin.math.*
 @Module.Info(
         name = "HoleSnap",
         description = "Move you into the hole nearby",
-        category = Module.Category.MOVEMENT
+        category = Module.Category.COMBAT
 )
 object HoleSnap : Module() {
     private val disableStrafe = register(Settings.b("DisableStrafe",true))
