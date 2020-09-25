@@ -16,11 +16,6 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 27/08/20
- */
 object PlayerPacketManager : Manager() {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */

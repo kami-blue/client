@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -58,7 +57,7 @@ object Nametags : Module() {
     private val line1center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Center").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
     private val line1right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Right").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
     private val line2left = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Left").withValue(ContentType.NAME).withVisibility { page.value == Page.CONTENT })
-    private val line2center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2enter").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
+    private val line2center = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Center").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
     private val line2right = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line2Right").withValue(ContentType.TOTAL_HP).withVisibility { page.value == Page.CONTENT })
     private val dropItemCount = register(Settings.booleanBuilder("DropItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
     private val maxDropItems = register(Settings.integerBuilder("MaxDropItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
@@ -76,6 +75,7 @@ object Nametags : Module() {
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
+    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
@@ -128,12 +128,10 @@ object Nametags : Module() {
     private val itemMap = TreeSet<ItemGroup>(compareByDescending { mc.player.getPositionEyes(1f).distanceTo(it.getCenter(1f)) })
 
     private var updateTick = 0
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
     override fun onRender() {
         if (entityMap.isEmpty() && itemMap.isEmpty()) return
         GlStateUtils.rescaleActual()
-        GlStateUtils.depth(false)
         val camPos = getCamPos()
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         for ((entity, textComponent) in entityMap) {
@@ -141,7 +139,7 @@ object Nametags : Module() {
             val screenPos = ProjectionUtils.toScreenPos(pos)
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, textComponent)
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, nameFrame.value, textComponent)
             drawItems(screenPos, (scale.value * 2f) * distFactor, vertexHelper, entity, textComponent)
         }
         for (itemGroup in itemMap) {
@@ -149,9 +147,8 @@ object Nametags : Module() {
             val screenPos = ProjectionUtils.toScreenPos(pos)
             val dist = camPos.distanceTo(pos).toFloat() * 0.2f
             val distFactor = if (distScaleFactor.value == 0f) 1f else max(1f / (dist * distScaleFactor.value + 1f), minDistScale.value)
-            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, itemGroup.textComponent)
+            drawNametag(screenPos, (scale.value * 2f) * distFactor, vertexHelper, dropItemFrame.value, itemGroup.textComponent)
         }
-        GlStateUtils.depth(true)
         GlStateUtils.rescaleMc()
     }
 
@@ -160,13 +157,13 @@ object Nametags : Module() {
                 ?: mc.player, KamiTessellator.pTicks()).add(ActiveRenderInfo.getCameraPosition())
     }
 
-    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, textComponent: TextComponent) {
+    private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
         glPushMatrix()
         glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
         glScalef(scale, scale, 1f)
         val halfWidth = textComponent.getWidth() / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
-        if (nameFrame.value) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
+        if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
         textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
         textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
         glPopMatrix()
@@ -203,7 +200,7 @@ object Nametags : Module() {
 
         if (itemFrame.value) {
             glTranslatef(0f, -margins.value, 0f)
-            val duraHeight = if (drawDura) mc.fontRenderer.FONT_HEIGHT / 2f + 2f else 0f
+            val duraHeight = if (drawDura) mc.fontRenderer.FONT_HEIGHT + 2f else 0f
             val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(3) }.max() ?: 0) + 4 else 0
             val height = 16 + duraHeight + enchantmentHeight / 2f
             val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
@@ -212,7 +209,7 @@ object Nametags : Module() {
         }
 
         glTranslatef(-halfWidth + 4f, -16f, 0f)
-        if (drawDura) glTranslatef(0f, mc.fontRenderer.FONT_HEIGHT / -2f - 2f, 0f)
+        if (drawDura) glTranslatef(0f, -mc.fontRenderer.FONT_HEIGHT - 2f, 0f)
         RenderHelper.enableGUIStandardItemLighting()
 
         for ((itemStack, enchantmentText) in itemList) {
@@ -224,15 +221,11 @@ object Nametags : Module() {
             glColor4f(1f, 1f, 1f, 1f)
 
             if (drawDura && itemStack.isItemStackDamageable) {
-                glPushMatrix()
-                glTranslatef(8f, 17f, 0f)
-                glScalef(0.5f, 0.5f, 1f)
                 val duraPercentage = 100f - (itemStack.itemDamage.toFloat() / itemStack.maxDamage.toFloat()) * 100f
                 val color = healthColorGradient.get(duraPercentage).toHex()
                 val text = duraPercentage.roundToInt().toString()
                 val textWidth = mc.fontRenderer.getStringWidth(text)
-                mc.fontRenderer.drawString(text, -round(textWidth / 2f), 0f, color, textShadow.value)
-                glPopMatrix()
+                mc.fontRenderer.drawString(text, 8f - round(textWidth / 2f), 17f, color, textShadow.value)
             }
 
             if (count.value && itemStack.count > 1) {

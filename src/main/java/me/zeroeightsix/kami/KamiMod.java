@@ -7,7 +7,7 @@ import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
-import me.zeroeightsix.kami.emoji.KamiMoji;
+import me.zeroeightsix.kami.manager.mangers.KamiMojiManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.manager.ManagerLoader;
@@ -70,8 +70,6 @@ public class KamiMod {
 
     public static final EventBus EVENT_BUS = new EventManager();
 
-    public static final KamiMoji KAMIMOJI = new KamiMoji();
-
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
@@ -102,9 +100,6 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        log.info("Initialising KamiMoji...");
-        KAMIMOJI.start();
-
         if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
@@ -117,7 +112,7 @@ public class KamiMod {
         ModuleManager.load();
         ManagerLoader.load();
 
-        MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
+        MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
         guiManager = new KamiGUI();
         guiManager.initializeGUI();

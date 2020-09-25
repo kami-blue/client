@@ -4,14 +4,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Friends
 import java.io.*
 
-/**
- * @author Xiaro
- * Created by Xiaro on 26/08/20
- */
-object FriendManager {
+object FriendManager : Manager() {
     var friendFile = FriendFile()
 
     private val gson = GsonBuilder().setPrettyPrinting().create()

@@ -8,9 +8,6 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-/**
- * @author dominikaaaa
- */
 object FileInstanceManager : Manager() {
     /**
      * Map of all the macros.

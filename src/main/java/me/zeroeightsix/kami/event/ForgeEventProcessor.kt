@@ -2,10 +2,7 @@ package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.commands.PeekCommand
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.DisplaySizeChangedEvent
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
@@ -16,19 +13,13 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDamageEvent
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
-import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.world.ChunkEvent
-import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -36,29 +27,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
 
-/**
- * Created by 086 on 11/11/2017.
- * Updated by Qther on 18/02/20
- * Updated by dominikaaaa on 18/02/20
- * Updated by Xiaro on 10/09/20
- */
-class ForgeEventProcessor {
+object ForgeEventProcessor {
     private val mc = Wrapper.minecraft
     private var displayWidth = 0
     private var displayHeight = 0
 
     @SubscribeEvent
-    fun onUpdate(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.world != null && event.entity.entityWorld.isRemote && event.entityLiving == mc.player) {
-            val localPlayerUpdateEvent: Event = LocalPlayerUpdateEvent(event.entityLiving)
-            KamiMod.EVENT_BUS.post(localPlayerUpdateEvent)
-            event.isCanceled = localPlayerUpdateEvent.isCanceled
-        }
-
-        if (event.isCanceled) return
-
+    fun onTick(event: TickEvent.ClientTickEvent) {
         if (mc.displayWidth != displayWidth || mc.displayHeight != displayHeight) {
-            KamiMod.EVENT_BUS.post(DisplaySizeChangedEvent())
             displayWidth = mc.displayWidth
             displayHeight = mc.displayHeight
             for (component in KamiMod.getInstance().guiManager.children) {
@@ -67,19 +43,6 @@ class ForgeEventProcessor {
             }
         }
 
-        if (PeekCommand.sb != null) {
-            val scaledResolution = ScaledResolution(mc)
-            val scaledWidth = scaledResolution.scaledWidth
-            val scaledHeight = scaledResolution.scaledHeight
-            val gui = GuiShulkerBox(mc.player!!.inventory, PeekCommand.sb)
-            gui.setWorldAndResolution(mc, scaledWidth, scaledHeight)
-            mc.displayGuiScreen(gui)
-            PeekCommand.sb = null
-        }
-    }
-
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
         if (mc.world == null || mc.player == null) return
 
         ModuleManager.onUpdate()
@@ -88,7 +51,6 @@ class ForgeEventProcessor {
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (event.isCanceled) return
         ProjectionUtils.updateMatrix()
         ModuleManager.onWorldRender(event)
     }
@@ -103,10 +65,9 @@ class ForgeEventProcessor {
     fun onRender(event: RenderGameOverlayEvent.Post) {
         KamiMod.EVENT_BUS.post(event)
         if (event.isCanceled) return
-        var target = RenderGameOverlayEvent.ElementType.EXPERIENCE
-        if (!mc.player.isCreative && mc.player!!.ridingEntity is AbstractHorse) {
-            target = RenderGameOverlayEvent.ElementType.HEALTHMOUNT
-        }
+
+        val target = if (!mc.player.isCreative && mc.player!!.ridingEntity is AbstractHorse) RenderGameOverlayEvent.ElementType.HEALTHMOUNT
+        else RenderGameOverlayEvent.ElementType.EXPERIENCE
 
         if (event.type == target) {
             ModuleManager.onRender()
@@ -121,7 +82,7 @@ class ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (CommandConfig.prefixChat.value && ("" + Keyboard.getEventCharacter()).equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
+        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
             mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
         } else {
             KamiMod.EVENT_BUS.post(event)
@@ -142,16 +103,6 @@ class ForgeEventProcessor {
             MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
         }
         event.message = ""
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onPlayerDrawn(event: RenderPlayerEvent.Pre) {
-        KamiMod.EVENT_BUS.post(event)
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onPlayerDrawn(event: RenderPlayerEvent.Post) {
-        KamiMod.EVENT_BUS.post(event)
     }
 
     @SubscribeEvent
@@ -175,18 +126,8 @@ class ForgeEventProcessor {
     }
 
     @SubscribeEvent
-    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Start) {
+    fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Tick) {
         KamiMod.EVENT_BUS.post(entityUseItemEvent)
-    }
-
-    @SubscribeEvent
-    fun onLivingDamageEvent(event: LivingDamageEvent) {
-        KamiMod.EVENT_BUS.post(event)
-    }
-
-    @SubscribeEvent
-    fun onEntityJoinWorldEvent(entityJoinWorldEvent: EntityJoinWorldEvent) {
-        KamiMod.EVENT_BUS.post(entityJoinWorldEvent)
     }
 
     @SubscribeEvent
@@ -227,10 +168,5 @@ class ForgeEventProcessor {
     @SubscribeEvent
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         KamiMod.EVENT_BUS.post(ConnectionEvent.Connect())
-    }
-
-    @SubscribeEvent
-    fun onLivingDamage(event: LivingDamageEvent) {
-        KamiMod.EVENT_BUS.post(event)
     }
 }

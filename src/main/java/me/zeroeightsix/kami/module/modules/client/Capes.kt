@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.modules.capes
+package me.zeroeightsix.kami.module.modules.client
 
 import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
