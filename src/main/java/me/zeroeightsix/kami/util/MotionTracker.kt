@@ -4,20 +4,16 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
 /**
- * @author Xiaro
- *
  * Tracking the motion of an Entity tick by tick
- *
- * Created by Xiaro on 04/09/20
  */
 class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     var target: Entity? = targetIn
@@ -32,7 +28,8 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     private var motion = Vec3d(0.0, 0.0, 0.0)
 
     @EventHandler
-    private val onUpdateListener = Listener(EventHook { event: LocalPlayerUpdateEvent ->
+    private val onUpdateListener = Listener(EventHook { event: TickEvent.ClientTickEvent ->
+        if (Wrapper.player == null || Wrapper.world == null) return@EventHook
         target?.let {
             motionLog.add(calcActualMotion(it))
             while (motionLog.size > trackLength) motionLog.pollFirst()

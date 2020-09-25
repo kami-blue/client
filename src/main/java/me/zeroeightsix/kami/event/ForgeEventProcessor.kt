@@ -34,6 +34,8 @@ object ForgeEventProcessor {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
+        KamiMod.EVENT_BUS.post(event)
+
         if (mc.displayWidth != displayWidth || mc.displayHeight != displayHeight) {
             displayWidth = mc.displayWidth
             displayHeight = mc.displayHeight
