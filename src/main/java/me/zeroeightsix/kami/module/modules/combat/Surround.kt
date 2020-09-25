@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -95,10 +94,7 @@ object Surround : Module() {
     override fun onUpdate() {
         if (isEnabled && holePos == null) holePos = mc.player.positionVector.toBlockPos()
         if (future?.isDone == false && future?.isCancelled == false) {
-            val slot = getObby()
-            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
-            val moving = autoCenter.value != AutoCenterMode.TP
-            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(sprinting = false, moving = moving, rotating = false))
+            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
         } else {
             PlayerPacketManager.resetHotbar()
         }
@@ -140,8 +136,7 @@ object Surround : Module() {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos), mc.player)) continue
-            if (!mc.world.getBlockState(pos).material.isReplaceable) continue
+            if (!BlockUtils.isPlaceable(pos)) continue
             return true
         }
         return false
@@ -203,10 +198,9 @@ object Surround : Module() {
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
             if (toIgnore.contains(pos)) continue
-            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos))) continue
-            if (!mc.world.getBlockState(pos).material.isReplaceable) continue
+            if (!BlockUtils.isPlaceable(pos)) continue
             if (BlockUtils.hasNeighbour(pos)) return pos
-            if (!mc.world.checkNoEntityCollision(AxisAlignedBB(pos.down()))) continue
+            if (!BlockUtils.isPlaceable(pos.down())) continue
             if (!toIgnore.contains(pos.down())) return pos.down()
         }
         return null

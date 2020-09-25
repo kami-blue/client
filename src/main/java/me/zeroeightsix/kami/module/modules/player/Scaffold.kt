@@ -89,10 +89,10 @@ object Scaffold : Module() {
         setSlotToBlocks(belowBlockPos)
 
         /* check if we don't have a block adjacent to the blockPos */
-        if (BlockUtils.getNeighbour(blockPos, maxAttempt = 1) == null) return
+        val neighbor = BlockUtils.getNeighbour(blockPos, attempts = 1)?: return
 
         /* place the block */
-        if (placeBlocks.value) BlockUtils.placeBlockScaffold(blockPos)
+        if (placeBlocks.value) BlockUtils.placeBlock(neighbor.second, neighbor.first)
 
         /* Reset the slot */
         if (!holding) mc.player.inventory.currentItem = oldSlot
