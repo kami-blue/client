@@ -101,7 +101,7 @@ object AutoOffhand : Module() {
         maxDamage = 0f
         if (!checkDamage.value) return
         for (entity in mc.world.loadedEntityList) {
-            if (entity == mc.player) continue
+            if (entity.name == mc.player.name) continue
             if (entity !is EntityMob && entity !is EntityPlayer && entity !is EntityEnderCrystal) continue
             if (mc.player.getDistance(entity) > 10f) continue
             if (mob.value && entity is EntityMob) {
@@ -121,9 +121,10 @@ object AutoOffhand : Module() {
 
     private fun checkGapple(): Boolean {
         val item = mc.player.heldItemMainhand.getItem()
-        return offhandGapple.value && checkAura.value && CombatManager.isActiveAndTopPriority(Aura)
+        return offhandGapple.value
+                && (checkAura.value && CombatManager.isActiveAndTopPriority(Aura)
                 || checkWeapon.value && (item is ItemSword || item is ItemAxe)
-                || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isActiveAndTopPriority(CrystalAura)
+                || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isActiveAndTopPriority(CrystalAura))
     }
 
     private fun checkCrystal() = offhandCrystal.value && checkCACrystal.value && CombatManager.isActiveAndTopPriority(CrystalAura)
