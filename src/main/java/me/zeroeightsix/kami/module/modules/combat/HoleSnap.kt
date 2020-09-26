@@ -24,10 +24,6 @@ object HoleSnap : Module() {
         if (mc.player == null) disable()
     }
 
-    override fun onDisable() {
-        mc.timer.tickLength = 50f
-    }
-
     override fun onUpdate() {
         if (SurroundUtils.checkHole(mc.player) != SurroundUtils.HoleType.NONE) {
             disable()
@@ -35,7 +31,6 @@ object HoleSnap : Module() {
         }
         findHole()?.toVec3d()?.let {
             if (disableStrafe.value) Strafe.disable()
-            mc.timer.tickLength = 30f
             if (mc.player.onGround) {
                 val yawRad = Math.toRadians(RotationUtils.getRotationTo(mc.player.positionVector, it).x)
                 val speed = min(0.25, mc.player.positionVector.distanceTo(it) / 4.0)
@@ -43,8 +38,6 @@ object HoleSnap : Module() {
                 mc.player.motionZ = cos(yawRad) * speed
             }
             if (mc.player.motionY <= 0.01) mc.player.motionY = -0.5
-        } ?: run {
-            mc.timer.tickLength = 50f
         }
     }
 
