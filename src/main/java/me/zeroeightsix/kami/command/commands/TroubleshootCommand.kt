@@ -21,18 +21,10 @@ class TroubleshootCommand : Command("troubleshoot", null, "tsc") {
         val liteLoader = if (FMLCommonHandler.instance().modName.contains("LiteLoader")) "LiteLoader: YES" else "LiteLoader: NO"
         val modInfoStr = arrayListOf<String>()
         val mods = getModules()
-        val minifyOutput = args.size > 1
 
         mods.forEach {
             if (it.isDisabled) return
             enabled += "${it.name}, "
-        }
-
-        enabled = enabled.substring(0, enabled.length - 2) // remove trailing ", "
-
-        if (minifyOutput) {
-            sendChatMessage("Enabled modules:\n${TextFormatting.GRAY}$enabled")
-            return
         }
 
         if (Loader.instance().activeModList.size > 5) { //the 5 always active mods are listed a couple lines down
