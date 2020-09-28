@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-import kotlin.math.pow
 
 @Module.Info(
         name = "AutoTrap",
@@ -38,13 +37,25 @@ object AutoTrap : Module() {
     }
 
     override fun onUpdate() {
-        if (future?.isDone != false && (CombatManager.target != null || selfTrap.value) && getPlacingPos(emptyList()) != null) future = threadPool.submit(placeThread)
+        if (future?.isDone != false && isPlaceable()) future = threadPool.submit(placeThread)
 
         if (future?.isDone == false && future?.isCancelled == false) {
+            val slot = getObby()
+            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
         } else if (CombatManager.isOnTopPriority(this)) {
             PlayerPacketManager.resetHotbar()
         }
+    }
+
+    private fun isPlaceable(): Boolean {
+        (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
+            for (offset in trapMode.value.offset) {
+                if (!BlockUtils.isPlaceable(it.add(offset))) continue
+                return true
+            }
+        }
+        return false
     }
 
     private fun getObby(): Int {
@@ -58,36 +69,15 @@ object AutoTrap : Module() {
     }
 
     private fun runAutoTrap() {
-        val slot = getObby()
-        if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
-        val placed = ArrayList<BlockPos>()
-        var placeCount = 0
-        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlacingPos(emptyList()) != null) {
-            while (isEnabled && CombatManager.isOnTopPriority(this)) {
-                val pos = getPlacingPos(placed) ?: break
-                val neighbor = BlockUtils.getNeighbour(pos, 2) ?: break
-                placeCount++
-                placed.add(neighbor.second.offset(neighbor.first))
-                BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
-                if (placeCount >= 4) break
+        BlockUtils.buildStructure(placeSpeed.value) {
+            if (isEnabled && CombatManager.isOnTopPriority(this))  {
+                val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
+                BlockUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
+            } else {
+                null
             }
-            Thread.sleep(100L)
-            placeCount = 0
-            placed.clear()
         }
         if (autoDisable.value) disable()
-    }
-
-    private fun getPlacingPos(toIgnore: List<BlockPos>): BlockPos? {
-        (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
-            for (offset in trapMode.value.offset) {
-                val pos = it.add(offset)
-                if (toIgnore.contains(pos)) continue
-                if (!BlockUtils.isPlaceable(pos)) continue
-                return pos
-            }
-        }
-        return null
     }
 
     @Suppress("UNUSED")

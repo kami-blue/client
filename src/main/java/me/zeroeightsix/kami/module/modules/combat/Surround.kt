@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -93,8 +94,10 @@ object Surround : Module() {
     }
 
     override fun onUpdate() {
-        if (isEnabled && holePos == null) holePos = mc.player.positionVector.toBlockPos()
+        if (isEnabled && holePos == null && centerPlayer()) holePos = mc.player.positionVector.toBlockPos()
         if (future?.isDone == false && future?.isCancelled == false) {
+            val slot = getObby()
+            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
         } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
             PlayerPacketManager.resetHotbar()
@@ -152,7 +155,8 @@ object Surround : Module() {
                 Strafe.disable()
             }
             val centerDiff = getCenterDiff()
-            if (!isCentered()) {
+            val centered = isCentered()
+            if (!centered) {
                 mc.player.setVelocity(0.0, -5.0, 0.0)
                 if (autoCenter.value == AutoCenterMode.TP) {
                     val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.2, 0.2)
@@ -163,7 +167,7 @@ object Surround : Module() {
                     mc.player.motionZ = MathHelper.clamp(centerDiff.z / 2.0, -0.2, 0.2)
                 }
             }
-            isCentered()
+            centered
         }
     }
 
@@ -180,34 +184,40 @@ object Surround : Module() {
     }
 
     private fun runSurround() {
-        val slot = getObby()
-        if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
-        val placed = ArrayList<BlockPos>()
+        BlockUtils.buildStructure(placeSpeed.value) {
+            if (isEnabled && CombatManager.isOnTopPriority(this)) {
+                BlockUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
+            } else {
+                null
+            }
+        }
+
+        /*val placed = ArrayList<BlockPos>()
         var placeCount = 0
-        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlacingPos(emptyList()) != null) {
+        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlaceInfo(emptyList()) != null) {
             while (isEnabled && CombatManager.isOnTopPriority(this)) {
-                val pos = getPlacingPos(placed) ?: break
-                val neighbor = BlockUtils.getNeighbour(pos, 1) ?: break
+                val placingInfo = getPlaceInfo(placed) ?: break
                 placeCount++
-                placed.add(pos)
-                BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
+                placed.add(placingInfo.second.offset(placingInfo.first))
+                BlockUtils.doPlace(placingInfo.second, placingInfo.first, placeSpeed.value)
                 if (placeCount >= 4) break
             }
             Thread.sleep(100L)
             placeCount = 0
             placed.clear()
-        }
+        }*/
     }
 
-    private fun getPlacingPos(toIgnore: List<BlockPos>): BlockPos? {
+    private fun getPlaceInfo(toIgnore: List<BlockPos>, attempts: Int = 1): Pair<EnumFacing, BlockPos>? {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
             if (toIgnore.contains(pos)) continue
             if (!BlockUtils.isPlaceable(pos)) continue
-            if (BlockUtils.hasNeighbour(pos)) return pos
-            if (!BlockUtils.isPlaceable(pos.down())) continue
-            if (!toIgnore.contains(pos.down())) return pos.down()
+            return BlockUtils.getNeighbour(pos, attempts) ?: continue
+        }
+        if (attempts <= 2) {
+            return getPlaceInfo(toIgnore, attempts + 1)
         }
         return null
     }

@@ -1,16 +1,17 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.*
+import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.Vec3d
 import kotlin.math.floor
-import kotlin.math.pow
 
 /**
  * Created by hub on 15/06/19
@@ -79,25 +80,6 @@ object BlockUtils {
         return false
     }
 
-    fun getNeighbour(blockPos: BlockPos, attempts: Int = 3, range: Float = 4.25f, checked: HashSet<BlockPos> = HashSet()): Pair<EnumFacing, BlockPos>? {
-        for (side in EnumFacing.values()) {
-            val pos = blockPos.offset(side)
-            if (!checked.add(pos)) continue
-            if (mc.world.getBlockState(pos).material.isReplaceable) continue
-            if (mc.player.getPositionEyes(1f).distanceTo(Vec3d(pos).add(getHitVecOffset(side))) > range) continue
-            return Pair(side.opposite, pos)
-        }
-        if (attempts > 1) {
-            checked.add(blockPos)
-            for (side in EnumFacing.values()) {
-                val pos = blockPos.offset(side)
-                if (!isPlaceable(pos)) continue
-                return getNeighbour(pos, attempts - 1, range, checked)?: continue
-            }
-        }
-        return null
-    }
-
     fun getHitSide(blockPos: BlockPos): EnumFacing {
         return rayTraceTo(blockPos)?.sideHit ?: EnumFacing.UP
     }
@@ -163,6 +145,55 @@ object BlockUtils {
      */
     fun isPlaceableForChest(pos: BlockPos): Boolean {
         return isPlaceable(pos) && !mc.world.getBlockState(pos.down()).material.isReplaceable && mc.world.isAirBlock(pos.up())
+    }
+
+    fun buildStructure(placeSpeed: Float, getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?) {
+        val emptyHashSet = HashSet<BlockPos>()
+        val placed = HashSet<BlockPos>()
+        var placeCount = 0
+        while (getPlaceInfo(emptyHashSet) != null) {
+            val placingInfo = getPlaceInfo(placed) ?: getPlaceInfo(emptyHashSet)?: break
+            placeCount++
+            placed.add(placingInfo.second.offset(placingInfo.first))
+            doPlace(placingInfo.second, placingInfo.first, placeSpeed)
+            if (placeCount >= 4) {
+                Thread.sleep(100L)
+                placeCount = 0
+                placed.clear()
+            }
+        }
+    }
+
+    fun getPlaceInfo(center: BlockPos?, structureOffset: Array<BlockPos>, toIgnore: HashSet<BlockPos>, maxAttempts: Int, attempts: Int = 1): Pair<EnumFacing, BlockPos>? {
+        center?.let {
+            for (offset in structureOffset) {
+                val pos = it.add(offset)
+                if (toIgnore.contains(pos)) continue
+                if (!isPlaceable(pos)) continue
+                return getNeighbour(pos, attempts) ?: continue
+            }
+            if (attempts <= maxAttempts) return getPlaceInfo(it, structureOffset, toIgnore, maxAttempts, attempts + 1)
+        }
+        return null
+    }
+
+    fun getNeighbour(blockPos: BlockPos, attempts: Int = 3, range: Float = 4.25f, toIgnore: HashSet<BlockPos> = HashSet()): Pair<EnumFacing, BlockPos>? {
+        for (side in EnumFacing.values()) {
+            val pos = blockPos.offset(side)
+            if (!toIgnore.add(pos)) continue
+            if (mc.world.getBlockState(pos).material.isReplaceable) continue
+            if (mc.player.getPositionEyes(1f).distanceTo(Vec3d(pos).add(getHitVecOffset(side))) > range) continue
+            return Pair(side.opposite, pos)
+        }
+        if (attempts > 1) {
+            toIgnore.add(blockPos)
+            for (side in EnumFacing.values()) {
+                val pos = blockPos.offset(side)
+                if (!isPlaceable(pos)) continue
+                return getNeighbour(pos, attempts - 1, range, toIgnore) ?: continue
+            }
+        }
+        return null
     }
 
     /**
