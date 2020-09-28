@@ -93,7 +93,6 @@ object ModuleManager {
         for (module in moduleList) {
             if (isModuleListening(module)) {
                 module.onRender()
-                GlStateUtils.blend(true)
             }
         }
     }
