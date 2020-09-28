@@ -42,7 +42,7 @@ object AutoTrap : Module() {
 
         if (future?.isDone == false && future?.isCancelled == false) {
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
-        } else {
+        } else if (CombatManager.isOnTopPriority(this)) {
             PlayerPacketManager.resetHotbar()
         }
     }
@@ -62,16 +62,20 @@ object AutoTrap : Module() {
         if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
         val placed = ArrayList<BlockPos>()
         var placeCount = 0
-        while (isEnabled) {
-            val pos = getPlacingPos(placed) ?: break
-            val neighbor = BlockUtils.getNeighbour(pos, 2) ?: break
-            placeCount++
-            placed.add(neighbor.second.offset(neighbor.first))
-            println("${neighbor.first} ,${neighbor.second}")
-            BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
-            if (placeCount >= 4) Thread.sleep(50L)
+        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlacingPos(emptyList()) != null) {
+            while (isEnabled && CombatManager.isOnTopPriority(this)) {
+                val pos = getPlacingPos(placed) ?: break
+                val neighbor = BlockUtils.getNeighbour(pos, 2) ?: break
+                placeCount++
+                placed.add(neighbor.second.offset(neighbor.first))
+                BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
+                if (placeCount >= 4) break
+            }
+            Thread.sleep(100L)
+            placeCount = 0
+            placed.clear()
         }
-        disable()
+        if (autoDisable.value) disable()
     }
 
     private fun getPlacingPos(toIgnore: List<BlockPos>): BlockPos? {

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
@@ -95,7 +96,7 @@ object Surround : Module() {
         if (isEnabled && holePos == null) holePos = mc.player.positionVector.toBlockPos()
         if (future?.isDone == false && future?.isCancelled == false) {
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
-        } else {
+        } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
             PlayerPacketManager.resetHotbar()
         }
     }
@@ -183,17 +184,22 @@ object Surround : Module() {
         if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
         val placed = ArrayList<BlockPos>()
         var placeCount = 0
-        while (isEnabled) {
-            val pos = getPlacingPos(placed) ?: break
-            val neighbor = BlockUtils.getNeighbour(pos, 1) ?: break
-            placeCount++
-            placed.add(pos)
-            BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
-            if (placeCount >= 4) Thread.sleep(50L)
+        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlacingPos(emptyList()) != null) {
+            while (isEnabled && CombatManager.isOnTopPriority(this)) {
+                val pos = getPlacingPos(placed) ?: break
+                val neighbor = BlockUtils.getNeighbour(pos, 1) ?: break
+                placeCount++
+                placed.add(pos)
+                BlockUtils.doPlace(neighbor.second, neighbor.first, placeSpeed.value)
+                if (placeCount >= 4) break
+            }
+            Thread.sleep(100L)
+            placeCount = 0
+            placed.clear()
         }
     }
 
-    private fun getPlacingPos(toIgnore: ArrayList<BlockPos>): BlockPos? {
+    private fun getPlacingPos(toIgnore: List<BlockPos>): BlockPos? {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
