@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util.math
 
 import me.zeroeightsix.kami.util.math.RotationUtils.normalizeAngle
 import net.minecraft.client.Minecraft
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.BlockPos
 import kotlin.math.*
 
@@ -48,22 +49,22 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun getPlayerCardinal(mc: Minecraft): Cardinal {
-        return if (isBetween(-22.5, 22.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+    fun getPlayerCardinal(player: EntityPlayer): Cardinal {
+        return if (isBetween(-22.5, 22.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.POS_Z
-        } else if (isBetween(22.6, 67.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(22.6, 67.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.NEG_X_POS_Z
-        } else if (isBetween(67.6, 112.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(67.6, 112.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.NEG_X
-        } else if (isBetween(112.6, 157.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(112.6, 157.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.NEG_X_NEG_Z
-        } else if (normalizeAngle(mc.player.rotationYaw.toDouble()) >= 157.6 || normalizeAngle(mc.player.rotationYaw.toDouble()) <= -157.5) {
+        } else if (normalizeAngle(player.rotationYaw.toDouble()) >= 157.6 || normalizeAngle(player.rotationYaw.toDouble()) <= -157.5) {
             Cardinal.NEG_Z
-        } else if (isBetween(-157.6, -112.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(-157.6, -112.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.POS_X_NEG_Z
-        } else if (isBetween(-112.5, -67.5, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(-112.5, -67.5, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.POS_X
-        } else if (isBetween(-67.6, -22.6, normalizeAngle(mc.player.rotationYaw.toDouble()))) {
+        } else if (isBetween(-67.6, -22.6, normalizeAngle(player.rotationYaw.toDouble()))) {
             Cardinal.POS_X_POS_Z
         } else {
             Cardinal.ERROR
@@ -71,8 +72,8 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun getPlayerMainCardinal(mc: Minecraft): CardinalMain {
-        return when (Character.toUpperCase(mc.player.horizontalFacing.toString()[0])) {
+    fun getPlayerMainCardinal(player: EntityPlayer): CardinalMain {
+        return when (Character.toUpperCase(player.horizontalFacing.toString()[0])) {
             'N' -> CardinalMain.NEG_Z
             'S' -> CardinalMain.POS_Z
             'E' -> CardinalMain.POS_X

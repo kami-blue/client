@@ -437,49 +437,52 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
-        coordsLabel.addTickListener(new TickListener() {
-            final Minecraft mc = Minecraft.getMinecraft();
-
-            @Override
-            public void onTick() {
-                boolean inHell = mc.player.dimension == -1;
-
-                int posX = (int) mc.player.posX;
-                int posY = (int) mc.player.posY;
-                int posZ = (int) mc.player.posZ;
-
-                float f = !inHell ? 0.125f : 8;
-                int hposX = (int) (mc.player.posX * f);
-                int hposZ = (int) (mc.player.posZ * f);
-
-                /* The 7 and f in the string formatter is the color */
-                String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
-                String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
-                        KamiMod.colour,
-                        posX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posZ,
-                        KamiMod.colour
-                );
-                String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
-                        KamiMod.colour,
-                        hposX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        hposZ,
-                        KamiMod.colour
-                );
-                coordsLabel.setText("");
-                coordsLabel.addLine(ow);
-                coordsLabel.addLine(MathUtils.getPlayerCardinal(mc).cardinalName + colouredSeparator + nether);
+        coordsLabel.addTickListener(() -> {
+            EntityPlayer player;
+            if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+                player = (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
+            } else {
+                player = Wrapper.getPlayer();
             }
+            if (player == null) return;
+
+            boolean inHell = player.dimension == -1;
+
+            int posX = (int) player.posX;
+            int posY = (int) player.posY;
+            int posZ = (int) player.posZ;
+
+            float f = !inHell ? 0.125f : 8;
+            int hposX = (int) (player.posX * f);
+            int hposZ = (int) (player.posZ * f);
+
+            /* The 7 and f in the string formatter is the color */
+            String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
+            String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
+                    KamiMod.colour,
+                    posX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posZ,
+                    KamiMod.colour
+            );
+            String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
+                    KamiMod.colour,
+                    hposX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    hposZ,
+                    KamiMod.colour
+            );
+            coordsLabel.setText("");
+            coordsLabel.addLine(ow);
+            coordsLabel.addLine(MathUtils.getPlayerCardinal(player).cardinalName + colouredSeparator + nether);
         });
         frame.addChild(coordsLabel);
         coordsLabel.setFontRenderer(fontRenderer);
