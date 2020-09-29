@@ -74,7 +74,7 @@ object AutoWalk : Module() {
             return
         }
 
-        when (MathUtils.getPlayerCardinal((mc.getRenderViewEntity() as? EntityPlayer?) ?: mc.player)) {
+        when (MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)) {
             Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
             Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
             Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
@@ -89,7 +89,7 @@ object AutoWalk : Module() {
             }
         }
 
-        direction = MathUtils.getPlayerCardinal((mc.getRenderViewEntity() as? EntityPlayer?) ?: mc.player).cardinalName
+        direction = MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player).cardinalName
     }
 
     override fun getHudInfo(): String {

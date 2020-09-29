@@ -34,7 +34,7 @@ object AutoTunnel : Module() {
         }
         if (AutoWalk.isEnabled) AutoWalk.disable()
 
-        startingDirection = getPlayerMainCardinal((mc.getRenderViewEntity() as? EntityPlayer?) ?: mc.player)
+        startingDirection = getPlayerMainCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)
         sendTunnel()
     }
 

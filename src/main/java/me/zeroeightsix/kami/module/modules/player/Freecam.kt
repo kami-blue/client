@@ -70,7 +70,7 @@ object Freecam : Module() {
     override fun onUpdate() {
         if (cameraGuy == null && mc.player.ticksExisted > 20) {
             // Create a cloned player
-            cameraGuy = CameraGuy(mc.player).also {
+            cameraGuy = FakeCamera(mc.player).also {
                 // Add it to the world
                 mc.world.addEntityToWorld(-6969420, it)
 
@@ -107,7 +107,7 @@ object Freecam : Module() {
         }
     }
 
-    private class CameraGuy(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
+    private class FakeCamera(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
         init {
             copyLocationAndAnglesFrom(mc.player)
             capabilities.allowFlying = true
