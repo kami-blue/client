@@ -12,14 +12,14 @@ import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
-import org.lwjgl.opengl.GL30.glGenerateMipmap
+import org.lwjgl.opengl.GL12.*
+import org.lwjgl.opengl.GL14.*
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import java.nio.ByteBuffer
 import kotlin.math.max
 
 /**
@@ -149,70 +149,42 @@ object KamiFontRenderer {
 
         private fun loadImage(image: BufferedImage): Int {
             return try {
-                GlStateUtils.blend(true)
                 val dynamicTexture = DynamicTexture(image)
                 dynamicTexture.loadTexture(Wrapper.minecraft.getResourceManager())
                 val textureId = dynamicTexture.glTextureId
 
-                TextureUtil.allocateTextureImpl(textureId, 4, image.width, image.height)
-                TextureUtil.uploadTextureImageSub(textureId, image, 0, 0, true, true)
-                //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-                //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-                //GlStateManager.tryBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-                glGenerateMipmap(GL_TEXTURE_2D)
-                //GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-                textureId
+                // Tells Gl that our texture isn't a repeating texture (edges are connecting to each others)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
 
-
-                /*val width = bufferedImage.width
-                val height = bufferedImage.height
-                val bpp = bufferedImage.colorModel.pixelSize
-                val byteBuffer: ByteBuffer
-                val db = bufferedImage.data.dataBuffer
-                if (db is DataBufferInt) {
-                    val intI = (bufferedImage.data.dataBuffer as DataBufferInt).data
-                    val newI = ByteArray(intI.size * 4)
-                    for (i in intI.indices) {
-                        val b = intToByteArray(intI[i])
-                        val newIndex = i * 4
-                        newI[newIndex] = b[1]
-                        newI[newIndex + 1] = b[2]
-                        newI[newIndex + 2] = b[3]
-                        newI[newIndex + 3] = b[0]
-                    }
-                    byteBuffer = ByteBuffer.allocateDirect(width * height * (bpp / 8)).order(ByteOrder.nativeOrder()).put(newI)
-                } else {
-                    byteBuffer = ByteBuffer.allocateDirect(
-                            width * height * (bpp / 8))
-                            .order(ByteOrder.nativeOrder())
-                            .put((bufferedImage.data.dataBuffer as DataBufferByte).data)
-                }
-                byteBuffer.flip()
-                val textureId = BufferUtils.createIntBuffer(1)
-
-                glGenTextures(textureId)
-                GlStateManager.bindTexture(textureId[0])
-                GlStateUtils.blend(true)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+                // Setup texture filters
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
                 glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST)
 
-                GLU.gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE, byteBuffer)
+                // Setup mipmap parameters
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 3)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3)
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0f)
+                GlStateManager.bindTexture(textureId)
 
-                return textureId[0]*/
+                // We only need 3 levels of mipmaps for 32 sized font
+                // 0: 64 x 64, 1: 32 x 32, 2: 16 x 16, 3: 8 x 8
+                for (mipmapLevel in 0..3) {
+                    // GL_ALPHA means that the texture is a grayscale texture (black & white and alpha only)
+                    glTexImage2D(GL_TEXTURE_2D, mipmapLevel, GL_ALPHA, image.width shr mipmapLevel, image.height shr mipmapLevel, 0, GL_ALPHA, GL_UNSIGNED_BYTE, null as ByteBuffer?)
+                }
+
+                glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1)
+                TextureUtil.uploadTextureImageSub(textureId, image, 0, 0, true, true)
+                textureId
             } catch (e: Exception) {
                 e.printStackTrace()
                 return -1
             }
         }
-
-        private fun uploadTextureImageAllocate(textureId: Int, texture: BufferedImage) {
-
-        }
-
-        private fun intToByteArray(value: Int) = byteArrayOf((value ushr 24).toByte(), (value ushr 16).toByte(), (value ushr 8).toByte(), value.toByte())
 
         inner class IntObject(
                 /** Character's width  */

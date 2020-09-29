@@ -62,7 +62,7 @@ object TextureTest : Module() {
         buffer.pos(448.0, 64.0, 0.0).tex(1.0, 1.0).endVertex()
         tessellator.draw()
 
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(256.0, 0.0), Vec2d(384.0, 128.0), color = ColorHolder(255, 0, 255))
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(384.0, 0.0), Vec2d(448.0, 64.0), color = ColorHolder(255, 0, 255))
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     }
