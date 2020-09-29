@@ -74,11 +74,15 @@ object Freecam : Module() {
                 // Add it to the world
                 mc.world.addEntityToWorld(-6969420, it)
 
+                // Set the render view entity to our camera guy
+                mc.setRenderViewEntity(it)
+
                 // Reset player movement input
                 resetInput = true
 
                 // Stores prev third person view setting
                 prevThirdPersonViewSetting = mc.gameSettings.thirdPersonView
+                mc.gameSettings.thirdPersonView = 0
             }
         }
 
@@ -111,9 +115,6 @@ object Freecam : Module() {
         }
 
         override fun onLivingUpdate() {
-            // Force the render view entity to be our camera guy
-            if (mc.renderViewEntity != this) mc.setRenderViewEntity(this)
-
             // Update inventory
             inventory.copyInventory(player.inventory)
 
