@@ -69,15 +69,6 @@ public class MixinEntityRenderer {
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
     }
 
-    //@Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z"))
-    //public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
-    //    // [WebringOfTheDamned]
-    //    // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
-    //    if (Freecam.INSTANCE.isEnabled())
-    //        return true;
-    //    return entityPlayerSP.isSpectator();
-    //}
-
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))
     public float getEyeHeight(Entity entity) {
         if (ElytraFlight.INSTANCE.shouldSwing()) {
