@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
@@ -15,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.min
@@ -28,6 +30,7 @@ import kotlin.math.sin
 object Freecam : Module() {
     private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
     private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
+    private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
 
     private var prevThirdPersonViewSetting = -1
     var cameraGuy: EntityPlayer? = null
@@ -78,9 +81,29 @@ object Freecam : Module() {
                 prevThirdPersonViewSetting = mc.gameSettings.thirdPersonView
             }
         }
+
+        if (arrowKeyMove.value && !BaritoneUtils.isPathing) {
+            cameraGuy?.let {
+                val forward = Keyboard.isKeyDown(Keyboard.KEY_UP) to Keyboard.isKeyDown(Keyboard.KEY_DOWN)
+                val strafe = Keyboard.isKeyDown(Keyboard.KEY_LEFT) to Keyboard.isKeyDown(Keyboard.KEY_RIGHT)
+                val movementInput = calcMovementInput(forward, strafe, false to false)
+
+                if (movementInput.first != 0f || movementInput.second != 0f) mc.player.rotationYaw = it.rotationYaw
+
+                mc.player.movementInput.moveForward = movementInput.first
+                mc.player.movementInput.moveStrafe = -movementInput.second
+
+                mc.player.movementInput.forwardKeyDown = forward.first
+                mc.player.movementInput.backKeyDown = forward.second
+                mc.player.movementInput.leftKeyDown = strafe.first
+                mc.player.movementInput.rightKeyDown = strafe.second
+
+                mc.player.movementInput.jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+            }
+        }
     }
 
-    private class CameraGuy(val player: EntityPlayerSP): EntityOtherPlayerMP(mc.world, mc.session.profile) {
+    private class CameraGuy(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
         init {
             copyLocationAndAnglesFrom(mc.player)
             capabilities.allowFlying = true
@@ -98,26 +121,14 @@ object Freecam : Module() {
             updateEntityActionState()
 
             // We have to update movement input from key binds because mc.player.movementInput is used by Baritone
-            // Updates forward movement input
-            moveForward = if (mc.gameSettings.keyBindForward.isKeyDown xor mc.gameSettings.keyBindBack.isKeyDown) {
-                if (mc.gameSettings.keyBindForward.isKeyDown) 1f else -1f
-            } else {
-                0f
-            }
+            val forward = mc.gameSettings.keyBindForward.isKeyDown to mc.gameSettings.keyBindBack.isKeyDown
+            val strafe = mc.gameSettings.keyBindLeft.isKeyDown to mc.gameSettings.keyBindRight.isKeyDown
+            val vertical = mc.gameSettings.keyBindJump.isKeyDown to mc.gameSettings.keyBindSneak.isKeyDown
+            val movementInput = calcMovementInput(forward, strafe, vertical)
 
-            // Updates strafe movement input
-            moveStrafing = if (mc.gameSettings.keyBindLeft.isKeyDown xor mc.gameSettings.keyBindRight.isKeyDown) {
-                if (mc.gameSettings.keyBindRight.isKeyDown) 1f else -1f
-            } else {
-                0f
-            }
-
-            // Updates vertical movement input
-            moveVertical = if (mc.gameSettings.keyBindJump.isKeyDown xor mc.gameSettings.keyBindSneak.isKeyDown) {
-                if (mc.gameSettings.keyBindJump.isKeyDown) 1f else -1f
-            } else {
-                0f
-            }
+            moveForward = movementInput.first
+            moveStrafing = movementInput.second
+            moveVertical = movementInput.third
 
             // Update sprinting
             isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
@@ -141,5 +152,37 @@ object Freecam : Module() {
         }
 
         override fun getEyeHeight() = 1.65f
+    }
+
+    /**
+     * @param forward <Forward, Backward>
+     * @param strafe <Left, Right>
+     * @param vertical <Up, Down>
+     *
+     * @return <Forward, Strafe, Vertical>
+     */
+    private fun calcMovementInput(forward: Pair<Boolean, Boolean>, strafe: Pair<Boolean, Boolean>, vertical: Pair<Boolean, Boolean>): Triple<Float, Float, Float> {
+        // Forward movement input
+        val moveForward = if (forward.first xor forward.second) {
+            if (forward.first) 1f else -1f
+        } else {
+            0f
+        }
+
+        // Strafe movement input
+        val moveStrafing = if (strafe.first xor strafe.second) {
+            if (strafe.second) 1f else -1f
+        } else {
+            0f
+        }
+
+        // Vertical movement input
+        val moveVertical = if (vertical.first xor vertical.second) {
+            if (vertical.first) 1f else -1f
+        } else {
+            0f
+        }
+
+        return Triple(moveForward, moveStrafing, moveVertical)
     }
 }
