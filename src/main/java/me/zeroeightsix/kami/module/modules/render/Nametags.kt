@@ -205,7 +205,7 @@ object Nametags : Module() {
             val duraHeight = if (drawDura) KamiFontRenderer.getFontHeight() + 2f else 0f
             val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(2) }.max()
                     ?: 0f) + 4f else 0f
-            val height = 16 + duraHeight + enchantmentHeight / 2f
+            val height = 16 + duraHeight + enchantmentHeight * 0.6f
             val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
             val posEnd = Vec2d(halfWidth + margins.value.toDouble(), margins.value.toDouble())
             drawFrame(vertexHelper, posBegin, posEnd)
@@ -218,9 +218,9 @@ object Nametags : Module() {
         for ((itemStack, enchantmentText) in itemList) {
             if (itemStack.isEmpty()) continue
             GlStateUtils.blend(true)
-            mc.renderItem.zLevel = -150f
+            mc.renderItem.zLevel = -100f
             mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 0, 0)
-            mc.renderItem.zLevel = 100f
+            mc.renderItem.zLevel = 0f
             glColor4f(1f, 1f, 1f, 1f)
 
             if (drawDura && itemStack.isItemStackDamageable) {
@@ -233,9 +233,9 @@ object Nametags : Module() {
 
             if (count.value && itemStack.count > 1) {
                 val itemCount = itemStack.count.toString()
-                glTranslatef(0f, 0f, 10f)
+                glTranslatef(0f, 0f, 60f)
                 KamiFontRenderer.drawString(itemCount, 17f - KamiFontRenderer.getStringWidth(itemCount), 9f, textShadow.value)
-                glTranslatef(0f, 0f, -10f)
+                glTranslatef(0f, 0f, -60f)
             }
 
             glTranslatef(0f, -2f, 0f)
