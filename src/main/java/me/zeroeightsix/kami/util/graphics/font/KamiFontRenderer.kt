@@ -1,14 +1,15 @@
 package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.font.FontGlyphs.Companion.TEXTURE_WIDTH
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.text.TextFormatting
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
@@ -42,6 +43,9 @@ object KamiFontRenderer {
 
     /** CurrentVariant being used */
     private var currentVariant: FontGlyphs
+
+    /** For Minecraft color code only */
+    private var currentColor = ColorHolder(255, 255, 255)
 
     /** Available fonts on in the system */
     private val availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.map { it.name }.toHashSet()
@@ -91,13 +95,12 @@ object KamiFontRenderer {
     @JvmOverloads
     fun drawString(text: String, posXIn: Float = 0f, posYIn: Float = 0f, drawShadow: Boolean = true, color: ColorHolder = ColorHolder(255, 255, 255), scale: Float = 1f) {
         if (drawShadow) {
-            val shadowColor = ColorHolder((color.r * 0.2f).toInt(), (color.g * 0.2f).toInt(), (color.b * 0.2f).toInt(), (color.a * 0.9f).toInt())
-            drawString(text, posXIn + 0.7f, posYIn + 0.7f, shadowColor, scale)
+            drawString(text, posXIn + 0.7f, posYIn + 0.7f, color, scale, true)
         }
-        drawString(text, posXIn, posYIn, color, scale)
+        drawString(text, posXIn, posYIn, color, scale, false)
     }
 
-    private fun drawString(text: String, posXIn: Float, posYIn: Float, color: ColorHolder, scale: Float) {
+    private fun drawString(text: String, posXIn: Float, posYIn: Float, colorIn: ColorHolder, scale: Float, isShadow: Boolean) {
         var posX = 0.0
         var posY = 0.0
 
@@ -106,16 +109,20 @@ object KamiFontRenderer {
         glDisable(GL_ALPHA_TEST)
         GlStateUtils.blend(true)
         GlStateUtils.cull(false)
-        color.setGLColor()
         glPushMatrix()
         glTranslatef(posXIn, posYIn - 0.5f, 0.0f)
         glScalef(0.28f * scale, 0.28f * scale, 1.0f)
 
+        currentColor = DyeColors.WHITE.color
         currentVariant = glyphArray[0]
+
         for ((index, char) in text.withIndex()) {
             if (checkStyleCode(text, index)) continue
             val charInfo = currentVariant.getCharInfo(char)
             val chunk = currentVariant.getChunk(char)
+
+            val color = if (currentColor == DyeColors.WHITE.color) colorIn else currentColor
+            if (isShadow) getShadowColor(color).setGLColor() else color.setGLColor()
 
             GlStateManager.bindTexture(chunk.textureId)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
@@ -149,6 +156,8 @@ object KamiFontRenderer {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f)
         glColor4f(1f, 1f, 1f, 1f)
     }
+
+    private fun getShadowColor(color: ColorHolder) = ColorHolder((color.r * 0.2f).toInt(), (color.g * 0.2f).toInt(), (color.b * 0.2f).toInt(), (color.a * 0.9f).toInt())
 
     private fun drawQuad(pos1: Vec2d, pos2: Vec2d, texPos1: Vec2d, texPos2: Vec2d) {
         buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
@@ -184,6 +193,26 @@ object KamiFontRenderer {
                 TextProperties.Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
                 TextProperties.Style.BOLD.codeChar -> currentVariant = glyphArray[1]
                 TextProperties.Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
+            }
+            currentColor = when (text.getOrNull(index + 1)) {
+                TextFormatting.BLACK.toString()[1] -> ColorHolder(0, 0, 0)
+                TextFormatting.DARK_BLUE.toString()[1] -> ColorHolder(0, 0, 170)
+                TextFormatting.DARK_GREEN.toString()[1] -> ColorHolder(0, 170, 0)
+                TextFormatting.DARK_AQUA.toString()[1] -> ColorHolder(0, 170, 170)
+                TextFormatting.DARK_RED.toString()[1] -> ColorHolder(170, 0, 0)
+                TextFormatting.DARK_PURPLE.toString()[1] -> ColorHolder(170, 0, 170)
+                TextFormatting.GOLD.toString()[1] -> ColorHolder(250, 170, 0)
+                TextFormatting.GRAY.toString()[1] -> ColorHolder(170, 170, 170)
+                TextFormatting.DARK_GRAY.toString()[1] -> ColorHolder(85, 85, 85)
+                TextFormatting.BLUE.toString()[1] -> ColorHolder(85, 85, 255)
+                TextFormatting.GREEN.toString()[1] -> ColorHolder(85, 255, 85)
+                TextFormatting.AQUA.toString()[1] -> ColorHolder(85, 255, 255)
+                TextFormatting.RED.toString()[1] -> ColorHolder(255, 85, 85)
+                TextFormatting.LIGHT_PURPLE.toString()[1] -> ColorHolder(255, 85, 255)
+                TextFormatting.YELLOW.toString()[1] -> ColorHolder(255, 255, 85)
+                TextFormatting.WHITE.toString()[1] -> ColorHolder(255, 255, 255)
+                TextFormatting.RESET.toString()[1] -> ColorHolder(255, 255, 255)
+                else -> currentColor
             }
             return true
         }
