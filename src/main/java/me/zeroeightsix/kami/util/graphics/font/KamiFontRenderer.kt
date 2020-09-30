@@ -52,7 +52,7 @@ object KamiFontRenderer {
             "Source Han Sans", "Source Han Sans HC", "Source Han Sans SC", "Source Han Sans TC", "Source Han Sans K", // Source Sans
             "MS Gothic", "Meiryo", "Yu Gothic", // For Windows, Windows on top!
             "Hiragino Sans GB W3", "Hiragino Kaku Gothic Pro W3", "Hiragino Kaku Gothic ProN W3", "Osaka", // For stupid Mac OSX
-            "IPAPGothic" // For cringy Linux
+            "TakaoPGothic", "IPAPGothic" // For cringy Linux
     )
 
     init {

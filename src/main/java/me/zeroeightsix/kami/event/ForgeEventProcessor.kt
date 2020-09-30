@@ -71,11 +71,7 @@ object ForgeEventProcessor {
 
         if (event.type == target) {
             ModuleManager.onRender()
-            GlStateUtils.rescaleKami()
-            GlStateManager.pushMatrix()
             UIRenderer.renderAndUpdateFrames()
-            GlStateManager.popMatrix()
-            GlStateUtils.rescaleMc()
         }
     }
 

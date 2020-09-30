@@ -16,40 +16,28 @@ public class KamiGuiColors {
 
         // N = normal T = toggled
         buttonIdleN(new Color(200, 200, 200)), // lighter grey
-        buttonHoveredN(new Color(190, 190, 190)), // light grey
+        buttonHoveredN(new Color(123, 114, 204)), // light grey
 
         buttonIdleT(new Color(165, 158, 232)), // lighter colored
         buttonHoveredT((new Color(buttonIdleT.color.getRGB())).brighter()),
 
+        windowFilled(new Color(43, 43, 46, 230)),
         windowOutline(new Color(116, 101, 247)),
-        windowOutlineWidth(1.8f),
 
         pinnedWindow(new Color(116, 101, 247)),
-        unpinnedWindow(168.3),
-        lineWindow(112.2),
+        unpinnedWindow(new Color(168, 168, 168)),
+        lineWindow(new Color(112, 112, 112)),
 
         sliderColour(new Color(155, 144, 255)),
 
         enumColour(new Color(116, 101, 247)),
 
-        chatOutline(new Color(52, 43, 128)),
-
         scrollBar(new Color(116, 101, 247));
 
         public Color color;
-        public float aFloat;
-        public double aDouble;
 
         GuiC(Color color) {
             this.color = color;
-        }
-
-        GuiC(float aFloat) {
-            this.aFloat = aFloat;
-        }
-
-        GuiC(double aDouble) {
-            this.aDouble = aDouble;
         }
     }
 }

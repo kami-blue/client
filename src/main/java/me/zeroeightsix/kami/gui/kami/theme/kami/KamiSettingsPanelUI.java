@@ -1,10 +1,12 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.gui.kami.RenderHelper;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-import org.lwjgl.opengl.GL11;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
  * Created by 086 on 16/12/2017.
@@ -12,15 +14,14 @@ import org.lwjgl.opengl.GL11;
 public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
 
     @Override
-    public void renderComponent(SettingsPanel component, FontRenderer fontRenderer) {
-        super.renderComponent(component, fontRenderer);
+    public void renderComponent(SettingsPanel component) {
+        super.renderComponent(component);
 
-        GL11.glLineWidth(2.0F);
-        GL11.glColor4f(0.17F, 0.17F, 0.18F, 0.9F);
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        Vec2d pos1 = new Vec2d(0, 0);
+        Vec2d pos2 = new Vec2d(component.getWidth(), component.getHeight());
 
-        RenderHelper.drawFilledRectangle(0.0F, 0.0F, (float) component.getWidth(), (float) component.getHeight());
-        GL11.glColor3f(.60f, .56f, 1.00f);
-        GL11.glLineWidth(1.5F);
-        RenderHelper.drawRectangle(0.0F, 0.0F, (float) component.getWidth(), (float) component.getHeight());
+        RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(KamiGuiColors.GuiC.windowFilled.color));
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(KamiGuiColors.GuiC.windowOutline.color));
     }
 }
