@@ -91,9 +91,8 @@ object KamiFontRenderer {
     @JvmOverloads
     fun drawString(text: String, posXIn: Float = 0f, posYIn: Float = 0f, drawShadow: Boolean = true, color: ColorHolder = ColorHolder(255, 255, 255), scale: Float = 1f) {
         if (drawShadow) {
-            val darkness = ClickGUI.darkNess.value
-            val shadowColor = ColorHolder((color.r * darkness).toInt(), (color.g * darkness).toInt(), (color.b * darkness).toInt(), (color.a * ClickGUI.alpha.value).toInt())
-            drawString(text, posXIn + ClickGUI.shadow.value, posYIn + ClickGUI.shadow.value, shadowColor, scale)
+            val shadowColor = ColorHolder((color.r * 0.2f).toInt(), (color.g * 0.2f).toInt(), (color.b * 0.2f).toInt(), (color.a * 0.9f).toInt())
+            drawString(text, posXIn + 0.7f, posYIn + 0.7f, shadowColor, scale)
         }
         drawString(text, posXIn, posYIn, color, scale)
     }
@@ -102,6 +101,8 @@ object KamiFontRenderer {
         var posX = 0.0
         var posY = 0.0
 
+        val lighting = glGetBoolean(GL_LIGHTING)
+        glDisable(GL_LIGHTING)
         glDisable(GL_ALPHA_TEST)
         GlStateUtils.blend(true)
         GlStateUtils.cull(false)
@@ -133,11 +134,12 @@ object KamiFontRenderer {
                 val texPos2 = texPos1.add(Vec2d(charInfo.width.toDouble(), charInfo.height.toDouble()).divide(TEXTURE_WIDTH.toDouble(), chunk.textureHeight.toDouble()))
 
                 drawQuad(pos1, pos2, texPos1, texPos2)
-                posX += charInfo.width - 1.5f
+                posX += charInfo.width - 1f
             }
         }
 
         glPopMatrix()
+        if (lighting) glEnable(GL_LIGHTING)
         glEnable(GL_ALPHA_TEST)
         GlStateUtils.cull(true)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
@@ -168,7 +170,7 @@ object KamiFontRenderer {
         currentVariant = glyphArray[0]
         for ((index, char) in text.withIndex()) {
             if (checkStyleCode(text, index)) continue
-            width += currentVariant.getCharInfo(char).width.minus(1.5f)
+            width += currentVariant.getCharInfo(char).width.minus(1f)
         }
 
         return width * 0.28f * scale

@@ -17,9 +17,6 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
-    val darkNess = register(Settings.floatBuilder("Darkness").withValue(0f).withRange(0f, 1f).withStep(0.05f))
-    val alpha = register(Settings.floatBuilder("Alpha").withValue(0f).withRange(0f, 1f).withStep(0.05f))
-    val shadow = register(Settings.floatBuilder("Shadow").withValue(0f).withRange(0f, 2f).withStep(0.05f))
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
