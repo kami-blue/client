@@ -253,8 +253,8 @@ object Nametags : Module() {
         val textComponent = TextComponent()
         val enchantmentList = EnchantmentUtils.getAllEnchantments(itemStack)
         for (leveledEnchantment in enchantmentList) {
-            textComponent.add(leveledEnchantment.alias, style = TextProperties.Style.BOLD)
-            textComponent.addLine(leveledEnchantment.levelText, ColorHolder(155, 144, 255), TextProperties.Style.BOLD)
+            textComponent.add(leveledEnchantment.alias, ColorHolder(255, 255, 255, aText.value), style = TextProperties.Style.BOLD)
+            textComponent.addLine(leveledEnchantment.levelText, ColorHolder(155, 144, 255, aText.value), TextProperties.Style.BOLD)
         }
         return textComponent
     }
@@ -503,7 +503,7 @@ object Nametags : Module() {
                 textComponent.addLine(text, getTextColor())
                 if (index + 1 >= maxDropItems.value) {
                     val remaining = itemCountMap.size - index - 1
-                    if (remaining > 0) textComponent.addLine("...and $remaining more")
+                    if (remaining > 0) textComponent.addLine("...and $remaining more", getTextColor())
                     break
                 }
             }
