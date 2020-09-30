@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.gui.kami.component.UnboundSlider;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.util.color.ColorHolder;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 
 /**
  * Created by 086 on 17/12/2017.
@@ -20,13 +20,13 @@ public class KamiUnboundSliderUI extends AbstractComponentUI<UnboundSlider> {
                         component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
                                 KamiGuiColors.GuiC.buttonHoveredT.color);
 
-        KamiFontRenderer.INSTANCE.drawString(s, component.getWidth() / 2f - KamiFontRenderer.INSTANCE.getStringWidth(s) / 2f, 1f, true, color);
+        FontRenderAdapter.INSTANCE.drawString(s, component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(s) / 2f, 1f, true, color);
     }
 
     @Override
     public void handleAddComponent(UnboundSlider component, Container container) {
-        component.setHeight((int) (KamiFontRenderer.INSTANCE.getFontHeight() + 2));
-        component.setWidth((int) KamiFontRenderer.INSTANCE.getStringWidth(component.getText()));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) FontRenderAdapter.INSTANCE.getStringWidth(component.getText()));
     }
 
 }

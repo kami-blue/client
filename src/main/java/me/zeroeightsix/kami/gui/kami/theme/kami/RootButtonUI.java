@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
@@ -29,12 +29,12 @@ public class RootButtonUI<T extends Button> extends AbstractComponentUI<Button> 
 
         RenderUtils2D.drawRoundedRectFilled(vertexHelper, new Vec2d(0, 0), new Vec2d(component.getWidth(), component.getHeight()), 3, 8, color);
 
-        KamiFontRenderer.INSTANCE.drawString(component.getName(), component.getWidth() / 2f - KamiFontRenderer.INSTANCE.getStringWidth(component.getName()) / 2f, 0, true, component.isPressed() ? downColour : idleColour);
+        FontRenderAdapter.INSTANCE.drawString(component.getName(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getName()) / 2f, 0, true, component.isPressed() ? downColour : idleColour);
     }
 
     @Override
     public void handleAddComponent(Button component, Container container) {
-        component.setWidth((int) (KamiFontRenderer.INSTANCE.getStringWidth(component.getName()) + 28));
-        component.setHeight((int) (KamiFontRenderer.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getName()) + 28));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
     }
 }

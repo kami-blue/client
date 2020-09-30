@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 import org.lwjgl.input.Mouse;
 
@@ -49,7 +49,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
                 glTranslatef(0, 0, 69);
 
                 float tooltipX = 14; // padding
-                float tooltipWidth = KamiFontRenderer.INSTANCE.getStringWidth(component.getDescription()) + 8f;
+                float tooltipWidth = FontRenderAdapter.INSTANCE.getStringWidth(component.getDescription()) + 8f;
 
                 boolean tooBig = Wrapper.getMinecraft().displayWidth < (Mouse.getX() + (tooltipWidth * 2f + (component.getWidth() * 2)));
 
@@ -59,24 +59,24 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
                 VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
                 Vec2d pos1 = new Vec2d(component.getWidth() + tooltipX, -2);
-                Vec2d pos2 = pos1.add(tooltipWidth, KamiFontRenderer.INSTANCE.getFontHeight() + 2);
+                Vec2d pos2 = pos1.add(tooltipWidth, FontRenderAdapter.INSTANCE.getFontHeight() + 2);
 
                 RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(GuiC.windowFilled.color));
                 RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(GuiC.windowOutline.color));
-                KamiFontRenderer.INSTANCE.drawString(component.getDescription(), component.getWidth() + tooltipX + 4f, 0f);
+                FontRenderAdapter.INSTANCE.drawString(component.getDescription(), component.getWidth() + tooltipX + 4f, 0f);
 
                 glTranslatef(0, 0, -69);
                 glEnable(GL_SCISSOR_TEST); // stop drawing outside of the container
             }
         }
 
-        KamiFontRenderer.INSTANCE.drawString(text, component.getWidth() / 2f - KamiFontRenderer.INSTANCE.getStringWidth(text) / 2f, 1f, true, color);
+        FontRenderAdapter.INSTANCE.drawString(text, component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(text) / 2f, 1f, true, color);
     }
 
     @Override
     public void handleAddComponent(CheckButton component, Container container) {
-        component.setWidth((int) (KamiFontRenderer.INSTANCE.getStringWidth(component.getName()) + 14));
-        component.setHeight((int) (KamiFontRenderer.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getName()) + 14));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
     }
 
     /* in all honesty this is probably resource inefficient but there isn't any other way of getting panels :/ */

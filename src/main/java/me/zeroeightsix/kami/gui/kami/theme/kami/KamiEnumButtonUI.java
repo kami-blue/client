@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
@@ -42,10 +42,10 @@ public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
         RenderUtils2D.drawLine(vertexHelper, new Vec2d(startX, height - 1), new Vec2d(endX, height - 1), 1.5f, new ColorHolder(GuiC.sliderColour.color));
 
         if (modeComponent == null || !modeComponent.equals(component)) {
-            KamiFontRenderer.INSTANCE.drawString(component.getName(), 0, 1f, true, color, 0.75f);
-            KamiFontRenderer.INSTANCE.drawString(component.getIndexMode(), component.getWidth() - KamiFontRenderer.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f), 1f, true, color, 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(component.getName(), 0, 1f, true, color, 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(component.getIndexMode(), component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f), 1f, true, color, 0.75f);
         } else {
-            KamiFontRenderer.INSTANCE.drawString(component.getIndexMode(), component.getWidth() / 2f - KamiFontRenderer.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f) / 2f, 1f, true, color, 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(component.getIndexMode(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f) / 2f, 1f, true, color, 0.75f);
         }
     }
 
@@ -53,10 +53,10 @@ public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
     public void handleSizeComponent(EnumButton component) {
         int width = 0;
         for (String s : component.getModes()) {
-            width = Math.max(width, (int) KamiFontRenderer.INSTANCE.getStringWidth(s, 0.75f));
+            width = Math.max(width, (int) FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f));
         }
-        component.setWidth((int) (KamiFontRenderer.INSTANCE.getStringWidth(component.getName(), 0.75f) + width + 1));
-        component.setHeight((int) (KamiFontRenderer.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getName(), 0.75f) + width + 1));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
     }
 
     @Override

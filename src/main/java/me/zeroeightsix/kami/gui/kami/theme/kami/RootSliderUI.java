@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
@@ -34,18 +34,18 @@ public class RootSliderUI extends AbstractComponentUI<Slider> {
 
         String s = value + "";
         if (component.isPressed()) {
-            width -= KamiFontRenderer.INSTANCE.getStringWidth(s, 0.75f) / 2f;
-            width = Math.max(0, Math.min(width, component.getWidth() - KamiFontRenderer.INSTANCE.getStringWidth(s, 0.75f)));
-            KamiFontRenderer.INSTANCE.drawString(s, (float) width, 0, true, new ColorHolder(255, 255, 255), 0.75f);
+            width -= FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f) / 2f;
+            width = Math.max(0, Math.min(width, component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f)));
+            FontRenderAdapter.INSTANCE.drawString(s, (float) width, 0, true, new ColorHolder(255, 255, 255), 0.75f);
         } else {
-            KamiFontRenderer.INSTANCE.drawString(component.getText(), 0, 0, true, new ColorHolder(255, 255, 255), 0.75f);
-            KamiFontRenderer.INSTANCE.drawString(s, component.getWidth() - KamiFontRenderer.INSTANCE.getStringWidth(s, 0.75f), 0, true, new ColorHolder(255, 255, 255), 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(component.getText(), 0, 0, true, new ColorHolder(255, 255, 255), 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(s, component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f), 0, true, new ColorHolder(255, 255, 255), 0.75f);
         }
     }
 
     @Override
     public void handleAddComponent(Slider component, Container container) {
-        component.setHeight((int) (KamiFontRenderer.INSTANCE.getFontHeight() + 2));
-        component.setWidth((int) (KamiFontRenderer.INSTANCE.getStringWidth(component.getText(), 0.75f) + KamiFontRenderer.INSTANCE.getStringWidth(component.getMaximum() + "", 0.75f) + 3));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getText(), 0.75f) + FontRenderAdapter.INSTANCE.getStringWidth(component.getMaximum() + "", 0.75f) + 3));
     }
 }

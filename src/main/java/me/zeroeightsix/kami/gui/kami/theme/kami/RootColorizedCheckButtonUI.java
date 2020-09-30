@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
@@ -32,6 +32,6 @@ public class RootColorizedCheckButtonUI extends RootCheckButtonUI<ColorizedCheck
         ColorHolder idleColour = new ColorHolder(component.isToggled() ? GuiC.buttonIdleT.color : GuiC.buttonIdleN.color);
         ColorHolder downColour = new ColorHolder(component.isToggled() ? GuiC.buttonHoveredT.color : GuiC.buttonHoveredN.color);
 
-        KamiFontRenderer.INSTANCE.drawString(component.getName(), component.getWidth() / 2f - KamiFontRenderer.INSTANCE.getStringWidth(component.getName(), 0.75f) / 2f, 0, true, component.isPressed() ? downColour : idleColour, 0.75f);
+        FontRenderAdapter.INSTANCE.drawString(component.getName(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getName(), 0.75f) / 2f, 0, true, component.isPressed() ? downColour : idleColour, 0.75f);
     }
 }

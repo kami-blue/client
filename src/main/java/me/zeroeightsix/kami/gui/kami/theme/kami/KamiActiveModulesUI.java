@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.module.modules.client.ActiveModules;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorGradient;
 import me.zeroeightsix.kami.util.color.ColorHolder;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
         List<Module> mods = Arrays.stream(ModuleManager.getModules())
                 .filter(Module::isEnabled)
                 .filter(Module -> (ActiveModules.INSTANCE.getHidden().getValue() || Module.isOnArray()))
-                .sorted(Comparator.comparing(module -> KamiFontRenderer.INSTANCE.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
+                .sorted(Comparator.comparing(module -> FontRenderAdapter.INSTANCE.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
 
@@ -95,13 +95,13 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
             String hudInfo = module.getHudInfo();
             String text = ActiveModules.INSTANCE.getAlignedText(module.name.getValue(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
-            float textWidth = KamiFontRenderer.INSTANCE.getStringWidth(text);
-            float textHeight = KamiFontRenderer.INSTANCE.getFontHeight() + 1;
+            float textWidth = FontRenderAdapter.INSTANCE.getStringWidth(text);
+            float textHeight = FontRenderAdapter.INSTANCE.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;
             int green = (rgb >> 8) & 0xFF;
             int blue = rgb & 0xFF;
 
-            KamiFontRenderer.INSTANCE.drawString(text, xFunc.apply(textWidth), y[0], true, new ColorHolder(red, green, blue));
+            FontRenderAdapter.INSTANCE.drawString(text, xFunc.apply(textWidth), y[0], true, new ColorHolder(red, green, blue));
             hue[0] += .02f;
             y[0] += textHeight;
         }

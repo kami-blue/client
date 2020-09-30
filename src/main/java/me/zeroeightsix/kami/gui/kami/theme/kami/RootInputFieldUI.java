@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
@@ -30,6 +30,6 @@ public class RootInputFieldUI<T extends InputField> extends AbstractComponentUI<
     @Override
     public void handleAddComponent(InputField component, Container container) {
         component.setWidth(200);
-        component.setHeight((int) KamiFontRenderer.INSTANCE.getFontHeight());
+        component.setHeight((int) FontRenderAdapter.INSTANCE.getFontHeight());
     }
 }

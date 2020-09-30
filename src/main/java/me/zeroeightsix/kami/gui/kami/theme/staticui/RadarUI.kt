@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawCircleFilled
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawCircleOutline
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -58,13 +58,13 @@ class RadarUI : AbstractComponentUI<Radar?>() {
             drawCircleFilled(vertexHelper, Vec2d(dX / scale, dZ / scale), 2.5 / scale, color = color)
         }
 
-        KamiFontRenderer.drawString("\u00A77z+", -KamiFontRenderer.getStringWidth("+z") / 2f, radius - KamiFontRenderer.getFontHeight())
+        FontRenderAdapter.drawString("\u00A77z+", -FontRenderAdapter.getStringWidth("+z") / 2f, radius - FontRenderAdapter.getFontHeight())
         glRotatef(90f, 0f, 0f, 1f)
-        KamiFontRenderer.drawString("\u00A77x-", -KamiFontRenderer.getStringWidth("+x") / 2f, radius - KamiFontRenderer.getFontHeight())
+        FontRenderAdapter.drawString("\u00A77x-", -FontRenderAdapter.getStringWidth("+x") / 2f, radius - FontRenderAdapter.getFontHeight())
         glRotatef(90f, 0f, 0f, 1f)
-        KamiFontRenderer.drawString("\u00A77z-", -KamiFontRenderer.getStringWidth("-z") / 2f, radius - KamiFontRenderer.getFontHeight())
+        FontRenderAdapter.drawString("\u00A77z-", -FontRenderAdapter.getStringWidth("-z") / 2f, radius - FontRenderAdapter.getFontHeight())
         glRotatef(90f, 0f, 0f, 1f)
-        KamiFontRenderer.drawString("\u00A77x+", -KamiFontRenderer.getStringWidth("+x") / 2f, radius - KamiFontRenderer.getFontHeight())
+        FontRenderAdapter.drawString("\u00A77x+", -FontRenderAdapter.getStringWidth("+x") / 2f, radius - FontRenderAdapter.getFontHeight())
 
         glPopMatrix()
     }
