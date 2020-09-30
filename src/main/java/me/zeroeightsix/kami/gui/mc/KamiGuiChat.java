@@ -122,7 +122,7 @@ public class KamiGuiChat extends GuiChat {
             SyntaxChunk c = chunks[i];
 
             String result = c.getChunk(chunks, c, args, (i + 1 == args.length - 1 ? args[i + 1] : null));
-            if (!result.equals("") && (!result.startsWith("<") || !result.endsWith(">")) && (!result.startsWith("[") || !result.endsWith("]")))
+            if (!result.isEmpty() && (!result.startsWith("<") || !result.endsWith(">")) && (!result.startsWith("[") || !result.endsWith("]")))
                 cutSpace = true;
             currentFillinLine += result + (result.equals("") ? "" : " ") + "";
         }

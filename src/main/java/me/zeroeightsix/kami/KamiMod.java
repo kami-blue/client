@@ -61,7 +61,7 @@ public class KamiMod {
 
     public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
     public static final char colour = '\u00A7';
-    public static final char separator = '\u007c';
+    public static final char separator = '|';
 
     private static final String KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json";
 
