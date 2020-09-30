@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.gui.mc;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
-import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
@@ -21,14 +20,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KamiGuiChat extends GuiChat {
 
-    private String startString;
     private String currentFillinLine;
     private String chatLine = "";
     private int cursor;
 
     public KamiGuiChat(String startString, String historybuffer, int sentHistoryCursor) {
         super(startString);
-        this.startString = startString;
         if (!startString.equals(Command.getCommandPrefix()))
             calculateCommand(startString.substring(Command.getCommandPrefix().length()));
         this.historyBuffer = historybuffer;
@@ -156,7 +153,7 @@ public class KamiGuiChat extends GuiChat {
         Vec2d pos1 = new Vec2d(this.inputField.x - 2, this.inputField.y - 2);
         Vec2d pos2 = pos1.add(this.inputField.width, this.inputField.height);
 
-        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(GuiC.windowOutline.color));
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(155, 144, 255));
     }
 
     private String getStartString() {

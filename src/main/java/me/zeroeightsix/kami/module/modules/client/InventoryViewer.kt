@@ -3,9 +3,6 @@ package me.zeroeightsix.kami.module.modules.client
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleKami
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleMc
-import me.zeroeightsix.kami.util.graphics.GuiFrameUtil.getFrameByName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -71,14 +68,14 @@ object InventoryViewer : Module() {
     }
 
     override fun onRender() {
-        val frame = getFrameByName("inventory viewer") ?: return
+        /*val frame = getFrameByName("inventory viewer") ?: return
         if (frame.isPinned && !frame.isMinimized) {
             rescaleKami()
             val items = mc.player.inventory.mainInventory
             boxRender(frame.x, frame.y)
             itemRender(items, frame.x, frame.y)
             rescaleMc()
-        }
+        }*/
     }
 
     private fun itemRender(items: NonNullList<ItemStack>, x: Int, y: Int) {

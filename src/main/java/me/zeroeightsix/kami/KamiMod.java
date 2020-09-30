@@ -1,20 +1,15 @@
 package me.zeroeightsix.kami;
 
-import com.google.common.base.Converter;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
@@ -28,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -74,19 +68,7 @@ public class KamiMod {
     @Mod.Instance
     private static KamiMod INSTANCE;
 
-    private KamiGUI guiManager;
     public CommandManager commandManager;
-    public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
-        @Override
-        protected JsonObject doForward(@Nullable JsonObject jsonObject) {
-            return jsonObject;
-        }
-
-        @Override
-        protected JsonObject doBackward(@Nullable JsonObject jsonObject) {
-            return jsonObject;
-        }
-    }).buildAndRegister("");
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -112,8 +94,6 @@ public class KamiMod {
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
-        guiManager = new KamiGUI();
-        guiManager.initializeGUI();
         commandManager = new CommandManager();
 
         FileInstanceManager.fixEmptyFiles();
@@ -138,14 +118,6 @@ public class KamiMod {
 
     public static KamiMod getInstance() {
         return INSTANCE;
-    }
-
-    public KamiGUI getGuiManager() {
-        return this.guiManager;
-    }
-
-    public void setGuiManager(KamiGUI guiManager) {
-        this.guiManager = guiManager;
     }
 
     public CommandManager getCommandManager() {

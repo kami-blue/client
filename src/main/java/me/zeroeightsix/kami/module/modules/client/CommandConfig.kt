@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.gui.clickgui.KamiGuiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
@@ -30,7 +30,7 @@ object CommandConfig : Module() {
     val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     override fun onUpdate(event: SafeTickEvent) {
-        if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
+        if (autoSaving.value && mc.currentScreen !is KamiGuiClickGui && timer.tick(savingInterval.value.toLong())) {
             Thread {
                 Thread.currentThread().name = "Auto Saving Thread"
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")

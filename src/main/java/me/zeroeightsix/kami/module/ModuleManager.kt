@@ -32,7 +32,7 @@ object ModuleManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            moduleClassList = ClassFinder.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java)
+            moduleClassList = ClassFinder.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
             KamiMod.log.info("${moduleClassList!!.size} modules found")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"

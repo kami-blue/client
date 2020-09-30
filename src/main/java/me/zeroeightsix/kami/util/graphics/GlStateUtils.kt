@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -85,8 +85,8 @@ object GlStateUtils {
 
     @JvmStatic
     fun rescaleKami() {
-        val guiScale = DisplayGuiScreen.getScale()
-        rescale(Wrapper.minecraft.displayWidth / guiScale, Wrapper.minecraft.displayHeight / guiScale)
+        val scale = ClickGUI.getScaleFactor()
+        rescale(Wrapper.minecraft.displayWidth / scale, Wrapper.minecraft.displayHeight / scale)
     }
 
     @JvmStatic

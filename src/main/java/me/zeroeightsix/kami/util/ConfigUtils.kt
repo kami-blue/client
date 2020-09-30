@@ -1,14 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.kami.KamiGUI
-import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent
-import me.zeroeightsix.kami.gui.rgui.component.Component
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
-import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
-import me.zeroeightsix.kami.gui.rgui.util.Docking
 import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.manager.mangers.MacroManager
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
@@ -41,13 +33,13 @@ object ConfigUtils {
                 Thread {
                     Thread.currentThread().name = "Config Loading Thread"
                     success = loadConfiguration() && success
-                },
+                }/*,
                 Thread {
                     Thread.currentThread().name = "Gui Loading Thread"
                     KamiMod.getInstance().guiManager = KamiGUI()
                     KamiMod.getInstance().guiManager.initializeGUI()
                     KamiMod.log.info("Gui loaded")
-                }
+                }*/
         )
 
         for (thread in loadingThreads) {
@@ -179,7 +171,7 @@ object ConfigUtils {
         val kamiConfig = Paths.get(kamiConfigName)
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
-        val gui = KamiMod.getInstance().guiStateSetting.value
+        /*val gui = KamiMod.getInstance().guiStateSetting.value
         for ((key, value) in gui.entrySet()) {
             val optional = KamiMod.getInstance().guiManager.children.stream()
                     .filter { component: Component? -> component is Frame }
@@ -203,12 +195,12 @@ object ConfigUtils {
             if (component !is Frame) continue
             if (!component.isPinnable || !component.isVisible) continue
             component.opacity = 0f
-        }
+        }*/
     }
 
     @Throws(IOException::class)
     private fun saveConfigurationUnsafe() {
-        val `object` = JsonObject()
+        /*val `object` = JsonObject()
         KamiMod.getInstance().guiManager.children.stream()
                 .filter { component: Component? -> component is Frame }
                 .map { component: Component? -> component as Frame? }
@@ -221,7 +213,7 @@ object ConfigUtils {
                     frameObject.add("pinned", JsonPrimitive(frame.isPinned))
                     `object`.add(frame.title, frameObject)
                 }
-        KamiMod.getInstance().guiStateSetting.value = `object`
+        KamiMod.getInstance().guiStateSetting.value = `object`*/
         val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)

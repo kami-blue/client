@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.math.AxisAlignedBB
@@ -83,10 +83,9 @@ object BreakingESP : Module() {
     override fun onRender() {
         if (screenWarn.value && warn) {
             if (delay++ > 100) warn = false
-            val scale = DisplayGuiScreen.getScale().toInt()
-            val divider = if (scale == 0) 1 else scale
-            val posX = mc.displayWidth / divider / 2f - FontRenderAdapter.getStringWidth(warningText) / 2f
-            val posY = mc.displayHeight / divider / 2f - 16f
+            val scaledResolution = ScaledResolution(mc)
+            val posX = scaledResolution.scaledWidth / 2f - FontRenderAdapter.getStringWidth(warningText) / 2f
+            val posY = scaledResolution.scaledHeight / 2f - 16f
             val color = ColorHolder(240, 87, 70)
             FontRenderAdapter.drawString(warningText, posX, posY, color = color)
         }
