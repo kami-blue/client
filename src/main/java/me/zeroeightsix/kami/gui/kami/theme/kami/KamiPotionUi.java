@@ -23,7 +23,6 @@ public class KamiPotionUi extends AbstractComponentUI<Potions> {
         if (mc.player == null) return;
 
         int y = 2;
-        GlStateManager.pushMatrix();
 
         List<PotionInfo> potions = new ArrayList<>();
         mc.player.getActivePotionMap().forEach((potion, potionEffect) -> potions.add(new PotionInfo(

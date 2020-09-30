@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 
 object UIRenderer {
@@ -18,7 +17,7 @@ object UIRenderer {
             if (child !is Frame) continue
             if (!child.isPinned || !child.isVisible) continue
 
-            GlStateManager.pushMatrix()
+            glPushMatrix()
             val slide = child.opacity != 0f
             glTranslated(child.x.toDouble(), child.y.toDouble(), 0.0)
             for (renderListener in child.renderListeners) renderListener.onPreRender()

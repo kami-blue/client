@@ -104,13 +104,13 @@ object KamiFontRenderer {
         var posX = 0.0
         var posY = 0.0
 
-        val lighting = glGetBoolean(GL_LIGHTING)
+        //val lighting = glGetBoolean(GL_LIGHTING)
         glDisable(GL_LIGHTING)
         glDisable(GL_ALPHA_TEST)
         GlStateUtils.blend(true)
         GlStateUtils.cull(false)
         glPushMatrix()
-        glTranslatef(posXIn, posYIn - 0.5f, 0.0f)
+        glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(0.28f * scale, 0.28f * scale, 1.0f)
 
         currentColor = DyeColors.WHITE.color
@@ -146,7 +146,7 @@ object KamiFontRenderer {
         }
 
         glPopMatrix()
-        if (lighting) glEnable(GL_LIGHTING)
+        //if (lighting) glEnable(GL_LIGHTING)
         glEnable(GL_ALPHA_TEST)
         GlStateUtils.cull(true)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)

@@ -15,8 +15,7 @@ import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
-import org.lwjgl.opengl.GL11.glRotatef
-import org.lwjgl.opengl.GL11.glTranslated
+import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -39,7 +38,7 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         Wrapper.world ?: return
         component!!
 
-        GlStateManager.pushMatrix()
+        glPushMatrix()
         glTranslated(component.width / 2.0, component.height / 2.0, 0.0)
 
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
@@ -67,7 +66,7 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         glRotatef(90f, 0f, 0f, 1f)
         KamiFontRenderer.drawString("\u00A77x+", -KamiFontRenderer.getStringWidth("+x") / 2f, radius - KamiFontRenderer.getFontHeight())
 
-        GlStateManager.popMatrix()
+        glPopMatrix()
     }
 
     private fun getColor(entity: Entity): ColorHolder {
