@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem
@@ -15,7 +16,7 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.PLAYER,
         description = "Use items faster"
 )
-object Fastuse : Module() {
+object FastUse : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build())
     private val blocks = register(Settings.b("Blocks", false))
     private val allItems = register(Settings.b("AllItems", false))
@@ -23,16 +24,19 @@ object Fastuse : Module() {
     private val endCrystals = register(Settings.booleanBuilder().withName("EndCrystals").withValue(true).withVisibility { !allItems.value }.build())
     private val fireworks = register(Settings.booleanBuilder().withName("Fireworks").withValue(false).withVisibility { !allItems.value }.build())
     private val bow = register(Settings.booleanBuilder().withName("Bow").withValue(true).withVisibility { !allItems.value }.build())
-    private val bowCharge = register(Settings.integerBuilder("BowCharge").withMinimum(0).withMaximum(20).withValue(3).withVisibility { allItems.value || bow.value }.build())
+    private val chargeSetting = register(Settings.integerBuilder("BowCharge").withValue(3).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
     private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(5).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
 
     private var randomVariation = 0
     private var time = 0
 
+    val bowCharge get() = if (isEnabled && (allItems.value || bow.value)) 72000.0 - (chargeSetting.value.toDouble() + chargeVariation.value / 2.0) else null
+
     override fun onUpdate() {
         if (mc.player.isSpectator) return
 
-        if ((allItems.value || bow.value) && mc.player.heldItemMainhand.getItem() is ItemBow && mc.player.isHandActive && mc.player.itemInUseMaxCount >= getBowCharge()) {
+        @Suppress("SENSELESS_COMPARISON") // IDE meme
+        if ((allItems.value || bow.value) && mc.player.activeHand != null && (mc.player.getHeldItem(mc.player.activeHand).getItem() == Items.BOW) && mc.player.isHandActive && mc.player.itemInUseMaxCount >= getBowCharge()) {
             randomVariation = 0
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
             mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
@@ -61,7 +65,7 @@ object Fastuse : Module() {
         if (randomVariation == 0) {
             randomVariation = if (chargeVariation.value == 0) 0 else (0..chargeVariation.value).random()
         }
-        return bowCharge.value + randomVariation
+        return chargeSetting.value + randomVariation
     }
 
     private fun passItemCheck(item: Item): Boolean {

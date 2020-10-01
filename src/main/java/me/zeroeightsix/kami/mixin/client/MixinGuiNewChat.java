@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author 3arthqu4ke
- * Updated by dominikaaaa on 29/06/20
+ * Updated by l1ving on 29/06/20
  */
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat {

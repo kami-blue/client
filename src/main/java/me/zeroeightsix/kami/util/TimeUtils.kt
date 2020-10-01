@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 06/02/20
+ * @author l1ving
+ * Updated by l1ving on 06/02/20
  * Updated by Xiaro on 18/08/20
  */
 object TimeUtils {

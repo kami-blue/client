@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.gui.kami.RenderHelper;
-import me.zeroeightsix.kami.gui.kami.RootSmallFontRenderer;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-
-import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
  * Created by 086 on 8/08/2017.
@@ -17,45 +17,35 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class RootSliderUI extends AbstractComponentUI<Slider> {
 
-    RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
-
     @Override
-    public void renderComponent(Slider component, FontRenderer aa) {
-        glColor4f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()), component.getOpacity());
-        glLineWidth(2.5f);
+    public void renderComponent(Slider component) {
         int height = component.getHeight();
         double value = component.getValue();
-        double w = component.getWidth() * ((value - component.getMinimum()) / (component.getMaximum() - component.getMinimum()));
-        float downscale = 1.1f;
-        glBegin(GL_LINES);
-        {
-            glVertex2d(0, height / downscale);
-            glVertex2d(w, height / downscale);
-        }
-        glColor3f(0.33f, 0.33f, 0.33f);
-        {
-            glVertex2d(w, height / downscale);
-            glVertex2d(component.getWidth(), height / downscale);
-        }
-        glEnd();
-        glColor3f(toF(GuiC.sliderColour.color.getRed()), toF(GuiC.sliderColour.color.getGreen()), toF(GuiC.sliderColour.color.getBlue()));
-        RenderHelper.drawCircle((int) w, height / downscale, 2f);
+        double width = component.getWidth() * ((value - component.getMinimum()) / (component.getMaximum() - component.getMinimum()));
+
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+
+        ColorHolder sliderColor = new ColorHolder(GuiC.sliderColour.color);
+        sliderColor.setA((int) (component.getOpacity() * 255f));
+
+        RenderUtils2D.drawLine(vertexHelper, new Vec2d(0, height - 1), new Vec2d(width, height - 1), 2.5f, sliderColor);
+        RenderUtils2D.drawLine(vertexHelper, new Vec2d(width, height - 1), new Vec2d(component.getWidth(), height - 1), 2.5f, new ColorHolder(84, 84, 84));
+        RenderUtils2D.drawCircleFilled(vertexHelper, new Vec2d(width, height - 1), 2.0, 16, new ColorHolder(GuiC.sliderColour.color));
 
         String s = value + "";
         if (component.isPressed()) {
-            w -= smallFontRenderer.getStringWidth(s) / 2f;
-            w = Math.max(0, Math.min(w, component.getWidth() - smallFontRenderer.getStringWidth(s)));
-            smallFontRenderer.drawString((int) w, 0, s);
+            width -= FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f) / 2f;
+            width = Math.max(0, Math.min(width, component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f)));
+            FontRenderAdapter.INSTANCE.drawString(s, (float) width, 0, true, new ColorHolder(255, 255, 255), 0.75f);
         } else {
-            smallFontRenderer.drawString(0, 0, component.getText());
-            smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(s), 0, s);
+            FontRenderAdapter.INSTANCE.drawString(component.getText(), 0, 0, true, new ColorHolder(255, 255, 255), 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(s, component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f), 0, true, new ColorHolder(255, 255, 255), 0.75f);
         }
-        glDisable(GL_TEXTURE_2D);
     }
 
     @Override
     public void handleAddComponent(Slider component, Container container) {
-        component.setHeight(component.getTheme().getFontRenderer().getFontHeight() + 2);
-        component.setWidth(smallFontRenderer.getStringWidth(component.getText()) + smallFontRenderer.getStringWidth(component.getMaximum() + "") + 3);
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getText(), 0.75f) + FontRenderAdapter.INSTANCE.getStringWidth(component.getMaximum() + "", 0.75f) + 3));
     }
 }

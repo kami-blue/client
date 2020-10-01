@@ -5,9 +5,7 @@
 
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.emoji.Emoji;
-import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.manager.mangers.KamiMojiManager;
 import me.zeroeightsix.kami.module.modules.chat.KamiMoji;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.FontRenderer;
@@ -37,6 +35,9 @@ public abstract class MixinFontRenderer {
     @Shadow public float alpha;
     @Shadow public float posX;
     @Shadow public float posY;
+    @Shadow public float red;
+    @Shadow public float green;
+    @Shadow public float blue;
 
     @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
     @Shadow public abstract int getStringWidth(String s);
@@ -47,23 +48,24 @@ public abstract class MixinFontRenderer {
      */
     @Redirect(method = "renderString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;renderStringAtPos(Ljava/lang/String;Z)V"))
     private void renderStringAtPos(FontRenderer fontRenderer, String text, boolean shadow) {
-        if (KamiMoji.INSTANCE != null && KamiMoji.INSTANCE.isEnabled()) {
+        if (KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
             int size = FONT_HEIGHT;
 
             for (String possible : text.split(":")) {
-                if (KamiMod.KAMIMOJI.isEmoji(possible)) {
-                    Emoji emoji = new Emoji(possible);
+                if (KamiMojiManager.INSTANCE.isEmoji(possible)) {
+                    KamiMojiManager.Emoji emoji = new KamiMojiManager.Emoji(possible);
                     String emojiText = ":" + possible + ":";
                     if (!shadow) {
                         int index = text.indexOf(emojiText);
                         if (index == -1) continue;
                         int x = getStringWidth(text.substring(0, index)) + FONT_HEIGHT / 4;
-                        drawEmoji(KamiMod.KAMIMOJI.getEmoji(emoji), posX + x, posY, size, alpha);
+                        drawEmoji(KamiMojiManager.INSTANCE.getEmoji(emoji), posX + x, posY, size, alpha);
                     }
                     text = text.replaceFirst(emojiText, getReplacement());
                 }
             }
         }
+        GlStateManager.color(red, blue, green, alpha); // Big Mojang meme :monkey:
         renderStringAtPos(text, shadow);
     }
 
@@ -72,10 +74,10 @@ public abstract class MixinFontRenderer {
      */
     @Inject(method = "getStringWidth", at = @At("TAIL"), cancellable = true)
     public void getStringWidth(String text, CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE != null && KamiMoji.INSTANCE.isEnabled()) {
+        if (cir.getReturnValue() != 0 && KamiMoji.INSTANCE.isEnabled() && text.contains(":")) {
             int reducedWidth = cir.getReturnValue();
             for (String possible : text.split(":")) {
-                if (KamiMod.KAMIMOJI.isEmoji(possible)) {
+                if (KamiMojiManager.INSTANCE.isEmoji(possible)) {
                     String emojiText = ":" + possible + ":";
                     int emojiTextWidth = emojiText.chars().map(i -> getCharWidth((char) i)).sum();
                     reducedWidth -= emojiTextWidth;
@@ -93,7 +95,7 @@ public abstract class MixinFontRenderer {
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
         Wrapper.getMinecraft().getTextureManager().bindTexture(emojiTexture);
-        GlStateManager.color(1, 1, 1, alpha);
+        GlStateManager.color(1f, 1f, 1f, alpha);
         GlStateManager.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);

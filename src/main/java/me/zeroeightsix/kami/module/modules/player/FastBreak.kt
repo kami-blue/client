@@ -9,11 +9,12 @@ import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.network.play.client.CPacketPlayerDigging
 
 @Module.Info(
-        name = "Fastbreak",
+        name = "FastBreak",
         category = Module.Category.PLAYER,
         description = "Breaks block faster and nullifies the break delay"
 )
-object Fastbreak : Module() {
+object FastBreak : Module() {
+    private val delay = register(Settings.integerBuilder("Delay").withValue(0).withRange(0, 5).build())
     private val packetMine = register(Settings.b("PacketMine", true))
     private val sneakTrigger = register(Settings.booleanBuilder("SneakTrigger").withValue(true).withVisibility { packetMine.value }.build())
 
@@ -37,6 +38,6 @@ object Fastbreak : Module() {
     })
 
     override fun onUpdate() {
-        mc.playerController.blockHitDelay = 0
+        if (delay.value != 5 && mc.playerController.blockHitDelay == 5) mc.playerController.blockHitDelay = delay.value
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.item.Item
 
 /**
  * Created by 20kdc on 17/02/2020.
- * Updated by dominikaaaa on 17/02/20
+ * Updated by l1ving on 17/02/20
  * Modified for use with AutoEject by Xiaro on 19/07/2020
  */
 class EjectCommand : Command("eject", ChunkBuilder().append("command", true, EnumParser(arrayOf("help", "+item", "-item", "=item", "list", "default", "clear"))).build()) {

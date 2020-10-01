@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 /**
  * A helper to detect certain messages and return a boolean or message
  *
- * @author dominikaaaa
+ * @author l1ving
  * @see me.zeroeightsix.kami.module.modules.chat.DiscordNotifs
  */
 object MessageDetectionHelper {

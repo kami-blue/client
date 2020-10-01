@@ -18,8 +18,8 @@ import java.util.regex.Pattern;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 07/02/20
+ * @author l1ving
+ * Updated by l1ving on 07/02/20
  */
 public class TroubleshootCommand extends Command {
     public TroubleshootCommand() {

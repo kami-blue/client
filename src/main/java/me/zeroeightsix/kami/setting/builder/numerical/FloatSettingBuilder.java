@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.setting.builder.numerical;
 
 import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
+import org.spongepowered.asm.mixin.Overwrite;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -11,8 +11,8 @@ import java.util.function.Predicate;
  */
 public class FloatSettingBuilder extends NumericalSettingBuilder<Float> {
     @Override
-    public NumberSetting build() {
-        return new FloatSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max);
+    public FloatSetting build() {
+        return new FloatSetting(initialValue, predicate(), consumer(), name, visibilityPredicate(), min, max, step);
     }
 
     @Override
@@ -38,6 +38,11 @@ public class FloatSettingBuilder extends NumericalSettingBuilder<Float> {
     @Override
     public FloatSettingBuilder withRange(Float minimum, Float maximum) {
         return (FloatSettingBuilder) super.withRange(minimum, maximum);
+    }
+
+    @Override
+    public FloatSettingBuilder withStep(Float step) {
+        return (FloatSettingBuilder) super.withStep(step);
     }
 
     @Override

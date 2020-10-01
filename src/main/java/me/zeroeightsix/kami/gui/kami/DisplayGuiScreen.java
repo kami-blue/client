@@ -8,27 +8,23 @@ import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 3/08/2017.
- * Updated by dominikaaaa on 13/12/19
+ * Updated by l1ving on 13/12/19
  * Updated by Xiaro on 18/08/20
  */
 public class DisplayGuiScreen extends GuiScreen {
 
-    KamiGUI gui;
-    public final GuiScreen lastScreen;
-
     public static int mouseX;
     public static int mouseY;
-
+    public final GuiScreen lastScreen;
+    KamiGUI gui;
     Framebuffer framebuffer;
 
     public DisplayGuiScreen(GuiScreen lastScreen) {
@@ -70,8 +66,8 @@ public class DisplayGuiScreen extends GuiScreen {
         GlStateUtils.rescaleKami();
         gui.drawGUI();
         GlStateUtils.rescaleMc();
-        glEnable(GL_TEXTURE_2D);
-        GlStateManager.color(1, 1, 1);
+        GlStateUtils.blend(false);
+        glColor4f(1f, 1f, 1f, 1f);
     }
 
     @Override

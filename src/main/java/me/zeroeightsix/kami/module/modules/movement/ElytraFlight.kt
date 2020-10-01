@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
@@ -44,7 +43,7 @@ object ElytraFlight : Module() {
     private val easyTakeOff = register(Settings.booleanBuilder("EasyTakeoff").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS }.build())
     private val timerControl = register(Settings.booleanBuilder("TakeoffTimer").withValue(true).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS }.build())
     private val highPingOptimize = register(Settings.booleanBuilder("HighPingOptimize").withValue(false).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS }.build())
-    private val minTakeoffHeight = register(Settings.floatBuilder("MinTakeoffHeight").withRange(0.0f, 1.5f).withValue(0.5f).withVisibility { easyTakeOff.value && !highPingOptimize.value && page.value == Page.GENERIC_SETTINGS }.build())
+    private val minTakeoffHeight = register(Settings.floatBuilder("MinTakeoffHeight").withRange(0.0f, 1.5f).withValue(0.5f).withStep(0.1f).withVisibility { easyTakeOff.value && !highPingOptimize.value && page.value == Page.GENERIC_SETTINGS }.build())
 
     /* Acceleration */
     private val accelerateStartSpeed = register(Settings.integerBuilder("StartSpeed").withRange(0, 100).withValue(100).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS }.build())
@@ -75,7 +74,7 @@ object ElytraFlight : Module() {
     private val altitudeHoldControl = register(Settings.booleanBuilder("AutoControlAltitude").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val dynamicDownSpeed = register(Settings.booleanBuilder("DynamicDownSpeed").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val speedControl = register(Settings.floatBuilder("SpeedC").withMinimum(0.0f).withValue(1.81f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
-    private val fallSpeedControl = register(Settings.floatBuilder("FallSpeedC").withMinimum(0.0f).withMaximum(0.3f).withValue(0.00000000000003f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
+    private val fallSpeedControl = register(Settings.floatBuilder("FallSpeedC").withMinimum(0.0f).withMaximum(0.3f).withValue(0.00000000000003f).withStep(0.01f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val downSpeedControl = register(Settings.floatBuilder("DownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(1.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS }.build())
     private val fastDownSpeedControl = register(Settings.floatBuilder("DynamicDownSpeedC").withMaximum(5.0f).withMinimum(0.0f).withValue(2.0f).withVisibility { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value && page.value == Page.MODE_SETTINGS }.build())
 
@@ -365,9 +364,8 @@ object ElytraFlight : Module() {
     private fun controlMode(event: PlayerTravelEvent) {
         /* States and movement input */
         val currentSpeed = sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ)
-        val inventoryMove = ModuleManager.getModuleT(InventoryMove::class.java)!!
         val moveUp = if (!legacyLookBoost.value) mc.player.movementInput.jump else mc.player.rotationPitch < -10.0f && !isStandingStillH
-        val moveDown = if (inventoryMove.isEnabled && !inventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
+        val moveDown = if (InventoryMove.isEnabled && !InventoryMove.sneak.value && mc.currentScreen != null || moveUp) false else mc.player.movementInput.sneak
 
         /* Dynamic down speed */
         val calcDownSpeed = if (dynamicDownSpeed.value) {

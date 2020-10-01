@@ -4,18 +4,20 @@ import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.math.Vec2d;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 
 public class KamiGuiChat extends GuiChat {
 
@@ -120,9 +122,9 @@ public class KamiGuiChat extends GuiChat {
             SyntaxChunk c = chunks[i];
 
             String result = c.getChunk(chunks, c, args, (i + 1 == args.length - 1 ? args[i + 1] : null));
-            if (result != "" && (!result.startsWith("<") || !result.endsWith(">")) && (!result.startsWith("[") || !result.endsWith("]")))
+            if (!result.isEmpty() && (!result.startsWith("<") || !result.endsWith(">")) && (!result.startsWith("[") || !result.endsWith("]")))
                 cutSpace = true;
-            currentFillinLine += result + (result == "" ? "" : " ") + "";
+            currentFillinLine += result + (result.equals("") ? "" : " ") + "";
         }
 
         if (cutSpace) currentFillinLine = currentFillinLine.substring(1);
@@ -150,36 +152,11 @@ public class KamiGuiChat extends GuiChat {
             this.handleComponentHover(itextcomponent, mouseX, mouseY);
         }
 
-        /*int x = this.inputField.fontRendererInstance.getStringWidth(this.inputField.getText() + "")+4;
-        int y = this.inputField.getEnableBackgroundDrawing() ? this.inputField.yPosition + (this.inputField.height - 8) / 2 : this.inputField.yPosition;
-        this.inputField.fontRendererInstance.drawString(currentFillinLine, x, y, 0x666666);*/
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        Vec2d pos1 = new Vec2d(this.inputField.x - 2, this.inputField.y - 2);
+        Vec2d pos2 = pos1.add(this.inputField.width, this.inputField.height);
 
-        boolean a = GL11.glIsEnabled(GL11.GL_BLEND);
-        boolean b = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
-
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor3f(toF(GuiC.chatOutline.color.getRed()), toF(GuiC.chatOutline.color.getGreen()), toF(GuiC.chatOutline.color.getBlue()));
-        GL11.glBegin(GL11.GL_LINES);
-        {
-            GL11.glVertex2f(this.inputField.x - 2, this.inputField.y - 2);
-            GL11.glVertex2f(this.inputField.x + this.inputField.getWidth() - 2, this.inputField.y - 2);
-
-            GL11.glVertex2f(this.inputField.x + this.inputField.getWidth() - 2, this.inputField.y - 2);
-            GL11.glVertex2f(this.inputField.x + this.inputField.getWidth() - 2, this.inputField.y + this.inputField.height - 2);
-
-            GL11.glVertex2f(this.inputField.x + this.inputField.getWidth() - 2, this.inputField.y + this.inputField.height - 2);
-            GL11.glVertex2f(this.inputField.x - 2, this.inputField.y + this.inputField.height - 2);
-
-            GL11.glVertex2f(this.inputField.x - 2, this.inputField.y + this.inputField.height - 2);
-            GL11.glVertex2f(this.inputField.x - 2, this.inputField.y - 2);
-        }
-        GL11.glEnd();
-
-        if (a)
-            GL11.glEnable(GL11.GL_BLEND);
-        if (b)
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(GuiC.windowOutline.color));
     }
 
     private String getStartString() {

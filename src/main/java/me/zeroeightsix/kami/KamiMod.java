@@ -7,7 +7,6 @@ import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
-import me.zeroeightsix.kami.emoji.KamiMoji;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.manager.ManagerLoader;
@@ -36,7 +35,7 @@ import java.nio.charset.Charset;
 
 /**
  * Created by 086 on 7/11/2017.
- * Updated by dominikaaaa on 25/03/19
+ * Updated by l1ving on 25/03/19
  * Updated by Dewy on 09/04/2020
  */
 @Mod(
@@ -62,15 +61,13 @@ public class KamiMod {
 
     public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
     public static final char colour = '\u00A7';
-    public static final char separator = '\u23d0';
+    public static final char separator = '|';
 
     private static final String KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json";
 
     public static final Logger log = LogManager.getLogger("KAMI Blue");
 
     public static final EventBus EVENT_BUS = new EventManager();
-
-    public static final KamiMoji KAMIMOJI = new KamiMoji();
 
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
@@ -102,9 +99,6 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        log.info("Initialising KamiMoji...");
-        KAMIMOJI.start();
-
         if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
@@ -117,7 +111,7 @@ public class KamiMod {
         ModuleManager.load();
         ManagerLoader.load();
 
-        MinecraftForge.EVENT_BUS.register(new ForgeEventProcessor());
+        MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
         guiManager = new KamiGUI();
         guiManager.initializeGUI();

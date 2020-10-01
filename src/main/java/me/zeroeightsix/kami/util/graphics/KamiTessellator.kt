@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL32
  *
  *
  * Some is created by 086 on 9/07/2017.
- * Updated by dominikaaaa on 18/02/20
+ * Updated by l1ving on 18/02/20
  * Updated by on Afel 08/06/20
  * Updated by Xiaro on 06/08/20
  */
@@ -94,6 +94,8 @@ object KamiTessellator : Tessellator(0x200000) {
         return if (mc.isGamePaused) mc.renderPartialTicksPaused else mc.renderPartialTicks
     }
 
+    val camPos: Vec3d get() = EntityUtils.getInterpolatedPos(mc.player, pTicks()).add(ActiveRenderInfo.getCameraPosition())
+
     /**
      * @author Xiaro
      *
@@ -145,7 +147,6 @@ object KamiTessellator : Tessellator(0x200000) {
     @JvmStatic
     fun drawLineTo(position: Vec3d, color: ColorHolder, a: Int, thickness: Float) {
         GlStateManager.glLineWidth(thickness)
-        val camPos = EntityUtils.getInterpolatedPos(mc.player, pTicks()).add(ActiveRenderInfo.getCameraPosition())
         buffer.pos(camPos.x, camPos.y, camPos.z).color(color.r, color.g, color.b, a).endVertex()
         buffer.pos(position.x, position.y, position.z).color(color.r, color.g, color.b, a).endVertex()
     }

@@ -1,15 +1,18 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
-import me.zeroeightsix.kami.module.modules.render.Nametags;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
+import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -17,11 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(RenderPlayer.class)
 public class MixinRenderPlayer {
-
-    @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
-    public void renderLivingLabel(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo info) {
-        if (Nametags.INSTANCE.isEnabled()) info.cancel();
-    }
 
     @Inject(method = "applyRotations", at = @At("RETURN"))
     protected void applyRotations(AbstractClientPlayer entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
@@ -38,4 +36,9 @@ public class MixinRenderPlayer {
         }
     }
 
+    // Redirect it to the original player so the original player can be renderer correctly
+    @Redirect(method = "doRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderViewEntity:Lnet/minecraft/entity/Entity;", opcode = Opcodes.GETFIELD))
+    public Entity getRenderViewEntity(RenderManager renderManager) {
+        return Wrapper.getPlayer();
+    }
 }

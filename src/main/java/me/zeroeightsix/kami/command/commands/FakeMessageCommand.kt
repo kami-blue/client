@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.chat.ChatTimestamp
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  */
 class FakeMessageCommand : Command("fakemsg", ChunkBuilder().append("message").build()) {
     override fun call(args: Array<out String?>) {

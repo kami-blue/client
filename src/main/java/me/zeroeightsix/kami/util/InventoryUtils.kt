@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.network.play.client.CPacketClickWindow
-import net.minecraft.network.play.client.CPacketCloseWindow
 
 object InventoryUtils {
     private val mc = Minecraft.getMinecraft()
@@ -213,7 +211,6 @@ object InventoryUtils {
      */
     fun moveToSlot(slotFrom: Int, slotTo: Int) {
         moveToSlot(0, slotFrom, slotTo)
-        if (mc.currentScreen !is GuiInventory) mc.connection!!.sendPacket(CPacketCloseWindow(0))
     }
 
     /**
@@ -233,7 +230,6 @@ object InventoryUtils {
     fun moveAllToSlot(slotTo: Int) {
         inventoryClick(slot = slotTo, type = ClickType.PICKUP_ALL)
         inventoryClick(slot = slotTo, type = ClickType.PICKUP)
-        if (mc.currentScreen !is GuiInventory) mc.connection!!.sendPacket(CPacketCloseWindow(0))
     }
 
     /**
@@ -241,7 +237,6 @@ object InventoryUtils {
      */
     fun quickMoveSlot(slotFrom: Int) {
         quickMoveSlot(0, slotFrom)
-        if (mc.currentScreen !is GuiInventory) mc.connection!!.sendPacket(CPacketCloseWindow(0))
     }
 
     /**
@@ -256,7 +251,6 @@ object InventoryUtils {
      */
     fun throwAllInSlot(slot: Int) {
         throwAllInSlot(0, slot)
-        if (mc.currentScreen !is GuiInventory) mc.connection!!.sendPacket(CPacketCloseWindow(0))
     }
 
     /**

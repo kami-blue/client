@@ -1,49 +1,37 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
-import me.zeroeightsix.kami.gui.kami.RootSmallFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.ColorizedCheckButton;
 import me.zeroeightsix.kami.gui.rgui.component.use.CheckButton;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-
-import java.awt.*;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 8/08/2017.
  */
 public class RootColorizedCheckButtonUI extends RootCheckButtonUI<ColorizedCheckButton> {
 
-    RootSmallFontRenderer ff = new RootSmallFontRenderer();
-
     @Override
-    public void renderComponent(CheckButton component, FontRenderer aa) {
-        glColor4f(toF(GuiC.buttonIdleN.color.getRed()), toF(GuiC.buttonIdleN.color.getGreen()), toF(GuiC.buttonIdleN.color.getBlue()), component.getOpacity());
+    public void renderComponent(CheckButton component) {
+        ColorHolder color = new ColorHolder(GuiC.buttonIdleN.color);
         if (component.isHovered() || component.isPressed()) {
-            glColor4f(toF(GuiC.buttonPressed.color.getRed()), toF(GuiC.buttonPressed.color.getGreen()), toF(GuiC.buttonPressed.color.getBlue()), component.getOpacity());
+            color = new ColorHolder(GuiC.buttonPressed.color);
         }
         if (component.isToggled()) {
-            glColor3f(toF(GuiC.buttonIdleT.color.getRed()), toF(GuiC.buttonIdleT.color.getGreen()), toF(GuiC.buttonIdleT.color.getBlue()));
+            color = new ColorHolder(GuiC.buttonIdleT.color);
         }
 
-//        RenderHelper.drawRoundedRectangle(0,0,component.getWidth(), component.getHeight(), 3f);
-        glLineWidth(2.5f);
-        glBegin(GL_LINES);
-        {
-            glVertex2d(0, component.getHeight());
-            glVertex2d(component.getWidth(), component.getHeight());
-        }
-        glEnd();
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        RenderUtils2D.drawLine(vertexHelper, new Vec2d(0, component.getHeight()), new Vec2d(component.getWidth(), component.getHeight()), 2.5f, color);
 
-        Color idleColour = component.isToggled() ? GuiC.buttonIdleT.color : GuiC.buttonIdleN.color;
-        Color downColour = component.isToggled() ? GuiC.buttonHoveredT.color : GuiC.buttonHoveredN.color;
+        ColorHolder idleColour = new ColorHolder(component.isToggled() ? GuiC.buttonIdleT.color : GuiC.buttonIdleN.color);
+        ColorHolder downColour = new ColorHolder(component.isToggled() ? GuiC.buttonHoveredT.color : GuiC.buttonHoveredN.color);
 
-        glColor3f(1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
-        ff.drawString(component.getWidth() / 2 - KamiGUI.fontRenderer.getStringWidth(component.getName()) / 2, 0, component.isPressed() ? downColour : idleColour, component.getName());
-        glDisable(GL_TEXTURE_2D);
+        FontRenderAdapter.INSTANCE.drawString(component.getName(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getName(), 0.75f) / 2f, 0, true, component.isPressed() ? downColour : idleColour, 0.75f);
     }
 }

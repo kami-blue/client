@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils.CardinalMain
 import me.zeroeightsix.kami.util.math.MathUtils.getPlayerMainCardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraft.entity.player.EntityPlayer
 
 @Module.Info(
         name = "AutoTunnel",
@@ -33,7 +34,7 @@ object AutoTunnel : Module() {
         }
         if (AutoWalk.isEnabled) AutoWalk.disable()
 
-        startingDirection = getPlayerMainCardinal(mc)
+        startingDirection = getPlayerMainCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)
         sendTunnel()
     }
 

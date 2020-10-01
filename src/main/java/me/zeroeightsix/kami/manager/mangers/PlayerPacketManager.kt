@@ -10,11 +10,6 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 27/08/20
- */
 object PlayerPacketManager : Manager() {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */

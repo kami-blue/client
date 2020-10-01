@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
         description = "Logs storage units in render distance."
 )
 object StashFinder : Module() {
+    private val saveToFile = register(Settings.b("SaveToFile"))
     private val logToChat = register(Settings.b("LogToChat"))
     private val playSound = register(Settings.b("PlaySound"))
 
@@ -96,7 +97,9 @@ object StashFinder : Module() {
             chunkStats.hot = false
 
             // mfw int array instead of Vec3i
-            WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
+            if (saveToFile.value) {
+                WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
+            }
 
             if (playSound.value) {
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
@@ -82,6 +81,6 @@ object CustomChat : Module() {
     val cmdCheck: Array<String>
         get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
                 Command.getCommandPrefix(),
-                ModuleManager.getModuleT(ChatEncryption::class.java)?.delimiterValue?.value ?: "")
+                ChatEncryption.delimiterValue.value)
 
 }

@@ -9,12 +9,12 @@ import net.minecraft.client.Minecraft
 import org.lwjgl.opengl.Display
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 24/03/20
+ * @author l1ving
+ * Created by l1ving on 24/03/20
  * Updated by Xiaro on 20/08/20
  */
 object GuiFrameUtil {
-    // This is bad, but without a rearchitecture, it's probably staying... - 20kdc and dominikaaaa
+    // This is bad, but without a rearchitecture, it's probably staying... - 20kdc and l1ving
     @JvmStatic
     fun getFrameByName(name: String?): Frame? {
         val kamiGUI = KamiMod.getInstance().guiManager ?: return null

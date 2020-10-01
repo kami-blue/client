@@ -10,7 +10,7 @@ import net.minecraft.block.Block
 
 /**
  * Created by 20kdc on 17/02/2020.
- * Updated by dominikaaaa on 17/02/20
+ * Updated by l1ving on 17/02/20
  * Modified for use with search module by wnuke on 20/04/2020
  * Updated by Xiaro on 23/07/20
  */

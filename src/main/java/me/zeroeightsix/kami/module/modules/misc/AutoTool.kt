@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.EnumCreatureAttribute
 import net.minecraft.init.Enchantments
 import net.minecraft.item.ItemAxe
@@ -27,17 +28,23 @@ import kotlin.math.pow
 object AutoTool : Module() {
     private val switchBack = register(Settings.b("SwitchBack", true))
     private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value }.build())
-    private val preferTool = register(Settings.e<HitMode>("Prefer", HitMode.SWORD))
+    private val swapWeapon = register(Settings.b("SwitchWeapon", false))
+    private val preferWeapon = register(Settings.e<HitMode>("PreferWeapom", HitMode.SWORD))
 
     private var shouldMoveBack = false
     private var lastSlot = 0
     private var lastChange = 0L
 
     @EventHandler
-    private val leftClickListener = Listener(EventHook { event: LeftClickBlock -> if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos)) })
+    private val leftClickListener = Listener(EventHook { event: LeftClickBlock ->
+        if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos))
+    })
 
     @EventHandler
-    private val attackListener = Listener(EventHook { event: AttackEntityEvent? -> equipBestWeapon(preferTool.value) })
+    private val attackListener = Listener(EventHook { event: AttackEntityEvent ->
+        if (event.target !is EntityLivingBase) return@EventHook
+        if (swapWeapon.value) equipBestWeapon(preferWeapon.value)
+    })
 
     override fun onUpdate() {
         if (mc.currentScreen != null || !switchBack.value) return

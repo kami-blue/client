@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.command.Command;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
 /**
- * Created by dominikaaaa on 01/12/2019.
+ * Created by l1ving on 01/12/2019.
  */
 
 public class LicenseCommand extends Command {

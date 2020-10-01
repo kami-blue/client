@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
@@ -14,15 +11,12 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityCreeper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDamageEvent
 
 @Module.Info(
         name = "AutoLog",
@@ -42,28 +36,6 @@ object AutoLog : Module() {
     private val playerDistance = register(Settings.integerBuilder("PlayerDistance").withRange(64, 256).withValue(128).withVisibility { players.value }.build())
     private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
 
-    private var lastDamageSource = "unknown"
-
-    @EventHandler
-    private val entityJoinWorldEventListener = Listener(EventHook { event: EntityJoinWorldEvent ->
-        if (mc.player == null || !crystals.value || isDisabled) return@EventHook
-        if (event.entity is EntityEnderCrystal) {
-            if (mc.player.health - CrystalAura.calculateDamage(event.entity as EntityEnderCrystal, mc.player) < health.value) {
-                log(END_CRYSTAL)
-            }
-        }
-    })
-
-    @EventHandler
-    private val livingDamageEvent = Listener(EventHook { event: LivingDamageEvent ->
-        if (mc.player == null) return@EventHook
-        if (event.entity == mc.player) {
-            event.source.trueSource?.let {
-                lastDamageSource = it.name
-            }
-        }
-    })
-
     override fun onEnable() {
         if (mc.player == null) disable()
     }
@@ -81,30 +53,38 @@ object AutoLog : Module() {
             return
         }
 
+        if (crystals.value) {
+            for (entity in mc.world.loadedEntityList) {
+                if (entity !is EntityEnderCrystal) continue
+                if (mc.player.getDistance(entity) > 8f) continue
+                if (mc.player.health - CrystalAura.calculateDamage(entity, mc.player) > health.value) continue
+                log(END_CRYSTAL)
+                return
+            }
+        }
+
         if (creeper.value) {
             for (entity in mc.world.loadedEntityList) {
-                if (entity is EntityCreeper && entity.getDistance(mc.player) < creeperDistance.value) {
-                    log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
-                    break
-                }
+                if (entity !is EntityCreeper) continue
+                if (mc.player.getDistance(entity) > creeperDistance.value) continue
+                log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
+                return
             }
         }
 
         if (players.value) {
             for (entity in mc.world.loadedEntityList) {
-                if (entity is EntityPlayer
-                        && entity != mc.player
-                        && entity.getDistance(mc.player) < playerDistance.value
-                        && (friends.value || !Friends.isFriend(entity.name))) {
-                    log(PLAYER, entity.name)
-                    break
-                }
+                if (entity !is EntityPlayer) continue
+                if (entity == mc.player) continue
+                if (mc.player.getDistance(entity) > playerDistance.value) continue
+                if (!friends.value && Friends.isFriend(entity.name)) continue
+                log(PLAYER, entity.name)
+                return
             }
         }
-
     }
 
-    private fun log(reason: Reasons, additionalInfo: String) {
+    private fun log(reason: Reasons, additionalInfo: String = "") {
         val reasonText = getReason(reason, additionalInfo)
         val screen = getScreen() // do this before disconnecting
 
@@ -115,22 +95,18 @@ object AutoLog : Module() {
         mc.displayGuiScreen(KamiGuiDisconnected(reasonText, screen, disable.value == DisableMode.ALWAYS || (disable.value == DisableMode.NOT_PLAYER && reason != PLAYER)))
     }
 
-    private fun getScreen(): GuiScreen {
-        return if (mc.isIntegratedServerRunning) {
-            GuiMainMenu()
-        } else {
-            GuiMultiplayer(GuiMainMenu())
-        }
+    private fun getScreen() = if (mc.isIntegratedServerRunning) {
+        GuiMainMenu()
+    } else {
+        GuiMultiplayer(GuiMainMenu())
     }
 
-    private fun getReason(reason: Reasons, additionalInfo: String): List<String> {
-        return when (reason) {
-            HEALTH -> listOf("Health went below ${health.value}!", "Last attacked by: $lastDamageSource")
-            TOTEM -> listOf("Less then ${totemMessage(totemAmount.value)}!")
-            CREEPER -> listOf("Creeper came near you!", "It was $additionalInfo blocks away")
-            PLAYER -> listOf("Player $additionalInfo came within ${playerDistance.value} blocks range!")
-            END_CRYSTAL -> listOf("An end crystal was placed too close to you!", "It would have done more then ${health.value} damage!")
-        }
+    private fun getReason(reason: Reasons, additionalInfo: String) = when (reason) {
+        HEALTH -> arrayOf("Health went below ${health.value}!")
+        TOTEM -> arrayOf("Less then ${totemMessage(totemAmount.value)}!")
+        CREEPER -> arrayOf("Creeper came near you!", "It was $additionalInfo blocks away")
+        PLAYER -> arrayOf("Player $additionalInfo came within ${playerDistance.value} blocks range!")
+        END_CRYSTAL -> arrayOf("An end crystal was placed too close to you!", "It would have done more then ${health.value} damage!")
     }
 
     private enum class Reasons {
@@ -142,15 +118,9 @@ object AutoLog : Module() {
         NEVER, ALWAYS, NOT_PLAYER
     }
 
-    private fun log(reason: Reasons) {
-        log(reason, "")
-    }
-
-    private fun totemMessage(amount: Int): String {
-        return if (amount == 1) {
-            "one totem"
-        } else {
-            "$amount totems"
-        }
+    private fun totemMessage(amount: Int) = if (amount == 1) {
+        "one totem"
+    } else {
+        "$amount totems"
     }
 }

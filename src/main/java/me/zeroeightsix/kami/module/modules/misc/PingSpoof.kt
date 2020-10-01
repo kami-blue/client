@@ -17,7 +17,7 @@ import java.util.*
 )
 object PingSpoof : Module() {
     private val cancel = register(Settings.b("Cancel", false))// most servers will kick/time you out for this
-    private val delay = register(Settings.integerBuilder("Delay").withValue(100).withRange(0, 2000).withVisibility { !cancel.value }.build())
+    private val delay = register(Settings.integerBuilder("Delay").withValue(100).withRange(0, 2000).withStep(25).withVisibility { !cancel.value }.build())
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->

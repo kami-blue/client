@@ -28,21 +28,21 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 object Search : Module() {
-    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).build())
+    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).withStep(100).build())
     val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
-    private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(1, 256).build())
-    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).build())
+    private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(0, 256).withStep(8).build())
+    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).withStep(128).build())
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
     private val tracer = register(Settings.b("Tracer", true))
     private val customColours = register(Settings.b("CustomColours", false))
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withVisibility { customColours.value }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withVisibility { customColours.value }.build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withVisibility { customColours.value }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
+    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
+    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
+    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withStep(1).withVisibility { filled.value }.build())
+    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { outline.value }.build())
+    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { tracer.value }.build())
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withStep(0.25f).build())
 
     /* Search list */
     private const val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"

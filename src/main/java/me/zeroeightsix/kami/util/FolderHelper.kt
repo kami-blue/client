@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.util.OperatingSystemHelper.OperatingSystem.*
 import java.io.File
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  * @since 14/07/20 19:50
  */
 object FolderHelper {

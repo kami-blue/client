@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -47,18 +48,20 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
-                // First we try to get the constructor of the class and create a new instance with it.
-                // This is for modules that are still in Java.
-                // Because the INSTANCE field isn't assigned yet until the constructor gets called.
-                val module = clazz.getConstructor().newInstance() as Module
-                moduleMap[module.javaClass] = module
-            } catch (noSuchMethodException: NoSuchMethodException) {
-                // If we can't find the constructor for the class then it means it is a Kotlin object class.
-                // We just get the INSTANCE field from it, because Kotlin object class
-                // creates a new INSTANCE automatically when it gets called the first time
-                val module = clazz.getDeclaredField("INSTANCE")[null] as Module
-                moduleMap[module.javaClass] = module
-            } catch (exception: Exception) {
+                try {
+                    // First we try to get the constructor of the class and create a new instance with it.
+                    // This is for modules that are still in Java.
+                    // Because the INSTANCE field isn't assigned yet until the constructor gets called.
+                    val module = clazz.getConstructor().newInstance() as Module
+                    moduleMap[module.javaClass] = module
+                } catch (noSuchMethodException: NoSuchMethodException) {
+                    // If we can't find the constructor for the class then it means it is a Kotlin object class.
+                    // We just get the INSTANCE field from it, because Kotlin object class
+                    // creates a new INSTANCE automatically when it gets called the first time
+                    val module = clazz.getDeclaredField("INSTANCE")[null] as Module
+                    moduleMap[module.javaClass] = module
+                }
+            } catch (exception: Throwable) {
                 exception.printStackTrace()
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
             }
@@ -88,7 +91,9 @@ object ModuleManager {
 
     fun onRender() {
         for (module in moduleList) {
-            if (isModuleListening(module)) module.onRender()
+            if (isModuleListening(module)) {
+                module.onRender()
+            }
         }
     }
 
@@ -119,28 +124,8 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModules(): Array<Module> {
-        return moduleList
-    }
+    fun getModules() = moduleList
 
-    @JvmStatic
-    fun getModule(clazz: Class<out Module>): Module {
-        return moduleMap[clazz] ?: throw(ModuleNotFoundException(clazz.simpleName))
-    }
-
-    /**
-     * Get typed module object so that no casting is needed afterwards.
-     *
-     * @param clazz Module class
-     * @param [T] Type of module
-     * @return Object <[T]>
-     **/
-    @JvmStatic
-    fun <T : Module> getModuleT(clazz: Class<T>): T? {
-        return getModule(clazz) as? T?
-    }
-
-    @Deprecated("Use `getModule(Class<? extends Module>)` instead")
     @JvmStatic
     fun getModule(name: String?): Module? {
         for (module in moduleMap.entries) {
@@ -149,17 +134,6 @@ object ModuleManager {
             }
         }
         throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
-    }
-
-    @JvmStatic
-    fun isModuleEnabled(clazz: Class<out Module>): Boolean {
-        return getModule(clazz).isEnabled
-    }
-
-    @JvmStatic
-    fun isModuleListening(clazz: Class<out Module>): Boolean {
-        val module = getModule(clazz)
-        return isModuleListening(module)
     }
 
     @JvmStatic

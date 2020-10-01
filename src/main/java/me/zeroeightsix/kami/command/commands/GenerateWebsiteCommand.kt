@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 18/03/20
+ * @author l1ving
+ * Updated by l1ving on 18/03/20
  * Updated by Xiaro on 18/08/20
  *
  * Horribly designed command for uh, generating the modules page on the website. This was the easiest way I could do it, but maybe not the most efficient.

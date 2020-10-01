@@ -3,8 +3,12 @@ package me.zeroeightsix.kami.gui.kami.theme.kami;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Groupbox;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-import org.lwjgl.opengl.GL11;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 /**
  * Created by 086 on 26/06/2017.
@@ -12,28 +16,11 @@ import org.lwjgl.opengl.GL11;
 public class RootGroupboxUI extends AbstractComponentUI<Groupbox> {
 
     @Override
-    public void renderComponent(Groupbox component, FontRenderer fontRenderer) {
-        GL11.glLineWidth(1f);
-        fontRenderer.drawString(1, 1, component.getName());
+    public void renderComponent(Groupbox component) {
+        FontRenderAdapter.INSTANCE.drawString(component.getName(), 1, 1);
 
-        GL11.glColor3f(1, 0, 0);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-        GL11.glBegin(GL11.GL_LINES);
-        {
-            GL11.glVertex2d(0, 0);
-            GL11.glVertex2d(component.getWidth(), 0);
-
-            GL11.glVertex2d(component.getWidth(), 0);
-            GL11.glVertex2d(component.getWidth(), component.getHeight());
-
-            GL11.glVertex2d(component.getWidth(), component.getHeight());
-            GL11.glVertex2d(0, component.getHeight());
-
-            GL11.glVertex2d(0, component.getHeight());
-            GL11.glVertex2d(0, 0);
-        }
-        GL11.glEnd();
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0, 0), new Vec2d(component.getWidth(), component.getHeight()), 1f, new ColorHolder(255, 0, 0));
     }
 
     @Override
@@ -44,6 +31,6 @@ public class RootGroupboxUI extends AbstractComponentUI<Groupbox> {
     public void handleAddComponent(Groupbox component, Container container) {
         component.setWidth(100);
         component.setHeight(100);
-        component.setOriginOffsetY(component.getTheme().getFontRenderer().getFontHeight() + 3);
+        component.setOriginOffsetY((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 3f));
     }
 }

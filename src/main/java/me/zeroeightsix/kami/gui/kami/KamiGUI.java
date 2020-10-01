@@ -28,7 +28,6 @@ import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -49,20 +48,77 @@ import java.util.stream.Collectors;
 
 /**
  * Created by 086 on 25/06/2017.
- * Updated by dominikaaaa on 28/01/20
+ * Updated by l1ving on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
  *
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
 
-    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
-    public static ColorHolder primaryColour = new ColorHolder(29, 29, 29, 100);
+    private static final int DOCK_OFFSET = 0;
     public Theme theme;
 
     public KamiGUI() {
         super(new KamiTheme());
         theme = getTheme();
+    }
+
+    private static String getEntityName(@Nonnull Entity entity) {
+        if (entity instanceof EntityItem) {
+            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
+        }
+        if (entity instanceof EntityWitherSkull) {
+            return TextFormatting.DARK_GRAY + "Wither skull";
+        }
+        if (entity instanceof EntityEnderCrystal) {
+            return TextFormatting.LIGHT_PURPLE + "End crystal";
+        }
+        if (entity instanceof EntityEnderPearl) {
+            return "Thrown ender pearl";
+        }
+        if (entity instanceof EntityMinecart) {
+            return "Minecart";
+        }
+        if (entity instanceof EntityItemFrame) {
+            return "Item frame";
+        }
+        if (entity instanceof EntityEgg) {
+            return "Thrown egg";
+        }
+        if (entity instanceof EntitySnowball) {
+            return "Thrown snowball";
+        }
+
+        return entity.getName();
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<>(map.entrySet());
+        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    public static void dock(Frame component) {
+        Docking docking = component.getDocking();
+        if (docking.isTop())
+            component.setY(DOCK_OFFSET);
+        if (docking.isBottom())
+            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
+        if (docking.isLeft())
+            component.setX(DOCK_OFFSET);
+        if (docking.isRight())
+            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
+        if (docking.isCenterHorizontal())
+            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
+        if (docking.isCenterVertical())
+            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
+
     }
 
     @Override
@@ -233,7 +289,6 @@ public class KamiGUI extends GUI {
             InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
         });
         frame.addChild(information);
-        information.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /**
@@ -250,7 +305,6 @@ public class KamiGUI extends GUI {
         Label inventory = new Label("");
         inventory.setShadow(false);
         frame.addChild(inventory);
-        inventory.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -280,7 +334,6 @@ public class KamiGUI extends GUI {
         });
 
         frame.addChild(friends);
-        friends.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -308,7 +361,6 @@ public class KamiGUI extends GUI {
         });
 
         frame.addChild(processes);
-        processes.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -379,7 +431,6 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(100);
         list.setShadow(true);
         frame.addChild(list);
-        list.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -427,7 +478,6 @@ public class KamiGUI extends GUI {
         frame.addChild(entityLabel);
         frame.setPinnable(true);
         entityLabel.setShadow(true);
-        entityLabel.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -437,52 +487,54 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
-        coordsLabel.addTickListener(new TickListener() {
-            final Minecraft mc = Minecraft.getMinecraft();
-
-            @Override
-            public void onTick() {
-                boolean inHell = mc.player.dimension == -1;
-
-                int posX = (int) mc.player.posX;
-                int posY = (int) mc.player.posY;
-                int posZ = (int) mc.player.posZ;
-
-                float f = !inHell ? 0.125f : 8;
-                int hposX = (int) (mc.player.posX * f);
-                int hposZ = (int) (mc.player.posZ * f);
-
-                /* The 7 and f in the string formatter is the color */
-                String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
-                String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
-                        KamiMod.colour,
-                        posX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posZ,
-                        KamiMod.colour
-                );
-                String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
-                        KamiMod.colour,
-                        hposX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        hposZ,
-                        KamiMod.colour
-                );
-                coordsLabel.setText("");
-                coordsLabel.addLine(ow);
-                coordsLabel.addLine(MathUtils.getPlayerCardinal(mc).cardinalName + colouredSeparator + nether);
+        coordsLabel.addTickListener(() -> {
+            EntityPlayer player;
+            if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+                player = (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
+            } else {
+                player = Wrapper.getPlayer();
             }
+            if (player == null) return;
+
+            boolean inHell = player.dimension == -1;
+
+            int posX = (int) player.posX;
+            int posY = (int) player.posY;
+            int posZ = (int) player.posZ;
+
+            float f = !inHell ? 0.125f : 8;
+            int hposX = (int) (player.posX * f);
+            int hposZ = (int) (player.posZ * f);
+
+            /* The 7 and f in the string formatter is the color */
+            String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
+            String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
+                    KamiMod.colour,
+                    posX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posZ,
+                    KamiMod.colour
+            );
+            String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
+                    KamiMod.colour,
+                    hposX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    hposZ,
+                    KamiMod.colour
+            );
+            coordsLabel.setText("");
+            coordsLabel.addLine(ow);
+            coordsLabel.addLine(MathUtils.getPlayerCardinal(player).cardinalName + colouredSeparator + nether);
         });
         frame.addChild(coordsLabel);
-        coordsLabel.setFontRenderer(fontRenderer);
         coordsLabel.setShadow(true);
         frame.setHeight(20);
         frames.add(frame);
@@ -518,65 +570,5 @@ public class KamiGUI extends GUI {
     @Override
     public void destroyGUI() {
         kill();
-    }
-
-    private static String getEntityName(@Nonnull Entity entity) {
-        if (entity instanceof EntityItem) {
-            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
-        }
-        if (entity instanceof EntityWitherSkull) {
-            return TextFormatting.DARK_GRAY + "Wither skull";
-        }
-        if (entity instanceof EntityEnderCrystal) {
-            return TextFormatting.LIGHT_PURPLE + "End crystal";
-        }
-        if (entity instanceof EntityEnderPearl) {
-            return "Thrown ender pearl";
-        }
-        if (entity instanceof EntityMinecart) {
-            return "Minecart";
-        }
-        if (entity instanceof EntityItemFrame) {
-            return "Item frame";
-        }
-        if (entity instanceof EntityEgg) {
-            return "Thrown egg";
-        }
-        if (entity instanceof EntitySnowball) {
-            return "Thrown snowball";
-        }
-
-        return entity.getName();
-    }
-
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list =
-                new LinkedList<>(map.entrySet());
-        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
-
-        Map<K, V> result = new LinkedHashMap<K, V>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
-    }
-
-    private static final int DOCK_OFFSET = 0;
-
-    public static void dock(Frame component) {
-        Docking docking = component.getDocking();
-        if (docking.isTop())
-            component.setY(DOCK_OFFSET);
-        if (docking.isBottom())
-            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
-        if (docking.isLeft())
-            component.setX(DOCK_OFFSET);
-        if (docking.isRight())
-            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
-        if (docking.isCenterHorizontal())
-            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
-        if (docking.isCenterVertical())
-            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
-
     }
 }

@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.util.WebUtils.getContributors
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 
 /**
- * Created by dominikaaaa on 01/12/2019.
+ * Created by l1ving on 01/12/2019.
  * Revamped by d1gress/Qther on 13 April 2020
  * Updated by Xiaro on 21/08/20
  */
@@ -30,7 +30,7 @@ class CreditsCommand : Command("credits", null) {
                         "\n&l&9Author:" +
                         "\n    086 (zeroeightysix)" +
                         "\n&l&9Contributors:" +
-                        "\n    Dominika (dominikaaaa)" +
+                        "\n    Dominika (l1ving)" +
                         "\n    hub (blockparole)" +
                         "\n    Dewy (iBuyMountainDew)" +
                         "\n    Sasha (EmotionalLove)" +
@@ -50,7 +50,7 @@ class CreditsCommand : Command("credits", null) {
                         "\n    Xiaro"
 
         val exceptions = hashSetOf(
-                17222512,  // dominikaaaa / dominika
+                17222512,  // l1ving / dominika
                 27009727,  // zeroeightysix
                 48992448,  // blockparole
                 37771542,  // iBuyMountainDew

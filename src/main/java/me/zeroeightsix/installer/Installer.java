@@ -16,7 +16,7 @@ import java.util.Random;
 
 /**
  * Created by humboldt123 on 14/07/20
- * Rewritten almost entirely by dominikaaaa on 14/07/20
+ * Rewritten almost entirely by l1ving on 14/07/20
  * Added more background images by humboldt123 on 15/08/20
  */
 public class Installer extends JPanel {

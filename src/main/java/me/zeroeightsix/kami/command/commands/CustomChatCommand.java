@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.module.modules.chat.CustomChat;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 17/02/20
+ * @author l1ving
+ * Created by l1ving on 17/02/20
  */
 public class CustomChatCommand extends Command {
     public CustomChatCommand() {

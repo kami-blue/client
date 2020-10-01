@@ -1,13 +1,16 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
+import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.ActiveModules;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.color.ColorGradient;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -17,26 +20,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 4/08/2017.
- * Updated by dominikaaaa on 20/03/19
+ * Updated by l1ving on 20/03/19
  */
 public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kami.gui.kami.component.ActiveModules> {
 
-    @Override
-    public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component, FontRenderer f) {
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glEnable(GL_TEXTURE_2D);
+    final ColorGradient transRights = new ColorGradient(
+            new Pair<>(0f, new ColorHolder(91, 207, 250)), new Pair<>(19.9999999999f, new ColorHolder(91, 207, 250)),
+            new Pair<>(20f, new ColorHolder(245, 170, 185)), new Pair<>(39.9999999999f, new ColorHolder(245, 170, 185)),
+            new Pair<>(40f, new ColorHolder(255, 255, 255)), new Pair<>(59.9999999999f, new ColorHolder(255, 255, 255)),
+            new Pair<>(60f, new ColorHolder(245, 170, 185)), new Pair<>(79.9999999999f, new ColorHolder(245, 170, 185)),
+            new Pair<>(80f, new ColorHolder(91, 207, 250)), new Pair<>(100f, new ColorHolder(91, 207, 250))
+    );
 
-        FontRenderer renderer = Wrapper.getFontRenderer();
+    @Override
+    public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component) {
 
         List<Module> mods = Arrays.stream(ModuleManager.getModules())
                 .filter(Module::isEnabled)
                 .filter(Module -> (ActiveModules.INSTANCE.getHidden().getValue() || Module.isOnArray()))
-                .sorted(Comparator.comparing(module -> renderer.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
+                .sorted(Comparator.comparing(module -> FontRenderAdapter.INSTANCE.getStringWidth(module.name.getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
 
@@ -49,7 +54,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
         final float[] hue = {(System.currentTimeMillis() % (360 * ActiveModules.INSTANCE.getRainbowSpeed())) / (360f * ActiveModules.INSTANCE.getRainbowSpeed())};
 
-        Function<Integer, Integer> xFunc;
+        Function<Float, Float> xFunc;
         switch (component.getAlignment()) {
             case RIGHT:
                 xFunc = i -> component.getWidth() - i;
@@ -59,7 +64,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 break;
             case LEFT:
             default:
-                xFunc = i -> 0;
+                xFunc = i -> 0f;
                 break;
         }
 
@@ -80,27 +85,28 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 case INFO_OVERLAY:
                     rgb = ActiveModules.INSTANCE.getInfoColour(i);
                     break;
+                case TRANS_RIGHTS:
+                    float value = ((float) i + 1.0f) / (float) mods.size();
+                    rgb = transRights.get(value * 100f).toHex();
+                    break;
                 default:
                     rgb = 0;
             }
 
             String hudInfo = module.getHudInfo();
             String text = ActiveModules.INSTANCE.getAlignedText(module.name.getValue(), (hudInfo == null ? "" : KamiMod.colour + "7" + hudInfo + KamiMod.colour + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
-            int textWidth = renderer.getStringWidth(text);
-            int textHeight = renderer.getFontHeight() + 1;
+            float textWidth = FontRenderAdapter.INSTANCE.getStringWidth(text);
+            float textHeight = FontRenderAdapter.INSTANCE.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;
             int green = (rgb >> 8) & 0xFF;
             int blue = rgb & 0xFF;
 
-            renderer.drawStringWithShadow(xFunc.apply(textWidth), y[0], red, green, blue, text);
+            FontRenderAdapter.INSTANCE.drawString(text, xFunc.apply(textWidth), y[0], true, new ColorHolder(red, green, blue));
             hue[0] += .02f;
             y[0] += textHeight;
         }
 
         component.setHeight(y[0]);
-
-        glEnable(GL_CULL_FACE);
-        glDisable(GL_BLEND);
     }
 
     @Override

@@ -3,13 +3,12 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.module.Module.Category
-import me.zeroeightsix.kami.module.ModuleManager.getModuleT
 import me.zeroeightsix.kami.module.modules.client.ActiveModules
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 
 /**
- * @author dominikaaaa
- * Updated by dominikaaaa on 05/04/20
+ * @author l1ving
+ * Updated by l1ving on 05/04/20
  */
 class ActiveModulesCommand : Command("activemodules", ChunkBuilder().append("category").append("r").append("g").append("b").build(), "activemods", "modules") {
 
@@ -24,7 +23,7 @@ class ActiveModulesCommand : Command("activemodules", ChunkBuilder().append("cat
         }
         val category = convertToCategory(args[0]) ?: return
         val color = IntArray(3) { convertToColor(args[it + 1]) ?: return }
-        getModuleT(ActiveModules::class.java)!!.setColor(category, color)
+        ActiveModules.setColor(category, color)
     }
 
     private fun convertToCategory(string: String?): Category? {

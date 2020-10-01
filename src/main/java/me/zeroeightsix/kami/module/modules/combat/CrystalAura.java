@@ -5,7 +5,6 @@ import me.zero.alpine.listener.Listener;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.render.PlayerModel;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -50,7 +49,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
  * Updated 3 December 2019 by hub
  * Updated 8 March 2020 by polymer
  * Updated by qther on 27/03/20
- * Updated by dominikaaaa on 27/03/20
+ * Updated by l1ving on 27/03/20
  * Updated by Afel on 08/06/20
  */
 @Module.Info(
@@ -209,7 +208,7 @@ public class CrystalAura extends Module {
                     explode(crystal);
                 }
                 if (sneakEnable.getValue() && mc.player.isSneaking() && holeBlocks != 5) {
-                    ModuleManager.getModule(Surround.class).enable();
+                    Surround.INSTANCE.enable();
                 }
                 return;
             }

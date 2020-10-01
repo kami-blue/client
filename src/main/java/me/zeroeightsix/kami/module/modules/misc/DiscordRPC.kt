@@ -5,7 +5,6 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -91,7 +90,6 @@ object DiscordRPC : Module() {
     }
 
     private fun setRpcWithDelay() {
-        val discordRPC = ModuleManager.getModuleT(DiscordRPC::class.java)!!
         while (!Thread.currentThread().isInterrupted && connected) {
             try {
                 presence.details = getLine(line1Left.value) + getSeparator(0) + getLine(line1Right.value)
@@ -101,7 +99,7 @@ object DiscordRPC : Module() {
                 exception.printStackTrace()
             }
             try {
-                Thread.sleep((discordRPC.updateDelay.value * 1000f).toLong())
+                Thread.sleep((updateDelay.value * 1000f).toLong())
             } catch (interruptedException: InterruptedException) {
                 interruptedException.printStackTrace()
             }

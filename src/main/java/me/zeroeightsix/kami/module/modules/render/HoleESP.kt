@@ -2,13 +2,12 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.combat.CrystalAura
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.surroundOffset
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.ConcurrentHashMap
@@ -54,9 +53,7 @@ object HoleESP : Module() {
 
     override fun onUpdate() {
         safeHoles.clear()
-        val range = ceil(renderDistance.value).toInt()
-        val crystalAura = ModuleManager.getModuleT(CrystalAura::class.java)!!
-        val blockPosList = crystalAura.getSphere(CrystalAura.getPlayerPos(), range.toFloat(), range, false, true, 0)
+        val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
         for (pos in blockPosList) {
             if (mc.world.getBlockState(pos).block != Blocks.AIR// block gotta be air
                     || mc.world.getBlockState(pos.up()).block != Blocks.AIR // block 1 above gotta be air

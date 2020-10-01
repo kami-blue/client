@@ -10,10 +10,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 04/05/20
- */
 @Suppress("UNUSED_PARAMETER")
 object MacroManager : Manager() {
 

@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 /**
  * Created by Gebruiker on 18/04/2017.
@@ -72,4 +73,28 @@ class ColorHolder {
     fun clone(): ColorHolder {
         return ColorHolder(r, g, b, a)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ColorHolder
+
+        if (r != other.r) return false
+        if (g != other.g) return false
+        if (b != other.b) return false
+        if (a != other.a) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = r
+        result = 31 * result + g
+        result = 31 * result + b
+        result = 31 * result + a
+        return result
+    }
+
+    companion object
 }

@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.gui.kami.*;
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
+import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
@@ -11,7 +12,6 @@ import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.component.listen.UpdateListener;
 import me.zeroeightsix.kami.gui.rgui.poof.use.FramePoof;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.util.Bind;
@@ -20,19 +20,16 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
 import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
-import org.lwjgl.opengl.GL11;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 26/06/2017.
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
-    private static final RootFontRenderer ff = new RootLargeFontRenderer();
     Component yLineComponent = null;
     Component xLineComponent = null;
     Component centerXComponent = null;
@@ -42,20 +39,17 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     int xLineOffset = 0;
 
     @Override
-    public void renderComponent(Frame component, FontRenderer fontRenderer) {
-        if (component.getOpacity() == 0)
-            return;
+    public void renderComponent(Frame component) {
+        if (component.getOpacity() == 0) return;
 
         VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
-        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColorHolder(43, 43, 46, 230));
+        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColorHolder(GuiC.windowFilled.color));
         RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColorHolder(GuiC.windowOutline.color));
-        glDisable(GL_TEXTURE_2D);
 
-        GL11.glColor3f(1, 1, 1);
-        ff.drawString(component.getWidth() / 2 - ff.getStringWidth(component.getTitle()) / 2, 1, component.getTitle());
+        FontRenderAdapter.INSTANCE.drawString(component.getTitle(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getTitle()) / 2f, 1f);
 
         int top_y = 5;
-        int bottom_y = component.getTheme().getFontRenderer().getFontHeight() - 9;
+        float bottom_y = FontRenderAdapter.INSTANCE.getFontHeight() - 9f;
 
         if (component.isCloseable() && component.isMinimizeable()) {
             top_y -= 4;
@@ -63,16 +57,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
         }
 
         if (component.isCloseable()) {
-            glLineWidth(2f);
-            glColor3f(1, 1, 1);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(component.getWidth() - 20, top_y);
-                glVertex2d(component.getWidth() - 10, bottom_y);
-                glVertex2d(component.getWidth() - 10, top_y);
-                glVertex2d(component.getWidth() - 20, bottom_y);
-            }
-            glEnd();
+            RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(component.getWidth() - 20, top_y), new Vec2d(component.getWidth() - 10, bottom_y), 2f, new ColorHolder(255, 255, 255));
         }
 
         if (component.isCloseable() && component.isMinimizeable()) {
@@ -81,89 +66,42 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
         }
 
         if (component.isMinimizeable()) {
-            glLineWidth(1.5f);
-            glColor3f(1, 1, 1);
             if (component.isMinimized()) {
-                glBegin(GL_LINE_LOOP);
-                {
-                    glVertex2d(component.getWidth() - 15, top_y + 2);
-                    glVertex2d(component.getWidth() - 15, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, top_y + 2);
-                }
-                glEnd();
+                RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(component.getWidth() - 15, top_y + 2), new Vec2d(component.getWidth() - 10, bottom_y + 3), 1.5f, new ColorHolder(255, 255, 255));
             } else {
-                glBegin(GL_LINES);
-                {
-                    glVertex2d(component.getWidth() - 15, bottom_y + 4);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 4);
-                }
-                glEnd();
+                RenderUtils2D.drawLine(vertexHelper, new Vec2d(component.getWidth() - 15, bottom_y + 4), new Vec2d(component.getWidth() - 10, bottom_y + 4), 1.5f, new ColorHolder(255, 255, 255));
             }
         }
 
         if (component.isPinnable()) {
-            if (component.isPinned())
-                glColor3f(toF(GuiC.pinnedWindow.color.getRed()), toF(GuiC.pinnedWindow.color.getGreen()), toF(GuiC.pinnedWindow.color.getBlue()));
-            else
-                glColor3f(toF(GuiC.unpinnedWindow.aDouble), toF(GuiC.unpinnedWindow.aDouble), toF(GuiC.unpinnedWindow.aDouble));
-            RenderHelper.drawCircle(7, 4, 2f);
-            glLineWidth(3f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(7, 4);
-                glVertex2d(4, 8);
-            }
-            glEnd();
+            ColorHolder color;
+            if (component.isPinned()) color = new ColorHolder(GuiC.pinnedWindow.color);
+            else color = new ColorHolder(GuiC.unpinnedWindow.color);
+            RenderUtils2D.drawCircleFilled(vertexHelper, new Vec2d(7, 4), 2.0, color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(7, 4), new Vec2d(4, 8), 3f, color);
         }
 
         if (component.equals(xLineComponent)) {
-            glColor3f(toF(GuiC.lineWindow.aDouble), toF(GuiC.lineWindow.aDouble), toF(GuiC.lineWindow.aDouble));
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(xLineOffset, -GUI.calculateRealPosition(component)[1]);
-                glVertex2d(xLineOffset, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
+            ColorHolder color = new ColorHolder(GuiC.lineWindow.color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(xLineOffset, -GUI.calculateRealPosition(component)[1]), new Vec2d(xLineOffset, Wrapper.getMinecraft().displayHeight), 1f, color);
         }
 
         if (component == centerXComponent && centerX) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double x = component.getWidth() / 2;
-                glVertex2d(x, -GUI.calculateRealPosition(component)[1]);
-                glVertex2d(x, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
+            float x = component.getWidth() / 2f;
+            ColorHolder color = new ColorHolder(219, 8, 255);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(x, -GUI.calculateRealPosition(component)[1]), new Vec2d(x, Wrapper.getMinecraft().displayHeight), 1f, color);
         }
 
         if (component.equals(yLineComponent)) {
-            glColor3f(.44f, .44f, .44f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(-GUI.calculateRealPosition(component)[0], 0);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, 0);
-            }
-            glEnd();
+            ColorHolder color = new ColorHolder(GuiC.lineWindow.color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(-GUI.calculateRealPosition(component)[0], 0), new Vec2d(Wrapper.getMinecraft().displayWidth, 0), 1f, color);
         }
 
         if (component == centerYComponent && centerY) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double y = component.getHeight() / 2;
-                glVertex2d(-GUI.calculateRealPosition(component)[0], y);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, y);
-            }
-            glEnd();
+            float y = component.getHeight() / 2f;
+            ColorHolder color = new ColorHolder(219, 8, 255);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(-GUI.calculateRealPosition(component)[0], y), new Vec2d(Wrapper.getMinecraft().displayWidth, y), 1f, color);
         }
-
-        glDisable(GL_BLEND);
     }
 
     @Override
@@ -182,7 +120,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     @Override
     public void handleAddComponent(Frame component, Container container) {
         super.handleAddComponent(component, container);
-        component.setOriginOffsetY(component.getTheme().getFontRenderer().getFontHeight() + 3);
+        component.setOriginOffsetY((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 3f));
         component.setOriginOffsetX(3);
 
         component.addMouseListener(new MouseListener() {
