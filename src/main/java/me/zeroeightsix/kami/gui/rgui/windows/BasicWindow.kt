@@ -16,7 +16,8 @@ open class BasicWindow(
         height: Double
 ) : CleanWindow(name, posX, posY, width, height) {
     override fun onRender(vertexHelper: VertexHelper) {
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(prevWidth, prevHeight), ColorHolder(31, 29, 51, 180))
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(prevWidth, prevHeight), 2f, ColorHolder(123, 114, 204))
+        super.onRender(vertexHelper)
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), ColorHolder(31, 29, 51, 180))
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 2f, ColorHolder(123, 114, 204))
     }
 }

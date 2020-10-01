@@ -17,11 +17,11 @@ open class TitledWindow(
         height: Double
 ) : BasicWindow(name, posX, posY, width, height) {
     override val draggableHeight: Double
-        get() = KamiFontRenderer.getFontHeight() + 2.0
+        get() = KamiFontRenderer.getFontHeight() + 4.0
 
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(prevWidth, draggableHeight), ColorHolder(123, 114, 204))
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, draggableHeight), ColorHolder(123, 114, 204))
         KamiFontRenderer.drawString(name, 4f, 0f, color = ColorHolder(255, 255, 255))
     }
 }
