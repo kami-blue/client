@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageDetectionHelper
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import java.util.*
@@ -17,22 +17,13 @@ import java.util.function.Consumer
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
-/**
- * @author hub
- * @author dominikaaaa
- * Created 19 November 2019 by hub
- * Updated 12 January 2020 by hub
- * Updated 19 February 2020 by aUniqueUser
- * Updated by dominikaaaa on 19/04/20
- * Updated by Humboldt123 28/05/20
- */
 @Module.Info(
         name = "AntiSpam",
         category = Module.Category.CHAT,
         description = "Removes spam and advertising from the chat",
         showOnArray = Module.ShowOnArray.OFF
 )
-class AntiSpam : Module() {
+object AntiSpam : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))
     private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java).withName("ReplaceMode")
             .withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE }.build())
@@ -355,6 +346,7 @@ class AntiSpam : Module() {
                 "fa(g |g.{0,2})",
                 "reta.{0,3}"
         )
+
         // fairly simple - anarchy servers shouldn't have a chat filter so there isn't an attempt to check for bypasses
         val SWEARS = arrayOf(
                 "fuck(er)?",
