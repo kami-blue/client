@@ -14,8 +14,6 @@ abstract class WindowComponent : InteractiveComponent() {
     override var maxWidth: Double = -1.0
     override var maxHeight: Double = -1.0
     open val draggableHeight get() = height
-    open val minWidth: Double = 10.0
-    open val minHeight: Double = 10.0
     var lastActiveTime: Long = System.currentTimeMillis(); private set
     var preDragPos = Vec2d(0.0, 0.0); private set
     var preDragSize = Vec2d(0.0, 0.0); private set
@@ -46,11 +44,13 @@ abstract class WindowComponent : InteractiveComponent() {
     }
 
     override fun onClick(mousePos: Vec2d, buttonId: Int) {
+        super.onClick(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
     }
 
     override fun onRelease(mousePos: Vec2d, buttonId: Int) {
+        super.onRelease(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
     }
@@ -61,6 +61,7 @@ abstract class WindowComponent : InteractiveComponent() {
     }
 
     override fun onDrag(mousePos: Vec2d, clickPos: Vec2d, buttonId: Int) {
+        super.onDrag(mousePos, clickPos, buttonId)
         val relativeClickPos = clickPos.subtract(preDragPos)
         val horizontalSide = when (relativeClickPos.x) {
             in -2.5..2.5 -> Alignment.HAlign.LEFT

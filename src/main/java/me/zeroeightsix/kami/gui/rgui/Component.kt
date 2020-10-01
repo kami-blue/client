@@ -1,15 +1,21 @@
 package me.zeroeightsix.kami.gui.rgui
 
+import com.google.gson.annotations.Expose
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import java.util.*
 
 abstract class Component {
-    // Basic info of the component
-    abstract var name: String; protected set
-    abstract var width: Double; protected set
-    abstract var height: Double; protected set
+    // Basic info
+    val id: UUID = UUID.randomUUID()
+    @Expose open var name = id.toString(); protected set
+    @Expose open var width = 0.0; protected set
+    @Expose open var height = 0.0; protected set
 
     // Extra info
+    protected val mc = Wrapper.minecraft
+    open val minWidth: Double = 10.0
+    open val minHeight: Double = 10.0
     abstract var maxWidth: Double
     abstract var maxHeight: Double
 
@@ -35,5 +41,7 @@ abstract class Component {
 
     open fun onRender(vertexHelper: VertexHelper) {}
 
-    protected val mc = Wrapper.minecraft
+    override fun equals(other: Any?) = other === this || other is Component && other.id == id
+
+    override fun hashCode() = id.hashCode()
 }
