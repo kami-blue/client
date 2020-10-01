@@ -7,78 +7,140 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
-import java.util.*
+import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
+import kotlin.math.max
+import kotlin.random.Random
 
+/**
+ * TODO: Path finding to stay inside 1 chunk
+ * TODO: Render which chunk is selected
+ */
 @Module.Info(
         name = "AntiAFK",
         category = Module.Category.MISC,
         description = "Prevents being kicked for AFK"
 )
 object AntiAFK : Module() {
-    private val frequency = register(Settings.integerBuilder("ActionFrequency").withMinimum(1).withMaximum(100).withValue(40).build())
-    val autoReply = register(Settings.b("AutoReply", true))
+    private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(0, 100).build())
+    private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
+    private val autoReply = register(Settings.b("AutoReply", true))
     private val swing = register(Settings.b("Swing", true))
     private val jump = register(Settings.b("Jump", true))
-    private val squareWalk = register(Settings.b("SquareWalk", true))
-    private val radius = register(Settings.integerBuilder("Radius").withMinimum(1).withValue(64).build())
     private val turn = register(Settings.b("Turn", true))
+    private val walk = register(Settings.b("Walk", true))
+    private val radius = register(Settings.integerBuilder("Radius").withValue(64).withRange(1, 128).build())
+    private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15).build())
 
-    private val random = Random()
-    private val squareStartCoords = intArrayOf(0, 0)
+    private var startPos: BlockPos? = null
+    private var nextActionTick = 0
     private var squareStep = 0
     private var baritoneDisconnectOnArrival = false
-
-    public override fun onEnable() {
-        if (mc.player == null) return
-
-        baritoneDisconnectOnArrival = BaritoneAPI.getSettings().disconnectOnArrival.value
-        BaritoneAPI.getSettings().disconnectOnArrival.value = false
-        squareStartCoords[0] = mc.player.posX.toInt()
-        squareStartCoords[1] = mc.player.posZ.toInt()
-    }
-
-    public override fun onDisable() {
-        if (mc.player == null) return
-
-        BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival
-        if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    }
-
-    override fun onUpdate() {
-        if (mc.playerController.getIsHittingBlock()) return
-        if (swing.value && mc.player.ticksExisted % (0.5 * getFrequency()) == 0.0) {
-            Objects.requireNonNull(mc.connection)!!.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
-        }
-        if (squareWalk.value && mc.player.ticksExisted % getFrequency() == 0f && !isBaritoneActive) {
-            val r = clamp(radius.value)
-            when (squareStep) {
-                0 -> baritoneGotoXZ(squareStartCoords[0], squareStartCoords[1] + r)
-                1 -> baritoneGotoXZ(squareStartCoords[0] + r, squareStartCoords[1] + r)
-                2 -> baritoneGotoXZ(squareStartCoords[0] + r, squareStartCoords[1])
-                3 -> baritoneGotoXZ(squareStartCoords[0], squareStartCoords[1])
-            }
-            squareStep = (squareStep + 1) % 4
-        }
-        if (jump.value && mc.player.ticksExisted % (2 * getFrequency()) == 0f) {
-            mc.player.jump()
-        }
-        if (turn.value && mc.player.ticksExisted % (0.375 * getFrequency()) == 0.0) {
-            mc.player.rotationYaw = random.nextInt(360) - makeNegRandom(180).toFloat()
-        }
-    }
+    private val inputTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (autoReply.value && event.packet is SPacketChat && event.packet.getChatComponent().unformattedText.contains("whispers: ") && !event.packet.getChatComponent().unformattedText.contains(mc.player.name)) {
+        if (!autoReply.value || event.packet !is SPacketChat) return@EventHook
+        if (MessageDetectionHelper.isDirect(true, event.packet.getChatComponent().unformattedText)) {
             sendServerMessage("/r I am currently AFK and using KAMI Blue!")
         }
     })
+
+    @EventHandler
+    private val mouseInputListener = Listener(EventHook<InputEvent.MouseInputEvent> { event: InputEvent.MouseInputEvent? ->
+        if (inputTimeout.value != 0 && isInputting()) {
+            inputTimer.reset()
+        }
+    })
+
+    @EventHandler
+    private val keyInputListener = Listener(EventHook<KeyInputEvent> { event: KeyInputEvent? ->
+        if (inputTimeout.value != 0 && isInputting()) {
+            inputTimer.reset()
+        }
+    })
+
+    private fun isInputting(): Boolean {
+        return (mc.gameSettings.keyBindAttack.isKeyDown
+                || mc.gameSettings.keyBindUseItem.isKeyDown
+                || mc.gameSettings.keyBindJump.isKeyDown
+                || mc.gameSettings.keyBindSneak.isKeyDown
+                || mc.gameSettings.keyBindForward.isKeyDown
+                || mc.gameSettings.keyBindBack.isKeyDown
+                || mc.gameSettings.keyBindLeft.isKeyDown
+                || mc.gameSettings.keyBindRight.isKeyDown)
+    }
+
+    override fun getHudInfo(): String? {
+        return ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
+    }
+
+    override fun onEnable() {
+        with(BaritoneAPI.getSettings().disconnectOnArrival) {
+            baritoneDisconnectOnArrival = value
+            value = false
+        }
+    }
+
+    override fun onDisable() {
+        startPos = null
+        BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival
+        baritoneCancel()
+    }
+
+    override fun onUpdate() {
+        if (inputTimeout.value != 0) {
+            if (isBaritoneActive) inputTimer.reset()
+            if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
+                startPos = null
+                return
+            }
+        }
+
+        if (mc.player.ticksExisted >= nextActionTick) {
+            val random = if (variation.value > 0) (0..variation.value).random() else 0
+            nextActionTick = mc.player.ticksExisted + max(delay.value, 1) + random
+
+            when ((getAction())) {
+                Action.SWING -> mc.player.swingArm(EnumHand.MAIN_HAND)
+                Action.JUMP -> mc.player.jump()
+                Action.TURN -> mc.player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
+            }
+
+            if (walk.value && !isBaritoneActive) {
+                if (startPos == null) startPos = mc.player.position
+                startPos?.let {
+                    when (squareStep) {
+                        0 -> baritoneGotoXZ(it.x, it.z + radius.value)
+                        1 -> baritoneGotoXZ(it.x + radius.value, it.z + radius.value)
+                        2 -> baritoneGotoXZ(it.x + radius.value, it.z)
+                        3 -> baritoneGotoXZ(it.x, it.z)
+                    }
+                }
+                squareStep = (squareStep + 1) % 4
+            }
+        }
+    }
+
+    private fun getAction(): Action? {
+        if (!swing.value && !jump.value && !turn.value) return null
+        val action = Action.values().random()
+        return if (action.setting.value) action else getAction()
+    }
+
+    private enum class Action(val setting: Setting<Boolean>) {
+        SWING(swing),
+        JUMP(jump),
+        TURN(turn)
+    }
 
     private val isBaritoneActive: Boolean
         get() = BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive
@@ -87,20 +149,13 @@ object AntiAFK : Module() {
         BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(x, z))
     }
 
-    private fun clamp(`val`: Int): Int {
-        return if (`val` < 0) 0 else `val`
+    private fun baritoneCancel() {
+        if (walk.value && isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     }
 
-    private fun getFrequency(): Float {
-        return reverseNumber(frequency.value, 1, 100).toFloat()
-    }
-
-    private fun makeNegRandom(input: Int): Int {
-        val rand = if (random.nextBoolean()) 1 else 0
-        return if (rand == 0) {
-            -input
-        } else {
-            input
+    init {
+        walk.settingListener = Setting.SettingListeners {
+            if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
         }
     }
 }
