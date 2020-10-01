@@ -4,10 +4,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
+import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.graphics.font.TextComponent
+import me.zeroeightsix.kami.util.graphics.font.TextProperties
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -28,7 +30,6 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 //TODO: Impl Totem pops
@@ -94,6 +95,7 @@ object Nametags : Module() {
     private val rText = register(Settings.integerBuilder("TextRed").withValue(232).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val gText = register(Settings.integerBuilder("TextGreen").withValue(229).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val bText = register(Settings.integerBuilder("TextBlue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
+    private val aText = register(Settings.integerBuilder("TextAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val textShadow = register(Settings.booleanBuilder("TextShadow").withValue(true).withVisibility { page.value == Page.RENDERING })
     private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(-2.5f, 2.5f).withStep(0.05f).withVisibility { page.value == Page.RENDERING })
     private val scale = register(Settings.floatBuilder("Scale").withValue(1f).withRange(0.25f, 5f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
@@ -159,13 +161,13 @@ object Nametags : Module() {
 
     private fun drawNametag(screenPos: Vec3d, scale: Float, vertexHelper: VertexHelper, drawFrame: Boolean, textComponent: TextComponent) {
         glPushMatrix()
-        glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
+        glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
         glScalef(scale, scale, 1f)
         val halfWidth = textComponent.getWidth() / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
-        if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth - 0.5, -halfHeight), Vec2d(halfWidth - 0.5, halfHeight))
-        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
-        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
+        if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth, -halfHeight), Vec2d(halfWidth, halfHeight))
+        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER)
+        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER)
         glPopMatrix()
     }
 
@@ -187,10 +189,10 @@ object Nametags : Module() {
 
         if (itemList.isEmpty() || itemList.count { !it.first.isEmpty() } == 0) return
         val halfHeight = textComponent.getHeight(2, true) / 2.0 + margins.value + 2.0
-        val halfWidth = (itemList.count { !it.first.isEmpty() } * 24) / 2f
+        val halfWidth = (itemList.count { !it.first.isEmpty() } * 28) / 2f
 
         glPushMatrix()
-        glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f) // Translate to nametag pos
+        glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f) // Translate to nametag pos
         glScalef(nameTagScale, nameTagScale, 1f) // Scale to nametag scale
         glTranslated(0.0, -ceil(halfHeight), 0.0) // Translate to top of nametag
         glScalef((itemScale.value * 2f) / nameTagScale, (itemScale.value * 2f) / nameTagScale, 1f) // Scale to item scale
@@ -200,43 +202,46 @@ object Nametags : Module() {
 
         if (itemFrame.value) {
             glTranslatef(0f, -margins.value, 0f)
-            val duraHeight = if (drawDura) mc.fontRenderer.FONT_HEIGHT + 2f else 0f
-            val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(3) }.max() ?: 0) + 4 else 0
-            val height = 16 + duraHeight + enchantmentHeight / 2f
+            val duraHeight = if (drawDura) KamiFontRenderer.getFontHeight() + 2f else 0f
+            val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(2) }.max()
+                    ?: 0f) + 4f else 0f
+            val height = 16 + duraHeight + enchantmentHeight * 0.6f
             val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
             val posEnd = Vec2d(halfWidth + margins.value.toDouble(), margins.value.toDouble())
             drawFrame(vertexHelper, posBegin, posEnd)
         }
 
         glTranslatef(-halfWidth + 4f, -16f, 0f)
-        if (drawDura) glTranslatef(0f, -mc.fontRenderer.FONT_HEIGHT - 2f, 0f)
+        if (drawDura) glTranslatef(0f, -KamiFontRenderer.getFontHeight() - 2f, 0f)
         RenderHelper.enableGUIStandardItemLighting()
 
         for ((itemStack, enchantmentText) in itemList) {
             if (itemStack.isEmpty()) continue
             GlStateUtils.blend(true)
-            mc.renderItem.zLevel = -911f
+            mc.renderItem.zLevel = -100f
             mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 0, 0)
             mc.renderItem.zLevel = 0f
             glColor4f(1f, 1f, 1f, 1f)
 
             if (drawDura && itemStack.isItemStackDamageable) {
                 val duraPercentage = 100f - (itemStack.itemDamage.toFloat() / itemStack.maxDamage.toFloat()) * 100f
-                val color = healthColorGradient.get(duraPercentage).toHex()
+                val color = healthColorGradient.get(duraPercentage)
                 val text = duraPercentage.roundToInt().toString()
-                val textWidth = mc.fontRenderer.getStringWidth(text)
-                mc.fontRenderer.drawString(text, 8f - round(textWidth / 2f), 17f, color, textShadow.value)
+                val textWidth = KamiFontRenderer.getStringWidth(text)
+                KamiFontRenderer.drawString(text, 8f - textWidth / 2f, 17f, textShadow.value, color)
             }
 
             if (count.value && itemStack.count > 1) {
                 val itemCount = itemStack.count.toString()
-                mc.fontRenderer.drawStringWithShadow(itemCount, 17f - mc.fontRenderer.getStringWidth(itemCount), 9f, 0xFFFFFF)
+                glTranslatef(0f, 0f, 60f)
+                KamiFontRenderer.drawString(itemCount, 17f - KamiFontRenderer.getStringWidth(itemCount), 9f, textShadow.value)
+                glTranslatef(0f, 0f, -60f)
             }
 
             glTranslatef(0f, -2f, 0f)
-            if (enchantment.value) enchantmentText.draw(scale = 0.5f, lineSpace = 3, verticalAlign = TextComponent.VAlign.BOTTOM)
+            if (enchantment.value) enchantmentText.draw(lineSpace = 2, scale = 0.6f, drawShadow = textShadow.value, verticalAlign = TextProperties.VAlign.BOTTOM)
 
-            glTranslatef(24f, 2f, 0f)
+            glTranslatef(28f, 2f, 0f)
         }
         glColor4f(1f, 1f, 1f, 1f)
 
@@ -248,8 +253,8 @@ object Nametags : Module() {
         val textComponent = TextComponent()
         val enchantmentList = EnchantmentUtils.getAllEnchantments(itemStack)
         for (leveledEnchantment in enchantmentList) {
-            textComponent.add(leveledEnchantment.alias)
-            textComponent.addLine(leveledEnchantment.levelText, 0x9B90FF)
+            textComponent.add(leveledEnchantment.alias, ColorHolder(255, 255, 255, aText.value), style = TextProperties.Style.BOLD)
+            textComponent.addLine(leveledEnchantment.levelText, ColorHolder(155, 144, 255, aText.value), TextProperties.Style.BOLD)
         }
         return textComponent
     }
@@ -380,7 +385,7 @@ object Nametags : Module() {
                 null
             } else {
                 val absorption = MathUtils.round(entity.absorptionAmount, 1).toString()
-                TextComponent.TextElement(absorption, 0xEECC20)
+                TextComponent.TextElement(absorption, ColorHolder(234, 204, 32, aText.value))
             }
         }
         ContentType.PING -> {
@@ -388,7 +393,7 @@ object Nametags : Module() {
                 null
             } else {
                 val ping = mc.connection?.getPlayerInfo(entity.uniqueID)?.responseTime ?: 0
-                TextComponent.TextElement("${ping}ms", pingColorGradient.get(ping.toFloat()).toHex())
+                TextComponent.TextElement("${ping}ms", pingColorGradient.get(ping.toFloat()).apply { a = aText.value })
             }
         }
         ContentType.DISTANCE -> {
@@ -400,7 +405,7 @@ object Nametags : Module() {
 //        }
     }
 
-    private fun getTextColor() = ColorConverter.rgbToInt(rText.value, gText.value, bText.value)
+    private fun getTextColor() = ColorHolder(rText.value, gText.value, bText.value, aText.value)
 
     private fun getEntityType(entity: Entity) = entity.javaClass.simpleName.replace("Entity", "")
             .replace("Other", "")
@@ -408,7 +413,7 @@ object Nametags : Module() {
             .replace("SP", "")
             .replace(" ", "")
 
-    private fun getHpColor(entity: EntityLivingBase) = healthColorGradient.get((entity.health / entity.maxHealth) * 100f).toHex()
+    private fun getHpColor(entity: EntityLivingBase) = healthColorGradient.get((entity.health / entity.maxHealth) * 100f).apply { a = aText.value }
 
     fun checkEntityType(entity: Entity) = (self.value || entity != mc.player)
             && (!entity.isInvisible || invisible.value)
@@ -498,7 +503,7 @@ object Nametags : Module() {
                 textComponent.addLine(text, getTextColor())
                 if (index + 1 >= maxDropItems.value) {
                     val remaining = itemCountMap.size - index - 1
-                    if (remaining > 0) textComponent.addLine("...and $remaining more")
+                    if (remaining > 0) textComponent.addLine("...and $remaining more", getTextColor())
                     break
                 }
             }

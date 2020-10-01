@@ -60,7 +60,6 @@ object HungerOverlay : Module() {
         if (foodSaturationOverlay.value && foodValues.second > 0f) {
             drawSaturationBar(floor(stats.saturationLevel), newSaturationValue, left, top, flashAlpha)
         }
-        GlStateUtils.blend(false)
         mc.textureManager.bindTexture(Gui.ICONS)
     })
 

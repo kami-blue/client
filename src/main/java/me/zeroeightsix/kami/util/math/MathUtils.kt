@@ -17,6 +17,20 @@ object MathUtils {
     }
 
     @JvmStatic
+    fun ceilToPOT(valueIn: Int): Int {
+        // Magical bit shifting
+        var i = valueIn
+        i--
+        i = i or (i shr 1)
+        i = i or (i shr 2)
+        i = i or (i shr 4)
+        i = i or (i shr 8)
+        i = i or (i shr 16)
+        i++
+        return i
+    }
+
+    @JvmStatic
     fun round(value: Float, places: Int): Double {
         val scale = 10.0.pow(places.toDouble())
         return round(value * scale) / scale

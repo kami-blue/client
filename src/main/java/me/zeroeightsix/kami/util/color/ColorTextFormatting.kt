@@ -9,6 +9,7 @@ import java.util.*
  * Updated by l1ving on 25/03/20
  * Updated by Xiaro on 18/08/20
  */
+@Deprecated("Use TextComponent instead")
 object ColorTextFormatting {
     @JvmField
     var colourEnumMap: HashMap<TextFormatting, ColourEnum?> = object : HashMap<TextFormatting, ColourEnum?>() {

@@ -8,10 +8,10 @@ import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.component.listen.RenderListener;
 import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
 import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
+import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -51,16 +51,6 @@ public class InputField extends AbstractComponent {
 
     boolean shift = false;
 
-    FontRenderer fontRenderer = null;
-
-    public FontRenderer getFontRenderer() {
-        return fontRenderer == null ? getTheme().getFontRenderer() : fontRenderer;
-    }
-
-    public void setFontRenderer(FontRenderer fontRenderer) {
-        this.fontRenderer = fontRenderer;
-    }
-
     public InputField(String text) {
         currentState.text = text;
 
@@ -77,22 +67,18 @@ public class InputField extends AbstractComponent {
 
                 int[] real = GUI.calculateRealPosition(InputField.this);
                 double scale = DisplayGuiScreen.getScale();
-                GL11.glScissor(
+                glScissor(
                         (int) (real[0] * scale - getParent().getOriginOffsetX() - 1),
                         (int) (Display.getHeight() - getHeight() * scale - real[1] * scale - 1),
                         (int) (getWidth() * scale + getParent().getOriginOffsetX() + 1),
                         (int) (getHeight() * scale + 1));
-                GL11.glEnable(GL11.GL_SCISSOR_TEST);
+                glEnable(GL_SCISSOR_TEST);
 
-                GL11.glTranslatef(-scrollX, 0, 0);
-
-                FontRenderer fontRenderer = getFontRenderer();
+                glTranslatef(-scrollX, 0, 0);
 
                 glLineWidth(1);
 
-//                ColourHolder holder = ColourHolder.fromHex(fontRenderer.getBaseColor());
-//                holder.setGLColour();
-                GL11.glColor3f(1, 1, 1);
+                glColor3f(1, 1, 1);
 
                 boolean cursor = ((int) ((System.currentTimeMillis() - lastTypeMS) / 500) % 2 == 0) && isFocused();
                 int x = 0;
@@ -103,13 +89,13 @@ public class InputField extends AbstractComponent {
                     glBegin(GL_LINES);
                     {
                         glVertex2d(4, 2);
-                        glVertex2d(4, fontRenderer.getFontHeight() - 1);
+                        glVertex2d(4, Wrapper.getMinecraft().fontRenderer.FONT_HEIGHT - 1);
                     }
                     glEnd();
                 }
 
                 for (char c : getDisplayText().toCharArray()) {
-                    int w = fontRenderer.getStringWidth(c + "");
+                    int w = Wrapper.getMinecraft().fontRenderer.getStringWidth(c + "");
 
                     if (getCurrentState().isSelection()) {
                         if (i == getCurrentState().getSelectionStart())
@@ -121,8 +107,8 @@ public class InputField extends AbstractComponent {
                         glBegin(GL_QUADS);
                         {
                             glVertex2d(x + 2, 2);
-                            glVertex2d(x + 2, fontRenderer.getFontHeight() - 2);
-                            glVertex2d(x + w + 2, fontRenderer.getFontHeight() - 2);
+                            glVertex2d(x + 2, Wrapper.getMinecraft().fontRenderer.FONT_HEIGHT - 2);
+                            glVertex2d(x + w + 2, Wrapper.getMinecraft().fontRenderer.FONT_HEIGHT - 2);
                             glVertex2d(x + w + 2, 2);
                         }
                         glEnd();
@@ -135,7 +121,7 @@ public class InputField extends AbstractComponent {
                         glBegin(GL_LINES);
                         {
                             glVertex2d(x + 2, 2);
-                            glVertex2d(x + 2, fontRenderer.getFontHeight());
+                            glVertex2d(x + 2, Wrapper.getMinecraft().fontRenderer.FONT_HEIGHT);
                         }
                         glEnd();
                     }
@@ -148,15 +134,13 @@ public class InputField extends AbstractComponent {
 
                 String s = getDisplayText();
                 if (s.isEmpty()) s = " ";
-                glEnable(GL_BLEND);
-                fontRenderer.drawString(0, -1, s);
+                GlStateUtils.blend(true);
+                Wrapper.getMinecraft().fontRenderer.drawStringWithShadow(s, 0, -1, 0xFFFFFF);
+                GlStateUtils.blend(false);
 
-                glDisable(GL_TEXTURE_2D);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glTranslatef(scrollX, 0, 0);
 
-                GL11.glTranslatef(scrollX, 0, 0);
-
-                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                glDisable(GL_SCISSOR_TEST);
             }
         });
 
@@ -281,7 +265,7 @@ public class InputField extends AbstractComponent {
                 int x = -scrollX;
                 int i = 0;
                 for (char c : getText().toCharArray()) {
-                    x += getFontRenderer().getStringWidth(c + "");
+                    x += Wrapper.getMinecraft().fontRenderer.getStringWidth(c + "");
                     if (event.getX() < x) {
                         currentState.cursorRow = i;
                         scroll();
@@ -306,7 +290,7 @@ public class InputField extends AbstractComponent {
                 int x = -scrollX;
                 int i = 0;
                 for (char c : getText().toCharArray()) {
-                    x += getFontRenderer().getStringWidth(c + "");
+                    x += Wrapper.getMinecraft().fontRenderer.getStringWidth(c + "");
                     if (event.getX() < x) {
                         currentState.selectionEnd = i;
                         scroll();
@@ -404,7 +388,7 @@ public class InputField extends AbstractComponent {
         int i = 0;
         String a = "";
         for (char c : getText().toCharArray()) {
-            aX += getFontRenderer().getStringWidth(c + "");
+            aX += Wrapper.getMinecraft().fontRenderer.getStringWidth(c + "");
             i++;
             a += c;
             if (i >= currentState.cursorRow)
@@ -466,6 +450,9 @@ public class InputField extends AbstractComponent {
         return echoChar != 0;
     }
 
+    public abstract static class InputFieldTextPoof<T extends InputField, S extends PoofInfo> extends Poof<T, S> {
+    }
+
     public class InputState {
         String text;
         int cursorRow;
@@ -525,8 +512,5 @@ public class InputField extends AbstractComponent {
         public void setSelectionEnd(int selectionEnd) {
             this.selectionEnd = selectionEnd;
         }
-    }
-
-    public abstract static class InputFieldTextPoof<T extends InputField, S extends PoofInfo> extends Poof<T, S> {
     }
 }

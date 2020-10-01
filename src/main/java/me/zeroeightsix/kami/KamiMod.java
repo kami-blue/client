@@ -7,7 +7,6 @@ import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
-import me.zeroeightsix.kami.manager.mangers.KamiMojiManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.manager.ManagerLoader;
@@ -62,7 +61,7 @@ public class KamiMod {
 
     public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
     public static final char colour = '\u00A7';
-    public static final char separator = '\u23d0';
+    public static final char separator = '|';
 
     private static final String KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json";
 

@@ -1,17 +1,15 @@
-package me.zeroeightsix.kami.util.graphics
+package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
-import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
-import kotlin.math.round
 
 /**
  * Renders multi line text easily
  */
-class TextComponent(val separator: String = " ") {
+class TextComponent(val separator: String = "  ") {
     private val fontRenderer = Wrapper.minecraft.fontRenderer
     private val textLines = ArrayList<TextLine?>()
     var currentLine = 0
@@ -22,7 +20,7 @@ class TextComponent(val separator: String = " ") {
     /**
      * Create a new copy of a text component
      */
-    constructor(textComponent: TextComponent): this(textComponent.separator) {
+    constructor(textComponent: TextComponent) : this(textComponent.separator) {
         this.textLines.addAll(textComponent.textLines)
         this.currentLine = textComponent.currentLine
     }
@@ -30,7 +28,7 @@ class TextComponent(val separator: String = " ") {
     /**
      * Create a new text component from a multi line string
      */
-    constructor(string: String, separator: String = " ", vararg delimiters: String = arrayOf(separator)): this(separator) {
+    constructor(string: String, separator: String = "  ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
         val lines = string.lines()
         for (line in lines) {
             for (splitText in line.split(delimiters = *delimiters)) {
@@ -43,16 +41,8 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine], and goes to the next line
      */
-    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextStyle = TextStyle.REGULAR) {
+    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextProperties.Style = TextProperties.Style.REGULAR) {
         add(text, color, style)
-        currentLine++
-    }
-
-    /**
-     * Adds new text element to [currentLine], and goes to the next line
-     */
-    fun addLine(text: String, color: Int, styleIn: TextStyle = TextStyle.REGULAR) {
-        add(text, color, styleIn)
         currentLine++
     }
 
@@ -67,14 +57,7 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine]
      */
-    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextStyle = TextStyle.REGULAR) {
-        add(text, color.toHex(), style)
-    }
-
-    /**
-     * Adds new text element to [currentLine]
-     */
-    fun add(text: String, color: Int, style: TextStyle = TextStyle.REGULAR) {
+    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextProperties.Style = TextProperties.Style.REGULAR) {
         add(TextElement(text, color, style))
     }
 
@@ -105,31 +88,31 @@ class TextComponent(val separator: String = " ") {
              scale: Float = 1f,
              drawShadow: Boolean = true,
              skipEmptyLine: Boolean = true,
-             horizontalAlign: HAlign = HAlign.LEFT,
-             verticalAlign: VAlign = VAlign.TOP
+             horizontalAlign: TextProperties.HAlign = TextProperties.HAlign.LEFT,
+             verticalAlign: TextProperties.VAlign = TextProperties.VAlign.TOP
     ) {
         if (isEmpty()) return
         glPushMatrix()
-        glTranslated(round(pos.x), round(pos.y) + 1.0, 0.0) // Rounding it to int so stupid Minecraftia doesn't fucked up
+        glTranslated(pos.x, pos.y, 0.0) // Rounding it to int so stupid Minecraftia doesn't fucked up
         glScalef(scale, scale, 1f)
-        if (verticalAlign != VAlign.TOP) {
+        if (verticalAlign != TextProperties.VAlign.TOP) {
             var height = getHeight(lineSpace)
-            if (verticalAlign == VAlign.CENTER) height /= 2
-            glTranslatef(0f, -height.toFloat(), 0f)
+            if (verticalAlign == TextProperties.VAlign.CENTER) height /= 2
+            glTranslatef(0f, -height, 0f)
         }
         for (line in textLines) {
             if (skipEmptyLine && (line == null || line.isEmpty())) continue
-            line?.drawLine(fontRenderer, drawShadow, horizontalAlign)
-            glTranslatef(0f, (fontRenderer.FONT_HEIGHT + lineSpace).toFloat(), 0f)
+            line?.drawLine(drawShadow, horizontalAlign)
+            glTranslatef(0f, (KamiFontRenderer.getFontHeight() + lineSpace), 0f)
         }
         glPopMatrix()
     }
 
     fun isEmpty() = textLines.firstOrNull { it?.isEmpty() == false } == null
 
-    fun getWidth() = textLines.map { it?.getWidth(fontRenderer) ?: 0 }.max() ?: 0
+    fun getWidth() = textLines.map { it?.getWidth() ?: 0f }.max() ?: 0f
 
-    fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = false) = fontRenderer.FONT_HEIGHT * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)
+    fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = false) = KamiFontRenderer.getFontHeight() * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)
 
     fun getLines(skipEmptyLines: Boolean = true) = textLines.count { !skipEmptyLines || (it != null && !it.isEmpty()) }
 
@@ -144,53 +127,31 @@ class TextComponent(val separator: String = " ") {
             textElementList.add(textElement)
         }
 
-        fun drawLine(fontRenderer: FontRenderer, drawShadow: Boolean = false, horizontalAlign: HAlign) {
+        fun drawLine(drawShadow: Boolean, horizontalAlign: TextProperties.HAlign) {
             glPushMatrix()
-            if (horizontalAlign != HAlign.LEFT) {
-                var width = getWidth(fontRenderer)
-                if (horizontalAlign == HAlign.CENTER) width /= 2
-                glTranslatef(-width.toFloat(), 0f, 0f)
+            if (horizontalAlign != TextProperties.HAlign.LEFT) {
+                var width = getWidth()
+                if (horizontalAlign == TextProperties.HAlign.CENTER) width /= 2
+                glTranslatef(-width, 0f, 0f)
             }
             for (textElement in textElementList) {
-                val width = fontRenderer.getStringWidth(textElement.text + separator)
-                fontRenderer.drawString(textElement.text, 0f, 0f, textElement.color, drawShadow)
-                glTranslatef(width.toFloat(), 0f, 0f)
+                val width = KamiFontRenderer.getStringWidth(textElement.text + separator)
+                KamiFontRenderer.drawString(textElement.text, drawShadow = drawShadow, color = textElement.color)
+                glTranslatef(width, 0f, 0f)
             }
             glPopMatrix()
         }
 
-        fun getWidth(fontRenderer: FontRenderer): Int {
-            return fontRenderer.getStringWidth(toString())
-        }
+        fun getWidth() = KamiFontRenderer.getStringWidth(toString())
 
         override fun toString() = textElementList.joinToString(separator = separator)
     }
 
-    class TextElement(textIn: String, val color: Int = 0xFFFFFF, val style: TextStyle = TextStyle.REGULAR) {
-        val text = "§r${style.code}$textIn"
+    class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: TextProperties.Style = TextProperties.Style.REGULAR) {
+        val text = "${style.code}$textIn"
 
         override fun toString(): String {
             return text
         }
-    }
-
-    @Suppress("UNUSED")
-    enum class TextStyle(val code: String) {
-        REGULAR(""),
-        BOLD("§l"),
-        ITALIC("§o"),
-        UNDERLINE("§n"),
-        STRIKETHROUGH("§m"),
-        OBFUSCATED("§k"),
-    }
-
-    @Suppress("UNUSED")
-    enum class HAlign {
-        LEFT, CENTER, RIGHT
-    }
-
-    @Suppress("UNUSED")
-    enum class VAlign {
-        TOP, CENTER, BOTTOM
     }
 }

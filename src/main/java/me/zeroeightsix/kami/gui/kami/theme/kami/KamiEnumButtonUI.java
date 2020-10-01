@@ -1,44 +1,35 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.gui.kami.RootSmallFontRenderer;
 import me.zeroeightsix.kami.gui.kami.component.EnumButton;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-
-import java.awt.*;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 8/08/2017.
  */
 public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
 
-    RootSmallFontRenderer smallFontRenderer = new RootSmallFontRenderer();
-
-    protected Color idleColour = new Color(163, 163, 163);
-    protected Color downColour = new Color(255, 255, 255);
-
     EnumButton modeComponent;
     long lastMS = System.currentTimeMillis();
 
     @Override
-    public void renderComponent(EnumButton component, FontRenderer aa) {
+    public void renderComponent(EnumButton component) {
         if (System.currentTimeMillis() - lastMS > 3000 && modeComponent != null) {
             modeComponent = null;
         }
 
-        int c = component.isPressed() ? 0xaaaaaa : 0xdddddd;
-        if (component.isHovered())
-            c = (c & 0x7f7f7f) << 1;
-
-        //RenderHelper.drawRoundedRectangle(0,0,component.getWidth(), component.getHeight(), 3f);
-
-        glColor3f(1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
+        ColorHolder color = new ColorHolder(
+                component.isHovered() ? GuiC.buttonHoveredN.color :
+                        component.isPressed() ? GuiC.buttonPressed.color :
+                                GuiC.buttonHoveredT.color);
 
         int parts = component.getModes().length;
         double step = component.getWidth() / (double) parts;
@@ -46,22 +37,15 @@ public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
         double endX = step * (component.getIndex() + 1);
 
         int height = component.getHeight();
-        float downscale = 1.1f;
 
-        glDisable(GL_TEXTURE_2D);
-        glColor3f(toF(GuiC.enumColour.color.getRed()), toF(GuiC.enumColour.color.getGreen()), toF(GuiC.enumColour.color.getBlue())); // SEARCHCOLOUR: Enum and Bind Colours
-        glBegin(GL_LINES);
-        {
-            glVertex2d(startX, height / downscale);
-            glVertex2d(endX, height / downscale);
-        }
-        glEnd();
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        RenderUtils2D.drawLine(vertexHelper, new Vec2d(startX, height - 1), new Vec2d(endX, height - 1), 1.5f, new ColorHolder(GuiC.sliderColour.color));
 
         if (modeComponent == null || !modeComponent.equals(component)) {
-            smallFontRenderer.drawString(0, 0, c, component.getName());
-            smallFontRenderer.drawString(component.getWidth() - smallFontRenderer.getStringWidth(component.getIndexMode()), 0, c, component.getIndexMode());
+            FontRenderAdapter.INSTANCE.drawString(component.getName(), 0, 1f, true, color, 0.75f);
+            FontRenderAdapter.INSTANCE.drawString(component.getIndexMode(), component.getWidth() - FontRenderAdapter.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f), 1f, true, color, 0.75f);
         } else {
-            smallFontRenderer.drawString(component.getWidth() / 2 - smallFontRenderer.getStringWidth(component.getIndexMode()) / 2, 0, c, component.getIndexMode());
+            FontRenderAdapter.INSTANCE.drawString(component.getIndexMode(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getIndexMode(), 0.75f) / 2f, 1f, true, color, 0.75f);
         }
     }
 
@@ -69,10 +53,10 @@ public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
     public void handleSizeComponent(EnumButton component) {
         int width = 0;
         for (String s : component.getModes()) {
-            width = Math.max(width, smallFontRenderer.getStringWidth(s));
+            width = Math.max(width, (int) FontRenderAdapter.INSTANCE.getStringWidth(s, 0.75f));
         }
-        component.setWidth(smallFontRenderer.getStringWidth(component.getName()) + width + 1);
-        component.setHeight(smallFontRenderer.getFontHeight() + 2);
+        component.setWidth((int) (FontRenderAdapter.INSTANCE.getStringWidth(component.getName(), 0.75f) + width + 1));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
     }
 
     @Override
