@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.clickgui.KamiGuiClickGui
+import me.zeroeightsix.kami.gui.clickGui.KamiGuiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -51,7 +51,7 @@ object ClickGUI : Module() {
 
     override fun onEnable() {
         if (mc.currentScreen !is KamiGuiClickGui) {
-            mc.displayGuiScreen(KamiGuiClickGui())
+            mc.displayGuiScreen(KamiGuiClickGui)
         }
     }
 

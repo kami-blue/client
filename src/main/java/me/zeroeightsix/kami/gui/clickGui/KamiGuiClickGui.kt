@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.gui.clickgui
+package me.zeroeightsix.kami.gui.clickGui
 
 import net.minecraft.client.gui.GuiScreen
 

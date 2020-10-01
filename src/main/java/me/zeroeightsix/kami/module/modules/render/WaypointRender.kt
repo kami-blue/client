@@ -126,7 +126,7 @@ object WaypointRender : Module() {
 
         RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, ColorHolder(32, 32, 32, 172))
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 2f, ColorHolder(80, 80, 80, 232))
-        textComponent.draw(drawShadow = false, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER)
+        textComponent.draw(drawShadow = false, horizontalAlign = Alignment.HAlign.CENTER, verticalAlign = Alignment.VAlign.CENTER)
 
         glPopMatrix()
     }

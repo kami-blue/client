@@ -166,7 +166,7 @@ object Nametags : Module() {
         val halfWidth = textComponent.getWidth(customFont.value) / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true, customFont.value) / 2.0 + margins.value + 2.0
         if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth, -halfHeight), Vec2d(halfWidth, halfHeight))
-        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER, customFont = customFont.value)
+        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = Alignment.HAlign.CENTER, verticalAlign = Alignment.VAlign.CENTER, customFont = customFont.value)
         glPopMatrix()
     }
 
@@ -251,7 +251,7 @@ object Nametags : Module() {
         glTranslatef(0f, -2f, 0f)
         if (enchantment.value) {
             val scale = if (customFont.value) 0.6f else 0.5f
-            enchantmentText.draw(lineSpace = 2, scale = scale, drawShadow = textShadow.value, verticalAlign = TextProperties.VAlign.BOTTOM, customFont = customFont.value)
+            if (enchantment.value) enchantmentText.draw(lineSpace = 2, scale = scale, drawShadow = textShadow.value, verticalAlign = Alignment.VAlign.BOTTOM, customFont = customFont.value)
         }
 
         glTranslatef(28f, 2f, 0f)
