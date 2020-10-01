@@ -3,3 +3,8 @@ complexity:
   ComplexMethod:
     active: true
     threshold: 25
+
+style:
+  active: true
+  UnnecessaryParentheses:
+    active: false
