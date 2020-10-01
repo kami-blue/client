@@ -1,42 +1,33 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.misc.AutoTool.Companion.equipBestWeapon
+import me.zeroeightsix.kami.module.modules.misc.AutoTool
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.EntityUtils.EntityPriority
-import me.zeroeightsix.kami.util.EntityUtils.faceEntity
-import me.zeroeightsix.kami.util.EntityUtils.getFaceEntityRotation
 import me.zeroeightsix.kami.util.EntityUtils.getPrioritizedTarget
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.math.RotationUtils.faceEntity
+import me.zeroeightsix.kami.util.math.RotationUtils.getRotationToEntity
+import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.init.Items
-import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.EnumHand
 
-/**
- * Created by 086 on 12/12/2017.
- * Updated by hub on 31 October 2019
- * Updated by bot-debug on 10/04/20
- * Baritone compat added by dominikaaaa on 18/05/20
- * Updated by Xiaro on 02/08/20
- */
 @Module.Info(
         name = "Aura",
         category = Module.Category.COMBAT,
-        description = "Hits entities around you"
+        description = "Hits entities around you",
+        modulePriority = 50
 )
-class Aura : Module() {
+object Aura : Module() {
     private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
     private val priority = register(Settings.e<EntityPriority>("Priority", EntityPriority.DISTANCE))
-    private val multi = register(Settings.b("Multi", true))
+    private val multi = register(Settings.b("Multi", false))
     private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value }.build())
     private val lockView = register(Settings.booleanBuilder("LockView").withValue(false).withVisibility { !multi.value }.build())
     private val waitTick = register(Settings.floatBuilder("SpamDelay").withMinimum(0.1f).withValue(2.0f).withMaximum(40.0f).withVisibility { delayMode.value == WaitMode.SPAM }.build())
@@ -60,8 +51,6 @@ class Aura : Module() {
     private val disableOnDeath = register(Settings.b("DisableOnDeath", false))
 
     private var startTime: Long = 0
-    private var yaw = 0f
-    private var pitch = 0f
     private var tickCount = 0
     var isAttacking = false // returned to AutoEat
 
@@ -73,27 +62,15 @@ class Aura : Module() {
         SWORD, AXE, NONE
     }
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null || !spoofRotation.value || !isAttacking || event.packet !is CPacketPlayer) return@EventHook
-        val packet = event.packet as CPacketPlayer
-        packet.yaw = yaw
-        packet.pitch = pitch
-    })
-
     override fun onUpdate() {
-        if (mc.player == null || mc.player.isDead) {
+        if (mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()
             return
-        }
-        if (spoofRotation.value) {
-            mc.player.rotationYaw += Math.random().toFloat() * 0.005f - 0.0025f
-            mc.player.rotationPitch += Math.random().toFloat() * 0.005f - 0.0025f
         }
 
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val cacheList = getTargetList(player, mob, ignoreWalls.value,  invisible.value, range.value)
+        val cacheList = getTargetList(player, mob, ignoreWalls.value, invisible.value, range.value)
         val targetList = ArrayList<Entity>()
         for (target in cacheList) {
             if (target.ticksExisted < minExistTime.value * 20) continue
@@ -109,7 +86,7 @@ class Aura : Module() {
                 }
             }
 
-            if (autoTool.value) equipBestWeapon(prefer.value)
+            if (autoTool.value) AutoTool.equipBestWeapon(prefer.value)
             if (multi.value) {
                 if (canAttack()) for (target in targetList) {
                     attack(target)
@@ -117,9 +94,11 @@ class Aura : Module() {
             } else {
                 val target = getPrioritizedTarget(targetList.toTypedArray(), priority.value)
                 if (spoofRotation.value) {
-                    val rotation = getFaceEntityRotation(target)
-                    yaw = rotation[0]
-                    pitch = rotation[1]
+                    val rotation = getRotationToEntity(target)
+                    val yaw = rotation.x.toFloat()
+                    val pitch = rotation.y.toFloat()
+                    val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(yaw, pitch))
+                    PlayerPacketManager.addPacket(this, packet)
                 }
                 if (lockView.value) faceEntity(target)
                 if (canAttack()) attack(target)
@@ -139,7 +118,7 @@ class Aura : Module() {
             val shield = mc.player.heldItemOffhand.getItem() == Items.SHIELD && mc.player.activeHand == EnumHand.OFF_HAND
             if (mc.player.isHandActive && !shield) return false
         }
-        val adjustTicks = if (!sync.value) 0f else (LagCompensator.INSTANCE.tickRate - 20f)
+        val adjustTicks = if (!sync.value) 0f else (LagCompensator.adjustTicks)
         return if (delayMode.value == WaitMode.DELAY) {
             (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
         } else {

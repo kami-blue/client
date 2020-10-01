@@ -6,21 +6,16 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
+import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.network.play.client.CPacketChatMessage
-import java.util.*
 
-/**
- * @author dominikaaaa
- * Updated by dominikaaaa on 12/03/20
- */
 @Module.Info(
         name = "FancyChat",
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
         showOnArray = Module.ShowOnArray.OFF
 )
-class FancyChat : Module() {
+object FancyChat : Module() {
     private val uwu = register(Settings.b("uwu", true))
     private val leet = register(Settings.b("1337", false))
     private val mock = register(Settings.b("mOcK", false))
@@ -42,6 +37,7 @@ class FancyChat : Module() {
     private fun greenConverter(input: String): String {
         return "> $input"
     }
+
     private fun blueConverter(input: String): String {
         return "`$input"
     }
@@ -49,13 +45,13 @@ class FancyChat : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: PacketEvent.Send ->
         if (event.packet is CPacketChatMessage) {
-            var s = (event.packet as CPacketChatMessage).getMessage()
+            var s = event.packet.getMessage()
 
             if (!commands.value && isCommand(s)) return@EventHook
             s = getText(s)
 
             if (s.length >= 256) s = s.substring(0, 256)
-            (event.packet as CPacketChatMessage).message = s
+            event.packet.message = s
         }
     })
 
@@ -101,9 +97,8 @@ class FancyChat : Module() {
         val message = StringBuilder()
         for (i in input.indices) {
             var inputChar = input[i].toString() + ""
-            var rand = 0
-            if (randomSetting.value) rand = if (random.nextBoolean()) 1 else 0
-            inputChar = if (!MathsUtils.isNumberEven(i + rand)) inputChar.toUpperCase() else inputChar.toLowerCase()
+            val rand = if (randomSetting.value) (0..1).random() else 0
+            inputChar = if (!MathUtils.isNumberEven(i + rand)) inputChar.toUpperCase() else inputChar.toLowerCase()
             message.append(inputChar)
         }
         return message.toString()
@@ -131,9 +126,5 @@ class FancyChat : Module() {
             "t" -> "7"
             else -> i
         }
-    }
-
-    companion object {
-        private val random = Random()
     }
 }

@@ -7,20 +7,14 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.network.play.client.CPacketCloseWindow
 
-/**
- * @author Hamburger2k
- */
 @Module.Info(
         name = "XCarry",
         category = Module.Category.PLAYER,
-        description = "Store items in crafting slots",
-        showOnArray = Module.ShowOnArray.OFF
+        description = "Store items in crafting slots"
 )
-class XCarry : Module() {
+object XCarry : Module() {
     @EventHandler
     private val l = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketCloseWindow) {
-            event.cancel()
-        }
+        if (event.packet is CPacketCloseWindow) event.cancel()
     })
 }

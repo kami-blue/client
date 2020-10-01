@@ -9,17 +9,17 @@ import me.zeroeightsix.kami.gui.rgui.component.Component
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
 import me.zeroeightsix.kami.gui.rgui.util.Docking
-import me.zeroeightsix.kami.module.MacroManager
-import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.WaypointManager
+import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.mangers.MacroManager
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
-import java.util.concurrent.Executors
-import java.util.function.Consumer
 
 object ConfigUtils {
 
@@ -33,6 +33,10 @@ object ConfigUtils {
                 Thread {
                     Thread.currentThread().name = "Waypoint Loading Thread"
                     success = WaypointManager.loadWaypoints() && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Friend Loading Thread"
+                    success = FriendManager.loadFriends() && success
                 },
                 Thread {
                     Thread.currentThread().name = "Config Loading Thread"
@@ -69,6 +73,10 @@ object ConfigUtils {
                     success = WaypointManager.saveWaypoints() && success
                 },
                 Thread {
+                    Thread.currentThread().name = "Friend Saving Thread"
+                    success = FriendManager.saveFriends() && success
+                },
+                Thread {
                     Thread.currentThread().name = "Config Saving Thread"
                     success = saveConfiguration() && success
                 }
@@ -91,7 +99,6 @@ object ConfigUtils {
      * @return false if exception caught
      */
     fun loadConfiguration(): Boolean {
-        KamiMod.log.info("Loading config...")
         return try {
             loadConfigurationUnsafe()
             KamiMod.log.info("Config loaded")
@@ -109,7 +116,6 @@ object ConfigUtils {
      * @return false if exception caught
      */
     fun saveConfiguration(): Boolean {
-        KamiMod.log.info("Saving config...")
         return try {
             saveConfigurationUnsafe()
             KamiMod.log.info("Config saved")
@@ -121,12 +127,13 @@ object ConfigUtils {
         }
     }
 
-    fun getConfigName(): String? {
+    fun getConfigName(): String {
         val config = Paths.get("KAMIBlueLastConfig.txt")
         var kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
         try {
             Files.newBufferedReader(config).use { reader ->
-                if (isFilenameValid(reader.readLine())) kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
+                val line = reader.readLine()
+                if (isFilenameValid(line)) kamiConfigName = line
             }
         } catch (e: NoSuchFileException) {
             try {
@@ -151,9 +158,24 @@ object ConfigUtils {
         }
     }
 
+    /**
+     * Super lazy fix for Windows users sometimes saving empty files
+     */
+    fun fixEmptyFile(file: File) {
+        if (!file.exists()) {
+            try {
+                val fileWriter = FileWriter(file)
+                fileWriter.write("[]")
+                fileWriter.close()
+            } catch (exception: IOException) {
+                exception.printStackTrace()
+            }
+        }
+    }
+
     @Throws(IOException::class)
     private fun loadConfigurationUnsafe() {
-        val kamiConfigName = getConfigName()!!
+        val kamiConfigName = getConfigName()
         val kamiConfig = Paths.get(kamiConfigName)
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
@@ -177,9 +199,11 @@ object ConfigUtils {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }
         }
-        KamiMod.getInstance().getGuiManager().children.stream()
-                .filter { component: Component -> component is Frame && component.isPinnable && component.isVisible() }
-                .forEach { component: Component -> component.opacity = 0f }
+        for (component in KamiMod.getInstance().guiManager.children) {
+            if (component !is Frame) continue
+            if (!component.isPinnable || !component.isVisible) continue
+            component.opacity = 0f
+        }
     }
 
     @Throws(IOException::class)
@@ -198,12 +222,12 @@ object ConfigUtils {
                     `object`.add(frame.title, frameObject)
                 }
         KamiMod.getInstance().guiStateSetting.value = `object`
-        val outputFile = Paths.get(getConfigName()!!)
+        val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)
-        KamiMod.MODULE_MANAGER.modules.forEach(Consumer { obj: Module ->
-            obj.destroy()
-        })
+        for (module in ModuleManager.getModules()) {
+            module.destroy()
+        }
     }
 
     private const val KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json"

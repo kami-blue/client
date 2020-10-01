@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isWater
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Timer
+import me.zeroeightsix.kami.util.TimerUtils.TickTimer
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import java.lang.Math.random
@@ -18,7 +18,7 @@ import kotlin.math.abs
 /**
  * Created by 086 on 22/03/2018.
  * Updated by Qther on 05/03/20
- * Updated by dominikaaaa on 26/05/20
+ * Updated by l1ving on 26/05/20
  * Updated by Xiaro on 22/08/20
  */
 @Module.Info(
@@ -26,7 +26,7 @@ import kotlin.math.abs
         category = Module.Category.MISC,
         description = "Automatically catch fish"
 )
-class AutoFish : Module() {
+object AutoFish : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
     private val defaultSetting = register(Settings.b("Defaults", false))
     private val autoCast = register(Settings.b("AutoCast", true))
@@ -39,17 +39,16 @@ class AutoFish : Module() {
         BOUNCE, SPLASH, ANY_SPLASH, ALL
     }
 
-    private var looking = Pair(0.0f, 0.0f) // <Yaw, Pitch>
     private var catching = false
     private var recasting = false
-    private val timer = Timer()
+    private val timer = TickTimer()
 
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@EventHook
 
         if (mode.value != Mode.BOUNCE && event.packet is SPacketSoundEffect) {
-            if (isSplash(event.packet as SPacketSoundEffect)) {
+            if (isSplash(event.packet)) {
                 catch()
             }
         }
@@ -131,7 +130,7 @@ class AutoFish : Module() {
     private fun recast(extraDelay: Long = 0L) {
         if (recasting) return
         resetTimer()
-        timer.lastTickTime += extraDelay
+        timer.reset(extraDelay)
         catching = false
         recasting = true
     }
@@ -143,8 +142,8 @@ class AutoFish : Module() {
     }
 
     private fun resetTimer() {
-        timer.lastTickTime = System.currentTimeMillis()
-        if (variation.value > 0) timer.lastTickTime += (random() * (variation.value * 2) - variation.value).toLong()
+        val offset = if (variation.value > 0) (random() * (variation.value * 2) - variation.value).toLong() else 0
+        timer.reset(offset)
     }
 
     private fun defaults() {

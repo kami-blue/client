@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.listen.KeyListener;
 import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
+import me.zeroeightsix.kami.util.Wrapper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -324,6 +325,7 @@ public abstract class GUI extends AbstractContainer {
     }
 
     public void callTick(Container container) {
+        if (Wrapper.getPlayer() == null || Wrapper.getWorld() == null) return;
         container.getTickListeners().forEach(tickListener -> tickListener.onTick());
         for (Component c : container.getChildren()) {
             if (c instanceof Container)

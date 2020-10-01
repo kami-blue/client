@@ -7,29 +7,24 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 12/08/20
- */
 @Module.Info(
         name = "MidClickPearl",
         category = Module.Category.COMBAT,
         description = "Throws a pearl automatically when you middle click in air"
 )
-class MidClickPearl : Module() {
+object MidClickPearl : Module() {
     private var prevSlot = -1
     private var startTime = -1L
 
     @EventHandler
     private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent ->
-        if (mc.player == null || mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) return@EventHook
+        if (mc.player == null || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit == Type.BLOCK) return@EventHook
 
         if (startTime == -1L && Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {
             /* 368 is ender pearl */
@@ -45,7 +40,6 @@ class MidClickPearl : Module() {
     })
 
     override fun onUpdate() {
-        if (mc.player == null) return
         if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
             startTime = System.currentTimeMillis()

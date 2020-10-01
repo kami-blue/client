@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityAnimal
@@ -11,17 +11,12 @@ import net.minecraft.item.ItemNameTag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on this commit: 83387d6c2243c2a70dc864c9fbef96a77b9a9735
- * Updated by dominikaaaa on 05/04/20
- */
 @Module.Info(
         name = "AutoNametag",
         description = "Automatically nametags entities",
         category = Module.Category.MISC
 )
-class AutoNametag : Module() {
+object AutoNametag : Module() {
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.ANY))
     private val range = register(Settings.floatBuilder("Range").withMinimum(2.0f).withValue(3.5f).withMaximum(10.0f).build())
     private val debug = register(Settings.b("Debug", false))

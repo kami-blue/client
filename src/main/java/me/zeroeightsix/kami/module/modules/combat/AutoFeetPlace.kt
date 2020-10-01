@@ -1,13 +1,11 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.BlockObsidian
@@ -22,16 +20,12 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
-/**
- * @author hub
- * @since 2019-8-13
- */
 @Module.Info(
         name = "AutoFeetPlace",
         category = Module.Category.COMBAT,
         description = "Continually places obsidian around your feet"
 )
-class AutoFeetPlace : Module() {
+object AutoFeetPlace : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.FULL))
     private val triggerable = register(Settings.b("Triggerable", true))
     private val disableNone = register(Settings.b("DisableNoObby", true))
@@ -79,10 +73,6 @@ class AutoFeetPlace : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null || KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-            return
-        }
-
         if (triggerable.value && totalTicksRunning >= timeoutTicks.value) {
             totalTicksRunning = 0
             disable()
@@ -202,9 +192,7 @@ class AutoFeetPlace : Module() {
         mc.player.swingArm(EnumHand.MAIN_HAND)
         mc.rightClickDelayTimer = 4
 
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation::class.java)) {
-            KamiMod.MODULE_MANAGER.getModuleT(NoBreakAnimation::class.java).resetMining()
-        }
+        if (NoBreakAnimation.isEnabled) NoBreakAnimation.resetMining()
         return true
     }
 
@@ -254,19 +242,17 @@ class AutoFeetPlace : Module() {
         )
     }
 
-    companion object {
-        private fun getPlaceableSide(pos: BlockPos): EnumFacing? {
-            for (side in EnumFacing.values()) {
-                val neighbour = pos.offset(side)
-                if (!mc.world.getBlockState(neighbour).block.canCollideCheck(mc.world.getBlockState(neighbour), false)) {
-                    continue
-                }
-                val blockState = mc.world.getBlockState(neighbour)
-                if (!blockState.material.isReplaceable) {
-                    return side
-                }
+    private fun getPlaceableSide(pos: BlockPos): EnumFacing? {
+        for (side in EnumFacing.values()) {
+            val neighbour = pos.offset(side)
+            if (!mc.world.getBlockState(neighbour).block.canCollideCheck(mc.world.getBlockState(neighbour), false)) {
+                continue
             }
-            return null
+            val blockState = mc.world.getBlockState(neighbour)
+            if (!blockState.material.isReplaceable) {
+                return side
+            }
         }
+        return null
     }
 }

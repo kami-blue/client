@@ -4,7 +4,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -12,8 +12,6 @@ import org.lwjgl.input.Mouse
 import java.util.*
 
 /**
- * @author 0x2E | PretendingToCode
- *
  * TODO: Fix delay timer because that shit broken
  */
 @Module.Info(
@@ -21,7 +19,7 @@ import java.util.*
         category = Module.Category.MISC,
         description = "Right click blocks to display their data"
 )
-class BlockData : Module() {
+object BlockData : Module() {
     private var delay = 0
 
     override fun onUpdate() {
@@ -32,7 +30,7 @@ class BlockData : Module() {
 
     @EventHandler
     private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent? ->
-        if (Mouse.getEventButton() == 1 && delay == 0) {
+        if (Mouse.getEventButton() == 1 && delay == 0 && mc.objectMouseOver != null) {
             if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                 val blockPos = mc.objectMouseOver.blockPos
                 val iBlockState = mc.world.getBlockState(blockPos)

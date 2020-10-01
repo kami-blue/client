@@ -6,25 +6,21 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent.Receive
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketRespawn
 import net.minecraft.util.text.TextComponentString
-import java.util.*
 
-/**
- * Created by 0x2E | PretendingToCode
- */
 @Module.Info(
         name = "EndTeleport",
         category = Module.Category.PLAYER,
         description = "Allows for teleportation when going through end portals"
 )
-class EndTeleport : Module() {
-    private val confirmed = register(Settings.b("Confirm", true))
-    public override fun onEnable() {
-        if (Wrapper.getMinecraft().getCurrentServerData() == null) {
+object EndTeleport : Module() {
+    private val confirmed = register(Settings.b("Confirm", false))
+
+    override fun onEnable() {
+        if (mc.getCurrentServerData() == null) {
             MessageSendHelper.sendWarningMessage("$chatName This module does not work in singleplayer")
             disable()
         } else if (!confirmed.value) {
@@ -35,8 +31,8 @@ class EndTeleport : Module() {
     @EventHandler
     private val receiveListener = Listener(EventHook { event: Receive ->
         if (event.packet is SPacketRespawn) {
-            if ((event.packet as SPacketRespawn).dimensionID == 1 && confirmed.value) {
-                Objects.requireNonNull(Wrapper.getMinecraft().connection)!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
+            if (event.packet.dimensionID == 1 && confirmed.value) {
+                mc.connection!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
                 disable()
             }
         }

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.util.OperatingSystemHelper.OperatingSystem.*
 
 /**
- * @author dominikaaaa
+ * @author l1ving
  * @since 14/07/20 19:39
  */
 object OperatingSystemHelper {

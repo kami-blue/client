@@ -190,7 +190,9 @@ public class Frame extends OrganisedContainer {
         isMinimized = minimized;
     }
 
-    public boolean isCloseable() { return isCloseable; }
+    public boolean isCloseable() {
+        return isCloseable;
+    }
 
     public boolean isPinnable() {
         return isPinneable;

@@ -10,4 +10,4 @@ import me.zeroeightsix.kami.module.Module
         category = Module.Category.PLAYER,
         description = "Place blocks on liquid!"
 )
-class LiquidInteract : Module()
+object LiquidInteract : Module()

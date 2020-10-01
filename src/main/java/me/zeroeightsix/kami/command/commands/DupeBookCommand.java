@@ -15,13 +15,13 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage;
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendErrorMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
 
 /**
  * @author 0x2E | PretendingToCode
  * @author EarthComputer
- *
+ * <p>
  * The characterGenerator is from here: https://github.com/ImpactDevelopment/ImpactIssues/issues/1123#issuecomment-482721273
  * Which was written by EarthComputer for both EvilSourcerer and 0x2E
  */

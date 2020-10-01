@@ -3,31 +3,25 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.MathsUtils.convertRange
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.colourUtils.DyeColors
-import me.zeroeightsix.kami.util.colourUtils.HueCycler
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.color.DyeColors
+import me.zeroeightsix.kami.util.color.HueCycler
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.math.MathUtils.convertRange
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
-/**
- * Created by 086 on 11/12/2017.
- * Kurisu Makise is best girl
- * Updated by Afel on 08/06/20
- * Updated by Xiaro on 09/08/20
- */
 @Module.Info(
         name = "Tracers",
         description = "Draws lines to other living entities",
         category = Module.Category.RENDER
 )
-class Tracers : Module() {
+object Tracers : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */
@@ -61,7 +55,7 @@ class Tracers : Module() {
         ENTITY_TYPE, COLOR, RENDERING
     }
 
-    private var renderList = ConcurrentHashMap<Entity, Pair<ColourHolder, Float>>() /* <Entity, <RGBAColor, AlphaMultiplier>> */
+    private var renderList = ConcurrentHashMap<Entity, Pair<ColorHolder, Float>>() /* <Entity, <RGBAColor, AlphaMultiplier>> */
     private var cycler = HueCycler(600)
 
     override fun onWorldRender(event: RenderEvent) {
@@ -89,7 +83,7 @@ class Tracers : Module() {
             emptyArray()
         }
 
-        val cacheMap = HashMap<Entity, Pair<ColourHolder, Float>>()
+        val cacheMap = HashMap<Entity, Pair<ColorHolder, Float>>()
         for (entity in entityList) {
             cacheMap[entity] = Pair(getColor(entity), 0f)
         }
@@ -103,7 +97,7 @@ class Tracers : Module() {
         renderList.putAll(cacheMap)
     }
 
-    private fun getColor(entity: Entity): ColourHolder {
+    private fun getColor(entity: Entity): ColorHolder {
         val color = (when {
             Friends.isFriend(entity.name) -> colorFriend.value
             entity is EntityPlayer -> colorPlayer.value
@@ -120,7 +114,7 @@ class Tracers : Module() {
         }
     }
 
-    private fun getRangedColor(entity: Entity, rgba: ColourHolder): ColourHolder {
+    private fun getRangedColor(entity: Entity, rgba: ColorHolder): ColorHolder {
         if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return rgba
         val distance = mc.player.getDistance(entity)
         val colorFar = (colorFar.value as DyeColors).color
@@ -129,6 +123,6 @@ class Tracers : Module() {
         val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
         val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
         val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
-        return ColourHolder(r, g, b, a)
+        return ColorHolder(r, g, b, a)
     }
 }

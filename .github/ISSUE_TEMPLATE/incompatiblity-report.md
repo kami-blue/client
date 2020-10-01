@@ -1,7 +1,7 @@
 ---
 name: Incompatibility Report
-about: Incompatible with another module
-labels: !incompatible
+about: Module incompatibility or incompatible with another Forge mod
+labels: -incompatible
 ---
 
 **What mod?**

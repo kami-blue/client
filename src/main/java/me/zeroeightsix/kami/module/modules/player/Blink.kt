@@ -7,27 +7,21 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketPlayer
 import java.util.*
 
-/**
- * Created by 086 on 24/01/2018.
- * Updated by Cuhnt on 30/7/2019
- * Updated by Xiaro on 21/08/20
- */
 @Module.Info(
         name = "Blink",
         category = Module.Category.PLAYER,
         description = "Cancels server side packets"
 )
-class Blink : Module() {
+object Blink : Module() {
+    private val cancelPacket = register(Settings.b("CancelPackets", false))
     private val autoReset = register(Settings.b("AutoReset", true))
-    private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value }.build())
+    private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value })
 
-    private val packets: Queue<CPacketPlayer> = LinkedList()
+    private val packets = LinkedList<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
 
@@ -35,7 +29,7 @@ class Blink : Module() {
     private val listener = Listener(EventHook { event: PacketEvent.Send ->
         if (!sending && event.packet is CPacketPlayer) {
             event.cancel()
-            packets.add(event.packet as CPacketPlayer)
+            packets.add(event.packet)
         }
     })
 
@@ -55,23 +49,28 @@ class Blink : Module() {
     }
 
     private fun begin() {
-        if (mc.player != null) {
-            clonedPlayer = EntityOtherPlayerMP(mc.world, mc.getSession().profile)
-            clonedPlayer!!.copyLocationAndAnglesFrom(mc.player)
-            clonedPlayer!!.rotationYawHead = mc.player.rotationYawHead
-            mc.world.addEntityToWorld(-100, clonedPlayer as Entity)
+        if (mc.player == null) return
+        clonedPlayer = EntityOtherPlayerMP(mc.world, mc.session.profile).apply {
+            copyLocationAndAnglesFrom(mc.player)
+            rotationYawHead = mc.player.rotationYawHead
+            inventory.copyInventory(mc.player.inventory)
+            noClip = true
         }
+        mc.world.addEntityToWorld(-114514, clonedPlayer as Entity)
     }
 
     private fun end() {
-        sending = true
-        while (packets.isNotEmpty()) mc.player.connection.sendPacket(packets.poll())
-        val localPlayer: EntityPlayer? = mc.player
-        if (localPlayer != null) {
-            mc.world.removeEntityFromWorld(-100)
-            clonedPlayer = null
+        if (mc.player == null) return
+        if (cancelPacket.value || mc.connection == null) {
+            packets.peek()?.let { mc.player.setPosition(it.x, it.y, it.z) }
+            packets.clear()
+        } else {
+            sending = true
+            while (packets.isNotEmpty()) mc.connection!!.sendPacket(packets.poll())
+            sending = false
         }
-        sending = false
+        mc.world?.removeEntityFromWorld(-114514)
+        clonedPlayer = null
     }
 
     override fun getHudInfo(): String {

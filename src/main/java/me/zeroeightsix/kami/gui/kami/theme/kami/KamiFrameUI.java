@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.gui.kami.*;
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
+import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
@@ -11,25 +12,23 @@ import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.gui.rgui.component.listen.UpdateListener;
 import me.zeroeightsix.kami.gui.rgui.poof.use.FramePoof;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
 import me.zeroeightsix.kami.util.Bind;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
 import me.zeroeightsix.kami.util.Wrapper;
-import org.lwjgl.opengl.GL11;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D;
+import me.zeroeightsix.kami.util.graphics.VertexHelper;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import me.zeroeightsix.kami.util.math.Vec2d;
 
 import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
-import static me.zeroeightsix.kami.util.colourUtils.ColourConverter.toF;
-import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by 086 on 26/06/2017.
  */
 public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
-
-    ColourHolder frameColour = KamiGUI.primaryColour;
-    ColourHolder outlineColour = frameColour.darker();
 
     Component yLineComponent = null;
     Component xLineComponent = null;
@@ -39,25 +38,18 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     boolean centerY = false;
     int xLineOffset = 0;
 
-    private static final RootFontRenderer ff = new RootLargeFontRenderer();
-
     @Override
-    public void renderComponent(Frame component, FontRenderer fontRenderer) {
-        if (component.getOpacity() == 0)
-            return;
-        glDisable(GL_TEXTURE_2D);
+    public void renderComponent(Frame component) {
+        if (component.getOpacity() == 0) return;
 
-        glColor4f(.17f, .17f, .18f, .9f);
-        RenderHelper.drawFilledRectangle(0, 0, component.getWidth(), component.getHeight()); // Main window
-        glColor3f(toF(GuiC.windowOutline.color.getRed()), toF(GuiC.windowOutline.color.getGreen()), toF(GuiC.windowOutline.color.getBlue()));
-        glLineWidth(GuiC.windowOutlineWidth.aFloat);
-        RenderHelper.drawRectangle(0, 0, component.getWidth(), component.getHeight()); // Border / Outline
+        VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
+        RenderUtils2D.drawRectFilled(vertexHelper, new Vec2d(component.getWidth(), component.getHeight()), new ColorHolder(GuiC.windowFilled.color));
+        RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(0.0, 0.0), new Vec2d(component.getWidth(), component.getHeight()), 1.8f, new ColorHolder(GuiC.windowOutline.color));
 
-        GL11.glColor3f(1, 1, 1);
-        ff.drawString(component.getWidth() / 2 - ff.getStringWidth(component.getTitle()) / 2, 1, component.getTitle());
+        FontRenderAdapter.INSTANCE.drawString(component.getTitle(), component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(component.getTitle()) / 2f, 1f);
 
         int top_y = 5;
-        int bottom_y = component.getTheme().getFontRenderer().getFontHeight() - 9;
+        float bottom_y = FontRenderAdapter.INSTANCE.getFontHeight() - 9f;
 
         if (component.isCloseable() && component.isMinimizeable()) {
             top_y -= 4;
@@ -65,16 +57,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
         }
 
         if (component.isCloseable()) {
-            glLineWidth(2f);
-            glColor3f(1, 1, 1);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(component.getWidth() - 20, top_y);
-                glVertex2d(component.getWidth() - 10, bottom_y);
-                glVertex2d(component.getWidth() - 10, top_y);
-                glVertex2d(component.getWidth() - 20, bottom_y);
-            }
-            glEnd();
+            RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(component.getWidth() - 20, top_y), new Vec2d(component.getWidth() - 10, bottom_y), 2f, new ColorHolder(255, 255, 255));
         }
 
         if (component.isCloseable() && component.isMinimizeable()) {
@@ -83,89 +66,42 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
         }
 
         if (component.isMinimizeable()) {
-            glLineWidth(1.5f);
-            glColor3f(1, 1, 1);
             if (component.isMinimized()) {
-                glBegin(GL_LINE_LOOP);
-                {
-                    glVertex2d(component.getWidth() - 15, top_y + 2);
-                    glVertex2d(component.getWidth() - 15, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 3);
-                    glVertex2d(component.getWidth() - 10, top_y + 2);
-                }
-                glEnd();
+                RenderUtils2D.drawRectOutline(vertexHelper, new Vec2d(component.getWidth() - 15, top_y + 2), new Vec2d(component.getWidth() - 10, bottom_y + 3), 1.5f, new ColorHolder(255, 255, 255));
             } else {
-                glBegin(GL_LINES);
-                {
-                    glVertex2d(component.getWidth() - 15, bottom_y + 4);
-                    glVertex2d(component.getWidth() - 10, bottom_y + 4);
-                }
-                glEnd();
+                RenderUtils2D.drawLine(vertexHelper, new Vec2d(component.getWidth() - 15, bottom_y + 4), new Vec2d(component.getWidth() - 10, bottom_y + 4), 1.5f, new ColorHolder(255, 255, 255));
             }
         }
 
         if (component.isPinnable()) {
-            if (component.isPinned())
-                glColor3f(toF(GuiC.pinnedWindow.color.getRed()), toF(GuiC.pinnedWindow.color.getGreen()), toF(GuiC.pinnedWindow.color.getBlue()));
-            else
-                glColor3f(toF(GuiC.unpinnedWindow.aDouble), toF(GuiC.unpinnedWindow.aDouble), toF(GuiC.unpinnedWindow.aDouble));
-            RenderHelper.drawCircle(7, 4, 2f);
-            glLineWidth(3f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(7, 4);
-                glVertex2d(4, 8);
-            }
-            glEnd();
+            ColorHolder color;
+            if (component.isPinned()) color = new ColorHolder(GuiC.pinnedWindow.color);
+            else color = new ColorHolder(GuiC.unpinnedWindow.color);
+            RenderUtils2D.drawCircleFilled(vertexHelper, new Vec2d(7, 4), 2.0, color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(7, 4), new Vec2d(4, 8), 3f, color);
         }
 
         if (component.equals(xLineComponent)) {
-            glColor3f(toF(GuiC.lineWindow.aDouble), toF(GuiC.lineWindow.aDouble), toF(GuiC.lineWindow.aDouble));
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(xLineOffset, -GUI.calculateRealPosition(component)[1]);
-                glVertex2d(xLineOffset, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
+            ColorHolder color = new ColorHolder(GuiC.lineWindow.color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(xLineOffset, -GUI.calculateRealPosition(component)[1]), new Vec2d(xLineOffset, Wrapper.getMinecraft().displayHeight), 1f, color);
         }
 
         if (component == centerXComponent && centerX) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double x = component.getWidth() / 2;
-                glVertex2d(x, -GUI.calculateRealPosition(component)[1]);
-                glVertex2d(x, Wrapper.getMinecraft().displayHeight);
-            }
-            glEnd();
+            float x = component.getWidth() / 2f;
+            ColorHolder color = new ColorHolder(219, 8, 255);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(x, -GUI.calculateRealPosition(component)[1]), new Vec2d(x, Wrapper.getMinecraft().displayHeight), 1f, color);
         }
 
         if (component.equals(yLineComponent)) {
-            glColor3f(.44f, .44f, .44f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                glVertex2d(-GUI.calculateRealPosition(component)[0], 0);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, 0);
-            }
-            glEnd();
+            ColorHolder color = new ColorHolder(GuiC.lineWindow.color);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(-GUI.calculateRealPosition(component)[0], 0), new Vec2d(Wrapper.getMinecraft().displayWidth, 0), 1f, color);
         }
 
         if (component == centerYComponent && centerY) {
-            glColor3f(0.86f, 0.03f, 1f);
-            glLineWidth(1f);
-            glBegin(GL_LINES);
-            {
-                double y = component.getHeight() / 2;
-                glVertex2d(-GUI.calculateRealPosition(component)[0], y);
-                glVertex2d(Wrapper.getMinecraft().displayWidth, y);
-            }
-            glEnd();
+            float y = component.getHeight() / 2f;
+            ColorHolder color = new ColorHolder(219, 8, 255);
+            RenderUtils2D.drawLine(vertexHelper, new Vec2d(-GUI.calculateRealPosition(component)[0], y), new Vec2d(Wrapper.getMinecraft().displayWidth, y), 1f, color);
         }
-
-        glDisable(GL_BLEND);
     }
 
     @Override
@@ -184,7 +120,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
     @Override
     public void handleAddComponent(Frame component, Container container) {
         super.handleAddComponent(component, container);
-        component.setOriginOffsetY(component.getTheme().getFontRenderer().getFontHeight() + 3);
+        component.setOriginOffsetY((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 3f));
         component.setOriginOffsetX(3);
 
         component.addMouseListener(new MouseListener() {
@@ -259,8 +195,8 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
             @Override
             public void execute(Frame component, DragInfo info) {
                 if (Bind.isShiftDown() || Bind.isAltDown() || Bind.isCtrlDown()) return;
-                int x = info.getX();
-                int y = info.getY();
+                double x = info.getX();
+                double y = info.getY();
                 yLineComponent = null;
                 xLineComponent = null;
 
@@ -270,7 +206,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                 for (Component c : rootGUI.getChildren()) {
                     if (c.equals(component)) continue;
 
-                    int yDiff = Math.abs(y - c.getY());
+                    double yDiff = Math.abs(y - c.getY());
                     if (yDiff < 4) {
                         y = c.getY();
                         yLineComponent = component;
@@ -283,7 +219,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                         yLineComponent = component;
                     }
 
-                    int xDiff = Math.abs((x + component.getWidth()) - (c.getX() + c.getWidth()));
+                    double xDiff = Math.abs((x + component.getWidth()) - (c.getX() + c.getWidth()));
                     if (xDiff < 4) {
                         x = c.getX() + c.getWidth();
                         x -= component.getWidth();
@@ -312,7 +248,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     ContainerHelper.setAlignment(component, AlignedComponent.Alignment.LEFT);
                     component.setDocking(Docking.LEFT);
                 }
-                int diff = (x + component.getWidth()) * DisplayGuiScreen.getScale() - Wrapper.getMinecraft().displayWidth;
+                double diff = (x + component.getWidth()) * DisplayGuiScreen.getScale() - Wrapper.getMinecraft().displayWidth;
                 if (-diff < 5) {
                     x = (Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth();
                     ContainerHelper.setAlignment(component, AlignedComponent.Alignment.RIGHT);
@@ -341,11 +277,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                         component.setDocking(Docking.BOTTOM);
                 }
 
-                if (Math.abs(((x + component.getWidth() / 2) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayWidth) < 5) { // Component is center-aligned on the x axis
+                if (Math.abs(((x + component.getWidth() / 2.0) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayWidth) < 5) { // Component is center-aligned on the x axis
                     xLineComponent = null;
                     centerXComponent = component;
                     centerX = true;
-                    x = (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2)) - component.getWidth() / 2;
+                    x = (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2)) - component.getWidth() / 2.0;
                     if (component.getDocking().isTop()) {
                         component.setDocking(Docking.CENTERTOP);
                     } else if (component.getDocking().isBottom()) {
@@ -358,11 +294,11 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     centerX = false;
                 }
 
-                if (Math.abs(((y + component.getHeight() / 2) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayHeight) < 5) { // Component is center-aligned on the y axis
+                if (Math.abs(((y + component.getHeight() / 2.0) * DisplayGuiScreen.getScale() * 2) - Wrapper.getMinecraft().displayHeight) < 5) { // Component is center-aligned on the y axis
                     yLineComponent = null;
                     centerYComponent = component;
                     centerY = true;
-                    y = (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2)) - component.getHeight() / 2;
+                    y = (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2)) - component.getHeight() / 2.0;
                     if (component.getDocking().isLeft()) {
                         component.setDocking(Docking.CENTERLEFT);
                     } else if (component.getDocking().isRight()) {
@@ -376,8 +312,8 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
                     centerY = false;
                 }
 
-                info.setX(x);
-                info.setY(y);
+                info.setX((int) x);
+                info.setY((int) y);
             }
         });
     }

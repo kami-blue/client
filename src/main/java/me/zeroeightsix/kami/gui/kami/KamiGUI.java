@@ -20,13 +20,15 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Label;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
+import me.zeroeightsix.kami.manager.mangers.FriendManager;
 import me.zeroeightsix.kami.module.Module;
+import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
+import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.util.Friends;
-import me.zeroeightsix.kami.util.MathsUtils;
 import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder;
+import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,25 +46,79 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
 /**
  * Created by 086 on 25/06/2017.
- * Updated by dominikaaaa on 28/01/20
+ * Updated by l1ving on 28/01/20
  * Updated by Dewy on the 22nd of April, 2020
  *
  * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
  */
 public class KamiGUI extends GUI {
 
-    public static final RootFontRenderer fontRenderer = new RootFontRenderer(1);
+    private static final int DOCK_OFFSET = 0;
     public Theme theme;
-
-    public static ColourHolder primaryColour = new ColourHolder(29, 29, 29, 100);
 
     public KamiGUI() {
         super(new KamiTheme());
         theme = getTheme();
+    }
+
+    private static String getEntityName(@Nonnull Entity entity) {
+        if (entity instanceof EntityItem) {
+            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
+        }
+        if (entity instanceof EntityWitherSkull) {
+            return TextFormatting.DARK_GRAY + "Wither skull";
+        }
+        if (entity instanceof EntityEnderCrystal) {
+            return TextFormatting.LIGHT_PURPLE + "End crystal";
+        }
+        if (entity instanceof EntityEnderPearl) {
+            return "Thrown ender pearl";
+        }
+        if (entity instanceof EntityMinecart) {
+            return "Minecart";
+        }
+        if (entity instanceof EntityItemFrame) {
+            return "Item frame";
+        }
+        if (entity instanceof EntityEgg) {
+            return "Thrown egg";
+        }
+        if (entity instanceof EntitySnowball) {
+            return "Thrown snowball";
+        }
+
+        return entity.getName();
+    }
+
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<>(map.entrySet());
+        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    public static void dock(Frame component) {
+        Docking docking = component.getDocking();
+        if (docking.isTop())
+            component.setY(DOCK_OFFSET);
+        if (docking.isBottom())
+            component.setY((int) ((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET));
+        if (docking.isLeft())
+            component.setX(DOCK_OFFSET);
+        if (docking.isRight())
+            component.setX((int) ((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET));
+        if (docking.isCenterHorizontal())
+            component.setX((int) (Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
+        if (docking.isCenterVertical())
+            component.setY((int) (Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2));
+
     }
 
     @Override
@@ -73,9 +129,9 @@ public class KamiGUI extends GUI {
     @Override
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
-        for (Module module : MODULE_MANAGER.getModules()) {
-            if (module.getCategory().isHidden()) continue;
-            Module.Category moduleCategory = module.getCategory();
+        for (Module module : ModuleManager.getModules()) {
+            if (module.category.isHidden()) continue;
+            Module.Category moduleCategory = module.category;
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
                 Stretcherlayout stretcherlayout = new Stretcherlayout(1);
                 stretcherlayout.setComponentOffsetWidth(0);
@@ -86,14 +142,14 @@ public class KamiGUI extends GUI {
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
             Scrollpane scrollpane = pair.getFirst();
-            CheckButton checkButton = new CheckButton(module.getName(), module.getDescription());
+            CheckButton checkButton = new CheckButton(module.name.getValue(), module.description);
             checkButton.setToggled(module.isEnabled());
 
             /* descriptions aren't changed ever, so you don't need a tick listener */
-            checkButton.setDescription(module.getDescription());
+            checkButton.setDescription(module.description);
             checkButton.addTickListener(() -> { // dear god
                 checkButton.setToggled(module.isEnabled());
-                checkButton.setName(module.getName());
+                checkButton.setName(module.name.getValue());
             });
 
             checkButton.addMouseListener(new MouseListener() {
@@ -143,7 +199,7 @@ public class KamiGUI extends GUI {
         for (Map.Entry<Module.Category, Pair<Scrollpane, SettingsPanel>> entry : categoryScrollpaneHashMap.entrySet()) {
             Stretcherlayout stretcherlayout = new Stretcherlayout(1);
             stretcherlayout.COMPONENT_OFFSET_Y = 1;
-            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getName());
+            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getCategoryName());
             Scrollpane scrollpane = entry.getValue().getFirst();
             frame.addChild(scrollpane);
             frame.addChild(entry.getValue().getSecond());
@@ -229,12 +285,10 @@ public class KamiGUI extends GUI {
         Label information = new Label("");
         information.setShadow(true);
         information.addTickListener(() -> {
-            InfoOverlay info = MODULE_MANAGER.getModuleT(InfoOverlay.class);
             information.setText("");
-            info.infoContents().forEach(information::addLine);
+            InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
         });
         frame.addChild(information);
-        information.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /**
@@ -245,13 +299,12 @@ public class KamiGUI extends GUI {
         frame = new Frame(getTheme(), new Stretcherlayout(1), "Inventory Viewer");
         frame.setCloseable(false);
         frame.setPinnable(true);
-        frame.setPinned(true);
+        frame.setPinned(false);
         frame.setMinimumWidth(162);
         frame.setMaximumHeight(12);
         Label inventory = new Label("");
         inventory.setShadow(false);
         frame.addChild(inventory);
-        inventory.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -269,12 +322,18 @@ public class KamiGUI extends GUI {
         friends.addTickListener(() -> {
             friends.setText("");
             if (!finalFrame.isMinimized()) {
-                Friends.friends.getValue().forEach(friend -> friends.addLine(friend.getUsername()));
+                if (FriendManager.INSTANCE.getFriendFile().enabled) {
+                    for (Friends.Friend friend : FriendManager.INSTANCE.getFriendFile().friends) {
+                        if (friend.getUsername() == null || friend.getUsername().isEmpty()) continue;
+                        friends.addLine(friend.getUsername());
+                    }
+                } else {
+                    friends.addLine(KamiMod.colour + "cDisabled");
+                }
             }
         });
 
         frame.addChild(friends);
-        friends.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -293,9 +352,8 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                AutoWalk autoWalk = MODULE_MANAGER.getModuleT(AutoWalk.class);
-                if (process.get() != KamiMod.pauseProcess && autoWalk.isEnabled() && autoWalk.mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE) && AutoWalk.direction != null) {
-                    processes.addLine("Process: AutoWalk (" + AutoWalk.direction + ")");
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
+                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
                 }
@@ -303,7 +361,6 @@ public class KamiGUI extends GUI {
         });
 
         frame.addChild(processes);
-        processes.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -374,7 +431,6 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(100);
         list.setShadow(true);
         frame.addChild(list);
-        list.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -386,7 +442,7 @@ public class KamiGUI extends GUI {
         frame.setMinimumWidth(80);
         Frame finalFrame1 = frame;
         entityLabel.addTickListener(new TickListener() {
-            Minecraft mc = Wrapper.getMinecraft();
+            final Minecraft mc = Wrapper.getMinecraft();
 
             @Override
             public void onTick() {
@@ -422,7 +478,6 @@ public class KamiGUI extends GUI {
         frame.addChild(entityLabel);
         frame.setPinnable(true);
         entityLabel.setShadow(true);
-        entityLabel.setFontRenderer(fontRenderer);
         frames.add(frame);
 
         /*
@@ -432,52 +487,54 @@ public class KamiGUI extends GUI {
         frame.setCloseable(false);
         frame.setPinnable(true);
         Label coordsLabel = new Label("");
-        coordsLabel.addTickListener(new TickListener() {
-            Minecraft mc = Minecraft.getMinecraft();
-
-            @Override
-            public void onTick() {
-                boolean inHell = mc.player.dimension == -1;
-
-                int posX = (int) mc.player.posX;
-                int posY = (int) mc.player.posY;
-                int posZ = (int) mc.player.posZ;
-
-                float f = !inHell ? 0.125f : 8;
-                int hposX = (int) (mc.player.posX * f);
-                int hposZ = (int) (mc.player.posZ * f);
-
-                /* The 7 and f in the string formatter is the color */
-                String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
-                String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
-                        KamiMod.colour,
-                        posX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posZ,
-                        KamiMod.colour
-                );
-                String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
-                        KamiMod.colour,
-                        hposX,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        posY,
-                        KamiMod.colour,
-                        KamiMod.colour,
-                        hposZ,
-                        KamiMod.colour
-                );
-                coordsLabel.setText("");
-                coordsLabel.addLine(ow);
-                coordsLabel.addLine(MathsUtils.getPlayerCardinal(mc).cardinalName + colouredSeparator + nether);
+        coordsLabel.addTickListener(() -> {
+            EntityPlayer player;
+            if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+                player = (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
+            } else {
+                player = Wrapper.getPlayer();
             }
+            if (player == null) return;
+
+            boolean inHell = player.dimension == -1;
+
+            int posX = (int) player.posX;
+            int posY = (int) player.posY;
+            int posZ = (int) player.posZ;
+
+            float f = !inHell ? 0.125f : 8;
+            int hposX = (int) (player.posX * f);
+            int hposZ = (int) (player.posZ * f);
+
+            /* The 7 and f in the string formatter is the color */
+            String colouredSeparator = KamiMod.colour + "7 " + KamiMod.separator + KamiMod.colour + "r";
+            String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
+                    KamiMod.colour,
+                    posX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posZ,
+                    KamiMod.colour
+            );
+            String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
+                    KamiMod.colour,
+                    hposX,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    posY,
+                    KamiMod.colour,
+                    KamiMod.colour,
+                    hposZ,
+                    KamiMod.colour
+            );
+            coordsLabel.setText("");
+            coordsLabel.addLine(ow);
+            coordsLabel.addLine(MathUtils.getPlayerCardinal(player).cardinalName + colouredSeparator + nether);
         });
         frame.addChild(coordsLabel);
-        coordsLabel.setFontRenderer(fontRenderer);
         coordsLabel.setShadow(true);
         frame.setHeight(20);
         frames.add(frame);
@@ -510,68 +567,8 @@ public class KamiGUI extends GUI {
         }
     }
 
-    private static String getEntityName(@Nonnull Entity entity) {
-        if (entity instanceof EntityItem) {
-            return TextFormatting.DARK_AQUA + ((EntityItem) entity).getItem().getItem().getItemStackDisplayName(((EntityItem) entity).getItem());
-        }
-        if (entity instanceof EntityWitherSkull) {
-            return TextFormatting.DARK_GRAY + "Wither skull";
-        }
-        if (entity instanceof EntityEnderCrystal) {
-            return TextFormatting.LIGHT_PURPLE + "End crystal";
-        }
-        if (entity instanceof EntityEnderPearl) {
-            return "Thrown ender pearl";
-        }
-        if (entity instanceof EntityMinecart) {
-            return "Minecart";
-        }
-        if (entity instanceof EntityItemFrame) {
-            return "Item frame";
-        }
-        if (entity instanceof EntityEgg) {
-            return "Thrown egg";
-        }
-        if (entity instanceof EntitySnowball) {
-            return "Thrown snowball";
-        }
-
-        return entity.getName();
-    }
-
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list =
-                new LinkedList<>(map.entrySet());
-        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
-
-        Map<K, V> result = new LinkedHashMap<K, V>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
-    }
-
     @Override
     public void destroyGUI() {
         kill();
-    }
-
-    private static final int DOCK_OFFSET = 0;
-
-    public static void dock(Frame component) {
-        Docking docking = component.getDocking();
-        if (docking.isTop())
-            component.setY(DOCK_OFFSET);
-        if (docking.isBottom())
-            component.setY((Wrapper.getMinecraft().displayHeight / DisplayGuiScreen.getScale()) - component.getHeight() - DOCK_OFFSET);
-        if (docking.isLeft())
-            component.setX(DOCK_OFFSET);
-        if (docking.isRight())
-            component.setX((Wrapper.getMinecraft().displayWidth / DisplayGuiScreen.getScale()) - component.getWidth() - DOCK_OFFSET);
-        if (docking.isCenterHorizontal())
-            component.setX((Wrapper.getMinecraft().displayWidth / (DisplayGuiScreen.getScale() * 2) - component.getWidth() / 2));
-        if (docking.isCenterVertical())
-            component.setY(Wrapper.getMinecraft().displayHeight / (DisplayGuiScreen.getScale() * 2) - component.getHeight() / 2);
-
     }
 }

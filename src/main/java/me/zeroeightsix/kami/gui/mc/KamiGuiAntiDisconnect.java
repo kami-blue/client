@@ -11,7 +11,7 @@ import net.minecraft.realms.RealmsBridge;
 
 public class KamiGuiAntiDisconnect extends GuiScreen {
 
-    private int disconnectCount = KamiMod.MODULE_MANAGER.getModuleT(AntiDisconnect.class).requiredButtonPresses.getValue();
+    private int disconnectCount = AntiDisconnect.INSTANCE.getRequiredButtonPresses().getValue();
 
     @Override
     public void initGui() {
@@ -42,9 +42,9 @@ public class KamiGuiAntiDisconnect extends GuiScreen {
                 boolean single = mc.isIntegratedServerRunning();
                 boolean connectedToRealms = mc.isConnectedToRealms();
 
-                if (KamiMod.MODULE_MANAGER.isModuleEnabled(AutoWalk.class) && KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).mode.getValue().equals(AutoWalk.AutoWalkMode.BARITONE)) {
+                if (AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE) {
                     if (button.id == 1) {
-                        KamiMod.MODULE_MANAGER.getModuleT(AutoWalk.class).disable();
+                        AutoWalk.INSTANCE.disable();
                     }
                 }
 
@@ -53,18 +53,13 @@ public class KamiGuiAntiDisconnect extends GuiScreen {
                 mc.world.sendQuittingDisconnectingPacket();
                 mc.loadWorld(null);
 
-                if (single)
-                {
+                if (single) {
                     mc.displayGuiScreen(new GuiMainMenu());
-                }
-                else if (connectedToRealms)
-                {
+                } else if (connectedToRealms) {
                     RealmsBridge realmsbridge = new RealmsBridge();
 
                     realmsbridge.switchToRealms(new GuiMainMenu());
-                }
-                else
-                {
+                } else {
                     mc.displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
                 }
         }

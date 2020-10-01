@@ -5,34 +5,23 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-/**
- * @author dominikaaaa
- */
 @Module.Info(
         name = "AutoMine",
         description = "Automatically mines chosen ores",
         category = Module.Category.MISC
 )
-class AutoMine : Module() {
-    private var iron = register(Settings.b("Iron", true))
-    private var diamond = register(Settings.b("Diamond", true))
-    private var gold = register(Settings.b("Gold", false))
-    private var coal = register(Settings.b("Coal", false))
-    private var log = register(Settings.b("Logs", false))
-
-    init {
-        iron.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        diamond.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        gold.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        coal.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-        log.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) run() }
-    }
+object AutoMine : Module() {
+    private val iron = register(Settings.b("Iron", true))
+    private val diamond = register(Settings.b("Diamond", true))
+    private val gold = register(Settings.b("Gold", false))
+    private val coal = register(Settings.b("Coal", false))
+    private val log = register(Settings.b("Logs", false))
 
     override fun onEnable() {
         if (mc.player == null) {
@@ -43,12 +32,13 @@ class AutoMine : Module() {
     }
 
     private fun run() {
+        if (mc.player == null || isDisabled) return
         var current = ""
         if (iron.value) current += " iron_ore"
         if (diamond.value) current += " diamond_ore"
         if (gold.value) current += " gold_ore"
         if (coal.value) current += " coal_ore"
-        if (log.value) current += " log"
+        if (log.value) current += " log log2"
 
         if (current.startsWith(" ")) {
             current = current.substring(1)
@@ -71,12 +61,15 @@ class AutoMine : Module() {
     }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        disable()
     })
 
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    })
+    init {
+        iron.settingListener = Setting.SettingListeners { run() }
+        diamond.settingListener = Setting.SettingListeners { run() }
+        gold.settingListener = Setting.SettingListeners { run() }
+        coal.settingListener = Setting.SettingListeners { run() }
+        log.settingListener = Setting.SettingListeners { run() }
+    }
 }

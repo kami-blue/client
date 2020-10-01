@@ -7,21 +7,15 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.GuiGameOver
 
-/**
- * Created by dominikaaaa on 30/11/19
- */
 @Module.Info(
         name = "AntiDeathScreen",
         description = "Fixes random death screen glitches",
         category = Module.Category.COMBAT
 )
-class AntiDeathScreen : Module() {
+object AntiDeathScreen : Module() {
     @EventHandler
     private val listener = Listener(EventHook { event: Displayed ->
-        if (event.screen !is GuiGameOver) {
-            return@EventHook
-        }
-
+        if (event.screen !is GuiGameOver) return@EventHook
         if (mc.player.health > 0) {
             mc.player.respawnPlayer()
             mc.displayGuiScreen(null)

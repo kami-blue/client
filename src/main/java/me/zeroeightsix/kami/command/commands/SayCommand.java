@@ -3,11 +3,11 @@ package me.zeroeightsix.kami.command.commands;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 
-import static me.zeroeightsix.kami.util.MessageSendHelper.sendServerMessage;
+import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage;
 
 /**
- * @author dominikaaaa
- * Created by dominikaaaa on 12/03/20
+ * @author l1ving
+ * Created by l1ving on 12/03/20
  */
 public class SayCommand extends Command {
     public SayCommand() {

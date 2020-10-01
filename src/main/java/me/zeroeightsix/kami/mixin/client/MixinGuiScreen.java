@@ -23,12 +23,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
 import static org.lwjgl.opengl.GL11.glDepthRange;
 
-/**
- * Created by 086 on 24/12/2017.
- */
 @Mixin(GuiScreen.class)
 public class MixinGuiScreen {
 
@@ -39,7 +35,7 @@ public class MixinGuiScreen {
 
     @Inject(method = "renderToolTip", at = @At("HEAD"), cancellable = true)
     public void renderToolTip(ItemStack stack, int x, int y, CallbackInfo info) {
-        if (MODULE_MANAGER.isModuleEnabled(ShulkerPreview.class) && stack.getItem() instanceof ItemShulkerBox) {
+        if (ShulkerPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemShulkerBox) {
             NBTTagCompound tagCompound = stack.getTagCompound();
             if (tagCompound != null && tagCompound.hasKey("BlockEntityTag", 10)) {
                 NBTTagCompound blockEntityTag = tagCompound.getCompoundTag("BlockEntityTag");
@@ -47,7 +43,7 @@ public class MixinGuiScreen {
                     // We'll take over!
                     info.cancel();
 
-                    NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
+                    NonNullList<ItemStack> nonnulllist = NonNullList.withSize(27, ItemStack.EMPTY);
                     ItemStackHelper.loadAllItems(blockEntityTag, nonnulllist);
 
                     GlStateManager.enableBlend();
@@ -99,12 +95,11 @@ public class MixinGuiScreen {
                     GlStateManager.enableRescaleNormal();
                 }
             }
-        } else if (MODULE_MANAGER.isModuleEnabled(MapPreview.class) && stack.getItem() instanceof ItemMap) {
+        } else if (MapPreview.INSTANCE.isEnabled() && stack.getItem() instanceof ItemMap) {
             MapData mapData = MapPreview.getMapData(stack);
             if (mapData == null) return;
             info.cancel();
 
-            MapPreview mp = MODULE_MANAGER.getModuleT(MapPreview.class);
             int xl = x + 6;
             int yl = y + 6;
 
@@ -115,12 +110,12 @@ public class MixinGuiScreen {
             BufferBuilder bufferbuilder = tessellator.getBuffer();
 
             GlStateManager.translate(xl, yl, 0.0);
-            GlStateManager.scale(mp.getScale().getValue() / 5.0, mp.getScale().getValue() / 5.0, 0.0);
+            GlStateManager.scale(MapPreview.INSTANCE.getScale().getValue() / 5.0, MapPreview.INSTANCE.getScale().getValue() / 5.0, 0.0);
             RenderHelper.enableGUIStandardItemLighting(); // needed to make lighting work inside non inventory containers
             mc.getTextureManager().bindTexture(RES_MAP_BACKGROUND);
 
             /* taken from mc code, draw the maps frame */
-            if (mp.getFrame().getValue()) {
+            if (MapPreview.INSTANCE.getFrame().getValue()) {
                 glDepthRange(0, 0.01); // fix drawing under other layers, just draw over everything
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
                 bufferbuilder.pos(-7.0D, 135.0D, 0.0D).tex(0.0D, 1.0D).endVertex();
@@ -134,7 +129,7 @@ public class MixinGuiScreen {
             /* Draw the map */
             GlStateManager.disableDepth(); // needed to keep it on top of the frame
             glDepthRange(0, 0.01);
-            mc.entityRenderer.getMapItemRenderer().renderMap(mapData, !mp.getFrame().getValue());
+            mc.entityRenderer.getMapItemRenderer().renderMap(mapData, !MapPreview.INSTANCE.getFrame().getValue());
             glDepthRange(0, 1.0);
             GlStateManager.enableDepth(); // originally enabled
 
@@ -147,14 +142,14 @@ public class MixinGuiScreen {
      * @author cookiedragon234
      * see https://github.com/kami-blue/client/pull/293 for discussion
      * authors words:
-     * Also @dominikaaaa you should be more careful with merging commits, especially from people who are new to coding. Stuff like this is obviously stolen, and can get your repository DMCA'd.
-     *
+     * Also @l1ving you should be more careful with merging commits, especially from people who are new to coding. Stuff like this is obviously stolen, and can get your repository DMCA'd.
+     * <p>
      * as shown be the rest of his discussion, he was fine with it
-     * I even aknowledged when it was added, after cookies approval, that it was pasted from backdoored. 
+     * I even aknowledged when it was added, after cookies approval, that it was pasted from backdoored.
      */
     @Inject(method = "Lnet/minecraft/client/gui/GuiScreen;drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
-        if (this.mc.world != null && MODULE_MANAGER.isModuleEnabled(CleanGUI.class) && (MODULE_MANAGER.getModuleT(CleanGUI.class).inventoryGlobal.getValue())) {
+        if (this.mc.world != null && CleanGUI.INSTANCE.isEnabled() && (CleanGUI.INSTANCE.getInventoryGlobal().getValue())) {
             ci.cancel();
         }
     }

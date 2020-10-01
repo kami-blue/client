@@ -35,8 +35,7 @@ public class EnumConverter extends Converter<Enum, JsonElement> {
                 }
                 return Enum.valueOf(clazz, "null");
             }
-        }
-        else {
+        } else {
             try {
                 return Enum.valueOf(clazz, value.toString());
             } catch (IllegalArgumentException e) {

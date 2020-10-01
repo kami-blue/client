@@ -2,22 +2,19 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MessageSendHelper.*
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.client.gui.GuiChat
 import java.io.*
 import kotlin.random.Random
 
-/**
- * @author dominikaaaa
- * Created by dominikaaaa on 10/04/20
- * Updated by Xiaro on 27/6/20
- */
 @Module.Info(
         name = "Spammer",
         description = "Spams text from a file on a set delay into the chat",
         category = Module.Category.CHAT
 )
-class Spammer : Module() {
+object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
     private val timeoutTime = register(Settings.integerBuilder("Timeout(s)").withRange(1, 240).withValue(10).build())
 

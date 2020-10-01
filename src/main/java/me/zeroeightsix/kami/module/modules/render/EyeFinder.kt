@@ -3,11 +3,11 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.KamiTessellator
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -16,16 +16,12 @@ import net.minecraft.util.math.RayTraceResult
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
 
-/**
- * @author 086
- * Updated by Xiaro on 02/08/20
- */
 @Module.Info(
         name = "EyeFinder",
         description = "Draw lines from entity's heads to where they are looking",
         category = Module.Category.RENDER
 )
-class EyeFinder : Module() {
+object EyeFinder : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */
@@ -125,7 +121,7 @@ class EyeFinder : Module() {
                 val offset = getInterpolatedAmount(result.entityHit, KamiTessellator.pTicks())
                 result.entityHit.renderBoundingBox.offset(offset)
             }
-            val colour = ColourHolder(r.value, g.value, b.value)
+            val colour = ColorHolder(r.value, g.value, b.value)
             val renderer = ESPRenderer()
             renderer.aFilled = (alpha / 3)
             renderer.aOutline = alpha

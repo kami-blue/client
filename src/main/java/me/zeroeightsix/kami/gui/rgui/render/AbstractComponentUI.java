@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.gui.rgui.render;
 
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -11,7 +10,7 @@ import java.lang.reflect.ParameterizedType;
  */
 public abstract class AbstractComponentUI<T extends Component> implements ComponentUI<T> {
 
-    private Class<T> persistentClass;
+    private final Class<T> persistentClass;
 
     public AbstractComponentUI() {
         this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
@@ -19,7 +18,7 @@ public abstract class AbstractComponentUI<T extends Component> implements Compon
     }
 
     @Override
-    public void renderComponent(T component, FontRenderer fontRenderer) {
+    public void renderComponent(T component) {
     }
 
     @Override

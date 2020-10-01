@@ -2,23 +2,16 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils
-import me.zeroeightsix.kami.util.MessageSendHelper.sendChatMessage
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.round
 
-/**
- * Created by 086 on 12/12/2017
- * Rewritten by Xiaro on 22/08/20
- */
 @Module.Info(
         name = "FullBright",
         description = "Makes everything brighter!",
         category = Module.Category.RENDER,
         alwaysListening = true
 )
-class FullBright : Module() {
+object FullBright : Module() {
     private val gamma = register(Settings.floatBuilder("Gamma").withValue(12f).withRange(1f, 15f).build())
     private val transitionLength = register(Settings.floatBuilder("TransitionLength").withValue(3f).withRange(0f, 10f).build())
     private val oldValue = register(Settings.floatBuilder("OldValue").withValue(1f).withRange(0f, 1f).withVisibility { false }.build())
@@ -42,6 +35,10 @@ class FullBright : Module() {
 
             isDisabled && gammaSetting != oldValue.value -> {
                 transition(oldValue.value)
+            }
+
+            else -> {
+                alwaysListening = false
             }
         }
     }

@@ -4,10 +4,9 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.LocalPlayerUpdateEvent
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.MessageSendHelper
-import net.minecraftforge.fml.common.network.FMLNetworkEvent
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 
 @Module.Info(
@@ -16,7 +15,7 @@ import java.io.*
         category = Module.Category.CHAT,
         showOnArray = Module.ShowOnArray.OFF
 )
-class LoginMessage : Module() {
+object LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false
 
@@ -40,24 +39,17 @@ class LoginMessage : Module() {
             return
         }
         MessageSendHelper.sendChatMessage("$chatName Found '&7loginmsg.txt&f'!")
-
     }
 
-    @EventHandler
-    private val localPlayerUpdateEvent = Listener(EventHook { event: LocalPlayerUpdateEvent? ->
-        if (!sent && loginMessage != null && mc.player != null) {
+    override fun onUpdate() {
+        if (!sent && loginMessage != null) {
             mc.player.sendChatMessage(loginMessage!!)
             sent = true
         }
-    })
+    }
 
     @EventHandler
-    private val clientDisconnect = Listener(EventHook { event: FMLNetworkEvent.ClientDisconnectionFromServerEvent ->
-        sent = false
-    })
-
-    @EventHandler
-    private val serverDisconnect = Listener(EventHook { event: FMLNetworkEvent.ServerDisconnectionFromClientEvent ->
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
         sent = false
     })
 }

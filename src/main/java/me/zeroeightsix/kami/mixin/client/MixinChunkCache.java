@@ -9,18 +9,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static me.zeroeightsix.kami.KamiMod.MODULE_MANAGER;
-
-/**
- * Created by 20kdc on 15/02/2020.
- */
 @Mixin(ChunkCache.class)
 public class MixinChunkCache {
 
     @Inject(method = "getBlockState", at = @At("RETURN"), cancellable = true)
     public void getState(BlockPos pos, CallbackInfoReturnable<IBlockState> info) {
-        if (MODULE_MANAGER.isModuleEnabled(XRay.class))
-            info.setReturnValue(XRay.transform(info.getReturnValue()));
+        if (XRay.INSTANCE.isEnabled()) info.setReturnValue(XRay.transform(info.getReturnValue()));
     }
 
 }

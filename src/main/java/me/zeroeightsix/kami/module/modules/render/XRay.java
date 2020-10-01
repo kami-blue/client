@@ -24,9 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Created by 20kdc on 15/02/2020.
- * Updated by dominikaaaa on 17/02/20
- * Note for anybody using this in a development environment: THIS DOES NOT WORK. It will lag and the texture will break
+ * TODO: Rewrite this mess
  */
 @Module.Info(
         name = "XRay",
@@ -37,28 +35,27 @@ import java.util.Set;
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.
     private static final String DEFAULT_XRAY_CONFIG = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone";
-    // Split by ',' & each element trimmed (this is a bit weird but it works for now?)
-    private Setting<String> hiddenBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_XRAY_CONFIG).withConsumer((old, value) -> {
-        refreshHiddenBlocksSet(value);
-        if (isEnabled())
-            mc.renderGlobal.loadRenderers();
-    }).build());
+    public static XRay INSTANCE;
+    // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
+    // Essentially, the XRay primitive is just a block state transformer.
+    // Then this implements a custom block that the block state transformer can use for hidden blocks.
+    public static Block transparentBlock;
+    // A static mirror of the state.
+    private static final Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
+    private static boolean invertStatic, outlinesStatic = true;
+    // This is the state used for hidden blocks.
+    private static IBlockState transparentState;
     public Setting<Boolean> invert = register(Settings.booleanBuilder("Invert").withValue(false).withConsumer((old, value) -> {
         invertStatic = value;
         if (isEnabled())
             mc.renderGlobal.loadRenderers();
     }).build());
-
-    // A static mirror of the state.
-    private static Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
-    private static boolean invertStatic, outlinesStatic = true;
-
-    // This is the state used for hidden blocks.
-    private static IBlockState transparentState;
-    // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
-    // Essentially, the XRay primitive is just a block state transformer.
-    // Then this implements a custom block that the block state transformer can use for hidden blocks.
-    public static Block transparentBlock;
+    // Split by ',' & each element trimmed (this is a bit weird but it works for now?)
+    private final Setting<String> hiddenBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_XRAY_CONFIG).withConsumer((old, value) -> {
+        refreshHiddenBlocksSet(value);
+        if (isEnabled())
+            mc.renderGlobal.loadRenderers();
+    }).build());
 
     public XRay() {
         invertStatic = invert.getValue();
@@ -69,51 +66,7 @@ public class XRay extends Module {
         }).build());
         outlinesStatic = outlines.getValue();
         refreshHiddenBlocksSet(hiddenBlockNames.getValue());
-    }
-
-    // Get hidden block list for command display
-    public String extGet() {
-        return extGetInternal(null);
-    }
-    // Add entry by arbitrary user-provided string
-    public void extAdd(String s) {
-        hiddenBlockNames.setValue(extGetInternal(null) + ", " + s);
-    }
-    // Remove entry by arbitrary user-provided string
-    public void extRemove(String s) {
-        hiddenBlockNames.setValue(extGetInternal(Block.getBlockFromName(s)));
-    }
-    // Clears the list.
-    public void extClear() {
-        hiddenBlockNames.setValue("");
-    }
-    // Resets the list to default
-    public void extDefaults() { extClear(); extAdd(DEFAULT_XRAY_CONFIG); }
-    // Set the list to 1 value
-    public void extSet(String s) { extClear(); extAdd(s); }
-
-    private String extGetInternal(Block filter) {
-        StringBuilder sb = new StringBuilder();
-        boolean notFirst = false;
-        for (Block b : hiddenBlocks) {
-            if (b == filter)
-                continue;
-            if (notFirst)
-                sb.append(", ");
-            notFirst = true;
-            sb.append(Block.REGISTRY.getNameForObject(b));
-        }
-        return sb.toString();
-    }
-
-    private void refreshHiddenBlocksSet(String v) {
-        hiddenBlocks.clear();
-        for (String s : v.split(",")) {
-            String s2 = s.trim();
-            Block block = Block.getBlockFromName(s2);
-            if (block != null)
-                hiddenBlocks.add(block);
-        }
+        INSTANCE = this;
     }
 
     @SubscribeEvent
@@ -124,11 +77,13 @@ public class XRay extends Module {
             public BlockRenderLayer getRenderLayer() {
                 return BlockRenderLayer.CUTOUT;
             }
+
             // Not opaque so other materials (such as, of course, ores) will render
             @Override
             public boolean isOpaqueCube(IBlockState blah) {
                 return false;
             }
+
             // Essentially, the hidden-block world should be a projected grid-like thing...?
             @Override
             public boolean shouldSideBeRendered(IBlockState blah, IBlockAccess w, BlockPos pos, EnumFacing side) {
@@ -164,6 +119,62 @@ public class XRay extends Module {
             return target;
         }
         return input;
+    }
+
+    // Get hidden block list for command display
+    public String extGet() {
+        return extGetInternal(null);
+    }
+
+    // Add entry by arbitrary user-provided string
+    public void extAdd(String s) {
+        hiddenBlockNames.setValue(extGetInternal(null) + ", " + s);
+    }
+
+    // Remove entry by arbitrary user-provided string
+    public void extRemove(String s) {
+        hiddenBlockNames.setValue(extGetInternal(Block.getBlockFromName(s)));
+    }
+
+    // Clears the list.
+    public void extClear() {
+        hiddenBlockNames.setValue("");
+    }
+
+    // Resets the list to default
+    public void extDefaults() {
+        extClear();
+        extAdd(DEFAULT_XRAY_CONFIG);
+    }
+
+    // Set the list to 1 value
+    public void extSet(String s) {
+        extClear();
+        extAdd(s);
+    }
+
+    private String extGetInternal(Block filter) {
+        StringBuilder sb = new StringBuilder();
+        boolean notFirst = false;
+        for (Block b : hiddenBlocks) {
+            if (b == filter)
+                continue;
+            if (notFirst)
+                sb.append(", ");
+            notFirst = true;
+            sb.append(Block.REGISTRY.getNameForObject(b));
+        }
+        return sb.toString();
+    }
+
+    private void refreshHiddenBlocksSet(String v) {
+        hiddenBlocks.clear();
+        for (String s : v.split(",")) {
+            String s2 = s.trim();
+            Block block = Block.getBlockFromName(s2);
+            if (block != null)
+                hiddenBlocks.add(block);
+        }
     }
 
     @Override

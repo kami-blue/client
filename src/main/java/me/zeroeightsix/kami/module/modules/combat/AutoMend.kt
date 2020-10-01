@@ -7,23 +7,17 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MathsUtils.reverseNumber
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
 
-/**
- * Created 17 October 2019 by hub
- * Updated 21 November 2019 by hub
- * Rewritten by dominikaaaa on 07/04/20
- * Updated by dominikaaaa on 07/05/20
- */
 @Module.Info(
         name = "AutoMend",
         category = Module.Category.COMBAT,
         description = "Automatically mends armour"
 )
-class AutoMend : Module() {
+object AutoMend : Module() {
     private val autoThrow = register(Settings.b("AutoThrow", true))
     private val autoSwitch = register(Settings.b("AutoSwitch", true))
     private val autoDisable = register(Settings.booleanBuilder("AutoDisable").withValue(false).withVisibility { autoSwitch.value }.build())
@@ -58,7 +52,6 @@ class AutoMend : Module() {
     }
 
     override fun onUpdate() {
-        if (mc.player == null) return
         if (isGuiOpened && !gui.value) return
 
         if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {

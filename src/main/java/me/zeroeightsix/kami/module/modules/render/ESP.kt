@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.ESPRenderer
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import net.minecraft.client.shader.Shader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -16,18 +15,12 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import java.util.function.Consumer
 
-/**
- * Created by 086 on 14/12/2017.
- * Updated by d1gress/Qther on 27/11/2019.
- * Kurisu Makise is cute
- * Updated by dominikaaaa on 19/04/20
- * Updated by Xiaro on 31/07/20
- */
 @Module.Info(
         name = "ESP",
         category = Module.Category.RENDER,
-        description = "Highlights entities")
-class ESP : Module() {
+        description = "Highlights entities"
+)
+object ESP : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */
@@ -69,10 +62,10 @@ class ESP : Module() {
     private var entityList: Array<Entity>? = null
 
     override fun onWorldRender(event: RenderEvent) {
-        if (Wrapper.getMinecraft().getRenderManager().options == null || entityList == null) return
+        if (mc.renderManager.options == null || entityList == null) return
         when (mode.value) {
             ESPMode.BOX -> {
-                val colour = ColourHolder(r.value, g.value, b.value)
+                val colour = ColorHolder(r.value, g.value, b.value)
                 val renderer = ESPRenderer()
                 renderer.aFilled = if (filled.value) aFilled.value else 0
                 renderer.aOutline = if (outline.value) aOutline.value else 0

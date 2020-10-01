@@ -1,14 +1,12 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.CenterPlayer
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.Block
 import net.minecraft.block.BlockObsidian
 import net.minecraft.block.state.IBlockState
@@ -24,23 +22,16 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2
+import kotlin.math.floor
 import kotlin.math.sqrt
 
-/**
- * @author hub
- * @see me.zeroeightsix.kami.module.modules.combat.AutoFeetPlace
- * Updated by Polymer on 09/01/20
- * Updated by dominikaaaa on 28/01/20
- * Updated by Xiaro on 08/07/20
- */
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,
         description = "Surrounds you with obsidian to take less damage"
 )
-class Surround : Module() {
-    @JvmField
-    var autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
+object Surround : Module() {
+    val autoDisable: Setting<Boolean> = register(Settings.b("DisableOnPlace", true))
     private val spoofRotations = register(Settings.b("SpoofRotations", true))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", false))
     private val blockPerTick = register(Settings.doubleBuilder("BlocksPerTick").withMinimum(1.0).withValue(4.0).withMaximum(10.0).build())
@@ -55,6 +46,7 @@ class Surround : Module() {
     private var playerHotbarSlot = -1
     private var lastHotbarSlot = -1
 
+    @Suppress("UNUSED")
     private enum class DebugMsgs {
         NONE, IMPORTANT, ALL
     }
@@ -64,29 +56,27 @@ class Surround : Module() {
             CenterPlayer.centerPlayer(1.0f)
             if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
         } else {
-            if (mc.player != null && !KamiMod.MODULE_MANAGER.isModuleEnabled(Freecam::class.java)) {
-                if (offsetStep == 0) {
-                    basePos = BlockPos(mc.player.positionVector).down()
-                    playerHotbarSlot = mc.player.inventory.currentItem
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
-                    }
-                    if (!spoofHotbar.value) {
-                        lastHotbarSlot = mc.player.inventory.currentItem
-                    }
+            if (offsetStep == 0) {
+                basePos = BlockPos(mc.player.positionVector).down()
+                playerHotbarSlot = mc.player.inventory.currentItem
+                if (debugMsgs.value == DebugMsgs.ALL) {
+                    MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
                 }
-                for (i in 0 until Math.floor(blockPerTick.value).toInt()) {
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
-                    }
-                    if (offsetStep >= surroundTargets.size) {
-                        endLoop()
-                        return
-                    }
-                    val offset = surroundTargets[offsetStep]
-                    placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
-                    ++offsetStep
+                if (!spoofHotbar.value) {
+                    lastHotbarSlot = mc.player.inventory.currentItem
                 }
+            }
+            for (i in 0 until floor(blockPerTick.value).toInt()) {
+                if (debugMsgs.value == DebugMsgs.ALL) {
+                    MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
+                }
+                if (offsetStep >= surroundTargets.size) {
+                    endLoop()
+                    return
+                }
+                val offset = surroundTargets[offsetStep]
+                placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
+                ++offsetStep
             }
         }
     }
@@ -162,9 +152,7 @@ class Surround : Module() {
             placeBlockExecute(blockPos)
         }
 
-        if (KamiMod.MODULE_MANAGER.isModuleEnabled(NoBreakAnimation::class.java)) {
-            (KamiMod.MODULE_MANAGER.getModule(NoBreakAnimation::class.java) as NoBreakAnimation).resetMining()
-        }
+        if (NoBreakAnimation.isEnabled) NoBreakAnimation.resetMining()
     }
 
     private fun findObiInHotbar(): Int {
@@ -257,38 +245,36 @@ class Surround : Module() {
         }
     }
 
-    companion object {
-        private fun canBeClicked(pos: BlockPos): Boolean {
-            return getBlock(pos).canCollideCheck(getState(pos), false)
-        }
-
-        fun getBlock(pos: BlockPos): Block {
-            return getState(pos).block
-        }
-
-        private fun getState(pos: BlockPos): IBlockState {
-            return mc.world.getBlockState(pos)
-        }
-
-        private fun faceVectorPacketInstant(vec: Vec3d) {
-            val rotations = getLegitRotations(vec)
-            mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
-        }
-
-        private fun getLegitRotations(vec: Vec3d): FloatArray {
-            val eyesPos = eyesPos
-            val diffX = vec.x - eyesPos.x
-            val diffY = vec.y - eyesPos.y
-            val diffZ = vec.z - eyesPos.z
-
-            val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
-            val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
-            val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
-
-            return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
-        }
-
-        private val eyesPos: Vec3d
-            get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
+    private fun canBeClicked(pos: BlockPos): Boolean {
+        return getBlock(pos).canCollideCheck(getState(pos), false)
     }
+
+    fun getBlock(pos: BlockPos): Block {
+        return getState(pos).block
+    }
+
+    private fun getState(pos: BlockPos): IBlockState {
+        return mc.world.getBlockState(pos)
+    }
+
+    private fun faceVectorPacketInstant(vec: Vec3d) {
+        val rotations = getLegitRotations(vec)
+        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotations[0], rotations[1], mc.player.onGround))
+    }
+
+    private fun getLegitRotations(vec: Vec3d): FloatArray {
+        val eyesPos = eyesPos
+        val diffX = vec.x - eyesPos.x
+        val diffY = vec.y - eyesPos.y
+        val diffZ = vec.z - eyesPos.z
+
+        val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
+        val yaw = Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90.0f
+        val pitch = (-Math.toDegrees(atan2(diffY, diffXZ))).toFloat()
+
+        return floatArrayOf(mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch))
+    }
+
+    private val eyesPos: Vec3d
+        get() = Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ)
 }

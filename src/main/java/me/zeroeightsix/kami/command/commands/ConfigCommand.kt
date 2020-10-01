@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -28,9 +27,9 @@ class ConfigCommand : Command("config", ChunkBuilder()
 
         when (args[0]!!.toLowerCase()) {
             "reload" -> {
-                Thread{
+                Thread {
                     val loaded = ConfigUtils.loadAll()
-                    if (loaded) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints reloaded!")
+                    if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
                 }.start()
             }
@@ -38,18 +37,18 @@ class ConfigCommand : Command("config", ChunkBuilder()
             "save" -> {
                 Thread {
                     val saved = ConfigUtils.saveAll()
-                    if (saved) MessageSendHelper.sendChatMessage("Configuration, macros and waypoints saved!")
+                    if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
                 }.start()
             }
 
 
             "path" -> if (args[1] == null) {
-                val file = Paths.get(KamiMod.getConfigName())
+                val file = Paths.get(ConfigUtils.getConfigName())
                 MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
             } else {
                 val newPath = args[1]!!
-                if (!KamiMod.isFilenameValid(newPath)) {
+                if (!ConfigUtils.isFilenameValid(newPath)) {
                     MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                 }
                 try {

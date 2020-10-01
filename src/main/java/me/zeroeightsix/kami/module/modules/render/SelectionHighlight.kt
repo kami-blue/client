@@ -2,12 +2,11 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.colourUtils.ColourHolder
-import me.zeroeightsix.kami.util.ESPRenderer
-import me.zeroeightsix.kami.util.GeometryMasks
-import me.zeroeightsix.kami.util.KamiTessellator
+import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult.Type
 import kotlin.math.floor
@@ -17,8 +16,8 @@ import kotlin.math.floor
         description = "Highlights object you are looking at",
         category = Module.Category.RENDER
 )
-class SelectionHighlight : Module() {
-    val block: Setting<Boolean> = register(Settings.b("Block", true))
+object SelectionHighlight : Module() {
+    val block = register(Settings.b("Block", true))
     private val entity = register(Settings.b("Entity", false))
     private val hitSideOnly = register(Settings.b("HitSideOnly", false))
     private val throughBlocks = register(Settings.b("ThroughBlocks", false))
@@ -35,8 +34,8 @@ class SelectionHighlight : Module() {
         val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
         val eyeBlockPos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
         if (!mc.world.isAirBlock(eyeBlockPos) && !mc.player.isInLava && !mc.player.isInWater) return
-        val colour = ColourHolder(r.value, g.value, b.value)
-        val hitObject = mc.objectMouseOver
+        val colour = ColorHolder(r.value, g.value, b.value)
+        val hitObject = mc.objectMouseOver ?: return
         val renderer = ESPRenderer()
 
         renderer.aFilled = if (filled.value) aFilled.value else 0

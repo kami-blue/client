@@ -1,28 +1,22 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.MessageSendHelper
-import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import java.util.*
 
-/**
- * Created on 26 October 2019 by hub
- * Updated 12 January 2020 by hub
- * Updated by polymer on 23/02/20
- * Updated by Sorzon on 10/05/20
- */
 @Module.Info(
         name = "VisualRange",
         description = "Shows players who enter and leave range in chat",
         category = Module.Category.COMBAT
 )
-class VisualRange : Module() {
+object VisualRange : Module() {
     private val playSound = register(Settings.b("PlaySound", false))
     private val leaving = register(Settings.b("CountLeaving", false))
     private val friends = register(Settings.b("Friends", true))
@@ -32,7 +26,6 @@ class VisualRange : Module() {
     private var knownPlayers: MutableList<String>? = null
 
     override fun onUpdate() {
-        if (mc.player == null) return
         val tickPlayerList: MutableList<String> = ArrayList()
 
         for (entity in mc.world.getLoadedEntityList()) {
@@ -51,7 +44,7 @@ class VisualRange : Module() {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
                     if (logToFile.value) {
-                        Waypoint.writePlayerCoords("$playerName spotted!")
+                        WaypointManager.add("$playerName spotted!")
                     }
                     if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
                     return
@@ -84,7 +77,7 @@ class VisualRange : Module() {
         MessageSendHelper.sendChatMessage(s)
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         knownPlayers = ArrayList()
     }
 }
