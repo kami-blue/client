@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.VertexHelper
 
 abstract class Component {
     // Basic info of the component
@@ -32,7 +33,7 @@ abstract class Component {
         prevHeight = height
     }
 
-    open fun onRender() {}
+    open fun onRender(vertexHelper: VertexHelper) {}
 
     protected val mc = Wrapper.minecraft
 }
