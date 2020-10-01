@@ -32,7 +32,7 @@ import kotlin.random.Random
 object AntiAFK : Module() {
     private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(0, 100).build())
     private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
-    val autoReply = register(Settings.b("AutoReply", true))
+    private val autoReply = register(Settings.b("AutoReply", true))
     private val swing = register(Settings.b("Swing", true))
     private val jump = register(Settings.b("Jump", true))
     private val turn = register(Settings.b("Turn", true))
@@ -40,7 +40,7 @@ object AntiAFK : Module() {
     private val radius = register(Settings.integerBuilder("Radius").withValue(64).withRange(1, 128).build())
     private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15).build())
 
-    private var startPos = BlockPos(114514, -696969, 404)
+    private var startPos: BlockPos? = null
     private var nextActionTick = 0
     private var squareStep = 0
     private var baritoneDisconnectOnArrival = false
@@ -91,7 +91,7 @@ object AntiAFK : Module() {
     }
 
     override fun onDisable() {
-        startPos = BlockPos(114514, -696969, 404)
+        startPos = null
         BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival
         baritoneCancel()
     }
@@ -100,7 +100,7 @@ object AntiAFK : Module() {
         if (inputTimeout.value != 0) {
             if (isBaritoneActive) inputTimer.reset()
             if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
-                startPos = BlockPos(114514, -696969, 404)
+                startPos = null
                 return
             }
         }
@@ -116,12 +116,14 @@ object AntiAFK : Module() {
             }
 
             if (walk.value && !isBaritoneActive) {
-                if (startPos == BlockPos(114514, -696969, 404)) startPos = mc.player.position
-                when (squareStep) {
-                    0 -> baritoneGotoXZ(startPos.x, startPos.z + radius.value)
-                    1 -> baritoneGotoXZ(startPos.x + radius.value, startPos.z + radius.value)
-                    2 -> baritoneGotoXZ(startPos.x + radius.value, startPos.z)
-                    3 -> baritoneGotoXZ(startPos.x, startPos.z)
+                if (startPos == null) startPos = mc.player.position
+                startPos?.let {
+                    when (squareStep) {
+                        0 -> baritoneGotoXZ(it.x, it.z + radius.value)
+                        1 -> baritoneGotoXZ(it.x + radius.value, it.z + radius.value)
+                        2 -> baritoneGotoXZ(it.x + radius.value, it.z)
+                        3 -> baritoneGotoXZ(it.x, it.z)
+                    }
                 }
                 squareStep = (squareStep + 1) % 4
             }
