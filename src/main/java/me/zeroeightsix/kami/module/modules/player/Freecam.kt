@@ -3,122 +3,187 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.PlayerMoveEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.entity.Entity
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.entity.MoverType
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.client.CPacketInput
-import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
-import net.minecraft.network.play.client.CPacketVehicleMove
-import net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent
+import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.lwjgl.input.Keyboard
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.min
+import kotlin.math.sin
 
-/**
- * Created by 086 on 22/12/2017.
- */
 @Module.Info(
         name = "Freecam",
         category = Module.Category.PLAYER,
         description = "Leave your body and transcend into the realm of the gods"
 )
 object Freecam : Module() {
-    private val speed = register(Settings.i("Speed", 5)) // /100 in practice
-    private val packetCancel = register(Settings.b("PacketCancel", false))
+    private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
+    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
+    private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
 
-    private var posX = 0.0
-    private var posY = 0.0
-    private var posZ = 0.0
-    private var pitch = 0f
-    private var yaw = 0f
-    private var clonedPlayer: EntityOtherPlayerMP? = null
-    private var isRidingEntity = false
-    private var ridingEntity: Entity? = null
-
-    override fun onEnable() {
-        if (mc.player != null) {
-            isRidingEntity = mc.player.getRidingEntity() != null
-            if (mc.player.getRidingEntity() == null) {
-                posX = mc.player.posX
-                posY = mc.player.posY
-                posZ = mc.player.posZ
-            } else {
-                ridingEntity = mc.player.getRidingEntity()
-                mc.player.dismountRidingEntity()
-            }
-
-            pitch = mc.player.rotationPitch
-            yaw = mc.player.rotationYaw
-            clonedPlayer = EntityOtherPlayerMP(mc.world, mc.getSession().profile)
-            clonedPlayer!!.copyLocationAndAnglesFrom(mc.player)
-            clonedPlayer!!.rotationYawHead = mc.player.rotationYawHead
-
-            mc.world.addEntityToWorld(-100, clonedPlayer)
-            mc.player.capabilities.isFlying = true
-            mc.player.capabilities.flySpeed = speed.value / 100f
-            mc.player.noClip = true
-
-            // WebringOfTheDamned
-            // This is needed for some reason, as is the converse in onDisable.
-            mc.renderChunksMany = false
-            mc.renderGlobal.loadRenderers()
-        }
-    }
-
-    override fun onDisable() {
-        val localPlayer: EntityPlayer? = mc.player
-        if (localPlayer != null) {
-            mc.player.setPositionAndRotation(posX, posY, posZ, yaw, pitch)
-            mc.world.removeEntityFromWorld(-100)
-
-            clonedPlayer = null
-            posZ = 0.0
-            posY = posZ
-            posX = posY
-            yaw = 0f
-            pitch = yaw
-
-            mc.player.capabilities.isFlying = false //getModManager().getMod("ElytraFlight").isEnabled();
-            mc.player.capabilities.flySpeed = 0.05f
-            mc.player.noClip = false
-            mc.player.motionZ = 0.0
-            mc.player.motionY = mc.player.motionZ
-            mc.player.motionX = mc.player.motionY
-
-            if (isRidingEntity) {
-                mc.player.startRiding(ridingEntity, true)
-            }
-
-            // WebringOfTheDamned
-            // This is needed for some reason, as is the converse in onEnable.
-            mc.renderChunksMany = true
-            mc.renderGlobal.loadRenderers()
-        }
-    }
-
-    override fun onUpdate() {
-        mc.player.capabilities.isFlying = true
-        mc.player.capabilities.flySpeed = speed.value / 100f
-        mc.player.noClip = true
-        mc.player.onGround = false
-        mc.player.fallDistance = 0f
-    }
+    private var prevThirdPersonViewSetting = -1
+    var cameraGuy: EntityPlayer? = null
+        private set
+    var resetInput = false
 
     @EventHandler
-    private val moveListener = Listener(EventHook { event: PlayerMoveEvent? -> mc.player.noClip = true })
-
-    @EventHandler
-    private val pushListener = Listener(EventHook { event: PlayerSPPushOutOfBlocksEvent -> event.isCanceled = true })
+    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
+        prevThirdPersonViewSetting = -1
+        cameraGuy = null
+        mc.renderChunksMany = true
+    })
 
     @EventHandler
     private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketPlayer || event.packet is CPacketInput) {
-            event.cancel()
-        }
-        if (packetCancel.value && (event.packet is CPacketUseEntity || event.packet is CPacketVehicleMove)) {
-            event.cancel()
-        }
+        if (mc.world == null || event.packet !is CPacketUseEntity) return@EventHook
+        // Don't interact with self
+        if (event.packet.getEntityFromWorld(mc.world) == mc.player) event.cancel()
     })
+
+    @EventHandler
+    private val keyboardListener = Listener(EventHook { event: InputEvent.KeyInputEvent ->
+        if (mc.world == null || mc.player == null) return@EventHook
+        // Force it to stay in first person lol
+        if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
+    })
+
+    override fun onDisable() {
+        if (mc.player == null) return
+        mc.world.removeEntityFromWorld(-6969420)
+        mc.setRenderViewEntity(mc.player)
+        cameraGuy = null
+        mc.player.rotationYawHead
+        if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+    }
+
+    override fun onUpdate() {
+        if (cameraGuy == null && mc.player.ticksExisted > 20) {
+            // Create a cloned player
+            cameraGuy = FakeCamera(mc.player).also {
+                // Add it to the world
+                mc.world.addEntityToWorld(-6969420, it)
+
+                // Set the render view entity to our camera guy
+                mc.setRenderViewEntity(it)
+
+                // Reset player movement input
+                resetInput = true
+
+                // Stores prev third person view setting
+                prevThirdPersonViewSetting = mc.gameSettings.thirdPersonView
+                mc.gameSettings.thirdPersonView = 0
+            }
+        }
+
+        if (arrowKeyMove.value && !BaritoneUtils.isPathing) {
+            cameraGuy?.let {
+                val forward = Keyboard.isKeyDown(Keyboard.KEY_UP) to Keyboard.isKeyDown(Keyboard.KEY_DOWN)
+                val strafe = Keyboard.isKeyDown(Keyboard.KEY_LEFT) to Keyboard.isKeyDown(Keyboard.KEY_RIGHT)
+                val movementInput = calcMovementInput(forward, strafe, false to false)
+
+                if (movementInput.first != 0f || movementInput.second != 0f) mc.player.rotationYaw = it.rotationYaw
+
+                mc.player.movementInput.moveForward = movementInput.first
+                mc.player.movementInput.moveStrafe = -movementInput.second
+
+                mc.player.movementInput.forwardKeyDown = forward.first
+                mc.player.movementInput.backKeyDown = forward.second
+                mc.player.movementInput.leftKeyDown = strafe.first
+                mc.player.movementInput.rightKeyDown = strafe.second
+
+                mc.player.movementInput.jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+            }
+        }
+    }
+
+    private class FakeCamera(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
+        init {
+            copyLocationAndAnglesFrom(mc.player)
+            capabilities.allowFlying = true
+            capabilities.isFlying = true
+        }
+
+        override fun onLivingUpdate() {
+            // Update inventory
+            inventory.copyInventory(player.inventory)
+
+            // Update yaw head
+            updateEntityActionState()
+
+            // We have to update movement input from key binds because mc.player.movementInput is used by Baritone
+            val forward = mc.gameSettings.keyBindForward.isKeyDown to mc.gameSettings.keyBindBack.isKeyDown
+            val strafe = mc.gameSettings.keyBindLeft.isKeyDown to mc.gameSettings.keyBindRight.isKeyDown
+            val vertical = mc.gameSettings.keyBindJump.isKeyDown to mc.gameSettings.keyBindSneak.isKeyDown
+            val movementInput = calcMovementInput(forward, strafe, vertical)
+
+            moveForward = movementInput.first
+            moveStrafing = movementInput.second
+            moveVertical = movementInput.third
+
+            // Update sprinting
+            isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
+
+            val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
+            val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
+
+            motionX = -sin(yawRad) * speed
+            motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
+            motionZ = cos(yawRad) * speed
+
+            if (isSprinting) {
+                motionX *= 1.5
+                motionY *= 1.5
+                motionZ *= 1.5
+            }
+
+            noClip = true
+
+            move(MoverType.SELF, motionX, motionY, motionZ)
+        }
+
+        override fun getEyeHeight() = 1.65f
+    }
+
+    /**
+     * @param forward <Forward, Backward>
+     * @param strafe <Left, Right>
+     * @param vertical <Up, Down>
+     *
+     * @return <Forward, Strafe, Vertical>
+     */
+    private fun calcMovementInput(forward: Pair<Boolean, Boolean>, strafe: Pair<Boolean, Boolean>, vertical: Pair<Boolean, Boolean>): Triple<Float, Float, Float> {
+        // Forward movement input
+        val moveForward = if (forward.first xor forward.second) {
+            if (forward.first) 1f else -1f
+        } else {
+            0f
+        }
+
+        // Strafe movement input
+        val moveStrafing = if (strafe.first xor strafe.second) {
+            if (strafe.second) 1f else -1f
+        } else {
+            0f
+        }
+
+        // Vertical movement input
+        val moveVertical = if (vertical.first xor vertical.second) {
+            if (vertical.first) 1f else -1f
+        } else {
+            0f
+        }
+
+        return Triple(moveForward, moveStrafing, moveVertical)
+    }
 }

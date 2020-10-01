@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
+import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -29,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayerSP.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayerSP extends EntityPlayer {
@@ -92,6 +94,14 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             sprinting = Sprint.INSTANCE.getSprinting();
         }
         super.setSprinting(sprinting);
+    }
+
+    // We have to return true here so it would still update movement inputs from Baritone and send packets
+    @Inject(method = "isCurrentViewEntity", at = @At("RETURN"), cancellable = true)
+    protected void mixinIsCurrentViewEntity(CallbackInfoReturnable<Boolean> cir) {
+        if (Freecam.INSTANCE.isEnabled() && Freecam.INSTANCE.getCameraGuy() != null) {
+            cir.setReturnValue(mc.getRenderViewEntity() == Freecam.INSTANCE.getCameraGuy());
+        }
     }
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -49,7 +48,6 @@ public class AutoTrap extends Module {
     private final Setting<Cage> cage = register(Settings.e("Cage", Cage.TRAP));
     private final Setting<Boolean> rotate = register(Settings.b("Rotate", false));
     private final Setting<Boolean> noGlitchBlocks = register(Settings.b("NoGlitchBlocks", true));
-    private final Setting<Boolean> activeInFreecam = register(Settings.b("ActiveInFreecam", true));
     private final Setting<Boolean> selfTrap = register(Settings.b("SelfTrap", false));
     private final Setting<Boolean> infoMessage = register(Settings.b("Debug", false));
 
@@ -124,8 +122,6 @@ public class AutoTrap extends Module {
     @Override
     public void onUpdate() {
         if (mc.player.getHealth() <= 0) return;
-
-        if (!activeInFreecam.getValue() && Freecam.INSTANCE.isEnabled()) return;
 
         if (firstRun) {
             if (findObiInHotbar() == -1) {

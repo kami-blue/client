@@ -1,0 +1,5 @@
+complexity:
+  active: true
+  ComplexMethod:
+    active: true
+    threshold: 25

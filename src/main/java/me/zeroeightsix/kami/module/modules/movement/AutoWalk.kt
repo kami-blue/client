@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.InputUpdateEvent
 
 @Module.Info(
@@ -73,7 +74,7 @@ object AutoWalk : Module() {
             return
         }
 
-        when (MathUtils.getPlayerCardinal(mc)) {
+        when (MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)) {
             Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
             Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
             Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
@@ -88,7 +89,7 @@ object AutoWalk : Module() {
             }
         }
 
-        direction = MathUtils.getPlayerCardinal(mc).cardinalName
+        direction = MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player).cardinalName
     }
 
     override fun getHudInfo(): String {

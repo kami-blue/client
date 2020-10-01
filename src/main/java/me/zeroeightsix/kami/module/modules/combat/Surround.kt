@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -57,29 +56,27 @@ object Surround : Module() {
             CenterPlayer.centerPlayer(1.0f)
             if (debugMsgs.value == DebugMsgs.ALL) MessageSendHelper.sendChatMessage("$chatName Auto centering. Player position is " + mc.player.positionVector.toString())
         } else {
-            if (Freecam.isDisabled) {
-                if (offsetStep == 0) {
-                    basePos = BlockPos(mc.player.positionVector).down()
-                    playerHotbarSlot = mc.player.inventory.currentItem
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
-                    }
-                    if (!spoofHotbar.value) {
-                        lastHotbarSlot = mc.player.inventory.currentItem
-                    }
+            if (offsetStep == 0) {
+                basePos = BlockPos(mc.player.positionVector).down()
+                playerHotbarSlot = mc.player.inventory.currentItem
+                if (debugMsgs.value == DebugMsgs.ALL) {
+                    MessageSendHelper.sendChatMessage("$chatName Starting Loop, current Player Slot: $playerHotbarSlot")
                 }
-                for (i in 0 until floor(blockPerTick.value).toInt()) {
-                    if (debugMsgs.value == DebugMsgs.ALL) {
-                        MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
-                    }
-                    if (offsetStep >= surroundTargets.size) {
-                        endLoop()
-                        return
-                    }
-                    val offset = surroundTargets[offsetStep]
-                    placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
-                    ++offsetStep
+                if (!spoofHotbar.value) {
+                    lastHotbarSlot = mc.player.inventory.currentItem
                 }
+            }
+            for (i in 0 until floor(blockPerTick.value).toInt()) {
+                if (debugMsgs.value == DebugMsgs.ALL) {
+                    MessageSendHelper.sendChatMessage("$chatName Loop iteration: $offsetStep")
+                }
+                if (offsetStep >= surroundTargets.size) {
+                    endLoop()
+                    return
+                }
+                val offset = surroundTargets[offsetStep]
+                placeBlock(BlockPos(basePos!!.add(offset.x, offset.y, offset.z)))
+                ++offsetStep
             }
         }
     }

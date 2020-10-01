@@ -234,7 +234,7 @@ object EntityUtils {
         for (entity in mc.world.loadedEntityList) {
             /* Entity type check */
             if (!isLiving(entity)) continue
-            if (entity == mc.player) continue
+            if (entity.name == mc.player.name) continue
             if (entity is EntityPlayer) {
                 if (!player[0]) continue
                 if (!playerTypeCheck(entity, player[1], player[2])) continue

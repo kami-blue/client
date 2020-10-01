@@ -32,7 +32,7 @@ import kotlin.math.max
 )
 @Suppress("UNCHECKED_CAST")
 object InfoOverlay : Module() {
-    /* This is so horrible but there's no other way */
+    /* This is so horrible // TODO: FIX */
     private val page = register(Settings.enumBuilder(Page::class.java).withName("Page").withValue(Page.ONE))
 
     /* Page One */
@@ -41,6 +41,7 @@ object InfoOverlay : Module() {
     private val tps = register(Settings.booleanBuilder("TPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility { page.value == Page.ONE })
+    private val server = register(Settings.booleanBuilder("ServerBrand").withValue(false).withVisibility { page.value == Page.ONE })
     private val durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility { page.value == Page.ONE })
     private val biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility { page.value == Page.ONE })
     private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.ONE })
@@ -107,8 +108,11 @@ object InfoOverlay : Module() {
         if (ping.value) {
             infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.ping() + setToText(secondColour.value).toString() + " ms")
         }
+        if (server.value) {
+            infoContents.add(setToText(firstColour.value).toString() + mc.player.serverBrand)
+        }
         if (durability.value) {
-            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.dura() + setToText(secondColour.value).toString() + " dura")
+            infoContents.add(setToText(firstColour.value).toString() + InfoCalculator.heldItemDurability() + setToText(secondColour.value).toString() + " heldItemDurability")
         }
         if (biome.value) {
             infoContents.add(setToText(firstColour.value).toString() + mc.world.getBiome(mc.player.position).biomeName + setToText(secondColour.value).toString() + " biome")

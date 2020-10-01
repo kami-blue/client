@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -74,8 +73,6 @@ object AutoFeetPlace : Module() {
     }
 
     override fun onUpdate() {
-        if (Freecam.isEnabled) return
-
         if (triggerable.value && totalTicksRunning >= timeoutTicks.value) {
             totalTicksRunning = 0
             disable()

@@ -30,26 +30,25 @@ object Baritone : Module() {
     private val renderGoal = register(Settings.b("RenderGoals", true))
     private val failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2).build())
     private val blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f).build())
-    private val hasRun = register(Settings.booleanBuilder("hasRun1").withValue(false).withVisibility { false }.build())
+    private var hasRun = false
 
     init {
-        allowBreak.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowBreak.value = allowBreak.value } }
-        allowSprint.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowSprint.value = allowSprint.value } }
-        allowPlace.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowPlace.value = allowPlace.value } }
-        allowInventory.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowInventory.value = allowInventory.value } }
-        freeLook.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().freeLook.value = freeLook.value } }
-        allowDownwardTunneling.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowDownward.value = allowDownwardTunneling.value } }
-        allowParkour.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowParkour.value = allowParkour.value } }
-        allowParkourPlace.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().allowParkourPlace.value = allowParkourPlace.value } }
-        avoidPortals.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().enterPortal.value = !avoidPortals.value } }
-        mapArtMode.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().mapArtMode.value = mapArtMode.value } }
-        renderGoal.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().renderGoal.value = renderGoal.value } }
-        failureTimeout.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().failureTimeoutMS.value = failureTimeout.value * 1000L } }
-        blockReachDistance.settingListener = SettingListeners { mc.player?.let { BaritoneAPI.getSettings().blockReachDistance.value = blockReachDistance.value } }
+        settingList.forEach {
+            it.settingListener = SettingListeners { set() }
+        }
     }
 
+    // not triggered until in game
     override fun onUpdate() {
-        if (!hasRun.value) { // you can use a setting for this and only run it once because then it'll be updated in game, we're only worried about default settings
+        if (!hasRun) {
+            set()
+            hasRun = true
+        }
+    }
+
+    private fun set() {
+        mc.player?.let {
+            BaritoneAPI.getSettings().chatControl.value = false // enable chatControlAnyway if you want to use it
             BaritoneAPI.getSettings().allowBreak.value = allowBreak.value
             BaritoneAPI.getSettings().allowSprint.value = allowSprint.value
             BaritoneAPI.getSettings().allowPlace.value = allowPlace.value
@@ -63,7 +62,6 @@ object Baritone : Module() {
             BaritoneAPI.getSettings().renderGoal.value = renderGoal.value
             BaritoneAPI.getSettings().failureTimeoutMS.value = failureTimeout.value * 1000L
             BaritoneAPI.getSettings().blockReachDistance.value = blockReachDistance.value
-            hasRun.value = true
         }
     }
 }
