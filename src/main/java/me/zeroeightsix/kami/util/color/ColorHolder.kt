@@ -2,8 +2,6 @@ package me.zeroeightsix.kami.util.color
 
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Created by Gebruiker on 18/04/2017.
@@ -36,29 +34,18 @@ class ColorHolder {
         this.a = color.alpha
     }
 
-    fun brighter(): ColorHolder {
-        return ColorHolder(min(r + 10, 255), min(g + 10, 255), min(b + 10, 255), a)
+    val brightness = 255f / intArrayOf(r, g, b).max()!!.toFloat()
+
+    fun normalized(): ColorHolder {
+        return ColorHolder((r * brightness).toInt(), (b * brightness).toInt(), (g * brightness).toInt(), a)
     }
 
-    fun darker(): ColorHolder {
-        return ColorHolder(max(r - 10, 0), max(g - 10, 0), max(b - 10, 0), a)
+    fun multiply(multiplier: Float): ColorHolder {
+        return ColorHolder((r * multiplier).toInt(), (b * multiplier).toInt(), (g * multiplier).toInt(), a)
     }
 
     fun setGLColor() {
         glColor4f(this.r / 255f, this.g / 255f, this.b / 255f, this.a / 255f)
-    }
-
-    fun becomeHex(hex: Int) {
-        this.r = hex and 0xFF0000 shr 16
-        this.g = hex and 0xFF00 shr 8
-        this.b = hex and 0xFF
-        this.a = 255
-    }
-
-    fun fromHex(hex: Int): ColorHolder {
-        val n = ColorHolder(0, 0, 0)
-        n.becomeHex(hex)
-        return n
     }
 
     fun toHex(): Int {
