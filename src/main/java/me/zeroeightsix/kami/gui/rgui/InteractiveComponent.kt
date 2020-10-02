@@ -6,7 +6,7 @@ abstract class InteractiveComponent : Component() {
     // Interactive info
     protected var lastStateUpdateTime = System.currentTimeMillis(); private set
     protected var prevState = MouseState.NONE; private set
-    var state = MouseState.NONE
+    var mouseState = MouseState.NONE
         private set(value) {
             prevState = field
             lastStateUpdateTime = System.currentTimeMillis()
@@ -15,7 +15,7 @@ abstract class InteractiveComponent : Component() {
 
     override fun onGuiInit() {
         super.onGuiInit()
-        state = MouseState.NONE
+        mouseState = MouseState.NONE
         prevState = MouseState.NONE
         lastStateUpdateTime = System.currentTimeMillis()
     }
@@ -26,24 +26,24 @@ abstract class InteractiveComponent : Component() {
     }
 
     open fun onHover(mousePos: Vec2d) {
-        state = MouseState.HOVER
+        mouseState = MouseState.HOVER
     }
 
     open fun onLeave(mousePos: Vec2d) {
-        state = MouseState.NONE
+        mouseState = MouseState.NONE
     }
 
     open fun onClick(mousePos: Vec2d, buttonId: Int) {
-        state = MouseState.CLICK
+        mouseState = MouseState.CLICK
     }
 
     open fun onRelease(mousePos: Vec2d, buttonId: Int) {
-        state = if (isInComponent(mousePos)) MouseState.HOVER
+        mouseState = if (isInComponent(mousePos)) MouseState.HOVER
         else MouseState.NONE
     }
 
     open fun onDrag(mousePos: Vec2d, clickPos: Vec2d, buttonId: Int) {
-        state = MouseState.DRAG
+        mouseState = MouseState.DRAG
     }
 
     fun isInComponent(mousePos: Vec2d) = mousePos.x in 0.0..width && mousePos.y in 0.0..height

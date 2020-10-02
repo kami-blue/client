@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
-import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
@@ -21,7 +21,7 @@ open class TitledWindow(
 
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, draggableHeight), ColorHolder(123, 114, 204))
-        KamiFontRenderer.drawString(name, 4f, 0f, color = ColorHolder(255, 255, 255))
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, draggableHeight), GuiColors.primary)
+        KamiFontRenderer.drawString(name, 2f, 2f, color = GuiColors.text)
     }
 }
