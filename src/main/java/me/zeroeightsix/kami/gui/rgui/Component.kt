@@ -9,6 +9,8 @@ abstract class Component {
     // Basic info
     val id: UUID = UUID.randomUUID()
     @Expose open var name = id.toString(); protected set
+    @Expose open var posX = 0.0
+    @Expose open var posY = 0.0
     @Expose open var width = 0.0
     @Expose open var height = 0.0
 
@@ -20,6 +22,10 @@ abstract class Component {
     open val maxHeight = -1.0
 
     // Rendering info
+    var prevPosX = 0.0; protected set
+    var prevPosY = 0.0; protected set
+    val renderPosX get() = prevPosX + (posX - prevPosX) * mc.renderPartialTicks
+    val renderPosY get() = prevPosY + (posY - prevPosY) * mc.renderPartialTicks
     var prevWidth = 0.0; protected set
     var prevHeight = 0.0; protected set
     val renderWidth get() = prevWidth + (width - prevWidth) * mc.renderPartialTicks

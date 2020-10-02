@@ -18,7 +18,7 @@ open class Slider(override var name: String, valueIn: Double) : InteractiveCompo
             }
         }
     override val maxHeight
-        get() = KamiFontRenderer.getFontHeight() + 2.0
+        get() = KamiFontRenderer.getFontHeight() + 4.0
 
     private val prevValue = TimedFlag(value)
     protected val renderProgress: Double
@@ -31,8 +31,8 @@ open class Slider(override var name: String, valueIn: Double) : InteractiveCompo
 
     override fun onRender(vertexHelper: VertexHelper) {
         val color = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTime(lastStateUpdateTime), 100.0)
-        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth * renderProgress, renderHeight), color)
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.5f, GuiColors.outline)
+        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d((renderWidth - 1.0) * renderProgress, renderHeight - 1.0), color)
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1f, GuiColors.outline)
         KamiFontRenderer.drawString(name, 1f, 1f, color = GuiColors.text)
     }
 

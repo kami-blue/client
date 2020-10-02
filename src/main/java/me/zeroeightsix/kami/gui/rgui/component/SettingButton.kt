@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
-import me.zeroeightsix.kami.gui.rgui.component.CheckButton
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.util.math.Vec2d
 

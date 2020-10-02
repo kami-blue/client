@@ -4,10 +4,6 @@ import me.zeroeightsix.kami.util.math.Vec2d
 
 open class Button(override var name: String, val action: () -> Unit) : Slider(name, 0.0) {
 
-    override fun onTick() {
-        super.onTick()
-    }
-
     override fun onClick(mousePos: Vec2d, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         value = 1.0

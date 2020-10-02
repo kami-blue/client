@@ -1,27 +1,16 @@
 package me.zeroeightsix.kami.gui.rgui
 
-import com.google.gson.annotations.Expose
 import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.math.Vec2d
 import kotlin.math.max
 import kotlin.math.min
 
 abstract class WindowComponent : InteractiveComponent() {
-    // Basic info of the Window
-    @Expose open var posX = 0.0
-    @Expose open var posY = 0.0
-
     // Interactive info
     open val draggableHeight get() = height
     var lastActiveTime: Long = System.currentTimeMillis(); private set
     var preDragPos = Vec2d(0.0, 0.0); private set
     var preDragSize = Vec2d(0.0, 0.0); private set
-
-    // Render info
-    var prevPosX = 0.0; private set
-    var prevPosY = 0.0; private set
-    val renderPosX get() = prevPosX + (posX - prevPosX) * mc.renderPartialTicks
-    val renderPosY get() = prevPosY + (posY - prevPosY) * mc.renderPartialTicks
 
     open fun onResize() {}
     open fun onReposition() {}

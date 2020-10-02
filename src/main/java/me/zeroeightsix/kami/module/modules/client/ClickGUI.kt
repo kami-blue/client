@@ -17,7 +17,9 @@ import kotlin.math.round
         alwaysListening = true
 )
 object ClickGUI : Module() {
-    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
+    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())val customFont = register(Settings.b("CustomFont", true)) // For the sake of dumb Minecraftia simps
+    val scrollSpeed = register(Settings.f("ScrollSpeed", 1f))
+    val triggerSpeed = register(Settings.f("TriggerSpeed", 0.5f))
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale

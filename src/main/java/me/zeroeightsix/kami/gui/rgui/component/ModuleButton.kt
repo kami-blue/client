@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.util.math.Vec2d
 class ModuleButton(val module: Module) : CheckButton (module.name.value, module.isEnabled) {
     override fun onTick() {
         super.onTick()
+        name = module.name.value
         value = if (module.isEnabled) 1.0 else 0.0
     }
 
