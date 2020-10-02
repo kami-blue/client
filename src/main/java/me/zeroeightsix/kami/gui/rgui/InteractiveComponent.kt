@@ -21,8 +21,16 @@ abstract class InteractiveComponent : Component() {
     }
 
     // Interactive methods
+    open fun onMouseInput(mousePos: Vec2d) {
+
+    }
+
     open fun onHover(mousePos: Vec2d) {
         state = MouseState.HOVER
+    }
+
+    open fun onLeave(mousePos: Vec2d) {
+        state = MouseState.NONE
     }
 
     open fun onClick(mousePos: Vec2d, buttonId: Int) {
@@ -30,12 +38,15 @@ abstract class InteractiveComponent : Component() {
     }
 
     open fun onRelease(mousePos: Vec2d, buttonId: Int) {
-        state = MouseState.NONE
+        state = if (isInComponent(mousePos)) MouseState.HOVER
+        else MouseState.NONE
     }
 
     open fun onDrag(mousePos: Vec2d, clickPos: Vec2d, buttonId: Int) {
         state = MouseState.DRAG
     }
+
+    fun isInComponent(mousePos: Vec2d) = mousePos.x in 0.0..width && mousePos.y in 0.0..height
 
     @Suppress("UNUSED")
     enum class MouseState {

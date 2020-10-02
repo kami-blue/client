@@ -9,15 +9,15 @@ abstract class Component {
     // Basic info
     val id: UUID = UUID.randomUUID()
     @Expose open var name = id.toString(); protected set
-    @Expose open var width = 0.0; protected set
-    @Expose open var height = 0.0; protected set
+    @Expose open var width = 0.0
+    @Expose open var height = 0.0
 
     // Extra info
     protected val mc = Wrapper.minecraft
-    open val minWidth: Double = 10.0
-    open val minHeight: Double = 10.0
-    abstract var maxWidth: Double
-    abstract var maxHeight: Double
+    open val minWidth: Double = 16.0
+    open val minHeight: Double = 16.0
+    open val maxWidth = -1.0
+    open val maxHeight = -1.0
 
     // Rendering info
     var prevWidth = 0.0; protected set

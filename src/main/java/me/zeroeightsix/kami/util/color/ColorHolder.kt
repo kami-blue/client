@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.color
 
+import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 
@@ -34,14 +35,23 @@ class ColorHolder {
         this.a = color.alpha
     }
 
-    val brightness = 255f / intArrayOf(r, g, b).max()!!.toFloat()
-
-    fun normalized(): ColorHolder {
-        return ColorHolder((r * brightness).toInt(), (b * brightness).toInt(), (g * brightness).toInt(), a)
-    }
+    val brightness = intArrayOf(r, g, b).max()!!.toFloat() / 255f
 
     fun multiply(multiplier: Float): ColorHolder {
-        return ColorHolder((r * multiplier).toInt(), (b * multiplier).toInt(), (g * multiplier).toInt(), a)
+        return ColorHolder((r * multiplier).toInt().coerceIn(0, 255), (g * multiplier).toInt().coerceIn(0, 255), (b * multiplier).toInt().coerceIn(0, 255), a)
+    }
+
+    fun mix(other: ColorHolder): ColorHolder {
+        return ColorHolder((r + other.r) / 2 + (g + other.g) / 2, (b + other.b) / 2, (a + other.a) / 2)
+    }
+
+    fun interpolate(prev: ColorHolder, deltaTime: Double, length: Double): ColorHolder {
+        return ColorHolder(
+                AnimationUtils.exponent(deltaTime, length, prev.r.toDouble(), r.toDouble()).toInt().coerceIn(0, 255),
+                AnimationUtils.exponent(deltaTime, length, prev.g.toDouble(), g.toDouble()).toInt().coerceIn(0, 255),
+                AnimationUtils.exponent(deltaTime, length, prev.b.toDouble(), b.toDouble()).toInt().coerceIn(0, 255),
+                AnimationUtils.exponent(deltaTime, length, prev.a.toDouble(), a.toDouble()).toInt().coerceIn(0, 255)
+        )
     }
 
     fun setGLColor() {

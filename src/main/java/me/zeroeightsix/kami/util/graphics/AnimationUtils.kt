@@ -6,11 +6,22 @@ import kotlin.math.*
 object AnimationUtils {
     fun toDeltaTime(startTime: Long) = (System.currentTimeMillis() - startTime).toDouble()
 
+    // Linear
+    fun linear(deltaTime: Double, length: Double, from: Double, to: Double) =
+            if (from < to) linearInc(deltaTime, length, from, to)
+            else linearDec(deltaTime, length, to, from)
+
     fun linearInc(deltaTime: Double, length: Double, minValue: Double = 0.0, maxValue: Double = 1.0) =
             MathUtils.convertRange(deltaTime, 0.0, length, minValue, maxValue)
 
     fun linearDec(deltaTime: Double, length: Double, minValue: Double = 0.0, maxValue: Double = 1.0) =
             MathUtils.convertRange(deltaTime, 0.0, length, maxValue, minValue)
+
+
+    // Sine
+    fun sine(deltaTime: Double, length: Double, from: Double, to: Double) =
+            if (from < to) halfSineInc(deltaTime, length, from, to)
+            else halfSineDec(deltaTime, length, to, from)
 
     fun fullSineInc(deltaTime: Double, length: Double, minValue: Double = 0.0, maxValue: Double = 1.0) =
             (cos(deltaTime.coerceIn(0.0, length) * PI * (1.0 / length)) * 0.5 + 0.5) * (maxValue - minValue) + minValue
@@ -23,6 +34,12 @@ object AnimationUtils {
 
     fun halfSineDec(deltaTime: Double, length: Double, minValue: Double = 0.0, maxValue: Double = 1.0) =
             cos(0.5 * deltaTime.coerceIn(0.0, length) * PI * (1.0 / length)) * (maxValue - minValue) + minValue
+
+
+    // Exponent
+    fun exponent(deltaTime: Double, length: Double, from: Double, to: Double) =
+            if (from < to) exponentInc(deltaTime, length, from, to)
+            else exponentDec(deltaTime, length, to, from)
 
     fun exponentInc(deltaTime: Double, length: Double, minValue: Double = 0.0, maxValue: Double = 1.0) =
             sqrt(1.0 - (deltaTime.coerceIn(0.0, length) / length - 1.0).pow(2)) * (maxValue - minValue) + minValue
