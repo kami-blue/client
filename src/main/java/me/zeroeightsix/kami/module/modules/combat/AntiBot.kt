@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.graphics.TextComponent
+import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.abs
