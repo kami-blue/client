@@ -1,9 +1,10 @@
-[![Build Status features-master](https://img.shields.io/travis/com/kami-blue/client/master?logo=gradle&label=build&style=flat-square)](https://travis-ci.com/kami-blue/client)
-[![Discord Mine](https://img.shields.io/discord/573954110454366214?label=chat&logo=discord&logoColor=white&style=flat-square)](https://discord.gg/KfpqwZB)
+[![CodeFactor](https://www.codefactor.io/repository/github/kami-blue/client/badge)](https://www.codefactor.io/repository/github/kami-blue/client)
+[![Build Status features-master](https://img.shields.io/travis/com/kami-blue/client/master?logo=gradle&label=build)](https://travis-ci.com/kami-blue/client)
+[![Discord Mine](https://img.shields.io/discord/573954110454366214?label=chat&logo=discord&logoColor=white)](https://discord.gg/KfpqwZB)
 [![HitCount](http://hits.dwyl.com/kami-blue/client.svg)](http://hits.dwyl.com/kami-blue/client)
-[![Paypal](https://img.shields.io/badge/paypal-donate-red?color=169bd7&logo=paypal&style=flat-square)](https://paypal.me/mik4a/5USD)
-[![BTC](https://img.shields.io/badge/btc-donate-red?color=f08b16&logo=bitcoin&style=flat-square)](https://www.blockchain.com/btc/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7)
-[![BCH](https://img.shields.io/badge/bch-donate-red?color=2db300&logo=cash-app&style=flat-square)](https://www.blockchain.com/bch/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7) 
+
+[![Paypal](https://img.shields.io/badge/paypal-donate-red?color=169bd7&logo=paypal)](https://paypal.me/mik4a/5USD)
+[![BTC](https://img.shields.io/badge/btc-donate-red?color=f08b16&logo=bitcoin)](https://www.blockchain.com/btc/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7)
 
 Please consider donating to help continue this project and get a unique cape in game. 
 

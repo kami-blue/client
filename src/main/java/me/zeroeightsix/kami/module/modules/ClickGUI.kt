@@ -17,6 +17,7 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
+    val customFont = register(Settings.b("CustomFont", true)) // For the sake of dumb Minecraftia simps
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale

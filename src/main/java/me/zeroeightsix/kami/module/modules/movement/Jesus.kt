@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.Freecam
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import net.minecraft.block.BlockLiquid
@@ -34,12 +33,10 @@ object Jesus : Module() {
     }
 
     override fun onUpdate() {
-        if (!Freecam.isEnabled) {
-            if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
-                mc.player.motionY = 0.1
-                if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
-                    mc.player.getRidingEntity()!!.motionY = 0.3
-                }
+        if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
+            mc.player.motionY = 0.1
+            if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
+                mc.player.getRidingEntity()!!.motionY = 0.3
             }
         }
     }

@@ -2,14 +2,12 @@ package me.zeroeightsix.kami.mixin.client;
 
 import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
-import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
 import me.zeroeightsix.kami.module.modules.render.AntiFog;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -69,15 +67,6 @@ public class MixinEntityRenderer {
             return new ArrayList<>();
         else
             return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
-    }
-
-    @Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isSpectator()Z"))
-    public boolean noclipIsSpectator(EntityPlayerSP entityPlayerSP) {
-        // [WebringOfTheDamned]
-        // Freecam doesn't actually use spectator mode, but it can go through walls, and only spectator mode is "allowed to" go through walls as far as the renderer is concerned
-        if (Freecam.INSTANCE.isEnabled())
-            return true;
-        return entityPlayerSP.isSpectator();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getEyeHeight()F"))

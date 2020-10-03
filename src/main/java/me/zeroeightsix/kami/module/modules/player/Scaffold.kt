@@ -55,7 +55,6 @@ object Scaffold : Module() {
     })
 
     override fun onUpdate() {
-        if (Freecam.isEnabled) return
         shouldSlow = false
 
         val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value

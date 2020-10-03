@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.gui.kami.theme.kami;
 import me.zeroeightsix.kami.gui.kami.component.UnboundSlider;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
-import me.zeroeightsix.kami.gui.rgui.render.font.FontRenderer;
-import org.lwjgl.opengl.GL11;
+import me.zeroeightsix.kami.util.color.ColorHolder;
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 
 /**
  * Created by 086 on 17/12/2017.
@@ -12,19 +12,21 @@ import org.lwjgl.opengl.GL11;
 public class KamiUnboundSliderUI extends AbstractComponentUI<UnboundSlider> {
 
     @Override
-    public void renderComponent(UnboundSlider component, FontRenderer fontRenderer) {
+    public void renderComponent(UnboundSlider component) {
         String s = component.getText() + ": " + component.getValue();
-        int c = component.isPressed() ? 0xaaaaaa : 0xdddddd;
-        if (component.isHovered())
-            c = (c & 0x7f7f7f) << 1;
-        fontRenderer.drawString(component.getWidth() / 2 - fontRenderer.getStringWidth(s) / 2, component.getHeight() - fontRenderer.getFontHeight() / 2 - 4, c, s);
-        GL11.glDisable(GL11.GL_BLEND);
+
+        ColorHolder color = new ColorHolder(
+                component.isHovered() ? KamiGuiColors.GuiC.buttonHoveredN.color :
+                        component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
+                                KamiGuiColors.GuiC.buttonHoveredT.color);
+
+        FontRenderAdapter.INSTANCE.drawString(s, component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(s) / 2f, 1f, true, color);
     }
 
     @Override
     public void handleAddComponent(UnboundSlider component, Container container) {
-        component.setHeight(component.getTheme().getFontRenderer().getFontHeight());
-        component.setWidth(component.getTheme().getFontRenderer().getStringWidth(component.getText()));
+        component.setHeight((int) (FontRenderAdapter.INSTANCE.getFontHeight() + 2));
+        component.setWidth((int) FontRenderAdapter.INSTANCE.getStringWidth(component.getText()));
     }
 
 }

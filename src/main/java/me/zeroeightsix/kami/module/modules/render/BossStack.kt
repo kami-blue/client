@@ -102,7 +102,6 @@ object BossStack : Module() {
 
             posY += 10 + mc.fontRenderer.FONT_HEIGHT
         }
-        GlStateUtils.blend(false)
         mc.profiler.endSection()
     })
 }

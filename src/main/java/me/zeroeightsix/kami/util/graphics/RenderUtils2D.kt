@@ -211,7 +211,6 @@ object RenderUtils2D {
         GlStateUtils.blend(true)
         GlStateUtils.smooth(true)
         GlStateUtils.lineSmooth(true)
-        GlStateUtils.depth(false)
         GlStateUtils.cull(false)
     }
 
@@ -220,7 +219,6 @@ object RenderUtils2D {
         GlStateUtils.blend(false)
         GlStateUtils.smooth(false)
         GlStateUtils.lineSmooth(false)
-        GlStateUtils.depth(true)
         GlStateUtils.cull(true)
     }
 

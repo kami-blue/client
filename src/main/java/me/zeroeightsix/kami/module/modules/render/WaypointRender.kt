@@ -14,6 +14,8 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
+import me.zeroeightsix.kami.util.graphics.font.TextComponent
+import me.zeroeightsix.kami.util.graphics.font.TextProperties
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.AxisAlignedBB
@@ -63,7 +65,8 @@ object WaypointRender : Module() {
     }
 
     private val waypointMap = TreeMap<BlockPos, TextComponent>(compareByDescending {
-        it.distanceSq(mc.player?.position ?: BlockPos(0, -69420, 0)) // This has to be sorted so the further ones doesn't overlaps the closer ones
+        it.distanceSq(mc.player?.position
+                ?: BlockPos(0, -69420, 0)) // This has to be sorted so the further ones doesn't overlaps the closer ones
     })
     private var currentServer: String? = null
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -112,7 +115,7 @@ object WaypointRender : Module() {
         glPushMatrix()
 
         val screenPos = ProjectionUtils.toScreenPos(pos.toVec3d())
-        glTranslatef(screenPos.x.roundToInt() + 0.375f, screenPos.y.roundToInt() + 0.375f, 0f)
+        glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
         glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
 
         val textComponent = TextComponent(textComponentIn).apply { if (showDist.value) add("$distance m") }
@@ -124,7 +127,7 @@ object WaypointRender : Module() {
 
         RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, ColorHolder(32, 32, 32, 172))
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 2f, ColorHolder(80, 80, 80, 232))
-        textComponent.draw(drawShadow = false, horizontalAlign = TextComponent.HAlign.CENTER, verticalAlign = TextComponent.VAlign.CENTER)
+        textComponent.draw(drawShadow = false, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER)
 
         glPopMatrix()
     }
@@ -151,8 +154,11 @@ object WaypointRender : Module() {
                 WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
                 WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
                 WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
-                WaypointUpdateEvent.Type.RELOAD -> { waypointMap.clear(); updateList() }
-                else -> { }
+                WaypointUpdateEvent.Type.RELOAD -> {
+                    waypointMap.clear(); updateList()
+                }
+                else -> {
+                }
             }
         }
     })

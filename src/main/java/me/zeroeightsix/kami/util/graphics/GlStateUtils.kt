@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.util.graphics
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.opengl.GL11.*
 
@@ -17,7 +18,7 @@ object GlStateUtils {
     fun blend(state: Boolean) {
         if (state) {
             glEnable(GL_BLEND)
-            OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+            GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
         } else {
             glDisable(GL_BLEND)
         }

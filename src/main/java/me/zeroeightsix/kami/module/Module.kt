@@ -150,9 +150,9 @@ open class Module {
     }
 
     protected fun <T> register(builder: SettingBuilder<T>): Setting<T> {
-        val setting = builder.buildAndRegister("modules.$name")
+        val setting = builder.build()
         settingList.add(setting)
-        return setting
+        return SettingBuilder.register(setting, "modules.$originalName")
     }
     /* End of setting registering */
 

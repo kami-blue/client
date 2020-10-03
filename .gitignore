@@ -1,27 +1,5 @@
 # Created by https://www.gitignore.io/api/linux,gradle,eclipse,windows,forgegradle,intellij+all,emacs,vim
 
-# stop skidding kami blue
-
-#gradle*
-#gradlew*
-#gradle/
-#buildext.sh
-#deltags.sh
-#buildexttmp.sh
-#build.gradle
-#builddonator.sh
-#buildkeygen.sh
-#build.sh
-
-# donator
-
-#src/main/java/me/zeroeightsix/kami/module/modules/sdashb/capes/
-#src/main/java/me/zeroeightsix/kami/mixin/client/MixinAbstractClientPlayer.java
-
-# sdashb
-
-sdashb.modules
-
 # MCP
 
 assets/mcp-1.12.2-srg.zip

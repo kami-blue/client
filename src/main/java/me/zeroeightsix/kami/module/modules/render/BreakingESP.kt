@@ -8,9 +8,9 @@ import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Blocks
@@ -84,10 +84,12 @@ object BreakingESP : Module() {
     override fun onRender() {
         if (screenWarn.value && warn) {
             if (delay++ > 100) warn = false
-            val textRenderer = Wrapper.fontRenderer
             val scale = DisplayGuiScreen.getScale().toInt()
             val divider = if (scale == 0) 1 else scale
-            textRenderer.drawStringWithShadow(mc.displayWidth / divider / 2 - textRenderer.getStringWidth(warningText) / 2, mc.displayHeight / divider / 2 - 16, 240, 87, 70, warningText)
+            val posX = mc.displayWidth / divider / 2f - FontRenderAdapter.getStringWidth(warningText) / 2f
+            val posY = mc.displayHeight / divider / 2f - 16f
+            val color = ColorHolder(240, 87, 70)
+            FontRenderAdapter.drawString(warningText, posX, posY, color = color)
         }
     }
 
