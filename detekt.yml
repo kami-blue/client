@@ -2,7 +2,7 @@ complexity:
   active: true
   ComplexMethod:
     active: true
-    threshold: 25
+    threshold: 50
 
 style:
   active: true

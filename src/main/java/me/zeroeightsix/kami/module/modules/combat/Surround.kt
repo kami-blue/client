@@ -140,8 +140,11 @@ object Surround : Module() {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (!BlockUtils.isPlaceable(pos)) continue
-            return true
+            if (!BlockUtils.isPlaceable(pos)) {
+                continue
+            } else {
+                return true
+            }
         }
         return false
     }
@@ -191,21 +194,6 @@ object Surround : Module() {
                 null
             }
         }
-
-        /*val placed = ArrayList<BlockPos>()
-        var placeCount = 0
-        while (isEnabled && CombatManager.isOnTopPriority(this) && getPlaceInfo(emptyList()) != null) {
-            while (isEnabled && CombatManager.isOnTopPriority(this)) {
-                val placingInfo = getPlaceInfo(placed) ?: break
-                placeCount++
-                placed.add(placingInfo.second.offset(placingInfo.first))
-                BlockUtils.doPlace(placingInfo.second, placingInfo.first, placeSpeed.value)
-                if (placeCount >= 4) break
-            }
-            Thread.sleep(100L)
-            placeCount = 0
-            placed.clear()
-        }*/
     }
 
     private fun getPlaceInfo(toIgnore: List<BlockPos>, attempts: Int = 1): Pair<EnumFacing, BlockPos>? {

@@ -72,7 +72,7 @@ object Aura : Module() {
     }
 
     private fun canAttack(): Boolean {
-        val adjustTicks = if (!tpsSync.value) 0f else (LagCompensator.adjustTicks)
+        val adjustTicks = if (!tpsSync.value) 0f else LagCompensator.adjustTicks
         return if (delayMode.value == WaitMode.DELAY) {
             (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
         } else {

@@ -223,6 +223,7 @@ object CrystalAura : Module() {
                 && countValidCrystal() < maxCrystal.value
     }
 
+    @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
     private fun getPlacingPos(): BlockPos? {
         if (placeMap.isEmpty()) return null
         for ((damage, pos) in placeMap) {
