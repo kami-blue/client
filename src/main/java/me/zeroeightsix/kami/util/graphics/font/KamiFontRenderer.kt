@@ -165,11 +165,11 @@ object KamiFontRenderer {
         var posX = 0.0
         var posY = 0.0
 
-        val lighting = glGetBoolean(GL_LIGHTING)
+        GlStateManager.disableOutlineMode() // Weird fix for black text
+        glEnable(GL_TEXTURE_2D)
         glDisable(GL_LIGHTING)
         glDisable(GL_ALPHA_TEST)
         GlStateUtils.blend(true)
-        GlStateUtils.cull(false)
         glPushMatrix()
         glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(0.28f * scale, 0.28f * scale, 1.0f)
@@ -205,16 +205,12 @@ object KamiFontRenderer {
             }
         }
         resetStyle()
-        glColor4f(1f, 1f, 1f, 1f)
 
         glPopMatrix()
-        if (lighting) glEnable(GL_LIGHTING)
         glEnable(GL_ALPHA_TEST)
-        GlStateUtils.cull(true)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0.0f)
         glColor4f(1f, 1f, 1f, 1f)
     }
@@ -224,8 +220,8 @@ object KamiFontRenderer {
     private fun drawQuad(pos1: Vec2d, pos2: Vec2d, texPos1: Vec2d, texPos2: Vec2d) {
         buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
         buffer.pos(pos1.x, pos1.y, 0.0).tex(texPos1.x, texPos1.y).endVertex()
-        buffer.pos(pos2.x, pos1.y, 0.0).tex(texPos2.x, texPos1.y).endVertex()
         buffer.pos(pos1.x, pos2.y, 0.0).tex(texPos1.x, texPos2.y).endVertex()
+        buffer.pos(pos2.x, pos1.y, 0.0).tex(texPos2.x, texPos1.y).endVertex()
         buffer.pos(pos2.x, pos2.y, 0.0).tex(texPos2.x, texPos2.y).endVertex()
         tessellator.draw()
     }
@@ -248,7 +244,6 @@ object KamiFontRenderer {
     }
 
     private fun resetStyle() {
-
         currentVariant = glyphArray[0]
         currentColor = DyeColors.WHITE.color
     }
