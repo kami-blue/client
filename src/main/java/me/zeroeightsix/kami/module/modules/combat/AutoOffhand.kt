@@ -21,14 +21,6 @@ import net.minecraft.item.ItemSword
 import net.minecraft.network.play.server.SPacketConfirmTransaction
 import kotlin.math.max
 
-// TODO: Merge Auto totem into this Y
-// TODO: Merge OffhandGap into this Y
-// TODO: #1329 Y
-// TODO: #1045 Y
-// TODO: #1049 Y
-// TODO: #1005 Y
-// TODO: #943 Y
-// TODO: #836 Y
 @Module.Info(
         name = "AutoOffhand",
         description = "Manages item in your offhand",
@@ -45,7 +37,7 @@ object AutoOffhand : Module() {
     private val crystal = register(Settings.booleanBuilder("Crystal").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })
 
     // Gapple
-    private val offhandGapple = register(Settings.booleanBuilder("OffhandGapple").withValue(true).withVisibility { type.value == Type.GAPPLE })
+    private val offhandGapple = register(Settings.booleanBuilder("OffhandGapple").withValue(false).withVisibility { type.value == Type.GAPPLE })
     private val checkAura = register(Settings.booleanBuilder("CheckAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkWeapon = register(Settings.booleanBuilder("CheckWeapon").withValue(false).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkCAGapple = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
