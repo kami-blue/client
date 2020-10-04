@@ -140,11 +140,7 @@ object Surround : Module() {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (!BlockUtils.isPlaceable(pos)) {
-                continue
-            } else {
-                return true
-            }
+            if (BlockUtils.isPlaceable(pos)) return true
         }
         return false
     }
