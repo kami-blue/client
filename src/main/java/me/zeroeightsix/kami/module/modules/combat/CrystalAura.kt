@@ -65,6 +65,7 @@ object CrystalAura : Module() {
     /* Place page two */
     private val minDamageP = register(Settings.integerBuilder("MinDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
     private val maxSelfDamageP = register(Settings.integerBuilder("MaxSelfDamagePlace").withValue(4).withRange(0, 20).withVisibility { page.value == Page.PLACE_TWO })
+    private val placeOffset = register(Settings.floatBuilder("PlaceOffset").withValue(1.0f).withRange(0f, 1f).withStep(0.05f).withVisibility { page.value == Page.PLACE_TWO })
     private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
     private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.PLACE_TWO })
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
@@ -125,6 +126,7 @@ object CrystalAura : Module() {
         PlayerPacketManager.resetHotbar()
     }
 
+    // Minecraft sends sounds packets a tick before removing the crystal lol
     @EventHandler
     private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
         if (!CombatManager.isOnTopPriority(this) || mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
@@ -183,8 +185,8 @@ object CrystalAura : Module() {
             getHand()?.let { hand ->
                 placeTimer = 0
                 inactiveTicks = 0
-                lastLookAt = Vec3d(pos).add(0.5, 1.0, 0.5)
-                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0.5f, 1f, 0.5f))
+                lastLookAt = Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5)
+                mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f))
                 if (placeSwing.value) mc.player.swingArm(hand)
             }
         }
