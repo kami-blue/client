@@ -134,6 +134,7 @@ object CrystalAura : Module() {
             val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 5f)
             for (crystal in crystalList) {
                 crystal.setDead()
+                mc.world.removeEntityFromWorld(crystal.entityId)
             }
             ignoredList.clear()
             hitCount = 0
@@ -365,6 +366,7 @@ object CrystalAura : Module() {
     }
     /* End of Motion prediction */
 
+    /* Rotation spoofing */
     private fun getLastRotation() = RotationUtils.getRotationTo(lastLookAt, true)
 
     private fun resetRotation() {
