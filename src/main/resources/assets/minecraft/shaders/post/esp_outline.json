@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "Radius",
-                    "values": [ 16.0 ]
+                    "values": [ 2.0 ]
                 }
             ]
         },
@@ -31,7 +31,7 @@
                 },
                 {
                     "name": "Radius",
-                    "values": [ 16.0 ]
+                    "values": [ 2.0 ]
                 }
             ]
         },

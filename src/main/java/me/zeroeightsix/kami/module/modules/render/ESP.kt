@@ -50,15 +50,15 @@ object ESP : Module() {
     private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 128).withVisibility { page.value == Page.ENTITY_TYPE }.build())
 
     /* Rendering settings */
-    private val mode = register(Settings.enumBuilder(ESPMode::class.java, "Mode").withValue(ESPMode.BOX).withVisibility { page.value == Page.RENDERING }.build())
+    private val mode = register(Settings.enumBuilder(ESPMode::class.java, "Mode").withValue(ESPMode.SHADER).withVisibility { page.value == Page.RENDERING }.build())
     private val hideOriginal = register(Settings.booleanBuilder("HideOriginal").withValue(false).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.SHADER }.build())
     private val filled = register(Settings.booleanBuilder("Filled").withValue(false).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
     private val blurRadius = register(Settings.floatBuilder("BlurRadius").withValue(0f).withRange(0f, 16f).withStep(0.5f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.SHADER }.build())
     private val width = register(Settings.floatBuilder("Width").withValue(2f).withRange(1f, 8f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
 
