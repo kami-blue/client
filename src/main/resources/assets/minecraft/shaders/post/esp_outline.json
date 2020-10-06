@@ -1,0 +1,32 @@
+{
+    "targets": [
+        "swap",
+        "final"
+    ],
+    "passes": [
+        {
+            "name": "esp_outline",
+            "intarget": "final",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "width",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "outlineAlpha",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "filledAlpha",
+                    "values": [ 0.25 ]
+                }
+            ]
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "final"
+        }
+    ]
+}
