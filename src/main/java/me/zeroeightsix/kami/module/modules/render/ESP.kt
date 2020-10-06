@@ -13,9 +13,11 @@ import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
+import net.minecraft.client.shader.Shader
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.client.shader.ShaderLinkHelper
 import net.minecraft.entity.Entity
@@ -90,6 +92,7 @@ object ESP : Module() {
                     it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                 }
             } catch (e: Exception) {
+                MessageSendHelper.sendErrorMessage("$chatName Error loading Shader: \"${e.message}\", check the log for more information!")
                 KamiMod.log.warn("$chatName Failed loading Shader")
                 e.printStackTrace()
                 null
@@ -165,18 +168,14 @@ object ESP : Module() {
             }
 
             else -> {
-
+                // other modes, such as GLOW, use onUpdate()
             }
         }
     }
 
     override fun onUpdate() {
         // Refresh frame buffer on resolution change
-        if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
-            prevWidth = mc.displayWidth
-            prevHeight = mc.displayHeight
-            shader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-        }
+        refreshFrameBuffers()
 
         entityList.clear()
         entityList.addAll(getEntityList())
@@ -187,7 +186,7 @@ object ESP : Module() {
                     shader.shaderManager.getShaderUniform("Radius")?.set(width.value)
                 }
 
-                for (entity in mc.world.loadedEntityList) { // Set grow for entities in the list. Remove grow for entities not in the list
+                for (entity in mc.world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
                     entity.isGlowing = entityList.contains(entity)
                 }
             } else {
@@ -196,11 +195,7 @@ object ESP : Module() {
         } else if (mode.value == ESPMode.SHADER) {
             shader?.let {
                 for (shader in it.listShaders) {
-                    shader.shaderManager.getShaderUniform("color")?.set(r.value / 255f, g.value / 255f, b.value / 255f)
-                    shader.shaderManager.getShaderUniform("outlineAlpha")?.set(if (outline.value) aOutline.value / 255f else 0f)
-                    shader.shaderManager.getShaderUniform("filledAlpha")?.set(if (filled.value) aFilled.value / 255f else 0f)
-                    shader.shaderManager.getShaderUniform("width")?.set(width.value)
-                    shader.shaderManager.getShaderUniform("Radius")?.set(blurRadius.value)
+                    setShaderSettings(shader)
                 }
             }
         }
@@ -230,6 +225,22 @@ object ESP : Module() {
             }
         }
         return entityList
+    }
+
+    private fun refreshFrameBuffers() {
+        if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
+            prevWidth = mc.displayWidth
+            prevHeight = mc.displayHeight
+            shader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+        }
+    }
+
+    private fun setShaderSettings(shader: Shader) {
+        shader.shaderManager.getShaderUniform("color")?.set(r.value / 255f, g.value / 255f, b.value / 255f)
+        shader.shaderManager.getShaderUniform("outlineAlpha")?.set(if (outline.value) aOutline.value / 255f else 0f)
+        shader.shaderManager.getShaderUniform("filledAlpha")?.set(if (filled.value) aFilled.value / 255f else 0f)
+        shader.shaderManager.getShaderUniform("width")?.set(width.value)
+        shader.shaderManager.getShaderUniform("Radius")?.set(blurRadius.value)
     }
 
     override fun onDisable() {
