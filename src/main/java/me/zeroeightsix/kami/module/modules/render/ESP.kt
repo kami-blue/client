@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -60,6 +59,7 @@ object ESP : Module() {
     private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) }.build())
+    private val blurRadius = register(Settings.floatBuilder("BlurRadius").withValue(0f).withRange(0f, 16f).withStep(0.5f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.SHADER }.build())
     private val width = register(Settings.floatBuilder("Width").withValue(2f).withRange(1f, 8f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
 
     private enum class Page {
@@ -126,7 +126,7 @@ object ESP : Module() {
 
     private fun prepareFrameBuffer() {
         GlStateManager.pushMatrix()
-        GlStateManager.enableOutlineMode(ColorConverter.rgbToInt(r.value, g.value, b.value, aOutline.value))
+        GlStateManager.enableOutlineMode(0xFFFFFF)
         frameBuffer?.bindFramebuffer(false)
     }
 
@@ -172,7 +172,7 @@ object ESP : Module() {
 
     override fun onUpdate() {
         // Refresh frame buffer on resolution change
-        if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight){
+        if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
             prevWidth = mc.displayWidth
             prevHeight = mc.displayHeight
             shader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
@@ -196,9 +196,11 @@ object ESP : Module() {
         } else if (mode.value == ESPMode.SHADER) {
             shader?.let {
                 for (shader in it.listShaders) {
-                    shader.shaderManager.getShaderUniform("width")?.set(width.value)
+                    shader.shaderManager.getShaderUniform("color")?.set(r.value / 255f, g.value / 255f, b.value / 255f)
                     shader.shaderManager.getShaderUniform("outlineAlpha")?.set(if (outline.value) aOutline.value / 255f else 0f)
                     shader.shaderManager.getShaderUniform("filledAlpha")?.set(if (filled.value) aFilled.value / 255f else 0f)
+                    shader.shaderManager.getShaderUniform("width")?.set(width.value)
+                    shader.shaderManager.getShaderUniform("Radius")?.set(blurRadius.value)
                 }
             }
         }

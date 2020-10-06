@@ -1,17 +1,54 @@
 {
     "targets": [
         "swap",
+        "previous",
         "final"
     ],
     "passes": [
         {
-            "name": "esp_outline",
-            "intarget": "final",
+            "name": "blur",
+            "intarget": "minecraft:main",
             "outtarget": "swap",
             "uniforms": [
                 {
-                    "name": "width",
-                    "values": [ 1.0 ]
+                    "name": "BlurDir",
+                    "values": [ 1.0, 0.0 ]
+                },
+                {
+                    "name": "Radius",
+                    "values": [ 16.0 ]
+                }
+            ]
+        },
+        {
+            "name": "blur",
+            "intarget": "swap",
+            "outtarget": "previous",
+            "uniforms": [
+                {
+                    "name": "BlurDir",
+                    "values": [ 0.0, 1.0 ]
+                },
+                {
+                    "name": "Radius",
+                    "values": [ 16.0 ]
+                }
+            ]
+        },
+        {
+            "name": "esp_outline",
+            "intarget": "final",
+            "outtarget": "swap",
+            "auxtargets": [
+                {
+                    "name": "PrevSampler",
+                    "id": "previous"
+                }
+            ],
+            "uniforms": [
+                {
+                    "name": "color",
+                    "values": [ 0.6078, 0.5647, 1.0 ]
                 },
                 {
                     "name": "outlineAlpha",
@@ -20,6 +57,10 @@
                 {
                     "name": "filledAlpha",
                     "values": [ 0.25 ]
+                },
+                {
+                    "name": "width",
+                    "values": [ 1.0 ]
                 }
             ]
         },
