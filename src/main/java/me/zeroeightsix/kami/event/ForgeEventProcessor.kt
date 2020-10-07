@@ -37,8 +37,10 @@ object ForgeEventProcessor {
         KamiMod.EVENT_BUS.post(event)
 
         if (mc.world != null && mc.player != null) {
-            val safeTickEvent = SafeTickEvent(event.phase)
-            ModuleManager.onUpdate(safeTickEvent)
+            SafeTickEvent(event.phase).also {
+                KamiMod.EVENT_BUS.post(it)
+                ModuleManager.onUpdate(it)
+            }
         }
 
         if (event.phase == TickEvent.Phase.END) {
