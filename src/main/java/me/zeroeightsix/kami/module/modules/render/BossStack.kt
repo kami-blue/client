@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -32,7 +33,7 @@ object BossStack : Module() {
     private val texture = ResourceLocation("textures/gui/bars.png")
     private val bossInfoMap = LinkedHashMap<BossInfoClient, Int>()
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         bossInfoMap.clear()
         val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return
         when (mode.value as BossStackMode) {

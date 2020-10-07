@@ -4,6 +4,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -31,7 +32,7 @@ object LogoutLogger : Module() {
         loggedPlayers.clear()
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         for (player in mc.world.loadedEntityList) {
             if (player !is EntityPlayer) continue
             if (player == mc.player) continue

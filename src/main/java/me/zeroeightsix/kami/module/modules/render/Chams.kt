@@ -4,6 +4,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -56,7 +57,7 @@ object Chams : Module() {
 
     private var cycler = HueCycler(600)
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         cycler++
     }
 

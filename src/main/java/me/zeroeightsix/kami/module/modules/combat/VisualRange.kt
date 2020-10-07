@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -25,7 +26,7 @@ object VisualRange : Module() {
 
     private var knownPlayers: MutableList<String>? = null
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         val tickPlayerList: MutableList<String> = ArrayList()
 
         for (entity in mc.world.getLoadedEntityList()) {

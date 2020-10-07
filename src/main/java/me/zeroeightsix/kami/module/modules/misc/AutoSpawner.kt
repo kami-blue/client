@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -78,7 +79,7 @@ object AutoSpawner : Module() {
         buildStage = Stage.PRE
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         when (buildStage) {
             Stage.PRE -> {
                 isSneaking = false

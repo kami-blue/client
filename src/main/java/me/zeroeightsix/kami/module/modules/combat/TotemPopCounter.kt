@@ -6,6 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.EntityUseTotemEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends.isFriend
@@ -38,7 +39,7 @@ object TotemPopCounter : Module() {
     private var playerList = HashMap<String, Int>()
     private var isDead = false
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!isDead
                 && resetSelfDeaths.value
                 && 0 >= mc.player.health) {

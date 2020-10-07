@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -59,7 +60,7 @@ object HoleMiner : Module() {
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!CombatManager.isOnTopPriority(this)) return
         if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE) {
             val slot = InventoryUtils.getSlotsHotbar(278)?.get(0)

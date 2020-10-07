@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -93,7 +94,7 @@ object Surround : Module() {
         if (future?.isDone != false) future = threadPool.submit(placeThread)
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (isEnabled && holePos == null && centerPlayer()) holePos = mc.player.positionVector.toBlockPos()
         if (future?.isDone == false && future?.isCancelled == false) {
             val slot = getObby()

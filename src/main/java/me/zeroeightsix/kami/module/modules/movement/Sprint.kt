@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
@@ -18,7 +19,7 @@ object Sprint : Module() {
 
     var sprinting = false
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!shouldSprint()) return
 
         sprinting = if (multiDirection.value) mc.player.moveForward != 0f || mc.player.moveStrafing != 0f

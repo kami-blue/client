@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -49,7 +50,7 @@ object HoleESP : Module() {
         return holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         safeHoles.clear()
         val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
         for (pos in blockPosList) {
@@ -65,7 +66,7 @@ object HoleESP : Module() {
         }
     }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (mc.player == null || safeHoles.isEmpty()) return
         val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
         else GeometryMasks.Quad.DOWN

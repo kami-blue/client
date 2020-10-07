@@ -4,6 +4,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -47,7 +48,7 @@ object NoBreakAnimation : Module() {
         }
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!mc.gameSettings.keyBindAttack.isKeyDown) {
             resetMining()
             return

@@ -5,6 +5,7 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
@@ -51,7 +52,7 @@ object AutoMend : Module() {
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (isGuiOpened && !gui.value) return
 
         if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {

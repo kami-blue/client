@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -42,7 +43,7 @@ object AutoTool : Module() {
         if (swapWeapon.value) CombatUtils.equipBestWeapon(preferWeapon.value)
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.currentScreen != null || !switchBack.value) return
 
         val mouse = Mouse.isButtonDown(0)

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -41,7 +42,7 @@ object Aura : Module() {
         return inactiveTicks <= 20 && isEnabled
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         inactiveTicks++
         if (mc.player.isDead) {
             if (mc.player.isDead && disableOnDeath.value) disable()

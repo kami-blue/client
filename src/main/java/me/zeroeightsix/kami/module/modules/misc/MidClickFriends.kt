@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.addFriend
@@ -22,7 +23,7 @@ import org.lwjgl.input.Mouse
 object MidClickFriends : Module() {
     private var delay = 0
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (delay > 0) {
             delay--
         }

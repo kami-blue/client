@@ -5,10 +5,10 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.abs
@@ -39,7 +39,7 @@ object AntiBot : Module() {
         if (isEnabled && botSet.contains(event.entity)) event.cancel()
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         val cacheSet = HashSet<EntityPlayer>()
         for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityPlayer) continue

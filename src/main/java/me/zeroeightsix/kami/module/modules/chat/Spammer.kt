@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -49,7 +50,7 @@ object Spammer : Module() {
         startTime = System.currentTimeMillis()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         sendMsg()
     }
 

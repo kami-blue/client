@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -33,7 +34,7 @@ object ClickGUI : Module() {
         return (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         prevScale = scale
         if (settingTimer.stop() > 500L) {
             val diff = scale - getRoundedScale()

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -34,7 +35,7 @@ object ChestStealer : Module() {
     var stealing = false
     val timer = TimerUtils.TickTimer()
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
             steal(getStealingSlot())
         } else {

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.util.math.Vec3d
@@ -11,14 +12,10 @@ import net.minecraft.util.math.Vec3d
  *
  * Updated by Xiaro on 18/08/20
  */
-class RenderEvent(val tessellator: Tessellator, val renderPos: Vec3d) : KamiEvent() {
-    val buffer: BufferBuilder get() = tessellator.buffer
+class RenderWorldEvent(val tessellator: Tessellator, override val partialTicks: Float) : KamiEvent() {
+    val buffer = tessellator.buffer
 
-    fun setTranslation(translation: Vec3d) {
-        buffer.setTranslation(-translation.x, -translation.y, -translation.z)
-    }
-
-    fun resetTranslation() {
-        setTranslation(renderPos)
+    fun setupTranslation() {
+        buffer.setTranslation(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY, -mc.renderManager.renderPosZ)
     }
 }

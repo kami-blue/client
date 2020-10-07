@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.util.math.MathHelper
@@ -15,7 +16,7 @@ object YawLock : Module() {
     private val yaw = register(Settings.f("Yaw", 180f))
     private val slice = register(Settings.i("Slice", 8))
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (slice.value == 0) return
         if (auto.value) {
             val angle = 360 / slice.value

@@ -7,6 +7,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -32,7 +33,7 @@ object Jesus : Module() {
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
             mc.player.motionY = 0.1
             if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import baritone.api.BaritoneAPI
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
@@ -39,7 +40,7 @@ object Baritone : Module() {
     }
 
     // not triggered until in game
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!hasRun) {
             set()
             hasRun = true

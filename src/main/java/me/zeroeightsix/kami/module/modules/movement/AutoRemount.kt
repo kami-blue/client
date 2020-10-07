@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
@@ -26,7 +27,7 @@ object AutoRemount : Module() {
 
     private var remountTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         // we don't need to do anything if we're already riding.
         if (mc.player.isRiding) {
             remountTimer.reset()

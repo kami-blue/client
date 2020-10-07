@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import baritone.api.BaritoneAPI
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.Aura
@@ -44,7 +45,7 @@ object AutoEat : Module() {
         return true
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (Aura.isActive()) return
 
         if (eating && !mc.player.isHandActive) {

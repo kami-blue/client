@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
@@ -73,7 +74,7 @@ object DiscordNotifs : Module() {
     })
 
     /* Always on status code */
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (isDisabled) return
         if (url.value == "unchanged") {
             sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
@@ -37,7 +38,7 @@ object BookCrash : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.currentServerData == null || mc.currentServerData.serverIP.isEmpty() || mc.connection == null) {
             sendChatMessage("Not connected to a server")
             disable()

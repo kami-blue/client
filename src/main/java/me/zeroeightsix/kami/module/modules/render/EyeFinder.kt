@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
@@ -49,14 +50,14 @@ object EyeFinder : Module() {
 
     private val resultMap = HashMap<Entity, Pair<RayTraceResult, Float>>()
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (resultMap.isEmpty()) return
         for ((entity, pair) in resultMap) {
             drawLine(entity, pair)
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         alwaysListening = resultMap.isNotEmpty()
 
         val player = arrayOf(players.value, friends.value, sleeping.value)

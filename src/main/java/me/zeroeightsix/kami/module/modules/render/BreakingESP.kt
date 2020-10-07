@@ -4,7 +4,8 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -48,7 +49,7 @@ object BreakingESP : Module() {
 
     private var warningText = ""
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val colour = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
@@ -115,7 +116,7 @@ object BreakingESP : Module() {
         }
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         breakingBlockList.values.removeIf { triple ->
             mc.world.isAirBlock(triple.first)
         }

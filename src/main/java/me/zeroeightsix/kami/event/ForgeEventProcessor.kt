@@ -2,17 +2,18 @@ package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
+import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
@@ -35,29 +36,41 @@ object ForgeEventProcessor {
     fun onTick(event: TickEvent.ClientTickEvent) {
         KamiMod.EVENT_BUS.post(event)
 
+        if (mc.world != null && mc.player != null) {
+            val safeTickEvent = SafeTickEvent(event.phase)
+            ModuleManager.onUpdate(safeTickEvent)
+        }
+
         if (event.phase == TickEvent.Phase.END) {
             if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
                 prevWidth = mc.displayWidth
                 prevHeight = mc.displayHeight
-                val resolutionUpdateEvent = ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight)
-                KamiMod.EVENT_BUS.post(resolutionUpdateEvent)
+                KamiMod.EVENT_BUS.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
                 for (component in KamiMod.getInstance().guiManager.children) {
                     if (component !is Frame) continue
                     KamiGUI.dock(component)
                 }
             }
-        }
-
-        if (mc.world != null && mc.player != null) {
-            ModuleManager.onUpdate()
-            KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
+            if (mc.world != null && mc.player != null) {
+                KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
+            }
         }
     }
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
         ProjectionUtils.updateMatrix()
-        ModuleManager.onWorldRender(event)
+
+        mc.profiler.startSection("KamiWorldRender")
+        KamiTessellator.prepareGL()
+        val renderWorldEvent = RenderWorldEvent(KamiTessellator, event.partialTicks)
+        renderWorldEvent.setupTranslation()
+
+        KamiMod.EVENT_BUS.post(renderWorldEvent)
+        ModuleManager.onWorldRender(renderWorldEvent)
+
+        KamiTessellator.releaseGL()
+        mc.profiler.endSection()
     }
 
     @SubscribeEvent
@@ -75,6 +88,7 @@ object ForgeEventProcessor {
         else RenderGameOverlayEvent.ElementType.EXPERIENCE
 
         if (event.type == target) {
+            KamiMod.EVENT_BUS.post(RenderOverlayEvent(event.partialTicks))
             ModuleManager.onRender()
             UIRenderer.renderAndUpdateFrames()
         }

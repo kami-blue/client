@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -69,7 +70,7 @@ object CrystalESP : Module() {
     private val threads = arrayOf(Thread { updateDamageESP() }, Thread { updateCrystalESP() })
     private val threadPool = Executors.newCachedThreadPool()
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         for (thread in threads) {
             threadPool.execute(thread)
         }
@@ -111,7 +112,7 @@ object CrystalESP : Module() {
         return Pair(damage, selfDamage)
     }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val renderer = ESPRenderer()
 
         /* Damage ESP */

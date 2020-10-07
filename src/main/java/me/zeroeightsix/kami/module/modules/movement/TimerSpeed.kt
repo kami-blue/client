@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 
@@ -17,7 +18,7 @@ object TimerSpeed : Module() {
     private var tickDelay = 0.0f
     private var curSpeed = 0.0f
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (tickDelay == minimumSpeed.value) {
             curSpeed = fastSpeed.value
             mc.timer.tickLength = 50.0f / fastSpeed.value

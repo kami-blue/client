@@ -6,6 +6,7 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -96,7 +97,7 @@ object AntiAFK : Module() {
         baritoneCancel()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (inputTimeout.value != 0) {
             if (isBaritoneActive) inputTimer.reset()
             if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -30,7 +31,7 @@ object ElytraReplace : Module() {
     private var chestPlateCount = 0
     private var shouldSendFinalWarning = true
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
             return
         }

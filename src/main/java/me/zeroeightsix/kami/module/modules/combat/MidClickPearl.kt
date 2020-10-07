@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
@@ -39,7 +40,7 @@ object MidClickPearl : Module() {
         }
     })
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
             mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
             startTime = System.currentTimeMillis()

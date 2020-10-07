@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getNameFromUUID
@@ -28,7 +29,7 @@ object MobOwner : Module() {
     private var apiRequests = 0
     private const val invalidText = "Offline or invalid UUID!"
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         resetRequests()
         resetCache()
         for (entity in mc.world.loadedEntityList) {

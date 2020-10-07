@@ -5,6 +5,7 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
@@ -41,7 +42,7 @@ object LoginMessage : Module() {
         MessageSendHelper.sendChatMessage("$chatName Found '&7loginmsg.txt&f'!")
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!sent && loginMessage != null) {
             mc.player.sendChatMessage(loginMessage!!)
             sent = true

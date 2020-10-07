@@ -37,6 +37,7 @@ object KamiTessellator : Tessellator(0x200000) {
     @JvmStatic
     fun prepareGL() {
         GlStateManager.pushMatrix()
+        glLineWidth(1f)
         glEnable(GL_LINE_SMOOTH)
         glEnable(GL32.GL_DEPTH_CLAMP)
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
@@ -65,6 +66,7 @@ object KamiTessellator : Tessellator(0x200000) {
         glDisable(GL32.GL_DEPTH_CLAMP)
         glDisable(GL_LINE_SMOOTH)
         GlStateManager.color(1f, 1f, 1f)
+        glLineWidth(1f)
         GlStateManager.popMatrix()
     }
 

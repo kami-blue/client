@@ -4,7 +4,8 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
@@ -72,7 +73,7 @@ object WaypointRender : Module() {
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var prevDimension = -2
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (waypointMap.isEmpty()) return
         val color = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
@@ -140,7 +141,7 @@ object WaypointRender : Module() {
         currentServer = null
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
             if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
             updateList()

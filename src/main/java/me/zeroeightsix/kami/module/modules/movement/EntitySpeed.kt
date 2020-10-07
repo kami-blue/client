@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -24,7 +25,7 @@ object EntitySpeed : Module() {
     private val wobble = register(Settings.booleanBuilder("Wobble").withValue(true).withVisibility { b: Boolean? -> flight.value }.build())
     private val opacity = register(Settings.f("BoatOpacity", .5f))
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.getRidingEntity() != null) {
             val riding = mc.player.getRidingEntity()
             if (riding is EntityPig || riding is AbstractHorse) {

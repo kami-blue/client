@@ -4,7 +4,9 @@ import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
@@ -129,9 +131,16 @@ open class Module {
         return null
     }
 
-    open fun onUpdate() {}
+    /** Use event listener for [SafeTickEvent] Instead */
+    @Deprecated ("Planned to remove by 1.1.8 release")
+    open fun onUpdate(event: SafeTickEvent) {}
+    /** Use event listener for [RenderOverlayEvent] Instead */
+    @Deprecated ("Planned to remove by 1.1.8 release")
     open fun onRender() {}
-    open fun onWorldRender(event: RenderEvent) {}
+    /** Use event listener for [RenderOverlayEvent] Instead */
+    @Deprecated ("Planned to remove by 1.1.8 release")
+    open fun onWorldRender(event: RenderWorldEvent) {}
+
     protected open fun onEnable() {}
     protected open fun onDisable() {}
     protected open fun onToggle() {}

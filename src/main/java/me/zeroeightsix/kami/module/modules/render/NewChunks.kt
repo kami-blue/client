@@ -5,7 +5,8 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
@@ -65,14 +66,14 @@ object NewChunks : Module() {
         timer.reset()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (autoClear.value && timer.tick(10L)) {
             chunks.clear()
             sendChatMessage("$chatName Cleared chunks!")
         }
     }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, pTicks()).y else 0.0
         glLineWidth(2.0f)
         glDisable(GL_DEPTH_TEST)
