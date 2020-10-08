@@ -44,6 +44,17 @@ object EventBus {
                 }
             }
         }
+
+        override fun post(event: Any) {
+            val thread = Thread.currentThread()
+            if (thread == KamiMod.MAIN_THREAD) {
+                super.post(event)
+            } else {
+                synchronized(thread) {
+                    super.post(event)
+                }
+            }
+        }
     }
 
     /**
