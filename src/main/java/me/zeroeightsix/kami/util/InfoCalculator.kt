@@ -1,16 +1,19 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.mixin.client.MixinAnvilChunkLoader
 import me.zeroeightsix.kami.util.LagCompensator.tickRate
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.world.chunk.storage.AnvilChunkLoader
+import org.spongepowered.asm.mixin.gen.Invoker
 import java.io.*
 import java.util.zip.DeflaterOutputStream
 import kotlin.math.hypot
 
 object InfoCalculator {
     private val mc = Wrapper.minecraft
+    @Invoker
 
     fun getServerType() = if (mc.isIntegratedServerRunning) "Singleplayer" else mc.currentServerData?.serverIP
             ?: "MainMenu"
@@ -42,7 +45,6 @@ object InfoCalculator {
      * Ported from Forgehax under MIT: https://github.com/fr1kin/ForgeHax/blob/2011740/src/main/java/com/matt/forgehax/mods/ClientChunkSize.java
      * @return current chunk size in bytes
      */
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     fun chunkSize(): Int {
         if (mc.world == null) return 0
 
@@ -56,8 +58,9 @@ object InfoCalculator {
         root.setInteger("DataVersion", 6969)
 
         try {
+            @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
             val loader = AnvilChunkLoader(File("kamiblue"), null)
-            loader.writeChunkToNBT(chunk, mc.world, level)
+            (loader as MixinAnvilChunkLoader).invokeWriteChunkToNBT(chunk, mc.world, level)
         } catch (ignored: Throwable) {
             return 0 // couldn't save
         }
