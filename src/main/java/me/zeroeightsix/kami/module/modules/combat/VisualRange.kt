@@ -24,9 +24,9 @@ object VisualRange : Module() {
     private val uwuAura = register(Settings.b("UwUAura", false))
     private val logToFile = register(Settings.b("LogToFile", false))
     val customjoin = register(Settings.b("CustomJoin", false))
-    val VisualJoinMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "customjoin&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customjoin.value }.build())
+    val VisualJoinMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "visualrange&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customjoin.value }.build())
     val customleave = register(Settings.b("CustomLeave", false))
-    val VisualLeaveMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "customleave&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customleave.value }.build())
+    val VisualLeaveMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "visualrange&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customleave.value }.build())
 
     private var knownPlayers: MutableList<String>? = null
 
