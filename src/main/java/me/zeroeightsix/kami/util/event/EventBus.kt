@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.event
 
 import io.netty.util.internal.ConcurrentSet
+import me.zeroeightsix.kami.KamiMod
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -9,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
 object EventBus {
 
     /**
-     * A basic implementation of [AbstractEventBus], for thread safe alternative, use [ConcurrentEventBus] instead
+     * A basic implementation of [AbstractEventBus], for thread safe alternative, use [SynchronizedEventBus], [ConcurrentEventBus] instead
      */
     open class SingleThreadEventBus : AbstractEventBus() {
         final override val subscribedObjects = HashMap<Any, MutableSet<Listener<*>>>()
@@ -19,6 +20,34 @@ object EventBus {
 
     /**
      * A thread-safe alternative of [SingleThreadEventBus], note that this would reduce
+     * performance in non [mainThread].
+     */
+    open class SynchronizedEventBus(val mainThread: Thread) : SingleThreadEventBus() {
+        override fun subscribe(`object`: Any) {
+            val thread = Thread.currentThread()
+            if (thread == KamiMod.MAIN_THREAD) {
+                super.subscribe(`object`)
+            } else {
+                synchronized(thread) {
+                    super.subscribe(`object`)
+                }
+            }
+        }
+
+        override fun unsubscribe(`object`: Any) {
+            val thread = Thread.currentThread()
+            if (thread == KamiMod.MAIN_THREAD) {
+                super.unsubscribe(`object`)
+            } else {
+                synchronized(thread) {
+                    super.unsubscribe(`object`)
+                }
+            }
+        }
+    }
+
+    /**
+     * A concurrent alternative of [SingleThreadEventBus], note that this would reduce
      * performance in single thread tasks.
      */
     open class ConcurrentEventBus : AbstractEventBus() {

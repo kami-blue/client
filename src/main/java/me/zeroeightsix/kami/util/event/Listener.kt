@@ -17,16 +17,14 @@ class Listener<T : Any>(val event: Class<T>, private val function: (T) -> Unit) 
     override fun hashCode(): Int {
         return 31 * event.hashCode() + function.hashCode()
     }
+}
 
-    companion object {
-        /**
-         * Create and register a new listener for this object
-         *
-         * @param T target event
-         * @param function action to perform when this listener gets called by the event bus
-         */
-        inline fun <reified T : Any> Any.listener(noinline function: (event: T) -> Unit) {
-            ListenerManager.register(this, Listener(T::class.java, function))
-        }
-    }
+/**
+ * Create and register a new listener for this object
+ *
+ * @param T target event
+ * @param function action to perform when this listener gets called by the event bus
+ */
+inline fun <reified T : Any> Any.listener(noinline function: (event: T) -> Unit) {
+    ListenerManager.register(this, Listener(T::class.java, function))
 }
