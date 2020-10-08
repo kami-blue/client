@@ -45,8 +45,5 @@
     "MixinTileEntityBeacon",
     "MixinVisGraph",
     "MixinWorld"
-  ],
-  "mixins": [
-    "MixinAnvilChunkLoader"
   ]
 }
