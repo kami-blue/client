@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
+import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -21,7 +22,11 @@ object VisualRange : Module() {
     private val leaving = register(Settings.b("CountLeaving", false))
     private val friends = register(Settings.b("Friends", true))
     private val uwuAura = register(Settings.b("UwUAura", false))
-    private val logToFile = register(Settings.b("LogTo File", false))
+    private val logToFile = register(Settings.b("LogToFile", false))
+    val customjoin = register(Settings.b("CustomJoin", false))
+    val VisualJoinMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "customjoin&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customjoin.value }.build())
+    val customleave = register(Settings.b("CustomLeave", false))
+    val VisualLeaveMessage = VisualRange.register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "customleave&r to modify this").withConsumer { _: String?, _: String? -> }.withVisibility { customleave.value }.build())
 
     private var knownPlayers: MutableList<String>? = null
 
@@ -39,7 +44,13 @@ object VisualRange : Module() {
                 if (!knownPlayers!!.contains(playerName)) {
                     knownPlayers!!.add(playerName)
                     if (Friends.isFriend(playerName)) {
-                        sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
+                        if (customjoin.value) {
+                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " " + VisualJoinMessage.value)
+                        } else {
+                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
+                        }
+                    } else if (customjoin.value) {
+                        sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " " + VisualJoinMessage.value)
                     } else {
                         sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
                     }
@@ -58,7 +69,13 @@ object VisualRange : Module() {
                     knownPlayers!!.remove(playerName)
                     if (leaving.value) {
                         if (Friends.isFriend(playerName)) {
-                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " left!")
+                            if (customleave.value) {
+                                sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " " + VisualLeaveMessage.value)
+                            } else {
+                                sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " left!")
+                            }
+                        } else if (customleave.value) {
+                                sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " " + VisualLeaveMessage.value)
                         } else {
                             sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " left!")
                         }
