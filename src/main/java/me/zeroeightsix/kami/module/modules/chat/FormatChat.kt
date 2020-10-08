@@ -25,7 +25,7 @@ object FormatChat : Module() {
 
     init {
         listener<PacketEvent.Send> {
-            if (it.packet !is CPacketChatMessage) return@listener
+            if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
             var message = it.packet.message
 
             if (message.contains("&") || message.contains("#n")) {

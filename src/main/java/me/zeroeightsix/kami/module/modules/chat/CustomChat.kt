@@ -37,7 +37,7 @@ object CustomChat : Module() {
 
     init {
         listener<PacketEvent.Send> {
-            if (it.packet !is CPacketChatMessage) return@listener
+            if (mc.player == null || it.packet !is CPacketChatMessage) return@listener
             var s = it.packet.getMessage()
             if (!commands.value && isCommand(s)) return@listener
             s += getFull(decoMode.value)

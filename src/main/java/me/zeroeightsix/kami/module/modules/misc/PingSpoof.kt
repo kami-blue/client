@@ -19,7 +19,7 @@ object PingSpoof : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketKeepAlive) return@listener
+            if (it.packet !is SPacketKeepAlive || mc.player == null) return@listener
             it.cancel()
             if (!cancel.value) {
                 Timer().schedule(object : TimerTask() {

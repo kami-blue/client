@@ -49,7 +49,7 @@ object ChatEncryption : Module() {
 
     init {
         listener<PacketEvent.Send> {
-            if (it.packet !is CPacketChatMessage) return@listener
+            if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
             var s = it.packet.getMessage()
             if (delimiterSetting.value) {
                 if (delimiter == null || !s.startsWith(delimiter!!)) return@listener

@@ -26,6 +26,7 @@ object ChatTimestamp : Module() {
 
     init {
         listener<ClientChatReceivedEvent> {
+            if (mc.player == null) return@listener
             val prefix = TextComponentString(formattedTime)
             it.message = prefix.appendSibling(it.message)
         }

@@ -39,7 +39,7 @@ object AutoExcuse : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketUpdateHealth) return@listener
+            if (mc.player == null || it.packet !is SPacketUpdateHealth) return@listener
             if (it.packet.health <= 0f && timer.tick(3L)) {
                 MessageSendHelper.sendServerMessage(getExcuse())
             }
