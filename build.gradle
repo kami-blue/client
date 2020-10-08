@@ -82,16 +82,12 @@ dependencies {
 
     compile "com.github.ZeroMemes:Alpine:1.7"
 
-    compile group: 'net.jodah', name: 'typetools', version: '0.6.2'
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.27'
-
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.12') {
         exclude group: 'com.google.guava', module: 'guava'
     }
 
     compile 'club.minnced:java-discord-rpc:2.0.2'
     compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
-    compile 'com.github.kevinsawicki:http-request:http-request-6.0'
 
     compile 'com.github.cabaletta:baritone:1.2.14'
     compile 'cabaletta:baritone-api:1.2'
@@ -100,9 +96,6 @@ dependencies {
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk7", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8", version: kotlin_version
     compile group: "org.jetbrains.kotlin", name: "kotlin-reflect", version: kotlin_version
-
-    compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: coroutines_version
-    compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: coroutines_version
 
     compile group: "org.jetbrains", name: "annotations", version: annotations_version
 }
@@ -128,23 +121,17 @@ processResources {
 
 shadowJar {
     dependencies {
-        include(dependency('org.spongepowered:mixin'))
-        include(dependency('com.github.ZeroMemes:Alpine'))
-        include(dependency('club.minnced:java-discord-rpc'))
-        include(dependency('net.jodah:typetools'))
-        include(dependency('org.yaml:snakeyaml'))
-        include(dependency('org.reflections:reflections'))
-        include(dependency('org.javassist:javassist'))
-        include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
-        include(dependency('com.github.kevinsawicki:http-request'))
         include(dependency('cabaletta:baritone-api'))
+        include(dependency('club.minnced:java-discord-rpc'))
+        include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
+        include(dependency('com.github.ZeroMemes:Alpine'))
+        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
         include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
         include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
         include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
-        include(dependency("org.jetbrains:annotations:${annotations_version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
+        include(dependency('org.javassist:javassist'))
+        include(dependency('org.reflections:reflections'))
+        include(dependency('org.spongepowered:mixin'))
     }
 
     exclude 'dummyThing' // can someone explain why this is here
