@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos
 )
 object LogoutLogger : Module() {
     private val saveToFile = register(Settings.b("SaveToFile", true))
+    private val announcer = register(Settings.b("Announcer", false))
     private val print = register(Settings.b("PrintToChat", true))
 
     private val loggedPlayers = HashMap<String, BlockPos>()
@@ -43,7 +44,8 @@ object LogoutLogger : Module() {
             for ((name, pos) in loggedPlayers) {
                 if (mc.connection!!.getPlayerInfo(name) != null) continue
                 if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
-                if (saveToFile.value) WaypointManager.add(pos, "$name Logout Spot")
+                if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
+                if (announcer.value) mc.player.sendChatMessage( "KAMI BLUE on top! EZ Log, $name")
                 toRemove.add(name)
             }
             loggedPlayers.keys.removeAll(toRemove)
