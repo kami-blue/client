@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.SoundCategory
@@ -15,11 +13,12 @@ import net.minecraft.util.SoundCategory
         description = "Prevents lag caused by sound machines"
 )
 object NoSoundLag : Module() {
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
-        if (event.packet.getCategory() == SoundCategory.PLAYERS && event.packet.getSound() === SoundEvents.ITEM_ARMOR_EQUIP_GENERIC) {
-            event.cancel()
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketSoundEffect) return@listener
+            if (it.packet.getCategory() == SoundCategory.PLAYERS && it.packet.getSound() === SoundEvents.ITEM_ARMOR_EQUIP_GENERIC) {
+                it.cancel()
+            }
         }
-    })
+    }
 }

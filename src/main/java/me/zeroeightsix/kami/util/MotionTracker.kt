@@ -1,9 +1,8 @@
 package me.zeroeightsix.kami.util
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
@@ -27,16 +26,17 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var motion = Vec3d(0.0, 0.0, 0.0)
 
-    @EventHandler
-    private val onUpdateListener = Listener(EventHook { event: TickEvent.ClientTickEvent ->
-        if (Wrapper.player == null || Wrapper.world == null) return@EventHook
-        target?.let {
-            motionLog.add(calcActualMotion(it))
-            while (motionLog.size > trackLength) motionLog.pollFirst()
-            prevMotion = motion
-            motion = calcAverageMotion()
+    init {
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@listener
+            target?.let { target ->
+                motionLog.add(calcActualMotion(target))
+                while (motionLog.size > trackLength) motionLog.pollFirst()
+                prevMotion = motion
+                motion = calcAverageMotion()
+            }
         }
-    })
+    }
 
     /**
      * Calculate the actual motion of given entity
@@ -120,6 +120,6 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     }
 
     init {
-        KamiMod.EVENT_BUS.subscribe(this)
+        KamiEventBus.subscribe(this)
     }
 }

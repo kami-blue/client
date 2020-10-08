@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.manager
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.TimerUtils
@@ -34,7 +35,7 @@ object ManagerLoader {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in managerClassList!!) {
-            clazz.getDeclaredField("INSTANCE")[null].also { KamiMod.EVENT_BUS.subscribe(it) }
+            clazz.getDeclaredField("INSTANCE")[null].also { KamiEventBus.subscribe(it) }
         }
         val time = stopTimer.stop()
         KamiMod.log.info("${managerClassList!!.size} managers loaded, took ${time}ms")

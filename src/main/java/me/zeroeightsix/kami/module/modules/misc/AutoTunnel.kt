@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.CardinalMain
 import me.zeroeightsix.kami.util.math.MathUtils.getPlayerMainCardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -77,14 +78,15 @@ object AutoTunnel : Module() {
         return startingDirection.cardinalName
     }
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    })
-
     init {
-        height.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }
-        width.settingListener = Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }
+        with(Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }) {
+            height.settingListener = this
+            width.settingListener = this
+        }
         backfill.settingListener = Setting.SettingListeners { if (mc.player != null) BaritoneAPI.getSettings().backfill.value = backfill.value }
+
+        listener<ConnectionEvent.Disconnect> {
+            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        }
     }
 }

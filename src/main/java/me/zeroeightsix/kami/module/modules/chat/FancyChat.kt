@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.network.play.client.CPacketChatMessage
 
@@ -24,6 +22,19 @@ object FancyChat : Module() {
     private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value }.build())
     private val commands = register(Settings.b("Commands", false))
 
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketChatMessage) return@listener
+            var s = it.packet.getMessage()
+
+            if (!commands.value && isCommand(s)) return@listener
+            s = getText(s)
+
+            if (s.length >= 256) s = s.substring(0, 256)
+            it.packet.message = s
+        }
+    }
+
     private fun getText(s: String): String {
         var string = s
         if (uwu.value) string = uwuConverter(string)
@@ -41,19 +52,6 @@ object FancyChat : Module() {
     private fun blueConverter(input: String): String {
         return "`$input"
     }
-
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketChatMessage) {
-            var s = event.packet.getMessage()
-
-            if (!commands.value && isCommand(s)) return@EventHook
-            s = getText(s)
-
-            if (s.length >= 256) s = s.substring(0, 256)
-            event.packet.message = s
-        }
-    })
 
     override fun getHudInfo(): String {
         val returned = StringBuilder()

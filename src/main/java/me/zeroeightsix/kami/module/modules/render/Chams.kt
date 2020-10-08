@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import me.zeroeightsix.kami.util.color.HueCycler
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityXPOrb
@@ -61,32 +62,32 @@ object Chams : Module() {
         cycler++
     }
 
-    @EventHandler
-    private val preRenderListener = Listener(EventHook { event: RenderEntityEvent.Pre ->
-        if (event.entity == null || !checkEntityType(event.entity)) return@EventHook
-        if (!texture.value) glDisable(GL_TEXTURE_2D)
-        if (!lightning.value) glDisable(GL_LIGHTING)
-        if (throughWall.value) {
-            glEnable(GL_POLYGON_OFFSET_FILL)
-            glPolygonOffset(1.0f, -9999999.0f)
+    init {
+        listener<RenderEntityEvent.Pre> {
+            if (it.entity == null || !checkEntityType(it.entity)) return@listener
+            if (!texture.value) glDisable(GL_TEXTURE_2D)
+            if (!lightning.value) glDisable(GL_LIGHTING)
+            if (throughWall.value) {
+                glEnable(GL_POLYGON_OFFSET_FILL)
+                glPolygonOffset(1.0f, -9999999.0f)
+            }
+            if (customColor.value) {
+                if (rainbow.value) cycler.setCurrent()
+                else glColor3f(r.value / 255f, g.value / 255f, b.value / 255f)
+            }
         }
-        if (customColor.value) {
-            if (rainbow.value) cycler.setCurrent()
-            else glColor3f(r.value / 255f, g.value / 255f, b.value / 255f)
-        }
-    })
 
-    @EventHandler
-    private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Post ->
-        if (event.entity == null || !checkEntityType(event.entity)) return@EventHook
-        if (!texture.value) glEnable(GL_TEXTURE_2D)
-        if (!lightning.value) glEnable(GL_LIGHTING)
-        if (throughWall.value) {
-            glDisable(GL_POLYGON_OFFSET_FILL)
-            glPolygonOffset(1.0f, 9999999.0f)
+        listener<RenderEntityEvent.Post> {
+            if (it.entity == null || !checkEntityType(it.entity)) return@listener
+            if (!texture.value) glEnable(GL_TEXTURE_2D)
+            if (!lightning.value) glEnable(GL_LIGHTING)
+            if (throughWall.value) {
+                glDisable(GL_POLYGON_OFFSET_FILL)
+                glPolygonOffset(1.0f, 9999999.0f)
+            }
+            if (customColor.value) glColor4f(1f, 1f, 1f, 1f)
         }
-        if (customColor.value) glColor4f(1f, 1f, 1f, 1f)
-    })
+    }
 
     private fun checkEntityType(entity: Entity): Boolean {
         return (self.value || entity != mc.player) && (all.value

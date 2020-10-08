@@ -6,6 +6,7 @@ import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
 import net.minecraft.client.gui.ScaledResolution
@@ -79,30 +80,31 @@ object BossStack : Module() {
         return bossHealthMap.keys.minBy { mc.player.getDistance(it) }
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: RenderGameOverlayEvent.Pre ->
-        if (event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH) return@EventHook
-        event.isCanceled = true
+    init {
+        listener<RenderGameOverlayEvent.Pre> {
+            if (it.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH) return@listener
+            it.isCanceled = true
 
-        mc.profiler.startSection("bossHealth")
-        val width = ScaledResolution(mc).scaledWidth
-        var posY = 12
-        GlStateUtils.blend(true)
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
-            val posX = (width / scale.value / 2.0f - 91f).roundToInt()
-            val text = bossInfo.name.formattedText + if (count != -1) " x$count" else ""
-            val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
-            val textPosY = posY - 9.0f
+            mc.profiler.startSection("bossHealth")
+            val width = ScaledResolution(mc).scaledWidth
+            var posY = 12
+            GlStateUtils.blend(true)
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+            if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
+                val posX = (width / scale.value / 2.0f - 91f).roundToInt()
+                val text = bossInfo.name.formattedText + if (count != -1) " x$count" else ""
+                val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
+                val textPosY = posY - 9.0f
 
-            glScalef(scale.value, scale.value, 1.0f)
-            mc.textureManager.bindTexture(texture)
-            mc.ingameGUI.bossOverlay.render(posX, posY, bossInfo)
-            mc.fontRenderer.drawStringWithShadow(text, textPosX, textPosY, 0xffffff)
-            glScalef(1.0f / scale.value, 1.0f / scale.value, 1.0f)
+                glScalef(scale.value, scale.value, 1.0f)
+                mc.textureManager.bindTexture(texture)
+                mc.ingameGUI.bossOverlay.render(posX, posY, bossInfo)
+                mc.fontRenderer.drawStringWithShadow(text, textPosX, textPosY, 0xffffff)
+                glScalef(1.0f / scale.value, 1.0f / scale.value, 1.0f)
 
-            posY += 10 + mc.fontRenderer.FONT_HEIGHT
+                posY += 10 + mc.fontRenderer.FONT_HEIGHT
+            }
+            mc.profiler.endSection()
         }
-        mc.profiler.endSection()
-    })
+    }
 }

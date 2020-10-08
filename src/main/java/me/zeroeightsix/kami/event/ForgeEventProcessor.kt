@@ -13,7 +13,6 @@ import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
@@ -34,11 +33,11 @@ object ForgeEventProcessor {
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
 
         if (mc.world != null && mc.player != null) {
             SafeTickEvent(event.phase).also {
-                KamiMod.EVENT_BUS.post(it)
+                KamiEventBus.post(it)
                 ModuleManager.onUpdate(it)
             }
         }
@@ -47,7 +46,7 @@ object ForgeEventProcessor {
             if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
                 prevWidth = mc.displayWidth
                 prevHeight = mc.displayHeight
-                KamiMod.EVENT_BUS.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
+                KamiEventBus.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
                 for (component in KamiMod.getInstance().guiManager.children) {
                     if (component !is Frame) continue
                     KamiGUI.dock(component)
@@ -68,7 +67,7 @@ object ForgeEventProcessor {
         val renderWorldEvent = RenderWorldEvent(KamiTessellator, event.partialTicks)
         renderWorldEvent.setupTranslation()
 
-        KamiMod.EVENT_BUS.post(renderWorldEvent)
+        KamiEventBus.post(renderWorldEvent)
         ModuleManager.onWorldRender(renderWorldEvent)
 
         KamiTessellator.releaseGL()
@@ -77,20 +76,20 @@ object ForgeEventProcessor {
 
     @SubscribeEvent
     fun onRenderPre(event: RenderGameOverlayEvent.Pre) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
         if (event.isCanceled) return
     }
 
     @SubscribeEvent
     fun onRender(event: RenderGameOverlayEvent.Post) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
         if (event.isCanceled) return
 
         val target = if (!mc.player.isCreative && mc.player!!.ridingEntity is AbstractHorse) RenderGameOverlayEvent.ElementType.HEALTHMOUNT
         else RenderGameOverlayEvent.ElementType.EXPERIENCE
 
         if (event.type == target) {
-            KamiMod.EVENT_BUS.post(RenderOverlayEvent(event.partialTicks))
+            KamiEventBus.post(RenderOverlayEvent(event.partialTicks))
             ModuleManager.onRender()
             UIRenderer.renderAndUpdateFrames()
         }
@@ -102,7 +101,7 @@ object ForgeEventProcessor {
         if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
             mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
         } else {
-            KamiMod.EVENT_BUS.post(event)
+            KamiEventBus.post(event)
             ModuleManager.onBind(Keyboard.getEventKey())
         }
     }
@@ -124,66 +123,66 @@ object ForgeEventProcessor {
 
     @SubscribeEvent
     fun onChunkLoaded(event: ChunkEvent.Load) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onEventMouse(event: InputEvent.MouseInputEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onChunkLoaded(event: ChunkEvent.Unload) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onInputUpdate(event: InputUpdateEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onLivingEntityUseItemEventTick(entityUseItemEvent: LivingEntityUseItemEvent.Tick) {
-        KamiMod.EVENT_BUS.post(entityUseItemEvent)
+        KamiEventBus.post(entityUseItemEvent)
     }
 
     @SubscribeEvent
     fun onPlayerPush(event: PlayerSPPushOutOfBlocksEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onLeftClickBlock(event: PlayerInteractEvent.LeftClickBlock) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onAttackEntity(entityEvent: AttackEntityEvent) {
-        KamiMod.EVENT_BUS.post(entityEvent)
+        KamiEventBus.post(entityEvent)
     }
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onClientChat(event: ClientChatReceivedEvent) {
-        KamiMod.EVENT_BUS.post(event)
+        KamiEventBus.post(event)
     }
 
     @SubscribeEvent
     fun onServerDisconnect(event: FMLNetworkEvent.ServerDisconnectionFromClientEvent) {
-        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
+        KamiEventBus.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
     fun onClientDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
-        KamiMod.EVENT_BUS.post(ConnectionEvent.Disconnect())
+        KamiEventBus.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
-        KamiMod.EVENT_BUS.post(ConnectionEvent.Connect())
+        KamiEventBus.post(ConnectionEvent.Connect())
     }
 }

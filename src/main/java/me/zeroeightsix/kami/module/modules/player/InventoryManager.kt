@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
@@ -81,12 +82,13 @@ object InventoryManager : Module() {
     private var paused = false
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    @EventHandler
-    private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@EventHook
-        mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
-        event.cancel()
-    })
+    init {
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
+            mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
+            it.cancel()
+        }
+    }
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE

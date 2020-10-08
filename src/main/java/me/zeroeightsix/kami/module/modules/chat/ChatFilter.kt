@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirectOther
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -27,11 +25,11 @@ object ChatFilter : Module() {
 
     private val chatFilter = ArrayList<Pattern>()
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
-        if (mc.player == null) return@EventHook
-        if (isDetected(event.message.unformattedText)) event.isCanceled = true
-    })
+    init {
+        listener<ClientChatReceivedEvent> {
+            if (isDetected(it.message.unformattedText)) it.isCanceled = true
+        }
+    }
 
     private fun isDetected(message: String): Boolean {
         val ownMsg = "^<" + mc.player.name + "> "

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
 import net.minecraft.client.gui.FontRenderer;
@@ -25,7 +26,7 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "printChatMessage", at = @At("HEAD"))
     private void printChatMessage(ITextComponent chatComponent, CallbackInfo ci) {
-        KamiMod.EVENT_BUS.post(new PrintChatMessageEvent(chatComponent, chatComponent.getUnformattedComponentText()));
+        KamiEventBus.INSTANCE.post(new PrintChatMessageEvent(chatComponent, chatComponent.getUnformattedComponentText()));
     }
 
 }

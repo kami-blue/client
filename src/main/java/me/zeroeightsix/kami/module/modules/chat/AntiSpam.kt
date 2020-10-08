@@ -1,12 +1,10 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.SpamFilters
@@ -69,38 +67,39 @@ object AntiSpam : Module() {
         NONE, LOG_FILE, CHAT, BOTH
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
-        if (mc.player == null) return@EventHook
+    init {
+        listener<ClientChatReceivedEvent> {
+            if (mc.player == null) return@listener
 
-        /* leijurv's sexy lambda to remove older entries in messageHistory */
-        messageHistory?.let {
-            it.entries.stream()
-                    .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 600000 } // 10 minutes delay
-                    .collect(Collectors.toList())
-                    .forEach(Consumer { entry: Map.Entry<String, Long> -> it.remove(entry.key) })
-        }
+            /* leijurv's sexy lambda to remove older entries in messageHistory */
+            messageHistory?.let {
+                it.entries.stream()
+                        .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 600000 } // 10 minutes delay
+                        .collect(Collectors.toList())
+                        .forEach(Consumer { entry: Map.Entry<String, Long> -> it.remove(entry.key) })
+            }
 
-        if (duplicates.value && checkDupes(event.message.unformattedText)) {
-            event.isCanceled = true
-        }
+            if (duplicates.value && checkDupes(it.message.unformattedText)) {
+                it.isCanceled = true
+            }
 
-        val pattern = isSpam(event.message.unformattedText)
-        if (pattern != null) { // null means no pattern found
-            if (mode.value == Mode.HIDE) {
-                event.isCanceled = true
-            } else if (mode.value == Mode.REPLACE) {
-                event.message = TextComponentString(sanitize(event.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
+            val pattern = isSpam(it.message.unformattedText)
+            if (pattern != null) { // null means no pattern found
+                if (mode.value == Mode.HIDE) {
+                    it.isCanceled = true
+                } else if (mode.value == Mode.REPLACE) {
+                    it.message = TextComponentString(sanitize(it.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
+                }
+            }
+
+            if (fancyChat.value) {
+                val message = sanitizeFancyChat(it.message.unformattedText)
+                if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
+                    it.message = TextComponentString(getUsername(it.message.unformattedText) + " [Fancychat]")
+                }
             }
         }
-
-        if (fancyChat.value) {
-            val message = sanitizeFancyChat(event.message.unformattedText)
-            if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
-                event.message = TextComponentString(getUsername(event.message.unformattedText) + " [Fancychat]")
-            }
-        }
-    })
+    }
 
     public override fun onEnable() {
         messageHistory = ConcurrentHashMap()

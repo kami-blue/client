@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
@@ -39,12 +40,14 @@ object NoFall : Module() {
 
     private var last: Long = 0
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if ((mode.value == Mode.FALL && fallMode.value == FallMode.PACKET || mode.value == Mode.CATCH) && event.packet is CPacketPlayer && !mc.player.isElytraFlying) {
-            event.packet.onGround = true
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketPlayer || mc.player.isElytraFlying) return@listener
+            if ((mode.value == Mode.FALL && fallMode.value == FallMode.PACKET || mode.value == Mode.CATCH)) {
+                it.packet.onGround = true
+            }
         }
-    })
+    }
 
     override fun onUpdate(event: SafeTickEvent) {
         if (!mc.player.isCreative && fallDistCheck()) {

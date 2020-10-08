@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.KamiTessellator.begin
 import me.zeroeightsix.kami.util.graphics.KamiTessellator.pTicks
@@ -91,12 +92,17 @@ object NewChunks : Module() {
         glEnable(GL_DEPTH_TEST)
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ChunkEvent ->
-        if (event.packet.isFullChunk) return@EventHook
-        chunks.add(event.chunk)
-        if (saveNewChunks.value) saveNewChunk(event.chunk)
-    })
+    init {
+        listener<ChunkEvent> {
+            if (it.packet.isFullChunk) return@listener
+            chunks.add(it.chunk)
+            if (saveNewChunks.value) saveNewChunk(it.chunk)
+        }
+
+        listener<net.minecraftforge.event.world.ChunkEvent.Unload> {
+            chunks.remove(it.chunk)
+        }
+    }
 
     // needs to be synchronized so no data gets lost
     private fun saveNewChunk(chunk: Chunk) {
@@ -265,10 +271,6 @@ object NewChunks : Module() {
     private fun saveNewChunk(log: PrintWriter?, data: String) {
         log!!.println(data)
     }
-
-    @EventHandler
-    private val unloadListener = Listener(EventHook { event: net.minecraftforge.event.world.ChunkEvent.Unload -> chunks.remove(event.chunk) }
-    )
 
     private enum class SaveOption {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL

@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.Packet
 import java.io.*
 import java.nio.charset.StandardCharsets
@@ -30,13 +28,14 @@ object PacketLogger : Module() {
         if (mc.player != null) write()
     }
 
-    @EventHandler
-    private val packetListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null) {
-            disable(); return@EventHook
+    init {
+        listener<PacketEvent.Send> {
+            if (mc.player == null) {
+                disable(); return@listener
+            }
+            addLine(it.packet)
         }
-        addLine(event.packet)
-    })
+    }
 
     /* see https://kotlinlang.org/docs/reference/basic-types.html#string-templates for usage of $*/
     private fun addLine(packet: Packet<*>) {

@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.tileentity.TileEntitySign
@@ -18,12 +16,12 @@ import java.io.IOException
         category = Module.Category.MISC
 )
 object ColorSign : Module() {
-    @EventHandler
-    private val eventListener = Listener(EventHook { event: GuiScreenEvent.Displayed ->
-        if (event.screen is GuiEditSign) {
-            event.screen = KamiGuiEditSign((event.screen as GuiEditSign?)!!.tileSign)
+    init {
+        listener<GuiScreenEvent.Displayed> {
+            if (it.screen !is GuiEditSign) return@listener
+            it.screen = KamiGuiEditSign((it.screen as GuiEditSign?)!!.tileSign)
         }
-    })
+    }
 
     private class KamiGuiEditSign(teSign: TileEntitySign) : GuiEditSign(teSign) {
         @Throws(IOException::class)

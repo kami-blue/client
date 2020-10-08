@@ -4,6 +4,7 @@ import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -100,7 +101,9 @@ open class Module {
         onEnable()
         onToggle()
         sendToggleMessage()
-        if (!alwaysListening) KamiMod.EVENT_BUS.subscribe(this)
+        if (!alwaysListening) {
+            KamiEventBus.subscribe(this)
+        }
     }
 
     fun disable() {
@@ -109,7 +112,9 @@ open class Module {
         onDisable()
         onToggle()
         sendToggleMessage()
-        if (!alwaysListening) KamiMod.EVENT_BUS.unsubscribe(this)
+        if (!alwaysListening) {
+            KamiEventBus.unsubscribe(this)
+        }
     }
 
     private fun sendToggleMessage() {

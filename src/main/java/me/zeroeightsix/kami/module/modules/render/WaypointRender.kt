@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.TextProperties
@@ -148,26 +149,26 @@ object WaypointRender : Module() {
         }
     }
 
-    @EventHandler
-    private val waypointUpdateListener = Listener(EventHook { event: WaypointUpdateEvent ->
-        synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
-            when (event.type) {
-                WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
-                WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
-                WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
-                WaypointUpdateEvent.Type.RELOAD -> {
-                    waypointMap.clear(); updateList()
-                }
-                else -> {
+    init {
+        listener<WaypointUpdateEvent> {
+            synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
+                when (it.type) {
+                    WaypointUpdateEvent.Type.ADD -> it.waypoint?.let { updateTextComponent(it) }
+                    WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(it.waypoint?.pos)
+                    WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
+                    WaypointUpdateEvent.Type.RELOAD -> {
+                        waypointMap.clear(); updateList()
+                    }
+                    else -> {
+                    }
                 }
             }
         }
-    })
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        currentServer = null
-    })
+        listener<ConnectionEvent.Disconnect> {
+            currentServer = null
+        }
+    }
 
     private fun updateList() {
         timer.reset()

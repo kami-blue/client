@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 
@@ -19,6 +20,12 @@ import java.io.*
 object LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false
+
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            sent = false
+        }
+    }
 
     override fun onEnable() {
         val reader: BufferedReader
@@ -48,9 +55,4 @@ object LoginMessage : Module() {
             sent = true
         }
     }
-
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        sent = false
-    })
 }

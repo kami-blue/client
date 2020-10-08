@@ -2,14 +2,12 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.BaritoneAPI
 import baritone.api.pathing.goals.GoalXZ
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
@@ -32,29 +30,29 @@ object AutoWalk : Module() {
     private const val border = 30000000
     var direction: String? = null
 
-    @EventHandler
-    private val inputUpdateEventListener = Listener(EventHook { event: InputUpdateEvent ->
-        when (mode.value) {
-            AutoWalkMode.FORWARD -> {
-                disableBaritone = false
-                event.movementInput.moveForward = 1f
-            }
-            AutoWalkMode.BACKWARDS -> {
-                disableBaritone = false
-                event.movementInput.moveForward = -1f
-            }
-            AutoWalkMode.BARITONE -> disableBaritone = true
+    init {
+        listener<InputUpdateEvent> {
+            when (mode.value) {
+                AutoWalkMode.FORWARD -> {
+                    disableBaritone = false
+                    it.movementInput.moveForward = 1f
+                }
+                AutoWalkMode.BACKWARDS -> {
+                    disableBaritone = false
+                    it.movementInput.moveForward = -1f
+                }
+                AutoWalkMode.BARITONE -> disableBaritone = true
 
-            else -> {
-                KamiMod.log.error("Mode is irregular. Value: " + mode.value)
+                else -> {
+                    KamiMod.log.error("Mode is irregular. Value: " + mode.value)
+                }
             }
         }
-    })
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        disable()
-    })
+        listener<ConnectionEvent.Disconnect> {
+            disable()
+        }
+    }
 
     override fun onDisable() {
         if (disableBaritone) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()

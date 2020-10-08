@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
+import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiGameOver
 
 @Module.Info(
@@ -13,12 +11,13 @@ import net.minecraft.client.gui.GuiGameOver
         category = Module.Category.COMBAT
 )
 object AntiDeathScreen : Module() {
-    @EventHandler
-    private val listener = Listener(EventHook { event: Displayed ->
-        if (event.screen !is GuiGameOver) return@EventHook
-        if (mc.player.health > 0) {
-            mc.player.respawnPlayer()
-            mc.displayGuiScreen(null)
+    init {
+        listener<GuiScreenEvent.Displayed> {
+            if (it.screen !is GuiGameOver) return@listener
+            if (mc.player.health > 0) {
+                mc.player.respawnPlayer()
+                mc.displayGuiScreen(null)
+            }
         }
-    })
+    }
 }

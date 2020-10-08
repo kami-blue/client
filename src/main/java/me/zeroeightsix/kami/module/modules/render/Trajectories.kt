@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.FastUse
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -47,16 +48,16 @@ object Trajectories : Module() {
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var prevItemUseCount = 0
 
-    @EventHandler
-    private val TravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (mc.player == null) return@EventHook
-        prevMotion = Vec3d(mc.player.motionX, mc.player.motionY, mc.player.motionZ)
-    })
+    init {
+        listener<PlayerTravelEvent> {
+            if (mc.player == null) return@listener
+            prevMotion = Vec3d(mc.player.motionX, mc.player.motionY, mc.player.motionZ)
+        }
 
-    @EventHandler
-    private val playerUpdateListener = Listener(EventHook { event: LivingEntityUseItemEvent.Tick ->
-        prevItemUseCount = mc.player.itemInUseCount
-    })
+        listener<LivingEntityUseItemEvent.Tick> {
+            prevItemUseCount = mc.player.itemInUseCount
+        }
+    }
 
     override fun onWorldRender(event: RenderWorldEvent) {
         val type = getThrowingType(mc.player?.heldItemMainhand) ?: getThrowingType(mc.player?.heldItemOffhand) ?: return

@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.CPacketPlayer
@@ -26,13 +27,14 @@ object Blink : Module() {
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (!sending && event.packet is CPacketPlayer) {
-            event.cancel()
-            packets.add(event.packet)
+    init {
+        listener<PacketEvent.Receive> {
+            if (!sending && it.packet is CPacketPlayer) {
+                it.cancel()
+                packets.add(it.packet)
+            }
         }
-    })
+    }
 
     override fun onUpdate(event: SafeTickEvent) {
         if (autoReset.value && packets.size >= resetThreshold.value) {

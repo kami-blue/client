@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 
@@ -21,18 +19,18 @@ import net.minecraft.network.play.client.CPacketPlayer
 object AntiHunger : Module() {
     private val cancelMovementState = register(Settings.b("CancelMovementState", true))
 
-    @EventHandler
-    private val packetListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null) return@EventHook
-        if (cancelMovementState.value && event.packet is CPacketEntityAction) {
-            if (event.packet.action == CPacketEntityAction.Action.START_SPRINTING
-                    || event.packet.action == CPacketEntityAction.Action.STOP_SPRINTING) {
-                event.cancel()
+    init {
+        listener<PacketEvent.Send> {
+            if (mc.player == null) return@listener
+            if (cancelMovementState.value && it.packet is CPacketEntityAction) {
+                if (it.packet.action == CPacketEntityAction.Action.START_SPRINTING || it.packet.action == CPacketEntityAction.Action.STOP_SPRINTING) {
+                    it.cancel()
+                }
+            }
+            if (it.packet is CPacketPlayer) {
+                // Trick the game to think that tha player is flying even if he is on ground. Also check if the player is flying with the Elytra.
+                it.packet.onGround = (mc.player.fallDistance <= 0 || mc.playerController.isHittingBlock) && mc.player.isElytraFlying
             }
         }
-        if (event.packet is CPacketPlayer) {
-            // Trick the game to think that tha player is flying even if he is on ground. Also check if the player is flying with the Elytra.
-            event.packet.onGround = (mc.player.fallDistance <= 0 || mc.playerController.isHittingBlock) && mc.player.isElytraFlying
-        }
-    })
+    }
 }

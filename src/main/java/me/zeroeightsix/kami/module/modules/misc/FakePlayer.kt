@@ -1,13 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import java.util.*
@@ -21,10 +19,11 @@ object FakePlayer : Module() {
     private val copyInventory = register(Settings.b("CopyInventory", false))
     val playerName = register(Settings.stringBuilder("PlayerName").withValue("Player").withVisibility { false })
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        disable()
-    })
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            disable()
+        }
+    }
 
     override fun onEnable() {
         if (mc.world == null || mc.player == null) {

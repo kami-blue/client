@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
@@ -57,12 +58,13 @@ object AutoOffhand : Module() {
     private val movingTimer = TimerUtils.TickTimer()
     private var maxDamage = 0f
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || event.packet !is SPacketConfirmTransaction || event.packet.windowId != 0 || !transactionLog.containsKey(event.packet.actionNumber)) return@EventHook
-        transactionLog[event.packet.actionNumber] = event.packet.wasAccepted()
-        if (!transactionLog.containsValue(false)) movingTimer.reset(-200L) // If all the click packets were accepted then we reset the timer for next moving
-    })
+    init {
+        listener<PacketEvent.Receive> {
+            if (mc.player == null || it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@listener
+            transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
+            if (!transactionLog.containsValue(false)) movingTimer.reset(-200L) // If all the click packets were accepted then we reset the timer for next moving
+        }
+    }
 
     override fun onRender() {
         if (mc.player == null || mc.player.isDead || !movingTimer.tick(200L, false)) return // Delay 4 ticks by default

@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.mixin.client;
 
 import io.netty.channel.ChannelHandlerContext;
 import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.modules.player.NoPacketKick;
 import net.minecraft.network.NetworkManager;
@@ -19,7 +20,7 @@ public class MixinNetworkManager {
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void onSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
         PacketEvent event = new PacketEvent.Send(packet);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
 
         if (event.isCancelled()) {
             callbackInfo.cancel();
@@ -29,7 +30,7 @@ public class MixinNetworkManager {
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     private void onChannelRead(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callbackInfo) {
         PacketEvent event = new PacketEvent.Receive(packet);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
 
         if (event.isCancelled()) {
             callbackInfo.cancel();
@@ -39,7 +40,7 @@ public class MixinNetworkManager {
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("RETURN"), cancellable = true)
     private void afterSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
         PacketEvent event = new PacketEvent.PostSend(packet);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
 
         if (event.isCancelled()) {
             callbackInfo.cancel();
