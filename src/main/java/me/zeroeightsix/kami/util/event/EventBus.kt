@@ -57,7 +57,7 @@ object EventBus {
     }
 
     /**
-     * A thread-safe implementation of [AbstractEventBus] and [IMultiEventBus]
+     * A concurrent implementation of [AbstractEventBus] and [IMultiEventBus]
      */
     open class MasterEventBus : ConcurrentEventBus(), IMultiEventBus {
         private val subscribedEventBus = ConcurrentSet<IEventBus>()

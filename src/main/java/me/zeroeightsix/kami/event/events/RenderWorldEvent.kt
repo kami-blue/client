@@ -1,10 +1,7 @@
 package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.KamiEvent
-import me.zeroeightsix.kami.util.Wrapper
-import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.Tessellator
-import net.minecraft.util.math.Vec3d
 
 /**
  * Created by 086 on 10/12/2017.

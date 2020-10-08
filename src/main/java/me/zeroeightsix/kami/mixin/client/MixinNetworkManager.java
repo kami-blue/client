@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import io.netty.channel.ChannelHandlerContext;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PacketEvent;
 import me.zeroeightsix.kami.module.modules.player.NoPacketKick;

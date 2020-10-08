@@ -12,7 +12,7 @@ import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glColor4f;
 
 /**
  * Created by 086 on 3/08/2017.

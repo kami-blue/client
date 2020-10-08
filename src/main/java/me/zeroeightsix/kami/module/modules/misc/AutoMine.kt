@@ -1,9 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module

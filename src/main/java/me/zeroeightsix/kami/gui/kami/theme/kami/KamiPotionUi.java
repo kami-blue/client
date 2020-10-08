@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.util.color.ColorConverter;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 
 import java.util.ArrayList;

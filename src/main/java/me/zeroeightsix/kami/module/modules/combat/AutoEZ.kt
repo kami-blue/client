@@ -1,11 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting

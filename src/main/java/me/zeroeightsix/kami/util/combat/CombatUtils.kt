@@ -9,7 +9,6 @@ import net.minecraft.entity.EnumCreatureAttribute
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.init.Enchantments
 import net.minecraft.init.MobEffects
 import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemStack
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemTool
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.MathHelper
-import kotlin.concurrent.fixedRateTimer
 import kotlin.math.max
 import kotlin.math.round
 

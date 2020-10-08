@@ -2,11 +2,9 @@ package me.zeroeightsix.kami.manager.mangers
 
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
-import me.zeroeightsix.kami.util.Waypoint
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 object FileInstanceManager : Manager() {
     /**

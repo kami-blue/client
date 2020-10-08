@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module
 import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent

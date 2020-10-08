@@ -1,9 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent

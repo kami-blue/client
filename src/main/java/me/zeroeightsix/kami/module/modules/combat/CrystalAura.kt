@@ -30,7 +30,6 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 import kotlin.collections.HashSet
 import kotlin.math.abs

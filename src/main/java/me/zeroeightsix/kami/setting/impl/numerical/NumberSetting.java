@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.setting.impl.numerical;
 
-import kotlin.NumbersKt;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.converter.AbstractBoxedNumberConverter;
 

@@ -3,8 +3,6 @@ package me.zeroeightsix.kami;
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.zero.alpine.EventBus;
-import me.zero.alpine.EventManager;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;

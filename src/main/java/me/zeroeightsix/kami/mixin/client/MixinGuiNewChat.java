@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent;
 import me.zeroeightsix.kami.module.modules.render.CleanGUI;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.util.text.ITextComponent;

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.mojang.authlib.GameProfile;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEvent;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;

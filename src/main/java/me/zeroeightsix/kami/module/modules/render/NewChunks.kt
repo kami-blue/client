@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
