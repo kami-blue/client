@@ -41,7 +41,7 @@ object TotemPopCounter : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (mc.player.isDead || it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35) return@listener
+            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || mc.player == null || mc.player.isDead) return@listener
             val player = (it.packet.getEntity(mc.world) as? EntityPlayer) ?: return@listener
 
             if (friendCheck(player) || selfCheck(player)) {
