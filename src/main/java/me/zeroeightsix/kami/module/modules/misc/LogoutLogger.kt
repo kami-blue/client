@@ -44,7 +44,7 @@ object LogoutLogger : Module() {
             for ((name, pos) in loggedPlayers) {
                 if (mc.connection!!.getPlayerInfo(name) != null) continue
                 if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
-                if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
+                if (saveToFile.value) WaypointManager.add(pos, "$name Logout Spot")
                 if (announcer.value) mc.player.sendChatMessage( "KAMI BLUE on top! EZ Log, $name")
                 toRemove.add(name)
             }
