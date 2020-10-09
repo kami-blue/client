@@ -26,8 +26,8 @@ object BeaconSelector : Module() {
             PacketBuffer(Unpooled.buffer()).apply {
                 writeInt(effect)
                 writeInt(secondary)
-            }.also {
-                mc.player.connection.sendPacket(CPacketCustomPayload("MC|Beacon", it))
+            }.also { buffer ->
+                mc.player.connection.sendPacket(CPacketCustomPayload("MC|Beacon", buffer))
             }
             doCancelPacket = true
         }
