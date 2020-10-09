@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
