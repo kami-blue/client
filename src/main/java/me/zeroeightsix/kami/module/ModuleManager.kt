@@ -97,7 +97,7 @@ object ModuleManager {
         }
     }
 
-    @Deprecated ("Use event listener for RenderOverlayEvent instead")
+    @Deprecated ("Use event listener for RenderWorldEvent instead")
     fun onWorldRender(event: RenderWorldEvent) {
         for (module in moduleList) {
             if (isModuleListening(module)) {

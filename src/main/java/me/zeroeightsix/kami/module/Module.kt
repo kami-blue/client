@@ -139,7 +139,7 @@ open class Module {
     open fun onUpdate(event: SafeTickEvent) {}
     @Deprecated ("Use event listener for RenderOverlayEvent instead")
     open fun onRender() {}
-    @Deprecated ("Use event listener for RenderOverlayEvent instead")
+    @Deprecated ("Use event listener for RenderWorldEvent instead")
     open fun onWorldRender(event: RenderWorldEvent) {}
 
     protected open fun onEnable() {}
