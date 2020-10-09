@@ -33,6 +33,10 @@ object StashFinder : Module() {
 
     private val logDispensers = register(Settings.b("Dispensers", false))
     private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
+        
+    private val logHoppers = register(Settings.b("Hoppers", false))
+    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
+
 
     private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hot: Boolean = false) {
         val tileEntities = mutableListOf<TileEntity>()
@@ -62,7 +66,7 @@ object StashFinder : Module() {
         }
 
         override fun toString(): String {
-            return "($chests chests, $shulkers shulkers, $droppers droppers, $dispensers dispensers)"
+            return "($chests chests, $shulkers shulkers, $droppers droppers, $dispensers dispensers, $hoppers hoppers)"
         }
     }
 
@@ -84,14 +88,14 @@ object StashFinder : Module() {
         val chunkStats = chunkData.getOrPut(chunk, { ChunkStats() })
 
         chunkStats.add(tileEntity)
-        if (chunkStats.chests >= chestDensity.value || chunkStats.shulkers >= shulkerDensity.value || chunkStats.droppers >= dropperDensity.value || chunkStats.dispensers >= dispenserDensity.value) {
+        if (chunkStats.chests >= chestDensity.value || chunkStats.shulkers >= shulkerDensity.value || chunkStats.droppers >= dropperDensity.value || chunkStats.dispensers >= dispenserDensity.value || chunkStats.hoppers >= hopperDensity.value) {
             chunkStats.hot = true
         }
     }
 
     override fun onUpdate(event: SafeTickEvent) {
         mc.world.loadedTileEntityList
-                .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) }
+                .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) || (it is TileEntityHopper && logHoppers.value)}
                 .forEach { logTileEntity(it) }
 
         chunkData.values.filter { it.hot }.forEach { chunkStats ->
