@@ -135,14 +135,11 @@ open class Module {
         return null
     }
 
-    /** Use event listener for [SafeTickEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for SafeTickEvent instead")
     open fun onUpdate(event: SafeTickEvent) {}
-    /** Use event listener for [RenderOverlayEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     open fun onRender() {}
-    /** Use event listener for [RenderOverlayEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     open fun onWorldRender(event: RenderWorldEvent) {}
 
     protected open fun onEnable() {}

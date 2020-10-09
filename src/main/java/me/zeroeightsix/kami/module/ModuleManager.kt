@@ -81,16 +81,14 @@ object ModuleManager {
         }.start()
     }
 
-    /** Use event listener for [SafeTickEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for SafeTickEvent instead")
     fun onUpdate(event: SafeTickEvent) {
         for (module in moduleList) {
             if (isModuleListening(module) && inGame()) module.onUpdate(event)
         }
     }
 
-    /** Use event listener for [RenderOverlayEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     fun onRender() {
         for (module in moduleList) {
             if (isModuleListening(module)) {
@@ -99,8 +97,7 @@ object ModuleManager {
         }
     }
 
-    /** Use event listener for [RenderOverlayEvent] Instead */
-    @Deprecated ("Planned to remove by 1.1.8 release")
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     fun onWorldRender(event: RenderWorldEvent) {
         for (module in moduleList) {
             if (isModuleListening(module)) {
