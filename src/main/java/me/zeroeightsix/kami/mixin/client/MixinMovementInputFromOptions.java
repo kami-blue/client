@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import net.minecraft.util.MovementInput;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinMovementInputFromOptions extends MovementInput {
     @Inject(method = "updatePlayerMoveState", at = @At("RETURN"))
     public void updatePlayerMoveStateReturn(CallbackInfo callback) {
-        KamiMod.EVENT_BUS.post(new PlayerUpdateMoveEvent());
+        KamiEventBus.INSTANCE.post(new PlayerUpdateMoveEvent());
     }
 
     // We have to cancel this so original player doesn't move around, also reset movement input when we enable Freecam

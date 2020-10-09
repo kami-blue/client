@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.BlockBreakEvent;
 import me.zeroeightsix.kami.module.modules.render.SelectionHighlight;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -25,6 +25,6 @@ public class MixinRenderGlobal {
     @Inject(method = "sendBlockBreakProgress", at = @At("HEAD"))
     public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress, CallbackInfo ci) {
         BlockBreakEvent event = new BlockBreakEvent(breakerId, pos, progress);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 }

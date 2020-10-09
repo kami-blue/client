@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.setting.builder.numerical;
 
 import me.zeroeightsix.kami.setting.impl.numerical.DoubleSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;

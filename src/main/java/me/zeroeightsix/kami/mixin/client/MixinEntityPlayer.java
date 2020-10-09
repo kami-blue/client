@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -21,7 +21,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase {
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     public void travel(float strafe, float vertical, float forward, CallbackInfo info) {
         PlayerTravelEvent event = new PlayerTravelEvent();
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
         if (event.isCancelled()) {
             move(MoverType.SELF, motionX, motionY, motionZ);
             info.cancel();

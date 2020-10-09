@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Friends.addFriend
 import me.zeroeightsix.kami.util.Friends.removeFriend
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
@@ -20,44 +19,32 @@ import org.lwjgl.input.Mouse
         showOnArray = Module.ShowOnArray.OFF
 )
 object MidClickFriends : Module() {
-    private var delay = 0
+    private val timer = TimerUtils.TickTimer()
+    private var lastPlayer: EntityOtherPlayerMP? = null
 
-    override fun onUpdate() {
-        if (delay > 0) {
-            delay--
+    init {
+        listener<InputEvent.MouseInputEvent> {
+            // 0 is left, 1 is right, 2 is middle
+            if (Mouse.getEventButton() != 2 || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.ENTITY) return@listener
+            val player = mc.objectMouseOver.entityHit as? EntityOtherPlayerMP ?: return@listener
+            if (timer.tick(5000L) || player != lastPlayer && timer.tick(500L)) {
+                if (Friends.isFriend(player.name)) remove(player.name)
+                else add(player.name)
+                lastPlayer = player
+            }
         }
     }
 
-    @EventHandler
-    private val mouseListener = Listener(EventHook<InputEvent.MouseInputEvent> { event: InputEvent.MouseInputEvent? ->
-        if (delay == 0 && Mouse.getEventButton() == 2 && mc.objectMouseOver != null) { // 0 is left, 1 is right, 2 is middle
-            if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.ENTITY) {
-                val lookedAtEntity = mc.objectMouseOver.entityHit as? EntityOtherPlayerMP
-                        ?: return@EventHook
-                if (Friends.isFriend(lookedAtEntity.name)) {
-                    remove(lookedAtEntity.name)
-                } else {
-                    add(lookedAtEntity.name)
-                }
-            }
-        }
-    })
-
     private fun remove(name: String) {
-        delay = 20
         if (removeFriend(name)) {
             MessageSendHelper.sendChatMessage("&b$name&r has been unfriended.")
         }
     }
 
     private fun add(name: String) {
-        delay = 20
         Thread {
-            if (addFriend(name)) {
-                MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
-            } else {
-                MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
-            }
+            if (addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
+            else MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
         }.start()
     }
 }

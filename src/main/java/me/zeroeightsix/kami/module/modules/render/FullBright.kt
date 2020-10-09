@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import kotlin.math.max
@@ -26,7 +27,7 @@ object FullBright : Module() {
         oldValue.value = mc.gameSettings.gammaSetting
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         when {
             isEnabled -> {
                 transition(gamma.value)

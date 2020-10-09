@@ -1,16 +1,15 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
@@ -81,32 +80,50 @@ object ESP : Module() {
             drawNametag = false
             resetGlow()
         }
+
+        listener<RenderEntityEvent.Pre> {
+            if (mode.value != ESPMode.SHADER || it.entity == null || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
+            if (hideOriginal.value) {
+                // Steal it from Minecraft rendering kek
+                prepareFrameBuffer()
+                drawNametag = true
+            }
+        }
+
+        listener<RenderEntityEvent.Post> {
+            if (mode.value != ESPMode.SHADER || it.entity == null || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
+            if (!hideOriginal.value) {
+                prepareFrameBuffer()
+                mc.renderManager.getEntityRenderObject<Entity>(it.entity)?.doRender(it.entity, it.x, it.y, it.z, it.yaw, it.partialTicks)
+            }
+
+            mc.framebuffer.bindFramebuffer(false)
+            GlStateManager.disableOutlineMode()
+            GlStateManager.popMatrix()
+            drawingOutline = false
+            drawNametag = false
+        }
+
+        listener<RenderShaderEvent> {
+            if (mode.value != ESPMode.SHADER || it.phase != RenderShaderEvent.Phase.PRE) return@listener
+
+            frameBuffer?.bindFramebuffer(false)
+            shaderHelper.shader?.render(KamiTessellator.pTicks())
+
+            // Draw it on the main frame buffer
+            mc.framebuffer.bindFramebuffer(false)
+            GlStateManager.disableDepth()
+            // Re-enable blend because shader rendering will disable it at the end
+            GlStateManager.enableBlend()
+            frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
+            GlStateManager.disableBlend()
+            GlStateManager.enableDepth()
+
+            // Clean up the frame buffer
+            frameBuffer?.framebufferClear()
+            mc.framebuffer.bindFramebuffer(true)
+        }
     }
-
-    @EventHandler
-    private val preRenderListener = Listener(EventHook { event: RenderEntityEvent.Pre ->
-        if (mode.value != ESPMode.SHADER || event.entity == null || mc.renderManager.renderOutlines || !entityList.contains(event.entity)) return@EventHook
-        if (hideOriginal.value) {
-            // Steal it from Minecraft rendering kek
-            prepareFrameBuffer()
-            drawNametag = true
-        }
-    })
-
-    @EventHandler
-    private val postRenderListener = Listener(EventHook { event: RenderEntityEvent.Post ->
-        if (mode.value != ESPMode.SHADER || event.entity == null || mc.renderManager.renderOutlines || !entityList.contains(event.entity)) return@EventHook
-        if (!hideOriginal.value) {
-            prepareFrameBuffer()
-            mc.renderManager.getEntityRenderObject<Entity>(event.entity)?.doRender(event.entity, event.x, event.y, event.z, event.yaw, event.partialTicks)
-        }
-
-        mc.framebuffer.bindFramebuffer(false)
-        GlStateManager.disableOutlineMode()
-        GlStateManager.popMatrix()
-        drawingOutline = false
-        drawNametag = false
-    })
 
     private fun prepareFrameBuffer() {
         drawingOutline = true
@@ -115,28 +132,7 @@ object ESP : Module() {
         frameBuffer?.bindFramebuffer(false)
     }
 
-    @EventHandler
-    private val preRenderShaderListener = Listener(EventHook { event: RenderShaderEvent ->
-        if (mode.value != ESPMode.SHADER || event.phase != RenderShaderEvent.Phase.PRE) return@EventHook
-        // Apply shader on the frame buffer
-        frameBuffer?.bindFramebuffer(false)
-        shaderHelper.shader?.render(KamiTessellator.pTicks())
-
-        // Draw it on the main frame buffer
-        mc.framebuffer.bindFramebuffer(false)
-        GlStateManager.disableDepth()
-        // Re-enable blend because shader rendering will disable it at the end
-        GlStateManager.enableBlend()
-        frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
-        GlStateManager.disableBlend()
-        GlStateManager.enableDepth()
-
-        // Clean up the frame buffer
-        frameBuffer?.framebufferClear()
-        mc.framebuffer.bindFramebuffer(true)
-    })
-
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (mc.renderManager.options == null) return
         when (mode.value) {
             ESPMode.BOX -> {
@@ -157,7 +153,7 @@ object ESP : Module() {
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         entityList.clear()
         entityList.addAll(getEntityList())
 

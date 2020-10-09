@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
@@ -68,7 +69,7 @@ object AutoObsidian : Module() {
         state = State.SEARCHING
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.playerController == null) return
 
         /* Just a delay */

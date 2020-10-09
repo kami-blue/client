@@ -1,12 +1,10 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
-import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
@@ -28,12 +26,11 @@ object AutoMend : Module() {
     private var initHotbarSlot = -1
     private var isGuiOpened = false
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive? ->
-        if (mc.player != null && fast.value && mc.player.heldItemMainhand.getItem() === Items.EXPERIENCE_BOTTLE) {
-            mc.rightClickDelayTimer = 0
+    init {
+        listener<GuiScreenEvent.Displayed> {
+            isGuiOpened = it.screen != null
         }
-    })
+    }
 
     override fun onEnable() {
         if (mc.player == null) return
@@ -51,7 +48,7 @@ object AutoMend : Module() {
         }
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (isGuiOpened && !gui.value) return
 
         if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {
@@ -68,6 +65,7 @@ object AutoMend : Module() {
                 mc.player.inventory.currentItem = xpSlot
             }
             if (autoThrow.value && mc.player.heldItemMainhand.getItem() === Items.EXPERIENCE_BOTTLE) {
+                if (fast.value) mc.rightClickDelayTimer = 0
                 mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
             }
         }
@@ -88,7 +86,4 @@ object AutoMend : Module() {
         return if (mc.player.inventory.armorInventory[i].maxDamage == 0) false
         else 100 * mc.player.inventory.armorInventory[i].getItemDamage() / mc.player.inventory.armorInventory[i].maxDamage > reverseNumber(threshold.value, 1, 100)
     }
-
-    @EventHandler
-    private val listener = Listener(EventHook { event: Displayed -> isGuiOpened = event.screen != null })
 }

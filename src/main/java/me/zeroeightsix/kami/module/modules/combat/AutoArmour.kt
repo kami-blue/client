@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -19,7 +20,7 @@ object AutoArmour : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!timer.tick(delay.value.toLong(), false)) return
         if (!mc.player.inventory.getItemStack().isEmpty()) {
             if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item

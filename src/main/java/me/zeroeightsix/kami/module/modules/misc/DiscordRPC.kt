@@ -4,6 +4,7 @@ import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
@@ -52,7 +53,7 @@ object DiscordRPC : Module() {
         end()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
             MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
                     "This will display your coords on the discord rpc. " +

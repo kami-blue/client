@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWrittenBook
 import net.minecraft.network.play.client.CPacketClickWindow
@@ -23,16 +21,17 @@ import net.minecraft.network.play.client.CPacketClickWindow
         showOnArray = Module.ShowOnArray.OFF
 )
 object AntiBookKick : Module() {
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.PostSend ->
-        if (event.packet !is CPacketClickWindow) return@EventHook
-        if (event.packet.clickedItem.getItem() !is ItemWrittenBook) return@EventHook
+    init {
+        listener<PacketEvent.PostSend> {
+            if (it.packet !is CPacketClickWindow) return@listener
+            if (it.packet.clickedItem.getItem() !is ItemWrittenBook) return@listener
 
-        event.cancel()
-        MessageSendHelper.sendWarningMessage(chatName
-                + " Don't click the book \""
-                + event.packet.clickedItem.displayName
-                + "\", shift click it instead!")
-        mc.player.openContainer.slotClick(event.packet.slotId, event.packet.usedButton, event.packet.clickType, mc.player)
-    })
+            it.cancel()
+            MessageSendHelper.sendWarningMessage(chatName
+                    + " Don't click the book \""
+                    + it.packet.clickedItem.displayName
+                    + "\", shift click it instead!")
+            mc.player.openContainer.slotClick(it.packet.slotId, it.packet.usedButton, it.packet.clickType, mc.player)
+        }
+    }
 }

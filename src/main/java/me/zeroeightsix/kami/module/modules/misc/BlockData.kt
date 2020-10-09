@@ -1,49 +1,38 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
-import java.util.*
 
-/**
- * TODO: Fix delay timer because that shit broken
- */
 @Module.Info(
         name = "BlockData",
         category = Module.Category.MISC,
         description = "Right click blocks to display their data"
 )
 object BlockData : Module() {
-    private var delay = 0
+    private val timer = TimerUtils.TickTimer()
+    private var lastPos = BlockPos.ORIGIN
 
-    override fun onUpdate() {
-        if (delay > 0) {
-            delay--
-        }
-    }
-
-    @EventHandler
-    private val mouseListener = Listener(EventHook { event: InputEvent.MouseInputEvent? ->
-        if (Mouse.getEventButton() == 1 && delay == 0 && mc.objectMouseOver != null) {
-            if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
+    init {
+        listener<InputEvent.MouseInputEvent> {
+            if (Mouse.getEventButton() != 1 || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.BLOCK) return@listener
+            if (timer.tick(5000L) || mc.objectMouseOver.blockPos != lastPos && timer.tick(500L)) {
                 val blockPos = mc.objectMouseOver.blockPos
-                val iBlockState = mc.world.getBlockState(blockPos)
-                val block = iBlockState.block
+                val blockState = mc.world.getBlockState(blockPos)
+                lastPos = blockPos
 
-                if (block.hasTileEntity()) {
-                    val t = mc.world.getTileEntity(blockPos)
-                    val tag = NBTTagCompound()
-
-                    Objects.requireNonNull(t)!!.writeToNBT(tag)
+                if (blockState.block.hasTileEntity(blockState)) {
+                    val tileEntity = mc.world.getTileEntity(blockPos) ?: return@listener
+                    val tag = NBTTagCompound().apply { tileEntity.writeToNBT(this) }
                     MessageSendHelper.sendChatMessage("""$chatName &6Block Tags:$tag""".trimIndent())
                 }
             }
         }
-    })
+    }
 }

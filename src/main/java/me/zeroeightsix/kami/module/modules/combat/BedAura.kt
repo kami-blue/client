@@ -1,9 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -12,6 +10,7 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -68,19 +67,21 @@ object BedAura : Module() {
         inactiveTicks = 6
     }
 
-    @EventHandler
-    private val postSendListener = Listener(EventHook { event: PacketEvent.PostSend ->
-        if (!CombatManager.isOnTopPriority(this) || event.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@EventHook
-        val hand = getBedHand() ?: EnumHand.MAIN_HAND
-        val facing = if (state == State.PLACE) EnumFacing.UP else BlockUtils.getHitSide(clickPos)
-        val hitVecOffset = BlockUtils.getHitVecOffset(facing)
-        val packet = CPacketPlayerTryUseItemOnBlock(clickPos, facing, hand, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
-        mc.connection!!.sendPacket(packet)
-        mc.player.swingArm(hand)
-        state = State.NONE
-    })
 
-    override fun onUpdate() {
+    init {
+        listener<PacketEvent.PostSend> {
+            if (!CombatManager.isOnTopPriority(this) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@listener
+            val hand = getBedHand() ?: EnumHand.MAIN_HAND
+            val facing = if (state == State.PLACE) EnumFacing.UP else BlockUtils.getHitSide(clickPos)
+            val hitVecOffset = BlockUtils.getHitVecOffset(facing)
+            val packet = CPacketPlayerTryUseItemOnBlock(clickPos, facing, hand, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
+            mc.connection!!.sendPacket(packet)
+            mc.player.swingArm(hand)
+            state = State.NONE
+        }
+    }
+
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
             state = State.NONE
             resetRotation()

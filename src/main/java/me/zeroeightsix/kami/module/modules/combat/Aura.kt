@@ -1,16 +1,19 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "Aura",
@@ -41,33 +44,37 @@ object Aura : Module() {
         return inactiveTicks <= 20 && isEnabled
     }
 
-    override fun onUpdate() {
-        inactiveTicks++
-        if (mc.player.isDead) {
-            if (mc.player.isDead && disableOnDeath.value) disable()
-            return
-        }
-        if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return
-        val targetList = CombatManager.targetList
-        val target = CombatManager.target
+    init {
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@listener
 
-        if (multi.value && targetList.isNotEmpty()) {
-            inactiveTicks = 0
-            if (canAttack()) {
-                for (entity in targetList) {
-                    if (mc.player.getDistance(entity) > range.value) continue
-                    attack(entity)
+            inactiveTicks++
+            if (mc.player.isDead) {
+                if (mc.player.isDead && disableOnDeath.value) disable()
+                return@listener
+            }
+            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
+            val targetList = CombatManager.targetList
+            val target = CombatManager.target
+
+            if (multi.value && targetList.isNotEmpty()) {
+                inactiveTicks = 0
+                if (canAttack()) {
+                    for (entity in targetList) {
+                        if (mc.player.getDistance(entity) > range.value) continue
+                        attack(entity)
+                    }
                 }
+            } else if (target != null && mc.player.getDistance(target) < range.value) {
+                inactiveTicks = 0
+                if (lockView.value) {
+                    faceEntityClosest(target)
+                } else if (spoofRotation.value) {
+                    val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
+                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                }
+                if (canAttack()) attack(target)
             }
-        } else if (target != null && mc.player.getDistance(target) < range.value) {
-            inactiveTicks = 0
-            if (lockView.value) {
-                faceEntityClosest(target)
-            } else if (spoofRotation.value) {
-                val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
-                PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
-            }
-            if (canAttack()) attack(target)
         }
     }
 

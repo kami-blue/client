@@ -3,8 +3,10 @@ package me.zeroeightsix.kami.module
 import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
@@ -98,7 +100,9 @@ open class Module {
         onEnable()
         onToggle()
         sendToggleMessage()
-        if (!alwaysListening) KamiMod.EVENT_BUS.subscribe(this)
+        if (!alwaysListening) {
+            KamiEventBus.subscribe(this)
+        }
     }
 
     fun disable() {
@@ -107,7 +111,9 @@ open class Module {
         onDisable()
         onToggle()
         sendToggleMessage()
-        if (!alwaysListening) KamiMod.EVENT_BUS.unsubscribe(this)
+        if (!alwaysListening) {
+            KamiEventBus.unsubscribe(this)
+        }
     }
 
     private fun sendToggleMessage() {
@@ -129,9 +135,13 @@ open class Module {
         return null
     }
 
-    open fun onUpdate() {}
+    @Deprecated ("Use event listener for SafeTickEvent instead")
+    open fun onUpdate(event: SafeTickEvent) {}
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     open fun onRender() {}
-    open fun onWorldRender(event: RenderEvent) {}
+    @Deprecated ("Use event listener for RenderWorldEvent instead")
+    open fun onWorldRender(event: RenderWorldEvent) {}
+
     protected open fun onEnable() {}
     protected open fun onDisable() {}
     protected open fun onToggle() {}

@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.renderer.GlStateManager
@@ -52,13 +51,14 @@ object Breadcrumbs : Module() {
         }
     }
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        startTime = 0L
-        alphaMultiplier = 0f
-    })
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            startTime = 0L
+            alphaMultiplier = 0f
+        }
+    }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (mc.player == null || (mc.integratedServer == null && mc.currentServerData == null)
                 || (isDisabled && !whileDisabled.value)) {
             return
@@ -86,7 +86,7 @@ object Breadcrumbs : Module() {
         drawTail(renderPosList)
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if ((mc.integratedServer == null && mc.currentServerData == null)) return
         alphaMultiplier = if (isEnabled && shouldRecord(false)) {
             min(alphaMultiplier + 0.07f, 1f)

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.mangers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyFile
@@ -56,7 +57,7 @@ object WaypointManager : Manager() {
             waypoints.clear()
             false
         }
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
         return success
     }
 
@@ -88,13 +89,13 @@ object WaypointManager : Manager() {
 
     fun get(id: String): Waypoint? {
         val waypoint = waypoints.firstOrNull { it.id.toString() == id }
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
         return waypoint
     }
 
     fun get(pos: BlockPos, currentDimension: Boolean = false): Waypoint? {
         val waypoint = waypoints.firstOrNull { (if (currentDimension) it.currentPos() else it.pos) == pos }
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
         return waypoint
     }
 
@@ -102,7 +103,7 @@ object WaypointManager : Manager() {
         val pos = Wrapper.player?.positionVector?.toBlockPos()
         return if (pos != null) {
             val waypoint = add(pos, locationName)
-            KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
+            KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
             waypoint
         } else {
             KamiMod.log.error("Error during waypoint adding")
@@ -113,27 +114,27 @@ object WaypointManager : Manager() {
     fun add(pos: BlockPos, locationName: String): Waypoint {
         val waypoint = dateFormatter(pos, locationName)
         waypoints.add(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
         return waypoint
     }
 
     fun remove(pos: BlockPos, currentDimension: Boolean = false): Boolean {
         val waypoint = get(pos, currentDimension)
         val removed = waypoints.remove(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
     }
 
     fun remove(id: String): Boolean {
         val waypoint = get(id)?: return false
         val removed = waypoints.remove(waypoint)
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
     }
 
     fun clear() {
         waypoints.clear()
-        KamiMod.EVENT_BUS.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
+        KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
     }
 
     fun genServer(): String? {

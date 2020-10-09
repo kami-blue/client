@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -71,7 +72,7 @@ object InfoOverlay : Module() {
     private val speedList = LinkedList<Double>()
     private var currentChunkSize = 0
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         updateSpeedList()
         updateChunkSize()
     }

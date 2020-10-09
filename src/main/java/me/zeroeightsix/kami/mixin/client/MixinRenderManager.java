@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderEntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -27,7 +27,7 @@ public class MixinRenderManager {
     @Inject(method = "renderEntity", at = @At("HEAD"), cancellable = true)
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         RenderEntityEvent.Pre event = new RenderEntityEvent.Pre(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
         if (event.isCancelled()) ci.cancel();
     }
 
@@ -35,25 +35,25 @@ public class MixinRenderManager {
     @Inject(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/Render;doRenderShadowAndFire(Lnet/minecraft/entity/Entity;DDDFF)V"))
     public void renderEntityPostShadow(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         RenderEntityEvent.Post event = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 
     @Inject(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderDebugBoundingBox(Lnet/minecraft/entity/Entity;DDDFF)V"))
     public void renderEntityPostDebugBB(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         if (!this.renderOutlines) return;
         RenderEntityEvent.Post event = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 
     @Inject(method = "renderEntity", at = @At("RETURN"))
     public void renderEntityPostReturn(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         RenderEntityEvent.Final eventFinal = new RenderEntityEvent.Final(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(eventFinal);
+        KamiEventBus.INSTANCE.post(eventFinal);
 
         if (!this.renderOutlines || (this.debugBoundingBox && !entity.isInvisible() && !debug && !Minecraft.getMinecraft().isReducedDebug()))
             return;
         RenderEntityEvent.Post event = new RenderEntityEvent.Post(entity, x, y, z, yaw, partialTicks, debug);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 
 }

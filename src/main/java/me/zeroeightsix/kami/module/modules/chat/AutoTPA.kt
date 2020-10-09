@@ -1,12 +1,10 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
@@ -20,11 +18,11 @@ object AutoTPA : Module() {
     private val friends = register(Settings.b("AlwaysAcceptFriends", true))
     private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet is SPacketChat && MessageDetectionHelper.isTPA(true, event.packet.getChatComponent().unformattedText)) {
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketChat || !MessageDetectionHelper.isTPA(true, it.packet.getChatComponent().unformattedText)) return@listener
             /* I tested that getting the first word is compatible with chat timestamp, and it as, as this is Receive and chat timestamp is after Receive */
-            val name = event.packet.getChatComponent().unformattedText.split(" ").toTypedArray()[0]
+            val name = it.packet.getChatComponent().unformattedText.split(" ").toTypedArray()[0]
 
             when (mode.value) {
                 Mode.ACCEPT -> MessageSendHelper.sendServerMessage("/tpaccept $name")
@@ -35,9 +33,12 @@ object AutoTPA : Module() {
                         MessageSendHelper.sendServerMessage("/tpdeny $name")
                     }
                 }
+                else -> {
+                }
             }
         }
-    })
+    }
+
 
     enum class Mode {
         ACCEPT, DENY

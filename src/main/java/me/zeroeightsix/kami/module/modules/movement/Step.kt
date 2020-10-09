@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.BaritoneAPI
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getRidingEntity
 import me.zeroeightsix.kami.util.PacketHelper
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayer.PositionRotation
@@ -50,7 +49,7 @@ object Step : Module() {
     /**
      * Vanilla mode.
      */
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.isElytraFlying || mc.player.capabilities.isFlying) return
         if (mode.value == Mode.VANILLA) {
             if (mc.player.onGround && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava) {
@@ -96,42 +95,43 @@ object Step : Module() {
     /**
      * Everything onwards is Packet mode
      */
-    @EventHandler
-    private val packetListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@EventHook
+    init {
+        listener<PacketEvent.Send> {
+            if (mc.player == null || mode.value != Mode.PACKET || mc.player.isElytraFlying) return@listener
 
-        if (event.packet is CPacketPlayer.Position || event.packet is PositionRotation) {
-            val packetPlayer = event.packet as CPacketPlayer
+            if (it.packet is CPacketPlayer.Position || it.packet is PositionRotation) {
+                val packetPlayer = it.packet as CPacketPlayer
 
-            if (previousPositionPacket != null && !PacketHelper.isIgnored(event.packet)) {
-                val diffY = packetPlayer.getY(0.0) - previousPositionPacket!!.getY(0.0)
-
-                /**
-                 * The Y difference must be between 0.6 and 1.25
-                 */
-                if (diffY > defaultHeight && diffY <= 1.25) {
-                    val sendList = ArrayList<CPacketPlayer.Position>()
+                if (previousPositionPacket != null && !PacketHelper.isIgnored(it.packet)) {
+                    val diffY = packetPlayer.getY(0.0) - previousPositionPacket!!.getY(0.0)
 
                     /**
-                     * Send additional packets to bypass NCP
+                     * The Y difference must be between 0.6 and 1.25
                      */
-                    val x = previousPositionPacket!!.getX(0.0)
-                    val y = previousPositionPacket!!.getY(0.0)
-                    val z = previousPositionPacket!!.getZ(0.0)
-                    sendList.add(CPacketPlayer.Position(x, y + 0.419, z, true))
-                    sendList.add(CPacketPlayer.Position(x, y + 0.753, z, true))
-                    sendList.add(CPacketPlayer.Position(packetPlayer.getX(0.0), packetPlayer.getY(0.0), packetPlayer.getZ(0.0), packetPlayer.isOnGround))
+                    if (diffY > defaultHeight && diffY <= 1.25) {
+                        val sendList = ArrayList<CPacketPlayer.Position>()
 
-                    for (toSend in sendList) {
-                        PacketHelper.ignore(toSend)
-                        FMLClientHandler.instance().clientToServerNetworkManager.sendPacket(toSend)
+                        /**
+                         * Send additional packets to bypass NCP
+                         */
+                        val x = previousPositionPacket!!.getX(0.0)
+                        val y = previousPositionPacket!!.getY(0.0)
+                        val z = previousPositionPacket!!.getZ(0.0)
+                        sendList.add(CPacketPlayer.Position(x, y + 0.419, z, true))
+                        sendList.add(CPacketPlayer.Position(x, y + 0.753, z, true))
+                        sendList.add(CPacketPlayer.Position(packetPlayer.getX(0.0), packetPlayer.getY(0.0), packetPlayer.getZ(0.0), packetPlayer.isOnGround))
+
+                        for (toSend in sendList) {
+                            PacketHelper.ignore(toSend)
+                            FMLClientHandler.instance().clientToServerNetworkManager.sendPacket(toSend)
+                        }
+                        it.cancel()
                     }
-                    event.cancel()
                 }
+                previousPositionPacket = it.packet
             }
-            previousPositionPacket = event.packet
         }
-    })
+    }
 
     /**
      * Update player step height to the height setting

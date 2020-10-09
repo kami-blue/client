@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -34,34 +32,35 @@ object HungerOverlay : Module() {
 
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: RenderGameOverlayEvent.Post ->
-        if (event.type != RenderGameOverlayEvent.ElementType.FOOD) return@EventHook
+    init {
+        listener<RenderGameOverlayEvent.Post> {
+            if (it.type != RenderGameOverlayEvent.ElementType.FOOD) return@listener
 
-        val time = (System.currentTimeMillis() % 5000L) / 2500f
-        val flashAlpha = -0.5f * cos(time * 3.1415927f) + 0.5f
-        val stats = mc.player.foodStats
-        val resolution = ScaledResolution(mc)
-        val left = resolution.scaledWidth / 2 + 82
-        val top = resolution.scaledHeight - GuiIngameForge.right_height + 10
-        val foodValues = getFoodValues(mc.player.heldItemMainhand.getItem())
-        val newHungerValue = min(stats.foodLevel + foodValues.first, 20)
-        val newSaturationValue = min((stats.saturationLevel + foodValues.second), newHungerValue.toFloat())
+            val time = (System.currentTimeMillis() % 5000L) / 2500f
+            val flashAlpha = -0.5f * cos(time * 3.1415927f) + 0.5f
+            val stats = mc.player.foodStats
+            val resolution = ScaledResolution(mc)
+            val left = resolution.scaledWidth / 2 + 82
+            val top = resolution.scaledHeight - GuiIngameForge.right_height + 10
+            val foodValues = getFoodValues(mc.player.heldItemMainhand.getItem())
+            val newHungerValue = min(stats.foodLevel + foodValues.first, 20)
+            val newSaturationValue = min((stats.saturationLevel + foodValues.second), newHungerValue.toFloat())
 
-        GlStateUtils.blend(true)
-        if (foodHungerOverlay.value && foodValues.first > 0) {
-            drawHungerBar(stats.foodLevel, newHungerValue, left, top, flashAlpha)
+            GlStateUtils.blend(true)
+            if (foodHungerOverlay.value && foodValues.first > 0) {
+                drawHungerBar(stats.foodLevel, newHungerValue, left, top, flashAlpha)
+            }
+
+            if (saturationOverlay.value) {
+                drawSaturationBar(0f, stats.saturationLevel, left, top, 1f)
+            }
+
+            if (foodSaturationOverlay.value && foodValues.second > 0f) {
+                drawSaturationBar(floor(stats.saturationLevel), newSaturationValue, left, top, flashAlpha)
+            }
+            mc.textureManager.bindTexture(Gui.ICONS)
         }
-
-        if (saturationOverlay.value) {
-            drawSaturationBar(0f, stats.saturationLevel, left, top, 1f)
-        }
-
-        if (foodSaturationOverlay.value && foodValues.second > 0f) {
-            drawSaturationBar(floor(stats.saturationLevel), newSaturationValue, left, top, flashAlpha)
-        }
-        mc.textureManager.bindTexture(Gui.ICONS)
-    })
+    }
 
     /**
      * @return <Hunger, Saturation>

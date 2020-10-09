@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -21,7 +22,7 @@ object FastFall : Module() {
         MOTION, TIMER
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player == null
                 || mc.player.onGround
                 || mc.player.isElytraFlying

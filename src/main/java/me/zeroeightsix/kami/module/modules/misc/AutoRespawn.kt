@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
+import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 
@@ -21,22 +20,19 @@ object AutoRespawn : Module() {
     private val deathCoords = register(Settings.b("SaveDeathCoords", true))
     private val antiGlitchScreen = register(Settings.b("AntiGlitchScreen", true))
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: Displayed ->
-        if (event.screen !is GuiGameOver) return@EventHook
+    init {
+        listener<GuiScreenEvent.Displayed> {
+            if (it.screen !is GuiGameOver) return@listener
 
-        if (deathCoords.value && mc.player.health <= 0) {
-            WaypointManager.add("Death - " + InfoCalculator.getServerType())
-            MessageSendHelper.sendChatMessage(String.format("You died at x %d y %d z %d",
-                    mc.player.posX.toInt(),
-                    mc.player.posY.toInt(),
-                    mc.player.posZ.toInt())
-            )
-        }
+            if (deathCoords.value && mc.player.health <= 0) {
+                WaypointManager.add("Death - " + InfoCalculator.getServerType())
+                MessageSendHelper.sendChatMessage("You died at ${mc.player.position.asString()}")
+            }
 
-        if (respawn.value || antiGlitchScreen.value && mc.player.health > 0) {
-            mc.player.respawnPlayer()
-            mc.displayGuiScreen(null)
+            if (respawn.value || antiGlitchScreen.value && mc.player.health > 0) {
+                mc.player.respawnPlayer()
+                mc.displayGuiScreen(null)
+            }
         }
-    })
+    }
 }

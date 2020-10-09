@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 
@@ -24,7 +25,7 @@ object Timer : Module() {
         mc.timer.tickLength = 50.0f
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!slow.value) {
             mc.timer.tickLength = 50.0f / tickNormal.value
         } else {

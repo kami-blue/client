@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
@@ -80,12 +79,13 @@ object InventoryManager : Module() {
     private var paused = false
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    @EventHandler
-    private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@EventHook
-        mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
-        event.cancel()
-    })
+    init {
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
+            mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
+            it.cancel()
+        }
+    }
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE
@@ -99,7 +99,7 @@ object InventoryManager : Module() {
         BaritoneUtils.unpause()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return
         setState()
         if (!timer.tick(delay.value.toLong())) return

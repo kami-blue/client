@@ -1,20 +1,22 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.EntityUseTotemEvent
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends.isFriend
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Module.Info(
         name = "TotemPopCounter",
@@ -24,138 +26,97 @@ import java.util.*
 object TotemPopCounter : Module() {
     private val countFriends = register(Settings.b("CountFriends", true))
     private val countSelf = register(Settings.b("CountSelf", false))
-    private val resetDeaths = register(Settings.b("ResetOnDeath", true))
-    private val resetSelfDeaths = register(Settings.b("ResetSelfDeath", true))
+    private val resetOnDeath = register(Settings.b("ResetOnDeath", true))
     private val announceSetting = register(Settings.e<Announce>("Announce", Announce.CLIENT))
     private val thanksTo = register(Settings.b("ThanksTo", false))
-    private val colourCode = register(Settings.e<ColourCode>("ColorName", ColourCode.DARK_PURPLE))
-    private val colourCode1 = register(Settings.e<ColourCode>("ColorNumber", ColourCode.LIGHT_PURPLE))
+    private val colorName = register(Settings.e<ColourCode>("ColorName", ColourCode.DARK_PURPLE))
+    private val colorNumber = register(Settings.e<ColourCode>("ColorNumber", ColourCode.LIGHT_PURPLE))
 
     private enum class Announce {
         CLIENT, EVERYONE
     }
 
-    private var playerList = HashMap<String, Int>()
-    private var isDead = false
+    private val playerList = HashMap<EntityPlayer, Int>()
+    private var wasDead = false
 
-    override fun onUpdate() {
-        if (!isDead
-                && resetSelfDeaths.value
-                && 0 >= mc.player.health) {
-            sendMessage(formatName(mc.player.name) + " died and " + grammar(mc.player.name) + " pop list was reset!")
-            isDead = true
-            playerList.clear()
-            return
-        }
-        if (isDead && 0 < mc.player.health) isDead = false
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || mc.player == null || mc.player.isDead) return@listener
+            val player = (it.packet.getEntity(mc.world) as? EntityPlayer) ?: return@listener
 
-        for (player in mc.world.playerEntities) {
-            if (resetDeaths.value
-                    && 0 >= player.health && friendCheck(player.name)
-                    && selfCheck(player.name)
-                    && playerList.containsKey(player.name)) {
-                /* To note: if they died after popping 1 totem it's going to say totems, but I cba to fix it */
-                sendMessage(formatName(player.name) + " died after popping " + formatNumber(playerList[player.name]!!) + " totems" + ending())
-                playerList.remove(player.name, playerList[player.name])
+            if (friendCheck(player) || selfCheck(player)) {
+                val count = playerList.getOrDefault(player, 0) + 1
+                playerList[player] = count
+                sendMessage("${formatName(player)} popped ${formatNumber(count)} ${plural(count)}${ending()}")
             }
         }
-    }
 
-    @EventHandler
-    private val listListener = Listener(EventHook { event: EntityUseTotemEvent ->
-        if (playerList[event.entity.name] == null) {
-            playerList[event.entity.name] = 1
-            sendMessage(formatName(event.entity.name) + " popped " + formatNumber(1) + " totem" + ending())
-        } else if (playerList[event.entity.name] != null) {
-            var popCounter = playerList[event.entity.name]!!
-            popCounter += 1
-            playerList[event.entity.name] = popCounter
-            sendMessage(formatName(event.entity.name) + " popped " + formatNumber(popCounter) + " totems" + ending())
+        listener<ConnectionEvent.Disconnect> {
+            playerList.clear()
         }
-    })
-
-    private fun friendCheck(name: String): Boolean {
-        return !isDead || (isFriend(name) && countFriends.value)
     }
 
-    private fun selfCheck(name: String): Boolean {
-        if (isDead) return false
-        if (countSelf.value && name.equals(mc.player.name, ignoreCase = true)) {
-            return true
-        } else if (!countSelf.value && name.equals(mc.player.name, ignoreCase = true)) {
-            return false
+    override fun onDisable() {
+        playerList.clear()
+    }
+
+    override fun onUpdate(event: SafeTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+
+        if (wasDead && !mc.player.isDead && resetOnDeath.value) {
+            sendMessage("${formatName(mc.player)} died and ${grammar(mc.player)} pop list was reset!")
+            playerList.clear()
+            wasDead = false
+            return
         }
-        return true
-    }
 
-    private fun isSelf(name: String): Boolean {
-        return name.equals(mc.player.name, ignoreCase = true)
-    }
-
-    private fun formatName(username: String): String {
-        var name = username // this is a var because you change it in isSelf
-        var extraText = ""
-        if (isFriend(name) && !isPublic) extraText = "Your friend, " else if (isFriend(name) && isPublic) extraText = "My friend, "
-        if (isSelf(name)) {
-            extraText = ""
-            name = "I"
+        val toRemove = ArrayList<EntityPlayer>()
+        for ((player, count) in playerList) {
+            if (!player.isDead) continue
+            if (player == mc.player) continue
+            sendMessage("${formatName(player)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
+            toRemove.add(player)
         }
-        return if (announceSetting.value == Announce.EVERYONE) {
-            extraText + name
-        } else extraText + setToText(colourCode.value) + name + TextFormatting.RESET
+
+        wasDead = mc.player.isDead
     }
 
-    private fun grammar(name: String): String {
-        return if (isSelf(name)) {
-            "my"
-        } else "their"
-    }
+    private fun friendCheck(player: EntityPlayer) = isFriend(player.name) && countFriends.value
 
-    private fun ending(): String {
-        return if (thanksTo.value) {
-            " thanks to " + KamiMod.MODNAME + "!"
-        } else "!"
+    private fun selfCheck(player: EntityPlayer) = player == mc.player && countSelf.value
+
+    private fun formatName(player: EntityPlayer): String {
+        val name = when {
+            player == mc.player -> "I"
+            isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
+            else -> player.name
+        }
+        return setToText(colorName.value) + name + TextFormatting.RESET
     }
 
     private val isPublic: Boolean
         get() = announceSetting.value == Announce.EVERYONE
 
-    private fun formatNumber(message: Int): String {
-        return if (announceSetting.value == Announce.EVERYONE) "" + message else setToText(colourCode1.value).toString() + "" + message + TextFormatting.RESET
-    }
+    private fun plural(count: Int) = if (count == 1) "totem" else "totems"
+
+    private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
+
+    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.MODNAME} !" else "!"
+
+    private fun formatNumber(message: Int) = setToText(colorNumber.value) + message + TextFormatting.RESET
 
     private fun sendMessage(message: String) {
         when (announceSetting.value) {
             Announce.CLIENT -> {
-                MessageSendHelper.sendRawChatMessage(message)
-                return
+                MessageSendHelper.sendChatMessage("$chatName $message")
             }
             Announce.EVERYONE -> {
-                MessageSendHelper.sendServerMessage(message)
-                return
+                MessageSendHelper.sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
             }
             else -> {
             }
         }
     }
 
-    @EventHandler
-    private val popListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null) return@EventHook
-        if (event.packet is SPacketEntityStatus) {
-            val packet = event.packet
-
-            if (packet.opCode.toInt() == 35) {
-                val entity = packet.getEntity(mc.world)
-
-                if (friendCheck(entity.name) || selfCheck(entity.name)) {
-                    KamiMod.EVENT_BUS.post(EntityUseTotemEvent(entity))
-                }
-            }
-        }
-    })
-
-    private fun setToText(colourCode: ColourCode): TextFormatting? {
-        return ColorTextFormatting.toTextMap[colourCode]
-    }
+    private fun setToText(colourCode: ColourCode) = ColorTextFormatting.toTextMap[colourCode]!!.toString()
 }

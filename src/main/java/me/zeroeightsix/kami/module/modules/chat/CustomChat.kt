@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketChatMessage
 
@@ -36,22 +35,23 @@ object CustomChat : Module() {
         NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM
     }
 
-    override fun onUpdate() {
+    init {
+        listener<PacketEvent.Send> {
+            if (mc.player == null || it.packet !is CPacketChatMessage) return@listener
+            var s = it.packet.getMessage()
+            if (!commands.value && isCommand(s)) return@listener
+            s += getFull(decoMode.value)
+
+            if (s.length >= 256) s = s.substring(0, 256)
+            it.packet.message = s
+        }
+    }
+
+    override fun onUpdate(event: SafeTickEvent) {
         if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
             MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
         }
     }
-
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet !is CPacketChatMessage) return@EventHook
-        var s = event.packet.getMessage()
-        if (!commands.value && isCommand(s)) return@EventHook
-        s += getFull(decoMode.value)
-
-        if (s.length >= 256) s = s.substring(0, 256)
-        event.packet.message = s
-    })
 
     private fun getText(t: TextMode): String {
         return when (t) {

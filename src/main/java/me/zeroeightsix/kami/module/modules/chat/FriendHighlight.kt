@@ -1,13 +1,11 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
@@ -31,16 +29,17 @@ object FriendHighlight : Module() {
         noFriendsCheck()
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ClientChatReceivedEvent ->
-        if (mc.player == null || noFriendsCheck() || !FriendManager.friendFile.enabled) return@EventHook
-        var converted = event.message.formattedText
-        for (friend in FriendManager.friendFile.friends) {
-            converted = converted.replace(friend.username.toRegex(RegexOption.IGNORE_CASE), getReplacement(friend.username) + TextFormatting.RESET.toString())
+    init {
+        listener<ClientChatReceivedEvent> {
+            if (noFriendsCheck() || !FriendManager.friendFile.enabled) return@listener
+            var converted = it.message.formattedText
+            for (friend in FriendManager.friendFile.friends) {
+                converted = converted.replace(friend.username.toRegex(RegexOption.IGNORE_CASE), getReplacement(friend.username) + TextFormatting.RESET.toString())
+            }
+            val message = TextComponentString(converted)
+            it.message = message
         }
-        val message = TextComponentString(converted)
-        event.message = message
-    })
+    }
 
     private fun noFriendsCheck(): Boolean {
         if (FriendManager.friendFile.friends.size == 0) {

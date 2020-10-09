@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
@@ -41,7 +42,7 @@ object AutoLog : Module() {
         if (mc.player == null) disable()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (isDisabled) return
 
         if (mc.player.health < health.value) {

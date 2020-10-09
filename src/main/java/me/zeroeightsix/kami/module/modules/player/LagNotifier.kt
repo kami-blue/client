@@ -1,9 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent.Receive
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -11,6 +8,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.WebHelper
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
@@ -74,8 +72,11 @@ object LagNotifier : Module() {
         unpause()
     }
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: Receive? -> serverLastUpdated = System.currentTimeMillis() })
+    init {
+        listener<PacketEvent.Receive> {
+            serverLastUpdated = System.currentTimeMillis()
+        }
+    }
 
     private fun timeDifference(): Double {
         return MathUtils.round((System.currentTimeMillis() - serverLastUpdated) / 1000.0, 1)

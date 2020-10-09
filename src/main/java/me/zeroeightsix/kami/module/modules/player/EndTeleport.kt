@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent.Receive
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketRespawn
@@ -28,13 +26,13 @@ object EndTeleport : Module() {
         }
     }
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: Receive ->
-        if (event.packet is SPacketRespawn) {
-            if (event.packet.dimensionID == 1 && confirmed.value) {
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketRespawn) return@listener
+            if (it.packet.dimensionID == 1 && confirmed.value) {
                 mc.connection!!.handleDisconnect(SPacketDisconnect(TextComponentString("Attempting teleportation exploit")))
                 disable()
             }
         }
-    })
+    }
 }

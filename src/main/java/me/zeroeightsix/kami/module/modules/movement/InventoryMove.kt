@@ -1,12 +1,10 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.GuiEditSign
@@ -23,9 +21,9 @@ object InventoryMove : Module() {
 
     private var hasSent = false
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PlayerUpdateMoveEvent ->
-        if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiEditSign && mc.currentScreen !is GuiRepair) {
+    init {
+        listener<PlayerUpdateMoveEvent> {
+            if (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiEditSign || mc.currentScreen is GuiRepair) return@listener
             // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
                 mc.player.rotationYaw = mc.player.rotationYaw - speed.value
@@ -88,5 +86,5 @@ object InventoryMove : Module() {
                 }
             }
         }
-    })
+    }
 }

@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isWater
 import me.zeroeightsix.kami.util.TimerUtils.TickTimer
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
@@ -35,6 +34,7 @@ object AutoFish : Module() {
     private val recastDelay = register(Settings.integerBuilder("RecastDelay(ms)").withValue(450).withRange(50, 2000).build())
     private val variation = register(Settings.integerBuilder("Variation(ms)").withValue(100).withRange(0, 1000).build())
 
+    @Suppress("UNUSED")
     private enum class Mode {
         BOUNCE, SPLASH, ANY_SPLASH, ALL
     }
@@ -43,18 +43,15 @@ object AutoFish : Module() {
     private var recasting = false
     private val timer = TickTimer()
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@EventHook
-
-        if (mode.value != Mode.BOUNCE && event.packet is SPacketSoundEffect) {
-            if (isSplash(event.packet)) {
-                catch()
-            }
+    init {
+        listener<PacketEvent.Receive> {
+            if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@listener
+            if (mode.value == Mode.BOUNCE || it.packet !is SPacketSoundEffect) return@listener
+            if (isSplash(it.packet)) catch()
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
             reset()
             return

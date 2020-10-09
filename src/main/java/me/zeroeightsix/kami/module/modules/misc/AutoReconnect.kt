@@ -1,16 +1,13 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData
-import kotlin.math.floor
-import kotlin.math.max
 
 @Module.Info(
         name = "AutoReconnect",
@@ -19,42 +16,36 @@ import kotlin.math.max
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val seconds = register(Settings.doubleBuilder("Seconds").withValue(5.0).withMinimum(0.5).build())
+    private val delay = register(Settings.integerBuilder("Delay").withValue(5000).withRange(100, 10000).withStep(100))
 
-    private var cServer: ServerData? = null
+    private var prevServerDate: ServerData? = null
 
-    @EventHandler
-    private val closedListener = Listener(EventHook { event: GuiScreenEvent.Closed ->
-        if (event.screen is GuiConnecting) cServer = mc.currentServerData
-    })
+    init {
+        listener<GuiScreenEvent.Closed> {
+            if (it.screen is GuiConnecting) prevServerDate = mc.currentServerData
+        }
 
-    @EventHandler
-    private val displayedListener = Listener(EventHook { event: GuiScreenEvent.Displayed ->
-        if (isEnabled || (cServer == null && mc.currentServerData == null))
-            (event.screen as? GuiDisconnected)?.let {
-                event.screen = KamiGuiDisconnected(it)
+        listener<GuiScreenEvent.Displayed> {
+            if (isDisabled || (prevServerDate == null && mc.currentServerData == null)) return@listener
+            (it.screen as? GuiDisconnected)?.let { gui ->
+                it.screen = KamiGuiDisconnected(gui)
             }
-    })
+        }
+    }
 
     private class KamiGuiDisconnected(disconnected: GuiDisconnected) : GuiDisconnected(disconnected.parentScreen, disconnected.reason, disconnected.message) {
-        private var millis = seconds.value * 1000
-        private var cTime: Long
+        private val timer = TimerUtils.StopTimer()
 
         override fun updateScreen() {
-            if (millis <= 0) mc.displayGuiScreen(GuiConnecting(parentScreen, mc, mc.currentServerData ?: cServer!!))
+            if (timer.stop() >= delay.value) {
+                mc.displayGuiScreen(GuiConnecting(parentScreen, mc, mc.currentServerData ?: prevServerDate ?: return))
+            }
         }
 
         override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
             super.drawScreen(mouseX, mouseY, partialTicks)
-            val a = System.currentTimeMillis()
-            millis -= a - cTime.toDouble()
-            cTime = a
-            val s = "Reconnecting in ${max(0.0, floor(millis / 100) / 10)}s"
-            fontRenderer.drawString(s, width / 2 - fontRenderer.getStringWidth(s) / 2.toFloat(), height - 16.toFloat(), 0xffffff, true)
-        }
-
-        init {
-            cTime = System.currentTimeMillis()
+            val text = "Reconnecting in ${timer.stop()}ms"
+            fontRenderer.drawString(text, width / 2f - fontRenderer.getStringWidth(text) / 2f, height - 32f, 0xffffff, true)
         }
     }
 }

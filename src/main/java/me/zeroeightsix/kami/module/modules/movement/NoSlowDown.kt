@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
@@ -42,27 +41,27 @@ object NoSlowDown : Module() {
      * InputUpdateEvent is called just before the player is slowed down @see EntityPlayerSP.onLivingUpdate)
      * We'll abuse this fact, and multiply moveStrafe and moveForward by 5 to nullify the *0.2f hardcoded by Mojang.
      */
-    @EventHandler
-    private val eventListener = Listener(EventHook { event: InputUpdateEvent ->
-        if ((passItemCheck(mc.player.activeItemStack.getItem()) || (mc.player.isSneaking && sneak.value)) && !mc.player.isRiding) {
-            event.movementInput.moveStrafe *= 5f
-            event.movementInput.moveForward *= 5f
+    init {
+        listener<InputUpdateEvent> {
+            if ((passItemCheck(mc.player.activeItemStack.getItem()) || (mc.player.isSneaking && sneak.value)) && !mc.player.isRiding) {
+                it.movementInput.moveStrafe *= 5f
+                it.movementInput.moveForward *= 5f
+            }
         }
-    })
 
-    /**
-     * @author ionar2
-     * Used with explicit permission and MIT license permission
-     * https://github.com/ionar2/salhack/blob/163f86e/src/main/java/me/ionar/salhack/module/movement/NoSlowModule.java#L175
-     */
-    @EventHandler
-    private val receivedEvent = Listener(EventHook { event: PacketEvent.PostSend ->
-        if (ncpStrict.value && event.packet is CPacketPlayer && passItemCheck(mc.player.activeItemStack.getItem()) && !mc.player.isRiding) {
-            mc.player.connection.sendPacket(CPacketPlayerDigging(Action.ABORT_DESTROY_BLOCK, MathUtils.mcPlayerPosFloored(mc), EnumFacing.DOWN))
+        /**
+         * @author ionar2
+         * Used with explicit permission and MIT license permission
+         * https://github.com/ionar2/salhack/blob/163f86e/src/main/java/me/ionar/salhack/module/movement/NoSlowModule.java#L175
+         */
+        listener<PacketEvent.PostSend> {
+            if (ncpStrict.value && it.packet is CPacketPlayer && passItemCheck(mc.player.activeItemStack.getItem()) && !mc.player.isRiding) {
+                mc.player.connection.sendPacket(CPacketPlayerDigging(Action.ABORT_DESTROY_BLOCK, MathUtils.mcPlayerPosFloored(mc), EnumFacing.DOWN))
+            }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (slime.value) Blocks.SLIME_BLOCK.slipperiness = 0.4945f // normal block speed 0.4945
         else Blocks.SLIME_BLOCK.slipperiness = 0.8f
     }
@@ -72,10 +71,11 @@ object NoSlowDown : Module() {
     }
 
     private fun passItemCheck(item: Item): Boolean {
-        return if (!mc.player.isHandActive) false else allItems.value
-                || food.value && item is ItemFood
-                || bow.value && item is ItemBow
-                || potion.value && item is ItemPotion
-                || shield.value && item is ItemShield
+        return if (!mc.player.isHandActive) false
+        else allItems.value
+                || item is ItemFood && food.value
+                || item is ItemBow && bow.value
+                || item is ItemPotion && potion.value
+                || item is ItemShield && shield.value
     }
 }

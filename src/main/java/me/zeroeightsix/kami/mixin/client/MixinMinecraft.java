@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
@@ -62,9 +62,9 @@ public class MixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo info) {
         GuiScreenEvent.Closed screenEvent = new GuiScreenEvent.Closed(Wrapper.getMinecraft().currentScreen);
-        KamiMod.EVENT_BUS.post(screenEvent);
+        KamiEventBus.INSTANCE.post(screenEvent);
         GuiScreenEvent.Displayed screenEvent1 = new GuiScreenEvent.Displayed(guiScreenIn);
-        KamiMod.EVENT_BUS.post(screenEvent1);
+        KamiEventBus.INSTANCE.post(screenEvent1);
         guiScreenIn = screenEvent1.getScreen();
 
         if (guiScreenIn == null && this.world == null) {

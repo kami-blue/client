@@ -2,21 +2,19 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
 import baritone.api.pathing.goals.GoalXZ
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -46,27 +44,26 @@ object AntiAFK : Module() {
     private var baritoneDisconnectOnArrival = false
     private val inputTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (!autoReply.value || event.packet !is SPacketChat) return@EventHook
-        if (MessageDetectionHelper.isDirect(true, event.packet.getChatComponent().unformattedText)) {
-            sendServerMessage("/r I am currently AFK and using KAMI Blue!")
+    init {
+        listener<PacketEvent.Receive> {
+            if (!autoReply.value || it.packet !is SPacketChat) return@listener
+            if (MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) {
+                sendServerMessage("/r I am currently AFK and using KAMI Blue!")
+            }
         }
-    })
 
-    @EventHandler
-    private val mouseInputListener = Listener(EventHook<InputEvent.MouseInputEvent> { event: InputEvent.MouseInputEvent? ->
-        if (inputTimeout.value != 0 && isInputting()) {
-            inputTimer.reset()
+        listener<InputEvent.MouseInputEvent> {
+            if (inputTimeout.value != 0 && isInputting()) {
+                inputTimer.reset()
+            }
         }
-    })
 
-    @EventHandler
-    private val keyInputListener = Listener(EventHook<KeyInputEvent> { event: KeyInputEvent? ->
-        if (inputTimeout.value != 0 && isInputting()) {
-            inputTimer.reset()
+        listener<InputEvent.KeyInputEvent> {
+            if (inputTimeout.value != 0 && isInputting()) {
+                inputTimer.reset()
+            }
         }
-    })
+    }
 
     private fun isInputting(): Boolean {
         return (mc.gameSettings.keyBindAttack.isKeyDown
@@ -96,7 +93,7 @@ object AntiAFK : Module() {
         baritoneCancel()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (inputTimeout.value != 0) {
             if (isBaritoneActive) inputTimer.reset()
             if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {

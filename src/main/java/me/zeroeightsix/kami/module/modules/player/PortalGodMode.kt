@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.CPacketConfirmTeleport
@@ -29,11 +27,11 @@ object PortalGodMode : Module() {
         }
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketConfirmTeleport) {
-            event.cancel()
-            packet = event.packet
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketConfirmTeleport) return@listener
+            it.cancel()
+            packet = it.packet
         }
-    })
+    }
 }

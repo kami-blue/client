@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -21,7 +22,7 @@ object AutoQMain : Module() {
     private var delayTime = 0.0
     private var oldDelay = 0.0
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (oldDelay == 0.0) oldDelay = delay.value else if (oldDelay != delay.value) {
             delayTime = delay.value
             oldDelay = delay.value

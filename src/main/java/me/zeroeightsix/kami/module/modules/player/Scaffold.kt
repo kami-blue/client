@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.Block
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling
@@ -41,20 +40,21 @@ object Scaffold : Module() {
         NORMAL, LEGIT
     }
 
-    @EventHandler
-    private val eventListener = Listener(EventHook { event: InputUpdateEvent ->
-        if (modeSetting.value == Mode.LEGIT && shouldSlow) {
-            if (randomDelay.value) {
-                event.movementInput.moveStrafe *= 0.2f + randomInRange
-                event.movementInput.moveForward *= 0.2f + randomInRange
-            } else {
-                event.movementInput.moveStrafe *= 0.2f
-                event.movementInput.moveForward *= 0.2f
+    init {
+        listener<InputUpdateEvent> {
+            if (modeSetting.value == Mode.LEGIT && shouldSlow) {
+                if (randomDelay.value) {
+                    it.movementInput.moveStrafe *= 0.2f + randomInRange
+                    it.movementInput.moveForward *= 0.2f + randomInRange
+                } else {
+                    it.movementInput.moveStrafe *= 0.2f
+                    it.movementInput.moveForward *= 0.2f
+                }
             }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         shouldSlow = false
 
         val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value

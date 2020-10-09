@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
@@ -31,18 +30,17 @@ object AutoTool : Module() {
     private var lastSlot = 0
     private var lastChange = 0L
 
-    @EventHandler
-    private val leftClickListener = Listener(EventHook { event: LeftClickBlock ->
-        if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(event.pos))
-    })
+    init {
+        listener<LeftClickBlock> {
+            if (shouldMoveBack || !switchBack.value) equipBestTool(mc.world.getBlockState(it.pos))
+        }
 
-    @EventHandler
-    private val attackListener = Listener(EventHook { event: AttackEntityEvent ->
-        if (event.target !is EntityLivingBase) return@EventHook
-        if (swapWeapon.value) CombatUtils.equipBestWeapon(preferWeapon.value)
-    })
+        listener<AttackEntityEvent> {
+            if (swapWeapon.value && it.target is EntityLivingBase) CombatUtils.equipBestWeapon(preferWeapon.value)
+        }
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.currentScreen != null || !switchBack.value) return
 
         val mouse = Mouse.isButtonDown(0)

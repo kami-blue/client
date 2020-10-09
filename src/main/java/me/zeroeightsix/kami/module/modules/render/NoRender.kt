@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.PacketEvent.Receive
+import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
@@ -28,24 +27,23 @@ object NoRender : Module() {
     val beacon = register(Settings.b("BeaconBeams", false))
     val skylight = register(Settings.b("SkyLightUpdates", true))
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: Receive ->
-        val packet = event.packet
-        if (packet is SPacketSpawnMob && mob.value ||
-                packet is SPacketSpawnGlobalEntity && gEntity.value ||
-                packet is SPacketSpawnObject && `object`.value ||
-                packet is SPacketSpawnExperienceOrb && xp.value ||
-                packet is SPacketSpawnObject && sand.value ||
-                packet is SPacketExplosion && explosion.value ||
-                packet is SPacketSpawnPainting && paint.value) event.cancel()
-    })
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet is SPacketSpawnMob && mob.value ||
+                    it.packet is SPacketSpawnGlobalEntity && gEntity.value ||
+                    it.packet is SPacketSpawnObject && `object`.value ||
+                    it.packet is SPacketSpawnExperienceOrb && xp.value ||
+                    it.packet is SPacketSpawnObject && sand.value ||
+                    it.packet is SPacketExplosion && explosion.value ||
+                    it.packet is SPacketSpawnPainting && paint.value) it.cancel()
+        }
 
-    @EventHandler
-    private val blockOverlayEventListener = Listener(EventHook { event: RenderBlockOverlayEvent ->
-        if (fire.value && event.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE) event.isCanceled = true
-    })
+        listener<RenderBlockOverlayEvent> {
+            if (it.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE && fire.value) it.isCanceled = true
+        }
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (items.value) for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityItem) continue
             entity.setDead()

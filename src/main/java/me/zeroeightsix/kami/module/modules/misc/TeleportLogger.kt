@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -22,7 +23,7 @@ object TeleportLogger : Module() {
 
     private val teleportedPlayers = HashMap<String, BlockPos>()
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         for (player in mc.world.loadedEntityList.filterIsInstance<EntityPlayer>()) {
             if (player.name == mc.player.name) continue
 

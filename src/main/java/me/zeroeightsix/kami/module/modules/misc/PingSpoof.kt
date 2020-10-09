@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketKeepAlive
 import net.minecraft.network.play.server.SPacketKeepAlive
 import java.util.*
@@ -19,17 +17,17 @@ object PingSpoof : Module() {
     private val cancel = register(Settings.b("Cancel", false))// most servers will kick/time you out for this
     private val delay = register(Settings.integerBuilder("Delay").withValue(100).withRange(0, 2000).withStep(25).withVisibility { !cancel.value }.build())
 
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet is SPacketKeepAlive) {
-            event.cancel()
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketKeepAlive || mc.player == null) return@listener
+            it.cancel()
             if (!cancel.value) {
                 Timer().schedule(object : TimerTask() {
                     override fun run() {
-                        mc.connection.let { it!!.sendPacket(CPacketKeepAlive(event.packet.id)) }
+                        mc.connection?.sendPacket(CPacketKeepAlive(it.packet.id))
                     }
                 }, delay.value.toLong())
             }
         }
-    })
+    }
 }

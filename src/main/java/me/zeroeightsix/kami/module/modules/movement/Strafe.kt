@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
@@ -26,7 +27,7 @@ object Strafe : Module() {
     }
 
     /* If you skid this you omega gay */
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!shouldStrafe()) {
             reset()
             return

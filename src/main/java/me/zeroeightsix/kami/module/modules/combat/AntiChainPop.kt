@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.server.SPacketEntityStatus
 
 @Module.Info(
@@ -19,20 +18,16 @@ object AntiChainPop : Module() {
 
     private var totems = 0
 
-    @EventHandler
-    private val selfPopListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || mode.value != Mode.PACKET) return@EventHook
-
-        if (event.packet is SPacketEntityStatus) {
-            val packet = event.packet
-            if (packet.opCode.toInt() == 35) {
-                val entity = packet.getEntity(mc.world)
-                if (entity.displayName == mc.player.displayName) packetMode()
+    init {
+        listener<PacketEvent.Receive> {
+            if (mode.value != Mode.PACKET || it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35) return@listener
+            mc.world?.let { world ->
+                if (it.packet.getEntity(world) == mc.player) packetMode()
             }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mode.value == Mode.ITEMS) {
             itemMode()
         }

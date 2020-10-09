@@ -1,13 +1,11 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraft.network.play.client.CPacketChatMessage
@@ -49,63 +47,62 @@ object ChatEncryption : Module() {
             return delimiterValue.value
         }
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet !is CPacketChatMessage) return@EventHook
-        var s = event.packet.getMessage()
-        if (delimiterSetting.value) {
-            if (delimiter == null || !s.startsWith(delimiter!!)) return@EventHook
-            s = s.substring(1)
-        }
-        val builder = StringBuilder()
-        when (mode.value as EncryptionMode) {
-            EncryptionMode.SHUFFLE -> {
-                builder.append(shuffle(getKey(), s))
-                builder.append("\uD83D\uDE4D")
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
+            var s = it.packet.getMessage()
+            if (delimiterSetting.value) {
+                if (delimiter == null || !s.startsWith(delimiter!!)) return@listener
+                s = s.substring(1)
             }
-            EncryptionMode.SHIFT -> {
-                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
-                builder.append("\uD83D\uDE48")
+            val builder = StringBuilder()
+            when (mode.value as EncryptionMode) {
+                EncryptionMode.SHUFFLE -> {
+                    builder.append(shuffle(getKey(), s))
+                    builder.append("\uD83D\uDE4D")
+                }
+                EncryptionMode.SHIFT -> {
+                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
+                    builder.append("\uD83D\uDE48")
+                }
             }
+            s = builder.toString()
+            if (s.length > 256) {
+                sendChatMessage("Encrypted message length was too long, couldn't send!")
+                it.cancel()
+                return@listener
+            }
+            it.packet.message = s
         }
-        s = builder.toString()
-        if (s.length > 256) {
-            sendChatMessage("Encrypted message length was too long, couldn't send!")
-            event.cancel()
-            return@EventHook
-        }
-        event.packet.message = s
 
-    })
-
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet !is SPacketChat) return@EventHook
-        var s = event.packet.getChatComponent().unformattedText
-        if (!self.value && isOwn(s)) return@EventHook
-        val matcher = pattern.matcher(s)
-        var username = "unnamed"
-        if (matcher.find()) {
-            username = matcher.group()
-            username = username.substring(1, username.length - 2)
-            s = matcher.replaceFirst("")
-        }
-        val builder = StringBuilder()
-        val substring = s.substring(0, s.length - 2)
-        when (mode.value as EncryptionMode) {
-            EncryptionMode.SHUFFLE -> {
-                if (!s.endsWith("\uD83D\uDE4D")) return@EventHook
-                s = substring
-                builder.append(unShuffle(getKey(), s))
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketChat) return@listener
+            var s = it.packet.getChatComponent().unformattedText
+            if (!self.value && isOwn(s)) return@listener
+            val matcher = pattern.matcher(s)
+            var username = "unnamed"
+            if (matcher.find()) {
+                username = matcher.group()
+                username = username.substring(1, username.length - 2)
+                s = matcher.replaceFirst("")
             }
-            EncryptionMode.SHIFT -> {
-                if (!s.endsWith("\uD83D\uDE48")) return@EventHook
-                s = substring
-                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
+            val builder = StringBuilder()
+            val substring = s.substring(0, s.length - 2)
+            when (mode.value as EncryptionMode) {
+                EncryptionMode.SHUFFLE -> {
+                    if (!s.endsWith("\uD83D\uDE4D")) return@listener
+                    s = substring
+                    builder.append(unShuffle(getKey(), s))
+                }
+                EncryptionMode.SHIFT -> {
+                    if (!s.endsWith("\uD83D\uDE48")) return@listener
+                    s = substring
+                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
+                }
             }
+            it.packet.chatComponent = TextComponentString("<" + username + "> " + KamiMod.colour + "lDECRYPTED" + KamiMod.colour + "r: " + builder.toString())
         }
-        event.packet.chatComponent = TextComponentString("<" + username + "> " + KamiMod.colour + "lDECRYPTED" + KamiMod.colour + "r: " + builder.toString())
-    })
+    }
 
     private fun generateShuffleMap(seed: Int): Map<Char, Char> {
         val r = Random(seed.toLong())

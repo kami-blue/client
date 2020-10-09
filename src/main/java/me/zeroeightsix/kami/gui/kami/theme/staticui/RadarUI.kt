@@ -13,7 +13,6 @@ import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawCircleOutline
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs

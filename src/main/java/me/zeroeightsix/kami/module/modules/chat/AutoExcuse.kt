@@ -1,38 +1,31 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import net.minecraft.client.gui.GuiGameOver
-import java.util.*
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraft.network.play.server.SPacketUpdateHealth
 
-/**
- * most :smoothbrain: code ever
- */
 @Module.Info(
         name = "AutoExcuse",
         description = "Makes an excuse for you when you die",
         category = Module.Category.CHAT
 )
 object AutoExcuse : Module() {
-
-    private val rand = Random()
+    private const val CLIENT_NAME = "%CLIENT%"
 
     private val excuses = arrayOf(
-            "sorry, im using ",
-            "my ping is so bad",
-            "i was changing my config :(",
-            "why did my autototem break",
-            "i was desynced",
-            "stupid hackers killed me",
-            "wow, so many tryhards",
-            "lagggg",
-            "there was an optfine error",
-            "i wasnt trying",
-            "im not using lion client"
+            "Sorry, im using $CLIENT_NAME client",
+            "My ping is so bad",
+            "I was changing my config :(",
+            "Why did my AutoTotem break",
+            "I was desynced",
+            "Stupid hackers killed me",
+            "Wow, so many try hards",
+            "Lagggg",
+            "I wasn't trying",
+            "I'm not using $CLIENT_NAME client"
     )
 
     private val clients = arrayOf(
@@ -42,24 +35,16 @@ object AutoExcuse : Module() {
             "Impact"
     )
 
-    private fun getExcuse(): String {
-        val excuse = rand.nextInt(excuses.size)
-        return if (excuse == 0) {
-            excuses[0] + clients.random()
-        } else {
-            excuses[excuse]
+    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+
+    init {
+        listener<PacketEvent.Receive> {
+            if (mc.player == null || it.packet !is SPacketUpdateHealth) return@listener
+            if (it.packet.health <= 0f && timer.tick(3L)) {
+                MessageSendHelper.sendServerMessage(getExcuse())
+            }
         }
     }
 
-    /* it's not actually unreachable, thanks intellij */
-    @Suppress("UNREACHABLE_CODE")
-    @EventHandler
-    private val listener = Listener(EventHook { event: Displayed ->
-        if (event.screen is GuiGameOver) {
-            do {
-                sendServerMessage(getExcuse())
-                break
-            } while (!(mc.player.isDead))
-        }
-    })
+    private fun getExcuse() = excuses.random().replace(CLIENT_NAME, clients.random())
 }

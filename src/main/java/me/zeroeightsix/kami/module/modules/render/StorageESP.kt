@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -60,7 +61,7 @@ object StorageESP : Module() {
     private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     private var cycler = HueCycler(600)
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
@@ -72,7 +73,7 @@ object StorageESP : Module() {
         renderer.render(true)
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         cycler++
         renderList.clear()
         for (tileEntity in mc.world.loadedTileEntityList) {

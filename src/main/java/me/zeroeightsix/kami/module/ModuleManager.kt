@@ -1,16 +1,14 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassFinder
-import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -83,12 +81,14 @@ object ModuleManager {
         }.start()
     }
 
-    fun onUpdate() {
+    @Deprecated ("Use event listener for SafeTickEvent instead")
+    fun onUpdate(event: SafeTickEvent) {
         for (module in moduleList) {
-            if (isModuleListening(module) && inGame()) module.onUpdate()
+            if (isModuleListening(module) && inGame()) module.onUpdate(event)
         }
     }
 
+    @Deprecated ("Use event listener for RenderOverlayEvent instead")
     fun onRender() {
         for (module in moduleList) {
             if (isModuleListening(module)) {
@@ -97,23 +97,15 @@ object ModuleManager {
         }
     }
 
-    fun onWorldRender(event: RenderWorldLastEvent) {
-        mc.profiler.startSection("KamiWorldRender")
-        KamiTessellator.prepareGL()
-        GlStateManager.glLineWidth(1f)
-        val renderPos = getInterpolatedPos(mc.renderViewEntity!!, event.partialTicks)
-        val e = RenderEvent(KamiTessellator, renderPos)
-        e.resetTranslation()
+    @Deprecated ("Use event listener for RenderWorldEvent instead")
+    fun onWorldRender(event: RenderWorldEvent) {
         for (module in moduleList) {
             if (isModuleListening(module)) {
                 KamiTessellator.prepareGL()
-                module.onWorldRender(e)
+                module.onWorldRender(event)
                 KamiTessellator.releaseGL()
             }
         }
-        GlStateManager.glLineWidth(1f)
-        KamiTessellator.releaseGL()
-        mc.profiler.endSection()
     }
 
     fun onBind(eventKey: Int) {

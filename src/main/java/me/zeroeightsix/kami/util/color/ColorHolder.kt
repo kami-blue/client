@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sqrt
 
 /**
  * Created by Gebruiker on 18/04/2017.

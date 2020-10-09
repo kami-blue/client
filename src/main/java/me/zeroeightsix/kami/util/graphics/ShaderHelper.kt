@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.util.graphics
 
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.client.shader.ShaderGroup
@@ -40,15 +39,14 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
         }
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ResolutionUpdateEvent ->
-        shader?.createBindFramebuffers(event.width, event.height)
-    })
-
     fun getFrameBuffer(name: String) = frameBufferMap[name]
 
     // We are putting it here so it can find the listener above
     init {
-        KamiMod.EVENT_BUS.subscribe(this)
+        listener<ResolutionUpdateEvent> {
+            shader?.createBindFramebuffers(it.width, it.height)
+        }
+
+        KamiEventBus.subscribe(this)
     }
 }

@@ -1,14 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
@@ -60,16 +58,17 @@ object AutoMine : Module() {
         }
     }
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        disable()
-    })
-
     init {
-        iron.settingListener = Setting.SettingListeners { run() }
-        diamond.settingListener = Setting.SettingListeners { run() }
-        gold.settingListener = Setting.SettingListeners { run() }
-        coal.settingListener = Setting.SettingListeners { run() }
-        log.settingListener = Setting.SettingListeners { run() }
+        with(Setting.SettingListeners { run() }) {
+            iron.settingListener = this
+            diamond.settingListener = this
+            gold.settingListener = this
+            coal.settingListener = this
+            log.settingListener = this
+        }
+
+        listener<ConnectionEvent.Disconnect> {
+            disable()
+        }
     }
 }

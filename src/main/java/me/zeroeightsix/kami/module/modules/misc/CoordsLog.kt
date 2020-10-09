@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -24,7 +25,7 @@ object CoordsLog : Module() {
     private var playerIsDead = false
     private var startTime: Long = 0
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (autoLog.value) {
             timeout()
         }

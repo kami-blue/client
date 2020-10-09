@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -16,6 +14,7 @@ import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -126,38 +125,38 @@ object CrystalAura : Module() {
         PlayerPacketManager.resetHotbar()
     }
 
-    // Minecraft sends sounds packets a tick before removing the crystal lol
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (!CombatManager.isOnTopPriority(this) || mc.player == null || event.packet !is SPacketSoundEffect) return@EventHook
-        if (event.packet.getCategory() == SoundCategory.BLOCKS && event.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-            val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 5f)
-            for (crystal in crystalList) {
-                crystal.setDead()
-                mc.world.removeEntityFromWorld(crystal.entityId)
+    init {
+        // Minecraft sends sounds packets a tick before removing the crystal lol
+        listener<PacketEvent.Receive> {
+            if (!CombatManager.isOnTopPriority(this) || mc.player == null || it.packet !is SPacketSoundEffect) return@listener
+            if (it.packet.getCategory() == SoundCategory.BLOCKS && it.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 5f)
+                for (crystal in crystalList) {
+                    crystal.setDead()
+                    mc.world.removeEntityFromWorld(crystal.entityId)
+                }
+                ignoredList.clear()
+                hitCount = 0
             }
-            ignoredList.clear()
-            hitCount = 0
         }
-    })
 
-    @EventHandler
-    private val onUpdateWalkingPlayerListener = Listener(EventHook { event: OnUpdateWalkingPlayerEvent ->
-        if (inactiveTicks > 20 || event.era != KamiEvent.Era.PRE || lastLookAt == Vec3d.ZERO || CombatSetting.pause) return@EventHook
-        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(getLastRotation()))
-        PlayerPacketManager.addPacket(this, packet)
-    })
+        listener<OnUpdateWalkingPlayerEvent> {
+            if (inactiveTicks > 20 || it.era != KamiEvent.Era.PRE || lastLookAt == Vec3d.ZERO || CombatSetting.pause) return@listener
+            val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(getLastRotation()))
+            PlayerPacketManager.addPacket(this, packet)
+        }
 
-    override fun onUpdate() {
-        if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return
-        inactiveTicks++
-        hitTimer++
-        placeTimer++
+        listener<SafeTickEvent> {
+            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
+            inactiveTicks++
+            hitTimer++
+            placeTimer++
 
-        updateMap()
-        if (canExplode()) explode() else if (canPlace()) place()
-        if (inactiveTicks > 5 || getHand() == EnumHand.OFF_HAND) PlayerPacketManager.resetHotbar()
-        if (inactiveTicks > 20) resetRotation()
+            updateMap()
+            if (canExplode()) explode() else if (canPlace()) place()
+            if (inactiveTicks > 5 || getHand() == EnumHand.OFF_HAND) PlayerPacketManager.resetHotbar()
+            if (inactiveTicks > 20) resetRotation()
+        }
     }
 
     private fun updateMap() {

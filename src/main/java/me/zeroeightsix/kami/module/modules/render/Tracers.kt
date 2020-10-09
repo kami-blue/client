@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
@@ -58,7 +59,7 @@ object Tracers : Module() {
     private var renderList = ConcurrentHashMap<Entity, Pair<ColorHolder, Float>>() /* <Entity, <RGBAColor, AlphaMultiplier>> */
     private var cycler = HueCycler(600)
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val renderer = ESPRenderer()
         renderer.aTracer = a.value
         renderer.thickness = thickness.value
@@ -71,7 +72,7 @@ object Tracers : Module() {
         renderer.render(true)
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         cycler++
         alwaysListening = renderList.isNotEmpty()
 

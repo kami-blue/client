@@ -1,10 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -22,32 +21,28 @@ object NoBreakAnimation : Module() {
     private var lastPos: BlockPos? = null
     private var lastFacing: EnumFacing? = null
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketPlayerDigging) {
-            val cPacketPlayerDigging = event.packet
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketPlayerDigging) return@listener
             // skip crystals and living entities
-            for (entity in mc.world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB(cPacketPlayerDigging.position))) {
-                if (entity is EntityEnderCrystal) {
+            for (entity in mc.world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB(it.packet.position))) {
+                if (entity is EntityEnderCrystal || entity is EntityLivingBase) {
                     resetMining()
-                    return@EventHook
-                }
-                if (entity is EntityLivingBase) {
-                    resetMining()
-                    return@EventHook
+                    return@listener
                 }
             }
-            if (cPacketPlayerDigging.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK) {
+            if (it.packet.action == CPacketPlayerDigging.Action.START_DESTROY_BLOCK) {
                 isMining = true
-                setMiningInfo(cPacketPlayerDigging.position, cPacketPlayerDigging.facing)
+                lastPos = it.packet.position
+                lastFacing = it.packet.facing
             }
-            if (cPacketPlayerDigging.action == CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK) {
+            if (it.packet.action == CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK) {
                 resetMining()
             }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!mc.gameSettings.keyBindAttack.isKeyDown) {
             resetMining()
             return
@@ -55,11 +50,6 @@ object NoBreakAnimation : Module() {
         if (isMining && lastPos != null && lastFacing != null) {
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, lastPos, lastFacing))
         }
-    }
-
-    private fun setMiningInfo(lastPos: BlockPos, lastFacing: EnumFacing) {
-        this.lastPos = lastPos
-        this.lastFacing = lastFacing
     }
 
     fun resetMining() {

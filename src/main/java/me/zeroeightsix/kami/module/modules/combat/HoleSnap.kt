@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Settings
@@ -24,7 +25,7 @@ object HoleSnap : Module() {
         if (mc.player == null) disable()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (SurroundUtils.checkHole(mc.player) != SurroundUtils.HoleType.NONE) {
             disable()
             return

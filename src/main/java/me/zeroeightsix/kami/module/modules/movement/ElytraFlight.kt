@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
@@ -14,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -116,49 +114,50 @@ object ElytraFlight : Module() {
     private var hoverState = false
     private var boostingTick = 0
 
-    /* Event Handlers */
-    @EventHandler
-    private val receiveListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying || mode.value == ElytraFlightMode.BOOST) return@EventHook
-        if (event.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
-            val packet = event.packet
-            packet.pitch = mc.player.rotationPitch
-        }
-
-        /* Cancels the elytra opening animation */
-        if (event.packet is SPacketEntityMetadata && isPacketFlying) {
-            val packet = event.packet
-            if (packet.entityId == mc.player.getEntityId()) event.cancel()
-        }
-    })
-
-    @EventHandler
-    private val playerTravelListener = Listener(EventHook { event: PlayerTravelEvent ->
-        if (mc.player == null || mc.player.isSpectator) return@EventHook
-        stateUpdate(event)
-        if (elytraIsEquipped && elytraDurability > 1) {
-            if (autoLanding.value) {
-                landing(event)
-                return@EventHook
+    /* Event Listeners */
+    init {
+        listener<PacketEvent.Receive> {
+            if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying || mode.value == ElytraFlightMode.BOOST) return@listener
+            if (it.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
+                val packet = it.packet
+                packet.pitch = mc.player.rotationPitch
             }
-            if (!isFlying && !isPacketFlying) {
-                takeoff(event)
-            } else {
-                mc.timer.tickLength = 50.0f
-                mc.player.isSprinting = false
-                when (mode.value) {
-                    ElytraFlightMode.BOOST -> boostMode()
-                    ElytraFlightMode.CONTROL -> controlMode(event)
-                    ElytraFlightMode.CREATIVE -> creativeMode()
-                    ElytraFlightMode.PACKET -> packetMode(event)
+
+            /* Cancels the elytra opening animation */
+            if (it.packet is SPacketEntityMetadata && isPacketFlying) {
+                val packet = it.packet
+                if (packet.entityId == mc.player.getEntityId()) it.cancel()
+            }
+        }
+
+
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || mc.player.isSpectator) return@listener
+            stateUpdate(it)
+            if (elytraIsEquipped && elytraDurability > 1) {
+                if (autoLanding.value) {
+                    landing(it)
+                    return@listener
                 }
+                if (!isFlying && !isPacketFlying) {
+                    takeoff(it)
+                } else {
+                    mc.timer.tickLength = 50.0f
+                    mc.player.isSprinting = false
+                    when (mode.value) {
+                        ElytraFlightMode.BOOST -> boostMode()
+                        ElytraFlightMode.CONTROL -> controlMode(it)
+                        ElytraFlightMode.CREATIVE -> creativeMode()
+                        ElytraFlightMode.PACKET -> packetMode(it)
+                    }
+                }
+                spoofRotation()
+            } else if (!outOfDurability) {
+                reset(true)
             }
-            spoofRotation()
-        } else if (!outOfDurability) {
-            reset(true)
         }
-    })
-    /* End of Event Handlers */
+    }
+    /* End of Event Listeners */
 
     /* Generic Functions */
     private fun stateUpdate(event: PlayerTravelEvent) {

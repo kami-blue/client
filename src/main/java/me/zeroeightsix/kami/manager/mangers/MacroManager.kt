@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.manager.mangers
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
@@ -13,10 +11,11 @@ import org.lwjgl.input.Keyboard
 @Suppress("UNUSED_PARAMETER")
 object MacroManager : Manager() {
 
-    @EventHandler
-    private val onKeyInput = Listener(EventHook { event: InputEvent.KeyInputEvent ->
-        sendMacro(Keyboard.getEventKey())
-    })
+    init {
+        listener<InputEvent.KeyInputEvent> {
+            sendMacro(Keyboard.getEventKey())
+        }
+    }
 
     /**
      * Reads macros from KAMIBlueMacros.json into the macros Map

@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.event.events.GuiScreenEvent.Displayed
+import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.entity.player.EntityPlayer
@@ -77,29 +76,28 @@ object AutoEZ : Module() {
         }
     }
 
-    @EventHandler
-    private val livingDeathEventListener = Listener(EventHook { event: AttackEntityEvent ->
-        if (event.target is EntityPlayer) {
-            focus = event.target as EntityPlayer
-            if (event.entityPlayer.uniqueID === mc.player.uniqueID) {
-                if (focus!!.health <= 0.0 || focus!!.isDead || !mc.world.playerEntities.contains(focus)) {
-                    mc.player.sendChatMessage(getText(mode.value, event.target.name))
-                    return@EventHook
+    init {
+        listener<AttackEntityEvent> {
+            (it.target as? EntityPlayer)?.let { target ->
+                focus = target
+                if (it.entityPlayer.uniqueID === mc.player.uniqueID) {
+                    if (focus!!.health <= 0.0 || focus!!.isDead || !mc.world.playerEntities.contains(focus)) {
+                        mc.player.sendChatMessage(getText(mode.value, it.target.name))
+                    }
+                    hasBeenCombat = 1000
                 }
-                hasBeenCombat = 1000
             }
         }
-    })
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: Displayed ->
-        if (event.screen !is GuiGameOver) return@EventHook
-        if (mc.player.health > 0) {
-            hasBeenCombat = 0
+        listener<GuiScreenEvent.Displayed> {
+            if (it.screen !is GuiGameOver) return@listener
+            if (mc.player.health > 0) {
+                hasBeenCombat = 0
+            }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (hasBeenCombat > 0 && (focus!!.health <= 0.0f || focus!!.isDead || !mc.world.playerEntities.contains(focus))) {
             mc.player.sendChatMessage(getText(mode.value, focus!!.name))
             hasBeenCombat = 0

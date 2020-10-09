@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 
@@ -18,6 +17,12 @@ import java.io.*
 object LoginMessage : Module() {
     private var loginMessage: String? = null
     private var sent = false
+
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            sent = false
+        }
+    }
 
     override fun onEnable() {
         val reader: BufferedReader
@@ -41,15 +46,10 @@ object LoginMessage : Module() {
         MessageSendHelper.sendChatMessage("$chatName Found '&7loginmsg.txt&f'!")
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (!sent && loginMessage != null) {
             mc.player.sendChatMessage(loginMessage!!)
             sent = true
         }
     }
-
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        sent = false
-    })
 }

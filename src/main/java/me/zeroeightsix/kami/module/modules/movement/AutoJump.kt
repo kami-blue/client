@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
@@ -14,7 +15,7 @@ object AutoJump : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (mc.player.isInWater || mc.player.isInLava) mc.player.motionY = 0.1
         else if (mc.player.onGround && timer.tick(delay.value.toLong())) mc.player.jump()
     }

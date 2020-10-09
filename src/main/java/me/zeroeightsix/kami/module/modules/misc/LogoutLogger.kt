@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -26,12 +25,13 @@ object LogoutLogger : Module() {
     private val loggedPlayers = HashMap<String, BlockPos>()
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        loggedPlayers.clear()
-    })
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            loggedPlayers.clear()
+        }
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         for (player in mc.world.loadedEntityList) {
             if (player !is EntityPlayer) continue
             if (player == mc.player) continue

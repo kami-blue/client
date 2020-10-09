@@ -1,10 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
@@ -26,27 +25,27 @@ object AntiOverlay : Module() {
     private val vignette = register(Settings.b("Vignette", true))
     private val helmet = register(Settings.b("Helmet", true))
 
-    @EventHandler
-    private val renderBlockOverlayEventListener = Listener(EventHook { event: RenderBlockOverlayEvent ->
-        event.isCanceled = when (event.overlayType) {
-            OverlayType.FIRE -> fire.value
-            OverlayType.WATER -> water.value
-            OverlayType.BLOCK -> blocks.value
-            else -> false
+    init {
+        listener<RenderBlockOverlayEvent> {
+            it.isCanceled = when (it.overlayType) {
+                OverlayType.FIRE -> fire.value
+                OverlayType.WATER -> water.value
+                OverlayType.BLOCK -> blocks.value
+                else -> it.isCanceled
+            }
         }
-    })
 
-    @EventHandler
-    private val renderPreGameOverlayEventListener = Listener(EventHook { event: RenderGameOverlayEvent.Pre ->
-        event.isCanceled = when (event.type) {
-            RenderGameOverlayEvent.ElementType.VIGNETTE -> vignette.value
-            RenderGameOverlayEvent.ElementType.PORTAL -> portals.value
-            RenderGameOverlayEvent.ElementType.HELMET -> helmet.value
-            else -> false
+        listener<RenderGameOverlayEvent.Pre> {
+            it.isCanceled = when (it.type) {
+                RenderGameOverlayEvent.ElementType.VIGNETTE -> vignette.value
+                RenderGameOverlayEvent.ElementType.PORTAL -> portals.value
+                RenderGameOverlayEvent.ElementType.HELMET -> helmet.value
+                else -> it.isCanceled
+            }
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
         if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
     }

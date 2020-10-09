@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
@@ -38,27 +37,26 @@ object Freecam : Module() {
         private set
     var resetInput = false
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        prevThirdPersonViewSetting = -1
-        cameraGuy = null
-        mc.renderChunksMany = true
-        if (disableOnDisconnect.value) disable()
-    })
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            prevThirdPersonViewSetting = -1
+            cameraGuy = null
+            mc.renderChunksMany = true
+            if (disableOnDisconnect.value) disable()
+        }
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.world == null || event.packet !is CPacketUseEntity) return@EventHook
-        // Don't interact with self
-        if (event.packet.getEntityFromWorld(mc.world) == mc.player) event.cancel()
-    })
+        listener<PacketEvent.Send> {
+            if (mc.world == null || it.packet !is CPacketUseEntity) return@listener
+            // Don't interact with self
+            if (it.packet.getEntityFromWorld(mc.world) == mc.player) it.cancel()
+        }
 
-    @EventHandler
-    private val keyboardListener = Listener(EventHook { event: InputEvent.KeyInputEvent ->
-        if (mc.world == null || mc.player == null) return@EventHook
-        // Force it to stay in first person lol
-        if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
-    })
+        listener<InputEvent.KeyInputEvent> {
+            if (mc.world == null || mc.player == null) return@listener
+            // Force it to stay in first person lol
+            if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
+        }
+    }
 
     override fun onDisable() {
         if (mc.player == null) return
@@ -69,7 +67,7 @@ object Freecam : Module() {
         if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (cameraGuy == null && mc.player.ticksExisted > 20) {
             // Create a cloned player
             cameraGuy = FakeCamera(mc.player).also {

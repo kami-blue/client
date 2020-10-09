@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -31,7 +32,7 @@ object PlayerModel : Module() {
     private var entity: EntityLivingBase? = null
     var lastAttacked: Long = 0
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (lastAttacked == 0L || entity == null) {
             entity = mc.player
             mc.player.setLastAttackedEntity(mc.player)

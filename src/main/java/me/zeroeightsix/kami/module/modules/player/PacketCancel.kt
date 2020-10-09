@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.*
 
 @Module.Info(
@@ -23,21 +21,21 @@ object PacketCancel : Module() {
 
     private var numPackets = 0
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (mc.player == null) {
-            return@EventHook
+    init {
+        listener<PacketEvent.Send> {
+            if (mc.player == null) return@listener
+            if (all.value
+                    || it.packet is CPacketInput && packetInput.value
+                    || it.packet is CPacketPlayer && packetPlayer.value
+                    || it.packet is CPacketEntityAction && packetEntityAction.value
+                    || it.packet is CPacketUseEntity && packetUseEntity.value
+                    || it.packet is CPacketVehicleMove && packetVehicleMove.value
+            ) {
+                it.cancel()
+                numPackets++
+            }
         }
-        if (all.value
-                || packetInput.value && event.packet is CPacketInput
-                || packetPlayer.value && event.packet is CPacketPlayer
-                || packetEntityAction.value && event.packet is CPacketEntityAction
-                || packetUseEntity.value && event.packet is CPacketUseEntity
-                || packetVehicleMove.value && event.packet is CPacketVehicleMove) {
-            event.cancel()
-            numPackets++
-        }
-    })
+    }
 
     public override fun onDisable() {
         numPackets = 0

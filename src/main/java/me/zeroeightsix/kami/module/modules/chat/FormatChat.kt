@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.network.play.client.CPacketChatMessage
@@ -25,17 +23,17 @@ object FormatChat : Module() {
         }
     }
 
-    @EventHandler
-    private val sendListener = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketChatMessage) {
-            var message = event.packet.message
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
+            var message = it.packet.message
 
             if (message.contains("&") || message.contains("#n")) {
                 message = message.replace("&".toRegex(), KamiMod.colour.toString() + "")
                 message = message.replace("#n".toRegex(), "\n")
                 mc.player.connection.sendPacket(CPacketChatMessage(message))
-                event.cancel()
+                it.cancel()
             }
         }
-    })
+    }
 }

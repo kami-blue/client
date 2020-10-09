@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.world.GameType
@@ -17,7 +18,7 @@ object FakeGamemode : Module() {
 
     private var gameType: GameType? = null
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         when (gamemode.value) {
             GamemodeChanged.CREATIVE -> {
                 mc.playerController.setGameType(gameType)

@@ -2,7 +2,8 @@ package me.zeroeightsix.kami.module.modules.render
 
 import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -110,7 +111,7 @@ object Search : Module() {
         startTimeRender = 0L
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (shouldUpdateChunk()) {
             updateLoadedChunkList()
             updateMainList()
@@ -121,7 +122,7 @@ object Search : Module() {
         }
     }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (dirty > 1) {
             dirty = 0
             renderer.clear()

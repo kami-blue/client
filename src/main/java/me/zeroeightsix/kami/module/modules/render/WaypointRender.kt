@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
@@ -13,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.TextProperties
@@ -72,7 +71,7 @@ object WaypointRender : Module() {
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var prevDimension = -2
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         if (waypointMap.isEmpty()) return
         val color = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
@@ -140,33 +139,33 @@ object WaypointRender : Module() {
         currentServer = null
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
             if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
             updateList()
         }
     }
 
-    @EventHandler
-    private val waypointUpdateListener = Listener(EventHook { event: WaypointUpdateEvent ->
-        synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
-            when (event.type) {
-                WaypointUpdateEvent.Type.ADD -> event.waypoint?.let { updateTextComponent(it) }
-                WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(event.waypoint?.pos)
-                WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
-                WaypointUpdateEvent.Type.RELOAD -> {
-                    waypointMap.clear(); updateList()
-                }
-                else -> {
+    init {
+        listener<WaypointUpdateEvent> {
+            synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
+                when (it.type) {
+                    WaypointUpdateEvent.Type.ADD -> it.waypoint?.let { updateTextComponent(it) }
+                    WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(it.waypoint?.pos)
+                    WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
+                    WaypointUpdateEvent.Type.RELOAD -> {
+                        waypointMap.clear(); updateList()
+                    }
+                    else -> {
+                    }
                 }
             }
         }
-    })
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        currentServer = null
-    })
+        listener<ConnectionEvent.Disconnect> {
+            currentServer = null
+        }
+    }
 
     private fun updateList() {
         timer.reset()

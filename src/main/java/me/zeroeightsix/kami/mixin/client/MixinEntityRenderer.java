@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.google.common.base.Predicate;
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -83,12 +83,12 @@ public class MixinEntityRenderer {
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;renderEntityOutlineFramebuffer()V"))
     public void renderShaderPre(float partialTicks, long nanoTime, CallbackInfo ci) {
         RenderShaderEvent event = new RenderShaderEvent(RenderShaderEvent.Phase.PRE);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/shader/Framebuffer;bindFramebuffer(Z)V"))
     public void renderShaderPost(float partialTicks, long nanoTime, CallbackInfo ci) {
         RenderShaderEvent event = new RenderShaderEvent(RenderShaderEvent.Phase.POST);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 }

@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.util
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.server.SPacketTimeUpdate
 import net.minecraft.util.math.MathHelper
 import java.util.*
@@ -30,12 +28,17 @@ object LagCompensator : EventListener {
 
     val adjustTicks: Float get() = tickRate - 20f
 
-    @EventHandler
-    var packetEventListener = Listener(EventHook { event: PacketEvent.Receive ->
-        if (event.packet is SPacketTimeUpdate) {
-            onTimeUpdate()
+    init {
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketTimeUpdate) return@listener
+            if (timeLastTimeUpdate != -1L) {
+                val timeElapsed = (System.currentTimeMillis() - timeLastTimeUpdate).toFloat() / 1000.0f
+                tickRates[nextIndex % tickRates.size] = MathHelper.clamp(20.0f / timeElapsed, 0.0f, 20.0f)
+                nextIndex += 1
+            }
+            timeLastTimeUpdate = System.currentTimeMillis()
         }
-    })
+    }
 
     fun reset() {
         nextIndex = 0
@@ -43,17 +46,8 @@ object LagCompensator : EventListener {
         Arrays.fill(tickRates, 0.0f)
     }
 
-    fun onTimeUpdate() {
-        if (timeLastTimeUpdate != -1L) {
-            val timeElapsed = (System.currentTimeMillis() - timeLastTimeUpdate).toFloat() / 1000.0f
-            tickRates[nextIndex % tickRates.size] = MathHelper.clamp(20.0f / timeElapsed, 0.0f, 20.0f)
-            nextIndex += 1
-        }
-        timeLastTimeUpdate = System.currentTimeMillis()
-    }
-
     init {
-        KamiMod.EVENT_BUS.subscribe(this)
+        KamiEventBus.subscribe(this)
         reset()
     }
 }

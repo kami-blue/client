@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -24,7 +25,7 @@ object AutoNametag : Module() {
     private var currentName = ""
     private var currentSlot = -1
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         findNameTags()
         useNameTag()
     }

@@ -1,17 +1,16 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.KamiTessellator.begin
 import me.zeroeightsix.kami.util.graphics.KamiTessellator.pTicks
@@ -65,14 +64,14 @@ object NewChunks : Module() {
         timer.reset()
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         if (autoClear.value && timer.tick(10L)) {
             chunks.clear()
             sendChatMessage("$chatName Cleared chunks!")
         }
     }
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, pTicks()).y else 0.0
         glLineWidth(2.0f)
         glDisable(GL_DEPTH_TEST)
@@ -90,12 +89,17 @@ object NewChunks : Module() {
         glEnable(GL_DEPTH_TEST)
     }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ChunkEvent ->
-        if (event.packet.isFullChunk) return@EventHook
-        chunks.add(event.chunk)
-        if (saveNewChunks.value) saveNewChunk(event.chunk)
-    })
+    init {
+        listener<ChunkEvent> {
+            if (it.packet.isFullChunk) return@listener
+            chunks.add(it.chunk)
+            if (saveNewChunks.value) saveNewChunk(it.chunk)
+        }
+
+        listener<net.minecraftforge.event.world.ChunkEvent.Unload> {
+            chunks.remove(it.chunk)
+        }
+    }
 
     // needs to be synchronized so no data gets lost
     private fun saveNewChunk(chunk: Chunk) {
@@ -264,10 +268,6 @@ object NewChunks : Module() {
     private fun saveNewChunk(log: PrintWriter?, data: String) {
         log!!.println(data)
     }
-
-    @EventHandler
-    private val unloadListener = Listener(EventHook { event: net.minecraftforge.event.world.ChunkEvent.Unload -> chunks.remove(event.chunk) }
-    )
 
     private enum class SaveOption {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL

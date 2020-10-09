@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
-import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -48,7 +47,7 @@ object BreakingESP : Module() {
 
     private var warningText = ""
 
-    override fun onWorldRender(event: RenderEvent) {
+    override fun onWorldRender(event: RenderWorldEvent) {
         val colour = ColorHolder(r.value, g.value, b.value)
         val renderer = ESPRenderer()
         renderer.aFilled = if (filled.value) aFilled.value else 0
@@ -93,29 +92,30 @@ object BreakingESP : Module() {
         }
     }
 
-    @EventHandler
-    private val blockBreaklistener = Listener(EventHook { event: BlockBreakEvent ->
-        if (mc.player == null || mc.player.getDistanceSq(event.position) > range.value * range.value) return@EventHook
-        val breaker = mc.world.getEntityByID(event.breakId) ?: return@EventHook
-        if (event.progress in 0..9) {
-            val render = mc.player != breaker || espSelf.value
-            breakingBlockList.putIfAbsent(event.breakId, Triple(event.position, event.progress, Pair(false, render)))
-            breakingBlockList.computeIfPresent(event.breakId) { _, triple -> Triple(event.position, event.progress, triple.third) }
-            if (warning.value && (mc.player != breaker || warnSelf.value) && event.progress >= warningProgress.value && !breakingBlockList[event.breakId]!!.third.first
-                    && ((obsidianOnly.value && mc.world.getBlockState(event.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
-                if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                warningText = "${breaker.name} is breaking near you!"
-                if (chatWarn.value) sendChatMessage(warningText)
-                delay = 0
-                warn = true
-                breakingBlockList[event.breakId] = Triple(event.position, event.progress, Pair(true, render))
+    init {
+        listener<BlockBreakEvent> {
+            if (mc.player == null || mc.player.getDistanceSq(it.position) > range.value * range.value) return@listener
+            val breaker = mc.world.getEntityByID(it.breakId) ?: return@listener
+            if (it.progress in 0..9) {
+                val render = mc.player != breaker || espSelf.value
+                breakingBlockList.putIfAbsent(it.breakId, Triple(it.position, it.progress, Pair(false, render)))
+                breakingBlockList.computeIfPresent(it.breakId) { _, triple -> Triple(it.position, it.progress, triple.third) }
+                if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakId]!!.third.first
+                        && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
+                    if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    warningText = "${breaker.name} is breaking near you!"
+                    if (chatWarn.value) sendChatMessage(warningText)
+                    delay = 0
+                    warn = true
+                    breakingBlockList[it.breakId] = Triple(it.position, it.progress, Pair(true, render))
+                }
+            } else {
+                breakingBlockList.remove(it.breakId)
             }
-        } else {
-            breakingBlockList.remove(event.breakId)
         }
-    })
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         breakingBlockList.values.removeIf { triple ->
             mc.world.isAirBlock(triple.first)
         }

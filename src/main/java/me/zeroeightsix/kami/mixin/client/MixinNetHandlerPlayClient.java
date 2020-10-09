@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.ChunkEvent;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.SPacketChunkData;
@@ -21,7 +21,7 @@ public class MixinNetHandlerPlayClient {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;read(Lnet/minecraft/network/PacketBuffer;IZ)V"),
             locals = LocalCapture.CAPTURE_FAILHARD)
     private void read(SPacketChunkData data, CallbackInfo info, Chunk chunk) {
-        KamiMod.EVENT_BUS.post(new ChunkEvent(chunk, data));
+        KamiEventBus.INSTANCE.post(new ChunkEvent(chunk, data));
     }
 
 }

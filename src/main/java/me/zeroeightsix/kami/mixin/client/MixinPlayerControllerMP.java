@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent;
 import me.zeroeightsix.kami.module.modules.player.TpsSync;
 import me.zeroeightsix.kami.util.LagCompensator;
@@ -28,7 +28,7 @@ public class MixinPlayerControllerMP {
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity, CallbackInfo ci) {
         if (targetEntity == null) return;
         ClientPlayerAttackEvent event = new ClientPlayerAttackEvent(targetEntity);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
         if (event.isCancelled()) {
             ci.cancel();
         }

@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.passive.AbstractChestHorse
 import net.minecraft.network.play.client.CPacketUseEntity
 
@@ -14,16 +12,10 @@ import net.minecraft.network.play.client.CPacketUseEntity
         description = "Might allow you to mount chested animals on servers that block it"
 )
 object MountBypass : Module() {
-    @EventHandler
-    private val onPacketEventSend = Listener(EventHook { event: PacketEvent.Send ->
-        if (event.packet is CPacketUseEntity) {
-            val packet = event.packet
-
-            if (packet.getEntityFromWorld(mc.world) is AbstractChestHorse) {
-                if (packet.action == CPacketUseEntity.Action.INTERACT_AT) {
-                    event.cancel()
-                }
-            }
+    init {
+        listener<PacketEvent.Send> {
+            if (it.packet !is CPacketUseEntity || it.packet.action != CPacketUseEntity.Action.INTERACT_AT) return@listener
+            if (it.packet.getEntityFromWorld(mc.world) is AbstractChestHorse) it.cancel()
         }
-    })
+    }
 }

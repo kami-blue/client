@@ -1,14 +1,12 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.abs
@@ -29,17 +27,17 @@ object AntiBot : Module() {
 
     val botSet = HashSet<EntityPlayer>()
 
-    @EventHandler
-    private val disconnectListener = Listener(EventHook { event: ConnectionEvent.Disconnect ->
-        botSet.clear()
-    })
+    init {
+        listener<ConnectionEvent.Disconnect> {
+            botSet.clear()
+        }
 
-    @EventHandler
-    private val listener = Listener(EventHook { event: ClientPlayerAttackEvent ->
-        if (isEnabled && botSet.contains(event.entity)) event.cancel()
-    })
+        listener<ClientPlayerAttackEvent> {
+            if (isEnabled && botSet.contains(it.entity)) it.cancel()
+        }
+    }
 
-    override fun onUpdate() {
+    override fun onUpdate(event: SafeTickEvent) {
         val cacheSet = HashSet<EntityPlayer>()
         for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityPlayer) continue

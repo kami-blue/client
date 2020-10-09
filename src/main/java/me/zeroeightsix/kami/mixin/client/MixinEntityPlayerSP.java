@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.mixin.client;
 
 import com.mojang.authlib.GameProfile;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEvent;
+import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
@@ -85,7 +85,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MoverType type, double x, double y, double z, CallbackInfo info) {
         PlayerMoveEvent event = new PlayerMoveEvent(type, x, y, z);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
         if (event.isCancelled()) info.cancel();
     }
 
@@ -117,9 +117,9 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         Vec2f rotation = new Vec2f(this);
 
         OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, sprinting, sneaking, onGround, pos, rotation);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
         event.setEra(KamiEvent.Era.PERI);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
 
         if (event.isCancelled()) {
             ci.cancel();
@@ -189,7 +189,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             }
         }
         event.setEra(KamiEvent.Era.POST);
-        KamiMod.EVENT_BUS.post(event);
+        KamiEventBus.INSTANCE.post(event);
     }
 
     private boolean isMoving() {
