@@ -157,7 +157,7 @@ object ElytraFlight : Module() {
             }
         }
     }
-    /* End of Event Liseners */
+    /* End of Event Listeners */
 
     /* Generic Functions */
     private fun stateUpdate(event: PlayerTravelEvent) {
