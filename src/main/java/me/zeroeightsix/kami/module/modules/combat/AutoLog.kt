@@ -28,7 +28,7 @@ import net.minecraft.util.text.TextComponentString
 )
 object AutoLog : Module() {
     private val disable: Setting<DisableMode> = register(Settings.e("Disable", DisableMode.ALWAYS))
-    private val health = register(Settings.integerBuilder("Health").withRange(0, 36).withValue(10).build())
+    private val health = register(Settings.integerBuilder("Health").withRange(6, 36).withStep(1).withValue(10).build())
     private val crystals = register(Settings.b("Crystals", false))
     private val creeper = register(Settings.b("Creepers", true))
     private val creeperDistance = register(Settings.integerBuilder("CreeperDistance").withRange(1, 10).withValue(5).withVisibility { creeper.value }.build())
@@ -55,36 +55,45 @@ object AutoLog : Module() {
             return
         }
 
-        if (crystals.value) {
-            for (entity in mc.world.loadedEntityList) {
-                if (entity !is EntityEnderCrystal) continue
-                if (mc.player.getDistance(entity) > 8f) continue
-                if (mc.player.health - CrystalUtils.calcDamage(entity, mc.player) > health.value) continue
-                log(END_CRYSTAL)
-                return
-            }
-        }
+        if (crystals.value && checkCrystals()) return
 
-        if (creeper.value) {
-            for (entity in mc.world.loadedEntityList) {
-                if (entity !is EntityCreeper) continue
-                if (mc.player.getDistance(entity) > creeperDistance.value) continue
-                log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
-                return
-            }
-        }
+        if (creeper.value && checkCreeper()) return
 
-        if (players.value) {
-            for (entity in mc.world.loadedEntityList) {
-                if (entity !is EntityPlayer) continue
-                if (AntiBot.botSet.contains(entity)) continue
-                if (entity == mc.player) continue
-                if (mc.player.getDistance(entity) > playerDistance.value) continue
-                if (!friends.value && Friends.isFriend(entity.name)) continue
-                log(PLAYER, entity.name)
-                return
-            }
+        if (players.value) checkPlayers() // no need to return
+    }
+
+    private fun checkCrystals(): Boolean {
+        for (entity in mc.world.loadedEntityList) {
+            if (entity !is EntityEnderCrystal) continue
+            if (mc.player.getDistance(entity) > 8f) continue
+            if (mc.player.health - CrystalUtils.calcDamage(entity, mc.player) > health.value) continue
+            log(END_CRYSTAL)
+            return true
         }
+        return false
+    }
+
+    private fun checkCreeper(): Boolean {
+        for (entity in mc.world.loadedEntityList) {
+            if (entity !is EntityCreeper) continue
+            if (mc.player.getDistance(entity) > creeperDistance.value) continue
+            log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
+            return true
+        }
+        return false
+    }
+
+    private fun checkPlayers() {
+        for (entity in mc.world.loadedEntityList) {
+            if (entity !is EntityPlayer) continue
+            if (AntiBot.botSet.contains(entity)) continue
+            if (entity == mc.player) continue
+            if (mc.player.getDistance(entity) > playerDistance.value) continue
+            if (!friends.value && Friends.isFriend(entity.name)) continue
+            log(PLAYER, entity.name)
+            return
+        }
+        return
     }
 
     private fun log(reason: Reasons, additionalInfo: String = "") {

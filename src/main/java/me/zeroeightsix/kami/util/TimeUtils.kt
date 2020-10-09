@@ -8,13 +8,11 @@ object TimeUtils {
     /**
      * Get current time
      */
-    @JvmStatic
     fun time(format: SimpleDateFormat): String {
         val date = Date(System.currentTimeMillis())
         return format.format(date)
     }
 
-    @JvmStatic
     private fun formatTimeString(timeType: TimeType): String {
         return when (timeType) {
             TimeType.HHMM -> ":mm"
@@ -23,7 +21,6 @@ object TimeUtils {
         }
     }
 
-    @JvmStatic
     fun dateFormatter(timeUnit: TimeUnit, timeType: TimeType): SimpleDateFormat {
         return when (timeUnit) {
             TimeUnit.H12 -> SimpleDateFormat("hh" + formatTimeString(timeType), Locale.UK)
@@ -31,7 +28,6 @@ object TimeUtils {
         }
     }
 
-    @JvmStatic
     fun getFinalTime(colourCode2: TextFormatting, colourCode1: TextFormatting, timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
         val time = time(dateFormatter(TimeUnit.H24, TimeType.HH))
         val locale = if (timeUnit == TimeUnit.H12 && doLocale) {
@@ -42,7 +38,6 @@ object TimeUtils {
         return colourCode1.toString() + time(dateFormatter(timeUnit, timeType)) + colourCode2.toString() + locale
     }
 
-    @JvmStatic
     fun getFinalTime(timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
         var locale = ""
         val time = time(dateFormatter(TimeUnit.H24, TimeType.HH))

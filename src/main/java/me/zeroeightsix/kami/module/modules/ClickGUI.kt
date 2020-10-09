@@ -1,11 +1,13 @@
 package me.zeroeightsix.kami.module.modules
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
@@ -66,6 +68,14 @@ object ClickGUI : Module() {
         bind.value.key = Keyboard.KEY_Y
         scaleSetting.settingListener = Setting.SettingListeners {
             settingTimer.reset()
+        }
+        customFont.settingListener = Setting.SettingListeners {
+            MessageSendHelper.sendChatMessage(
+                    "Changed font! Run \n" +
+                            "&7${Command.commandPrefix}config save\n" +
+                            "&7${Command.commandPrefix}config reload\n" +
+                            "&f if it's not sizing correctly"
+            )
         }
     }
 }

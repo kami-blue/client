@@ -6,11 +6,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
+import me.zeroeightsix.kami.util.InfoCalculator.chunkSize
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
-import me.zeroeightsix.kami.util.math.MathUtils
+import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.client.Minecraft
 import java.util.*
 import kotlin.math.max
@@ -32,11 +33,10 @@ object InfoOverlay : Module() {
     private val tps = register(Settings.booleanBuilder("TPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility { page.value == Page.ONE })
-    private val server = register(Settings.booleanBuilder("ServerBrand").withValue(false).withVisibility { page.value == Page.ONE })
+    private val server = register(Settings.booleanBuilder("ServerType").withValue(true).withVisibility { page.value == Page.ONE })
+    private val chunkSize = register(Settings.booleanBuilder("ChunkSize").withValue(true).withVisibility { page.value == Page.ONE })
     private val durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility { page.value == Page.ONE })
     private val biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility { page.value == Page.ONE })
-    private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.ONE })
-    private val timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility { page.value == Page.ONE })
 
     /* Page Two */
     private val totems = register(Settings.booleanBuilder("Totems").withValue(false).withVisibility { page.value == Page.TWO })
@@ -53,6 +53,8 @@ object InfoOverlay : Module() {
     val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java, "TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value })
     val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java, "TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility { page.value == Page.THREE && time.value })
     val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
+    private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.THREE })
+    private val timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility { page.value == Page.THREE })
     private val firstColor = register(Settings.enumBuilder(ColourCode::class.java, "FirstColour").withValue(ColourCode.WHITE).withVisibility { page.value == Page.THREE })
     private val secondColor = register(Settings.enumBuilder(ColourCode::class.java, "SecondColour").withValue(ColourCode.BLUE).withVisibility { page.value == Page.THREE })
 
@@ -68,9 +70,11 @@ object InfoOverlay : Module() {
     }
 
     private val speedList = LinkedList<Double>()
+    private var currentChunkSize = 0
 
     override fun onUpdate(event: SafeTickEvent) {
         updateSpeedList()
+        updateChunkSize()
     }
 
     fun infoContents(): ArrayList<String> {
@@ -92,7 +96,7 @@ object InfoOverlay : Module() {
         tps -> "${InfoCalculator.tps(decimalPlaces.value)} ${second()}tps"
         fps -> "${Minecraft.debugFPS} ${second()}fps"
         speed -> "${calcSpeed(decimalPlaces.value)} ${second()}${speedUnit.value.displayName}"
-        timerSpeed -> "${MathUtils.round(50f / mc.timer.tickLength, decimalPlaces.value)} ${second()}x"
+        timerSpeed -> "${round(50f / mc.timer.tickLength, decimalPlaces.value)} ${second()}x"
         ping -> "${InfoCalculator.ping()} ${second()}ms"
         server -> mc.player.serverBrand
         durability -> "${InfoCalculator.heldItemDurability()} ${second()}dura"
@@ -102,6 +106,7 @@ object InfoOverlay : Module() {
         endCrystals -> "${InventoryUtils.countItemAll(426)} ${second()}crystals"
         expBottles -> "${InventoryUtils.countItemAll(384)} ${second()}exp"
         godApples -> "${InventoryUtils.countItemAll(322)} ${second()}gaps"
+        chunkSize -> "${round(currentChunkSize / 1000.0, decimalPlaces.value)} KB ${second()}(chunk)"
         else -> null
     }
 
@@ -115,7 +120,13 @@ object InfoOverlay : Module() {
 
     private fun calcSpeed(place: Int): Double {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
-        return MathUtils.round(averageSpeed, place)
+        return round(averageSpeed, place)
+    }
+
+    private fun updateChunkSize() {
+        if (mc.player.ticksExisted % 4 == 0) {
+            currentChunkSize = chunkSize()
+        }
     }
 
     private fun updateSpeedList() {
