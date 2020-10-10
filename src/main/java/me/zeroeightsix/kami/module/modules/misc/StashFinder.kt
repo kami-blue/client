@@ -35,7 +35,7 @@ object StashFinder : Module() {
     private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
         
     private val logHoppers = register(Settings.b("Hoppers", false))
-    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
+    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logHoppers.value }.build())
 
 
     private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hot: Boolean = false) {
