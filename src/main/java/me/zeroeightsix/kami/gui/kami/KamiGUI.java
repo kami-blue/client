@@ -352,7 +352,7 @@ public class KamiGUI extends GUI {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
             if (!frameFinal.isMinimized() && process.isPresent()) {
-                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.PATHFIND && AutoWalk.INSTANCE.getDirection() != null) {
                     processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());

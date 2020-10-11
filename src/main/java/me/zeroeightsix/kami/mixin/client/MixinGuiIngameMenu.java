@@ -23,7 +23,7 @@ public class MixinGuiIngameMenu {
                 callbackInfo.cancel();
             }
 
-            if (AntiDisconnect.INSTANCE.isEnabled() && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE) {
+            if (AntiDisconnect.INSTANCE.isEnabled() && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.PATHFIND) {
                 AutoWalk.INSTANCE.disable();
             }
         }

@@ -1,18 +1,25 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.BaritoneAPI
+import baritone.api.pathing.calc.IPath
+import baritone.api.pathing.goals.Goal
 import baritone.api.pathing.goals.GoalXZ
+import baritone.api.pathing.movement.IMovement
+import baritone.api.utils.BetterBlockPos
+import baritone.utils.PathRenderer
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.astar.Astarpathfinder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.InputUpdateEvent
+import java.awt.Color
 
 @Module.Info(
         name = "AutoWalk",
@@ -20,10 +27,12 @@ import net.minecraftforge.client.event.InputUpdateEvent
         description = "Automatically walks somewhere"
 )
 object AutoWalk : Module() {
-    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
+    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.PATHFIND))
+    val flydelay = register(Settings.integerBuilder("SableFlightDelay").withRange(0, 400).withValue(0).withVisibility { mode.value == AutoWalkMode.PATHFIND }.build())
+    private val drawPath = register(Settings.booleanBuilder("DrawPath").withValue(false).withVisibility { mode.value == AutoWalkMode.PATHFIND }.build())
 
     enum class AutoWalkMode {
-        FORWARD, BACKWARDS, BARITONE
+        FORWARD, BACKWARDS, PATHFIND
     }
 
     private var disableBaritone = false
@@ -41,7 +50,7 @@ object AutoWalk : Module() {
                     disableBaritone = false
                     it.movementInput.moveForward = -1f
                 }
-                AutoWalkMode.BARITONE -> disableBaritone = true
+                AutoWalkMode.PATHFIND -> disableBaritone = true
 
                 else -> {
                     KamiMod.log.error("Mode is irregular. Value: " + mode.value)
@@ -52,10 +61,26 @@ object AutoWalk : Module() {
         listener<ConnectionEvent.Disconnect> {
             disable()
         }
+
+        listener<RenderWorldEvent> {
+            if (drawPath.value && mode.value.equals(AutoWalkMode.PATHFIND) && ElytraFlight.isEnabled && Astarpathfinder.path != null) {
+                val path: MutableList<BetterBlockPos> = mutableListOf()
+                for (i in 0 until Astarpathfinder.path.size) {
+                    path.add(BetterBlockPos(Astarpathfinder.path[i].pos.x, mc.player.posY.toInt() - 1, Astarpathfinder.path[i].pos.z))
+                }
+                PathRenderer.drawPath(object : IPath {
+                    override fun positions(): MutableList<BetterBlockPos> { return path }
+                    override fun movements(): MutableList<IMovement>? { return null }
+                    override fun getGoal(): Goal? { return null }
+                    override fun getNumNodesConsidered(): Int { return 0 }
+                }, 0, Color(1f, 1f, 0f), false, 0, 0)
+            }
+        }
     }
 
     override fun onDisable() {
         if (disableBaritone) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        ElytraFlight.updatePathfindState()
     }
 
     public override fun onEnable() {
@@ -64,11 +89,11 @@ object AutoWalk : Module() {
             return
         }
 
-        if (mode.value != AutoWalkMode.BARITONE) return
+        if (mode.value != AutoWalkMode.PATHFIND) return
 
-        if (mc.player.isElytraFlying) {
-            sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying")
-            disable()
+        if (ElytraFlight.isEnabled) {
+            disableBaritone = true
+            onDisable()
             return
         }
 
@@ -95,7 +120,7 @@ object AutoWalk : Module() {
             direction!!
         } else {
             when (mode.value) {
-                AutoWalkMode.BARITONE -> "NONE"
+                AutoWalkMode.PATHFIND -> "NONE"
                 AutoWalkMode.FORWARD -> "FORWARD"
                 AutoWalkMode.BACKWARDS -> "BACKWARDS"
 
@@ -106,13 +131,5 @@ object AutoWalk : Module() {
         }
     }
 
-    init {
-        mode.settingListener = Setting.SettingListeners {
-            mc.player?.let {
-                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
-                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
-                }
-            }
-        }
-    }
+
 }
