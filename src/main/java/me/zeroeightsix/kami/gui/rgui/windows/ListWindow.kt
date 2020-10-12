@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
 import com.google.gson.annotations.Expose
-import me.zeroeightsix.kami.gui.clickGui.KamiGuiClickGui
+import me.zeroeightsix.kami.gui.clickGui.KamiClickGui
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -34,8 +33,8 @@ open class ListWindow(
     private var hoveredChild: Component? = null
         set(value) {
             if (value == field) return
-            (field as? InteractiveComponent)?.onLeave(KamiGuiClickGui.getRealMousePos())
-            (value as? InteractiveComponent)?.onHover(KamiGuiClickGui.getRealMousePos())
+            (field as? InteractiveComponent)?.onLeave(KamiClickGui.getRealMousePos())
+            (value as? InteractiveComponent)?.onHover(KamiClickGui.getRealMousePos())
             field = value
         }
 
@@ -67,6 +66,7 @@ open class ListWindow(
 
     override fun onGuiInit() {
         super.onGuiInit()
+        for (child in children) child.onGuiInit()
         updateChild()
     }
 
@@ -94,9 +94,9 @@ open class ListWindow(
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)
         glScissor(
-                ((renderPosX) * ClickGUI.getScaleFactor()).roundToInt(),
+                ((renderPosX + lineSpace) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
-                ((renderWidth) * ClickGUI.getScaleFactor()).roundToInt(),
+                ((renderWidth - lineSpace * 2.0) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor()).roundToInt()
         )
         glEnable(GL_SCISSOR_TEST)
@@ -112,12 +112,14 @@ open class ListWindow(
 
     override fun onMouseInput(mousePos: Vec2d) {
         super.onMouseInput(mousePos)
-        val relativeMousePos = mousePos.subtract(posX, posY - renderScrollProgress)
         if (Mouse.getEventDWheel() != 0) {
             scrollTimer.reset()
             scrollSpeed += Mouse.getEventDWheel() * ClickGUI.scrollSpeed.value
         }
-        hoveredChild = children.firstOrNull { relativeMousePos.y in it.posY..it.posY + it.height }
+        if (mouseState != MouseState.DRAG && mousePos.y - posY - draggableHeight - lineSpace > 0.0) {
+            val relativeMousePos = mousePos.subtract(posX, posY - renderScrollProgress)
+            hoveredChild = children.firstOrNull { relativeMousePos.y in it.posY..it.posY + it.height }
+        }
     }
 
     override fun onLeave(mousePos: Vec2d) {

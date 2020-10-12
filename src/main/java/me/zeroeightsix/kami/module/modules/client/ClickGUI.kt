@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.clickGui.KamiGuiClickGui
+import me.zeroeightsix.kami.gui.clickGui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -17,9 +18,9 @@ import kotlin.math.round
         alwaysListening = true
 )
 object ClickGUI : Module() {
-    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())val customFont = register(Settings.b("CustomFont", true)) // For the sake of dumb Minecraftia simps
+    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
     val scrollSpeed = register(Settings.f("ScrollSpeed", 1f))
-    val triggerSpeed = register(Settings.f("TriggerSpeed", 0.5f))
+    val backgroundBlur = register(Settings.floatBuilder("BackgroundBlur").withValue(0.5f).withRange(0f, 8f).withStep(0.25f))
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
@@ -52,14 +53,16 @@ object ClickGUI : Module() {
     }
 
     override fun onEnable() {
-        if (mc.currentScreen !is KamiGuiClickGui) {
-            mc.displayGuiScreen(KamiGuiClickGui)
+        if (mc.currentScreen !is KamiClickGui) {
+            mc.displayGuiScreen(KamiClickGui)
+            KamiEventBus.subscribe(KamiClickGui)
         }
     }
 
     override fun onDisable() {
-        if (mc.currentScreen is KamiGuiClickGui) {
+        if (mc.currentScreen is KamiClickGui) {
             mc.displayGuiScreen(null)
+            KamiEventBus.unsubscribe(KamiClickGui)
         }
     }
 

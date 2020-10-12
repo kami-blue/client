@@ -31,7 +31,7 @@ open class Slider(override var name: String, valueIn: Double) : InteractiveCompo
 
     override fun onRender(vertexHelper: VertexHelper) {
         val color = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTime(lastStateUpdateTime), 100.0)
-        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d((renderWidth - 1.0) * renderProgress, renderHeight - 1.0), color)
+        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.5, 0.5), Vec2d((renderWidth - 0.5) * renderProgress, renderHeight - 0.5), color)
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1f, GuiColors.outline)
         KamiFontRenderer.drawString(name, 1f, 1f, color = GuiColors.text)
     }
