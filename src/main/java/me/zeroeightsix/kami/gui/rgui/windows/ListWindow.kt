@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
@@ -120,13 +119,14 @@ open class ListWindow(
             scrollSpeed -= Mouse.getEventDWheel() * 0.1f
             updateHovered(relativeMousePos)
         }
-        if (mouseState != MouseState.DRAG && mousePos.y - posY - draggableHeight - lineSpace > 0.0) {
+        if (mouseState != MouseState.DRAG) {
             updateHovered(relativeMousePos)
         }
     }
 
     private fun updateHovered(relativeMousePos: Vec2f) {
-        hoveredChild = children.firstOrNull { relativeMousePos.y in it.posY + draggableHeight..it.posY + it.height }
+        hoveredChild = if (relativeMousePos.y < draggableHeight) null
+        else children.firstOrNull { relativeMousePos.y in it.posY..it.posY + it.height }
     }
 
     override fun onLeave(mousePos: Vec2f) {
