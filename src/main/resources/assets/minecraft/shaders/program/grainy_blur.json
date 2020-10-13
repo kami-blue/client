@@ -1,0 +1,21 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "srcalpha",
+        "dstrgb": "1-srcalpha"
+    },
+    "vertex": "grainy_blur",
+    "fragment": "grainy_blur",
+    "attributes": [ "Position" ],
+    "samplers": [
+        { "name": "DiffuseSampler" }
+    ],
+    "uniforms": [
+        { "name": "ProjMat",     "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+        { "name": "InSize",      "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+        { "name": "OutSize",     "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
+        { "name": "randomSeed",  "type": "float",     "count": 2,  "values": [ 1233.224, 1743.335 ] },
+        { "name": "radius",      "type": "float",     "count": 1,  "values": [ 2.0 ] },
+        { "name": "iterations",  "type": "float",     "count": 1,  "values": [ 8.0 ] }
+    ]
+}
