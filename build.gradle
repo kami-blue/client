@@ -90,6 +90,9 @@ dependencies {
     }
 
     compile 'club.minnced:java-discord-rpc:2.0.2'
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.0'
+    implementation 'com.github.kittinunf.fuel:fuel-gson:2.3.0'
+
     compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
     compile 'com.github.kevinsawicki:http-request:http-request-6.0'
 
@@ -128,24 +131,23 @@ processResources {
 
 shadowJar {
     dependencies {
-        include(dependency('org.spongepowered:mixin'))
-        include(dependency('com.github.ZeroMemes:Alpine'))
-        include(dependency('club.minnced:java-discord-rpc'))
-        include(dependency('net.jodah:typetools'))
-        include(dependency('org.yaml:snakeyaml'))
-        include(dependency('org.reflections:reflections'))
-        include(dependency('org.javassist:javassist'))
-        include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
-        include(dependency('com.github.kevinsawicki:http-request'))
-        include(dependency('cabaletta:baritone-api'))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
-        include(dependency("org.jetbrains:annotations:${annotations_version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
-    }
+                    include(dependency('org.spongepowered:mixin'))
+                    include(dependency('com.github.ZeroMemes:Alpine'))
+                    include(dependency('club.minnced:java-discord-rpc'))
+                    include(dependency('net.jodah:typetools'))
+                    include(dependency('org.yaml:snakeyaml'))
+                    include(dependency('org.reflections:reflections'))
+                    include(dependency('org.javassist:javassist'))
+                    include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
+                    include(dependency('cabaletta:baritone-api'))
+                    include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
+                    include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
+                    include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
+                    include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
+                    include(dependency("org.jetbrains:annotations:${annotations_version}"))
+                    include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"))
+                    include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${coroutines_version}"))
+                }
 
     exclude 'dummyThing' // can someone explain why this is here
     classifier = 'release'
