@@ -12,15 +12,17 @@ import me.zeroeightsix.kami.util.math.Vec2d
 open class Slider(override var name: String, valueIn: Float) : InteractiveComponent() {
     protected var value = valueIn
         set(value) {
-            prevValue.value = renderProgress
-            field = value
+            if (value != field) {
+                prevValue.value = renderProgress
+                field = value
+            }
         }
     override val maxHeight
         get() = KamiFontRenderer.getFontHeight() + 4.0f
 
     private val prevValue = TimedFlag(value)
     protected val renderProgress: Float
-        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 100.0f, prevValue.value, value)
+        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 50.0f, prevValue.value, value)
 
     override fun onTick() {
         super.onTick()
