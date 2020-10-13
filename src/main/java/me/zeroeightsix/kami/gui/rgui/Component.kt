@@ -9,25 +9,25 @@ abstract class Component {
     // Basic info
     val id: UUID = UUID.randomUUID()
     @Expose open var name = id.toString(); protected set
-    @Expose open var posX = 0.0
-    @Expose open var posY = 0.0
-    @Expose open var width = 0.0
-    @Expose open var height = 0.0
+    @Expose open var posX = 0.0f
+    @Expose open var posY = 0.0f
+    @Expose open var width = 0.0f
+    @Expose open var height = 0.0f
 
     // Extra info
     protected val mc = Wrapper.minecraft
-    open val minWidth: Double = 16.0
-    open val minHeight: Double = 16.0
-    open val maxWidth = -1.0
-    open val maxHeight = -1.0
+    open val minWidth = 16.0f
+    open val minHeight = 16.0f
+    open val maxWidth = -1.0f
+    open val maxHeight = -1.0f
 
     // Rendering info
-    var prevPosX = 0.0; protected set
-    var prevPosY = 0.0; protected set
+    var prevPosX = 0.0f; protected set
+    var prevPosY = 0.0f; protected set
     val renderPosX get() = prevPosX + (posX - prevPosX) * mc.renderPartialTicks
     val renderPosY get() = prevPosY + (posY - prevPosY) * mc.renderPartialTicks
-    var prevWidth = 0.0; protected set
-    var prevHeight = 0.0; protected set
+    var prevWidth = 0.0f; protected set
+    var prevHeight = 0.0f; protected set
     val renderWidth get() = prevWidth + (width - prevWidth) * mc.renderPartialTicks
     val renderHeight get() = prevHeight + (height - prevHeight) * mc.renderPartialTicks
 

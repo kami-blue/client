@@ -37,6 +37,8 @@ class ColorHolder {
 
     val brightness = intArrayOf(r, g, b).max()!!.toFloat() / 255f
 
+    val averageBrightness = (intArrayOf(r, g, b).average() / 255.0).toFloat()
+
     fun multiply(multiplier: Float): ColorHolder {
         return ColorHolder((r * multiplier).toInt().coerceIn(0, 255), (g * multiplier).toInt().coerceIn(0, 255), (b * multiplier).toInt().coerceIn(0, 255), a)
     }

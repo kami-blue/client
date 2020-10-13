@@ -4,7 +4,9 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import kotlin.math.*
 
 object AnimationUtils {
-    fun toDeltaTime(startTime: Long) = (System.currentTimeMillis() - startTime).toDouble()
+    fun toDeltaTimeFloat(startTime: Long) = (System.currentTimeMillis() - startTime).toFloat()
+
+    fun toDeltaTimeDouble(startTime: Long) = (System.currentTimeMillis() - startTime).toDouble()
 
     // Linear
     fun linear(deltaTime: Double, length: Double, from: Double, to: Double) =
@@ -37,6 +39,18 @@ object AnimationUtils {
 
 
     // Exponent
+    // Float
+    fun exponent(deltaTime: Float, length: Float, from: Float, to: Float) =
+            if (from < to) exponentInc(deltaTime, length, from, to)
+            else exponentDec(deltaTime, length, to, from)
+
+    fun exponentInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            sqrt(1.0f - (deltaTime.coerceIn(0.0f, length) / length - 1.0f).pow(2)) * (maxValue - minValue) + minValue
+
+    fun exponentDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            sqrt(1.0f - ((deltaTime.coerceIn(0.0f, length) + length) / length - 1.0f).pow(2)) * (maxValue - minValue) + minValue
+
+    // Double
     fun exponent(deltaTime: Double, length: Double, from: Double, to: Double) =
             if (from < to) exponentInc(deltaTime, length, from, to)
             else exponentDec(deltaTime, length, to, from)

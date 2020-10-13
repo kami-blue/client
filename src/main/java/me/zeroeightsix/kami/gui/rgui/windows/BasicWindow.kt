@@ -10,10 +10,10 @@ import me.zeroeightsix.kami.util.math.Vec2d
  */
 open class BasicWindow(
         name: String,
-        posX: Double,
-        posY: Double,
-        width: Double,
-        height: Double
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float
 ) : CleanWindow(name, posX, posY, width, height) {
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)

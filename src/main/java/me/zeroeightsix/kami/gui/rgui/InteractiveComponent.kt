@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui
 
-import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.Vec2f
 
 abstract class InteractiveComponent : Component() {
     // Interactive info
@@ -21,32 +21,32 @@ abstract class InteractiveComponent : Component() {
     }
 
     // Interactive methods
-    open fun onMouseInput(mousePos: Vec2d) {
+    open fun onMouseInput(mousePos: Vec2f) {
 
     }
 
-    open fun onHover(mousePos: Vec2d) {
+    open fun onHover(mousePos: Vec2f) {
         mouseState = MouseState.HOVER
     }
 
-    open fun onLeave(mousePos: Vec2d) {
+    open fun onLeave(mousePos: Vec2f) {
         mouseState = MouseState.NONE
     }
 
-    open fun onClick(mousePos: Vec2d, buttonId: Int) {
+    open fun onClick(mousePos: Vec2f, buttonId: Int) {
         mouseState = MouseState.CLICK
     }
 
-    open fun onRelease(mousePos: Vec2d, buttonId: Int) {
+    open fun onRelease(mousePos: Vec2f, buttonId: Int) {
         mouseState = if (isInComponent(mousePos)) MouseState.HOVER
         else MouseState.NONE
     }
 
-    open fun onDrag(mousePos: Vec2d, clickPos: Vec2d, buttonId: Int) {
+    open fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         mouseState = MouseState.DRAG
     }
 
-    fun isInComponent(mousePos: Vec2d) = mousePos.x in 0.0..width && mousePos.y in 0.0..height
+    fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width && mousePos.y in 0.0f..height
 
     @Suppress("UNUSED")
     enum class MouseState {

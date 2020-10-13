@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.util.graphics.Alignment
-import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
 
@@ -9,8 +9,8 @@ abstract class WindowComponent : InteractiveComponent() {
     // Interactive info
     open val draggableHeight get() = height
     var lastActiveTime: Long = System.currentTimeMillis(); private set
-    var preDragPos = Vec2d(0.0, 0.0); private set
-    var preDragSize = Vec2d(0.0, 0.0); private set
+    var preDragPos = Vec2f(0.0f, 0.0f); private set
+    var preDragSize = Vec2f(0.0f, 0.0f); private set
 
     open fun onResize() {}
     open fun onReposition() {}
@@ -31,24 +31,24 @@ abstract class WindowComponent : InteractiveComponent() {
         prevPosY = posY
     }
 
-    override fun onClick(mousePos: Vec2d, buttonId: Int) {
+    override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
     }
 
-    override fun onRelease(mousePos: Vec2d, buttonId: Int) {
+    override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
     }
 
     private fun updatePreDrag() {
-        preDragPos = Vec2d(posX, posY)
-        preDragSize = Vec2d(width, height)
+        preDragPos = Vec2f(posX, posY)
+        preDragSize = Vec2f(width, height)
     }
 
-    override fun onDrag(mousePos: Vec2d, clickPos: Vec2d, buttonId: Int) {
+    override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
         val relativeClickPos = clickPos.subtract(preDragPos)
         val centerSplitterH = min(10.0, preDragSize.x / 3.0)
@@ -77,14 +77,14 @@ abstract class WindowComponent : InteractiveComponent() {
                 when (horizontalSide) {
                     Alignment.HAlign.LEFT -> {
                         var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
-                        if (maxWidth != -1.0) newWidth = min(newWidth, maxWidth)
+                        if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
                         posX += width - newWidth
                         width = newWidth
                     }
                     Alignment.HAlign.RIGHT -> {
                         var newWidth = max(preDragSize.x + draggedDist.x, minWidth)
-                        if (maxWidth != -1.0) newWidth = min(newWidth, maxWidth)
+                        if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
                         width = newWidth
                     }
@@ -96,14 +96,14 @@ abstract class WindowComponent : InteractiveComponent() {
                 when (verticalSide) {
                     Alignment.VAlign.TOP -> {
                         var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
-                        if (maxHeight != -1.0) newHeight = min(newHeight, maxHeight)
+                        if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
                         posY += height - newHeight
                         height = newHeight
                     }
                     Alignment.VAlign.BOTTOM -> {
                         var newHeight = max(preDragSize.y + draggedDist.y, minHeight)
-                        if (maxHeight != -1.0) newHeight = min(newHeight, maxHeight)
+                        if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
                         height = newHeight
                     }
@@ -114,8 +114,8 @@ abstract class WindowComponent : InteractiveComponent() {
 
                 onResize()
             } else if (relativeClickPos.y <= draggableHeight) {
-                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0, mc.displayWidth - width)
-                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0, mc.displayHeight - height)
+                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width)
+                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height)
 
                 onReposition()
             } else {

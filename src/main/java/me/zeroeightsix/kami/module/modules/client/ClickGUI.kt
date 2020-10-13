@@ -19,37 +19,36 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400).build())
-    val scrollSpeed = register(Settings.f("ScrollSpeed", 1f))
-    val backgroundBlur = register(Settings.floatBuilder("BackgroundBlur").withValue(0.5f).withRange(0f, 8f).withStep(0.25f))
+    val blur = register(Settings.floatBuilder("BlurRadius").withValue(4.0f).withRange(0f, 32f).withStep(0.5f))
 
-    private var prevScale = scaleSetting.value / 100.0
+    private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale
     private val settingTimer = TimerUtils.StopTimer()
 
     fun resetScale() {
         scaleSetting.value = 100
-        prevScale = 1.0
-        scale = 1.0
+        prevScale = 1.0f
+        scale = 1.0f
     }
 
-    fun getScaleFactor(): Double {
-        return (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
-    }
+    fun getScaleFactorFloat() = (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0f
+
+    fun getScaleFactor() = (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
 
     override fun onUpdate(event: SafeTickEvent) {
         prevScale = scale
         if (settingTimer.stop() > 500L) {
             val diff = scale - getRoundedScale()
             when {
-                diff < -0.025 -> scale += 0.025
-                diff > 0.025 -> scale -= 0.025
+                diff < -0.025 -> scale += 0.025f
+                diff > 0.025 -> scale -= 0.025f
                 else -> scale = getRoundedScale()
             }
         }
     }
 
-    private fun getRoundedScale(): Double {
-        return round((scaleSetting.value / 100.0) / 0.1) * 0.1
+    private fun getRoundedScale(): Float {
+        return round((scaleSetting.value / 100.0f) / 0.1f) * 0.1f
     }
 
     override fun onEnable() {

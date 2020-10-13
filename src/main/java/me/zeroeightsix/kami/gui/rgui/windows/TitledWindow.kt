@@ -11,13 +11,13 @@ import me.zeroeightsix.kami.util.math.Vec2d
  */
 open class TitledWindow(
         name: String,
-        posX: Double,
-        posY: Double,
-        width: Double,
-        height: Double
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float
 ) : BasicWindow(name, posX, posY, width, height) {
-    override val draggableHeight: Double
-        get() = KamiFontRenderer.getFontHeight() + 4.0
+    override val draggableHeight: Float
+        get() = KamiFontRenderer.getFontHeight() + 4.0f
 
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)

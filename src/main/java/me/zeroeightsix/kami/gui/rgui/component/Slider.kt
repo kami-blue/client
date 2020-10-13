@@ -9,20 +9,18 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2d
 
-open class Slider(override var name: String, valueIn: Double) : InteractiveComponent() {
+open class Slider(override var name: String, valueIn: Float) : InteractiveComponent() {
     protected var value = valueIn
         set(value) {
-            if (value != field) {
-                prevValue.value = renderProgress
-                field = value
-            }
+            prevValue.value = renderProgress
+            field = value
         }
     override val maxHeight
-        get() = KamiFontRenderer.getFontHeight() + 4.0
+        get() = KamiFontRenderer.getFontHeight() + 4.0f
 
     private val prevValue = TimedFlag(value)
-    protected val renderProgress: Double
-        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTime(prevValue.lastUpdateTime), 50.0, prevValue.value, value)
+    protected val renderProgress: Float
+        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 100.0f, prevValue.value, value)
 
     override fun onTick() {
         super.onTick()
@@ -30,14 +28,22 @@ open class Slider(override var name: String, valueIn: Double) : InteractiveCompo
     }
 
     override fun onRender(vertexHelper: VertexHelper) {
-        val color = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTime(lastStateUpdateTime), 100.0)
-        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.5, 0.5), Vec2d((renderWidth - 0.5) * renderProgress, renderHeight - 0.5), color)
+        // Slider bar
+        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d((renderWidth - 1.0) * renderProgress, renderHeight - 1.0), GuiColors.primary)
+
+        // Slider frame
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1f, GuiColors.outline)
-        KamiFontRenderer.drawString(name, 1f, 1f, color = GuiColors.text)
+
+        // Slider hover overlay
+        val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 100.0)
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d(renderWidth - 1.0, renderHeight - 1.0), overlayColor)
+
+        // Slider name
+        KamiFontRenderer.drawString(name, 2f, 1f, color = GuiColors.text)
     }
 
     private fun getStateColor(state: MouseState) = when (state) {
-        MouseState.NONE -> GuiColors.primary
+        MouseState.NONE -> GuiColors.idle
         MouseState.HOVER -> GuiColors.hover
         else -> GuiColors.click
     }

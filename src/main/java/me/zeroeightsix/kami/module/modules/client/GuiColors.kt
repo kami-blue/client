@@ -32,9 +32,12 @@ object GuiColors : Module() {
     private val bText = register(Settings.integerBuilder("TextBlue").withValue(255).withRange(0, 255).withStep(1))
     private val aText = register(Settings.integerBuilder("TextAlpha").withValue(255).withRange(0, 255).withStep(1))
 
+    private val aHover = register(Settings.integerBuilder("HoverAlpha").withValue(16).withRange(0, 255).withStep(1))
+
     val primary get() = ColorHolder(rPrimary.value, gPrimary.value, bPrimary.value, aPrimary.value)
-    val hover get() = primary.variant(0.1f)
-    val click get() = primary.variant(0.2f)
+    val idle get() = if (primary.averageBrightness < 0.9f) ColorHolder(255, 255, 255, 0) else ColorHolder(0, 0, 0, 0)
+    val hover get() = idle.apply { a = aHover.value }
+    val click get() = idle.apply { a = aHover.value * 2 }
     val backGround get() = ColorHolder(rBg.value, gBg.value, bBg.value, aBg.value)
     val outline get() = ColorHolder(rOutline.value, gOutline.value, bOutline.value, aOutline.value)
     val text get() = ColorHolder(rText.value, gText.value, bText.value, aText.value)

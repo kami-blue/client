@@ -7,11 +7,11 @@ import me.zeroeightsix.kami.gui.rgui.WindowComponent
  */
 open class CleanWindow(
         override var name: String,
-        override var posX: Double,
-        override var posY: Double,
-        override var width: Double,
-        override var height: Double
+        override var posX: Float,
+        override var posY: Float,
+        override var width: Float,
+        override var height: Float
 ) : WindowComponent() {
-    override val draggableHeight: Double
+    override val draggableHeight: Float
         get() = height
 }
