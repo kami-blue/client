@@ -18,6 +18,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
@@ -27,6 +28,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.collections.LinkedHashMap
 import kotlin.math.ceil
 
 @Module.Info(
@@ -83,18 +85,9 @@ object CombatSetting : Module() {
     private var overrideRange = range.value
     private var paused = false
     private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private val threadList = arrayOf(Thread { updateTarget() }, Thread { updatePlacingList() })
+    private val threadList = arrayOf(Thread { updateTarget() }, Thread { updatePlacingList() }, Thread { updateCrystalList() })
     private val threadPool = Executors.newCachedThreadPool()
 
-    val prediction
-        get() = CombatManager.target?.let {
-            if (motionPrediction.value) {
-                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
-                CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
-            } else {
-                it.positionVector to it.boundingBox
-            }
-        }
     val pause
         get() = mc.player.ticksExisted < 10
                 || pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
@@ -154,22 +147,47 @@ object CombatSetting : Module() {
 
             for (pos in CrystalUtils.getPlacePos(it, mc.player, 8f)) {
                 val damage = CrystalUtils.calcDamage(pos, it, prediction.first, prediction.second)
-                val selfDamage = CrystalUtils.calcDamage(pos, mc.player, prediction.first, prediction.second)
+                val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
                 cacheList.add(Triple(pos, damage, selfDamage))
             }
-
             cacheList.sortedByDescending { damage -> damage.second }
         } ?: emptyList()
     }
 
-    fun getPrediction(entity: Entity) = CombatManager.target?.let {
+    private fun updateCrystalList() {
+        val crystalList = ArrayList(mc.world.loadedEntityList).filterIsInstance<EntityEnderCrystal>()
+        val cacheList = ArrayList<Pair<EntityEnderCrystal, Pair<Float, Float>>>()
+        val cacheMap = LinkedHashMap<EntityEnderCrystal, Pair<Float, Float>>()
+        val eyePos = mc.player.getPositionEyes(1f)
+
+        CombatManager.target?.let {
+            val prediction = getPrediction(it)
+            for (crystal in crystalList) {
+                if (crystal.isDead) continue
+                val damage = CrystalUtils.calcDamage(crystal, it, prediction.first, prediction.second)
+                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
+                cacheList.add(crystal to (damage to selfDamage))
+            }
+        } ?: run {
+            for (crystal in crystalList) {
+                if (crystal.isDead) continue
+                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
+                cacheList.add(crystal to (0f to selfDamage))
+            }
+        }
+
+        cacheMap.putAll(cacheList.sortedBy { pair -> pair.first.positionVector.distanceTo(eyePos) })
+        CombatManager.crystalMap = cacheMap
+    }
+
+    private fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
             val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
             CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
         } else {
             it.positionVector to it.boundingBox
         }
-    }?: entity.positionVector to entity.boundingBox
+    } ?: entity.positionVector to entity.boundingBox
 
     /* Targeting */
     private fun getTargetList(): LinkedList<EntityLivingBase> {

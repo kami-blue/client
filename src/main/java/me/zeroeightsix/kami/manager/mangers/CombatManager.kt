@@ -5,9 +5,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
-import java.util.*
-import kotlin.collections.ArrayList
 
 object CombatManager : Manager() {
     private val combatModules: List<Module>
@@ -19,6 +18,7 @@ object CombatManager : Manager() {
             field = value
         }
     var crystalPlaceList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>, immutable list = thread safe
+    var crystalMap = emptyMap<EntityEnderCrystal, Pair<Float, Float>>() // <Crystal, <Target Damage, Self Damage>>
     val motionTracker = MotionTracker(null)
 
     fun isActiveAndTopPriority(module: Module) = module.isActive() && isOnTopPriority(module)
