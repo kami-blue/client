@@ -140,6 +140,8 @@ object CombatSetting : Module() {
     }
 
     private fun updatePlacingList() {
+        if (CrystalAura.isDisabled && CrystalBasePlace.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 != 0) return
+
         CombatManager.crystalPlaceList = CombatManager.target?.let {
             val cacheList = ArrayList<Triple<BlockPos, Float, Float>>()
 
@@ -155,6 +157,8 @@ object CombatSetting : Module() {
     }
 
     private fun updateCrystalList() {
+        if (CrystalAura.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 - 2 != 0) return
+
         val crystalList = ArrayList(mc.world.loadedEntityList).filterIsInstance<EntityEnderCrystal>()
         val cacheList = ArrayList<Pair<EntityEnderCrystal, Pair<Float, Float>>>()
         val cacheMap = LinkedHashMap<EntityEnderCrystal, Pair<Float, Float>>()
