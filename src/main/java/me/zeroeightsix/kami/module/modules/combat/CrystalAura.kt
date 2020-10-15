@@ -93,7 +93,7 @@ object CrystalAura : Module() {
     /* Variables */
     private var placeList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>
     private val placedBBMap = HashMap<AxisAlignedBB, Long>() // <CrystalBoundingBox, Added Time>
-    private val crystalList = HashSet<EntityEnderCrystal>()
+    private var crystalMap = emptyMap<EntityEnderCrystal, Pair<Float, Float>>() // <Crystal, <Target Damage, Self Damage>>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var lastLookAt = Vec3d.ZERO
@@ -117,7 +117,6 @@ object CrystalAura : Module() {
 
     override fun onDisable() {
         placedBBMap.clear()
-        crystalList.clear()
         ignoredList.clear()
         lastCrystal = null
         lastLookAt = Vec3d.ZERO
@@ -177,9 +176,7 @@ object CrystalAura : Module() {
 
     private fun updateMap() {
         placeList = CombatManager.crystalPlaceList
-
-        crystalList.clear()
-        crystalList.addAll(CrystalUtils.getCrystalList(max(placeRange.value, explodeRange.value)))
+        crystalMap = CombatManager.crystalMap
 
         placedBBMap.values.removeIf { System.currentTimeMillis() - it > max(InfoCalculator.ping(), 100) }
 
@@ -308,14 +305,10 @@ object CrystalAura : Module() {
         return doExplode.value
                 && hitTimer >= hitDelay.value
                 && getExplodingCrystal() != null
-                && CombatManager.target?.let { target ->
+                && CombatManager.target?.let {
             if (checkDamage.value) {
-                var maxDamage = 0f
-                var maxSelfDamage = 0f
-                for (crystal in crystalList) {
-                    maxDamage = max(maxDamage, CrystalUtils.calcDamage(crystal, target))
-                    maxSelfDamage = max(maxSelfDamage, CrystalUtils.calcDamage(crystal, mc.player))
-                }
+                val maxDamage = crystalMap.values.maxBy { it.first }?.first ?: 0.0f
+                val maxSelfDamage = crystalMap.values.maxBy { it.second }?.second ?: 0.0f
                 if (!noSuicideCheck(maxSelfDamage)) return false
                 if (!checkDamageExplode(maxDamage, maxSelfDamage)) return false
             }
@@ -324,16 +317,18 @@ object CrystalAura : Module() {
     }
 
     private fun getExplodingCrystal(): EntityEnderCrystal? {
-        if (crystalList.isEmpty()) return null
-        return crystalList.firstOrNull {
+        if (crystalMap.isEmpty()) return null
+        return crystalMap.keys.firstOrNull {
             !ignoredList.contains(it)
+                    && !it.isDead
                     && (mc.player.canEntityBeSeen(it) || EntityUtils.canEntityFeetBeSeen(it))
-                    && mc.player.getPositionEyes(1f).distanceTo(it.positionVector) < explodeRange.value
+                    && mc.player.getPositionEyes(1f).distanceTo(it.positionVector) <= explodeRange.value
                     && abs(RotationUtils.getRotationToEntity(it).x - getLastRotation().x) <= maxYawRate.value + (inactiveTicks * 5f)
-        } ?: crystalList.firstOrNull {
+        } ?: crystalMap.keys.firstOrNull {
             !ignoredList.contains(it)
+                    && !it.isDead
                     && EntityUtils.canEntityHitboxBeSeen(it) != null
-                    && mc.player.getPositionEyes(1f).distanceTo(it.positionVector) < wallExplodeRange.value
+                    && mc.player.getPositionEyes(1f).distanceTo(it.positionVector) <= wallExplodeRange.value
         }
     }
 
@@ -384,14 +379,12 @@ object CrystalAura : Module() {
                 }
             }
 
-            for (crystal in crystalList) {
+            for ((crystal, pair) in crystalMap) {
                 if (ignoredList.contains(crystal)) continue
+                if (!checkDamagePlace(pair.first, pair.second)) continue
                 if (crystal.positionVector.distanceTo(eyePos) > placeRange.value) continue
                 val rotation = RotationUtils.getRotationToEntity(crystal)
                 if (abs(rotation.x - getLastRotation().x) > maxYawRate.value) continue
-                val damage = CrystalUtils.calcDamage(crystal, target)
-                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
-                if (!checkDamagePlace(damage, selfDamage)) continue
                 count++
             }
         }
