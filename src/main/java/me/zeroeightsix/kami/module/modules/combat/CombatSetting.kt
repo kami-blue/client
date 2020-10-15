@@ -180,7 +180,7 @@ object CombatSetting : Module() {
         CombatManager.crystalMap = cacheMap
     }
 
-    private fun getPrediction(entity: Entity) = CombatManager.target?.let {
+    fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
             val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
             CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
