@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
@@ -10,6 +11,8 @@ import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
@@ -18,8 +21,11 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11.*
 import java.util.*
+import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 
@@ -55,11 +61,12 @@ object CombatSetting : Module() {
     private val ignoreOffhandEating = register(Settings.booleanBuilder("IgnoreOffhandEating").withValue(true).withVisibility { page.value == Page.IN_COMBAT && pauseForEating.value })
     private val pauseBaritone = register(Settings.booleanBuilder("PauseBaritone").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
     private val resumeDelay = register(Settings.integerBuilder("ResumeDelay").withRange(1, 10).withValue(3).withVisibility { page.value == Page.IN_COMBAT && pauseBaritone.value })
+    private val motionPrediction = register(Settings.booleanBuilder("MotionPrediction").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
+    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.IN_COMBAT && motionPrediction.value })
+    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
 
     /* Render */
     private val renderPredictedPos = register(Settings.booleanBuilder("RenderPredictedPosition").withValue(false).withVisibility { page.value == Page.RENDER })
-    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.RENDER && renderPredictedPos.value })
-    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.RENDER && renderPredictedPos.value && !pingSync.value })
 
     private enum class Page {
         TARGETING, IN_COMBAT, RENDER
@@ -76,32 +83,59 @@ object CombatSetting : Module() {
     private var overrideRange = range.value
     private var paused = false
     private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val threadList = arrayOf(Thread { updateTarget() }, Thread { updatePlacingList() })
+    private val threadPool = Executors.newCachedThreadPool()
+
+    val prediction
+        get() = CombatManager.target?.let {
+            if (motionPrediction.value) {
+                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+                CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
+            } else {
+                it.positionVector to it.boundingBox
+            }
+        }
     val pause
-        get() = pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
+        get() = mc.player.ticksExisted < 10
+                || pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
                 || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.getItem() is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
 
 
     override fun isActive() = Aura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
 
-    override fun onRender() {
-        if (!renderPredictedPos.value) return
-        CombatManager.target?.let {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
-            val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
-            val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return
-            val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
-            val posCurrentScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posCurrent))
-            val posAheadScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAhead))
-            val posAheadEyeScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAheadEye))
-            val vertexHelper = VertexHelper(GlStateUtils.useVbo())
-            val vertices = arrayOf(posCurrentScreen, posAheadScreen, posAheadEyeScreen)
-            glDisable(GL_TEXTURE_2D)
-            RenderUtils2D.drawLineStrip(vertexHelper, vertices, 2f, ColorHolder(80, 255, 80))
-            glEnable(GL_TEXTURE_2D)
+    init {
+        listener<RenderOverlayEvent> {
+            if (!renderPredictedPos.value) return@listener
+            CombatManager.target?.let {
+                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+                val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
+                val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return@listener
+                val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
+                val posCurrentScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posCurrent))
+                val posAheadScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAhead))
+                val posAheadEyeScreen = Vec2d(ProjectionUtils.toScaledScreenPos(posAheadEye))
+                val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+                val vertices = arrayOf(posCurrentScreen, posAheadScreen, posAheadEyeScreen)
+                glDisable(GL_TEXTURE_2D)
+                RenderUtils2D.drawLineStrip(vertexHelper, vertices, 2f, ColorHolder(80, 255, 80))
+                glEnable(GL_TEXTURE_2D)
+            }
+        }
+
+        listener<SafeTickEvent>(5000) {
+            for (thread in threadList) threadPool.execute(thread)
+
+            if (pauseBaritone.value && !paused && isActive()) {
+                BaritoneUtils.pause()
+                paused = true
+            } else if (paused && resumeTimer.tick(resumeDelay.value.toLong())) {
+                BaritoneUtils.unpause()
+                paused = false
+            }
         }
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
+    private fun updateTarget() {
         with(CombatManager.getTopModule()) {
             overrideRange = if (this is Aura) this.range.value else range.value
         }
@@ -110,15 +144,34 @@ object CombatSetting : Module() {
             CombatManager.targetList = it
             CombatManager.target = getTarget(it)
         }
-        if (pauseBaritone.value && !paused && isActive()) {
-            BaritoneUtils.pause()
-            paused = true
-        } else if (paused && resumeTimer.tick(resumeDelay.value.toLong())) {
-            BaritoneUtils.unpause()
-            paused = false
-        }
     }
 
+    private fun updatePlacingList() {
+        CombatManager.crystalPlaceList = CombatManager.target?.let {
+            val cacheList = ArrayList<Triple<BlockPos, Float, Float>>()
+
+            val prediction = getPrediction(it)
+
+            for (pos in CrystalUtils.getPlacePos(it, mc.player, 8f)) {
+                val damage = CrystalUtils.calcDamage(pos, it, prediction.first, prediction.second)
+                val selfDamage = CrystalUtils.calcDamage(pos, mc.player, prediction.first, prediction.second)
+                cacheList.add(Triple(pos, damage, selfDamage))
+            }
+
+            cacheList.sortedByDescending { damage -> damage.second }
+        } ?: emptyList()
+    }
+
+    fun getPrediction(entity: Entity) = CombatManager.target?.let {
+        if (motionPrediction.value) {
+            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+            CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
+        } else {
+            it.positionVector to it.boundingBox
+        }
+    }?: entity.positionVector to entity.boundingBox
+
+    /* Targeting */
     private fun getTargetList(): LinkedList<EntityLivingBase> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
@@ -172,7 +225,8 @@ object CombatSetting : Module() {
                 listIn.removeIf { it.boundingBox.calculateIntercept(eyePos, sightEndPos) == null }
             }
 
-            else -> { }
+            else -> {
+            }
         }
         return listIn
     }
@@ -230,4 +284,5 @@ object CombatSetting : Module() {
         if (listIn.isEmpty()) return null
         return listIn.sortedBy { it.getDistance(mc.player) }[0]
     }
+    /* End of targeting */
 }

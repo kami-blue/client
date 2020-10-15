@@ -65,6 +65,17 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
         return Vec3d(sumX, sumY, sumZ).scale(1.0 / motionLog.size)
     }
 
+    fun getPositionAndBBAhead(ticksAhead: Int, interpolation: Boolean = false): Pair<Vec3d, AxisAlignedBB>? {
+        return target?.let { entity ->
+            calcPositionAhead(ticksAhead, interpolation)?.let {
+                val halfWidth = entity.width / 2.0
+                val height = entity.height.toDouble()
+
+                it to AxisAlignedBB(it.x - halfWidth, it.y, it.z - halfWidth, it.x + halfWidth, it.y + height, it.z + halfWidth)
+            }
+        }
+    }
+
     /**
      * Calculate the predicted position of the target entity based on [calcAverageMotion]
      *

@@ -18,7 +18,6 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11.*
 import java.util.concurrent.ConcurrentHashMap
@@ -39,7 +38,7 @@ object CrystalESP : Module() {
     private val damageESP = register(Settings.booleanBuilder("DamageESP").withValue(false).withVisibility { page.value == Page.DAMAGE_ESP })
     private val minAlpha = register(Settings.integerBuilder("MinAlpha").withValue(0).withRange(0, 255).withVisibility { page.value == Page.DAMAGE_ESP })
     private val maxAlpha = register(Settings.integerBuilder("MaxAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.DAMAGE_ESP })
-    private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(4.0f).withRange(0.0f, 16.0f).withVisibility { page.value == Page.DAMAGE_ESP })
+    private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(4.0f).withRange(0.0f, 8.0f).withStep(0.5f).withVisibility { page.value == Page.DAMAGE_ESP })
 
     private val crystalESP = register(Settings.booleanBuilder("CrystalESP").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP })
     private val mode = register(Settings.enumBuilder(Mode::class.java, "Mode").withValue(Mode.BLOCK).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
@@ -68,24 +67,13 @@ object CrystalESP : Module() {
         BLOCK, CRYSTAL
     }
 
-    private val damageESPMap = ConcurrentHashMap<Float, BlockPos>()
     private val crystalMap = ConcurrentHashMap<EntityEnderCrystal, Pair<Pair<Float, Float>, Vec2f>>() // <Crystal, <<Damage, SelfDamage>, <PrevAlpha, Alpha>>>
-    private val threads = arrayOf(Thread { updateDamageESP() }, Thread { updateCrystalESP() })
-    private val threadPool = Executors.newCachedThreadPool()
+    private val runnable = Runnable { updateCrystalESP() }
+    private val executor = Executors.newSingleThreadExecutor()
 
     init {
         listener<SafeTickEvent> {
-            if (it.phase == TickEvent.Phase.END) for (thread in threads) threadPool.execute(thread)
-        }
-    }
-
-    private fun updateDamageESP() {
-        if (damageESP.value) {
-            val cacheMap = CrystalUtils.getPlacePos(CombatManager.target, CombatManager.target, damageRange.value)
-            damageESPMap.values.removeIf { !cacheMap.containsValue(it) }
-            damageESPMap.putAll(cacheMap)
-        } else {
-            damageESPMap.clear()
+            if (it.phase == TickEvent.Phase.END) executor.execute(runnable)
         }
     }
 
@@ -120,9 +108,10 @@ object CrystalESP : Module() {
             val renderer = ESPRenderer()
 
             /* Damage ESP */
-            if (damageESP.value && damageESPMap.isNotEmpty()) {
+            val placeList = CombatManager.crystalPlaceList
+            if (damageESP.value && placeList.isNotEmpty()) {
                 renderer.aFilled = 255
-                for ((damage, pos) in damageESPMap) {
+                for ((pos, damage, _) in placeList) {
                     val rgb = MathUtils.convertRange(damage.toInt(), 0, 20, 127, 255)
                     val a = MathUtils.convertRange(damage.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
                     val rgba = ColorHolder(rgb, rgb, rgb, a)

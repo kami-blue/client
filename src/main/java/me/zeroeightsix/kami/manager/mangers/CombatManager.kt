@@ -5,18 +5,20 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.math.BlockPos
 import java.util.*
 import kotlin.collections.ArrayList
 
 object CombatManager : Manager() {
-    private val combatModules = ArrayList<Module>()
+    private val combatModules: List<Module>
 
-    var targetList = LinkedList<EntityLivingBase>()
+    var targetList = emptyList<EntityLivingBase>()
     var target: EntityLivingBase? = null
         set(value) {
             motionTracker.target = value
             field = value
         }
+    var crystalPlaceList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>, immutable list = thread safe
     val motionTracker = MotionTracker(null)
 
     fun isActiveAndTopPriority(module: Module) = module.isActive() && isOnTopPriority(module)
@@ -40,10 +42,12 @@ object CombatManager : Manager() {
     }
 
     init {
+        val cacheList = ArrayList<Module>()
         for (module in ModuleManager.getModules()) {
             if (module.category != Module.Category.COMBAT) continue
             if (module.modulePriority == -1) continue
-            combatModules.add(module)
+            cacheList.add(module)
         }
+        combatModules = cacheList.toList()
     }
 }
