@@ -268,9 +268,9 @@ object CrystalAura : Module() {
             if (dist > placeRange.value) continue
 
             // Wall distance check
-            val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5))
-            val hitBlockPos = rayTraceResult?.blockPos ?: BlockPos.ORIGIN
-            if (hitBlockPos != pos && dist > wallPlaceRange.value) continue
+            val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, 0.5, 0.5))
+            val hitBlockPos = rayTraceResult?.blockPos ?: pos
+            if (hitBlockPos.distanceSq(pos) > 2.0 && dist > wallPlaceRange.value) continue
 
             // Collide check
             if (!CrystalUtils.canPlaceCollide(pos)) continue

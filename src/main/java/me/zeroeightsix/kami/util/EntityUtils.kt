@@ -275,7 +275,7 @@ object EntityUtils {
     }
 
     fun canEntityFeetBeSeen(entityIn: Entity): Boolean {
-        return mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ), Vec3d(entityIn.posX, entityIn.posY, entityIn.posZ), false, true, false) == null
+        return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), entityIn.positionVector, false, true, false) == null
     }
 
     fun getDroppedItems(itemId: Int, range: Float): Array<Entity>? {
