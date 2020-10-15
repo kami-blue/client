@@ -76,11 +76,12 @@ object CrystalESP : Module() {
             }
 
             if (crystalESP.value) {
-                val cacheMap = CombatManager.crystalMap.entries.associate { it.key to Quad(it.value.first, it.value.second, 0.0f, 0.0f) }.toMutableMap()
+                val cacheMap = CombatManager.crystalMap.entries
+                        .filter { it.key.positionVector.distanceTo(eyePos) < crystalRange.value }
+                        .associate { it.key to Quad(it.value.first, it.value.second, 0.0f, 0.0f) }.toMutableMap()
                 val scale = 1.0f / animationScale.value
 
                 for ((crystal, quad1) in crystalMap) {
-                    if (crystal.positionVector.distanceTo(eyePos) > crystalRange.value) continue
                     cacheMap.computeIfPresent(crystal) { _, quad2 -> Quad(quad2.first, quad2.second, quad1.fourth, min(quad1.fourth + 0.4f * scale, 1.0f)) }
                     if (quad1.fourth < 2.0f) cacheMap.computeIfAbsent(crystal) { Quad(quad1.first, quad1.second, quad1.fourth, min(quad1.fourth + 0.2f * scale, 2.0f)) }
                 }
