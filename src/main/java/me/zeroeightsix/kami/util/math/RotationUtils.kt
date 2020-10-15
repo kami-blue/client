@@ -26,16 +26,16 @@ object RotationUtils {
     }
 
     fun getRelativeRotation(entity: Entity, pTicks: Float = 1f): Double {
-        return getRotationDiff(getRotationToEntity(entity, pTicks), getPlayerRotation())
+        return getRelativeRotation(entity.boundingBox.center, pTicks)
     }
 
     fun getRelativeRotation(posTo: Vec3d, pTicks: Float = 1f): Double {
-        return getRotationDiff(getRotationTo(posTo, true, pTicks), getPlayerRotation())
+        return getRotationDiff(getRotationTo(posTo, true, pTicks), getPlayerRotation(pTicks))
     }
 
     fun getPlayerRotation(pTicks: Float = 1f): Vec2d {
         val rotation = Vec2d(mc.player.rotationYaw.toDouble(), mc.player.rotationPitch.toDouble())
-        val prevRotation = Vec2d(mc.player.rotationYaw.toDouble(), mc.player.rotationPitch.toDouble())
+        val prevRotation = Vec2d(mc.player.prevRotationYaw.toDouble(), mc.player.prevRotationPitch.toDouble())
         return prevRotation.add(rotation.subtract(prevRotation).multiply(pTicks.toDouble()))
     }
 
