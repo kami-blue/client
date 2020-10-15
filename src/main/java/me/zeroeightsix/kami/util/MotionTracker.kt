@@ -25,15 +25,18 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     private val motionLog = LinkedList<Vec3d>()
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var motion = Vec3d(0.0, 0.0, 0.0)
+    private val lockObject = Any()
 
     init {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
-            target?.let { target ->
-                motionLog.add(calcActualMotion(target))
-                while (motionLog.size > trackLength) motionLog.pollFirst()
-                prevMotion = motion
-                motion = calcAverageMotion()
+            synchronized(lockObject) {
+                target?.let { target ->
+                    motionLog.add(calcActualMotion(target))
+                    while (motionLog.size > trackLength) motionLog.pollFirst()
+                    prevMotion = motion
+                    motion = calcAverageMotion()
+                }
             }
         }
     }
@@ -57,12 +60,14 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
         var sumX = 0.0
         var sumY = 0.0
         var sumZ = 0.0
-        for (motion in motionLog) {
-            sumX += motion.x
-            sumY += motion.y
-            sumZ += motion.z
+        synchronized(lockObject) {
+            for (motion in motionLog) {
+                sumX += motion.x
+                sumY += motion.y
+                sumZ += motion.z
+            }
+            return Vec3d(sumX, sumY, sumZ).scale(1.0 / motionLog.size)
         }
-        return Vec3d(sumX, sumY, sumZ).scale(1.0 / motionLog.size)
     }
 
     fun getPositionAndBBAhead(ticksAhead: Int, interpolation: Boolean = false): Pair<Vec3d, AxisAlignedBB>? {
@@ -125,9 +130,11 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
      * Reset motion tracker
      */
     fun reset() {
-        motionLog.clear()
-        prevMotion = Vec3d(0.0, 0.0, 0.0)
-        motion = Vec3d(0.0, 0.0, 0.0)
+        synchronized(lockObject) {
+            motionLog.clear()
+            prevMotion = Vec3d(0.0, 0.0, 0.0)
+            motion = Vec3d(0.0, 0.0, 0.0)
+        }
     }
 
     init {
