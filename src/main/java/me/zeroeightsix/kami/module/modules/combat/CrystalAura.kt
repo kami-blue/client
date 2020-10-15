@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
@@ -32,7 +33,6 @@ import net.minecraft.util.SoundCategory
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -261,17 +261,32 @@ object CrystalAura : Module() {
         if (CombatManager.crystalPlaceList.isEmpty()) return null
         val eyePos = mc.player.getPositionEyes(1f)
         for ((pos, damage, selfDamage) in CombatManager.crystalPlaceList) {
+
+            // Damage check
+            if (!noSuicideCheck(selfDamage)) continue
+            if (!checkDamagePlace(damage, selfDamage)) continue
+
+            // Distance check
             val hitVec = Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5)
             val dist = eyePos.distanceTo(hitVec)
             if (dist > placeRange.value) continue
+
+            // Wall distance check
+            val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5))
+            val hitBlockPos = rayTraceResult?.blockPos ?: BlockPos.ORIGIN
+            if (hitBlockPos != pos && dist > wallPlaceRange.value) continue
+
+            // Collide check
+            if (!CrystalUtils.canPlaceCollide(pos)) continue
+
+            // Place sync
             val bb = CrystalUtils.getCrystalBB(pos.up())
             if (placeSync.value && placedBBMap.keys.firstOrNull { it.intersects(bb) } != null) continue
-            if (!CrystalUtils.canPlaceCollide(pos)) continue
-            if (BlockUtils.rayTraceTo(pos) == null && dist > wallPlaceRange.value) continue
+
+            // Yaw rate check
             val rotation = RotationUtils.getRotationTo(hitVec, true)
             if (abs(rotation.x - getLastRotation().x) > maxYawRate.value + (inactiveTicks * 5f)) continue
-            if (!noSuicideCheck(selfDamage)) continue
-            if (!checkDamagePlace(damage, selfDamage)) continue
+
             return pos
         }
         return null
