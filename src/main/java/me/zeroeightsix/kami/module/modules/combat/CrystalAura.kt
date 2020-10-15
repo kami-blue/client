@@ -108,7 +108,8 @@ object CrystalAura : Module() {
     private var placeTimer = 0
     private var hitTimer = 0
     private var hitCount = 0
-    private var inactiveTicks = 40
+    private val lockObject = Any()
+    var inactiveTicks = 20
 
     override fun isActive(): Boolean {
         return isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 40
@@ -141,7 +142,9 @@ object CrystalAura : Module() {
             if (it.packet is SPacketSpawnObject) {
                 if (it.packet.type == 51) {
                     val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
-                    placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
+                    synchronized(lockObject) {
+                        placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
+                    }
                 }
             }
 
