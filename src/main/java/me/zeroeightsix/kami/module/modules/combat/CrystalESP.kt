@@ -43,7 +43,7 @@ object CrystalESP : Module() {
     private val showSelfDamage = register(Settings.booleanBuilder("SelfDamage").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 4.0f).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val animationScale = register(Settings.floatBuilder("AnimationScale").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val crystalRange = register(Settings.floatBuilder("CrystalESPRange").withValue(16.0f).withRange(0.0f, 64.0f).withVisibility { page.value == Page.CRYSTAL_ESP })
+    private val crystalRange = register(Settings.floatBuilder("CrystalESPRange").withValue(16.0f).withRange(0.0f, 16.0f).withVisibility { page.value == Page.CRYSTAL_ESP })
 
     private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withVisibility { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
     private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withVisibility { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })

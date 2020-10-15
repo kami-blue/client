@@ -93,7 +93,7 @@ object CrystalAura : Module() {
     /* Variables */
     private var placeList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>
     private val placedBBMap = HashMap<AxisAlignedBB, Long>() // <CrystalBoundingBox, Added Time>
-    private var crystalMap = emptyMap<EntityEnderCrystal, Pair<Float, Float>>() // <Crystal, <Target Damage, Self Damage>>
+    private var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage>>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private var lastCrystal: EntityEnderCrystal? = null
     private var lastLookAt = Vec3d.ZERO

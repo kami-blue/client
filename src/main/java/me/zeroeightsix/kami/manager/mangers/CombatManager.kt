@@ -18,7 +18,7 @@ object CombatManager : Manager() {
             field = value
         }
     var crystalPlaceList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>, immutable list = thread safe
-    var crystalMap = emptyMap<EntityEnderCrystal, Pair<Float, Float>>() // <Crystal, <Target Damage, Self Damage>>
+    var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage, Distance>>
     val motionTracker = MotionTracker(null)
 
     fun isActiveAndTopPriority(module: Module) = module.isActive() && isOnTopPriority(module)

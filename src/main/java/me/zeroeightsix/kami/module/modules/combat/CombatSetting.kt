@@ -144,7 +144,6 @@ object CombatSetting : Module() {
 
         CombatManager.crystalPlaceList = CombatManager.target?.let {
             val cacheList = ArrayList<Triple<BlockPos, Float, Float>>()
-
             val prediction = getPrediction(it)
 
             for (pos in CrystalUtils.getPlacePos(it, mc.player, 8f)) {
@@ -152,6 +151,7 @@ object CombatSetting : Module() {
                 val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
                 cacheList.add(Triple(pos, damage, selfDamage))
             }
+
             cacheList.sortedByDescending { damage -> damage.second }
         } ?: emptyList()
     }
@@ -159,28 +159,24 @@ object CombatSetting : Module() {
     private fun updateCrystalList() {
         if (CrystalAura.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 - 2 != 0) return
 
-        val crystalList = ArrayList(mc.world.loadedEntityList).filterIsInstance<EntityEnderCrystal>()
-        val cacheList = ArrayList<Pair<EntityEnderCrystal, Pair<Float, Float>>>()
-        val cacheMap = LinkedHashMap<EntityEnderCrystal, Pair<Float, Float>>()
+        val entityList = ArrayList(mc.world.loadedEntityList)
+        val cacheList = ArrayList<Pair<EntityEnderCrystal, Triple<Float, Float, Double>>>()
+        val cacheMap = LinkedHashMap<EntityEnderCrystal, Triple<Float, Float, Double>>()
         val eyePos = mc.player.getPositionEyes(1f)
+        val target = CombatManager.target
+        val prediction = target?.let { getPrediction(it) }
 
-        CombatManager.target?.let {
-            val prediction = getPrediction(it)
-            for (crystal in crystalList) {
-                if (crystal.isDead) continue
-                val damage = CrystalUtils.calcDamage(crystal, it, prediction.first, prediction.second)
-                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
-                cacheList.add(crystal to (damage to selfDamage))
-            }
-        } ?: run {
-            for (crystal in crystalList) {
-                if (crystal.isDead) continue
-                val selfDamage = CrystalUtils.calcDamage(crystal, mc.player)
-                cacheList.add(crystal to (0f to selfDamage))
-            }
+        for (entity in entityList) {
+            if (entity.isDead) continue
+            if (entity !is EntityEnderCrystal) continue
+            val dist = entity.positionVector.distanceTo(eyePos)
+            if (dist > 16.0f) continue
+            val damage = if (target != null && prediction != null) CrystalUtils.calcDamage(entity, target, prediction.first, prediction.second) else 0.0f
+            val selfDamage = CrystalUtils.calcDamage(entity, mc.player)
+            cacheList.add(entity to Triple(damage, selfDamage, dist))
         }
 
-        cacheMap.putAll(cacheList.sortedBy { pair -> pair.first.positionVector.distanceTo(eyePos) })
+        cacheMap.putAll(cacheList.sortedBy { pair -> pair.second.third })
         CombatManager.crystalMap = cacheMap
     }
 
