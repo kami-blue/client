@@ -22,8 +22,6 @@ void main(){
     float offset = baseOffset * multiplier;
 
     fragCoord1 = Position.xy * uv;
-    fragCoord1.y = 1.0 - fragCoord1.y;
-
     fragCoord2 = fragCoord1 + vec2(-offset, -offset) * uv;
     fragCoord3 = fragCoord1 + vec2(-offset, offset) * uv;
     fragCoord4 = fragCoord1 + vec2(offset, offset) * uv;
