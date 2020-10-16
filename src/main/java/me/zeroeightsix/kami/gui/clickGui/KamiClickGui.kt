@@ -35,7 +35,7 @@ object KamiClickGui : GuiScreen() {
             value?.onHover(getRealMousePos())
             field = value
         }
-    private val blurShader = ShaderHelper(ResourceLocation("shaders/post/grainy_blur.json"))
+    private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
 
     init {
         windowList.add(TitledWindow("Test1", 128.0f, 128.0f, 256.0f, 256.0f))
@@ -55,8 +55,9 @@ object KamiClickGui : GuiScreen() {
                 window.onTick()
             }
             blurShader.shader?.let {
+                val multiplier = ClickGUI.blur.value / 1.0f
                 for (shader in it.listShaders) {
-                    shader.shaderManager.getShaderUniform("radius")?.set(ClickGUI.blur.value)
+                    shader.shaderManager.getShaderUniform("multiplier")?.set(multiplier)
                 }
             }
         }
@@ -107,7 +108,8 @@ object KamiClickGui : GuiScreen() {
         if (ClickGUI.blur.value > 0f) {
             glPushMatrix()
             blurShader.shader?.render(partialTicks)
-            mc.getFramebuffer().bindFramebuffer(false)
+            mc.getFramebuffer().bindFramebuffer(true)
+            blurShader.getFrameBuffer("final")?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
             glPopMatrix()
         }
 
