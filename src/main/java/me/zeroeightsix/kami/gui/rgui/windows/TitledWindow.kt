@@ -22,6 +22,6 @@ open class TitledWindow(
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)
         RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, draggableHeight), GuiColors.primary)
-        KamiFontRenderer.drawString(name, 2f, 2f, color = GuiColors.text)
+        KamiFontRenderer.drawString(name, 3f, 2f, colorIn = GuiColors.text)
     }
 }
