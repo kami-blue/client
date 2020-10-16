@@ -4,7 +4,6 @@ attribute vec4 Position;
 
 uniform mat4 ProjMat;
 uniform vec2 InSize;
-uniform vec2 OutSize;
 uniform float multiplier;
 uniform float baseOffset;
 
