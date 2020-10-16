@@ -132,26 +132,26 @@ object CrystalAura : Module() {
         listener<PacketEvent.Receive> {
             if (mc.player == null) return@listener
 
-            if (it.packet is SPacketSpawnObject) {
-                if (it.packet.type == 51) {
-                    val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
-                    synchronized(lockObject) {
-                        placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
-                    }
+            if (it.packet is SPacketSpawnObject && it.packet.type == 51) {
+                val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
+                synchronized(lockObject) {
+                    placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
                 }
             }
 
             // Minecraft sends sounds packets a tick before removing the crystal lol
-            if (it.packet is SPacketSoundEffect) {
-                if (it.packet.getCategory() == SoundCategory.BLOCKS && it.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                    val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 5f)
-                    for (crystal in crystalList) {
-                        crystal.setDead()
-                        mc.world.removeEntityFromWorld(crystal.entityId)
-                    }
-                    ignoredList.clear()
-                    hitCount = 0
+            if (it.packet is SPacketSoundEffect
+                    && it.packet.getCategory() == SoundCategory.BLOCKS
+                    && it.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 5f)
+
+                for (crystal in crystalList) {
+                    crystal.setDead()
+                    mc.world.removeEntityFromWorld(crystal.entityId)
                 }
+
+                ignoredList.clear()
+                hitCount = 0
             }
         }
 
@@ -371,25 +371,34 @@ object CrystalAura : Module() {
                 val bbList = ArrayList(placedBBMap.keys)
                 for (bb in bbList) {
                     val pos = bb.center.subtract(0.0, 1.0, 0.0)
+
                     if (pos.distanceTo(eyePos) > placeRange.value) continue
                     val damage = CrystalUtils.calcDamage(pos, target)
                     val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+
                     if (!checkDamagePlace(damage, selfDamage)) continue
                     count++
                 }
             }
 
-            for ((crystal, pair) in crystalMap) {
-                if (ignoredList.contains(crystal)) continue
-                if (!checkDamagePlace(pair.first, pair.second)) continue
-                if (crystal.positionVector.distanceTo(eyePos) > placeRange.value) continue
-                val rotation = RotationUtils.getRotationToEntity(crystal)
-                if (abs(rotation.x - getLastRotation().x) > maxYawRate.value) continue
-                count++
-            }
+            count += countWithoutSync(eyePos)
         }
         return count
     }
+
+    private fun countWithoutSync(eyePos: Vec3d): Int {
+        var count = 0
+        for ((crystal, pair) in crystalMap) {
+            if (ignoredList.contains(crystal)) continue
+            if (!checkDamagePlace(pair.first, pair.second)) continue
+            if (crystal.positionVector.distanceTo(eyePos) > placeRange.value) continue
+            val rotation = RotationUtils.getRotationToEntity(crystal)
+            if (abs(rotation.x - getLastRotation().x) > maxYawRate.value) continue
+            count++
+        }
+        return count
+    }
+
     /* End of general */
 
     /* Rotation spoofing */

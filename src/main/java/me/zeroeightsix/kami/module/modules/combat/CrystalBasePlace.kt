@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -146,6 +147,17 @@ object CrystalBasePlace : Module() {
         val minDamage = CrystalAura.minDamage
         val maxSelfDamage = CrystalAura.maxSelfDamage
 
+        return calcPlaceInfo(prediction, posList, maxCurrentDamage, maxSelfDamage, minDamage, entity)
+    }
+
+    private fun calcPlaceInfo(
+            prediction: Pair<Vec3d, AxisAlignedBB>,
+            posList: List<BlockPos>,
+            maxCurrentDamage: Float,
+            maxSelfDamage: Float,
+            minDamage: Float,
+            entity: EntityLivingBase
+    ): Pair<EnumFacing, BlockPos>? {
         for (pos in posList) {
             // Placeable check
             if (!BlockUtils.isPlaceable(pos, false)) continue
