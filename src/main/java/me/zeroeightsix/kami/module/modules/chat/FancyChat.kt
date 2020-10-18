@@ -19,7 +19,7 @@ object FancyChat : Module() {
     private val mock = register(Settings.b("mOcK", false))
     private val green = register(Settings.b(">", false))
     private val blue = register(Settings.b("`", false))
-    private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value }.build())
+    private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value })
     private val commands = register(Settings.b("Commands", false))
 
     init {

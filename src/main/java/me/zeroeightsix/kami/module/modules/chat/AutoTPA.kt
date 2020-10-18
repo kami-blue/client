@@ -18,6 +18,10 @@ object AutoTPA : Module() {
     private val friends = register(Settings.b("AlwaysAcceptFriends", true))
     private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
 
+    private enum class Mode {
+        ACCEPT, DENY
+    }
+
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketChat || !MessageDetectionHelper.isTPA(true, it.packet.getChatComponent().unformattedText)) return@listener
@@ -37,10 +41,5 @@ object AutoTPA : Module() {
                 }
             }
         }
-    }
-
-
-    enum class Mode {
-        ACCEPT, DENY
     }
 }

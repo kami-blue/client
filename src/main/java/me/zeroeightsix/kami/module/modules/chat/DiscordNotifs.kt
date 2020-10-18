@@ -24,15 +24,15 @@ import net.minecraft.network.play.server.SPacketChat
 )
 object DiscordNotifs : Module() {
     private val timeout = register(Settings.b("Timeout", true))
-    private val timeoutTime = register(Settings.integerBuilder("Seconds").withValue(10).withRange(0, 120).withVisibility { timeout.value }.build())
+    private val timeoutTime = register(Settings.integerBuilder("Seconds").withValue(10).withRange(0, 120).withStep(5).withVisibility { timeout.value })
     private val time = register(Settings.b("Timestamp", true))
     private val importantPings = register(Settings.b("ImportantPings", false))
     private val disconnect = register(Settings.b("DisconnectMsgs", true))
     private val all = register(Settings.b("AllMessages", false))
-    private val queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility { !all.value }.build())
-    private val restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility { !all.value }.build())
-    private val direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility { !all.value }.build())
-    private val directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility { !all.value }.build())
+    private val queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility { !all.value })
+    private val restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility { !all.value })
+    private val direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility { !all.value })
+    private val directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility { !all.value })
 
     val url = register(Settings.s("URL", "unchanged"))
     val pingID = register(Settings.s("PingID", "unchanged"))
@@ -60,16 +60,16 @@ object DiscordNotifs : Module() {
             if (!disconnect.value) return@listener
             sendMessage(getPingID("KamiBlueMessageType2") + getTime() + MessageDetectionHelper.getMessageType(direct.value, directSent.value, "KamiBlueMessageType2", server), avatar.value)
         }
-    }
 
-    /* Always on status code */
-    override fun onUpdate(event: SafeTickEvent) {
-        if (url.value == "unchanged") {
-            MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
-            disable()
-        } else if (pingID.value == "unchanged" && importantPings.value) {
-            MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
-            disable()
+        /* Always on status code */
+        listener<SafeTickEvent> {
+            if (url.value == "unchanged") {
+                MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                disable()
+            } else if (pingID.value == "unchanged" && importantPings.value) {
+                MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                disable()
+            }
         }
     }
 
