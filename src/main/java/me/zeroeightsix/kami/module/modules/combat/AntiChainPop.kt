@@ -25,11 +25,11 @@ object AntiChainPop : Module() {
                 if (it.packet.getEntity(world) == mc.player) packetMode()
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mode.value == Mode.ITEMS) {
-            itemMode()
+        listener<SafeTickEvent> {
+            if (mode.value == Mode.ITEMS) {
+                itemMode()
+            }
         }
     }
 

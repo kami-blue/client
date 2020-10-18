@@ -35,18 +35,18 @@ object AntiBot : Module() {
         listener<ClientPlayerAttackEvent> {
             if (isEnabled && botSet.contains(it.entity)) it.cancel()
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        val cacheSet = HashSet<EntityPlayer>()
-        for (entity in mc.world.loadedEntityList) {
-            if (entity !is EntityPlayer) continue
-            if (entity == mc.player) continue
-            if (!isBot(entity)) continue
-            cacheSet.add(entity)
+        listener<SafeTickEvent> {
+            val cacheSet = HashSet<EntityPlayer>()
+            for (entity in mc.world.loadedEntityList) {
+                if (entity !is EntityPlayer) continue
+                if (entity == mc.player) continue
+                if (!isBot(entity)) continue
+                cacheSet.add(entity)
+            }
+            botSet.removeIf { !cacheSet.contains(it) }
+            botSet.addAll(cacheSet)
         }
-        botSet.removeIf { !cacheSet.contains(it) }
-        botSet.addAll(cacheSet)
     }
 
     private fun isBot(entity: EntityPlayer) = entity.name == mc.player.name

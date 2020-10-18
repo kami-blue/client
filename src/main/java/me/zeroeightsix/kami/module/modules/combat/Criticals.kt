@@ -49,6 +49,25 @@ object Criticals : Module() {
                 delayModeSwing(it)
             }
         }
+
+        listener<SafeTickEvent> {
+            /* Sends attack packet and swing packet when falling */
+            if (mode.value == CriticalMode.DELAY && delayTick != 0) {
+                mc.player.isSprinting = false
+                if (getSpeed(mc.player) > 0.2f) resetHSpeed(0.2f, mc.player)
+                if (mc.player.motionY < -0.1 && delayTick in 1..15) {
+                    sendingPacket = true
+                    mc.connection!!.sendPacket(attackPacket)
+                    mc.connection!!.sendPacket(swingPacket)
+                    delayTick = 16
+                }
+                if (delayTick in 1..19) {
+                    delayTick++
+                } else if (delayTick > 19) { /* Resets after 1 second if no packets sent */
+                    delayTick = 0
+                }
+            }
+        }
     }
 
     private fun packetMode() {
@@ -83,25 +102,6 @@ object Criticals : Module() {
                 event.cancel()
             } else {
                 sendingPacket = false
-            }
-        }
-    }
-
-    override fun onUpdate(event: SafeTickEvent) {
-        /* Sends attack packet and swing packet when falling */
-        if (mode.value == CriticalMode.DELAY && delayTick != 0) {
-            mc.player.isSprinting = false
-            if (getSpeed(mc.player) > 0.2f) resetHSpeed(0.2f, mc.player)
-            if (mc.player.motionY < -0.1 && delayTick in 1..15) {
-                sendingPacket = true
-                mc.connection!!.sendPacket(attackPacket)
-                mc.connection!!.sendPacket(swingPacket)
-                delayTick = 16
-            }
-            if (delayTick in 1..19) {
-                delayTick++
-            } else if (delayTick > 19) { /* Resets after 1 second if no packets sent */
-                delayTick = 0
             }
         }
     }

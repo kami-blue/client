@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.item.ItemArmor
@@ -20,36 +21,33 @@ object AutoArmour : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!timer.tick(delay.value.toLong(), false)) return
-        if (!mc.player.inventory.getItemStack().isEmpty()) {
-            if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
-            else InventoryUtils.removeHoldingItem()
-            return
-        }
-        // store slots and values of best armor pieces, initialize with currently equipped armor
-        // Pair<Slot, Value>
-        val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorInventory[it]) }
+    init {
+        listener<SafeTickEvent> {
+            if (!timer.tick(delay.value.toLong(), false)) return@listener
+            if (!mc.player.inventory.getItemStack().isEmpty()) {
+                if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
+                else InventoryUtils.removeHoldingItem()
+                return@listener
+            }
+            // store slots and values of best armor pieces, initialize with currently equipped armor
+            // Pair<Slot, Value>
+            val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorInventory[it]) }
 
-        // search inventory for better armor
-        for (slot in 9..44) {
-            val itemStack = mc.player.inventoryContainer.inventory[slot]
-            val item = itemStack.getItem()
-            if (item !is ItemArmor) continue
+            // search inventory for better armor
+            for (slot in 9..44) {
+                val itemStack = mc.player.inventoryContainer.inventory[slot]
+                val item = itemStack.getItem()
+                if (item !is ItemArmor) continue
 
-            val armorType = item.armorType.index
-            if (armorType == 2 && mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
-            val armorValue = getArmorValue(itemStack)
+                val armorType = item.armorType.index
+                if (armorType == 2 && mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
+                val armorValue = getArmorValue(itemStack)
 
-            if (armorValue > bestArmors[armorType].second) bestArmors[armorType] = slot to armorValue
-        }
+                if (armorValue > bestArmors[armorType].second) bestArmors[armorType] = slot to armorValue
+            }
 
-        // equip better armor
-        for ((index, pair) in bestArmors.withIndex()) {
-            if (pair.first == -1) continue // Skip if we didn't find a better armor
-            InventoryUtils.moveToSlot(pair.first, 8 - index)
-            timer.reset()
-            break // Don't move more than one at once
+            // equip better armor
+            equipArmor(bestArmors)
         }
     }
 
@@ -67,5 +65,14 @@ object AutoArmour : Module() {
             return 1f + 0.04f * level
         }
         return 1f
+    }
+
+    private fun equipArmor(bestArmors: Array<Pair<Int, Float>>) {
+        for ((index, pair) in bestArmors.withIndex()) {
+            if (pair.first == -1) continue // Skip if we didn't find a better armor
+            InventoryUtils.moveToSlot(pair.first, 8 - index)
+            timer.reset()
+            break // Don't move more than one at once
+        }
     }
 }

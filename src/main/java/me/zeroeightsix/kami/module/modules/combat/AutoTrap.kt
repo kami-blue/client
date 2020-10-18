@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
@@ -37,15 +38,17 @@ object AutoTrap : Module() {
         PlayerPacketManager.resetHotbar()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (future?.isDone != false && isPlaceable()) future = threadPool.submit(placeThread)
+    init {
+        listener<SafeTickEvent> {
+            if (future?.isDone != false && isPlaceable()) future = threadPool.submit(placeThread)
 
-        if (future?.isDone == false && future?.isCancelled == false) {
-            val slot = getObby()
-            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
-            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
-        } else if (CombatManager.isOnTopPriority(this)) {
-            PlayerPacketManager.resetHotbar()
+            if (future?.isDone == false && future?.isCancelled == false) {
+                val slot = getObby()
+                if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+                PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
+            } else if (CombatManager.isOnTopPriority(this)) {
+                PlayerPacketManager.resetHotbar()
+            }
         }
     }
 
@@ -71,7 +74,7 @@ object AutoTrap : Module() {
 
     private fun runAutoTrap() {
         BlockUtils.buildStructure(placeSpeed.value) {
-            if (isEnabled && CombatManager.isOnTopPriority(this))  {
+            if (isEnabled && CombatManager.isOnTopPriority(this)) {
                 val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
                 BlockUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
             } else {

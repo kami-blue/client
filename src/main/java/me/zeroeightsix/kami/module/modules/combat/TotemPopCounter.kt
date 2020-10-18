@@ -54,32 +54,32 @@ object TotemPopCounter : Module() {
         listener<ConnectionEvent.Disconnect> {
             playerList.clear()
         }
+
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@listener
+
+            if (wasDead && !mc.player.isDead && resetOnDeath.value) {
+                sendMessage("${formatName(mc.player)} died and ${grammar(mc.player)} pop list was reset!")
+                playerList.clear()
+                wasDead = false
+                return@listener
+            }
+
+            val toRemove = ArrayList<EntityPlayer>()
+            for ((player, count) in playerList) {
+                if (!player.isDead) continue
+                if (player == mc.player) continue
+                sendMessage("${formatName(player)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
+                toRemove.add(player)
+            }
+            playerList.keys.removeAll(toRemove)
+
+            wasDead = mc.player.isDead
+        }
     }
 
     override fun onDisable() {
         playerList.clear()
-    }
-
-    override fun onUpdate(event: SafeTickEvent) {
-        if (event.phase != TickEvent.Phase.END) return
-
-        if (wasDead && !mc.player.isDead && resetOnDeath.value) {
-            sendMessage("${formatName(mc.player)} died and ${grammar(mc.player)} pop list was reset!")
-            playerList.clear()
-            wasDead = false
-            return
-        }
-
-        val toRemove = ArrayList<EntityPlayer>()
-        for ((player, count) in playerList) {
-            if (!player.isDead) continue
-            if (player == mc.player) continue
-            sendMessage("${formatName(player)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
-            toRemove.add(player)
-        }
-        playerList.keys.removeAll(toRemove)
-
-        wasDead = mc.player.isDead
     }
 
     private fun friendCheck(player: EntityPlayer) = isFriend(player.name) && countFriends.value

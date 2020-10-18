@@ -79,35 +79,35 @@ object BedAura : Module() {
             mc.player.swingArm(hand)
             state = State.NONE
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
-            state = State.NONE
-            resetRotation()
-            inactiveTicks = 6
-            return
-        }
-
-        inactiveTicks++
-        if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
-            InventoryUtils.getSlotsFullInvNoHotbar(355)?.let {
-                InventoryUtils.quickMoveSlot(it[0])
-                mc.playerController.syncCurrentPlayItem()
+        listener<SafeTickEvent> {
+            if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
+                state = State.NONE
+                resetRotation()
+                inactiveTicks = 6
+                return@listener
             }
-        }
 
-        updatePlaceMap()
-        updateBedMap()
+            inactiveTicks++
+            if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
+                InventoryUtils.getSlotsFullInvNoHotbar(355)?.let {
+                    InventoryUtils.quickMoveSlot(it[0])
+                    mc.playerController.syncCurrentPlayItem()
+                }
+            }
 
-        if (hitTickCount >= hitDelay.value) {
-            bedMap.values.firstOrNull()?.let { preExplode(it) } ?: getPlacePos()?.let { prePlace(it) }
-        } else {
-            hitTickCount++
-            getPlacePos()?.let { prePlace(it) }
+            updatePlaceMap()
+            updateBedMap()
+
+            if (hitTickCount >= hitDelay.value) {
+                bedMap.values.firstOrNull()?.let { preExplode(it) } ?: getPlacePos()?.let { prePlace(it) }
+            } else {
+                hitTickCount++
+                getPlacePos()?.let { prePlace(it) }
+            }
+            if (inactiveTicks <= 5) sendRotation()
+            else resetRotation()
         }
-        if (inactiveTicks <= 5) sendRotation()
-        else resetRotation()
     }
 
     private fun canRefill(): Boolean {
@@ -129,7 +129,7 @@ object BedAura : Module() {
                 val targetDamage = CrystalUtils.calcDamage(pos.offset(facing), it)
                 val selfDamage = CrystalUtils.calcDamage(pos.offset(facing), mc.player)
                 if (targetDamage < minDamage.value && (suicideMode.value || selfDamage > maxSelfDamage.value))
-                damagePosMap[Pair(targetDamage, selfDamage)] = pos
+                    damagePosMap[Pair(targetDamage, selfDamage)] = pos
             }
             damagePosMap
         }

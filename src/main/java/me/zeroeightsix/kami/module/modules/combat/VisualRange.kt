@@ -6,16 +6,18 @@ import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
-import java.util.*
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "VisualRange",
         description = "Shows players who enter and leave range in chat",
-        category = Module.Category.COMBAT
+        category = Module.Category.COMBAT,
+        alwaysListening = true
 )
 object VisualRange : Module() {
     private val playSound = register(Settings.b("PlaySound", false))
@@ -24,61 +26,49 @@ object VisualRange : Module() {
     private val uwuAura = register(Settings.b("UwUAura", false))
     private val logToFile = register(Settings.b("LogTo File", false))
 
-    private var knownPlayers: MutableList<String>? = null
+    private val playerSet = LinkedHashSet<EntityPlayer>()
 
-    override fun onUpdate(event: SafeTickEvent) {
-        val tickPlayerList: MutableList<String> = ArrayList()
+    init {
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END || isDisabled && mc.player.ticksExisted % 5 != 0) return@listener
 
-        for (entity in mc.world.getLoadedEntityList()) {
-            if (entity is EntityPlayer) tickPlayerList.add(entity.getName())
-        }
-
-        if (tickPlayerList.size > 0) {
-            for (playerName in tickPlayerList) {
-                if ((playerName == mc.player.name) || (!friends.value && Friends.isFriend(playerName))) continue
-
-                if (!knownPlayers!!.contains(playerName)) {
-                    knownPlayers!!.add(playerName)
-                    if (Friends.isFriend(playerName)) {
-                        sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
-                    } else {
-                        sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " joined!")
-                    }
-                    if (logToFile.value) {
-                        WaypointManager.add("$playerName spotted!")
-                    }
-                    if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName hi uwu")
-                    return
+            val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
+            for (player in loadedPlayerSet) {
+                if (player == mc.player || !friends.value && Friends.isFriend(player.name)) continue
+                if (playerSet.add(player) && isEnabled) {
+                    onEnter(player)
                 }
             }
-        }
 
-        if (knownPlayers!!.size > 0) {
-            for (playerName in knownPlayers!!) {
-                if (!tickPlayerList.contains(playerName)) {
-                    knownPlayers!!.remove(playerName)
-                    if (leaving.value) {
-                        if (Friends.isFriend(playerName)) {
-                            sendNotification(ChatFormatting.GREEN.toString() + playerName + ChatFormatting.RESET.toString() + " left!")
-                        } else {
-                            sendNotification(ChatFormatting.RED.toString() + playerName + ChatFormatting.RESET.toString() + " left!")
-                        }
-                        if (uwuAura.value) MessageSendHelper.sendServerMessage("/w $playerName bye uwu")
-                    }
-                    return
+            val toRemove = ArrayList<EntityPlayer>()
+            for (player in playerSet) {
+                if (!loadedPlayerSet.contains(player)) {
+                    toRemove.add(player)
+                    if (isEnabled) onLeave(player)
                 }
             }
+            playerSet.removeAll(toRemove)
         }
     }
 
-    private fun sendNotification(s: String) {
-        if (playSound.value) {
-            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-        }
-        MessageSendHelper.sendChatMessage(s)
+    private fun onEnter(player: EntityPlayer) {
+        sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}joined!")
+        if (logToFile.value) WaypointManager.add("${player.name} spotted!")
+        if (uwuAura.value) MessageSendHelper.sendServerMessage("/w ${player.name} hi uwu")
     }
 
-    override fun onEnable() {
-        knownPlayers = ArrayList()
+    private fun onLeave(player: EntityPlayer) {
+        if (leaving.value) {
+            sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}left!")
+            if (logToFile.value) WaypointManager.add("${player.name} left!")
+            if (uwuAura.value) MessageSendHelper.sendServerMessage("/w ${player.name} bye uwu")
+        }
+    }
+
+    private fun getColor(player: EntityPlayer) = if (Friends.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
+
+    private fun sendNotification(message: String) {
+        if (playSound.value) mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        MessageSendHelper.sendChatMessage(message)
     }
 }
