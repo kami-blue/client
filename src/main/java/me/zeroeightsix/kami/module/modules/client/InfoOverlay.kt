@@ -47,7 +47,7 @@ object InfoOverlay : Module() {
     private val godApples = register(Settings.booleanBuilder("GodApples").withValue(false).withVisibility { page.value == Page.TWO })
 
     /* Page Three */
-    private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withMinimum(0).withMaximum(10).withVisibility { page.value == Page.THREE })
+    private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withRange(0, 10).withVisibility { page.value == Page.THREE })
     private val speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility { page.value == Page.THREE })
     private val averageSpeedTime = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
     private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java, "SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value })

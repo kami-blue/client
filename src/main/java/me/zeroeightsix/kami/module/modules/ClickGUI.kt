@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
@@ -33,14 +34,16 @@ object ClickGUI : Module() {
         return (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        prevScale = scale
-        if (settingTimer.stop() > 500L) {
-            val diff = scale - getRoundedScale()
-            when {
-                diff < -0.025 -> scale += 0.025
-                diff > 0.025 -> scale -= 0.025
-                else -> scale = getRoundedScale()
+    init {
+        listener<SafeTickEvent> {
+            prevScale = scale
+            if (settingTimer.stop() > 500L) {
+                val diff = scale - getRoundedScale()
+                when {
+                    diff < -0.025 -> scale += 0.025
+                    diff > 0.025 -> scale -= 0.025
+                    else -> scale = getRoundedScale()
+                }
             }
         }
     }

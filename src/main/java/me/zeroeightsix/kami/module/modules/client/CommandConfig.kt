@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
@@ -24,18 +25,20 @@ object CommandConfig : Module() {
     val toggleMessages = register(Settings.b("ToggleMessages", false))
     val customTitle = register(Settings.b("WindowTitle", true))
     private val autoSaving = register(Settings.b("AutoSavingSettings", true))
-    private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value }.build())
-    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value }.build())
+    private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value })
+    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value })
 
     val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
-            Thread {
-                Thread.currentThread().name = "Auto Saving Thread"
-                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                ConfigUtils.saveConfiguration()
-            }.start()
+    init {
+        listener<SafeTickEvent> {
+            if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
+                Thread {
+                    Thread.currentThread().name = "Auto Saving Thread"
+                    if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
+                    ConfigUtils.saveConfiguration()
+                }.start()
+            }
         }
     }
 
