@@ -7,10 +7,11 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 
 object GlStateUtils {
+    private val mc = Wrapper.minecraft
 
     @JvmStatic
     fun useVbo(): Boolean {
-        return Wrapper.minecraft.gameSettings.useVbo
+        return mc.gameSettings.useVbo
     }
 
     @JvmStatic
@@ -26,7 +27,6 @@ object GlStateUtils {
     fun blend(state: Boolean) {
         if (state) {
             GlStateManager.enableBlend()
-            GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
         } else {
             GlStateManager.disableBlend()
         }
@@ -97,12 +97,13 @@ object GlStateUtils {
 
     @JvmStatic
     fun rescale(width: Double, height: Double) {
-        glClear(256)
-        glMatrixMode(5889)
-        glLoadIdentity()
-        glOrtho(0.0, width, height, 0.0, 1000.0, 3000.0)
-        glMatrixMode(5888)
-        glLoadIdentity()
-        glTranslated(0.0, 0.0, -2000.0)
+        GlStateManager.clear(256)
+        GlStateManager.viewport(0, 0, mc.displayWidth, mc.displayHeight)
+        GlStateManager.matrixMode(GL_PROJECTION)
+        GlStateManager.loadIdentity()
+        GlStateManager.ortho(0.0, width, height, 0.0, 1000.0, 3000.0)
+        GlStateManager.matrixMode(GL_MODELVIEW)
+        GlStateManager.loadIdentity()
+        GlStateManager.translate(0.0f, 0.0f, -2000.0f)
     }
 }

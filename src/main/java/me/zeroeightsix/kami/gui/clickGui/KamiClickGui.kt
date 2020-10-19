@@ -1,11 +1,9 @@
-package me.zeroeightsix.kami.gui.clickGui
+package me.zeroeightsix.kami.gui.clickgui
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
 import me.zeroeightsix.kami.gui.rgui.component.ModuleButton
-import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
-import me.zeroeightsix.kami.gui.rgui.windows.TitledWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
@@ -13,7 +11,6 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -38,8 +35,6 @@ object KamiClickGui : GuiScreen() {
     private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
 
     init {
-        windowList.add(TitledWindow("Test1", 128.0f, 128.0f, 256.0f, 256.0f))
-        windowList.add(BasicWindow("Test2", 256.0f, 256.0f, 64.0f, 32.0f))
         val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
         for ((index, category) in Module.Category.values().withIndex()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
@@ -84,23 +79,25 @@ object KamiClickGui : GuiScreen() {
     override fun handleMouseInput() {
         val mousePos = getRealMousePos()
         if (Mouse.getEventButtonState()) lastClickPos = mousePos
-        else hoveredWindow = getSortedWindowList().lastOrNull { isInWindow(it, mousePos) }
+        else hoveredWindow = windowList.lastOrNull { isInWindow(it, mousePos) }
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        getSortedWindowList().lastOrNull { isInWindow(it, lastClickPos) }?.onClick(lastClickPos, mouseButton)
+        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onClick(lastClickPos, mouseButton)
+        windowList.sortBy { it.lastActiveTime }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         val mousePos = getRealMousePos()
-        getSortedWindowList().lastOrNull { isInWindow(it, lastClickPos) }?.onRelease(mousePos, state)
+        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onRelease(mousePos, state)
+        windowList.sortBy { it.lastActiveTime }
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         val mousePos = getRealMousePos()
-        getSortedWindowList().lastOrNull { isInWindow(it, lastClickPos) }?.onDrag(mousePos, lastClickPos, clickedMouseButton)
+        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onDrag(mousePos, lastClickPos, clickedMouseButton)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -115,7 +112,7 @@ object KamiClickGui : GuiScreen() {
 
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         GlStateUtils.rescaleKami()
-        for (window in getSortedWindowList()) {
+        for (window in windowList) {
             glPushMatrix()
             glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
             window.onRender(vertexHelper)
@@ -123,8 +120,6 @@ object KamiClickGui : GuiScreen() {
         }
         GlStateUtils.rescaleMc()
     }
-
-    private fun getSortedWindowList() = windowList.sortedBy { it.lastActiveTime }
 
     fun getRealMousePos(): Vec2f {
         val scaleFactor = ClickGUI.getScaleFactorFloat()
