@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleKami
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.rescaleMc
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil.getFrameByName
@@ -70,14 +72,16 @@ object InventoryViewer : Module() {
         // }
     }
 
-    override fun onRender() {
-        val frame = getFrameByName("inventory viewer") ?: return
-        if (frame.isPinned && !frame.isMinimized) {
-            rescaleKami()
-            val items = mc.player.inventory.mainInventory
-            boxRender(frame.x, frame.y)
-            itemRender(items, frame.x, frame.y)
-            rescaleMc()
+    init {
+        listener<RenderOverlayEvent> {
+            val frame = getFrameByName("inventory viewer") ?: return@listener
+            if (frame.isPinned && !frame.isMinimized) {
+                rescaleKami()
+                val items = mc.player.inventory.mainInventory
+                boxRender(frame.x, frame.y)
+                itemRender(items, frame.x, frame.y)
+                rescaleMc()
+            }
         }
     }
 
