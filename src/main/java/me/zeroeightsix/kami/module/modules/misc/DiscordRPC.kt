@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.util.InfoCalculator.dimension
 import me.zeroeightsix.kami.util.InfoCalculator.tps
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.util.EnumHand
@@ -35,7 +36,7 @@ object DiscordRPC : Module() {
     private val coordsConfirm = register(Settings.booleanBuilder("CoordsConfirm").withValue(false).withVisibility { showCoordsConfirm() })
     private val updateDelay = register(Settings.floatBuilder("UpdateDelay").withValue(4f).withRange(1f, 10f))
 
-    enum class LineInfo {
+    private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
     }
 
@@ -53,11 +54,13 @@ object DiscordRPC : Module() {
         end()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
-            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
-                    "This will display your coords on the discord rpc. " +
-                    "Do NOT use this if you do not want your coords displayed")
+    init {
+        listener<SafeTickEvent> {
+            if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
+                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
+                        "This will display your coords on the discord rpc. " +
+                        "Do NOT use this if you do not want your coords displayed")
+            }
         }
     }
 

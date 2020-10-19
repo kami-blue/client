@@ -19,8 +19,8 @@ import net.minecraft.entity.player.EntityPlayer
 )
 object AutoTunnel : Module() {
     private val backfill = register(Settings.b("Backfill", false))
-    private val height = register(Settings.integerBuilder("Height").withRange(1, 10).withValue(2).build())
-    private val width = register(Settings.integerBuilder("Width").withRange(1, 10).withValue(1).build())
+    private val height = register(Settings.integerBuilder("Height").withValue(2).withRange(1, 10))
+    private val width = register(Settings.integerBuilder("Width").withValue(1).withRange(1, 10))
 
     private var lastCommand = arrayOf("")
     private var startingDirection = CardinalMain.POS_X
@@ -37,11 +37,8 @@ object AutoTunnel : Module() {
     }
 
     private fun sendTunnel() {
-        val current: Array<String> = if (height.value == 2 && width.value == 1) {
-            arrayOf("tunnel")
-        } else {
-            arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
-        }
+        val current = if (height.value == 2 && width.value == 1) arrayOf("tunnel")
+        else arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
 
         if (!current.contentEquals(lastCommand)) {
             lastCommand = current

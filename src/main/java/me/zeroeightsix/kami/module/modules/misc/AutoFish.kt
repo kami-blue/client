@@ -29,10 +29,10 @@ object AutoFish : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
     private val defaultSetting = register(Settings.b("Defaults", false))
     private val autoCast = register(Settings.b("AutoCast", true))
-    private val castDelay = register(Settings.integerBuilder("AutoCastDelay(s)").withValue(5).withRange(1, 20).withVisibility { autoCast.value }.build())
-    private val catchDelay = register(Settings.integerBuilder("CatchDelay(ms)").withValue(300).withRange(50, 2000).build())
-    private val recastDelay = register(Settings.integerBuilder("RecastDelay(ms)").withValue(450).withRange(50, 2000).build())
-    private val variation = register(Settings.integerBuilder("Variation(ms)").withValue(100).withRange(0, 1000).build())
+    private val castDelay = register(Settings.integerBuilder("AutoCastDelay(s)").withValue(5).withRange(1, 20).withVisibility { autoCast.value })
+    private val catchDelay = register(Settings.integerBuilder("CatchDelay(ms)").withValue(300).withRange(50, 2000))
+    private val recastDelay = register(Settings.integerBuilder("RecastDelay(ms)").withValue(450).withRange(50, 2000))
+    private val variation = register(Settings.integerBuilder("Variation(ms)").withValue(100).withRange(0, 1000))
 
     @Suppress("UNUSED")
     private enum class Mode {
@@ -49,38 +49,38 @@ object AutoFish : Module() {
             if (mode.value == Mode.BOUNCE || it.packet !is SPacketSoundEffect) return@listener
             if (isSplash(it.packet)) catch()
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
-            reset()
-            return
-        }
+        listener<SafeTickEvent> {
+            if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
+                reset()
+                return@listener
+            }
 
-        if (mc.player.fishEntity == null) {
-            if (recasting) { // Recast the fishing rod
-                if (timer.tick(recastDelay.value.toLong())) {
+            if (mc.player.fishEntity == null) {
+                if (recasting) { // Recast the fishing rod
+                    if (timer.tick(recastDelay.value.toLong())) {
+                        mc.rightClickMouse()
+                        reset()
+                    }
+                } else if (autoCast.value && timer.tick(castDelay.value * 1000L)) { // Cast the fishing rod if a fishing rod is in hand and not fishing
                     mc.rightClickMouse()
                     reset()
                 }
-            } else if (autoCast.value && timer.tick(castDelay.value * 1000L)) { // Cast the fishing rod if a fishing rod is in hand and not fishing
+            } else if (isStabled() && isOnWater()) {
+                if (catching) { // Catch the fish
+                    if (timer.tick(catchDelay.value.toLong())) {
+                        mc.rightClickMouse()
+                        recast()
+                    }
+                } else {// Bounce detection
+                    if ((mode.value == Mode.BOUNCE || mode.value == Mode.ALL) && isBouncing()) {
+                        catch()
+                    }
+                }
+            } else if (isStabled()) {// If the fishing rod is not in air and not in water (ex. hooked a block), then we recast it with extra delay
                 mc.rightClickMouse()
                 reset()
             }
-        } else if (isStabled() && isOnWater()) {
-            if (catching) { // Catch the fish
-                if (timer.tick(catchDelay.value.toLong())) {
-                    mc.rightClickMouse()
-                    recast()
-                }
-            } else {// Bounce detection
-                if ((mode.value == Mode.BOUNCE || mode.value == Mode.ALL) && isBouncing()) {
-                    catch()
-                }
-            }
-        } else if (isStabled()) {// If the fishing rod is not in air and not in water (ex. hooked a block), then we recast it with extra delay
-            mc.rightClickMouse()
-            reset()
         }
     }
 

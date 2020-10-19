@@ -17,9 +17,9 @@ import java.io.IOException
 )
 object ColorSign : Module() {
     init {
-        listener<GuiScreenEvent.Displayed> {
-            if (it.screen !is GuiEditSign) return@listener
-            it.screen = KamiGuiEditSign((it.screen as GuiEditSign?)!!.tileSign)
+        listener<GuiScreenEvent.Displayed> { event ->
+            if (event.screen !is GuiEditSign) return@listener
+            (event.screen as? GuiEditSign?)?.tileSign?.let { event.screen = KamiGuiEditSign(it) }
         }
     }
 

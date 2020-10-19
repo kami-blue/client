@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.hidden
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
 /**
@@ -20,9 +21,11 @@ import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
         enabledByDefault = true
 )
 object FixGui : Module() {
-    override fun onUpdate(event: SafeTickEvent) {
-        ClickGUI.resetScale()
-        GuiFrameUtil.fixFrames(mc)
-        disable()
+    init {
+        listener<SafeTickEvent> {
+            ClickGUI.resetScale()
+            GuiFrameUtil.fixFrames(mc)
+            disable()
+        }
     }
 }
