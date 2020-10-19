@@ -123,4 +123,9 @@ abstract class WindowComponent : InteractiveComponent() {
             }
         }
     }
+
+    fun isInWindow(mousePos: Vec2f): Boolean {
+        return mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
+                && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + preDragSize.y + 5.0f
+    }
 }

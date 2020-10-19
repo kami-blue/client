@@ -7,10 +7,13 @@ import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -39,7 +42,7 @@ object KamiClickGui : GuiScreen() {
         for ((index, category) in Module.Category.values().withIndex()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
             if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.categoryName, 128.0f * index, 64.0f, 100.0f, 256.0f, *buttons))
+            windowList.add(ListWindow(category.categoryName, 90.0f * index, 64.0f, 80.0f, 256.0f, *buttons))
         }
     }
 
@@ -79,30 +82,34 @@ object KamiClickGui : GuiScreen() {
     override fun handleMouseInput() {
         val mousePos = getRealMousePos()
         if (Mouse.getEventButtonState()) lastClickPos = mousePos
-        else hoveredWindow = windowList.lastOrNull { isInWindow(it, mousePos) }
+        else hoveredWindow = topWindow
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onClick(lastClickPos, mouseButton)
+        topWindow?.onClick(lastClickPos, mouseButton)
         windowList.sortBy { it.lastActiveTime }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         val mousePos = getRealMousePos()
-        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onRelease(mousePos, state)
+        topWindow?.onRelease(mousePos, state)
         windowList.sortBy { it.lastActiveTime }
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         val mousePos = getRealMousePos()
-        windowList.lastOrNull { isInWindow(it, lastClickPos) }?.onDrag(mousePos, lastClickPos, clickedMouseButton)
+        topWindow?.onDrag(mousePos, lastClickPos, clickedMouseButton)
     }
 
+    private val topWindow get() = windowList.lastOrNull { it.isInWindow(lastClickPos) }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+
         // Blur effect
-        if (ClickGUI.blur.value > 0f) {
+        if (ClickGUI.blur.value > 0.0f) {
             glPushMatrix()
             blurShader.shader?.render(partialTicks)
             mc.getFramebuffer().bindFramebuffer(true)
@@ -110,7 +117,13 @@ object KamiClickGui : GuiScreen() {
             glPopMatrix()
         }
 
-        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+        // Darkened background
+        if (ClickGUI.darkness.value > 0.0f) {
+            GlStateUtils.rescaleActual()
+            val color = ColorHolder(0, 0, 0, (ClickGUI.darkness.value * 255.0f).toInt())
+            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(mc.displayWidth.toDouble(), mc.displayHeight.toDouble()), color = color)
+        }
+
         GlStateUtils.rescaleKami()
         for (window in windowList) {
             glPushMatrix()
@@ -124,10 +137,5 @@ object KamiClickGui : GuiScreen() {
     fun getRealMousePos(): Vec2f {
         val scaleFactor = ClickGUI.getScaleFactorFloat()
         return Vec2f((Mouse.getX() / scaleFactor), (mc.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1.0f))
-    }
-
-    private fun isInWindow(window: WindowComponent, mousePos: Vec2f): Boolean {
-        return mousePos.x in window.preDragPos.x - 5.0f..window.preDragPos.x + window.preDragSize.x + 5.0f
-                && mousePos.y in window.preDragPos.y - 5.0f..window.preDragPos.y + window.preDragSize.y + 5.0f
     }
 }

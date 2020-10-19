@@ -22,7 +22,7 @@ open class Slider(override var name: String, valueIn: Float) : InteractiveCompon
 
     private val prevValue = TimedFlag(value)
     protected val renderProgress: Float
-        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 50.0f, prevValue.value, value)
+        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 200.0f, prevValue.value, value)
 
     override fun onTick() {
         super.onTick()
@@ -33,12 +33,12 @@ open class Slider(override var name: String, valueIn: Float) : InteractiveCompon
         // Slider bar
         if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth * renderProgress, renderHeight), GuiColors.primary)
 
+        // Slider hover overlay
+        val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 200.0)
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d(renderWidth - 1.0, renderHeight - 1.0), overlayColor)
+
         // Slider frame
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.0f, GuiColors.outline)
-
-        // Slider hover overlay
-        val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 100.0)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d(renderWidth - 1.0, renderHeight - 1.0), overlayColor)
 
         // Slider name
         KamiFontRenderer.drawString(name, 2f, 1f, colorIn = GuiColors.text)

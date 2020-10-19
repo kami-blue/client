@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
 import com.google.gson.annotations.Expose
-import me.zeroeightsix.kami.gui.clickGui.KamiClickGui
+import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
@@ -22,10 +22,9 @@ open class ListWindow(
         height: Float,
         vararg childrenIn: Component
 ) : TitledWindow(name, posX, posY, width, height) {
-    @Expose
-    private val children = LinkedList<Component>()
+    @Expose private val children = LinkedList<Component>()
 
-    override val minWidth = 100.0f
+    override val minWidth = 50.0f
     override val minHeight = 200.0f
     override val maxWidth = 200.0f
     override val maxHeight get() = mc.displayHeight.toFloat()
