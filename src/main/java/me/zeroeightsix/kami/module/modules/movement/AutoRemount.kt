@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.*
@@ -22,22 +23,24 @@ object AutoRemount : Module() {
     private val mule = register(Settings.b("Mule", true))
     private val pig = register(Settings.b("Pig", true))
     private val llama = register(Settings.b("Llama", true))
-    private val range = register(Settings.floatBuilder("Range").withMinimum(1.0f).withValue(2.0f).withMaximum(10.0f))
+    private val range = register(Settings.floatBuilder("Range").withValue(2.0f).withRange(1.0f, 5.0f).withStep(0.5f))
     private val remountDelay = register(Settings.integerBuilder("RemountDelay").withValue(5).withRange(0, 10))
 
     private var remountTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    override fun onUpdate(event: SafeTickEvent) {
-        // we don't need to do anything if we're already riding.
-        if (mc.player.isRiding) {
-            remountTimer.reset()
-            return
-        }
-        if (remountTimer.tick(remountDelay.value.toLong())) {
-            mc.world.loadedEntityList.stream()
-                    .filter { entity: Entity -> isValidEntity(entity) }
-                    .min(compareBy { mc.player.getDistance(it) })
-                    .ifPresent { mc.playerController.interactWithEntity(mc.player, it, EnumHand.MAIN_HAND) }
+    init {
+        listener<SafeTickEvent> {
+            // we don't need to do anything if we're already riding.
+            if (mc.player.isRiding) {
+                remountTimer.reset()
+                return@listener
+            }
+            if (remountTimer.tick(remountDelay.value.toLong())) {
+                mc.world.loadedEntityList.stream()
+                        .filter { entity: Entity -> isValidEntity(entity) }
+                        .min(compareBy { mc.player.getDistance(it) })
+                        .ifPresent { mc.playerController.interactWithEntity(mc.player, it, EnumHand.MAIN_HAND) }
+            }
         }
     }
 

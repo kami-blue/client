@@ -46,29 +46,31 @@ object Step : Module() {
         if (mc.player != null) BaritoneAPI.getSettings().assumeStep.value = isEnabled
     }
 
-    /**
-     * Vanilla mode.
-     */
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.isElytraFlying || mc.player.capabilities.isFlying) return
-        if (mode.value == Mode.VANILLA) {
-            if (mc.player.onGround && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava) {
-                if (mc.player.collidedHorizontally) {
-                    mc.player.motionY = speed.value / 100.0
-                } else if (downStep.value) {
-                    mc.player.motionY = -(speed.value / 100.0)
+    init {
+        /**
+         * Vanilla mode.
+         */
+        listener<SafeTickEvent> {
+            if (mc.player.isElytraFlying || mc.player.capabilities.isFlying) return@listener
+            if (mode.value == Mode.VANILLA) {
+                if (mc.player.onGround && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava) {
+                    if (mc.player.collidedHorizontally) {
+                        mc.player.motionY = speed.value / 100.0
+                    } else if (downStep.value) {
+                        mc.player.motionY = -(speed.value / 100.0)
+                    }
                 }
             }
-        }
-        if (mode.value == Mode.PACKET) {
-            updateStepHeight(mc.player)
-            updateUnStep(mc.player)
+            if (mode.value == Mode.PACKET) {
+                updateStepHeight(mc.player)
+                updateUnStep(mc.player)
 
-            if (getRidingEntity() != null) {
-                if (entityStep.value) {
-                    getRidingEntity()?.stepHeight = 256f
-                } else {
-                    getRidingEntity()?.stepHeight = 1f
+                if (getRidingEntity() != null) {
+                    if (entityStep.value) {
+                        getRidingEntity()?.stepHeight = 256f
+                    } else {
+                        getRidingEntity()?.stepHeight = 1f
+                    }
                 }
             }
         }

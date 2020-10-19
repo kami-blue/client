@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -22,38 +23,40 @@ object ElytraReplace : Module() {
     private val inventoryMode = register(Settings.b("Inventory", false))
     private val autoChest = register(Settings.b("AutoChest", false))
     private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
-    private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false).build())
-    private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value }.build())
-    private val logThreshold = register(Settings.integerBuilder("WarningThreshold").withRange(1, 10).withValue(2).withVisibility { logToChat.value }.build())
-    private val threshold = register(Settings.integerBuilder("Broken%").withRange(1, 100).withValue(7).build())
+    private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false))
+    private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value })
+    private val logThreshold = register(Settings.integerBuilder("WarningThreshold").withValue(2).withRange(1, 10).withVisibility { logToChat.value })
+    private val threshold = register(Settings.integerBuilder("Broken%").withValue(7).withRange(1, 50).withStep(1))
 
     private var elytraCount = 0
     private var chestPlateCount = 0
     private var shouldSendFinalWarning = true
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player == null || (!inventoryMode.value && mc.currentScreen is GuiContainer)) {
-            return
-        }
-
-        getElytraChestCount()
-
-        if (elytraCount == 0 && shouldSendFinalWarning) {
-            sendFinalElytraWarning()
-        }
-
-        if (mc.player.onGround && autoChest.value) {
-            swapToChest()
-        } else if (shouldAttemptElytraSwap()) {
-            var shouldSwap = isCurrentElytraBroken()
-            if (autoChest.value) {
-                shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
+    init {
+        listener<SafeTickEvent> {
+            if (!inventoryMode.value && mc.currentScreen is GuiContainer) {
+                return@listener
             }
 
-            if (shouldSwap) {
-                val success = swapToElytra()
-                if (success) {
-                    sendEquipNotif()
+            getElytraChestCount()
+
+            if (elytraCount == 0 && shouldSendFinalWarning) {
+                sendFinalElytraWarning()
+            }
+
+            if (mc.player.onGround && autoChest.value) {
+                swapToChest()
+            } else if (shouldAttemptElytraSwap()) {
+                var shouldSwap = isCurrentElytraBroken()
+                if (autoChest.value) {
+                    shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].getItem() === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
+                }
+
+                if (shouldSwap) {
+                    val success = swapToElytra()
+                    if (success) {
+                        sendEquipNotif()
+                    }
                 }
             }
         }

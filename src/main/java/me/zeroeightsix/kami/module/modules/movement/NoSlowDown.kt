@@ -59,11 +59,11 @@ object NoSlowDown : Module() {
                 mc.player.connection.sendPacket(CPacketPlayerDigging(Action.ABORT_DESTROY_BLOCK, MathUtils.mcPlayerPosFloored(mc), EnumFacing.DOWN))
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (slime.value) Blocks.SLIME_BLOCK.slipperiness = 0.4945f // normal block speed 0.4945
-        else Blocks.SLIME_BLOCK.slipperiness = 0.8f
+        listener<SafeTickEvent> {
+            if (slime.value) Blocks.SLIME_BLOCK.slipperiness = 0.4945f // normal block speed 0.4945
+            else Blocks.SLIME_BLOCK.slipperiness = 0.8f
+        }
     }
 
     override fun onDisable() {
@@ -73,9 +73,9 @@ object NoSlowDown : Module() {
     private fun passItemCheck(item: Item): Boolean {
         return if (!mc.player.isHandActive) false
         else allItems.value
-                || item is ItemFood && food.value
-                || item is ItemBow && bow.value
-                || item is ItemPotion && potion.value
-                || item is ItemShield && shield.value
+                || food.value && item is ItemFood
+                || bow.value && item is ItemBow
+                || potion.value && item is ItemPotion
+                || shield.value && item is ItemShield
     }
 }

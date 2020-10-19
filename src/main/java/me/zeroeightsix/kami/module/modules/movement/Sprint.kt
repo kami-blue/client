@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.event.listener
 
 /**
  * @see me.zeroeightsix.kami.mixin.client.MixinEntityPlayerSP
@@ -19,15 +20,17 @@ object Sprint : Module() {
 
     var sprinting = false
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!shouldSprint()) return
+    init {
+        listener<SafeTickEvent> {
+            if (!shouldSprint()) return@listener
 
-        sprinting = if (multiDirection.value) mc.player.moveForward != 0f || mc.player.moveStrafing != 0f
-        else mc.player.moveForward > 0
+            sprinting = if (multiDirection.value) mc.player.moveForward != 0f || mc.player.moveStrafing != 0f
+            else mc.player.moveForward > 0
 
-        if (mc.player.collidedHorizontally || (onHolding.value && !mc.gameSettings.keyBindSprint.isKeyDown)) sprinting = false
+            if (mc.player.collidedHorizontally || (onHolding.value && !mc.gameSettings.keyBindSprint.isKeyDown)) sprinting = false
 
-        mc.player.isSprinting = sprinting
+            mc.player.isSprinting = sprinting
+        }
     }
 
     fun shouldSprint() = !mc.player.isElytraFlying && !mc.player.capabilities.isFlying && !BaritoneUtils.isPathing
