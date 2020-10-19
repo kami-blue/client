@@ -11,7 +11,7 @@ class KamiGuiDisconnected(private val reason: Array<String>, private val screen:
 
         buttonList.add(GuiButton(0, width / 2 - 100, 200, "Okay"))
         if (!disable) {
-            buttonList.add(GuiButton(1, width / 2 - 100, 220, "Disable"))
+            buttonList.add(GuiButton(1, width / 2 - 100, 220, "Disable AutoLog"))
         } else {
             disable()
         }

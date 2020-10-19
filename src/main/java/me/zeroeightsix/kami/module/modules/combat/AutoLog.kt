@@ -20,6 +20,7 @@ import net.minecraft.entity.monster.EntityCreeper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoLog",
@@ -44,13 +45,10 @@ object AutoLog : Module() {
         NEVER, ALWAYS, NOT_PLAYER
     }
 
-    override fun onEnable() {
-        if (mc.player == null) disable()
-    }
 
     init {
-        listener<SafeTickEvent> {
-            if (isDisabled) return@listener
+        listener<SafeTickEvent>(-1000) {
+            if (isDisabled || it.phase != TickEvent.Phase.END) return@listener
 
             when {
                 mc.player.health < health.value -> log(HEALTH)
