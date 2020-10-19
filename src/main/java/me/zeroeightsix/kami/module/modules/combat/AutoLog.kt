@@ -71,6 +71,7 @@ object AutoLog : Module() {
         for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityCreeper) continue
             if (mc.player.getDistance(entity) > creeperDistance.value) continue
+            log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
             return true
         }
         return false
