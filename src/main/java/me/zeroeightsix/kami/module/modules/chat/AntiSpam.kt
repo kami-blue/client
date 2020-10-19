@@ -41,7 +41,7 @@ object AntiSpam : Module() {
     /* Page Two */
     private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS })
     private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.SETTINGS })
-    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(0, 600).withStep(5).withVisibility { duplicates.value && p.value == Page.SETTINGS })
+    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(1, 600).withStep(5).withVisibility { duplicates.value && p.value == Page.SETTINGS })
     private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.SETTINGS })
     private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.SETTINGS })
     private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.SETTINGS })
