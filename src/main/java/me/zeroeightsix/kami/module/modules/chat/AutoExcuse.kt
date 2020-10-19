@@ -56,7 +56,13 @@ object AutoExcuse : Module() {
 
                 lateinit var excusesFromFile: ArrayList<String>
                 MessageSendHelper.sendChatMessage("$chatName Trying to find '&7excuses.txt&f'")
-                File("excuses.txt").forEachLine { excusesFromFile.add(it) }
+
+                try {
+                    File("excuses.txt").forEachLine { excusesFromFile.add(it) }
+                } catch(e: Exception) {
+                    MessageSendHelper.sendErrorMessage("$chatName An error occurred while trying to read the file!")
+                    e.printStackTrace()
+                }
 
                 if (excusesFromFile.isEmpty()) {
                     MessageSendHelper.sendErrorMessage("$chatName &7excuses.txt&f is empty! Using default excuses...")
