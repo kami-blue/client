@@ -64,10 +64,10 @@ object InventoryViewer : Module() {
         if (mcTexture.value) {
             mc.renderEngine.bindTexture(containerTexture)
             buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
-            buffer.pos(0.0, 0.0, 0.0).tex(0.02734375, 0.32421875).endVertex()
-            buffer.pos(0.0, 54.0, 0.0).tex(0.02734375, 0.53125).endVertex()
-            buffer.pos(162.0, 0.0, 0.0).tex(0.65625, 0.32421875).endVertex()
-            buffer.pos(162.0, 54.0, 0.0).tex(0.65625, 0.53125).endVertex()
+            buffer.pos(0.0, 0.0, 0.0).tex(0.02734375, 0.32421875).endVertex() // (1.75 / 64), (20.75 / 64)
+            buffer.pos(0.0, 54.0, 0.0).tex(0.02734375, 0.53125).endVertex() // (1.75 / 64), (34 / 64)
+            buffer.pos(162.0, 0.0, 0.0).tex(0.65625, 0.32421875).endVertex() // (42 / 64), (20.75 / 64)
+            buffer.pos(162.0, 54.0, 0.0).tex(0.65625, 0.53125).endVertex() // (42 / 64), (34 / 64)
             tessellator.draw()
         } else if (showIcon.value) {
             mc.renderEngine.bindTexture(kamiIcon)
