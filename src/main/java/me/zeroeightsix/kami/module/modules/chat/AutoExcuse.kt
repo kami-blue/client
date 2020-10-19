@@ -62,6 +62,7 @@ object AutoExcuse : Module() {
                 } catch(e: Exception) {
                     MessageSendHelper.sendErrorMessage("$chatName An error occurred while trying to read the file!")
                     e.printStackTrace()
+                    disable()
                 }
 
                 if (excusesFromFile.isEmpty()) {
