@@ -26,9 +26,9 @@ import kotlin.math.min
         category = Module.Category.RENDER
 )
 object HungerOverlay : Module() {
-    private val saturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("SaturationOverlay").withValue(true).build())
-    private val foodHungerOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodHungerOverlay").withValue(true).build())
-    private val foodSaturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodSaturationOverlay").withValue(true).build())
+    private val saturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("SaturationOverlay").withValue(true))
+    private val foodHungerOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodHungerOverlay").withValue(true))
+    private val foodSaturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodSaturationOverlay").withValue(true))
 
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 

@@ -1,61 +1,42 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.math.MathHelper
 
-/**
- * Ngl this code is so fucking scuffed :joy_cat:
- * It should be illegal to write code at 2am
- *
- * tldr the way this works is by modifying mc.player.lastAttackedEntity you can make this compatible with lots of stuff
- * *but* it defaults to mc.player if 1. the time is reset or 2. your target disconnects / dies
- */
 @Module.Info(
         name = "PlayerModel",
         description = "Renders a model of you, or someone you're attacking",
         category = Module.Category.RENDER
 )
 object PlayerModel : Module() {
-    private val scale = register(Settings.integerBuilder("Size").withRange(1, 100).withValue(50).build())
-    private val timeout = register(Settings.integerBuilder("ResetTimeout").withRange(1, 100).withValue(10).build())
+    private val scale = register(Settings.integerBuilder("Size").withValue(100).withRange(10, 200).withStep(10))
+    private val resetDelay = register(Settings.integerBuilder("ResetDelay").withValue(100).withRange(0, 200).withStep(10))
     private val emulatePitch = register(Settings.b("EmulatePitch", true))
     private val emulateYaw = register(Settings.b("EmulateYaw", false))
-    private val x = register(Settings.i("X", 100))
-    private val y = register(Settings.i("Y", 120))
+    private val x = register(Settings.integerBuilder("X").withValue(200).withRange(0, 2000).withStep(10))
+    private val y = register(Settings.integerBuilder("Y").withValue(240).withRange(0, 2000).withStep(10))
 
-    private var entity: EntityLivingBase? = null
-    var lastAttacked: Long = 0
+    init {
+        listener<RenderOverlayEvent> {
+            if (mc.player == null || mc.renderManager.renderViewEntity == null) return@listener
+            mc.player.lastAttackedEntity.let { attackedEntity: EntityLivingBase? ->
+                GlStateUtils.rescaleActual()
+                GlStateUtils.depth(true)
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (lastAttacked == 0L || entity == null) {
-            entity = mc.player
-            mc.player.setLastAttackedEntity(mc.player)
-            lastAttacked = System.currentTimeMillis()
-        }
+                val entity = if (attackedEntity != null && mc.player.ticksExisted - mc.player.lastAttackedEntityTime <= resetDelay.value) attackedEntity else mc.player
+                val yaw = if (emulateYaw.value) interpolateAndWrap(entity.prevRotationYaw, entity.rotationYaw) else 0.0f
+                val pitch = if (emulatePitch.value) interpolateAndWrap(entity.prevRotationPitch, entity.rotationPitch) else 0.0f
+                GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, entity)
 
-        /* after x seconds of not attacking, reset to mc.player */
-        if (lastAttacked + timeout.value * 1000 < System.currentTimeMillis()) {
-            lastAttacked = 0
-        }
-
-        entity = mc.player.lastAttackedEntity
-    }
-
-    override fun onRender() {
-        entity?.let {
-            GlStateManager.pushMatrix()
-            GlStateManager.enableDepth()
-            val yaw = if (emulateYaw.value) interpolateAndWrap(it.prevRotationYaw, it.rotationYaw) else 0.0f
-            val pitch = if (emulatePitch.value) interpolateAndWrap(it.prevRotationPitch, it.rotationPitch) else 0.0f
-            GuiInventory.drawEntityOnScreen(x.value, y.value, scale.value, -yaw, -pitch, it)
-            GlStateManager.disableDepth()
-            GlStateManager.popMatrix()
+                GlStateUtils.rescaleMc()
+            }
         }
     }
 

@@ -4,7 +4,6 @@ import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
@@ -148,12 +147,6 @@ open class Module {
 
 
     /* Setting registering */
-    protected fun registerAll(vararg settings: Setting<*>) {
-        for (setting in settings) {
-            register(setting)
-        }
-    }
-
     protected fun <T> register(setting: Setting<T>): Setting<T> {
         settingList.add(setting)
         return SettingBuilder.register(setting, "modules.$originalName")

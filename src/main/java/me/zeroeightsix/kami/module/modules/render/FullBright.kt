@@ -3,6 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 import kotlin.math.min
 
@@ -13,9 +15,9 @@ import kotlin.math.min
         alwaysListening = true
 )
 object FullBright : Module() {
-    private val gamma = register(Settings.floatBuilder("Gamma").withValue(12f).withRange(1f, 15f).build())
-    private val transitionLength = register(Settings.floatBuilder("TransitionLength").withValue(3f).withRange(0f, 10f).build())
-    private val oldValue = register(Settings.floatBuilder("OldValue").withValue(1f).withRange(0f, 1f).withVisibility { false }.build())
+    private val gamma = register(Settings.floatBuilder("Gamma").withValue(12.0f).withRange(1.0f, 15f))
+    private val transitionLength = register(Settings.floatBuilder("TransitionLength").withValue(3.0f).withRange(0.0f, 10.0f))
+    private val oldValue = register(Settings.floatBuilder("OldValue").withValue(1.0f).withRange(0.0f, 1.0f).withVisibility { false })
 
     private var gammaSetting: Float
         get() = mc.gameSettings.gammaSetting
@@ -27,19 +29,22 @@ object FullBright : Module() {
         oldValue.value = mc.gameSettings.gammaSetting
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        when {
-            isEnabled -> {
-                transition(gamma.value)
-                alwaysListening = true
-            }
+    init {
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@listener
+            when {
+                isEnabled -> {
+                    transition(gamma.value)
+                    alwaysListening = true
+                }
 
-            isDisabled && gammaSetting != oldValue.value -> {
-                transition(oldValue.value)
-            }
+                isDisabled && gammaSetting != oldValue.value -> {
+                    transition(oldValue.value)
+                }
 
-            else -> {
-                alwaysListening = false
+                else -> {
+                    alwaysListening = false
+                }
             }
         }
     }

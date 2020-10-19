@@ -21,9 +21,9 @@ object ArmourHide : Module() {
 
     @JvmStatic
     fun shouldHidePiece(slotIn: EntityEquipmentSlot): Boolean {
-        return slotIn == EntityEquipmentSlot.HEAD && helmet.value
-                || slotIn == EntityEquipmentSlot.CHEST && chestplate.value
-                || slotIn == EntityEquipmentSlot.LEGS && leggings.value
-                || slotIn == EntityEquipmentSlot.FEET && boots.value
+        return helmet.value && slotIn == EntityEquipmentSlot.HEAD
+                || chestplate.value && slotIn == EntityEquipmentSlot.CHEST
+                || leggings.value && slotIn == EntityEquipmentSlot.LEGS
+                || boots.value && slotIn == EntityEquipmentSlot.FEET
     }
 }

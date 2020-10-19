@@ -43,10 +43,10 @@ object AntiOverlay : Module() {
                 else -> it.isCanceled
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
-        if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
+        listener<SafeTickEvent> {
+            if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
+            if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
+        }
     }
 }

@@ -13,7 +13,7 @@ import kotlin.math.round
 )
 object PitchLock : Module() {
     private val auto = register(Settings.b("Auto", true))
-    private val pitch = register(Settings.floatBuilder("Pitch").withRange(-90.0f, 90.0f).withStep(1.0f))
+    private val pitch = register(Settings.floatBuilder("Pitch").withValue(0.0f).withRange(-90.0f, 90.0f).withStep(1.0f))
     private val slice = register(Settings.integerBuilder("Slice").withValue(8).withRange(2, 32).withStep(1).withVisibility { auto.value })
 
     init {

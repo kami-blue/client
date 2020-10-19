@@ -35,24 +35,24 @@ import java.util.Set;
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.
     private static final String DEFAULT_XRAY_CONFIG = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone";
+    // A static mirror of the state.
+    private static final Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
     public static XRay INSTANCE;
     // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
     // Essentially, the XRay primitive is just a block state transformer.
     // Then this implements a custom block that the block state transformer can use for hidden blocks.
     public static Block transparentBlock;
-    // A static mirror of the state.
-    private static final Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
     private static boolean invertStatic, outlinesStatic = true;
     // This is the state used for hidden blocks.
     private static IBlockState transparentState;
-    public Setting<Boolean> invert = register(Settings.booleanBuilder("Invert").withValue(false).withConsumer((old, value) -> {
-        invertStatic = value;
-        if (isEnabled())
-            mc.renderGlobal.loadRenderers();
-    }).build());
     // Split by ',' & each element trimmed (this is a bit weird but it works for now?)
     private final Setting<String> hiddenBlockNames = register(Settings.stringBuilder("HiddenBlocks").withValue(DEFAULT_XRAY_CONFIG).withConsumer((old, value) -> {
         refreshHiddenBlocksSet(value);
+        if (isEnabled())
+            mc.renderGlobal.loadRenderers();
+    }).build());
+    public Setting<Boolean> invert = register(Settings.booleanBuilder("Invert").withValue(false).withConsumer((old, value) -> {
+        invertStatic = value;
         if (isEnabled())
             mc.renderGlobal.loadRenderers();
     }).build());

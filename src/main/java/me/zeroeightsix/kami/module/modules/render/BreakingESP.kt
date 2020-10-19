@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
@@ -43,56 +44,54 @@ object BreakingESP : Module() {
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withVisibility { outline.value }.build())
     private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
 
-    private val breakingBlockList = HashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
-
-    private var warningText = ""
-
-    override fun onWorldRender(event: RenderWorldEvent) {
-        val colour = ColorHolder(r.value, g.value, b.value)
-        val renderer = ESPRenderer()
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        renderer.aTracer = if (tracer.value) aTracer.value else 0
-        renderer.thickness = thickness.value
-
-        var selfBreaking: AxisAlignedBB? = null
-        for ((breakID, triple) in breakingBlockList) {
-            if (triple.third.second) {
-                val box = mc.world.getBlockState(triple.first).getSelectedBoundingBox(mc.world, triple.first)
-                val progress = triple.second / 9f
-                val resizedBox = box.shrink((1f - progress) * box.averageEdgeLength * 0.5)
-                if (mc.world.getEntityByID(breakID) == mc.player) {
-                    selfBreaking = resizedBox
-                    continue
-                }
-                renderer.add(resizedBox, colour)
-            }
-        }
-        renderer.render(true)
-
-        if (selfBreaking != null) {
-            renderer.aTracer = 0
-            renderer.add(selfBreaking, colour)
-            renderer.render(true)
-        }
-    }
-
+    private val breakingBlockList = LinkedHashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
     private var warn = false
     private var delay = 0
-
-    override fun onRender() {
-        if (screenWarn.value && warn) {
-            if (delay++ > 100) warn = false
-            val scale = DisplayGuiScreen.getScale().toInt()
-            val divider = if (scale == 0) 1 else scale
-            val posX = mc.displayWidth / divider / 2f - FontRenderAdapter.getStringWidth(warningText) / 2f
-            val posY = mc.displayHeight / divider / 2f - 16f
-            val color = ColorHolder(240, 87, 70)
-            FontRenderAdapter.drawString(warningText, posX, posY, color = color)
-        }
-    }
+    private var warningText = ""
 
     init {
+        listener<RenderWorldEvent> {
+            val color = ColorHolder(r.value, g.value, b.value)
+            val renderer = ESPRenderer()
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            renderer.aTracer = if (tracer.value) aTracer.value else 0
+            renderer.thickness = thickness.value
+
+            var selfBreaking: AxisAlignedBB? = null
+            for ((breakID, triple) in breakingBlockList) {
+                if (triple.third.second) {
+                    val box = mc.world.getBlockState(triple.first).getSelectedBoundingBox(mc.world, triple.first)
+                    val progress = triple.second / 9f
+                    val resizedBox = box.shrink((1f - progress) * box.averageEdgeLength * 0.5)
+                    if (mc.world.getEntityByID(breakID) == mc.player) {
+                        selfBreaking = resizedBox
+                        continue
+                    }
+                    renderer.add(resizedBox, color)
+                }
+            }
+            renderer.render(true)
+
+            if (selfBreaking != null) {
+                renderer.aTracer = 0
+                renderer.add(selfBreaking, color)
+                renderer.render(true)
+            }
+        }
+
+        listener<RenderOverlayEvent> {
+            if (screenWarn.value && warn) {
+                if (delay++ > 100) warn = false
+                val scale = DisplayGuiScreen.getScale().toInt()
+                val divider = if (scale == 0) 1 else scale
+                val posX = mc.displayWidth / divider / 2f - FontRenderAdapter.getStringWidth(warningText) / 2f
+                val posY = mc.displayHeight / divider / 2f - 16f
+                val color = ColorHolder(240, 87, 70)
+                FontRenderAdapter.drawString(warningText, posX, posY, color = color)
+            }
+        }
+
         listener<BlockBreakEvent> {
             if (mc.player == null || mc.player.getDistanceSq(it.position) > range.value * range.value) return@listener
             val breaker = mc.world.getEntityByID(it.breakId) ?: return@listener
@@ -113,11 +112,11 @@ object BreakingESP : Module() {
                 breakingBlockList.remove(it.breakId)
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        breakingBlockList.values.removeIf { triple ->
-            mc.world.isAirBlock(triple.first)
+        listener<SafeTickEvent> {
+            breakingBlockList.values.removeIf { triple ->
+                mc.world.isAirBlock(triple.first)
+            }
         }
     }
 }

@@ -12,15 +12,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GuiInventory.class)
 public class MixinGuiInventory {
-    @Redirect(method = "drawGuiContainerBackgroundLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiInventory;drawEntityOnScreen(IIIFFLnet/minecraft/entity/EntityLivingBase;)V"))
-    private void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
-        GlStateManager.pushMatrix();
-        GlStateManager.enableDepth();
-        GuiInventory.drawEntityOnScreen(posX, posY, scale, mouseX, mouseY, ent);
-        GlStateManager.disableDepth();
-        GlStateManager.popMatrix();
-    }
-
     @Redirect(method = "drawEntityOnScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntity(Lnet/minecraft/entity/Entity;DDDFFZ)V"))
     private static void renderEntity(RenderManager renderManager, Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug) {
         if (entity instanceof EntityLivingBase) {

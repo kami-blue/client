@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -29,15 +30,15 @@ import kotlin.math.min
 object Breadcrumbs : Module() {
     private val clear = register(Settings.b("Clear", false))
     private val whileDisabled = register(Settings.b("WhileDisabled", false))
-    private val smoothFactor = register(Settings.floatBuilder("SmoothFactor").withValue(5.0f).withRange(0.0f, 10.0f).build())
-    private val maxDistance = register(Settings.integerBuilder("MaxDistance").withValue(4096).withRange(1024, 16384).build())
-    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(0.0f, 1.0f).build())
+    private val smoothFactor = register(Settings.floatBuilder("SmoothFactor").withValue(5.0f).withRange(0.0f, 10.0f).withStep(0.25f))
+    private val maxDistance = register(Settings.integerBuilder("MaxDistance").withValue(4096).withRange(1024, 16384).withStep(1024))
+    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(0.0f, 1.0f).withStep(0.05f))
     private val throughBlocks = register(Settings.b("ThroughBlocks", true))
-    private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).build())
-    private val g = register(Settings.integerBuilder("Green").withValue(166).withRange(0, 255).build())
-    private val b = register(Settings.integerBuilder("Blue").withValue(188).withRange(0, 255).build())
-    private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
+    private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).withStep(1))
+    private val g = register(Settings.integerBuilder("Green").withValue(166).withRange(0, 255).withStep(1))
+    private val b = register(Settings.integerBuilder("Blue").withValue(188).withRange(0, 255).withStep(1))
+    private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).withStep(1))
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 8.0f).withStep(0.25f))
 
     private val mainList = ConcurrentHashMap<String, HashMap<Int, LinkedList<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
     private var prevDimension = -2
@@ -56,56 +57,56 @@ object Breadcrumbs : Module() {
             startTime = 0L
             alphaMultiplier = 0f
         }
-    }
 
-    override fun onWorldRender(event: RenderWorldEvent) {
-        if (mc.player == null || (mc.integratedServer == null && mc.currentServerData == null)
-                || (isDisabled && !whileDisabled.value)) {
-            return
-        }
-        if (mc.player.dimension != prevDimension) {
-            startTime = 0L
-            alphaMultiplier = 0f
-            prevDimension = mc.player.dimension
-        }
-        if (!shouldRecord(true)) return
+        listener<RenderWorldEvent> {
+            if (mc.player == null || (mc.integratedServer == null && mc.currentServerData == null)
+                    || (isDisabled && !whileDisabled.value)) {
+                return@listener
+            }
+            if (mc.player.dimension != prevDimension) {
+                startTime = 0L
+                alphaMultiplier = 0f
+                prevDimension = mc.player.dimension
+            }
+            if (!shouldRecord(true)) return@listener
 
-        /* Adding server and dimension to the map if they are not exist */
-        val serverIP = getServerIP()
-        val dimension = mc.player.dimension
-        if (!mainList.containsKey(serverIP)) { /* Add server to the map if not exist */
-            mainList[serverIP] = hashMapOf(Pair(dimension, LinkedList()))
-        } else if (!mainList[serverIP]!!.containsKey(dimension)) { /* Add dimension to the map if not exist */
-            mainList[serverIP]!![dimension] = LinkedList()
-        }
-
-        /* Adding position points to list */
-        val renderPosList = addPos(serverIP, dimension, KamiTessellator.pTicks())
-
-        /* Rendering */
-        drawTail(renderPosList)
-    }
-
-    override fun onUpdate(event: SafeTickEvent) {
-        if ((mc.integratedServer == null && mc.currentServerData == null)) return
-        alphaMultiplier = if (isEnabled && shouldRecord(false)) {
-            min(alphaMultiplier + 0.07f, 1f)
-        } else {
-            max(alphaMultiplier - 0.05f, 0f)
-        }
-        if (isDisabled && !whileDisabled.value) return
-        if (tickCount < 200) {
-            tickCount++
-        } else {
+            /* Adding server and dimension to the map if they are not exist */
             val serverIP = getServerIP()
             val dimension = mc.player.dimension
-            val posList = ((mainList[serverIP] ?: return)[dimension] ?: return)
-            val cutoffPos = posList.lastOrNull { pos -> mc.player.getDistance(pos.x, pos.y, pos.z) > maxDistance.value }
-            if (cutoffPos != null) while (posList.first() != cutoffPos) {
-                posList.remove()
+            if (!mainList.containsKey(serverIP)) { /* Add server to the map if not exist */
+                mainList[serverIP] = hashMapOf(Pair(dimension, LinkedList()))
+            } else if (!mainList[serverIP]!!.containsKey(dimension)) { /* Add dimension to the map if not exist */
+                mainList[serverIP]!![dimension] = LinkedList()
             }
-            mainList[serverIP]!![dimension] = posList
-            tickCount = 0
+
+            /* Adding position points to list */
+            val renderPosList = addPos(serverIP, dimension, KamiTessellator.pTicks())
+
+            /* Rendering */
+            drawTail(renderPosList)
+        }
+
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.START || mc.integratedServer == null && mc.currentServerData == null) return@listener
+
+            alphaMultiplier = if (isEnabled && shouldRecord(false)) min(alphaMultiplier + 0.07f, 1f)
+            else max(alphaMultiplier - 0.05f, 0f)
+
+            if (isDisabled && !whileDisabled.value) return@listener
+
+            if (tickCount < 200) {
+                tickCount++
+            } else {
+                val serverIP = getServerIP()
+                val dimension = mc.player.dimension
+                val posList = ((mainList[serverIP] ?: return@listener)[dimension] ?: return@listener)
+                val cutoffPos = posList.lastOrNull { pos -> mc.player.getDistance(pos.x, pos.y, pos.z) > maxDistance.value }
+                if (cutoffPos != null) while (posList.first() != cutoffPos) {
+                    posList.remove()
+                }
+                mainList[serverIP]!![dimension] = posList
+                tickCount = 0
+            }
         }
     }
 
@@ -117,7 +118,8 @@ object Breadcrumbs : Module() {
             GlStateManager.glLineWidth(thickness.value)
             KamiTessellator.begin(GL_LINE_STRIP)
             for (pos in posList) {
-                buffer.pos(pos.add(offset).x, pos.add(offset).y, pos.add(offset).z).color(r.value, g.value, b.value, (a.value * alphaMultiplier).toInt()).endVertex()
+                val offsetPost = pos.add(offset)
+                buffer.pos(offsetPost.x, offsetPost.y, offsetPost.z).color(r.value, g.value, b.value, (a.value * alphaMultiplier).toInt()).endVertex()
             }
             KamiTessellator.render()
         }
