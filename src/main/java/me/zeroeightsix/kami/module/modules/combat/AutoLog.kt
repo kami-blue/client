@@ -119,6 +119,5 @@ object AutoLog : Module() {
         HEALTH, TOTEM, CREEPER, PLAYER, END_CRYSTAL
     }
 
-    private fun totemMessage(amount: Int) = if (amount == 1) "one totem"
-    else "$amount totems"
+    private fun totemMessage(amount: Int) = if (amount == 1) "one totem" else "$amount totems"
 }
