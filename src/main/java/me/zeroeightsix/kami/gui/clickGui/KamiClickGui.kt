@@ -82,7 +82,7 @@ object KamiClickGui : GuiScreen() {
     override fun handleMouseInput() {
         val mousePos = getRealMousePos()
         if (Mouse.getEventButtonState()) lastClickPos = mousePos
-        else hoveredWindow = topWindow
+        else hoveredWindow = windowList.lastOrNull { it.isInWindow(mousePos) }
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
     }
