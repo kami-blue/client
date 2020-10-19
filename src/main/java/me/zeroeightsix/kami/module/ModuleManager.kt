@@ -87,33 +87,6 @@ object ModuleManager {
         }
     }
 
-    @Deprecated ("Use event listener for SafeTickEvent instead")
-    fun onUpdate(event: SafeTickEvent) {
-        for (module in getModules()) {
-            if (isModuleListening(module) && inGame()) module.onUpdate(event)
-        }
-    }
-
-    @Deprecated ("Use event listener for RenderOverlayEvent instead")
-    fun onRender() {
-        for (module in getModules()) {
-            if (isModuleListening(module)) {
-                module.onRender()
-            }
-        }
-    }
-
-    @Deprecated ("Use event listener for RenderWorldEvent instead")
-    fun onWorldRender(event: RenderWorldEvent) {
-        for (module in getModules()) {
-            if (isModuleListening(module)) {
-                KamiTessellator.prepareGL()
-                module.onWorldRender(event)
-                KamiTessellator.releaseGL()
-            }
-        }
-    }
-
     fun onBind(eventKey: Int) {
         if (eventKey == 0) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
         for (module in getModules()) {

@@ -134,17 +134,9 @@ open class Module {
         return null
     }
 
-    @Deprecated ("Use event listener for SafeTickEvent instead")
-    open fun onUpdate(event: SafeTickEvent) {}
-    @Deprecated ("Use event listener for RenderOverlayEvent instead")
-    open fun onRender() {}
-    @Deprecated ("Use event listener for RenderWorldEvent instead")
-    open fun onWorldRender(event: RenderWorldEvent) {}
-
     protected open fun onEnable() {}
     protected open fun onDisable() {}
     protected open fun onToggle() {}
-
 
     /* Setting registering */
     protected fun <T> register(setting: Setting<T>): Setting<T> {
