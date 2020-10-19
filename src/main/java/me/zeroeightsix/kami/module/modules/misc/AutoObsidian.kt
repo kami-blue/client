@@ -159,6 +159,17 @@ object AutoObsidian : Module() {
         }
 
         /* Updates main state */
+        updateMainState()
+
+        /* Updates searching state */
+        if (state == State.SEARCHING && searchingState != SearchingState.DONE) {
+            updateSearchingState()
+        } else if (state != State.SEARCHING) {
+            searchingState = SearchingState.PLACING
+        }
+    }
+
+    private fun updateMainState() {
         val placedEnderChest = enderChestCount - InventoryUtils.countItem(0, 35, 130)
         val targetEnderChest = (targetStacks.value * 64 - obsidianCount) / 8
         state = when {
@@ -182,41 +193,35 @@ object AutoObsidian : Module() {
             }
             else -> state
         }
-
-        /* Updates searching state */
-        if (state == State.SEARCHING && searchingState != SearchingState.DONE) {
-            searchingState = when {
-                searchingState == SearchingState.PLACING && InventoryUtils.countItem(0, 35, 130) > 0 -> {
-                    SearchingState.DONE
-                }
-                searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
-                    SearchingState.DONE
-                }
-                searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
-                    if (InventoryUtils.countItem(0, 35, 130) > 0) {
-                        SearchingState.COLLECTING
-                    } else { /* In case if the shulker wasn't placed due to server lag */
-                        SearchingState.PLACING
-                    }
-                }
-                searchingState == SearchingState.OPENING && (InventoryUtils.countItem(0, 35, 130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
-                    SearchingState.PRE_MINING
-                }
-                searchingState == SearchingState.PLACING && !mc.world.isAirBlock(placingPos) -> {
-                    if (mc.world.getBlockState(placingPos).block is BlockShulkerBox) {
-                        SearchingState.OPENING
-                    } else { /* In case if the shulker wasn't placed due to server lag */
-                        SearchingState.PRE_MINING
-                    }
-                }
-                else -> searchingState
-            }
-        } else if (state != State.SEARCHING) searchingState = SearchingState.PLACING
-
     }
 
-    private fun countObsidian(): Int {
-        return ceil(InventoryUtils.countItem(0, 35, 49).toDouble() / 8.0).toInt() * 8
+    private fun updateSearchingState() {
+        searchingState = when {
+            searchingState == SearchingState.PLACING && InventoryUtils.countItem(0, 35, 130) > 0 -> {
+                SearchingState.DONE
+            }
+            searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
+                SearchingState.DONE
+            }
+            searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
+                if (InventoryUtils.countItem(0, 35, 130) > 0) {
+                    SearchingState.COLLECTING
+                } else { /* In case if the shulker wasn't placed due to server lag */
+                    SearchingState.PLACING
+                }
+            }
+            searchingState == SearchingState.OPENING && (InventoryUtils.countItem(0, 35, 130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
+                SearchingState.PRE_MINING
+            }
+            searchingState == SearchingState.PLACING && !mc.world.isAirBlock(placingPos) -> {
+                if (mc.world.getBlockState(placingPos).block is BlockShulkerBox) {
+                    SearchingState.OPENING
+                } else { /* In case if the shulker wasn't placed due to server lag */
+                    SearchingState.PRE_MINING
+                }
+            }
+            else -> searchingState
+        }
     }
 
     private fun setPlacingPos() {
@@ -228,6 +233,10 @@ object AutoObsidian : Module() {
             this.disable()
             return
         }
+    }
+
+    private fun countObsidian(): Int {
+        return ceil(InventoryUtils.countItem(0, 35, 49).toDouble() / 8.0).toInt() * 8
     }
 
     private fun getPlacingPos(): BlockPos {
