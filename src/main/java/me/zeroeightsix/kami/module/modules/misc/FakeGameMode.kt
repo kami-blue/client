@@ -6,9 +6,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.world.GameType
 
-/**
- * Yes, this is 100% original code. Go away
- */
 @Module.Info(
         name = "FakeGameMode",
         description = "Fakes your current gamemode client side",
