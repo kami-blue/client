@@ -22,7 +22,7 @@ public class AutoEZCommand extends Command {
             sendWarningMessage("&6Warning: The AutoEZ module is not enabled!");
             sendWarningMessage("The command will still work, but will not visibly do anything.");
         }
-        if (!AutoEZ.INSTANCE.getMode().getValue().equals(AutoEZ.Mode.CUSTOM)) {
+        if (!AutoEZ.INSTANCE.getMessageMode().getValue().equals(AutoEZ.MessageMode.CUSTOM)) {
             sendWarningMessage("&6Warning: You don't have custom mode enabled in AutoEZ!");
             sendWarningMessage("The command will still work, but will not visibly do anything.");
         }
