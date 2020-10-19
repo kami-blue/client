@@ -2,10 +2,12 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketUpdateHealth
+import java.io.File
 
 @Module.Info(
         name = "AutoExcuse",
@@ -14,6 +16,7 @@ import net.minecraft.network.play.server.SPacketUpdateHealth
 )
 object AutoExcuse : Module() {
     private const val CLIENT_NAME = "%CLIENT%"
+    private val mode = register(Settings.e<Mode>("Mode", Mode.DEFAULT))
 
     private val excuses = arrayOf(
             "Sorry, im using $CLIENT_NAME client",
@@ -46,5 +49,31 @@ object AutoExcuse : Module() {
         }
     }
 
-    private fun getExcuse() = excuses.random().replace(CLIENT_NAME, clients.random())
+    private fun getExcuse(): String {
+        when (mode.value) {
+            Mode.DEFAULT -> return excuses.random().replace(CLIENT_NAME, clients.random())
+            Mode.READ_FROM_FILE -> {
+
+                lateinit var excusesFromFile: ArrayList<String>
+                MessageSendHelper.sendChatMessage("$chatName Trying to find '&7excuses.txt&f'")
+                File("excuses.txt").forEachLine { excusesFromFile.add(it) }
+
+                if (excusesFromFile.isEmpty()) {
+                    MessageSendHelper.sendErrorMessage("$chatName &7excuses.txt&f is empty! Using default excuses...")
+                    return excuses.random().replace(CLIENT_NAME, clients.random())
+                }
+
+                return excusesFromFile.random()
+
+            }
+            else -> {
+                throw IllegalArgumentException("Invalid mode found! Stopping...")
+            }
+        }
+    }
+
+    private enum class Mode{
+        READ_FROM_FILE,
+        DEFAULT
+    }
 }
