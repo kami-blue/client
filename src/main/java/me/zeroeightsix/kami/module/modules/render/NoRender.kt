@@ -26,6 +26,7 @@ object NoRender : Module() {
     private val explosion = register(Settings.b("Explosions", true))
     val beacon = register(Settings.b("BeaconBeams", false))
     val skylight = register(Settings.b("SkyLightUpdates", true))
+    val particles = register(Settings.b("Particles", false))
 
     init {
         listener<PacketEvent.Receive> {
@@ -35,7 +36,8 @@ object NoRender : Module() {
                     it.packet is SPacketSpawnExperienceOrb && xp.value ||
                     it.packet is SPacketSpawnObject && sand.value ||
                     it.packet is SPacketExplosion && explosion.value ||
-                    it.packet is SPacketSpawnPainting && paint.value) it.cancel()
+                    it.packet is SPacketSpawnPainting && paint.value ||
+                    it.packet is SPacketParticles && particles.value) it.cancel()
         }
 
         listener<RenderBlockOverlayEvent> {
