@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.mixin.client.MixinAnvilChunkLoader
-import me.zeroeightsix.kami.util.LagCompensator.tickRate
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
@@ -32,7 +31,7 @@ object InfoCalculator {
     fun memory() = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
 
     @JvmStatic
-    fun tps(places: Int) = round(tickRate, places)
+    fun tps(places: Int) = round(LagCompensator.tickRate, places)
 
     fun dimension() = when (mc.player?.dimension) {
         -1 -> "Nether"
