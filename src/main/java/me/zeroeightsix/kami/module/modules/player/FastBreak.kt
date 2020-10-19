@@ -35,9 +35,9 @@ object FastBreak : Module() {
                 it.cancel() /* Cancels aborting packets */
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (delay.value != 5 && mc.playerController.blockHitDelay == 5) mc.playerController.blockHitDelay = delay.value
+        listener<SafeTickEvent> {
+            if (delay.value != 5 && mc.playerController.blockHitDelay == 5) mc.playerController.blockHitDelay = delay.value
+        }
     }
 }

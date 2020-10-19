@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 
 /**
  * Code like this does not have an author, as it is literally one function. It's nothing unique.
@@ -18,18 +19,17 @@ import me.zeroeightsix.kami.setting.Settings
 )
 object Timer : Module() {
     private val slow = register(Settings.b("SlowMode", false))
-    private val tickNormal = register(Settings.floatBuilder("TickN").withValue(2.0f).withRange(1f, 10f).withStep(0.1f).withVisibility { !slow.value }.build())
-    private val tickSlow = register(Settings.floatBuilder("TickS").withValue(8f).withRange(1f, 10f).withStep(0.1f).withVisibility { slow.value }.build())
+    private val tickNormal = register(Settings.floatBuilder("TickN").withValue(2.0f).withRange(1f, 10f).withStep(0.1f).withVisibility { !slow.value })
+    private val tickSlow = register(Settings.floatBuilder("TickS").withValue(8f).withRange(1f, 10f).withStep(0.1f).withVisibility { slow.value })
 
     public override fun onDisable() {
         mc.timer.tickLength = 50.0f
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!slow.value) {
-            mc.timer.tickLength = 50.0f / tickNormal.value
-        } else {
-            mc.timer.tickLength = 50.0f / (tickSlow.value / 10.0f)
+    init {
+        listener<SafeTickEvent> {
+            mc.timer.tickLength = if (!slow.value) 50.0f / tickNormal.value
+            else 50.0f / (tickSlow.value / 10.0f)
         }
     }
 }

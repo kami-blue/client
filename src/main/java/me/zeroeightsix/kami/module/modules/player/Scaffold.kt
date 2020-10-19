@@ -18,6 +18,8 @@ import kotlin.math.round
 
 /**
  * @see me.zeroeightsix.kami.mixin.client.MixinEntity
+ *
+ * TODO: Rewrite this
  */
 @Module.Info(
         name = "Scaffold",
@@ -28,9 +30,9 @@ object Scaffold : Module() {
     private val placeBlocks = register(Settings.b("PlaceBlocks", true))
     private val tower = register(Settings.b("Tower", true))
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
-    private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT }.build())
-    private val delayRange = register(Settings.integerBuilder("DelayRange").withMinimum(0).withValue(6).withMaximum(10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value }.build())
-    private val ticks = register(Settings.integerBuilder("Ticks").withMinimum(0).withMaximum(60).withValue(2).withVisibility { modeSetting.value == Mode.NORMAL }.build())
+    private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT })
+    private val delayRange = register(Settings.integerBuilder("DelayRange").withValue(6).withRange(0, 10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value })
+    private val ticks = register(Settings.integerBuilder("Ticks").withValue(2).withRange(0, 60).withStep(2).withVisibility { modeSetting.value == Mode.NORMAL })
 
     private var shouldSlow = false
     private var towerStart = 0.0
@@ -52,68 +54,68 @@ object Scaffold : Module() {
                 }
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        shouldSlow = false
-
-        val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value
-        var vec3d = EntityUtils.getInterpolatedPos(mc.player, ticks.value.toFloat())
-
-        if (modeSetting.value == Mode.LEGIT) vec3d = EntityUtils.getInterpolatedPos(mc.player, 0f)
-
-        val blockPos = BlockPos(vec3d).down()
-        val belowBlockPos = blockPos.down()
-        val legitPos = BlockPos(EntityUtils.getInterpolatedPos(mc.player, 2f))
-
-        /* when legitBridge is enabled */
-        /* check if block behind player is air or other replaceable block and if it is, make the player crouch */
-        if (modeSetting.value == Mode.LEGIT && mc.world.getBlockState(legitPos.down()).material.isReplaceable && mc.player.onGround && !towering) {
-            shouldSlow = true
-            mc.player.movementInput.sneak = true
-            mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
-        }
-
-        if (towering) {
-            if (mc.player.posY <= blockPos.y + 1.0f) {
-                return
-            }
-        }
-
-        if (!mc.world.getBlockState(blockPos).material.isReplaceable) {
-            return
-        }
-
-        val oldSlot = mc.player.inventory.currentItem
-        setSlotToBlocks(belowBlockPos)
-
-        /* check if we don't have a block adjacent to the blockPos */
-        val neighbor = BlockUtils.getNeighbour(blockPos, attempts = 1)?: return
-
-        /* place the block */
-        if (placeBlocks.value) BlockUtils.placeBlock(neighbor.second, neighbor.first)
-
-        /* Reset the slot */
-        if (!holding) mc.player.inventory.currentItem = oldSlot
-
-        if (towering) {
-            val motion = 0.42 // jump motion
-            if (mc.player.onGround) {
-                towerStart = mc.player.posY
-                mc.player.motionY = motion
-            }
-            if (mc.player.posY > towerStart + motion) {
-                mc.player.setPosition(mc.player.posX, round(mc.player.posY), mc.player.posZ)
-                mc.player.motionY = motion
-                towerStart = mc.player.posY
-            }
-        } else {
-            towerStart = 0.0
-        }
-
-        if (shouldSlow) {
-            mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+        listener<SafeTickEvent> {
             shouldSlow = false
+
+            val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value
+            var vec3d = EntityUtils.getInterpolatedPos(mc.player, ticks.value.toFloat())
+
+            if (modeSetting.value == Mode.LEGIT) vec3d = EntityUtils.getInterpolatedPos(mc.player, 0f)
+
+            val blockPos = BlockPos(vec3d).down()
+            val belowBlockPos = blockPos.down()
+            val legitPos = BlockPos(EntityUtils.getInterpolatedPos(mc.player, 2f))
+
+            /* when legitBridge is enabled */
+            /* check if block behind player is air or other replaceable block and if it is, make the player crouch */
+            if (modeSetting.value == Mode.LEGIT && mc.world.getBlockState(legitPos.down()).material.isReplaceable && mc.player.onGround && !towering) {
+                shouldSlow = true
+                mc.player.movementInput.sneak = true
+                mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
+            }
+
+            if (towering) {
+                if (mc.player.posY <= blockPos.y + 1.0f) {
+                    return@listener
+                }
+            }
+
+            if (!mc.world.getBlockState(blockPos).material.isReplaceable) {
+                return@listener
+            }
+
+            val oldSlot = mc.player.inventory.currentItem
+            setSlotToBlocks(belowBlockPos)
+
+            /* check if we don't have a block adjacent to the blockPos */
+            val neighbor = BlockUtils.getNeighbour(blockPos, attempts = 1) ?: return@listener
+
+            /* place the block */
+            if (placeBlocks.value) BlockUtils.placeBlock(neighbor.second, neighbor.first)
+
+            /* Reset the slot */
+            if (!holding) mc.player.inventory.currentItem = oldSlot
+
+            if (towering) {
+                val motion = 0.42 // jump motion
+                if (mc.player.onGround) {
+                    towerStart = mc.player.posY
+                    mc.player.motionY = motion
+                }
+                if (mc.player.posY > towerStart + motion) {
+                    mc.player.setPosition(mc.player.posX, round(mc.player.posY), mc.player.posZ)
+                    mc.player.motionY = motion
+                    towerStart = mc.player.posY
+                }
+            } else {
+                towerStart = 0.0
+            }
+
+            if (shouldSlow) {
+                mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                shouldSlow = false
+            }
         }
     }
 

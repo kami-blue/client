@@ -17,7 +17,7 @@ import java.util.*
         category = Module.Category.PLAYER,
         description = "Cancels server side packets"
 )
-object  Blink : Module() {
+object Blink : Module() {
     private val cancelPacket = register(Settings.b("CancelPackets", false))
     private val autoReset = register(Settings.b("AutoReset", true))
     private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value })

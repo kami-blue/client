@@ -22,7 +22,8 @@ object NoBreakAnimation : Module() {
     private var lastFacing: EnumFacing? = null
 
     init {
-        listener<PacketEvent.Send> {
+        // Lower priority so we process the packet at the last
+        listener<PacketEvent.Send>(500) {
             if (it.packet !is CPacketPlayerDigging) return@listener
             // skip crystals and living entities
             for (entity in mc.world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB(it.packet.position))) {
@@ -40,19 +41,23 @@ object NoBreakAnimation : Module() {
                 resetMining()
             }
         }
+
+        listener<SafeTickEvent> {
+            if (!mc.gameSettings.keyBindAttack.isKeyDown) {
+                resetMining()
+                return@listener
+            }
+            if (isMining) {
+                lastPos?.let { lastPos ->
+                    lastFacing?.let { lastFacing ->
+                        mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, lastPos, lastFacing))
+                    }
+                }
+            }
+        }
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!mc.gameSettings.keyBindAttack.isKeyDown) {
-            resetMining()
-            return
-        }
-        if (isMining && lastPos != null && lastFacing != null) {
-            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, lastPos, lastFacing))
-        }
-    }
-
-    fun resetMining() {
+    private fun resetMining() {
         isMining = false
         lastPos = null
         lastFacing = null

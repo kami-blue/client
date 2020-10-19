@@ -4,10 +4,11 @@ import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
-import me.zeroeightsix.kami.module.modules.combat.Aura
+import me.zeroeightsix.kami.module.modules.combat.CombatSetting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -21,8 +22,8 @@ import net.minecraft.util.EnumHand
         category = Module.Category.PLAYER
 )
 object AutoEat : Module() {
-    private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withMinimum(1).withMaximum(20).build())
-    private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withMinimum(1).withMaximum(20).build())
+    private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withRange(1, 20).withStep(1))
+    private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withRange(1, 20).withStep(1))
     private val pauseBaritone = register(Settings.b("PauseBaritone", true))
 
     private var lastSlot = -1
@@ -35,63 +36,65 @@ object AutoEat : Module() {
 
     private fun passItemCheck(stack: ItemStack): Boolean {
         val item: Item = stack.getItem()
-        if (item === Items.ROTTEN_FLESH
-                || item === Items.SPIDER_EYE
-                || item === Items.POISONOUS_POTATO
-                || (item === Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Pufferfish, Clown fish
-                || item === Items.CHORUS_FRUIT) {
+        if (item == Items.ROTTEN_FLESH
+                || item == Items.SPIDER_EYE
+                || item == Items.POISONOUS_POTATO
+                || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Pufferfish, Clown fish
+                || item == Items.CHORUS_FRUIT) {
             return false
         }
         return true
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (Aura.isActive()) return
+    init {
+        listener<SafeTickEvent> {
+            if (CombatSetting.isActive()) return@listener
 
-        if (eating && !mc.player.isHandActive) {
-            if (lastSlot != -1) {
-                mc.player.inventory.currentItem = lastSlot
-                lastSlot = -1
-            }
-            eating = false
-            unpause()
+            if (eating && !mc.player.isHandActive) {
+                if (lastSlot != -1) {
+                    mc.player.inventory.currentItem = lastSlot
+                    lastSlot = -1
+                }
+                eating = false
+                unpause()
 
-            BaritoneAPI.getSettings().allowInventory.value = false
+                BaritoneAPI.getSettings().allowInventory.value = false
 
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-            return
-        }
-
-        if (eating) return
-
-        val stats = mc.player.getFoodStats()
-
-        if (isValid(mc.player.heldItemOffhand, stats.foodLevel)) {
-            mc.player.activeHand = EnumHand.OFF_HAND
-
-            if (pauseBaritone.value && !eating) {
-                pause()
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
+                return@listener
             }
 
-            eating = true
-            BaritoneAPI.getSettings().allowInventory.value = Baritone.allowInventory.value
+            if (eating) return@listener
 
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-            mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
-        } else {
-            for (i in 0..8) {
-                if (isValid(mc.player.inventory.getStackInSlot(i), stats.foodLevel)) {
-                    lastSlot = mc.player.inventory.currentItem
-                    mc.player.inventory.currentItem = i
+            val stats = mc.player.getFoodStats()
 
-                    if (pauseBaritone.value && !eating) {
-                        pause()
+            if (isValid(mc.player.heldItemOffhand, stats.foodLevel)) {
+                mc.player.activeHand = EnumHand.OFF_HAND
+
+                if (pauseBaritone.value && !eating) {
+                    pause()
+                }
+
+                eating = true
+                BaritoneAPI.getSettings().allowInventory.value = Baritone.allowInventory.value
+
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
+                mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
+            } else {
+                for (i in 0..8) {
+                    if (isValid(mc.player.inventory.getStackInSlot(i), stats.foodLevel)) {
+                        lastSlot = mc.player.inventory.currentItem
+                        mc.player.inventory.currentItem = i
+
+                        if (pauseBaritone.value && !eating) {
+                            pause()
+                        }
+
+                        eating = true
+                        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
+                        mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+                        return@listener
                     }
-
-                    eating = true
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-                    mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
-                    return
                 }
             }
         }

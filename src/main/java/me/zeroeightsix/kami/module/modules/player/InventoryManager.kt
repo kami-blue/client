@@ -20,22 +20,22 @@ import kotlin.math.ceil
         description = "Manages your inventory automatically"
 )
 object InventoryManager : Module() {
-    private val defaultEjectList = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone,minecraft:cobblestone"
+    private const val defaultEjectList = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone,minecraft:cobblestone"
 
     private val autoRefill = register(Settings.b("AutoRefill", true))
-    private val buildingMode = register(Settings.booleanBuilder("BuildingMode").withValue(false).withVisibility { autoRefill.value }.build())
-    val buildingBlockID: Setting<Int> = register(Settings.integerBuilder("BuildingBlockID").withValue(0).withVisibility { false }.build())
-    private val refillThreshold = register(Settings.integerBuilder("RefillThreshold").withValue(16).withRange(1, 63).withVisibility { autoRefill.value }.build())
+    private val buildingMode = register(Settings.booleanBuilder("BuildingMode").withValue(false).withVisibility { autoRefill.value })
+    val buildingBlockID: Setting<Int> = register(Settings.integerBuilder("BuildingBlockID").withValue(0).withVisibility { false })
+    private val refillThreshold = register(Settings.integerBuilder("RefillThreshold").withValue(16).withRange(1, 63).withStep(1).withVisibility { autoRefill.value })
     private val itemSaver = register(Settings.b("ItemSaver", false))
-    private val duraThreshold = register(Settings.integerBuilder("DurabilityThreshold").withValue(5).withRange(1, 50).withVisibility { itemSaver.value }.build())
+    private val duraThreshold = register(Settings.integerBuilder("DurabilityThreshold").withValue(5).withRange(1, 50).withStep(1).withVisibility { itemSaver.value })
     val autoEject = register(Settings.b("AutoEject", false))
     private val fullOnly = register(Settings.booleanBuilder("OnlyAtFull").withValue(false).withVisibility { autoEject.value })
     private val pauseMovement: Setting<Boolean> = register(Settings.b("PauseMovement", true))
-    private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false }.build())
-    private val delay = register(Settings.integerBuilder("DelayTicks").withValue(1).withRange(0, 20))
+    private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false })
+    private val delay = register(Settings.integerBuilder("DelayTicks").withValue(1).withRange(0, 20).withStep(1))
 
     /* Eject list */
-    var ejectArrayList = ejectGetArrayList()
+    var ejectArrayList = ejectGetArrayList(); private set
 
     private fun ejectGetArrayList(): ArrayList<String> {
         return ArrayList(ejectList.value.split(","))
@@ -79,14 +79,6 @@ object InventoryManager : Module() {
     private var paused = false
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
-    init {
-        listener<PlayerTravelEvent> {
-            if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
-            mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
-            it.cancel()
-        }
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE
     }
@@ -99,19 +91,28 @@ object InventoryManager : Module() {
         BaritoneUtils.unpause()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return
-        setState()
-        if (!timer.tick(delay.value.toLong())) return
-        if (currentState != State.IDLE) InventoryUtils.removeHoldingItem()
-        when (currentState) {
-            State.SAVING_ITEM -> saveItem()
-            State.REFILLING_BUILDING -> refillBuilding()
-            State.REFILLING -> refill()
-            State.EJECTING -> eject()
-            else -> { }
+    init {
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
+            mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
+            it.cancel()
         }
-        mc.playerController.syncCurrentPlayItem()
+
+        listener<SafeTickEvent> {
+            if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
+            setState()
+            if (!timer.tick(delay.value.toLong())) return@listener
+            if (currentState != State.IDLE) InventoryUtils.removeHoldingItem()
+            when (currentState) {
+                State.SAVING_ITEM -> saveItem()
+                State.REFILLING_BUILDING -> refillBuilding()
+                State.REFILLING -> refill()
+                State.EJECTING -> eject()
+                else -> {
+                }
+            }
+            mc.playerController.syncCurrentPlayItem()
+        }
     }
 
     private fun setState() {
