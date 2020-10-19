@@ -33,19 +33,19 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 object NewChunks : Module() {
-    private val yOffset = register(Settings.i("YOffset", 0))
     private val relative = register(Settings.b("Relative", true))
     private val autoClear = register(Settings.b("AutoClear", true))
     private val saveNewChunks = register(Settings.b("SaveNewChunks", false))
-    private val saveOption = register(Settings.enumBuilder(SaveOption::class.java).withValue(SaveOption.EXTRA_FOLDER).withName("SaveOption").withVisibility { saveNewChunks.value }.build())
-    private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).build())
+    private val saveOption = register(Settings.enumBuilder(SaveOption::class.java, "SaveOption").withValue(SaveOption.EXTRA_FOLDER).withVisibility { saveNewChunks.value })
+    private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value })
+    private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
+    private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
+    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4))
     private val customColor = register(Settings.b("CustomColor", false))
-    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
-    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
-    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
+    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null

@@ -21,7 +21,7 @@ object MobOwner : Module() {
     private val speed = register(Settings.b("Speed", true))
     private val jump = register(Settings.b("Jump", true))
     private val hp = register(Settings.b("Health", true))
-    private val requestTime = register(Settings.integerBuilder("CacheReset").withMinimum(10).withValue(20).build())
+    private val requestTime = register(Settings.integerBuilder("CacheReset").withValue(20).withRange(10, 200).withStep(10))
     private val debug = register(Settings.b("Debug", true))
 
     private var startTime = 0L /* Periodically try to re-request invalid UUIDs */
