@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
+import me.zeroeightsix.kami.gui.kami.theme.staticui.InventoryViewerUI;
 import me.zeroeightsix.kami.gui.kami.theme.staticui.RadarUI;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.theme.AbstractTheme;
@@ -12,7 +13,7 @@ public class KamiTheme extends AbstractTheme {
 
     public KamiTheme() {
         installUI(new RootButtonUI<>());
-        installUI(new GUIUI());
+        installUI(new GUI_UI());
         installUI(new RootGroupboxUI());
         installUI(new KamiFrameUI<>());
         installUI(new RootScrollpaneUI());
@@ -29,8 +30,9 @@ public class KamiTheme extends AbstractTheme {
         installUI(new KamiUnboundSliderUI());
 
         installUI(new RadarUI());
+        installUI(new InventoryViewerUI());
     }
 
-    public class GUIUI extends AbstractComponentUI<KamiGUI> {
+    public static class GUI_UI extends AbstractComponentUI<KamiGUI> {
     }
 }

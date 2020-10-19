@@ -5,10 +5,7 @@ import baritone.api.process.IBaritoneProcess;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.gui.kami.component.ActiveModules;
-import me.zeroeightsix.kami.gui.kami.component.Potions;
-import me.zeroeightsix.kami.gui.kami.component.Radar;
-import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
+import me.zeroeightsix.kami.gui.kami.component.*;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
 import me.zeroeightsix.kami.gui.rgui.GUI;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
@@ -46,13 +43,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by 086 on 25/06/2017.
- * Updated by l1ving on 28/01/20
- * Updated by Dewy on the 22nd of April, 2020
- *
- * @see me.zeroeightsix.kami.module.modules.client.InventoryViewer
- */
 public class KamiGUI extends GUI {
 
     private static final int DOCK_OFFSET = 0;
@@ -95,9 +85,9 @@ public class KamiGUI extends GUI {
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list =
                 new LinkedList<>(map.entrySet());
-        Collections.sort(list, Comparator.comparing(o -> (o.getValue())));
+        list.sort(Map.Entry.comparingByValue());
 
-        Map<K, V> result = new LinkedHashMap<K, V>();
+        Map<K, V> result = new LinkedHashMap<>();
         for (Map.Entry<K, V> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
@@ -221,8 +211,8 @@ public class KamiGUI extends GUI {
         }
 
         this.addMouseListener(new MouseListener() {
-            private boolean isNotBetween(int min, int val, int max) {
-                return val > max || val < min;
+            private boolean isNotBetween(int val, int max) {
+                return val > max || val < 0;
             }
 
             @Override
@@ -233,7 +223,7 @@ public class KamiGUI extends GUI {
                     int[] real = GUI.calculateRealPosition(settingsPanel);
                     int pX = event.getX() - real[0];
                     int pY = event.getY() - real[1];
-                    if (isNotBetween(0, pX, settingsPanel.getWidth()) || isNotBetween(0, pY, settingsPanel.getHeight()))
+                    if (isNotBetween(pX, settingsPanel.getWidth()) || isNotBetween(pY, settingsPanel.getHeight()))
                         settingsPanel.setVisible(false);
                 }
             }
@@ -260,71 +250,69 @@ public class KamiGUI extends GUI {
         /*
          * Active modules
          */
-        Frame frame = new Frame(getTheme(), new Stretcherlayout(1), "Active modules");
-        frame.setCloseable(false);
-        frame.addChild(new ActiveModules());
-        frame.setPinnable(true);
-        frames.add(frame);
+        final Frame activeModules = new Frame(getTheme(), new Stretcherlayout(1), "Active modules");
+        activeModules.setCloseable(false);
+        activeModules.addChild(new ActiveModules());
+        activeModules.setPinnable(true);
+        frames.add(activeModules);
 
         /*
          * Potions
          */
-        Frame frame2 = new Frame(getTheme(), new Stretcherlayout(1), "Potion Effects");
-        frame2.setCloseable(false);
-        frame2.setMinimizeable(true);
-        frame2.setPinnable(true);
-        frame2.addChild(new Potions());
-        frames.add(frame2);
+        final Frame potionEffects = new Frame(getTheme(), new Stretcherlayout(1), "Potion Effects");
+        potionEffects.setCloseable(false);
+        potionEffects.setMinimizeable(true);
+        potionEffects.setPinnable(true);
+        potionEffects.addChild(new Potions());
+        frames.add(potionEffects);
 
         /*
-         * Information Overlay / InfoOverlay
+         * InfoOverlay
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Info");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
+        final Frame infoOverlay = new Frame(getTheme(), new Stretcherlayout(1), "Info");
+        infoOverlay.setCloseable(false);
+        infoOverlay.setPinnable(true);
         Label information = new Label("");
         information.setShadow(true);
         information.addTickListener(() -> {
             information.setText("");
             InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
         });
-        frame.addChild(information);
-        frames.add(frame);
+        infoOverlay.addChild(information);
+        frames.add(infoOverlay);
 
-        /**
+        /*
          * Inventory Viewer
          *
          * {@link me.zeroeightsix.kami.module.modules.client.InventoryViewer}
+         * {@link me.zeroeightsix.kami.gui.kami.theme.staticui.InventoryViewerUI}
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Inventory Viewer");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-        frame.setPinned(false);
-        frame.setMinimumWidth(162);
-        frame.setMaximumHeight(12);
-        Label inventory = new Label("");
-        inventory.setShadow(false);
-        frame.addChild(inventory);
-        frames.add(frame);
+        final Frame inventoryViewer = new Frame(getTheme(), new Stretcherlayout(1), "Inventory Viewer");
+        inventoryViewer.setCloseable(false);
+        inventoryViewer.setMinimizeable(true);
+        inventoryViewer.setPinnable(true);
+        inventoryViewer.setWidth(176);
+        inventoryViewer.setHeight(64);
+        inventoryViewer.addChild(new InventoryViewerComponent());
+        frames.add(inventoryViewer);
 
         /*
          * Friends List
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Friends");
-        frame.setCloseable(false);
-        frame.setPinnable(false);
-        frame.setMinimizeable(true);
-        frame.setMinimumWidth(80);
-        frame.setMinimumHeight(10);
+        final Frame friendList = new Frame(getTheme(), new Stretcherlayout(1), "Friends");
+        friendList.setCloseable(false);
+        friendList.setPinnable(false);
+        friendList.setMinimizeable(true);
+        friendList.setMinimumWidth(80);
+        friendList.setMinimumHeight(10);
         Label friends = new Label("");
         friends.setShadow(true);
-        Frame finalFrame = frame;
         friends.addTickListener(() -> {
             friends.setText("");
-            if (!finalFrame.isMinimized()) {
+            if (!friendList.isMinimized()) {
                 if (FriendManager.INSTANCE.getFriendFile().enabled) {
                     for (Friends.Friend friend : FriendManager.INSTANCE.getFriendFile().friends) {
-                        if (friend.getUsername() == null || friend.getUsername().isEmpty()) continue;
+                        if (friend.getUsername().isEmpty()) continue;
                         friends.addLine(friend.getUsername());
                     }
                 } else {
@@ -332,26 +320,22 @@ public class KamiGUI extends GUI {
                 }
             }
         });
-
-        frame.addChild(friends);
-        frames.add(frame);
+        friendList.addChild(friends);
+        frames.add(friendList);
 
         /*
          * Baritone
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-        frame.setMinimumWidth(85);
+        final Frame baritone = new Frame(getTheme(), new Stretcherlayout(1), "Baritone");
+        baritone.setCloseable(false);
+        baritone.setPinnable(true);
+        baritone.setMinimumWidth(85);
         Label processes = new Label("");
         processes.setShadow(true);
-
-        Frame frameFinal = frame;
-
         processes.addTickListener(() -> {
             processes.setText("");
             Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
-            if (!frameFinal.isMinimized() && process.isPresent()) {
+            if (!baritone.isMinimized() && process.isPresent()) {
                 if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
                     processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
                 } else {
@@ -359,14 +343,13 @@ public class KamiGUI extends GUI {
                 }
             }
         });
-
-        frame.addChild(processes);
-        frames.add(frame);
+        baritone.addChild(processes);
+        frames.add(baritone);
 
         /*
          * Text Radar
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
+        final Frame textRadar = new Frame(getTheme(), new Stretcherlayout(1), "Text Radar");
         Label list = new Label("");
         DecimalFormat dfHealth = new DecimalFormat("#.#");
         dfHealth.setRoundingMode(RoundingMode.HALF_UP);
@@ -426,27 +409,26 @@ public class KamiGUI extends GUI {
                 list.addLine(KamiMod.colour + "7" + player.getKey() + " " + KamiMod.colour + "8" + player.getValue());
             }
         });
-        frame.setCloseable(false);
-        frame.setPinnable(true);
-        frame.setMinimumWidth(100);
+        textRadar.setCloseable(false);
+        textRadar.setPinnable(true);
+        textRadar.setMinimumWidth(100);
         list.setShadow(true);
-        frame.addChild(list);
-        frames.add(frame);
+        textRadar.addChild(list);
+        frames.add(textRadar);
 
         /*
          * Entity List
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
+        final Frame entityList = new Frame(getTheme(), new Stretcherlayout(1), "Entities");
         Label entityLabel = new Label("");
-        frame.setCloseable(false);
-        frame.setMinimumWidth(80);
-        Frame finalFrame1 = frame;
+        entityList.setCloseable(false);
+        entityList.setMinimumWidth(80);
         entityLabel.addTickListener(new TickListener() {
             final Minecraft mc = Wrapper.getMinecraft();
 
             @Override
             public void onTick() {
-                if (!finalFrame1.isMinimized()) {
+                if (!entityList.isMinimized()) {
                     if (mc.player == null || !entityLabel.isVisible()) return;
 
                     final List<Entity> entityList = new ArrayList<>(mc.world.loadedEntityList);
@@ -475,17 +457,17 @@ public class KamiGUI extends GUI {
                 }
             }
         });
-        frame.addChild(entityLabel);
-        frame.setPinnable(true);
+        entityList.addChild(entityLabel);
+        entityList.setPinnable(true);
         entityLabel.setShadow(true);
-        frames.add(frame);
+        frames.add(entityList);
 
         /*
          * Coordinates
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
-        frame.setCloseable(false);
-        frame.setPinnable(true);
+        Frame coords  = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
+        coords.setCloseable(false);
+        coords.setPinnable(true);
         Label coordsLabel = new Label("");
         coordsLabel.addTickListener(() -> {
             EntityPlayer player;
@@ -534,22 +516,22 @@ public class KamiGUI extends GUI {
             coordsLabel.addLine(ow);
             coordsLabel.addLine(MathUtils.getPlayerCardinal(player).cardinalName + colouredSeparator + nether);
         });
-        frame.addChild(coordsLabel);
+        coords.addChild(coordsLabel);
         coordsLabel.setShadow(true);
-        frame.setHeight(20);
-        frames.add(frame);
+        coords.setHeight(20);
+        frames.add(coords);
 
         /*
          * Radar
          */
-        frame = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
-        frame.setCloseable(false);
-        frame.setMinimizeable(true);
-        frame.setPinnable(true);
-        frame.addChild(new Radar());
-        frame.setWidth(100);
-        frame.setHeight(100);
-        frames.add(frame);
+        final Frame radar = new Frame(getTheme(), new Stretcherlayout(1), "Radar");
+        radar.setCloseable(false);
+        radar.setMinimizeable(true);
+        radar.setPinnable(true);
+        radar.addChild(new Radar());
+        radar.setWidth(100);
+        radar.setHeight(100);
+        frames.add(radar);
 
         for (Frame frame1 : frames) {
             frame1.setX(x);

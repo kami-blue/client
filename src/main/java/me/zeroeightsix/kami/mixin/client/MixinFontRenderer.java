@@ -104,6 +104,8 @@ public abstract class MixinFontRenderer {
         bufferbuilder.pos(x + size, y, 0.0).tex(1.0, 0.0).endVertex();
         bufferbuilder.pos(x, y, 0.0).tex(0.0, 0.0).endVertex();
         tessellator.draw();
+
+        GlStateManager.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
 
     private String getReplacement() {

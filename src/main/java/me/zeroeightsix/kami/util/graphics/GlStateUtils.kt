@@ -79,6 +79,15 @@ object GlStateUtils {
     }
 
     @JvmStatic
+    fun lighting(state: Boolean) {
+        if (state) {
+            GlStateManager.enableLighting()
+        } else {
+            GlStateManager.disableLighting()
+        }
+    }
+
+    @JvmStatic
     fun rescaleActual() {
         rescale(Wrapper.minecraft.displayWidth.toDouble(), Wrapper.minecraft.displayHeight.toDouble())
     }
