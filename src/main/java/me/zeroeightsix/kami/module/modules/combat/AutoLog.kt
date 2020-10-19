@@ -56,10 +56,8 @@ object AutoLog : Module() {
                 mc.player.health < health.value -> log(HEALTH)
                 totem.value && totemAmount.value > InventoryUtils.countItemAll(449) -> log(TOTEM)
                 crystals.value && checkCrystals() -> log(END_CRYSTAL)
-                creeper.value && checkCreeper() -> {
-                }
-                players.value && checkPlayers() -> {
-                }
+                creeper.value && checkCreeper() -> { /* checkCreeper() does log() */ }
+                players.value && checkPlayers() -> { /* checkPlayer() does log() */ }
             }
         }
     }
@@ -73,7 +71,6 @@ object AutoLog : Module() {
         for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityCreeper) continue
             if (mc.player.getDistance(entity) > creeperDistance.value) continue
-            log(CREEPER, MathUtils.round(entity.getDistance(mc.player), 2).toString())
             return true
         }
         return false
