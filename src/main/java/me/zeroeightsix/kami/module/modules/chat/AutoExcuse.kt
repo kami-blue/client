@@ -47,8 +47,7 @@ object AutoExcuse : Module() {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketUpdateHealth) return@listener
             if (it.packet.health <= 0f && timer.tick(3L)) {
-//                MessageSendHelper.sendServerMessage(getExcuse())
-                println(getExcuse())
+                    MessageSendHelper.sendServerMessage(getExcuse())
             }
         }
     }
@@ -59,8 +58,9 @@ object AutoExcuse : Module() {
                 excuses.clear()
                 file.forEachLine { excuses.add(it) }
             } else {
-                file.createNewFile()
-                backup.forEach { file.writeText(it) }
+                MessageSendHelper.sendErrorMessage("$chatName File is empty / file does not exist! Disabling.")
+                MessageSendHelper.sendWarningMessage("$chatName To create custom excuses, create a file named 'excuses.txt' inside your '.minecraft' folder.")
+                disable()
             }
         } else excuses = backup
     }
