@@ -30,9 +30,9 @@ object NoRender : Module() {
     private val explosion = register(Settings.b("Explosions", true))
     val beacon = register(Settings.b("BeaconBeams", false))
     val skylight = register(Settings.b("SkyLightUpdates", true))
-    val particles = register(Settings.b("Particles", false))
-    val enchantingtable = register(Settings.b("Enchantingtable Books", true))
-    val enchantingtableSnow = register(Settings.b("Enchantingtable as Snow", false))
+    private val particles = register(Settings.b("Particles", false))
+    val enchantingTable = register(Settings.b("EnchantingBooks", true))
+    private val enchantingTableSnow = register(Settings.b("EnchantBookSnow", false))
 
     init {
         listener<PacketEvent.Receive> {
@@ -47,16 +47,16 @@ object NoRender : Module() {
         }
 
         listener<ChunkEvent> {
-            if(!enchantingtableSnow.value)return@listener
-            val chunk =it.chunk
-            val layer =Blocks.SNOW_LAYER.defaultState.withProperty(BlockSnow.LAYERS, Integer.valueOf(7))
-            val yRange = IntRange(0, 256)
-            val xRange = IntRange(chunk.x*16, chunk.x*16+15)
-            val zRange = IntRange(chunk.z*16, chunk.z*16+15)
+            if (enchantingTableSnow.value) { // replaces enchanting tables with snow
+                val chunk = it.chunk
+                val layer = Blocks.SNOW_LAYER.defaultState.withProperty(BlockSnow.LAYERS, Integer.valueOf(7))
+                val xRange = IntRange(chunk.x * 16, chunk.x * 16 + 15)
+                val zRange = IntRange(chunk.z * 16, chunk.z * 16 + 15)
 
-            for (y in yRange) for (x in xRange) for (z in zRange) {
-                if (chunk.getBlockState(BlockPos(chunk.x * 16+x, y, chunk.z * 16+z)).block== Blocks.ENCHANTING_TABLE){
-                    chunk.setBlockState(BlockPos(chunk.x * 16+x, y, chunk.z * 16+z),layer )
+                for (y in 0..256) for (x in xRange) for (z in zRange) {
+                    if (chunk.getBlockState(BlockPos(chunk.x * 16 + x, y, chunk.z * 16 + z)).block == Blocks.ENCHANTING_TABLE) {
+                        chunk.setBlockState(BlockPos(chunk.x * 16 + x, y, chunk.z * 16 + z), layer)
+                    }
                 }
             }
         }

@@ -11,8 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TileEntityEnchantmentTableRenderer.class)
 public class MixinTileEntityEnchantmentTableRenderer {
 
+    @SuppressWarnings("SameParameterValue")
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(TileEntityEnchantmentTable te, double x, double y, double z, float partialTicks, int destroyStage, float alpha, CallbackInfo ci) {
-        if(NoRender.INSTANCE.isEnabled()&&NoRender.INSTANCE.getEnchantingtable().getValue())ci.cancel();
+        if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getEnchantingTable().getValue()) ci.cancel();
     }
 }
