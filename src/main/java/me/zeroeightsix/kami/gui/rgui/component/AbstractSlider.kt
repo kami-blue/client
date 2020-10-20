@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2d
 
-open class Slider(override var name: String, valueIn: Float) : InteractiveComponent() {
+abstract class AbstractSlider(override var name: String, valueIn: Double) : InteractiveComponent() {
     protected var value = valueIn
         set(value) {
             if (value != field) {
@@ -21,8 +21,8 @@ open class Slider(override var name: String, valueIn: Float) : InteractiveCompon
         get() = KamiFontRenderer.getFontHeight() + 4.0f
 
     private val prevValue = TimedFlag(value)
-    protected val renderProgress: Float
-        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(prevValue.lastUpdateTime), 200.0f, prevValue.value, value)
+    protected val renderProgress: Double
+        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 200.0, prevValue.value, value)
 
     override fun onTick() {
         super.onTick()
@@ -30,8 +30,10 @@ open class Slider(override var name: String, valueIn: Float) : InteractiveCompon
     }
 
     override fun onRender(vertexHelper: VertexHelper) {
+        super.onRender(vertexHelper)
+
         // Slider bar
-        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth * renderProgress, renderHeight), GuiColors.primary)
+        if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth * renderProgress, renderHeight.toDouble()), GuiColors.primary)
 
         // Slider hover overlay
         val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 200.0)

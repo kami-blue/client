@@ -2,13 +2,15 @@ package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.util.math.Vec2f
 
-open class CheckButton(override var name: String, stateIn: Boolean) : Slider(name, 0.0f) {
+class CheckButton(override var name: String, stateIn: Boolean) : AbstractSlider(name, 0.0) {
     init {
-        value = if (stateIn) 1.0f else 0.0f
+        value = if (stateIn) 1.0 else 0.0
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        value = if (value == 1.0f) 0.0f else 1.0f
+        if (prevState != MouseState.DRAG) {
+            value = if (value == 1.0) 0.0 else 1.0
+        }
     }
 }
