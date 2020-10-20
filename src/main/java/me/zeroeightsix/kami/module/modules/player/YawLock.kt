@@ -13,7 +13,7 @@ import kotlin.math.round
 )
 object YawLock : Module() {
     private val auto = register(Settings.b("Auto", true))
-    private val yaw = register(Settings.floatBuilder("Yaw").withValue(0.0f).withRange(-180.0f, 180.0f).withStep(1.0f))
+    private val yaw = register(Settings.floatBuilder("Yaw").withValue(180.0f).withRange(-180.0f, 180.0f).withStep(1.0f))
     private val slice = register(Settings.integerBuilder("Slice").withValue(8).withRange(2, 32).withStep(1).withVisibility { auto.value })
 
     init {
