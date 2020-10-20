@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketUpdateHealth
 import java.io.File
+import java.util.regex.Pattern
 
 @Module.Info(
         name = "AutoExcuse",
@@ -19,7 +20,9 @@ object AutoExcuse : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.DEFAULT))
     private val file = File("excuses.txt")
 
-    private var excuses: MutableList<String> = mutableListOf(
+    private lateinit var excuses: MutableList<String>
+
+    private val backup: MutableList<String> = mutableListOf(
             "Sorry, im using $CLIENT_NAME client",
             "My ping is so bad",
             "I was changing my config :(",
@@ -31,8 +34,6 @@ object AutoExcuse : Module() {
             "I wasn't trying",
             "I'm not using $CLIENT_NAME client"
     )
-
-    private val backup = excuses.toMutableList()
 
     private val clients = arrayOf(
             "Future",
@@ -52,14 +53,15 @@ object AutoExcuse : Module() {
         }
     }
 
-    override fun onToggle() {
+    override fun onEnable() {
         if (mode.value == Mode.READ_FROM_FILE) {
             if (file.exists() && file.length() != 0L) {
-                excuses.clear()
                 file.forEachLine { excuses.add(it) }
+                excuses = excuses.filter { it.isNotEmpty() }.toMutableList()
             } else {
-                MessageSendHelper.sendErrorMessage("$chatName File is empty / file does not exist! Disabling.")
-                MessageSendHelper.sendWarningMessage("$chatName To create custom excuses, create a file named 'excuses.txt' inside your '.minecraft' folder.")
+                file.createNewFile()
+                MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!")
+                MessageSendHelper.sendWarningMessage("$chatName Please add them in the 'excuses.txt' under the '.minecraft' directory.")
                 disable()
             }
         } else excuses = backup
