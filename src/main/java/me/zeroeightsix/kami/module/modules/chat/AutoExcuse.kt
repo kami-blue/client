@@ -17,8 +17,9 @@ import java.io.File
 object AutoExcuse : Module() {
     private const val CLIENT_NAME = "%CLIENT%"
     private val mode = register(Settings.e<Mode>("Mode", Mode.DEFAULT))
+    private val file = File("excuses.txt")
 
-    private val excuses = arrayOf(
+    private var excuses: MutableList<String> = mutableListOf(
             "Sorry, im using $CLIENT_NAME client",
             "My ping is so bad",
             "I was changing my config :(",
@@ -30,6 +31,8 @@ object AutoExcuse : Module() {
             "I wasn't trying",
             "I'm not using $CLIENT_NAME client"
     )
+
+    private val backup = excuses.toMutableList()
 
     private val clients = arrayOf(
             "Future",
@@ -49,35 +52,19 @@ object AutoExcuse : Module() {
         }
     }
 
-    private fun getExcuse(): String {
-        when (mode.value) {
-            Mode.DEFAULT -> return excuses.random().replace(CLIENT_NAME, clients.random())
-            Mode.READ_FROM_FILE -> {
-
-                lateinit var excusesFromFile: ArrayList<String>
-                MessageSendHelper.sendChatMessage("$chatName Trying to find '&7excuses.txt&f'")
-
-                try {
-                    File("excuses.txt").forEachLine { excusesFromFile.add(it) }
-                } catch(e: Exception) {
-                    MessageSendHelper.sendErrorMessage("$chatName An error occurred while trying to read the file!")
-                    e.printStackTrace()
-                    disable()
-                }
-
-                if (excusesFromFile.isEmpty()) {
-                    MessageSendHelper.sendErrorMessage("$chatName &7excuses.txt&f is empty! Using default excuses...")
-                    return excuses.random().replace(CLIENT_NAME, clients.random())
-                }
-
-                return excusesFromFile.random()
-
+    override fun onToggle() {
+        if (mode.value == Mode.READ_FROM_FILE) {
+            if (file.exists() && file.length() != 0L) {
+                excuses.clear()
+                file.forEachLine { excuses.add(it) }
+            } else {
+                file.createNewFile()
+                backup.forEach { file.writeText(it) }
             }
-            else -> {
-                throw IllegalArgumentException("Invalid mode found! Stopping...")
-            }
-        }
+        } else excuses = backup
     }
+
+    private fun getExcuse() = excuses.random().replace(CLIENT_NAME, clients.random())
 
     private enum class Mode{
         READ_FROM_FILE,
