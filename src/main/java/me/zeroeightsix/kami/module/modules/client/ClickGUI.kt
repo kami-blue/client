@@ -14,8 +14,8 @@ import kotlin.math.round
 @Module.Info(
         name = "ClickGUI",
         description = "Opens the Click GUI",
-        showOnArray = Module.ShowOnArray.OFF,
         category = Module.Category.CLIENT,
+        showOnArray = false,
         alwaysListening = true
 )
 object ClickGUI : Module() {

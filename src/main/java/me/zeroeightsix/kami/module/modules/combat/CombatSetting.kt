@@ -35,7 +35,7 @@ import kotlin.math.ceil
         name = "CombatSetting",
         description = "Settings for combat module targeting",
         category = Module.Category.COMBAT,
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object CombatSetting : Module() {

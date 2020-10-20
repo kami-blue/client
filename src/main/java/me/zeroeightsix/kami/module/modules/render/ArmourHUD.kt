@@ -18,7 +18,7 @@ import kotlin.math.floor
         name = "ArmourHUD",
         category = Module.Category.RENDER,
         description = "Displays your armour and it's durability on screen",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object ArmourHUD : Module() {
     private val damage = register(Settings.b("Damage", false))

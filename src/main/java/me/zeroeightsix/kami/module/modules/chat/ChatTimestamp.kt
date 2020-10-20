@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
         name = "ChatTimestamp",
         category = Module.Category.CHAT,
         description = "Shows the time a message was sent beside the message",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object ChatTimestamp : Module() {
     private val firstColour = register(Settings.e<ColourCode>("FirstColour", ColourCode.GRAY))

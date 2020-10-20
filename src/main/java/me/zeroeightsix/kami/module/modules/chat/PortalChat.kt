@@ -11,6 +11,6 @@ import me.zeroeightsix.kami.module.Module
         name = "PortalChat",
         category = Module.Category.CHAT,
         description = "Allows you to open GUIs in portals",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object PortalChat : Module()

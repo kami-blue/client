@@ -22,7 +22,7 @@ import kotlin.math.max
         name = "InfoOverlay",
         category = Module.Category.CLIENT,
         description = "Configures the game information overlay",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object InfoOverlay : Module() {

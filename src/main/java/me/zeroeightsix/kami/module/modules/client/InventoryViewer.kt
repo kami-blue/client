@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
         name = "InventoryViewer",
         category = Module.Category.CLIENT,
         description = "Configures Inventory Viewer's options",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object InventoryViewer : Module() {

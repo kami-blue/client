@@ -13,7 +13,7 @@ import java.util.*
         name = "AutoQMain",
         description = "Automatically does '/queue main' on servers",
         category = Module.Category.CHAT,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object AutoQMain : Module() {
     private val showWarns = register(Settings.b("ShowWarnings", true))

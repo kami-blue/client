@@ -20,7 +20,7 @@ import java.util.stream.Collectors
         name = "AntiSpam",
         category = Module.Category.CHAT,
         description = "Removes spam and advertising from the chat",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object AntiSpam : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))

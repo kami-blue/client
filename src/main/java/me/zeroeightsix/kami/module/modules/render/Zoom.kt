@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.Settings
         name = "Zoom",
         category = Module.Category.RENDER,
         description = "Configures FOV",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object Zoom : Module() {
     private var fov = 0f

@@ -11,7 +11,7 @@ import net.minecraft.network.play.client.CPacketChatMessage
         name = "FancyChat",
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object FancyChat : Module() {
     private val uwu = register(Settings.b("uwu", true))

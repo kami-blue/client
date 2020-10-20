@@ -8,7 +8,7 @@ import net.minecraft.inventory.EntityEquipmentSlot
         name = "ArmourHide",
         category = Module.Category.RENDER,
         description = "Hides the armour on selected entities",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object ArmourHide : Module() {
     val player = register(Settings.b("Players", false))

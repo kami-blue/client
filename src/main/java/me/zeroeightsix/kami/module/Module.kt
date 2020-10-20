@@ -4,8 +4,6 @@ import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.Setting
@@ -41,7 +39,7 @@ open class Module {
             val category: Category,
             val modulePriority: Int = -1,
             val alwaysListening: Boolean = false,
-            val showOnArray: ShowOnArray = ShowOnArray.ON,
+            val showOnArray: Boolean = true,
             val alwaysEnabled: Boolean = false,
             val enabledByDefault: Boolean = false
     )
@@ -72,7 +70,7 @@ open class Module {
     @JvmField val name = register(Settings.stringBuilder("Name").withValue(originalName).withVisibility { false })
     @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()))
     private val enabled = register(Settings.booleanBuilder("Enabled").withValue(annotation.enabledByDefault || annotation.alwaysEnabled).withVisibility { false })
-    private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
+    private val visible = register(Settings.b("Visible", annotation.showOnArray))
     /* End of settings */
 
     /* Properties */
@@ -80,7 +78,7 @@ open class Module {
     val isDisabled: Boolean get() = !isEnabled
     val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name.value}]"
-    val isOnArray: Boolean get() = showOnArray.value == ShowOnArray.ON
+    val isVisible: Boolean get() = visible.value
     val isProduction: Boolean get() = name.value == "clickGUI" || category != Category.EXPERIMENTAL && category != Category.HIDDEN
     /* End of properties */
 

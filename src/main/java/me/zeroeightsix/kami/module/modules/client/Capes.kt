@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection
         name = "Capes",
         category = Module.Category.CLIENT,
         description = "Controls the display of KAMI Blue capes",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         enabledByDefault = true
 )
 object Capes : Module() {

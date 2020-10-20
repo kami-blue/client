@@ -15,7 +15,7 @@ import me.zeroeightsix.kami.util.event.listener
         name = "Baritone",
         category = Module.Category.CLIENT,
         description = "Configures Baritone settings",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object Baritone : Module() {

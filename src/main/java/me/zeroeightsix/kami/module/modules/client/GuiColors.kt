@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 @Module.Info(
         name = "GuiColors",
         description = "Opens the Click GUI",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         category = Module.Category.CLIENT,
         alwaysEnabled = true
 )

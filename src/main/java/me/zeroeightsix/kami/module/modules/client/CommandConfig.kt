@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         name = "CommandConfig",
         category = Module.Category.CLIENT,
         description = "Configures client chat related stuff",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object CommandConfig : Module() {

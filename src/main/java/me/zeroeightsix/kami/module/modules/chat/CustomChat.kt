@@ -17,7 +17,7 @@ import net.minecraft.network.play.client.CPacketChatMessage
         name = "CustomChat",
         category = Module.Category.CHAT,
         description = "Add a custom ending to your message!",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object CustomChat : Module() {
     val textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
