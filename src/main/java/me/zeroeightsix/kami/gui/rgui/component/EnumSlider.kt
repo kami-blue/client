@@ -5,6 +5,8 @@ import me.zeroeightsix.kami.setting.impl.EnumSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2f
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0) {
     private val enumValues = setting.clazz.enumConstants
@@ -12,7 +14,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
     override fun onTick() {
         super.onTick()
         val settingValue = setting.value.ordinal
-        if (floorToStep(value) != settingValue) {
+        if (roundInput(value) != settingValue) {
             value = settingValue / enumValues.size.toDouble()
         }
         visible = setting.isVisible
@@ -20,7 +22,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        updateValue(mousePos)
+        setting.value = enumValues[(setting.value.ordinal + 1) % enumValues.size]
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
@@ -30,16 +32,18 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
 
     private fun updateValue(mousePos: Vec2f) {
         value = (mousePos.x / width).toDouble()
-        setting.setValueFromString(enumValues[floorToStep(value)].name, false)
+        setting.setValueFromString(enumValues[roundInput(value)].name, false)
     }
 
-    private fun floorToStep(valueIn: Double) = (valueIn * (enumValues.size - 1)).toInt()
+    private fun roundInput(valueIn: Double) = floor(valueIn * enumValues.size).toInt().coerceIn(0, enumValues.size - 1)
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        val valueText = setting.value.name
-        protectedWidth = KamiFontRenderer.getStringWidth(valueText).toDouble()
+        val valueText = setting.value.name.split('_').joinToString(" ") { it.toLowerCase().capitalize() }
+        protectedWidth = KamiFontRenderer.getStringWidth(valueText, 0.75f).toDouble()
 
         super.onRender(vertexHelper, absolutePos)
-        KamiFontRenderer.drawString(valueText, (renderWidth - protectedWidth - 2.0f).toFloat(), 1.0f, colorIn = GuiColors.text)
+        val posX = (renderWidth - protectedWidth - 2.0f).toFloat()
+        val posY = renderHeight - 2.0f - KamiFontRenderer.getFontHeight(0.75f)
+        KamiFontRenderer.drawString(valueText, posX, posY, colorIn = GuiColors.text, scale = 0.75f)
     }
 }

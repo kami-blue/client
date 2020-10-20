@@ -18,7 +18,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         for (setting in module.settingList) {
             when (setting) {
                 is BooleanSetting -> SettingButton(setting)
-                is NumberSetting -> SettingSlider(setting)
+                is NumberSetting -> if (setting.isBound()) SettingSlider(setting) else null
                 is EnumSetting -> EnumSlider(setting)
                 else -> null
             }?.also {
@@ -31,6 +31,6 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         super.onGuiInit()
         prevHeight = draggableHeight
         lastActiveTime = System.currentTimeMillis() + 1000L
-        name = "${module.name.value} Settings"
+        name = module.name.value
     }
 }

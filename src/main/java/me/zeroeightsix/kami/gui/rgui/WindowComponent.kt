@@ -12,6 +12,8 @@ abstract class WindowComponent : InteractiveComponent() {
     var preDragPos = Vec2f(0.0f, 0.0f); private set
     var preDragSize = Vec2f(0.0f, 0.0f); private set
 
+    open val resizable = true
+
     open fun onResize() {}
     open fun onReposition() {}
 
@@ -50,6 +52,8 @@ abstract class WindowComponent : InteractiveComponent() {
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
+
+        if (!resizable) return
         val relativeClickPos = clickPos.subtract(preDragPos)
         val centerSplitterH = min(10.0, preDragSize.x / 3.0)
         val centerSplitterV = min(10.0, preDragSize.y / 3.0)

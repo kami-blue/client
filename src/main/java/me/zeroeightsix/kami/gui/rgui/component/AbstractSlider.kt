@@ -22,13 +22,19 @@ abstract class AbstractSlider(override var name: String, valueIn: Double) : Inte
             }
         }
 
-    private val prevValue = TimedFlag(value)
-    protected val renderProgress: Double
-        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 200.0, prevValue.value, value)
+    protected val prevValue = TimedFlag(value)
+    protected open val renderProgress: Double
+        get() = AnimationUtils.linear(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 50.0, prevValue.value, value)
 
     override val maxHeight
         get() = KamiFontRenderer.getFontHeight() + 4.0f
     protected var protectedWidth = 0.0
+
+    override fun onGuiInit() {
+        super.onGuiInit()
+        prevValue.value = 0.0
+        value = 0.0
+    }
 
     override fun onTick() {
         super.onTick()
@@ -36,14 +42,12 @@ abstract class AbstractSlider(override var name: String, valueIn: Double) : Inte
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        super.onRender(vertexHelper, absolutePos)
-
         // Slider bar
         if (renderProgress > 0.0) RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth * renderProgress, renderHeight.toDouble()), GuiColors.primary)
 
         // Slider hover overlay
         val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 200.0)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(1.0, 1.0), Vec2d(renderWidth - 1.0, renderHeight - 1.0), overlayColor)
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), overlayColor)
 
         // Slider frame
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.0f, GuiColors.outline)
@@ -62,7 +66,7 @@ abstract class AbstractSlider(override var name: String, valueIn: Double) : Inte
         GlStateUtils.popScissor()
     }
 
-    private fun getStateColor(state: MouseState) = when (state) {
+    protected fun getStateColor(state: MouseState) = when (state) {
         MouseState.NONE -> GuiColors.idle
         MouseState.HOVER -> GuiColors.hover
         else -> GuiColors.click

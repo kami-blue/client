@@ -29,6 +29,8 @@ open class ListWindow(
     override val minHeight = 200.0f
     override val maxWidth = 200.0f
     override val maxHeight get() = mc.displayHeight.toFloat()
+    override val resizable: Boolean get() = hoveredChild == null
+
     protected val lineSpace = 2.0f
     private var hoveredChild: Component? = null
         set(value) {
@@ -40,12 +42,13 @@ open class ListWindow(
 
     private val scrollTimer = TimerUtils.TickTimer()
     private var scrollSpeed = 0.0f
-    private var prevScrollProgress = 0.0f
+
     private var scrollProgress = 0.0f
         set(value) {
             prevScrollProgress = field
             field = value
         }
+    private var prevScrollProgress = 0.0f
     protected val renderScrollProgress
         get() = prevScrollProgress + (scrollProgress - prevScrollProgress) * mc.renderPartialTicks
 
@@ -79,15 +82,16 @@ open class ListWindow(
     override fun onTick() {
         super.onTick()
         if (children.isEmpty()) return
-        val maxHeight = max((children.last().posY + children.last.height + lineSpace) - (height), 0.01f)
+        val lastVisible = children.lastOrNull { it.visible }
+        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height + lineSpace - height, 0.01f) }?: draggableHeight
 
         scrollProgress = (scrollProgress + scrollSpeed)
         scrollSpeed *= 0.5f
         if (scrollTimer.tick(100L, false)) {
             if (scrollProgress < 0.0) {
                 scrollSpeed = scrollProgress * -0.25f
-            } else if (scrollProgress > maxHeight) {
-                scrollSpeed = (scrollProgress - maxHeight) * -0.25f
+            } else if (scrollProgress > maxScrollProgress) {
+                scrollSpeed = (scrollProgress - maxScrollProgress) * -0.25f
             }
         }
 
@@ -129,7 +133,7 @@ open class ListWindow(
     }
 
     private fun updateHovered(relativeMousePos: Vec2f) {
-        hoveredChild = if (relativeMousePos.y < draggableHeight) null
+        hoveredChild = if (relativeMousePos.y < draggableHeight || relativeMousePos.x < lineSpace || relativeMousePos.x > renderWidth - lineSpace) null
         else children.firstOrNull { it.visible && relativeMousePos.y in it.posY..it.posY + it.height }
     }
 
