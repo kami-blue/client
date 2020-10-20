@@ -43,6 +43,9 @@ object MathUtils {
     }
 
     @JvmStatic
+    fun decimalPlaces(value: Double) = value.toString().split('.').getOrElse(1) { "0" }.length
+
+    @JvmStatic
     fun isNumberEven(i: Int): Boolean {
         return i and 1 == 0
     }
