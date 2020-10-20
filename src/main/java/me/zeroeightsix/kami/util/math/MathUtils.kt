@@ -31,8 +31,8 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun round(value: Float, places: Int): Double {
-        val scale = 10.0.pow(places.toDouble())
+    fun round(value: Float, places: Int): Float {
+        val scale = 10.0f.pow(places.toFloat())
         return round(value * scale) / scale
     }
 
