@@ -9,5 +9,5 @@ import me.zeroeightsix.kami.setting.Settings
         category = Module.Category.MISC
 )
 object AntiDisconnect : Module() {
-    val requiredButtonPresses = register(Settings.integerBuilder("ButtonPresses").withMinimum(1).withMaximum(20).withValue(3).build())
+    val requiredButtonPresses = register(Settings.integerBuilder("ButtonPresses").withValue(3).withRange(1, 20).withStep(1))
 }

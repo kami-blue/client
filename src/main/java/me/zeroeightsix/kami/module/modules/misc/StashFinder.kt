@@ -4,6 +4,8 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
@@ -23,60 +25,59 @@ object StashFinder : Module() {
     private val playSound = register(Settings.b("PlaySound"))
 
     private val logChests = register(Settings.b("Chests"))
-    private val chestDensity = register(Settings.integerBuilder("MinChests").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logChests.value }.build())
+    private val chestDensity = register(Settings.integerBuilder("MinChests").withValue(5).withRange(1, 20).withVisibility { logChests.value })
 
     private val logShulkers = register(Settings.b("Shulkers"))
-    private val shulkerDensity = register(Settings.integerBuilder("MinShulkers").withMinimum(1).withMaximum(20).withValue(1).withVisibility { logShulkers.value }.build())
+    private val shulkerDensity = register(Settings.integerBuilder("MinShulkers").withValue(1).withRange(1, 20).withVisibility { logShulkers.value })
 
     private val logDroppers = register(Settings.b("Droppers", false))
-    private val dropperDensity = register(Settings.integerBuilder("MinDroppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDroppers.value }.build())
+    private val dropperDensity = register(Settings.integerBuilder("MinDroppers").withValue(5).withRange(1, 20).withVisibility { logDroppers.value })
 
     private val logDispensers = register(Settings.b("Dispensers", false))
-    private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logDispensers.value }.build())
-        
+    private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withValue(5).withRange(1, 20).withVisibility { logDispensers.value })
+
     private val logHoppers = register(Settings.b("Hoppers", false))
-    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withMinimum(1).withMaximum(20).withValue(5).withVisibility { logHoppers.value }.build())
+    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withValue(5).withRange(1, 20).withVisibility { logHoppers.value })
 
 
-    private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hoppers: Int = 0, var hot: Boolean = false) {
-        val tileEntities = mutableListOf<TileEntity>()
-
-        fun add(tileEntity: TileEntity) {
-            when (tileEntity) {
-                is TileEntityChest -> chests++
-                is TileEntityShulkerBox -> shulkers++
-                is TileEntityDropper -> droppers++
-                is TileEntityDispenser -> dispensers++
-            }
-
-            tileEntities.add(tileEntity)
-        }
-
-        // Averages the positions of all the tile entities
-        fun getPosition(): IntArray {
-            val x = tileEntities.map { it.pos.x }.average().roundToInt()
-            val y = tileEntities.map { it.pos.y }.average().roundToInt()
-            val z = tileEntities.map { it.pos.z }.average().roundToInt()
-            return intArrayOf(x, y, z)
-        }
-
-        fun getBlockPos(): BlockPos {
-            val xyz = this.getPosition()
-            return BlockPos(xyz[0], xyz[1], xyz[2])
-        }
-
-        override fun toString(): String {
-            return "($chests chests, $shulkers shulkers, $droppers droppers, $dispensers dispensers, $hoppers hoppers)"
-        }
-    }
-
-    private val chunkData = hashMapOf<Long, ChunkStats>()
-    private val knownPositions = mutableListOf<BlockPos>()
+    private val chunkData = LinkedHashMap<Long, ChunkStats>()
+    private val knownPositions = LinkedHashSet<BlockPos>()
 
     override fun onEnable() {
-        super.onEnable()
         chunkData.clear()
         knownPositions.clear()
+    }
+
+    init {
+        listener<SafeTickEvent> {
+            mc.world.loadedTileEntityList
+                    .filter {
+                        logChests.value && it is TileEntityChest
+                                || logShulkers.value && it is TileEntityShulkerBox
+                                || logDroppers.value && it is TileEntityDropper
+                                || logDispensers.value && it is TileEntityDispenser
+                                || logHoppers.value && it is TileEntityHopper
+                    }
+                    .forEach { logTileEntity(it) }
+
+            chunkData.values.filter { it.hot }.forEach { chunkStats ->
+                chunkStats.hot = false
+
+                // mfw int array instead of Vec3i
+                if (saveToFile.value) {
+                    WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
+                }
+
+                if (playSound.value) {
+                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                }
+
+                if (logToChat.value) {
+                    val positionString = chunkStats.getBlockPos().asString()
+                    MessageSendHelper.sendChatMessage("$chatName $positionString $chunkStats")
+                }
+            }
+        }
     }
 
     private fun logTileEntity(tileEntity: TileEntity) {
@@ -93,27 +94,30 @@ object StashFinder : Module() {
         }
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        mc.world.loadedTileEntityList
-                .filter { (it is TileEntityChest && logChests.value) || (it is TileEntityShulkerBox && logShulkers.value) || (it is TileEntityDropper && logDroppers.value) || (it is TileEntityDispenser && logDispensers.value) || (it is TileEntityHopper && logHoppers.value)}
-                .forEach { logTileEntity(it) }
+    private data class ChunkStats(var chests: Int = 0, var shulkers: Int = 0, var droppers: Int = 0, var dispensers: Int = 0, var hoppers: Int = 0, var hot: Boolean = false) {
+        private val tileEntities = ArrayList<TileEntity>()
 
-        chunkData.values.filter { it.hot }.forEach { chunkStats ->
-            chunkStats.hot = false
-
-            // mfw int array instead of Vec3i
-            if (saveToFile.value) {
-                WaypointManager.add(chunkStats.getBlockPos(), chunkStats.toString())
+        fun add(tileEntity: TileEntity) {
+            when (tileEntity) {
+                is TileEntityChest -> chests++
+                is TileEntityShulkerBox -> shulkers++
+                is TileEntityDropper -> droppers++
+                is TileEntityDispenser -> dispensers++
             }
 
-            if (playSound.value) {
-                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-            }
+            tileEntities.add(tileEntity)
+        }
 
-            if (logToChat.value) {
-                val positionString = chunkStats.getPosition().joinToString { "$it" }
-                MessageSendHelper.sendChatMessage("$chatName $positionString $chunkStats")
-            }
+        // Averages the positions of all the tile entities
+        fun getBlockPos(): BlockPos {
+            val x = tileEntities.map { it.pos.x }.average().roundToInt()
+            val y = tileEntities.map { it.pos.y }.average().roundToInt()
+            val z = tileEntities.map { it.pos.z }.average().roundToInt()
+            return BlockPos(x, y, z)
+        }
+
+        override fun toString(): String {
+            return "($chests chests, $shulkers shulkers, $droppers droppers, $dispensers dispensers, $hoppers hoppers)"
         }
     }
 }

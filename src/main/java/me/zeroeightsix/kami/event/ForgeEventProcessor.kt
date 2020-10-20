@@ -35,7 +35,6 @@ object ForgeEventProcessor {
         if (mc.world != null && mc.player != null) {
             SafeTickEvent(event.phase).also {
                 KamiEventBus.post(it)
-                ModuleManager.onUpdate(it)
             }
         }
 
@@ -58,7 +57,6 @@ object ForgeEventProcessor {
         renderWorldEvent.setupTranslation()
 
         KamiEventBus.post(renderWorldEvent)
-        ModuleManager.onWorldRender(renderWorldEvent)
 
         KamiTessellator.releaseGL()
         mc.profiler.endSection()
@@ -80,7 +78,6 @@ object ForgeEventProcessor {
 
         if (event.type == target) {
             KamiEventBus.post(RenderOverlayEvent(event.partialTicks))
-            ModuleManager.onRender()
         }
     }
 

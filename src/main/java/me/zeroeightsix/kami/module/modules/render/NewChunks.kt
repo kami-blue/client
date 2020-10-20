@@ -11,17 +11,15 @@ import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
-import me.zeroeightsix.kami.util.graphics.KamiTessellator.begin
-import me.zeroeightsix.kami.util.graphics.KamiTessellator.pTicks
-import me.zeroeightsix.kami.util.graphics.KamiTessellator.render
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.world.chunk.Chunk
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.apache.commons.lang3.SystemUtils
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.GL_LINE_LOOP
+import org.lwjgl.opengl.GL11.glLineWidth
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Path
@@ -35,19 +33,19 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 object NewChunks : Module() {
-    private val yOffset = register(Settings.i("YOffset", 0))
     private val relative = register(Settings.b("Relative", true))
     private val autoClear = register(Settings.b("AutoClear", true))
     private val saveNewChunks = register(Settings.b("SaveNewChunks", false))
-    private val saveOption = register(Settings.enumBuilder(SaveOption::class.java).withValue(SaveOption.EXTRA_FOLDER).withName("SaveOption").withVisibility { saveNewChunks.value }.build())
-    private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value }.build())
-    private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).build())
+    private val saveOption = register(Settings.enumBuilder(SaveOption::class.java, "SaveOption").withValue(SaveOption.EXTRA_FOLDER).withVisibility { saveNewChunks.value })
+    private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value })
+    private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
+    private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
+    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4))
     private val customColor = register(Settings.b("CustomColor", false))
-    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
-    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
-    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withVisibility { customColor.value }.build())
+    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
@@ -57,39 +55,39 @@ object NewChunks : Module() {
     override fun onDisable() {
         logWriterClose()
         chunks.clear()
-        sendChatMessage("$chatName Saved and cleared chunks!")
+        MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
     }
 
     override fun onEnable() {
         timer.reset()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (autoClear.value && timer.tick(10L)) {
-            chunks.clear()
-            sendChatMessage("$chatName Cleared chunks!")
-        }
-    }
-
-    override fun onWorldRender(event: RenderWorldEvent) {
-        val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, pTicks()).y else 0.0
-        glLineWidth(2.0f)
-        glDisable(GL_DEPTH_TEST)
-        val color = if (customColor.value) ColorHolder(red.value, green.value, blue.value) else ColorHolder(155, 144, 255)
-        val buffer = KamiTessellator.buffer
-        for (chunk in chunks) {
-            if (sqrt(chunk.pos.getDistanceSq(mc.player)) > range.value) continue
-            begin(GL_LINE_LOOP)
-            buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
-            buffer.pos(chunk.pos.xEnd + 1.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
-            buffer.pos(chunk.pos.xEnd + 1.toDouble(), y, chunk.pos.zEnd + 1.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
-            buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zEnd + 1.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
-            render()
-        }
-        glEnable(GL_DEPTH_TEST)
-    }
-
     init {
+        listener<SafeTickEvent> {
+            if (it.phase == TickEvent.Phase.END && autoClear.value && timer.tick(10L)) {
+                chunks.clear()
+                MessageSendHelper.sendChatMessage("$chatName Cleared chunks!")
+            }
+        }
+
+        listener<RenderWorldEvent> {
+            val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y else 0.0
+            glLineWidth(2.0f)
+            GlStateUtils.depth(false)
+            val color = if (customColor.value) ColorHolder(red.value, green.value, blue.value) else ColorHolder(155, 144, 255)
+            val buffer = KamiTessellator.buffer
+            for (chunk in chunks) {
+                if (sqrt(chunk.pos.getDistanceSq(mc.player)) > range.value) continue
+                KamiTessellator.begin(GL_LINE_LOOP)
+                buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
+                buffer.pos(chunk.pos.xEnd + 1.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
+                buffer.pos(chunk.pos.xEnd + 1.toDouble(), y, chunk.pos.zEnd + 1.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
+                buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zEnd + 1.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
+                KamiTessellator.render()
+            }
+            GlStateUtils.depth(true)
+        }
+
         listener<ChunkEvent> {
             if (it.packet.isFullChunk) return@listener
             chunks.add(it.chunk)
@@ -142,7 +140,7 @@ object NewChunks : Module() {
         } catch (e: Exception) {
             e.printStackTrace()
             KamiMod.log.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
-            sendErrorMessage(chatName + " onLogStart: " + e.message)
+            MessageSendHelper.sendErrorMessage(chatName + " onLogStart: " + e.message)
         }
     }
 
@@ -160,13 +158,13 @@ object NewChunks : Module() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     KamiMod.log.error("some exception happened when getting canonicalFile -> " + e.message)
-                    sendErrorMessage(chatName + " onGetPath: " + e.message)
+                    MessageSendHelper.sendErrorMessage(chatName + " onGetPath: " + e.message)
                 }
 
                 // Gets the "depth" of this directory relative the the game's run directory, 2 is the location of the world
-                if (Objects.requireNonNull(file)!!.toPath().relativize(mc.gameDir.toPath()).nameCount != 2) {
+                if (file?.toPath()?.relativize(mc.gameDir.toPath())?.nameCount != 2) {
                     // subdirectory of the main save directory for this world
-                    file = file!!.parentFile
+                    file = file?.parentFile
                 }
             } else { // Otherwise, the server must be remote...
                 file = makeMultiplayerDirectory().toFile()
@@ -193,7 +191,7 @@ object NewChunks : Module() {
             } catch (e: IOException) {
                 e.printStackTrace()
                 KamiMod.log.error("some exception happened when trying to make the file -> " + e.message)
-                sendErrorMessage(chatName + " onCreateFile: " + e.message)
+                MessageSendHelper.sendErrorMessage(chatName + " onCreateFile: " + e.message)
             }
             return rV
         }
@@ -215,8 +213,8 @@ object NewChunks : Module() {
 
                 // extra because name might be different
                 if (!rV.exists()) {
-                    sendWarningMessage("$chatName nhack wdl directory doesnt exist: $folderName")
-                    sendWarningMessage("$chatName creating the directory now. It is recommended to update the ip")
+                    MessageSendHelper.sendWarningMessage("$chatName nhack wdl directory doesnt exist: $folderName")
+                    MessageSendHelper.sendWarningMessage("$chatName creating the directory now. It is recommended to update the ip")
                 }
             }
             else -> {
@@ -251,18 +249,7 @@ object NewChunks : Module() {
         val sp = ip.split("_").toTypedArray()
         val ending = sp[sp.size - 1]
         // if it is numeric it means it might be a port...
-        return !isInteger(ending)
-    }
-
-    private fun isInteger(s: String): Boolean {
-        try {
-            s.toInt()
-        } catch (e: NumberFormatException) {
-            return false
-        } catch (e: NullPointerException) {
-            return false
-        }
-        return true
+        return ending.toIntOrNull() != null
     }
 
     private fun saveNewChunk(log: PrintWriter?, data: String) {
@@ -310,7 +297,7 @@ object NewChunks : Module() {
         closeFile.settingListener = SettingListeners {
             if (closeFile.value) {
                 logWriterClose()
-                sendChatMessage("$chatName Saved file!")
+                MessageSendHelper.sendChatMessage("$chatName Saved file!")
                 closeFile.value = false
             }
         }

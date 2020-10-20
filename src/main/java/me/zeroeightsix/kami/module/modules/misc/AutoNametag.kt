@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.monster.EntityMob
@@ -19,35 +20,38 @@ import net.minecraft.util.EnumHand
 )
 object AutoNametag : Module() {
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.ANY))
-    private val range = register(Settings.floatBuilder("Range").withMinimum(2.0f).withValue(3.5f).withMaximum(10.0f).build())
+    private val range = register(Settings.floatBuilder("Range").withValue(3.5f).withRange(2.0f, 8.0f).withStep(0.5f))
     private val debug = register(Settings.b("Debug", false))
 
     private var currentName = ""
     private var currentSlot = -1
 
-    override fun onUpdate(event: SafeTickEvent) {
-        findNameTags()
-        useNameTag()
+    init {
+        listener<SafeTickEvent> {
+            findNameTags()
+            useNameTag()
+        }
     }
 
     private fun useNameTag() {
         val originalSlot = mc.player.inventory.currentItem
-        for (w in mc.world.getLoadedEntityList()) {
+        loop@ for (entity in mc.world.loadedEntityList) {
             when (modeSetting.value) {
-                Mode.WITHER -> if (w is EntityWither && w.getDisplayName().unformattedText != currentName) {
-                    if (mc.player.getDistance(w) <= range.value) {
-                        if (debug.value) MessageSendHelper.sendChatMessage("Found unnamed " + w.getDisplayName().unformattedText)
+                Mode.WITHER -> if (entity is EntityWither && entity.getDisplayName().unformattedText != currentName) {
+                    if (mc.player.getDistance(entity) <= range.value) {
+                        if (debug.value) MessageSendHelper.sendChatMessage("Found unnamed " + entity.getDisplayName().unformattedText)
                         selectNameTags()
-                        mc.playerController.interactWithEntity(mc.player, w, EnumHand.MAIN_HAND)
+                        mc.playerController.interactWithEntity(mc.player, entity, EnumHand.MAIN_HAND)
                     }
                 }
-                Mode.ANY -> if ((w is EntityMob || w is EntityAnimal) && w.displayName.unformattedText != currentName) {
-                    if (mc.player.getDistance(w) <= range.value) {
-                        if (debug.value) MessageSendHelper.sendChatMessage("Found unnamed " + w.displayName.unformattedText)
+                Mode.ANY -> if ((entity is EntityMob || entity is EntityAnimal) && entity.displayName.unformattedText != currentName) {
+                    if (mc.player.getDistance(entity) <= range.value) {
+                        if (debug.value) MessageSendHelper.sendChatMessage("Found unnamed " + entity.displayName.unformattedText)
                         selectNameTags()
-                        mc.playerController.interactWithEntity(mc.player, w, EnumHand.MAIN_HAND)
+                        mc.playerController.interactWithEntity(mc.player, entity, EnumHand.MAIN_HAND)
                     }
                 }
+                else -> continue@loop
             }
         }
         mc.player.inventory.currentItem = originalSlot

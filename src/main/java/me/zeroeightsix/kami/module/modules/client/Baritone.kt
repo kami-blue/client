@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 
 /**
  * Created by Dewy on the 21st of April, 2020
@@ -29,21 +30,21 @@ object Baritone : Module() {
     private val avoidPortals = register(Settings.b("AvoidPortals", false))
     private val mapArtMode = register(Settings.b("MapArtMode", false))
     private val renderGoal = register(Settings.b("RenderGoals", true))
-    private val failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2).build())
-    private val blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f).build())
+    private val failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2))
+    private val blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f))
     private var hasRun = false
 
     init {
         settingList.forEach {
             it.settingListener = SettingListeners { set() }
         }
-    }
 
-    // not triggered until in game
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!hasRun) {
-            set()
-            hasRun = true
+        // not triggered until in game
+        listener<SafeTickEvent> {
+            if (!hasRun) {
+                set()
+                hasRun = true
+            }
         }
     }
 

@@ -37,18 +37,18 @@ object MidClickPearl : Module() {
                 }
             }
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
-            mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
-            startTime = System.currentTimeMillis()
-        } else if (startTime > 0L) {
-            if (prevSlot != -1) {
-                swapSlot(prevSlot)
-                prevSlot = -1
+        listener<SafeTickEvent> {
+            if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
+                mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+                startTime = System.currentTimeMillis()
+            } else if (startTime > 0L) {
+                if (prevSlot != -1) {
+                    swapSlot(prevSlot)
+                    prevSlot = -1
+                }
+                if (System.currentTimeMillis() - startTime > 2000L) startTime = -1L
             }
-            if (System.currentTimeMillis() - startTime > 2000L) startTime = -1L
         }
     }
 }

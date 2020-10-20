@@ -24,28 +24,28 @@ import java.util.stream.Collectors
 )
 object AntiSpam : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))
-    private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java).withName("ReplaceMode").withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE }.build())
+    private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java, "ReplaceMode").withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE })
     private val p = register(Settings.e<Page>("Page", Page.TYPE))
 
     /* Page One */
-    private val discordLinks = register(Settings.booleanBuilder("Discord").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val slurs = register(Settings.booleanBuilder("Slurs").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val swears = register(Settings.booleanBuilder("Swears").withValue(false).withVisibility { p.value == Page.TYPE }.build())
-    private val automated = register(Settings.booleanBuilder("Automated").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE }.build())
-    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE }.build())
-    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { p.value == Page.TYPE }.build())
+    private val discordLinks = register(Settings.booleanBuilder("Discord").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val slurs = register(Settings.booleanBuilder("Slurs").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val swears = register(Settings.booleanBuilder("Swears").withValue(false).withVisibility { p.value == Page.TYPE })
+    private val automated = register(Settings.booleanBuilder("Automated").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE })
+    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE })
+    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { p.value == Page.TYPE })
 
     /* Page Two */
-    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
-    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.SETTINGS }.build())
-    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withMinimum(1).withValue(30).withMaximum(600).withVisibility { duplicates.value && p.value == Page.SETTINGS }.build())
-    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
-    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
-    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.SETTINGS }.build())
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java).withName("ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.SETTINGS }.build())
+    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS })
+    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.SETTINGS })
+    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(1, 600).withStep(5).withVisibility { duplicates.value && p.value == Page.SETTINGS })
+    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.SETTINGS })
+    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.SETTINGS })
+    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.SETTINGS })
+    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java, "ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.SETTINGS })
 
     private var messageHistory: ConcurrentHashMap<String, Long>? = null
 

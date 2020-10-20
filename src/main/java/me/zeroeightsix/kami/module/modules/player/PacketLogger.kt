@@ -2,9 +2,12 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
-import net.minecraft.network.Packet
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -16,12 +19,15 @@ import java.util.*
         category = Module.Category.PLAYER
 )
 object PacketLogger : Module() {
-    private val filename = "KAMIBluePackets.txt"
+    private val append = register(Settings.b("Append", false))
+    private val clear = register(Settings.b("Clear", false))
+
+    private const val filename = "KAMIBluePackets.txt"
     private val lines = ArrayList<String>()
     private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
 
     override fun onEnable() {
-        if (mc.player == null) disable() else readToList()
+        if (mc.player == null) disable() else if (append.value) readToList()
     }
 
     override fun onDisable() {
@@ -31,35 +37,35 @@ object PacketLogger : Module() {
     init {
         listener<PacketEvent.Send> {
             if (mc.player == null) {
-                disable(); return@listener
+                disable()
+                return@listener
             }
-            addLine(it.packet)
-        }
-    }
 
-    /* see https://kotlinlang.org/docs/reference/basic-types.html#string-templates for usage of $*/
-    private fun addLine(packet: Packet<*>) {
-        lines.add("""
-            ${FORMAT.format(Date())}
-            ${packet.javaClass.simpleName}
-            ${packet.javaClass}
-            $packet
-            """)
+            /* see https://kotlinlang.org/docs/reference/basic-types.html#string-templates for usage of $*/
+            lines.add("""
+                ${FORMAT.format(Date())}
+                ${it.packet.javaClass.simpleName}
+                ${it.packet.javaClass}
+                ${it.packet}
+                """)
+        }
+
+        listener<SafeTickEvent> {
+            if (mc.player.ticksExisted % 200 == 0) write()
+        }
     }
 
     private fun write() {
         try {
-            val writer = FileWriter(filename)
-
-            for (line in lines) {
-                writer.write(line)
+            FileWriter(filename).also {
+                for (line in lines) it.write(line)
+                it.close()
             }
-
-            writer.close()
         } catch (e: IOException) {
             KamiMod.log.error("$chatName Error saving!")
             e.printStackTrace()
         }
+        lines.clear()
     }
 
     private fun readToList() {
@@ -74,6 +80,17 @@ object PacketLogger : Module() {
             }
             bufferedReader.close()
         } catch (ignored: IOException) {
+        }
+    }
+
+    init {
+        clear.settingListener = Setting.SettingListeners {
+            if (clear.value) {
+                lines.clear()
+                write()
+                MessageSendHelper.sendChatMessage("$chatName Packet log cleared!")
+                clear.value = false
+            }
         }
     }
 }

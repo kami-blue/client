@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
@@ -35,11 +36,13 @@ object ChestStealer : Module() {
     var stealing = false
     val timer = TimerUtils.TickTimer()
 
-    override fun onUpdate(event: SafeTickEvent) {
-        stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
-            steal(getStealingSlot())
-        } else {
-            false
+    init {
+        listener<SafeTickEvent> {
+            stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
+                steal(getStealingSlot())
+            } else {
+                false
+            }
         }
     }
 
@@ -73,7 +76,8 @@ object ChestStealer : Module() {
                 MovingMode.QUICK_MOVE -> InventoryUtils.quickMoveSlot(windowID, slot)
                 MovingMode.PICKUP -> InventoryUtils.moveToSlot(windowID, slot, slotTo)
                 MovingMode.THROW -> InventoryUtils.throwAllInSlot(windowID, slot)
-                else -> { }
+                else -> {
+                }
             }
         }
         return true

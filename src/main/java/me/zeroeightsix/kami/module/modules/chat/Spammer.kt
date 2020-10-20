@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
@@ -17,7 +18,7 @@ import kotlin.random.Random
 )
 object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
-    private val timeoutTime = register(Settings.integerBuilder("Timeout(s)").withRange(1, 240).withValue(10).build())
+    private val timeoutTime = register(Settings.integerBuilder("Timeout(s)").withRange(1, 240).withValue(10).withStep(5))
 
     private var spammer = ArrayList<String>()
     private var currentLine = 0
@@ -50,8 +51,10 @@ object Spammer : Module() {
         startTime = System.currentTimeMillis()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        sendMsg()
+    init {
+        listener<SafeTickEvent> {
+            sendMsg()
+        }
     }
 
     private fun sendMsg() {

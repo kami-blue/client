@@ -26,8 +26,8 @@ import kotlin.math.sqrt
 object ChatEncryption : Module() {
     private val self = register(Settings.b("DecryptOwn", true))
     private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
-    private val keyA = register(Settings.i("KeyA", 3))
-    private val keyB = register(Settings.i("KeyB", 10))
+    private val keyA = register(Settings.integerBuilder("KeyA").withValue(3).withRange(0, 26).withStep(1))
+    private val keyB = register(Settings.integerBuilder("KeyB").withValue(10).withRange(0, 26).withStep(1))
     private val delimiterSetting = register(Settings.b("Delimiter", true))
     val delimiterValue = register(Settings.s("delimiterV", "unchanged"))
 

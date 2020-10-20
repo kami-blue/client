@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockDeadBush
@@ -79,91 +80,93 @@ object AutoSpawner : Module() {
         buildStage = Stage.PRE
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        when (buildStage) {
-            Stage.PRE -> {
-                isSneaking = false
-                rotationPlaceableX = false
-                rotationPlaceableZ = false
-
-                if (party.value) randomizeEntity()
-
-                if (!checkBlocksInHotbar()) {
-                    if (!party.value) {
-                        if (debug.value) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode.value}, disabling.")
-                        disable()
-                    }
-                    return
-                }
-                val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
-                var noPositionInArea = true
-
-                for (pos in blockPosList) {
-                    placeTarget = pos
-                    if (testStructure()) {
-                        noPositionInArea = false
-                        break
-                    }
-                }
-
-                if (noPositionInArea) {
-                    if (useMode.value == UseMode.SINGLE) {
-                        if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
-                        disable()
-                        return
-                    }
-                }
-
-                buildStage = Stage.BODY
-            }
-            Stage.BODY -> {
-                InventoryUtils.swapSlot(bodySlot)
-                for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos), rotate.value)
-                if (entityMode.value == EntityMode.WITHER || entityMode.value == EntityMode.IRON) {
-                    if (rotationPlaceableX) {
-                        for (pos in BodyParts.ArmsX) {
-                            placeBlock(placeTarget!!.add(pos), rotate.value)
-                        }
-                    } else if (rotationPlaceableZ) {
-                        for (pos in BodyParts.ArmsZ) {
-                            placeBlock(placeTarget!!.add(pos), rotate.value)
-                        }
-                    }
-                }
-
-                buildStage = Stage.HEAD
-            }
-            Stage.HEAD -> {
-                InventoryUtils.swapSlot(headSlot)
-
-                if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.SNOW) {
-                    for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos), rotate.value)
-                }
-
-                if (entityMode.value == EntityMode.WITHER) {
-                    if (rotationPlaceableX) {
-                        for (pos in BodyParts.headsX) {
-                            placeBlock(placeTarget!!.add(pos), rotate.value)
-                        }
-                    } else if (rotationPlaceableZ) {
-                        for (pos in BodyParts.headsZ) {
-                            placeBlock(placeTarget!!.add(pos), rotate.value)
-                        }
-                    }
-                }
-
-                if (isSneaking) {
-                    mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+    init {
+        listener<SafeTickEvent> {
+            when (buildStage) {
+                Stage.PRE -> {
                     isSneaking = false
+                    rotationPlaceableX = false
+                    rotationPlaceableZ = false
+
+                    if (party.value) randomizeEntity()
+
+                    if (!checkBlocksInHotbar()) {
+                        if (!party.value) {
+                            if (debug.value) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode.value}, disabling.")
+                            disable()
+                        }
+                        return@listener
+                    }
+                    val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
+                    var noPositionInArea = true
+
+                    for (pos in blockPosList) {
+                        placeTarget = pos
+                        if (testStructure()) {
+                            noPositionInArea = false
+                            break
+                        }
+                    }
+
+                    if (noPositionInArea) {
+                        if (useMode.value == UseMode.SINGLE) {
+                            if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
+                            disable()
+                            return@listener
+                        }
+                    }
+
+                    buildStage = Stage.BODY
                 }
+                Stage.BODY -> {
+                    InventoryUtils.swapSlot(bodySlot)
+                    for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos), rotate.value)
+                    if (entityMode.value == EntityMode.WITHER || entityMode.value == EntityMode.IRON) {
+                        if (rotationPlaceableX) {
+                            for (pos in BodyParts.ArmsX) {
+                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                            }
+                        } else if (rotationPlaceableZ) {
+                            for (pos in BodyParts.ArmsZ) {
+                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                            }
+                        }
+                    }
 
-                if (useMode.value == UseMode.SINGLE) disable()
+                    buildStage = Stage.HEAD
+                }
+                Stage.HEAD -> {
+                    InventoryUtils.swapSlot(headSlot)
 
-                buildStage = Stage.DELAY
-                timer.reset()
-            }
-            Stage.DELAY -> {
-                if (timer.tick(delay.value.toLong())) buildStage = Stage.PRE
+                    if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.SNOW) {
+                        for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos), rotate.value)
+                    }
+
+                    if (entityMode.value == EntityMode.WITHER) {
+                        if (rotationPlaceableX) {
+                            for (pos in BodyParts.headsX) {
+                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                            }
+                        } else if (rotationPlaceableZ) {
+                            for (pos in BodyParts.headsZ) {
+                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                            }
+                        }
+                    }
+
+                    if (isSneaking) {
+                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        isSneaking = false
+                    }
+
+                    if (useMode.value == UseMode.SINGLE) disable()
+
+                    buildStage = Stage.DELAY
+                    timer.reset()
+                }
+                Stage.DELAY -> {
+                    if (timer.tick(delay.value.toLong())) buildStage = Stage.PRE
+                }
             }
         }
     }

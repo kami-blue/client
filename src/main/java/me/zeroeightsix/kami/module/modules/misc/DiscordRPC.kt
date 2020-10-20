@@ -10,13 +10,13 @@ import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.InfoCalculator.dimension
-import me.zeroeightsix.kami.util.InfoCalculator.tps
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
-import net.minecraft.util.EnumHand
 import java.io.InputStreamReader
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -35,7 +35,7 @@ object DiscordRPC : Module() {
     private val coordsConfirm = register(Settings.booleanBuilder("CoordsConfirm").withValue(false).withVisibility { showCoordsConfirm() })
     private val updateDelay = register(Settings.floatBuilder("UpdateDelay").withValue(4f).withRange(1f, 10f))
 
-    enum class LineInfo {
+    private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
     }
 
@@ -53,11 +53,13 @@ object DiscordRPC : Module() {
         end()
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
-            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
-                    "This will display your coords on the discord rpc. " +
-                    "Do NOT use this if you do not want your coords displayed")
+    init {
+        listener<SafeTickEvent> {
+            if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
+                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
+                        "This will display your coords on the discord rpc. " +
+                        "Do NOT use this if you do not want your coords displayed")
+            }
         }
     }
 
@@ -109,19 +111,54 @@ object DiscordRPC : Module() {
 
     private fun getLine(line: LineInfo): String {
         return when (line) {
-            LineInfo.VERSION -> KamiMod.VER_SMALL
-            LineInfo.WORLD -> if (mc.isIntegratedServerRunning) "Singleplayer" else if (mc.getCurrentServerData() != null) "Multiplayer" else "Main Menu"
-            LineInfo.DIMENSION -> dimension()
-            LineInfo.USERNAME -> if (mc.player != null) mc.player.name else mc.getSession().username
-            LineInfo.HEALTH -> if (mc.player != null) mc.player.health.toInt().toString() + " HP" else "No HP"
-            LineInfo.HUNGER -> if (mc.player != null) mc.player.getFoodStats().foodLevel.toString() + " hunger" else "No Hunger"
-            LineInfo.SERVER_IP -> InfoCalculator.getServerType()
-            LineInfo.COORDS -> if (mc.player != null && coordsConfirm.value) "(" + mc.player.posX.toInt() + " " + mc.player.posY.toInt() + " " + mc.player.posZ.toInt() + ")" else "No Coords"
-            LineInfo.SPEED -> if (mc.player != null) InfoOverlay.calcSpeedWithUnit(1) else "No Speed"
-            LineInfo.HELD_ITEM -> "Holding " + if (mc.player != null) mc.player.getHeldItem(EnumHand.MAIN_HAND).displayName else "No Item"
-            LineInfo.FPS -> Minecraft.debugFPS.toString() + " FPS"
-            LineInfo.TPS -> if (mc.player != null) tps(2).toString() + " tps" else "No TPS"
-            else -> " "
+            LineInfo.VERSION -> {
+                KamiMod.VER_SMALL
+            }
+            LineInfo.WORLD -> {
+                when {
+                    mc.isIntegratedServerRunning -> "Singleplayer"
+                    mc.currentServerData != null -> "Multiplayer"
+                    else -> "Main Menu"
+                }
+            }
+            LineInfo.DIMENSION -> {
+                InfoCalculator.dimension()
+            }
+            LineInfo.USERNAME -> {
+                mc.session.username
+            }
+            LineInfo.HEALTH -> {
+                if (mc.player != null) "${mc.player.health.toInt()} HP"
+                else "No HP"
+            }
+            LineInfo.HUNGER -> {
+                if (mc.player != null) "${mc.player.foodStats.foodLevel} hunger"
+                else "No Hunger"
+            }
+            LineInfo.SERVER_IP -> {
+                InfoCalculator.getServerType()
+            }
+            LineInfo.COORDS -> {
+                if (mc.player != null && coordsConfirm.value) "(${mc.player.positionVector.toBlockPos().asString()})"
+                else "No Coords"
+            }
+            LineInfo.SPEED -> {
+                if (mc.player != null) InfoOverlay.calcSpeedWithUnit(1)
+                else "No Speed"
+            }
+            LineInfo.HELD_ITEM -> {
+                "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme
+            }
+            LineInfo.FPS -> {
+                "${Minecraft.debugFPS} FPS"
+            }
+            LineInfo.TPS -> {
+                if (mc.player != null) "${InfoCalculator.tps(1)} tps"
+                else "No Tps"
+            }
+            else -> {
+                " "
+            }
         }
     }
 

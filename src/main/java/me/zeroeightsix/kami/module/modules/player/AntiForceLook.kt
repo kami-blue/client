@@ -15,9 +15,8 @@ object AntiForceLook : Module() {
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketPlayerPosLook || mc.player == null) return@listener
-            val packet = it.packet
-            packet.yaw = mc.player.rotationYaw
-            packet.pitch = mc.player.rotationPitch
+            it.packet.yaw = mc.player.rotationYaw
+            it.packet.pitch = mc.player.rotationPitch
         }
     }
 }

@@ -29,24 +29,24 @@ object LogoutLogger : Module() {
         listener<ConnectionEvent.Disconnect> {
             loggedPlayers.clear()
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        for (player in mc.world.loadedEntityList) {
-            if (player !is EntityPlayer) continue
-            if (player == mc.player) continue
-            loggedPlayers[player.name] = player.positionVector.toBlockPos()
-        }
-
-        if (timer.tick(1L)) {
-            val toRemove = ArrayList<String>()
-            for ((name, pos) in loggedPlayers) {
-                if (mc.connection!!.getPlayerInfo(name) != null) continue
-                if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
-                if (saveToFile.value) WaypointManager.add(pos, "$name Logout Spot")
-                toRemove.add(name)
+        listener<SafeTickEvent> {
+            for (player in mc.world.loadedEntityList) {
+                if (player !is EntityPlayer) continue
+                if (player == mc.player) continue
+                loggedPlayers[player.name] = player.positionVector.toBlockPos()
             }
-            loggedPlayers.keys.removeAll(toRemove)
+
+            if (timer.tick(1L)) {
+                val toRemove = ArrayList<String>()
+                for ((name, pos) in loggedPlayers) {
+                    if (mc.connection!!.getPlayerInfo(name) != null) continue
+                    if (print.value) MessageSendHelper.sendChatMessage("$name logged out at ${pos.asString()}")
+                    if (saveToFile.value) WaypointManager.add(pos, "$name Logout Spot")
+                    toRemove.add(name)
+                }
+                loggedPlayers.keys.removeAll(toRemove)
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ object AutoOffhand : Module() {
     private val type = register(Settings.enumBuilder(Type::class.java, "Type").withValue(Type.TOTEM))
 
     // Totem
-    private val hpThreshold = register(Settings.floatBuilder("HpThreshold").withValue(5f).withRange(1f, 20f).withVisibility { type.value == Type.TOTEM })
+    private val hpThreshold = register(Settings.floatBuilder("HpThreshold").withValue(5f).withRange(1f, 20f).withStep(0.5f).withVisibility { type.value == Type.TOTEM })
     private val bindTotem = register(Settings.custom("BindTotem", Bind.none(), BindConverter()).withVisibility { type.value == Type.TOTEM })
     private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { type.value == Type.TOTEM })
     private val mob = register(Settings.booleanBuilder("Mob").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })

@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -27,35 +29,37 @@ object ArmourHUD : Module() {
             mc.player.inventory.armorInventory
         }
 
-    override fun onRender() {
-        GlStateManager.enableTexture2D()
-        val resolution = ScaledResolution(mc)
-        val i = resolution.scaledWidth / 2
-        var iteration = 0
-        val y = resolution.scaledHeight - 55 - if (isEyeInWater()) 10 else 0
-        for (`is` in armour) {
-            iteration++
-            if (`is`.isEmpty()) continue
-            val x = i - 90 + (9 - iteration) * 20 + 2
-            GlStateManager.enableDepth()
-            mc.renderItem.zLevel = 200f
-            mc.renderItem.renderItemAndEffectIntoGUI(`is`, x, y)
-            mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, `is`, x, y, "")
-            mc.renderItem.zLevel = 0f
-            GlStateManager.enableTexture2D()
-            GlStateManager.disableLighting()
-            GlStateManager.disableDepth()
-            val s = if (`is`.count > 1) `is`.count.toString() + "" else ""
-            mc.fontRenderer.drawStringWithShadow(s, x + 19 - 2 - mc.fontRenderer.getStringWidth(s).toFloat(), y + 9.toFloat(), 0xffffff)
-            if (damage.value) {
-                val green = (`is`.maxDamage.toFloat() - `is`.getItemDamage().toFloat()) / `is`.maxDamage.toFloat()
-                val red = 1 - green
-                val dmg = 100 - (red * 100).toInt()
-                mc.fontRenderer.drawStringWithShadow(dmg.toString() + "", x + 8 - mc.fontRenderer.getStringWidth(dmg.toString() + "") / 2.toFloat(), y - 11.toFloat(), ColorConverter.rgbToHex((red * 255).toInt(), (green * 255).toInt(), 0))
+    init {
+        listener<RenderOverlayEvent> {
+            val resolution = ScaledResolution(mc)
+            val width = resolution.scaledWidth / 2
+            val height = resolution.scaledHeight - 55 - if (isEyeInWater()) 10 else 0
+
+            for ((index, itemStack) in armour.withIndex()) {
+                if (itemStack.isEmpty()) continue
+                val x = width - (9 - index) * 20 + 92
+
+                GlStateManager.enableDepth()
+                GlStateManager.enableTexture2D()
+                mc.renderItem.zLevel = 200f
+                mc.renderItem.renderItemAndEffectIntoGUI(itemStack, x, height)
+                mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, x, height, "")
+                mc.renderItem.zLevel = 0f
+                GlStateManager.enableTexture2D()
+                GlStateManager.disableLighting()
+                GlStateManager.disableDepth()
+
+                if (damage.value) {
+                    val dura = (itemStack.maxDamage - itemStack.itemDamage) / itemStack.maxDamage.toFloat()
+                    val duraText = dura.toInt().toString()
+                    val green = (dura * 255.0f).toInt()
+                    val red = 255 - green
+                    mc.fontRenderer.drawStringWithShadow(duraText, x + 8 - mc.fontRenderer.getStringWidth(duraText) / 2.0f, height - 11.0f, ColorConverter.rgbToHex(red, green, 0))
+                }
             }
+
+            GlStateManager.enableDepth()
         }
-        GlStateManager.enableDepth()
-        GlStateManager.disableLighting()
     }
 
     private fun isEyeInWater(): Boolean {

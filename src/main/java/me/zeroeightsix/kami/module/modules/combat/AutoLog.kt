@@ -2,23 +2,25 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
+import me.zeroeightsix.kami.manager.mangers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.multiplayer.WorldClient
-import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityCreeper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoLog",
@@ -28,49 +30,39 @@ import net.minecraft.util.text.TextComponentString
 )
 object AutoLog : Module() {
     private val disable: Setting<DisableMode> = register(Settings.e("Disable", DisableMode.ALWAYS))
-    private val health = register(Settings.integerBuilder("Health").withRange(6, 36).withStep(1).withValue(10).build())
+    private val health = register(Settings.integerBuilder("Health").withValue(10).withRange(6, 36).withStep(1))
     private val crystals = register(Settings.b("Crystals", false))
     private val creeper = register(Settings.b("Creepers", true))
-    private val creeperDistance = register(Settings.integerBuilder("CreeperDistance").withRange(1, 10).withValue(5).withVisibility { creeper.value }.build())
+    private val creeperDistance = register(Settings.integerBuilder("CreeperDistance").withValue(5).withRange(1, 10).withVisibility { creeper.value })
     private val totem = register(Settings.b("Totems", false))
-    private val totemAmount = register(Settings.integerBuilder("MinTotems").withRange(1, 10).withValue(2).withVisibility { totem.value }.build())
+    private val totemAmount = register(Settings.integerBuilder("MinTotems").withValue(2).withRange(1, 10).withVisibility { totem.value })
     private val players = register(Settings.b("Players", false))
-    private val playerDistance = register(Settings.integerBuilder("PlayerDistance").withRange(64, 256).withValue(128).withVisibility { players.value }.build())
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value }.build())
+    private val playerDistance = register(Settings.integerBuilder("PlayerDistance").withValue(128).withRange(64, 256).withVisibility { players.value })
+    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { players.value })
 
-    override fun onEnable() {
-        if (mc.player == null) disable()
+    @Suppress("UNUSED")
+    private enum class DisableMode {
+        NEVER, ALWAYS, NOT_PLAYER
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (isDisabled) return
 
-        if (mc.player.health < health.value) {
-            log(HEALTH)
-            return
+    init {
+        listener<SafeTickEvent>(-1000) {
+            if (isDisabled || it.phase != TickEvent.Phase.END) return@listener
+
+            when {
+                mc.player.health < health.value -> log(HEALTH)
+                totem.value && totemAmount.value > InventoryUtils.countItemAll(449) -> log(TOTEM)
+                crystals.value && checkCrystals() -> log(END_CRYSTAL)
+                creeper.value && checkCreeper() -> { /* checkCreeper() does log() */ }
+                players.value && checkPlayers() -> { /* checkPlayer() does log() */ }
+            }
         }
-
-        if (totem.value && totemAmount.value > InventoryUtils.countItemAll(449)) {
-            log(TOTEM)
-            return
-        }
-
-        if (crystals.value && checkCrystals()) return
-
-        if (creeper.value && checkCreeper()) return
-
-        if (players.value) checkPlayers() // no need to return
     }
 
     private fun checkCrystals(): Boolean {
-        for (entity in mc.world.loadedEntityList) {
-            if (entity !is EntityEnderCrystal) continue
-            if (mc.player.getDistance(entity) > 8f) continue
-            if (mc.player.health - CrystalUtils.calcDamage(entity, mc.player) > health.value) continue
-            log(END_CRYSTAL)
-            return true
-        }
-        return false
+        val maxSelfDamage = CombatManager.crystalMap.values.maxBy { it.second }?.second ?: 0.0f
+        return CombatUtils.getHealthSmart(mc.player) - maxSelfDamage < health.value
     }
 
     private fun checkCreeper(): Boolean {
@@ -83,7 +75,7 @@ object AutoLog : Module() {
         return false
     }
 
-    private fun checkPlayers() {
+    private fun checkPlayers(): Boolean {
         for (entity in mc.world.loadedEntityList) {
             if (entity !is EntityPlayer) continue
             if (AntiBot.botSet.contains(entity)) continue
@@ -91,9 +83,9 @@ object AutoLog : Module() {
             if (mc.player.getDistance(entity) > playerDistance.value) continue
             if (!friends.value && Friends.isFriend(entity.name)) continue
             log(PLAYER, entity.name)
-            return
+            return true
         }
-        return
+        return false
     }
 
     private fun log(reason: Reasons, additionalInfo: String = "") {
@@ -125,14 +117,5 @@ object AutoLog : Module() {
         HEALTH, TOTEM, CREEPER, PLAYER, END_CRYSTAL
     }
 
-    @Suppress("UNUSED")
-    private enum class DisableMode {
-        NEVER, ALWAYS, NOT_PLAYER
-    }
-
-    private fun totemMessage(amount: Int) = if (amount == 1) {
-        "one totem"
-    } else {
-        "$amount totems"
-    }
+    private fun totemMessage(amount: Int) = if (amount == 1) "one totem" else "$amount totems"
 }

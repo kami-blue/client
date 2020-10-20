@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtils.getSpeed
-import me.zeroeightsix.kami.util.EntityUtils.isLiving
-import me.zeroeightsix.kami.util.EntityUtils.resetHSpeed
+import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -37,9 +36,9 @@ object Criticals : Module() {
 
             if (it.packet is CPacketUseEntity && it.packet.action == CPacketUseEntity.Action.ATTACK) {
                 val target = it.packet.getEntityFromWorld(mc.world)
-                if (target == null || !isLiving(target)) return@listener
+                if (target == null || target !is EntityLivingBase) return@listener
                 mc.player.isSprinting = false
-                if (getSpeed(mc.player) > 0.2f) resetHSpeed(0.2f, mc.player)
+                if (MovementUtils.getSpeed() > 0.2) MovementUtils.setSpeed(0.2)
                 if (mode.value == CriticalMode.PACKET) {
                     packetMode()
                 } else {
@@ -47,6 +46,25 @@ object Criticals : Module() {
                 }
             } else if (it.packet is CPacketAnimation && mode.value == CriticalMode.DELAY) {
                 delayModeSwing(it)
+            }
+        }
+
+        listener<SafeTickEvent> {
+            /* Sends attack packet and swing packet when falling */
+            if (mode.value == CriticalMode.DELAY && delayTick != 0) {
+                mc.player.isSprinting = false
+                if (MovementUtils.getSpeed() > 0.2) MovementUtils.setSpeed(0.2)
+                if (mc.player.motionY < -0.1 && delayTick in 1..15) {
+                    sendingPacket = true
+                    mc.connection!!.sendPacket(attackPacket)
+                    mc.connection!!.sendPacket(swingPacket)
+                    delayTick = 16
+                }
+                if (delayTick in 1..19) {
+                    delayTick++
+                } else if (delayTick > 19) { /* Resets after 1 second if no packets sent */
+                    delayTick = 0
+                }
             }
         }
     }
@@ -83,25 +101,6 @@ object Criticals : Module() {
                 event.cancel()
             } else {
                 sendingPacket = false
-            }
-        }
-    }
-
-    override fun onUpdate(event: SafeTickEvent) {
-        /* Sends attack packet and swing packet when falling */
-        if (mode.value == CriticalMode.DELAY && delayTick != 0) {
-            mc.player.isSprinting = false
-            if (getSpeed(mc.player) > 0.2f) resetHSpeed(0.2f, mc.player)
-            if (mc.player.motionY < -0.1 && delayTick in 1..15) {
-                sendingPacket = true
-                mc.connection!!.sendPacket(attackPacket)
-                mc.connection!!.sendPacket(swingPacket)
-                delayTick = 16
-            }
-            if (delayTick in 1..19) {
-                delayTick++
-            } else if (delayTick > 19) { /* Resets after 1 second if no packets sent */
-                delayTick = 0
             }
         }
     }

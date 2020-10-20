@@ -19,7 +19,7 @@ public class MixinModelBoat {
     @Inject(method = "render", at = @At("HEAD"))
     public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo info) {
         if (Wrapper.getPlayer().getRidingEntity() == entityIn && EntitySpeed.INSTANCE.isEnabled()) {
-            GlStateManager.color(1, 1, 1, EntitySpeed.getOpacity());
+            GlStateManager.color(1.0f, 1.0f, 1.0f, EntitySpeed.getOpacity());
             GlStateManager.enableBlend();
         }
     }

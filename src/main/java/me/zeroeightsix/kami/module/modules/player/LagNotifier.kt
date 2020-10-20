@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
@@ -25,47 +25,49 @@ import org.lwjgl.opengl.GL11.glColor4f
 )
 object LagNotifier : Module() {
     private val pauseTakeoff = register(Settings.b("PauseElytraTakeoff", true))
-    private var pauseBaritone: Setting<Boolean> = register(Settings.b("PauseBaritone", true))
-    private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value }.build())
-    private val timeout = register(Settings.doubleBuilder().withName("Timeout").withValue(2.0).withMinimum(0.0).withMaximum(10.0).build())
+    private val pauseBaritone = register(Settings.b("PauseBaritone", true))
+    private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value })
+    private val timeout = register(Settings.floatBuilder("Timeout").withValue(2.0f).withRange(0.0f, 10.0f))
 
     private var startTime: Long = 0
     private var serverLastUpdated: Long = 0
     var paused = false
     var text = "Server Not Responding! "
 
-    override fun onRender() {
-        if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return
+    init {
+        listener<RenderOverlayEvent> {
+            if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) return@listener
 
-        if (1000L * timeout.value.toDouble() > System.currentTimeMillis() - serverLastUpdated) {
-            if (BaritoneUtils.paused && paused) {
-                if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
-                unpause()
+            if (System.currentTimeMillis() - serverLastUpdated < 1000.0f * timeout.value) {
+                if (BaritoneUtils.paused && paused) {
+                    if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
+                    unpause()
+                }
+                paused = false
+                return@listener
             }
-            paused = false
-            return
+
+            if (shouldPing()) {
+                WebHelper.run()
+                text = if (WebHelper.isInternetDown) {
+                    "Your internet is offline! "
+                } else {
+                    "Server Not Responding! "
+                }
+                if (pauseBaritone.value && !paused) {
+                    if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
+                    pause()
+                }
+                if (pauseTakeoff.value) paused = true
+            }
+            text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
+            val fontRenderer = mc.fontRenderer
+            val resolution = ScaledResolution(mc)
+
+            /* 80px down from the top edge of the screen */
+            fontRenderer.drawStringWithShadow(text, resolution.scaledWidth / 2f - fontRenderer.getStringWidth(text) / 2f, 80f / resolution.scaleFactor, 0xff3333)
+            glColor4f(1f, 1f, 1f, 1f)
         }
-
-        if (shouldPing()) {
-            WebHelper.run()
-            text = if (WebHelper.isInternetDown) {
-                "Your internet is offline! "
-            } else {
-                "Server Not Responding! "
-            }
-            if (pauseBaritone.value && !paused) {
-                if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
-                pause()
-            }
-            if (pauseTakeoff.value) paused = true
-        }
-        text = text.replace("! .*".toRegex(), "! " + timeDifference() + "s")
-        val fontRenderer = mc.fontRenderer
-        val resolution = ScaledResolution(mc)
-
-        /* 80px down from the top edge of the screen */
-        fontRenderer.drawStringWithShadow(text, resolution.scaledWidth / 2f - fontRenderer.getStringWidth(text) / 2f, 80f / resolution.scaleFactor, 0xff3333)
-        glColor4f(1f, 1f, 1f, 1f)
     }
 
     override fun onDisable() {

@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.MobEffects
 import net.minecraft.potion.Potion
 
@@ -11,9 +12,11 @@ import net.minecraft.potion.Potion
         category = Module.Category.MOVEMENT
 )
 object AntiLevitation : Module() {
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.isPotionActive(MobEffects.LEVITATION)) {
-            mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("levitation"))
+    init {
+        listener<SafeTickEvent> {
+            if (mc.player.isPotionActive(MobEffects.LEVITATION)) {
+                mc.player.removeActivePotionEffect(MobEffects.LEVITATION)
+            }
         }
     }
 }

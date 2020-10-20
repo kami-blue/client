@@ -16,7 +16,7 @@ import org.lwjgl.input.Keyboard
         category = Module.Category.MOVEMENT
 )
 object InventoryMove : Module() {
-    private val speed = register(Settings.i("LookSpeed", 10))
+    private val rotateSpeed = register(Settings.integerBuilder("RotateSpeed").withValue(5).withRange(0, 20).withStep(1))
     val sneak = register(Settings.b("Sneak", false))
 
     private var hasSent = false
@@ -24,25 +24,26 @@ object InventoryMove : Module() {
     init {
         listener<PlayerUpdateMoveEvent> {
             if (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiEditSign || mc.currentScreen is GuiRepair) return@listener
-            // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
+
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw - speed.value
+                mc.player.rotationYaw = mc.player.rotationYaw - rotateSpeed.value
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw + speed.value
+                mc.player.rotationYaw = mc.player.rotationYaw + rotateSpeed.value
             }
+
+            // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
             if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch - speed.value).coerceAtLeast(-90f)
+                mc.player.rotationPitch = (mc.player.rotationPitch - rotateSpeed.value).coerceAtLeast(-90.0f)
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch + speed.value).coerceAtMost(90f)
+                mc.player.rotationPitch = (mc.player.rotationPitch + rotateSpeed.value).coerceAtMost(90.0f)
             }
 
+            mc.player.movementInput.moveStrafe = 0.0f
+            mc.player.movementInput.moveForward = 0.0f
+
             try {
-
-                mc.player.movementInput.moveStrafe = 0.0f
-                mc.player.movementInput.moveForward = 0.0f
-
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode)) {
                     ++mc.player.movementInput.moveForward
                     mc.player.movementInput.forwardKeyDown = true

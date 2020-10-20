@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.renderer.GlStateManager
@@ -111,26 +112,26 @@ object Search : Module() {
         startTimeRender = 0L
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (shouldUpdateChunk()) {
-            updateLoadedChunkList()
-            updateMainList()
-        }
+    init {
+        listener<SafeTickEvent> {
+            if (shouldUpdateChunk()) {
+                updateLoadedChunkList()
+                updateMainList()
+            }
 
-        if (shouldUpdateRender()) {
-            updateRenderList()
-        }
-    }
-
-    override fun onWorldRender(event: RenderWorldEvent) {
-        if (dirty > 1) {
-            dirty = 0
-            renderer.clear()
-            for ((pos, colour) in renderList) {
-                renderer.add(pos, colour)
+            if (shouldUpdateRender()) {
+                updateRenderList()
             }
         }
-        renderer.render(false)
+
+        listener<RenderWorldEvent> {
+            if (dirty > 1) {
+                dirty = 0
+                renderer.clear()
+                for ((pos, colour) in renderList) renderer.add(pos, colour)
+            }
+            renderer.render(false)
+        }
     }
 
     /* Main list updating */

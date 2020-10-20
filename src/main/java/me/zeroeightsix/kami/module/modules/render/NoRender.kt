@@ -43,12 +43,12 @@ object NoRender : Module() {
         listener<RenderBlockOverlayEvent> {
             if (it.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE && fire.value) it.isCanceled = true
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (items.value) for (entity in mc.world.loadedEntityList) {
-            if (entity !is EntityItem) continue
-            entity.setDead()
+        listener<SafeTickEvent> {
+            if (items.value) for (entity in mc.world.loadedEntityList) {
+                if (entity !is EntityItem) continue
+                entity.setDead()
+            }
         }
     }
 }

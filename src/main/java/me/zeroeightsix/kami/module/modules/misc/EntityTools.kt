@@ -29,7 +29,7 @@ object EntityTools : Module() {
     init {
         listener<InputEvent.MouseInputEvent> {
             if (Mouse.getEventButton() != 1 || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.ENTITY) return@listener
-            if (timer.tick(5000L) ||  mc.objectMouseOver.entityHit != lastEntity && timer.tick(500L)) {
+            if (timer.tick(5000L) || mc.objectMouseOver.entityHit != lastEntity && timer.tick(500L)) {
                 when (mode.value) {
                     Mode.DELETE -> {
                         mc.world.removeEntity(mc.objectMouseOver.entityHit)

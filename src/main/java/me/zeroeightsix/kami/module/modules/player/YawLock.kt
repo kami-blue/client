@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import net.minecraft.util.math.MathHelper
-import kotlin.math.roundToInt
+import me.zeroeightsix.kami.util.event.listener
+import kotlin.math.round
 
 @Module.Info(
         name = "YawLock",
@@ -13,19 +13,18 @@ import kotlin.math.roundToInt
 )
 object YawLock : Module() {
     private val auto = register(Settings.b("Auto", true))
-    private val yaw = register(Settings.f("Yaw", 180f))
-    private val slice = register(Settings.i("Slice", 8))
+    private val yaw = register(Settings.floatBuilder("Yaw").withValue(180.0f).withRange(-180.0f, 180.0f).withStep(1.0f))
+    private val slice = register(Settings.integerBuilder("Slice").withValue(8).withRange(2, 32).withStep(1).withVisibility { auto.value })
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (slice.value == 0) return
-        if (auto.value) {
-            val angle = 360 / slice.value
-            var yaw = mc.player.rotationYaw
-            yaw = (yaw / angle).roundToInt() * angle.toFloat()
-            mc.player.rotationYaw = yaw
-            if (mc.player.isRiding) mc.player.getRidingEntity()!!.rotationYaw = yaw
-        } else {
-            mc.player.rotationYaw = MathHelper.clamp(yaw.value - 180, -180f, 180f)
+    init {
+        listener<SafeTickEvent> {
+            if (auto.value) {
+                val angle = 360.0f / slice.value
+                mc.player.rotationYaw = round(mc.player.rotationYaw / angle) * angle
+                mc.player.ridingEntity?.let { it.rotationYaw = mc.player.rotationYaw }
+            } else {
+                mc.player.rotationYaw = yaw.value
+            }
         }
     }
 }

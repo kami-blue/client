@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.entity.Entity
@@ -61,50 +62,52 @@ object StorageESP : Module() {
     private val renderList = ConcurrentHashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     private var cycler = HueCycler(600)
 
-    override fun onWorldRender(event: RenderWorldEvent) {
-        val renderer = ESPRenderer()
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        renderer.aTracer = if (tracer.value) aTracer.value else 0
-        renderer.thickness = thickness.value
-        for ((box, pair) in renderList) {
-            renderer.add(box, pair.first, pair.second)
-        }
-        renderer.render(true)
-    }
-
-    override fun onUpdate(event: SafeTickEvent) {
-        cycler++
-        renderList.clear()
-        for (tileEntity in mc.world.loadedTileEntityList) {
-            if (tileEntity is TileEntityChest && chest.value
-                    || tileEntity is TileEntityDispenser && dispenser.value
-                    || tileEntity is TileEntityShulkerBox && shulker.value
-                    || tileEntity is TileEntityEnderChest && enderChest.value
-                    || tileEntity is TileEntityFurnace && furnace.value
-                    || tileEntity is TileEntityHopper && hopper.value) {
-                val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
-                val color = getTileEntityColor(tileEntity) ?: continue
-                var side = GeometryMasks.Quad.ALL
-                if (tileEntity is TileEntityChest) {
-                    // Leave only the colliding face and then flip the bits (~) to have ALL but that face
-                    if (tileEntity.adjacentChestZNeg != null) side = (side and GeometryMasks.Quad.NORTH).inv()
-                    if (tileEntity.adjacentChestXPos != null) side = (side and GeometryMasks.Quad.EAST).inv()
-                    if (tileEntity.adjacentChestZPos != null) side = (side and GeometryMasks.Quad.SOUTH).inv()
-                    if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
-                }
-                renderList[box] = Pair(color, side)
+    init {
+        listener<RenderWorldEvent> {
+            val renderer = ESPRenderer()
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            renderer.aTracer = if (tracer.value) aTracer.value else 0
+            renderer.thickness = thickness.value
+            for ((box, pair) in renderList) {
+                renderer.add(box, pair.first, pair.second)
             }
+            renderer.render(true)
         }
 
-        for (entity in mc.world.loadedEntityList) {
-            if (entity is EntityItemFrame && frameShulkerOrAny(entity)
-                    || (entity is EntityMinecartChest
-                            || entity is EntityMinecartHopper
-                            || entity is EntityMinecartFurnace) && cart.value) {
-                val box = entity.renderBoundingBox
-                val color = getEntityColor(entity) ?: continue
-                renderList[box] = Pair(color, GeometryMasks.Quad.ALL)
+        listener<SafeTickEvent> {
+            cycler++
+            renderList.clear()
+            for (tileEntity in mc.world.loadedTileEntityList) {
+                if (tileEntity is TileEntityChest && chest.value
+                        || tileEntity is TileEntityDispenser && dispenser.value
+                        || tileEntity is TileEntityShulkerBox && shulker.value
+                        || tileEntity is TileEntityEnderChest && enderChest.value
+                        || tileEntity is TileEntityFurnace && furnace.value
+                        || tileEntity is TileEntityHopper && hopper.value) {
+                    val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
+                    val color = getTileEntityColor(tileEntity) ?: continue
+                    var side = GeometryMasks.Quad.ALL
+                    if (tileEntity is TileEntityChest) {
+                        // Leave only the colliding face and then flip the bits (~) to have ALL but that face
+                        if (tileEntity.adjacentChestZNeg != null) side = (side and GeometryMasks.Quad.NORTH).inv()
+                        if (tileEntity.adjacentChestXPos != null) side = (side and GeometryMasks.Quad.EAST).inv()
+                        if (tileEntity.adjacentChestZPos != null) side = (side and GeometryMasks.Quad.SOUTH).inv()
+                        if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
+                    }
+                    renderList[box] = Pair(color, side)
+                }
+            }
+
+            for (entity in mc.world.loadedEntityList) {
+                if (entity is EntityItemFrame && frameShulkerOrAny(entity)
+                        || (entity is EntityMinecartChest
+                                || entity is EntityMinecartHopper
+                                || entity is EntityMinecartFurnace) && cart.value) {
+                    val box = entity.renderBoundingBox
+                    val color = getEntityColor(entity) ?: continue
+                    renderList[box] = Pair(color, GeometryMasks.Quad.ALL)
+                }
             }
         }
     }

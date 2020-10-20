@@ -1,14 +1,22 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityHorse
 import net.minecraft.entity.passive.EntityPig
+import net.minecraft.network.play.client.CPacketInput
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketVehicleMove
+import net.minecraft.network.play.server.SPacketMoveVehicle
+import net.minecraft.util.EnumHand
 import net.minecraft.world.chunk.EmptyChunk
 import kotlin.math.cos
 import kotlin.math.sin
@@ -19,114 +27,72 @@ import kotlin.math.sin
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
 object EntitySpeed : Module() {
-    private val speed = register(Settings.f("Speed", 1f))
-    private val antiStuck = register(Settings.b("AntiStuck"))
+    private val speed = register(Settings.floatBuilder("Speed").withValue(1.0f).withRange(0.1f, 10.0f).withStep(0.1f))
+    private val antiStuck = register(Settings.b("AntiStuck", true))
     private val flight = register(Settings.b("Flight", false))
-    private val wobble = register(Settings.booleanBuilder("Wobble").withValue(true).withVisibility { b: Boolean? -> flight.value }.build())
-    private val opacity = register(Settings.f("BoatOpacity", .5f))
+    private val glideSpeed = register(Settings.floatBuilder("GlideSpeed").withValue(0.1f).withRange(0.0f, 1.0f).withStep(0.01f).withVisibility { flight.value })
+    private val upSpeed = register(Settings.floatBuilder("UpSpeed").withValue(1.0f).withRange(0.0f, 5.0f).withStep(0.1f).withVisibility { flight.value })
+    private val opacity = register(Settings.floatBuilder("BoatOpacity").withValue(1.0f).withRange(0.0f, 1.0f).withStep(0.01f))
+    private val forceInteract = register(Settings.b("ForceInteract", false))
+    private val interactTickDelay = register(Settings.integerBuilder("InteractTickDelay").withValue(2).withRange(1, 20).withStep(1).withVisibility { forceInteract.value })
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.getRidingEntity() != null) {
-            val riding = mc.player.getRidingEntity()
-            if (riding is EntityPig || riding is AbstractHorse) {
-                steerEntity(riding)
-            } else if (riding is EntityBoat && riding.controllingPassenger == mc.player) {
-                steerBoat(boat)
+    init {
+        listener<PacketEvent.Send> {
+            if (!forceInteract.value || mc.player?.ridingEntity !is EntityBoat) return@listener
+            if (it.packet is CPacketPlayer.Rotation || it.packet is CPacketInput) {
+                it.cancel()
+            }
+            if (it.packet is CPacketVehicleMove) {
+                if (mc.player?.ridingEntity is EntityBoat && mc.player.ticksExisted % interactTickDelay.value == 0) {
+                    mc.playerController.interactWithEntity(mc.player, mc.player.ridingEntity, EnumHand.MAIN_HAND)
+                }
+            }
+        }
+
+        listener<PacketEvent.Receive> {
+            if (!forceInteract.value || mc.player?.ridingEntity !is EntityBoat || it.packet !is SPacketMoveVehicle) return@listener
+            it.cancel()
+        }
+
+        listener<PlayerTravelEvent> {
+            mc.player.ridingEntity?.let {
+                if (it is EntityPig || it is AbstractHorse || it is EntityBoat && it.controllingPassenger == mc.player) {
+                    steerEntity(it)
+                    if (flight.value) fly(it)
+                }
             }
         }
     }
 
     private fun steerEntity(entity: Entity) {
-        if (!flight.value) {
-            entity.motionY = -0.4
+        val yawRad = MovementUtils.calcMoveYaw()
+
+        val motionX = -sin(yawRad) * speed.value
+        val motionZ = cos(yawRad) * speed.value
+
+        if (MovementUtils.isInputing() && !isBorderingChunk(entity, motionX, motionZ)) {
+            entity.motionX = motionX
+            entity.motionZ = motionZ
+        } else {
+            entity.motionX = 0.0
+            entity.motionZ = 0.0
         }
-        if (flight.value) {
-            if (mc.gameSettings.keyBindJump.isKeyDown) entity.motionY = speed.value.toDouble()
-            else if (mc.gameSettings.keyBindForward.isKeyDown || mc.gameSettings.keyBindBack.isKeyDown) entity.motionY = (if (wobble.value) sin(mc.player.ticksExisted.toDouble()) else 0.0).toDouble()
-        }
-        moveForward(entity, speed.value * 3.8)
-        if (entity is EntityHorse) {
+
+        if (entity is EntityHorse || entity is EntityBoat) {
             entity.rotationYaw = mc.player.rotationYaw
+
+            // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
+            if (entity is EntityBoat) entity.updateInputs(false, false, false, false)
         }
     }
 
-    private fun steerBoat(boat: EntityBoat?) {
-        if (boat == null) return
-
-        var angle: Int
-        val forward = mc.gameSettings.keyBindForward.isKeyDown
-        val left = mc.gameSettings.keyBindLeft.isKeyDown
-        val right = mc.gameSettings.keyBindRight.isKeyDown
-        val back = mc.gameSettings.keyBindBack.isKeyDown
-
-        if (flight.value) {
-            if (!(forward && back)) boat.motionY = 0.0
-            if (mc.gameSettings.keyBindJump.isKeyDown) boat.motionY += speed.value / 2f.toDouble()
-        }
-        if (!forward && !left && !right && !back) return
-        if (left && right) angle = if (forward) 0 else if (back) 180 else -1 else if (forward && back) angle = if (left) -90 else if (right) 90 else -1 else {
-            angle = if (left) -90 else if (right) 90 else 0
-            if (forward) angle /= 2 else if (back) angle = 180 - angle / 2
-        }
-        if (angle == -1) return
-
-        val yaw = mc.player.rotationYaw + angle
-        boat.motionX = EntityUtils.getRelativeX(yaw) * speed.value
-        boat.motionZ = EntityUtils.getRelativeZ(yaw) * speed.value
+    private fun fly(entity: Entity) {
+        if (!entity.isInWater) entity.motionY = -glideSpeed.value.toDouble()
+        if (mc.gameSettings.keyBindJump.isKeyDown) entity.motionY += upSpeed.value / 2.0
     }
 
-    override fun onRender() {
-        val boat = boat ?: return
-        boat.rotationYaw = mc.player.rotationYaw
-        boat.updateInputs(false, false, false, false) // Make sure the boat doesn't turn etc (params: isLeftDown, isRightDown, isForwardDown, isBackDown)
-    }
-
-    private val boat: EntityBoat?
-        get() = if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() is EntityBoat && (mc.player.getRidingEntity() as EntityBoat).controllingPassenger == mc.player) mc.player.getRidingEntity() as EntityBoat? else null
-
-    private fun moveForward(entity: Entity?, speed: Double) {
-        if (entity != null) {
-            val movementInput = mc.player.movementInput
-            var forward = movementInput.moveForward.toDouble()
-            var strafe = movementInput.moveStrafe.toDouble()
-            val movingForward = forward != 0.0
-            val movingStrafe = strafe != 0.0
-            var yaw = mc.player.rotationYaw
-
-            if (!movingForward && !movingStrafe) {
-                setEntitySpeed(entity, 0.0, 0.0)
-            } else {
-                if (forward != 0.0) {
-                    if (strafe > 0.0) {
-                        yaw += (if (forward > 0.0) -45 else 45).toFloat()
-                    } else if (strafe < 0.0) {
-                        yaw += (if (forward > 0.0) 45 else -45).toFloat()
-                    }
-                    strafe = 0.0
-                    forward = if (forward > 0.0) {
-                        1.0
-                    } else {
-                        -1.0
-                    }
-                }
-                var motX = forward * speed * cos(Math.toRadians(yaw + 90.0f.toDouble())) + strafe * speed * sin(Math.toRadians(yaw + 90.0f.toDouble()))
-                var motZ = forward * speed * sin(Math.toRadians(yaw + 90.0f.toDouble())) - strafe * speed * cos(Math.toRadians(yaw + 90.0f.toDouble()))
-                if (isBorderingChunk(entity, motX, motZ)) {
-                    motZ = 0.0
-                    motX = motZ
-                }
-                setEntitySpeed(entity, motX, motZ)
-            }
-        }
-    }
-
-    private fun setEntitySpeed(entity: Entity, motX: Double, motZ: Double) {
-        entity.motionX = motX
-        entity.motionZ = motZ
-    }
-
-    private fun isBorderingChunk(entity: Entity, motX: Double, motZ: Double): Boolean {
-        return antiStuck.value && mc.world.getChunk((entity.posX + motX).toInt() shr 4, (entity.posZ + motZ).toInt() shr 4) is EmptyChunk
+    private fun isBorderingChunk(entity: Entity, motionX: Double, motionZ: Double): Boolean {
+        return antiStuck.value && mc.world.getChunk((entity.posX + motionX).toInt() shr 4, (entity.posZ + motionZ).toInt() shr 4) is EmptyChunk
     }
 
     @JvmStatic

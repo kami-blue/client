@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -60,37 +61,39 @@ object HoleMiner : Module() {
         }
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!CombatManager.isOnTopPriority(this)) return
-        if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE) {
-            val slot = InventoryUtils.getSlotsHotbar(278)?.get(0)
-            if (slot == null) {
-                MessageSendHelper.sendChatMessage("$chatName No pickaxe found, disabling")
-                disable()
-                return
-            } else {
-                InventoryUtils.swapSlot(slot)
+    init {
+        listener<SafeTickEvent> {
+            if (!CombatManager.isOnTopPriority(this)) return@listener
+            if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE) {
+                val slot = InventoryUtils.getSlotsHotbar(278)?.get(0)
+                if (slot == null) {
+                    MessageSendHelper.sendChatMessage("$chatName No pickaxe found, disabling")
+                    disable()
+                    return@listener
+                } else {
+                    InventoryUtils.swapSlot(slot)
+                }
             }
-        }
-        val pos = miningPos
-        if (pos == null) {
-            MessageSendHelper.sendChatMessage("$chatName No hole block to mine, disabling")
-            disable()
-        } else if (mc.player.ticksExisted % 2 == 0) {
-            if (mc.world.isAirBlock(pos)) {
-                MessageSendHelper.sendChatMessage("$chatName Done mining")
+            val pos = miningPos
+            if (pos == null) {
+                MessageSendHelper.sendChatMessage("$chatName No hole block to mine, disabling")
                 disable()
-                return
+            } else if (mc.player.ticksExisted % 2 == 0) {
+                if (mc.world.isAirBlock(pos)) {
+                    MessageSendHelper.sendChatMessage("$chatName Done mining")
+                    disable()
+                    return@listener
+                }
+                val action = if (start) CPacketPlayerDigging.Action.START_DESTROY_BLOCK else CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK
+                val rotation = Vec2f(RotationUtils.getRotationTo(pos.toVec3d(), true))
+                val diff = mc.player.getPositionEyes(1f).subtract(pos.toVec3d())
+                val normalizedVec = diff.scale(1.0 / diff.length())
+                val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
+                PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                mc.connection!!.sendPacket(CPacketPlayerDigging(action, pos, facing))
+                mc.player.swingArm(EnumHand.MAIN_HAND)
+                start = false
             }
-            val action = if (start) CPacketPlayerDigging.Action.START_DESTROY_BLOCK else CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK
-            val rotation = Vec2f(RotationUtils.getRotationTo(pos.toVec3d(), true))
-            val diff = mc.player.getPositionEyes(1f).subtract(pos.toVec3d())
-            val normalizedVec = diff.scale(1.0 / diff.length())
-            val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
-            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
-            mc.connection!!.sendPacket(CPacketPlayerDigging(action, pos, facing))
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            start = false
         }
     }
 

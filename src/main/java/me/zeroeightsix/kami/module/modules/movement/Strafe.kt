@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.settings.KeyBinding
 import kotlin.math.cos
 import kotlin.math.sin
@@ -27,27 +28,29 @@ object Strafe : Module() {
     }
 
     /* If you skid this you omega gay */
-    override fun onUpdate(event: SafeTickEvent) {
-        if (!shouldStrafe()) {
-            reset()
-            return
-        }
-        MovementUtils.setSpeed(MovementUtils.getSpeed())
-        if (airSpeedBoost.value) mc.player.jumpMovementFactor = 0.029f
-        if (timerBoost.value) mc.timer.tickLength = 45.87155914306640625f
-
-        if (autoJump.value && mc.player.onGround && jumpTicks <= 0) {
-            KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
-            mc.player.motionY = 0.41
-            if (mc.player.isSprinting) {
-                val yaw = MovementUtils.calcMoveYaw()
-                mc.player.motionX -= sin(yaw) * 0.2
-                mc.player.motionZ += cos(yaw) * 0.2
+    init {
+        listener<SafeTickEvent> {
+            if (!shouldStrafe()) {
+                reset()
+                return@listener
             }
-            mc.player.isAirBorne = true
-            jumpTicks = 5
+            MovementUtils.setSpeed(MovementUtils.getSpeed())
+            if (airSpeedBoost.value) mc.player.jumpMovementFactor = 0.029f
+            if (timerBoost.value) mc.timer.tickLength = 45.87155914306640625f
+
+            if (autoJump.value && mc.player.onGround && jumpTicks <= 0) {
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
+                mc.player.motionY = 0.41
+                if (mc.player.isSprinting) {
+                    val yaw = MovementUtils.calcMoveYaw()
+                    mc.player.motionX -= sin(yaw) * 0.2
+                    mc.player.motionZ += cos(yaw) * 0.2
+                }
+                mc.player.isAirBorne = true
+                jumpTicks = 5
+            }
+            if (jumpTicks > 0) jumpTicks--
         }
-        if (jumpTicks > 0) jumpTicks--
     }
 
     fun shouldStrafe() = !BaritoneUtils.isPathing

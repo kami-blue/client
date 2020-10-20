@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -33,32 +34,34 @@ object FastUse : Module() {
 
     val bowCharge get() = if (isEnabled && (allItems.value || bow.value)) 72000.0 - (chargeSetting.value.toDouble() + chargeVariation.value / 2.0) else null
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.player.isSpectator) return
+    init {
+        listener<SafeTickEvent> {
+            if (mc.player.isSpectator) return@listener
 
-        @Suppress("SENSELESS_COMPARISON") // IDE meme
-        if ((allItems.value || bow.value) && mc.player.activeHand != null && (mc.player.getHeldItem(mc.player.activeHand).getItem() == Items.BOW) && mc.player.isHandActive && mc.player.itemInUseMaxCount >= getBowCharge()) {
-            randomVariation = 0
-            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
-            mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
-            mc.player.stopActiveHand()
-        }
-
-        if (delay.value > 0) {
-            if (time <= 0) {
-                time = delay.value
-            } else {
-                time--
-                return
+            @Suppress("SENSELESS_COMPARISON") // IDE meme
+            if ((allItems.value || bow.value) && mc.player.isHandActive && (mc.player.activeItemStack.getItem() == Items.BOW) && mc.player.itemInUseMaxCount >= getBowCharge()) {
+                randomVariation = 0
+                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
+                mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
+                mc.player.stopActiveHand()
             }
-        }
 
-        if (passItemCheck(mc.player.heldItemMainhand.getItem()) || passItemCheck(mc.player.heldItemOffhand.getItem())) {
-            mc.rightClickDelayTimer = 0
+            if (delay.value > 0) {
+                if (time <= 0) {
+                    time = delay.value
+                } else {
+                    time--
+                    return@listener
+                }
+            }
+
+            if (mc.player.isHandActive && passItemCheck(mc.player.activeItemStack.getItem())) {
+                mc.rightClickDelayTimer = 0
+            }
         }
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         mc.rightClickDelayTimer = 4
     }
 

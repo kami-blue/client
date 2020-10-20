@@ -14,9 +14,9 @@ object Zoom : Module() {
     private var fov = 0f
     private var sensi = 0f
 
-    private val fovChange = register(Settings.integerBuilder("FOV").withRange(1, 130).withValue(40).build())
+    private val fovChange = register(Settings.floatBuilder("FOV").withRange(1.0f, 180.0f).withValue(40.0f))
     private val sens = register(Settings.b("ChangeSensitivity", true))
-    private val sensChange = register(Settings.floatBuilder("SensitivityMultiplier").withMinimum(0.25f).withValue(1.3f).withMaximum(2f).withVisibility { sens.value }.build())
+    private val sensChange = register(Settings.floatBuilder("SensitivityMultiplier").withValue(1.0f).withRange(0.25f, 2.0f).withStep(0.25f).withVisibility { sens.value })
     private val smoothCamera = register(Settings.b("CinematicCamera", false))
 
     public override fun onEnable() {

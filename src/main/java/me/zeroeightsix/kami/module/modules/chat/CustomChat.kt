@@ -45,11 +45,11 @@ object CustomChat : Module() {
             if (s.length >= 256) s = s.substring(0, 256)
             it.packet.message = s
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
-            MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
+        listener<SafeTickEvent> {
+            if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
+                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
+            }
         }
     }
 

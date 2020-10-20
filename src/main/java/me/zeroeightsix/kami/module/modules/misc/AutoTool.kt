@@ -22,7 +22,7 @@ import kotlin.math.pow
 )
 object AutoTool : Module() {
     private val switchBack = register(Settings.b("SwitchBack", true))
-    private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value }.build())
+    private val timeout = register(Settings.integerBuilder("Timeout").withRange(1, 100).withValue(20).withVisibility { switchBack.value })
     private val swapWeapon = register(Settings.b("SwitchWeapon", false))
     private val preferWeapon = register(Settings.e<CombatUtils.PreferWeapon>("Prefer", CombatUtils.PreferWeapon.SWORD))
 
@@ -38,21 +38,21 @@ object AutoTool : Module() {
         listener<AttackEntityEvent> {
             if (swapWeapon.value && it.target is EntityLivingBase) CombatUtils.equipBestWeapon(preferWeapon.value)
         }
-    }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (mc.currentScreen != null || !switchBack.value) return
+        listener<SafeTickEvent> {
+            if (mc.currentScreen != null || !switchBack.value) return@listener
 
-        val mouse = Mouse.isButtonDown(0)
-        if (mouse && !shouldMoveBack) {
-            lastChange = System.currentTimeMillis()
-            shouldMoveBack = true
-            lastSlot = mc.player.inventory.currentItem
-            mc.playerController.syncCurrentPlayItem()
-        } else if (!mouse && shouldMoveBack && (lastChange + timeout.value * 10 < System.currentTimeMillis())) {
-            shouldMoveBack = false
-            mc.player.inventory.currentItem = lastSlot
-            mc.playerController.syncCurrentPlayItem()
+            val mouse = Mouse.isButtonDown(0)
+            if (mouse && !shouldMoveBack) {
+                lastChange = System.currentTimeMillis()
+                shouldMoveBack = true
+                lastSlot = mc.player.inventory.currentItem
+                mc.playerController.syncCurrentPlayItem()
+            } else if (!mouse && shouldMoveBack && (lastChange + timeout.value * 10 < System.currentTimeMillis())) {
+                shouldMoveBack = false
+                mc.player.inventory.currentItem = lastSlot
+                mc.playerController.syncCurrentPlayItem()
+            }
         }
     }
 

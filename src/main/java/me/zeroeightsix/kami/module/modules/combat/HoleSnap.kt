@@ -19,7 +19,7 @@ import kotlin.math.*
         category = Module.Category.COMBAT
 )
 object HoleSnap : Module() {
-    private val disableStrafe = register(Settings.b("DisableStrafe",true))
+    private val disableStrafe = register(Settings.b("DisableStrafe", true))
     private val range = register(Settings.floatBuilder("Range").withValue(2.5f).withRange(0f, 5f))
 
     override fun onEnable() {

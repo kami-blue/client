@@ -5,6 +5,9 @@ import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
+import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
@@ -15,48 +18,37 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.MISC
 )
 object CoordsLog : Module() {
-    private val forceLogOnDeath = register(Settings.b("SaveDeathCoords", true))
-    private val deathInChat = register(Settings.b("LogInChat", true))
-    private val autoLog = register(Settings.b("Delay", false))
-    private val delay = register(Settings.doubleBuilder("DelayT").withMinimum(1.0).withValue(15.0).withMaximum(60.0).build())
-    private val checkDuplicates = register(Settings.b("AvoidDuplicates", true))
+    private val saveOndeath = register(Settings.b("SaveOnDeath", true))
+    private val autoLog = register(Settings.b("AutoLog", false))
+    private val delay = register(Settings.integerBuilder("Delay").withValue(15).withRange(1, 60).withStep(1))
 
     private var previousCoord: String? = null
-    private var playerIsDead = false
-    private var startTime: Long = 0
+    private var savedDeath = false
+    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (autoLog.value) {
-            timeout()
-        }
-
-        if (0 < mc.player.health && playerIsDead) {
-            playerIsDead = false
-        }
-
-        if (!playerIsDead && 0 >= mc.player.health && forceLogOnDeath.value) {
-            val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType())
-            if (deathInChat.value) {
-                MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")
+    init {
+        listener<SafeTickEvent> {
+            if (autoLog.value) {
+                timeout()
             }
-            playerIsDead = true
+
+            if (saveOndeath.value) {
+                savedDeath = if (!savedDeath && (mc.player.isDead || mc.player.health <= 0.0f)) {
+                    val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType())
+                    MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")
+                    true
+                } else {
+                    false
+                }
+            }
         }
     }
 
     private fun timeout() {
-        if (startTime == 0L) startTime = System.currentTimeMillis()
+        if (timer.tick(delay.value.toLong())) {
+            val currentCoord = mc.player.positionVector.toBlockPos().asString()
 
-        if (startTime + delay.value * 1000 <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
-            startTime = System.currentTimeMillis()
-            val pos = mc.player.positionVector.toBlockPos()
-            val currentCoord = pos.toString()
-
-            if (checkDuplicates.value) {
-                if (currentCoord != previousCoord) {
-                    logCoordinates("autoLogger")
-                    previousCoord = currentCoord
-                }
-            } else {
+            if (currentCoord != previousCoord) {
                 logCoordinates("autoLogger")
                 previousCoord = currentCoord
             }
@@ -65,9 +57,5 @@ object CoordsLog : Module() {
 
     private fun logCoordinates(name: String): BlockPos {
         return WaypointManager.add(name).pos
-    }
-
-    override fun onDisable() {
-        startTime = 0
     }
 }

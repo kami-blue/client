@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils
@@ -50,33 +51,35 @@ object HoleESP : Module() {
         return holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        safeHoles.clear()
-        val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
-        for (pos in blockPosList) {
-            val holeType = SurroundUtils.checkHole(pos)
-            if (holeType == SurroundUtils.HoleType.NONE) continue
+    init {
+        listener<SafeTickEvent> {
+            safeHoles.clear()
+            val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
+            for (pos in blockPosList) {
+                val holeType = SurroundUtils.checkHole(pos)
+                if (holeType == SurroundUtils.HoleType.NONE) continue
 
-            if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
-                safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
-            }
-            if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
-                safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
+                if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
+                    safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
+                }
+                if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
+                    safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
+                }
             }
         }
-    }
 
-    override fun onWorldRender(event: RenderWorldEvent) {
-        if (mc.player == null || safeHoles.isEmpty()) return
-        val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
-        else GeometryMasks.Quad.DOWN
-        val renderer = ESPRenderer()
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        for ((pos, colour) in safeHoles) {
-            val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
-            renderer.add(renderPos, colour, side)
+        listener<RenderWorldEvent> {
+            if (mc.player == null || safeHoles.isEmpty()) return@listener
+            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
+            else GeometryMasks.Quad.DOWN
+            val renderer = ESPRenderer()
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            for ((pos, colour) in safeHoles) {
+                val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
+                renderer.add(renderPos, colour, side)
+            }
+            renderer.render(true)
         }
-        renderer.render(true)
     }
 }

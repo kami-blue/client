@@ -1,9 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
+import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.manager.mangers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -63,31 +60,35 @@ object WaypointRender : Module() {
         INFO_BOX, ESP
     }
 
+    // This has to be sorted so the further ones doesn't overlaps the closer ones
     private val waypointMap = TreeMap<BlockPos, TextComponent>(compareByDescending {
         it.distanceSq(mc.player?.position
-                ?: BlockPos(0, -69420, 0)) // This has to be sorted so the further ones doesn't overlaps the closer ones
+                ?: BlockPos(0, -69420, 0))
     })
     private var currentServer: String? = null
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var prevDimension = -2
+    private val lockObject = Any()
 
-    override fun onWorldRender(event: RenderWorldEvent) {
-        if (waypointMap.isEmpty()) return
-        val color = ColorHolder(r.value, g.value, b.value)
-        val renderer = ESPRenderer()
-        renderer.aFilled = if (filled.value) aFilled.value else 0
-        renderer.aOutline = if (outline.value) aOutline.value else 0
-        renderer.aTracer = if (tracer.value) aTracer.value else 0
-        renderer.thickness = thickness.value
-        GlStateUtils.depth(false)
-        for (pos in waypointMap.keys) {
-            val distance = sqrt(mc.player.getDistanceSq(pos))
-            if (espRangeLimit.value && distance > espRange.value) continue
-            renderer.add(AxisAlignedBB(pos), color) /* Adds pos to ESPRenderer list */
-            drawVerticalLines(pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
+    init {
+        listener<RenderWorldEvent> {
+            if (waypointMap.isEmpty()) return@listener
+            val color = ColorHolder(r.value, g.value, b.value)
+            val renderer = ESPRenderer()
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            renderer.aTracer = if (tracer.value) aTracer.value else 0
+            renderer.thickness = thickness.value
+            GlStateUtils.depth(false)
+            for (pos in waypointMap.keys) {
+                val distance = sqrt(mc.player.getDistanceSq(pos))
+                if (espRangeLimit.value && distance > espRange.value) continue
+                renderer.add(AxisAlignedBB(pos), color) /* Adds pos to ESPRenderer list */
+                drawVerticalLines(pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
+            }
+            GlStateUtils.depth(true)
+            renderer.render(true)
         }
-        GlStateUtils.depth(true)
-        renderer.render(true)
     }
 
     private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
@@ -98,16 +99,17 @@ object WaypointRender : Module() {
         KamiTessellator.render()
     }
 
-    override fun onRender() {
-        if (waypointMap.isEmpty()) return
-        if (!showCoords.value && !showName.value && !showDate.value && !showDist.value) return
-        GlStateUtils.rescaleActual()
-        for ((pos, textComponent) in waypointMap) {
-            val distance = sqrt(mc.player.getDistanceSqToCenter(pos))
-            if (distance > infoBoxRange.value) continue
-            drawText(pos, textComponent, distance.roundToInt())
+    init {
+        listener<RenderOverlayEvent> {
+            if (waypointMap.isEmpty() || !showCoords.value && !showName.value && !showDate.value && !showDist.value) return@listener
+            GlStateUtils.rescaleActual()
+            for ((pos, textComponent) in waypointMap) {
+                val distance = sqrt(mc.player.getDistanceSqToCenter(pos))
+                if (distance > infoBoxRange.value) continue
+                drawText(pos, textComponent, distance.roundToInt())
+            }
+            GlStateUtils.rescaleMc()
         }
-        GlStateUtils.rescaleMc()
     }
 
     private fun drawText(pos: BlockPos, textComponentIn: TextComponent, distance: Int) {
@@ -139,16 +141,17 @@ object WaypointRender : Module() {
         currentServer = null
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
-            if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
-            updateList()
-        }
-    }
-
     init {
+        listener<SafeTickEvent> {
+            if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
+                if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
+                updateList()
+            }
+        }
+
         listener<WaypointUpdateEvent> {
-            synchronized(waypointMap) { // This could be called from another thread so we have to synchronize the map
+            // This could be called from another thread so we have to synchronize the map
+            synchronized(lockObject) {
                 when (it.type) {
                     WaypointUpdateEvent.Type.ADD -> it.waypoint?.let { updateTextComponent(it) }
                     WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(it.waypoint?.pos)
@@ -195,7 +198,7 @@ object WaypointRender : Module() {
 
     init {
         with(Setting.SettingListeners {
-            synchronized(waypointMap) { waypointMap.clear(); updateList() } // This could be called from another thread so we have to synchronize the map
+            synchronized(lockObject) { waypointMap.clear(); updateList() } // This could be called from another thread so we have to synchronize the map
         }) {
             dimension.settingListener = this
             showName.settingListener = this

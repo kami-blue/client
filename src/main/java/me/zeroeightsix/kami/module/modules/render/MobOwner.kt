@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getNameFromUUID
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.entity.passive.AbstractHorse
@@ -20,7 +21,7 @@ object MobOwner : Module() {
     private val speed = register(Settings.b("Speed", true))
     private val jump = register(Settings.b("Jump", true))
     private val hp = register(Settings.b("Health", true))
-    private val requestTime = register(Settings.integerBuilder("CacheReset").withMinimum(10).withValue(20).build())
+    private val requestTime = register(Settings.integerBuilder("CacheReset").withValue(20).withRange(10, 200).withStep(10))
     private val debug = register(Settings.b("Debug", true))
 
     private var startTime = 0L /* Periodically try to re-request invalid UUIDs */
@@ -29,23 +30,25 @@ object MobOwner : Module() {
     private var apiRequests = 0
     private const val invalidText = "Offline or invalid UUID!"
 
-    override fun onUpdate(event: SafeTickEvent) {
-        resetRequests()
-        resetCache()
-        for (entity in mc.world.loadedEntityList) {
-            /* Non Horse types, such as wolves */
-            if (entity is EntityTameable) {
-                if (entity.isTamed && entity.owner != null) {
+    init {
+        listener<SafeTickEvent> {
+            resetRequests()
+            resetCache()
+            for (entity in mc.world.loadedEntityList) {
+                /* Non Horse types, such as wolves */
+                if (entity is EntityTameable) {
+                    if (entity.isTamed && entity.owner != null) {
+                        entity.alwaysRenderNameTag = true
+                        entity.customNameTag = "Owner: " + entity.owner!!.displayName.formattedText + getHealth(entity)
+                    }
+                }
+                if (entity is AbstractHorse) {
+                    if (!entity.isTame || entity.ownerUniqueId == null) {
+                        continue
+                    }
                     entity.alwaysRenderNameTag = true
-                    entity.customNameTag = "Owner: " + entity.owner!!.displayName.formattedText + getHealth(entity)
+                    entity.customNameTag = "Owner: " + getUsername(entity.ownerUniqueId.toString()) + getSpeed(entity) + getJump(entity) + getHealth(entity)
                 }
-            }
-            if (entity is AbstractHorse) {
-                if (!entity.isTame || entity.ownerUniqueId == null) {
-                    continue
-                }
-                entity.alwaysRenderNameTag = true
-                entity.customNameTag = "Owner: " + getUsername(entity.ownerUniqueId.toString()) + getSpeed(entity) + getJump(entity) + getHealth(entity)
             }
         }
     }

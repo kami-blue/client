@@ -10,6 +10,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11.glColor4f
 import org.lwjgl.opengl.GL11.glScalef
 import kotlin.math.abs
@@ -31,28 +32,30 @@ object BossStack : Module() {
     private val texture = ResourceLocation("textures/gui/bars.png")
     private val bossInfoMap = LinkedHashMap<BossInfoClient, Int>()
 
-    override fun onUpdate(event: SafeTickEvent) {
-        bossInfoMap.clear()
-        val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return
-        when (mode.value as BossStackMode) {
-            BossStackMode.REMOVE -> {
-            }
-            BossStackMode.MINIMIZE -> {
-                val closest = bossInfoList.minBy { findMatchBoss(it)?.getDistance(mc.player) ?: Float.MAX_VALUE }
-                        ?: return
-                bossInfoMap[closest] = -1
-            }
-            BossStackMode.STACK -> {
-                val cacheMap = HashMap<String, ArrayList<BossInfoClient>>()
-                for (bossInfo in bossInfoList) {
-                    val list = cacheMap.getOrDefault(bossInfo.name.formattedText, ArrayList())
-                    cacheMap.putIfAbsent(bossInfo.name.formattedText, list)
-                    list.add(bossInfo)
+    init {
+        listener<SafeTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@listener
+            bossInfoMap.clear()
+            val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return@listener
+            when (mode.value as BossStackMode) {
+                BossStackMode.REMOVE -> {
                 }
-                for (list in cacheMap.values) {
-                    val closest = list.minBy { findMatchBoss(it)?.getDistance(mc.player) ?: Float.MAX_VALUE }
-                            ?: continue
-                    bossInfoMap[closest] = list.size
+                BossStackMode.MINIMIZE -> {
+                    val closest = bossInfoList.minBy { findMatchBoss(it)?.getDistance(mc.player) ?: Float.MAX_VALUE } ?: return@listener
+                    bossInfoMap[closest] = -1
+                }
+                BossStackMode.STACK -> {
+                    val cacheMap = HashMap<String, ArrayList<BossInfoClient>>()
+                    for (bossInfo in bossInfoList) {
+                        val list = cacheMap.getOrDefault(bossInfo.name.formattedText, ArrayList())
+                        cacheMap.putIfAbsent(bossInfo.name.formattedText, list)
+                        list.add(bossInfo)
+                    }
+                    for (list in cacheMap.values) {
+                        val closest = list.minBy { findMatchBoss(it)?.getDistance(mc.player) ?: Float.MAX_VALUE }
+                                ?: continue
+                        bossInfoMap[closest] = list.size
+                    }
                 }
             }
         }
@@ -88,7 +91,7 @@ object BossStack : Module() {
             GlStateUtils.blend(true)
             glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
             if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
-                val posX = (width / scale.value / 2.0f - 91f).roundToInt()
+                val posX = (width / scale.value / 2.0f - 91.0f).roundToInt()
                 val text = bossInfo.name.formattedText + if (count != -1) " x$count" else ""
                 val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
                 val textPosY = posY - 9.0f

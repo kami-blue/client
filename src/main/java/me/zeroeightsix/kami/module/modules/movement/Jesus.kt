@@ -30,11 +30,13 @@ object Jesus : Module() {
         }
     }
 
-    override fun onUpdate(event: SafeTickEvent) {
-        if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
-            mc.player.motionY = 0.1
-            if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
-                mc.player.getRidingEntity()!!.motionY = 0.3
+    init {
+        listener<SafeTickEvent> {
+            if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
+                mc.player.motionY = 0.1
+                if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
+                    mc.player.getRidingEntity()!!.motionY = 0.3
+                }
             }
         }
     }

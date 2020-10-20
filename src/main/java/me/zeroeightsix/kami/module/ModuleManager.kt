@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
 import java.util.*
 
@@ -83,33 +81,6 @@ object ModuleManager {
         }.also {
             it.name = "Modules Sorting Thread"
             it.start()
-        }
-    }
-
-    @Deprecated ("Use event listener for SafeTickEvent instead")
-    fun onUpdate(event: SafeTickEvent) {
-        for (module in getModules()) {
-            if (isModuleListening(module) && inGame()) module.onUpdate(event)
-        }
-    }
-
-    @Deprecated ("Use event listener for RenderOverlayEvent instead")
-    fun onRender() {
-        for (module in getModules()) {
-            if (isModuleListening(module)) {
-                module.onRender()
-            }
-        }
-    }
-
-    @Deprecated ("Use event listener for RenderWorldEvent instead")
-    fun onWorldRender(event: RenderWorldEvent) {
-        for (module in getModules()) {
-            if (isModuleListening(module)) {
-                KamiTessellator.prepareGL()
-                module.onWorldRender(event)
-                KamiTessellator.releaseGL()
-            }
         }
     }
 
