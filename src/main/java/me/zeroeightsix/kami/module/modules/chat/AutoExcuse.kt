@@ -54,7 +54,7 @@ object AutoExcuse : Module() {
 
     override fun onEnable() {
         if (mode.value == Mode.READ_FROM_FILE) {
-            if (file.exists() && file.length() != 0L) {
+            if (file.exists()) {
                 file.forEachLine { if (it.isNotEmpty()) userExcuses.add(it.removeWhiteSpace()) }
             } else {
                 file.createNewFile()
