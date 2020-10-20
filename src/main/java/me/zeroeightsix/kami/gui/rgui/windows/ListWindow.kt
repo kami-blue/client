@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Mouse
@@ -93,7 +94,7 @@ open class ListWindow(
 
     override fun onRender(vertexHelper: VertexHelper) {
         super.onRender(vertexHelper)
-        glScissor(
+        GlStateUtils.glScissor(
                 ((renderPosX + lineSpace) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
                 ((renderWidth - lineSpace * 2.0) * ClickGUI.getScaleFactor()).roundToInt(),

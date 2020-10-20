@@ -1,13 +1,30 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
+import java.util.*
 
 object GlStateUtils {
     private val mc = Wrapper.minecraft
+    private var lastScissor: Quad<Int, Int, Int, Int>? = null
+    private val scissorList = LinkedList<Quad<Int, Int, Int, Int>>()
+
+    fun glScissor(x: Int, y: Int, width: Int, height: Int) {
+        lastScissor = Quad(x, y, width, height)
+        glScissor(x, y, width, height)
+    }
+
+    fun pushScissor() {
+        lastScissor?.let { scissorList.add(it) }
+    }
+
+    fun popScissor() {
+        scissorList.pollLast()?.let { glScissor(it.first, it.second, it.third, it.fourth) }
+    }
 
     @JvmStatic
     fun useVbo(): Boolean {
