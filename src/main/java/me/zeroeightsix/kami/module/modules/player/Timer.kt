@@ -28,8 +28,9 @@ object Timer : Module() {
 
     init {
         listener<SafeTickEvent> {
-            mc.timer.tickLength = if (!slow.value) 50.0f / tickNormal.value
-            else 50.0f / (tickSlow.value / 10.0f)
+            mc.timer.tickLength =  50.0f /
+                    if (!slow.value) tickNormal.value
+                    else (tickSlow.value / 10.0f)
         }
     }
 }
