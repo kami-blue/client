@@ -15,7 +15,7 @@ object AntiLevitation : Module() {
     init {
         listener<SafeTickEvent> {
             if (mc.player.isPotionActive(MobEffects.LEVITATION)) {
-                mc.player.removeActivePotionEffect(Potion.getPotionFromResourceLocation("levitation"))
+                mc.player.removeActivePotionEffect(MobEffects.LEVITATION)
             }
         }
     }
