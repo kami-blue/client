@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketUpdateHealth
 import java.io.File
-import java.util.regex.Pattern
 
 @Module.Info(
         name = "AutoExcuse",
@@ -20,9 +19,9 @@ object AutoExcuse : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.DEFAULT))
     private val file = File("excuses.txt")
 
-    private lateinit var excuses: MutableList<String>
+    private lateinit var userExcuses: MutableList<String>
 
-    private val backup: MutableList<String> = mutableListOf(
+    private val defaultExcuses: MutableList<String> = mutableListOf(
             "Sorry, im using $CLIENT_NAME client",
             "My ping is so bad",
             "I was changing my config :(",
@@ -48,7 +47,7 @@ object AutoExcuse : Module() {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketUpdateHealth) return@listener
             if (it.packet.health <= 0f && timer.tick(3L)) {
-                    MessageSendHelper.sendServerMessage(getExcuse())
+                MessageSendHelper.sendServerMessage(getExcuse())
             }
         }
     }
@@ -56,20 +55,21 @@ object AutoExcuse : Module() {
     override fun onEnable() {
         if (mode.value == Mode.READ_FROM_FILE) {
             if (file.exists() && file.length() != 0L) {
-                file.forEachLine { excuses.add(it) }
-                excuses = excuses.filter { it.isNotEmpty() }.toMutableList()
+                file.forEachLine { if (it.isNotEmpty()) userExcuses.add(it.removeWhiteSpace()) }
             } else {
                 file.createNewFile()
-                MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!")
-                MessageSendHelper.sendWarningMessage("$chatName Please add them in the 'excuses.txt' under the '.minecraft' directory.")
+                MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!" +
+                        ", please add them in the &7excuses.txt&f under the &7.minecraft&f directory.")
                 disable()
             }
-        } else excuses = backup
+        } else userExcuses = defaultExcuses
     }
 
-    private fun getExcuse() = excuses.random().replace(CLIENT_NAME, clients.random())
+    private fun getExcuse() = userExcuses.random().replace(CLIENT_NAME, clients.random())
 
-    private enum class Mode{
+    private fun String.removeWhiteSpace() = this.replace("^( )+".toRegex(), "").replace("( )+$".toRegex(), "")
+
+    private enum class Mode {
         READ_FROM_FILE,
         DEFAULT
     }
