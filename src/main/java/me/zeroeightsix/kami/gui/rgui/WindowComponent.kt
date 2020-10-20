@@ -8,7 +8,7 @@ import kotlin.math.min
 abstract class WindowComponent : InteractiveComponent() {
     // Interactive info
     open val draggableHeight get() = height
-    var lastActiveTime: Long = System.currentTimeMillis(); private set
+    var lastActiveTime: Long = System.currentTimeMillis(); protected set
     var preDragPos = Vec2f(0.0f, 0.0f); private set
     var preDragSize = Vec2f(0.0f, 0.0f); private set
 

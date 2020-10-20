@@ -69,9 +69,9 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField val name = register(Settings.s("Name", originalName))
-    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
-    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
+    @JvmField val name = register(Settings.stringBuilder("Name").withValue(originalName).withVisibility { false })
+    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()))
+    private val enabled = register(Settings.booleanBuilder("Enabled").withValue(annotation.enabledByDefault || annotation.alwaysEnabled).withVisibility { false })
     private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
     /* End of settings */
 

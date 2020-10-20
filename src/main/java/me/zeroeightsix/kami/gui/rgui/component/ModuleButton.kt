@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
+import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.math.Vec2f
 
@@ -18,6 +19,7 @@ class ModuleButton(val module: Module) : AbstractSlider (module.name.value, 0.0)
         super.onRelease(mousePos, buttonId)
         if (prevState != MouseState.DRAG) {
             if (buttonId == 0) module.toggle()
+            else if (buttonId == 1) KamiClickGui.displaySettingWindow(module)
         }
     }
 }

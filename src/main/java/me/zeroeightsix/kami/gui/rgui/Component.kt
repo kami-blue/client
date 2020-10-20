@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.rgui
 import com.google.gson.annotations.Expose
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.math.Vec2f
 import java.util.*
 
 abstract class Component {
@@ -13,6 +14,7 @@ abstract class Component {
     @Expose open var posY = 0.0f
     @Expose open var width = 0.0f
     @Expose open var height = 0.0f
+    @Expose var visible = true
 
     // Extra info
     protected val mc = Wrapper.minecraft
@@ -45,7 +47,7 @@ abstract class Component {
         prevHeight = height
     }
 
-    open fun onRender(vertexHelper: VertexHelper) {}
+    open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
 
     override fun equals(other: Any?) = other === this || other is Component && other.id == id
 

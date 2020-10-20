@@ -1,13 +1,16 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
+import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.impl.numerical.DoubleSetting
 import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting
 import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting
+import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.floor
 
-class SettingSlider<T : Number>(val setting: NumberSetting<T>) : AbstractSlider(setting.name, 0.0) {
+class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0) {
     private val range = setting.max.toDouble() - setting.min.toDouble()
     private val step = if (setting.step != null && setting.step.toDouble() > 0.0) setting.step.toDouble() else getDefaultStep()
 
@@ -17,10 +20,12 @@ class SettingSlider<T : Number>(val setting: NumberSetting<T>) : AbstractSlider(
     }
 
     override fun onTick() {
+        super.onTick()
         val settingValue = floorToStep(setting.value.toDouble())
         if (value * range !in settingValue..settingValue + step) {
             value = setting.value.toDouble() / range
         }
+        visible = setting.isVisible
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -52,5 +57,13 @@ class SettingSlider<T : Number>(val setting: NumberSetting<T>) : AbstractSlider(
                 this.value = valueIn
             }
         }
+    }
+
+    override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        val valueText = setting.value.toDouble().toString()
+        protectedWidth = KamiFontRenderer.getStringWidth(valueText).toDouble()
+
+        super.onRender(vertexHelper, absolutePos)
+        KamiFontRenderer.drawString(valueText, (renderWidth - protectedWidth - 2.0f).toFloat(), 1.0f, colorIn = GuiColors.text)
     }
 }

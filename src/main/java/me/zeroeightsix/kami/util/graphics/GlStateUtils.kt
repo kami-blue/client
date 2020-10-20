@@ -13,7 +13,7 @@ object GlStateUtils {
     private var lastScissor: Quad<Int, Int, Int, Int>? = null
     private val scissorList = LinkedList<Quad<Int, Int, Int, Int>>()
 
-    fun glScissor(x: Int, y: Int, width: Int, height: Int) {
+    fun scissor(x: Int, y: Int, width: Int, height: Int) {
         lastScissor = Quad(x, y, width, height)
         glScissor(x, y, width, height)
     }
@@ -23,7 +23,7 @@ object GlStateUtils {
     }
 
     fun popScissor() {
-        scissorList.pollLast()?.let { glScissor(it.first, it.second, it.third, it.fourth) }
+        scissorList.pollLast()?.let { scissor(it.first, it.second, it.third, it.fourth) }
     }
 
     @JvmStatic

@@ -23,13 +23,13 @@ open class ListWindow(
         height: Float,
         vararg childrenIn: Component
 ) : TitledWindow(name, posX, posY, width, height) {
-    @Expose private val children = LinkedList<Component>()
+    @Expose val children = LinkedList<Component>()
 
     override val minWidth = 50.0f
     override val minHeight = 200.0f
     override val maxWidth = 200.0f
     override val maxHeight get() = mc.displayHeight.toFloat()
-    private val lineSpace = 2.0f
+    protected val lineSpace = 2.0f
     private var hoveredChild: Component? = null
         set(value) {
             if (value == field) return
@@ -46,7 +46,7 @@ open class ListWindow(
             prevScrollProgress = field
             field = value
         }
-    private val renderScrollProgress
+    protected val renderScrollProgress
         get() = prevScrollProgress + (scrollProgress - prevScrollProgress) * mc.renderPartialTicks
 
     init {
@@ -57,6 +57,7 @@ open class ListWindow(
     private fun updateChild() {
         var y = (if (draggableHeight != height) draggableHeight else 0.0f) + lineSpace
         for (child in children) {
+            if (!child.visible) continue
             child.posX = lineSpace
             child.posY = y
             child.width = width - lineSpace * 2.0f
@@ -79,6 +80,7 @@ open class ListWindow(
         super.onTick()
         if (children.isEmpty()) return
         val maxHeight = max((children.last().posY + children.last.height + lineSpace) - (height), 0.01f)
+
         scrollProgress = (scrollProgress + scrollSpeed)
         scrollSpeed *= 0.5f
         if (scrollTimer.tick(100L, false)) {
@@ -88,13 +90,14 @@ open class ListWindow(
                 scrollSpeed = (scrollProgress - maxHeight) * -0.25f
             }
         }
+
         updateChild()
         for (child in children) child.onTick()
     }
 
-    override fun onRender(vertexHelper: VertexHelper) {
-        super.onRender(vertexHelper)
-        GlStateUtils.glScissor(
+    override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        super.onRender(vertexHelper, absolutePos)
+        GlStateUtils.scissor(
                 ((renderPosX + lineSpace) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
                 ((renderWidth - lineSpace * 2.0) * ClickGUI.getScaleFactor()).roundToInt(),
@@ -103,9 +106,10 @@ open class ListWindow(
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
         for (child in children) {
+            if (!child.visible) continue
             glPushMatrix()
             glTranslatef(child.posX, child.posY, 0.0f)
-            child.onRender(vertexHelper)
+            child.onRender(vertexHelper, absolutePos.add(child.posX, child.posY))
             glPopMatrix()
         }
         glDisable(GL_SCISSOR_TEST)
@@ -126,7 +130,7 @@ open class ListWindow(
 
     private fun updateHovered(relativeMousePos: Vec2f) {
         hoveredChild = if (relativeMousePos.y < draggableHeight) null
-        else children.firstOrNull { relativeMousePos.y in it.posY..it.posY + it.height }
+        else children.firstOrNull { it.visible && relativeMousePos.y in it.posY..it.posY + it.height }
     }
 
     override fun onLeave(mousePos: Vec2f) {

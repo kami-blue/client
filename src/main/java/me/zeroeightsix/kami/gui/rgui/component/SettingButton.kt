@@ -11,6 +11,7 @@ class SettingButton(val setting: Setting<Boolean>) : AbstractSlider(setting.name
     override fun onTick() {
         super.onTick()
         value = if (setting.value) 0.0 else 1.0
+        visible = setting.isVisible
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
