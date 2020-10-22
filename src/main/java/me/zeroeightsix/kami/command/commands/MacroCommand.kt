@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
-import me.zeroeightsix.kami.manager.mangers.MacroManager
+import me.zeroeightsix.kami.manager.managers.FileInstanceManager
+import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage

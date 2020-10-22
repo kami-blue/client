@@ -5,7 +5,7 @@
 
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.manager.mangers.KamiMojiManager;
+import me.zeroeightsix.kami.manager.managers.KamiMojiManager;
 import me.zeroeightsix.kami.module.modules.chat.KamiMoji;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;

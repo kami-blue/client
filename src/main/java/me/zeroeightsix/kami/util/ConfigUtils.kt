@@ -9,9 +9,9 @@ import me.zeroeightsix.kami.gui.rgui.component.Component
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
 import me.zeroeightsix.kami.gui.rgui.util.Docking
-import me.zeroeightsix.kami.manager.mangers.FriendManager
-import me.zeroeightsix.kami.manager.mangers.MacroManager
-import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.manager.managers.MacroManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File

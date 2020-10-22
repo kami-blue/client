@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.math
 
-import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager
 import net.minecraft.util.math.BlockPos
 
 object CoordinateConverter {

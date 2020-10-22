@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import com.google.gson.annotations.SerializedName
-import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.util.math.CoordinateConverter
 import net.minecraft.util.math.BlockPos
 

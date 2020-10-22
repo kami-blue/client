@@ -64,7 +64,7 @@ public class SetCommand extends Command {
         ISettingUnknown setting = optionalSetting.get();
 
         if (args[2] == null) {
-            sendChatMessage("&b" + setting.getName() + "&r is a &3" + setting.getValueClass().getSimpleName() + "&r. Its current value is &3" + setting.getValueAsString());
+            sendChatMessage("&b" + setting.getName() + "&r is a &3" + setting.getValueClass().getSimpleName() + "&r. Its current value is &3" + setting.toString());
             return;
         }
 
@@ -75,7 +75,7 @@ public class SetCommand extends Command {
             }
             /* PLEASE MAKE SURE TO USE PROPER NAMING WHEN USING ENUMS */ /* if you use improper lowercase letters it will *not* work with this command ie THIS_IS correct, this_is NOT ~l1ving */
             setting.setValueFromString(arg2, setting.getValueClass().getSimpleName().equals("Boolean"));
-            sendChatMessage("Set &b" + setting.getName() + "&r to &3" + setting.getValueAsString() + "&r.");
+            sendChatMessage("Set &b" + setting.getName() + "&r to &3" + setting.toString() + "&r.");
         } catch (Exception e) {
             e.printStackTrace();
             sendChatMessage("Unable to set value! &6" + e.getMessage());

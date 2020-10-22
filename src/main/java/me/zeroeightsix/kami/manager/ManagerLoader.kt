@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.manager
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.manager.managers.FileInstanceManager
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.TimerUtils
 

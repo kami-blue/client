@@ -23,7 +23,7 @@ public class StringSetting extends Setting<String> {
     }
 
     @Override
-    public String getValueAsString() {
+    public String toString() {
         return getValue();
     }
 
