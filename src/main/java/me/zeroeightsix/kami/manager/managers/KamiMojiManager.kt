@@ -5,12 +5,15 @@
 
 package me.zeroeightsix.kami.manager.managers
 
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.JsonUtils
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
+import org.apache.commons.compress.utils.Charsets
+import org.apache.commons.io.IOUtils
 import java.io.*
 import java.net.URL
 import java.util.zip.ZipInputStream
@@ -103,8 +106,8 @@ object KamiMojiManager : Manager() {
                 if (!LOCAL_VERSION.exists()) {
                     updateEmojis()
                 } else {
-                    val globalVer = JsonUtils.streamToJson(URL(VERSION_URL).openStream())
-                    val localVer = JsonUtils.streamToJson(FileInputStream(LOCAL_VERSION))
+                    val globalVer = streamToJson(URL(VERSION_URL).openStream())
+                    val localVer = streamToJson(FileInputStream(LOCAL_VERSION))
 
                     if (globalVer != null) {
                         if (!globalVer.has("version")) {
@@ -122,10 +125,31 @@ object KamiMojiManager : Manager() {
 
             synchronized(files) {
                 // Store the files in hash map, we are not loading them yet until we need them
-                files.putAll(File(FOLDER).listFiles { file: File -> file.isFile && file.name.toLowerCase().endsWith(".png") }!!.associateBy { it.name.replace(".png".toRegex(), "") })
+                files.putAll(File(FOLDER).listFiles { file: File -> file.isFile && file.name.toLowerCase().endsWith(".png") }!!.associateBy { it.name.replace(".png", "") })
             }
         }, "KamiMoji Loading Thread")
 
         thread.start()
+    }
+
+    /**
+     * Pop in a JSON input stream and get a JsonObject as output.
+     *
+     * @param in A JSON input stream ting
+     * @return Corresponding JsonObject
+     */
+    private fun streamToJson(`in`: InputStream?): JsonObject? {
+        val gson = Gson()
+        var jsonObject: JsonObject? = null
+
+        try {
+            val json = IOUtils.toString(`in`, Charsets.UTF_8)
+
+            jsonObject = gson.fromJson(json, JsonObject::class.java)
+        } catch (e: IOException) {
+            KamiMod.log.error(e)
+        }
+
+        return jsonObject
     }
 }
