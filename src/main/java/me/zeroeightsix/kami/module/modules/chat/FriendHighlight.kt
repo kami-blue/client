@@ -33,7 +33,6 @@ object FriendHighlight : Module() {
             if (noFriendsCheck() || !FriendManager.enabled) return@listener
 
             val playerName = regex1.find(it.message.unformattedText)?.value?.replace(regex2, "")
-            println(playerName)
             if (playerName == null || !FriendManager.isFriend(playerName)) return@listener
             val modified = it.message.formattedText.replaceFirst(playerName, getReplacement(playerName))
             val textComponent = TextComponentString(modified)
