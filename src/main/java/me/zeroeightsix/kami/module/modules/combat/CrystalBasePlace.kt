@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import java.util.*
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "CrystalBasePlace",
         description = "Places obby for placing crystal on",

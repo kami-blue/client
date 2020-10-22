@@ -29,6 +29,7 @@ import kotlin.collections.HashMap
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "BedAura",
         description = "Place bed and kills enemies",

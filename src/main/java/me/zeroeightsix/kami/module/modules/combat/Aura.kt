@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "Aura",
         category = Module.Category.COMBAT,
