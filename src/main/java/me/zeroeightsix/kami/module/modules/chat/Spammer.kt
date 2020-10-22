@@ -16,7 +16,8 @@ import kotlin.random.Random
 @Module.Info(
         name = "Spammer",
         description = "Spams text from a file on a set delay into the chat",
-        category = Module.Category.CHAT
+        category = Module.Category.CHAT,
+        modulePriority = 100
 )
 object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
@@ -35,11 +36,10 @@ object Spammer : Module() {
         spammer.clear()
         if (file.exists()) {
             try {
-                MessageSendHelper.sendChatMessage("$chatName Trying to find '&7spammer.txt&f'")
                 file.forEachLine { if (it.isNotEmpty()) spammer.add(it) }
-                MessageSendHelper.sendChatMessage("$chatName Found '&7spammer.txt&f'!")
+                MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
             } catch (e: Exception) {
-                MessageSendHelper.sendErrorMessage("Failed loading spammer, $e")
+                MessageSendHelper.sendErrorMessage("$chatName Failed loading spammer, $e")
             }
         } else {
             file.createNewFile()
