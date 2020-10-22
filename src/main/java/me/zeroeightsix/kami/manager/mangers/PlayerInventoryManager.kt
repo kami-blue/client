@@ -24,7 +24,7 @@ object PlayerInventoryManager : Manager() {
 
     init {
         listener<RenderOverlayEvent>(0) {
-            if (!timer.tick((1000.0f / LagCompensator.tickRate).toLong())) return@listener
+            if (mc.player == null || !timer.tick((1000.0f / LagCompensator.tickRate).toLong())) return@listener
 
             if (!mc.player.inventory.getItemStack().isEmpty()) {
                 if (mc.currentScreen is GuiContainer) timer.reset(250L) // Wait for 5 extra ticks if player is moving item
