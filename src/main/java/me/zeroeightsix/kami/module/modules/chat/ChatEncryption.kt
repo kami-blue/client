@@ -100,7 +100,7 @@ object ChatEncryption : Module() {
                     s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
                 }
             }
-            it.packet.chatComponent = TextComponentString("<" + username + "> " + KamiMod.colour + "lDECRYPTED" + KamiMod.colour + "r: " + builder.toString())
+            it.packet.chatComponent = TextComponentString("<" + username + "> " + KamiMod.color + "lDECRYPTED" + KamiMod.color + "r: " + builder.toString())
         }
     }
 

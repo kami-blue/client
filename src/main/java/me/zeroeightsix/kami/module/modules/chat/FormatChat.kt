@@ -29,7 +29,7 @@ object FormatChat : Module() {
             var message = it.packet.message
 
             if (message.contains("&") || message.contains("#n")) {
-                message = message.replace("&".toRegex(), KamiMod.colour.toString() + "")
+                message = message.replace("&".toRegex(), KamiMod.color.toString() + "")
                 message = message.replace("#n".toRegex(), "\n")
                 mc.player.connection.sendPacket(CPacketChatMessage(message))
                 it.cancel()

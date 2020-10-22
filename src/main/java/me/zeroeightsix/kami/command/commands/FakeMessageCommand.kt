@@ -17,7 +17,7 @@ class FakeMessageCommand : Command("fakemsg", ChunkBuilder().append("message").b
                 return
             }
         }
-        MessageSendHelper.sendRawChatMessage(getTime() + args[0]?.replace('&', KamiMod.colour))
+        MessageSendHelper.sendRawChatMessage(getTime() + args[0]?.replace('&', KamiMod.color))
     }
 
     private fun getTime(): String {
