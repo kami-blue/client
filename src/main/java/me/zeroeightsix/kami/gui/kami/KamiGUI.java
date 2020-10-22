@@ -310,7 +310,8 @@ public class KamiGUI extends GUI {
             friends.setText("");
             if (!friendList.isMinimized()) {
                 if (FriendManager.INSTANCE.getEnabled()) {
-                    for (String name : FriendManager.INSTANCE.getFriends().keySet()) {
+                    for (FriendManager.Friend friend : FriendManager.INSTANCE.getFriends().values()) {
+                        final String name = friend.getUsername();
                         if (name.isEmpty()) continue;
                         friends.addLine(name);
                     }

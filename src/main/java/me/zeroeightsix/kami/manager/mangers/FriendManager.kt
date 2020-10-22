@@ -29,19 +29,19 @@ object FriendManager : Manager() {
     val empty get() = friends.isEmpty()
     var enabled = friendFile.enabled
         set(value) {
-            field = value;
+            field = value
             friendFile.enabled = value
         }
 
-    fun isFriend(name: String) = friendFile.enabled && friends.contains(name)
+    fun isFriend(name: String) = friendFile.enabled && friends.contains(name.toLowerCase())
 
     fun addFriend(name: String) = getFriendByName(name)?.let {
         friendFile.friends.add(it)
-        friends[it.username] = it
+        friends[it.username.toLowerCase()] = it
         true
     } ?: false
 
-    fun removeFriend(name: String) = friendFile.friends.remove(friends.remove(name))
+    fun removeFriend(name: String) = friendFile.friends.remove(friends.remove(name.toLowerCase()))
 
     fun clearFriend() {
         friends.clear()
@@ -119,7 +119,7 @@ object FriendManager : Manager() {
         return try {
             friendFile = gson.fromJson(FileReader(file), object : TypeToken<FriendFile>() {}.type)
             friends.clear()
-            friends.putAll(friendFile.friends.associateBy { it.username })
+            friends.putAll(friendFile.friends.associateBy { it.username.toLowerCase() })
             KamiMod.log.info("Friend loaded")
             true
         } catch (e: Exception) {
@@ -141,8 +141,8 @@ object FriendManager : Manager() {
             fileWriter.close()
             KamiMod.log.info("Friend saved")
             true
-        } catch (e: IOException) {
-            KamiMod.log.info("Failed saving friend")
+        } catch (e: Exception) {
+            KamiMod.log.error("Failed saving friend", e)
             e.printStackTrace()
             false
         }
