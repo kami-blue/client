@@ -88,15 +88,15 @@ object MessageSendHelper {
 
     @JvmStatic
     @Deprecated("For Java use only", ReplaceWith("this.sendServerMessage(message)", "me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage"))
-    fun sendServerMessage(message: String?, priority: Int): TaskState {
+    fun sendServerMessage(message: String?, source: Any, priority: Int): TaskState {
         if (message.isNullOrBlank()) return TaskState(true)
-        return MessageManager.addMessageToQueue(message, priority)
+        return MessageManager.addMessageToQueue(message, source, priority)
     }
 
     fun Any.sendServerMessage(message: String?): TaskState {
         if (message.isNullOrBlank()) return TaskState(true)
         val priority = if (this is Module) modulePriority else 0
-        return MessageManager.addMessageToQueue(message, priority)
+        return MessageManager.addMessageToQueue(message, this, priority)
     }
 
     class ChatMessage internal constructor(text: String) : TextComponentBase() {

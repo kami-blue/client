@@ -109,7 +109,10 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
     public void sendChatMessage(String message, CallbackInfo ci) {
         ci.cancel();
-        MessageSendHelper.sendServerMessage(message, Integer.MAX_VALUE - 1);
+        final EntityPlayerSP player = mc.player;
+        if (player != null) {
+            MessageSendHelper.sendServerMessage(message, player, Integer.MAX_VALUE - 1);
+        }
     }
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)

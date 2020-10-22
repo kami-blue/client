@@ -26,7 +26,7 @@ object MessageManager : Manager() {
         listener<PacketEvent.Send>(0) {
             if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
             it.cancel()
-            addMessageToQueue(it.packet)
+            addMessageToQueue(it.packet, it)
         }
 
         listener<SafeTickEvent> { event ->
@@ -54,12 +54,12 @@ object MessageManager : Manager() {
         }
     }
 
-    fun addMessageToQueue(message: String, priority: Int = 0) : TaskState {
-        return addMessageToQueue(CPacketChatMessage(message), priority)
+    fun addMessageToQueue(message: String, source: Any, priority: Int = 0): TaskState {
+        return addMessageToQueue(CPacketChatMessage(message), source, priority)
     }
 
-    fun addMessageToQueue(message: CPacketChatMessage, priority: Int = 0) : TaskState {
-        return QueuedMessage(currentId++, priority, message).let {
+    fun addMessageToQueue(message: CPacketChatMessage, source: Any, priority: Int = 0): TaskState {
+        return QueuedMessage(currentId++, priority, source, message).let {
             messageQueue.add(it)
             packetSet.add(message)
             it.state
@@ -69,6 +69,7 @@ object MessageManager : Manager() {
     private data class QueuedMessage(
             val id: Int,
             val priority: Int,
+            val source: Any,
             val message: CPacketChatMessage,
             val state: TaskState = TaskState()
     ) : Comparable<QueuedMessage> {

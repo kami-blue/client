@@ -18,6 +18,6 @@ public class SayCommand extends Command {
                 message.append(" ").append(arg);
             }
         }
-        MessageSendHelper.sendServerMessage(message.toString(), Integer.MAX_VALUE);
+        MessageSendHelper.sendServerMessage(message.toString(), this, Integer.MAX_VALUE);
     }
 }
