@@ -27,15 +27,6 @@ object FileInstanceManager : Manager() {
                 e.printStackTrace()
             }
         }
-        if (!FriendManager.file.exists()) {
-            try {
-                val w = FileWriter(FriendManager.file)
-                w.write("{}")
-                w.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
     }
 
     init {
