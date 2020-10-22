@@ -33,7 +33,7 @@ object MessageManager : Manager() {
             addMessageToQueue(it.packet, it)
         }
 
-        listener<SafeTickEvent> { event ->
+        listener<SafeTickEvent>(-69420) { event ->
             if (event.phase != TickEvent.Phase.START) return@listener
 
             synchronized(lockObject) {
