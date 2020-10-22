@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,

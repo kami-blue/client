@@ -23,6 +23,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import kotlin.math.pow
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "HoleMiner",
         category = Module.Category.COMBAT,

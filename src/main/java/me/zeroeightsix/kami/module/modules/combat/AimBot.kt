@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import net.minecraft.init.Items
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "AimBot",
         description = "Automatically aims at entities for you.",

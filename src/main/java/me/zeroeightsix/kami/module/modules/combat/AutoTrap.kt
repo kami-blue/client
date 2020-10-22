@@ -18,6 +18,7 @@ import org.lwjgl.input.Keyboard
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "AutoTrap",
         category = Module.Category.COMBAT,

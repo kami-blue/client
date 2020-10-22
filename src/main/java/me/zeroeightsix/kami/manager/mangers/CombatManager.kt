@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
+import kotlin.reflect.full.findAnnotation
 
 object CombatManager : Manager() {
     private val combatModules: List<Module>
@@ -41,13 +42,16 @@ object CombatManager : Manager() {
         return topModule
     }
 
+    /** Use to mark a module that should be added to [combatModules] */
+    annotation class CombatModule
+
     init {
         val cacheList = ArrayList<Module>()
         for (module in ModuleManager.getModules()) {
             if (module.category != Module.Category.COMBAT) continue
-            if (module.modulePriority == -1) continue
+            if (module::class.findAnnotation<CombatModule>() == null) continue
             cacheList.add(module)
         }
-        combatModules = cacheList.toList()
+        combatModules = cacheList
     }
 }

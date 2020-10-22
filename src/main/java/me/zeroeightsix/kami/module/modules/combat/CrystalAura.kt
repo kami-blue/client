@@ -39,6 +39,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "CrystalAura",
         description = "Places End Crystals to kill enemies",
