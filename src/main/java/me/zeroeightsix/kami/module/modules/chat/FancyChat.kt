@@ -12,7 +12,7 @@ import kotlin.math.min
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
         showOnArray = Module.ShowOnArray.OFF,
-        modulePriority = 0
+        modulePriority = 100
 )
 object FancyChat : Module() {
     private val uwu = register(Settings.b("uwu", true))

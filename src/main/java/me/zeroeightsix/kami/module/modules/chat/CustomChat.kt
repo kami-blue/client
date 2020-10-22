@@ -17,7 +17,7 @@ import kotlin.math.min
         category = Module.Category.CHAT,
         description = "Add a custom ending to your message!",
         showOnArray = Module.ShowOnArray.OFF,
-        modulePriority = 100
+        modulePriority = 200
 )
 object CustomChat : Module() {
     private val textMode = register(Settings.e<TextMode>("Message", TextMode.JAPANESE))
