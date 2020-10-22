@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.util.BetterArrayList
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft
@@ -112,7 +111,7 @@ object KamiTessellator : Tessellator(0x200000) {
      */
     @JvmStatic
     fun drawBox(box: AxisAlignedBB, color: ColorHolder, a: Int, sides: Int) {
-        val vertexList = BetterArrayList<Vec3d>()
+        val vertexList = LinkedHashSet<Vec3d>()
 
         if (sides and GeometryMasks.Quad.DOWN != 0) {
             vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toQuad())
@@ -168,26 +167,26 @@ object KamiTessellator : Tessellator(0x200000) {
      */
     @JvmStatic
     fun drawOutline(box: AxisAlignedBB, color: ColorHolder, a: Int, sides: Int, thickness: Float) {
-        val vertexList = BetterArrayList<Pair<Vec3d, Vec3d>>()
+        val vertexList = LinkedHashSet<Pair<Vec3d, Vec3d>>()
         GlStateManager.glLineWidth(thickness)
 
         if (sides and GeometryMasks.Quad.DOWN != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toLines())
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toLines())
         }
         if (sides and GeometryMasks.Quad.UP != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.maxY, EnumFacing.UP).toLines())
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.maxY, EnumFacing.UP).toLines())
         }
         if (sides and GeometryMasks.Quad.NORTH != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.minZ, EnumFacing.NORTH).toLines())
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.minZ, EnumFacing.NORTH).toLines())
         }
         if (sides and GeometryMasks.Quad.SOUTH != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.maxZ, EnumFacing.SOUTH).toLines())
+            vertexList.addAll(SquareVec(box.minX, box.maxX, box.minY, box.maxY, box.maxZ, EnumFacing.SOUTH).toLines())
         }
         if (sides and GeometryMasks.Quad.WEST != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.minX, EnumFacing.WEST).toLines())
+            vertexList.addAll(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.minX, EnumFacing.WEST).toLines())
         }
         if (sides and GeometryMasks.Quad.EAST != 0) {
-            vertexList.addAllIfAbsent(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.maxX, EnumFacing.EAST).toLines())
+            vertexList.addAll(SquareVec(box.minY, box.maxY, box.minZ, box.maxZ, box.maxX, EnumFacing.EAST).toLines())
         }
 
         for ((p1, p2) in vertexList) {
@@ -196,7 +195,7 @@ object KamiTessellator : Tessellator(0x200000) {
         }
     }
 
-    private class SquareVec(val minX: Double, val maxX: Double, val minZ: Double, val maxZ: Double, val y: Double, val facing: EnumFacing) {
+    private data class SquareVec(val minX: Double, val maxX: Double, val minZ: Double, val maxZ: Double, val y: Double, val facing: EnumFacing) {
         fun toLines(): Array<Pair<Vec3d, Vec3d>> {
             val quad = this.toQuad()
             return arrayOf(
