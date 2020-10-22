@@ -7,24 +7,32 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.event.listener
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
 import java.util.*
 
 object PlayerInventoryManager : Manager() {
+    private val mc = Wrapper.minecraft
     private val timer = TimerUtils.TickTimer()
-    private val actionQueue = TreeSet<InventoryTask>(Comparator.reverseOrder())
     private val lockObject = Any()
+    private val actionQueue = TreeSet<InventoryTask>(Comparator.reverseOrder())
+
     private var currentId = 0
+    private var currentTask: InventoryTask? = null
 
     init {
         listener<RenderOverlayEvent>(0) {
             if (!timer.tick((1000.0f / LagCompensator.tickRate).toLong())) return@listener
 
-            synchronized(lockObject) {
-                actionQueue.removeIf { it.isDone }
-                actionQueue.firstOrNull()
-            }?.nextInfo()?.let {
+            if (!mc.player.inventory.getItemStack().isEmpty()) {
+                if (mc.currentScreen is GuiContainer) timer.reset(250L) // Wait for 5 extra ticks if player is moving item
+                else InventoryUtils.removeHoldingItem()
+                return@listener
+            }
+
+            getTaskOrNext()?.nextInfo()?.let {
                 InventoryUtils.inventoryClick(it.windowId, it.slot, it.mouseButton, it.type)
             }
 
@@ -36,6 +44,15 @@ object PlayerInventoryManager : Manager() {
             currentId = 0
         }
     }
+
+    private fun getTaskOrNext() =
+            currentTask?.let {
+                if (!it.isDone) it
+                else null
+            } ?: synchronized(lockObject) {
+                actionQueue.removeIf { it.isDone }
+                actionQueue.firstOrNull()
+            }
 
     /**
      * Adds a new task to the inventory manager
