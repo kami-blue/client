@@ -1,10 +1,12 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -20,7 +22,7 @@ object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
     private val delay = register(Settings.integerBuilder("Delay(s)").withRange(1, 240).withValue(10).withStep(5))
 
-    private val file = File("spammer.txt")
+    private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = ArrayList<String>()
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var currentLine = 0
@@ -49,7 +51,12 @@ object Spammer : Module() {
     init {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@listener
-            sendServerMessage(if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom())
+            val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()
+            if (MessageDetectionHelper.isKamiCommand(message)) {
+                MessageSendHelper.sendKamiCommand(message, false)
+            } else {
+                sendServerMessage(message)
+            }
         }
     }
 

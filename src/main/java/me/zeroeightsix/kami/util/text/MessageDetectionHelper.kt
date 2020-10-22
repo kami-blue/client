@@ -57,7 +57,9 @@ object MessageDetectionHelper {
 
     fun isCommand(string: String) = commandPrefixes.firstOrNull { string.startsWith(it) } != null
 
-    val commandPrefixes: Array<String>
+    fun isKamiCommand(string: String) = string.startsWith(Command.getCommandPrefix())
+
+    private val commandPrefixes: Array<String>
         get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
                 Command.getCommandPrefix(),
                 ChatEncryption.delimiterValue.value)
