@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.MessageManager.newMessageModifier
+import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
