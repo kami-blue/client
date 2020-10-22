@@ -25,25 +25,26 @@ object MessageManager : Manager() {
     init {
         listener<PacketEvent.Send>(0) {
             if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
-            messageQueue.add(QueuedMessage(currentId++, 0, it.packet))
-            packetSet.add(it.packet)
             it.cancel()
+            addMessageToQueue(it.packet)
         }
 
         listener<SafeTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.START || !timer.tick((ChatSetting.delay.value * 1000.0f).toLong())) return@listener
+            if (event.phase != TickEvent.Phase.START) return@listener
 
             synchronized(lockObject) {
-                messageQueue.pollFirst()?.let {
-                    packetSet.remove(it.message)
-                    mc.connection?.sendPacket(it.message)
-                    it.state.done = true
-                }
-
                 if (messageQueue.isEmpty()) {
                     // Reset the current id so we don't reach the max 32 bit integer limit (although that is not likely to happen)
                     currentId = 0
                 } else {
+                    if (timer.tick((ChatSetting.delay.value * 1000.0f).toLong())) {
+                        messageQueue.pollFirst()?.let {
+                            mc.connection?.sendPacket(it.message)
+                            packetSet.remove(it.message)
+                            it.state.done = true
+                        }
+                    }
+
                     // Removes the low priority messages if it exceed the limit
                     while (messageQueue.size > ChatSetting.maxMessageQueueSize.value) {
                         messageQueue.pollLast()
