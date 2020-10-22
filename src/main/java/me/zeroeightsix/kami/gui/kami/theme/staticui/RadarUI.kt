@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.kami.theme.staticui
 
 import me.zeroeightsix.kami.gui.kami.component.Radar
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI
-import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.EntityUtils.isCurrentlyNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassiveMob
 import me.zeroeightsix.kami.util.Wrapper

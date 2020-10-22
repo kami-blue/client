@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
-import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.text.TextFormatting
-
 
 @Module.Info(
         name = "BaritoneRemote",

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam

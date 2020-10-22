@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.FriendManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
