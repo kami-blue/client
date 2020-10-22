@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.mangers
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TimerUtils
@@ -22,6 +23,9 @@ object MessageManager : Manager() {
     private val timer = TimerUtils.TickTimer()
     private var currentId = 0
 
+    private val activeModifiers = TreeSet<MessageModifier>(Comparator.reverseOrder())
+    private var modifierId = 0
+
     init {
         listener<PacketEvent.Send>(0) {
             if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
@@ -39,8 +43,9 @@ object MessageManager : Manager() {
                 } else {
                     if (timer.tick((ChatSetting.delay.value * 1000.0f).toLong())) {
                         messageQueue.pollFirst()?.let {
-                            mc.connection?.sendPacket(it.message)
-                            packetSet.remove(it.message)
+                            for (modifier in activeModifiers) modifier.apply(it)
+                            mc.connection?.sendPacket(it.packet)
+                            packetSet.remove(it.packet)
                             it.state.done = true
                         }
                     }
@@ -66,11 +71,11 @@ object MessageManager : Manager() {
         }
     }
 
-    private data class QueuedMessage(
-            val id: Int,
-            val priority: Int,
+    data class QueuedMessage(
+            private val id: Int,
+            private val priority: Int,
             val source: Any,
-            val message: CPacketChatMessage,
+            val packet: CPacketChatMessage,
             val state: TaskState = TaskState()
     ) : Comparable<QueuedMessage> {
 
@@ -80,5 +85,47 @@ object MessageManager : Manager() {
             else other.id - id
         }
 
+    }
+
+    fun Module.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
+            MessageModifier(modifierId++, modulePriority, filter, modifier)
+
+    class MessageModifier(
+            private val id: Int,
+            private val priority: Int,
+            private val filter: (QueuedMessage) -> Boolean = {true},
+            private val modifier: (QueuedMessage) -> String
+    ): Comparable<MessageModifier> {
+
+        /**
+         * Adds this modifier to the active modifier set [activeModifiers]
+         */
+        fun enable() {
+            activeModifiers.add(this)
+        }
+
+        /**
+         * Adds this modifier to the active modifier set [activeModifiers]
+         */
+        fun disable() {
+            activeModifiers.remove(this)
+        }
+
+        /**
+         * Apple this modifier on [queuedMessage]
+         *
+         * @param queuedMessage Message to be applied on
+         *
+         * @return true if [queuedMessage] have been modified
+         */
+        fun apply(queuedMessage: QueuedMessage) = filter(queuedMessage).also {
+            if (it) queuedMessage.packet.message = modifier(queuedMessage)
+        }
+
+        override fun compareTo(other: MessageModifier): Int {
+            val result = priority - other.priority
+            return if (result != 0) result
+            else other.id - id
+        }
     }
 }
