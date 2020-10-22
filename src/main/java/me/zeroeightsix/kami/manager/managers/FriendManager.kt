@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName

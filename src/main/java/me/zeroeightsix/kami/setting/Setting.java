@@ -96,7 +96,7 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
     }
 
     @Override
-    public String getValueAsString() {
+    public String toString() {
         return this.converter().convert(getValue()).toString();
     }
 }

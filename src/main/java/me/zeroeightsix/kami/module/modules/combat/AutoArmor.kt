@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.PlayerInventoryManager
-import me.zeroeightsix.kami.manager.mangers.PlayerInventoryManager.addInventoryTask
+import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
+import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils

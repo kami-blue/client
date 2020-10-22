@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent

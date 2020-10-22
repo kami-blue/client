@@ -15,11 +15,6 @@ public interface ISettingUnknown {
     Class getValueClass();
 
     /**
-     * @return The value in a format that setValueFromString can accept (if possible)
-     */
-    String getValueAsString();
-
-    /**
      * @return Whether or not this setting should be displayed to the user
      */
     boolean isVisible();

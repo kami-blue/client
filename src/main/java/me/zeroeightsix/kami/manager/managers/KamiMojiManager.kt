@@ -3,7 +3,7 @@
  * You can find a copy of the original license here: https://github.com/2b2t-Utilities/emoji-api/blob/35b0683/LICENSE
  */
 
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
