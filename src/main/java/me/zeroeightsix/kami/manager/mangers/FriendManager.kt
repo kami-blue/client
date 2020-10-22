@@ -148,19 +148,51 @@ object FriendManager : Manager() {
         }
     }
 
-    class FriendFile {
-        @SerializedName("Enabled")
-        var enabled = true
+    data class FriendFile(
+            @SerializedName("Enabled")
+            var enabled: Boolean = true,
 
-        @SerializedName("Friends")
-        val friends: MutableSet<Friend> = Collections.synchronizedSet(LinkedHashSet<Friend>())
+            @SerializedName("Friends")
+            val friends: MutableSet<Friend> = Collections.synchronizedSet(LinkedHashSet<Friend>())
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is FriendFile) return false
+
+            if (enabled != other.enabled) return false
+            if (friends != other.friends) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = enabled.hashCode()
+            result = 31 * result + friends.hashCode()
+            return result
+        }
     }
 
-    class Friend(
+    data class Friend(
             @SerializedName("Name")
             var username: String,
 
             @SerializedName("UUID")
             var uuid: UUID
-    )
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Friend) return false
+
+            if (username != other.username) return false
+            if (uuid != other.uuid) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = username.hashCode()
+            result = 31 * result + uuid.hashCode()
+            return result
+        }
+    }
 }
