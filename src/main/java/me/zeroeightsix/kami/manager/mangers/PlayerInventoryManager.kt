@@ -4,10 +4,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.LagCompensator
-import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
@@ -103,6 +100,4 @@ object PlayerInventoryManager : Manager() {
     }
 
     data class ClickInfo(val windowId: Int = 0, val slot: Int, val mouseButton: Int = 0, val type: ClickType)
-
-    data class TaskState(var done: Boolean = false)
 }
