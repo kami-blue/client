@@ -20,12 +20,14 @@ object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
     private val timeoutTime = register(Settings.integerBuilder("Timeout(s)").withRange(1, 240).withValue(10).withStep(5))
 
-    private var spammer = ArrayList<String>()
+    private val spammer = ArrayList<String>()
     private var currentLine = 0
     private var startTime = 0L
     private var isChatOpen = false
 
-    private enum class Mode { IN_ORDER, RANDOM_ORDER }
+    private enum class Mode {
+        IN_ORDER, RANDOM_ORDER
+    }
 
     override fun onEnable() {
         val bufferedReader: BufferedReader
@@ -58,7 +60,7 @@ object Spammer : Module() {
     }
 
     private fun sendMsg() {
-        if (startTime + (timeoutTime.value * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
+        if (spammer.isNotEmpty() && startTime + (timeoutTime.value * 1000) <= System.currentTimeMillis()) { // 1 timeout = 1 second = 1000 ms
             when {
                 mc.currentScreen is GuiChat -> { /* Delays the spammer msg if the chat gui is open */
                     startTime = System.currentTimeMillis() - (timeoutTime.value * 1000)
@@ -72,25 +74,27 @@ object Spammer : Module() {
                 else -> {
                     startTime = System.currentTimeMillis()
                     if (modeSetting.value == Mode.IN_ORDER) {
-                        sendServerMessage(getOrdered(spammer))
+                        sendServerMessage(getOrdered())
                     } else {
-                        sendServerMessage(getRandom(spammer, currentLine))
+                        sendServerMessage(getRandom())
                     }
                 }
             }
         }
     }
 
-    private fun getOrdered(array: ArrayList<String>): String {
-        if (currentLine >= array.size) currentLine = 0
+    private fun getOrdered(): String {
+        if (currentLine >= spammer.size) currentLine = 0
         currentLine++
-        return array[currentLine - 1]
+        return spammer[currentLine - 1]
     }
 
-    private fun getRandom(array: ArrayList<String>, LastLine: Int): String {
-        while (array.size != 1 && currentLine == LastLine) {
-            currentLine = Random.nextInt(array.size)
-        } /* Avoids sending the same message */
-        return array[currentLine]
+    private fun getRandom(): String {
+        val prevLine = currentLine
+        // Avoids sending the same message
+        while (spammer.size != 1 && currentLine == prevLine) {
+            currentLine = Random.nextInt(spammer.size)
+        }
+        return spammer[currentLine]
     }
 }
