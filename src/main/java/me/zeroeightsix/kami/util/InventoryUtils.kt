@@ -267,7 +267,7 @@ object InventoryUtils {
      *
      * @return Transaction id
      */
-    private fun inventoryClick(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
+    fun inventoryClick(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
         val player = mc.player ?: return -32768
         val container = (if (windowId == 0) player.inventoryContainer else player.openContainer) ?: return -32768
         val playerInventory = player.inventory ?: return -32768
