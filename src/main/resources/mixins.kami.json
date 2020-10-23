@@ -4,6 +4,7 @@
   "package": "me.zeroeightsix.kami.mixin.client",
   "refmap": "mixins.kami.refmap.json",
   "client": [
+    "AccessorShaderGroup",
     "MixinAbstractClientPlayer",
     "MixinAnvilChunkLoader",
     "MixinBaritoneSettings",
@@ -21,6 +22,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
+    "MixinFramebuffer",
     "MixinFrustum",
     "MixinGuiChat",
     "MixinGuiContainer",
