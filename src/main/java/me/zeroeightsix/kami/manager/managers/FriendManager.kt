@@ -49,8 +49,8 @@ object FriendManager : Manager() {
     }
 
     private fun getFriendByName(input: String): Friend? {
-        val infoMap = Wrapper.minecraft.connection?.playerInfoMap?.let { ArrayList(it) } ?: return null
-        val profile = infoMap.firstOrNull { it.gameProfile.name.equals(input, ignoreCase = true) }
+        val infoMap = Wrapper.minecraft.connection?.playerInfoMap?.let { ArrayList(it) }
+        val profile = infoMap?.firstOrNull { it.gameProfile.name.equals(input, ignoreCase = true) }
 
         return if (profile != null) {
             Friend(profile.gameProfile.name, profile.gameProfile.id)
