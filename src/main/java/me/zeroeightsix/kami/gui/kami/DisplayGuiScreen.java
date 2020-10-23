@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.kami;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
-import me.zeroeightsix.kami.module.modules.ClickGUI;
+import me.zeroeightsix.kami.module.modules.client.ClickGUI;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.Minecraft;

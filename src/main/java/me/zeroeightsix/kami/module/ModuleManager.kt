@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.Minecraft
@@ -22,7 +21,7 @@ object ModuleManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            moduleClassList = ClassUtils.findClasses(ClickGUI::class.java.getPackage().name, Module::class.java).sortedBy { it.simpleName }
+            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java).sortedBy { it.simpleName }
             KamiMod.log.info("${moduleClassList!!.size} modules found")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"

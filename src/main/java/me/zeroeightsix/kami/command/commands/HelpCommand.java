@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.module.modules.ClickGUI;
+import me.zeroeightsix.kami.module.modules.client.ClickGUI;
 
 import java.util.Arrays;
 

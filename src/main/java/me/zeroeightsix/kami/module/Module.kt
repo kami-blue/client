@@ -5,7 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
-import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.hidden
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 

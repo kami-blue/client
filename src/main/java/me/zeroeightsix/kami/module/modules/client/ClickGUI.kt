@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.module.modules
+package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen

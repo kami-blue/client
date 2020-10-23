@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
