@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.LagCompensator
+import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
@@ -80,7 +80,7 @@ object Aura : Module() {
     }
 
     private fun canAttack(): Boolean {
-        val adjustTicks = if (!tpsSync.value) 0f else LagCompensator.adjustTicks
+        val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
         return if (delayMode.value == WaitMode.DELAY) {
             (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
         } else {

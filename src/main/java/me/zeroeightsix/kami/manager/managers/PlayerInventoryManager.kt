@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.LagCompensator
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -24,7 +24,7 @@ object PlayerInventoryManager : Manager() {
 
     init {
         listener<RenderOverlayEvent>(0) {
-            if (mc.player == null || !timer.tick((1000.0f / LagCompensator.tickRate).toLong())) return@listener
+            if (mc.player == null || !timer.tick((1000.0f / TpsCalculator.tickRate).toLong())) return@listener
 
             if (!mc.player.inventory.getItemStack().isEmpty()) {
                 if (mc.currentScreen is GuiContainer) timer.reset(250L) // Wait for 5 extra ticks if player is moving item

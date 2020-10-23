@@ -31,7 +31,7 @@ object InfoCalculator {
     fun memory() = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
 
     @JvmStatic
-    fun tps(places: Int) = round(LagCompensator.tickRate, places)
+    fun tps(places: Int) = round(TpsCalculator.tickRate, places)
 
     fun dimension() = when (mc.player?.dimension) {
         -1 -> "Nether"
