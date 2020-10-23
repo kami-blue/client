@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.Waypoint
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
@@ -191,7 +191,7 @@ object WaypointRender : Module() {
             TextComponent().apply {
                 if (showName.value) addLine(waypoint.name)
                 if (showDate.value) addLine(waypoint.date)
-                if (showCoords.value) addLine(waypoint.asString(true))
+                if (showCoords.value) addLine(waypoint.toString())
             }
         }
     }
