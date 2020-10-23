@@ -27,7 +27,6 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
             KamiMod.log.warn("Running on Intel Integrated Graphics!")
             null
         } else {
-            println("=\n".repeat(50) + GlStateManager.glGetString(GL11.GL_VENDOR))
             try {
                 ShaderLinkHelper.setNewStaticShaderLinkHelper()
                 ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shaderIn).also {
