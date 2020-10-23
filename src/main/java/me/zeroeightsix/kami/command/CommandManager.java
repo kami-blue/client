@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.command.commands.BindCommand;
-import me.zeroeightsix.kami.util.ClassFinder;
+import me.zeroeightsix.kami.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class CommandManager {
     public CommandManager() {
         commands = new ArrayList<>();
 
-        for (Class<? extends Command> s : ClassFinder.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
+        for (Class<? extends Command> s : ClassUtils.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
             if (Command.class.isAssignableFrom(s)) {
                 try {
                     Command command = (Command) s.getConstructor().newInstance();

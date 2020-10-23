@@ -30,12 +30,11 @@ public class TroubleshootCommand extends Command {
     @Override
     public void call(String[] args) {
         AtomicReference<String> enabled = new AtomicReference<>("");
-        Module[] mods = ModuleManager.getModules();
 
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";
 
-        for (Module module : mods) {
+        for (Module module : ModuleManager.getModules()) {
             if (args[0] == null) {
                 if (module.isEnabled()) {
                     enabled.set(enabled + module.getName().getValue() + ", ");

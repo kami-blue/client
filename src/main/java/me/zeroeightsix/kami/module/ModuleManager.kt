@@ -38,7 +38,7 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
-                moduleMap[clazz] = ClassUtils.getClassInstance(clazz)
+                moduleMap[clazz] = ClassUtils.getInstance(clazz)
             } catch (exception: Throwable) {
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
                 exception.printStackTrace()
@@ -60,10 +60,7 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModules(): Array<Module> {
-        sortingThread?.join()
-        return moduleList
-    }
+    fun getModules() = moduleMap.values
 
     @JvmStatic
     fun getModule(moduleName: String?): Module? {

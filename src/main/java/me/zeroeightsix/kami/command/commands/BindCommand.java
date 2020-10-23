@@ -40,10 +40,8 @@ public class BindCommand extends Command {
         String rkey = args[1];
 
         if (module.equalsIgnoreCase("list")) {
-            Module[] modules = ModuleManager.getModules();
-
             sendChatMessage("You have the following binds: ");
-            for (Module module1 : modules) {
+            for (Module module1 : ModuleManager.getModules()) {
                 if (module1.getBind().getValue().toString().equals("None")) continue;
                 sendRawChatMessage(module1.getBind().getValue().toString() + ": " + module1.getName().getValue());
             }

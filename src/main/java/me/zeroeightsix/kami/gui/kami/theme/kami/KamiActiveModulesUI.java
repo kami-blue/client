@@ -13,7 +13,6 @@ import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -38,9 +37,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
     @Override
     public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component) {
 
-        List<Module> mods = Arrays.stream(ModuleManager.getModules())
-                .filter(Module::isEnabled)
-                .filter(Module -> (ActiveModules.INSTANCE.getHidden().getValue() || Module.isOnArray()))
+        List<Module> modules = ModuleManager.getModules().stream()
+                .filter(module -> module.isEnabled() && (ActiveModules.INSTANCE.getHidden().getValue() || module.isOnArray()))
                 .sorted(Comparator.comparing(module -> FontRenderAdapter.INSTANCE.getStringWidth(module.getName().getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
@@ -68,8 +66,8 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 break;
         }
 
-        for (int i = 0; i < mods.size(); i++) {
-            Module module = mods.get(i);
+        for (int i = 0; i < modules.size(); i++) {
+            Module module = modules.get(i);
             int rgb;
 
             switch (ActiveModules.INSTANCE.getMode().getValue()) {
@@ -86,7 +84,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                     rgb = ActiveModules.INSTANCE.getInfoColour(i);
                     break;
                 case TRANS_RIGHTS:
-                    float value = ((float) i + 1.0f) / (float) mods.size();
+                    float value = ((float) i + 1.0f) / (float) modules.size();
                     rgb = transRights.get(value * 100f).toHex();
                     break;
                 default:
