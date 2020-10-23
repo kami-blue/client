@@ -10,12 +10,11 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
-import org.lwjgl.opengl.GL11.GL_VENDOR
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -101,7 +100,7 @@ object Search : Module() {
     }
 
     override fun onEnable() {
-        if (!overrideWarning.value && GlStateManager.glGetString(GL_VENDOR).contains("Intel")) {
+        if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics()) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
             MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${Command.getCommandPrefix()}search override&f command")
             disable()
