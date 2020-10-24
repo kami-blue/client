@@ -8,8 +8,6 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyJson
-import me.zeroeightsix.kami.util.Waypoint
-import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyFile
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.CoordinateConverter
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -129,7 +127,7 @@ object WaypointManager : Manager() {
     }
 
     fun remove(id: String): Boolean {
-        val waypoint = get(id)?: return false
+        val waypoint = get(id) ?: return false
         val removed = waypoints.remove(waypoint)
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
