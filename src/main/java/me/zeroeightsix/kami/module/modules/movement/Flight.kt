@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -9,6 +10,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.server.SPacketCloseWindow
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -93,6 +95,10 @@ object Flight : Module() {
         listener<OnUpdateWalkingPlayerEvent> {
             if (mode.value != FlightMode.PACKET || it.era != KamiEvent.Era.PRE) return@listener
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(moving = false, rotating = false))
+        }
+
+        listener<PacketEvent.Receive> {
+            if (mode.value == FlightMode.PACKET && it.packet is SPacketCloseWindow) it.cancel()
         }
     }
 }

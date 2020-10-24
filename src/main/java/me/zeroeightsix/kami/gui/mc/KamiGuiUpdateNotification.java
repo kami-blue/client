@@ -31,7 +31,7 @@ public class KamiGuiUpdateNotification extends GuiScreen {
         super.initGui();
 
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, 200, "Download Latest (Recommended)"));
-        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, 230, KamiMod.colour + "cUse Current Version"));
+        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, 230, KamiMod.color + "cUse Current Version"));
     }
 
     @Override

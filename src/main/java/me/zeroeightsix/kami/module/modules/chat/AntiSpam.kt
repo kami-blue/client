@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
@@ -10,11 +9,8 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.SpamFilters
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Consumer
 import java.util.regex.Pattern
-import java.util.stream.Collectors
 
 @Module.Info(
         name = "AntiSpam",
@@ -25,29 +21,27 @@ import java.util.stream.Collectors
 object AntiSpam : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))
     private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java, "ReplaceMode").withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE })
-    private val p = register(Settings.e<Page>("Page", Page.TYPE))
+    private val page = register(Settings.e<Page>("Page", Page.TYPE))
 
     /* Page One */
-    private val discordLinks = register(Settings.booleanBuilder("Discord").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val slurs = register(Settings.booleanBuilder("Slurs").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val swears = register(Settings.booleanBuilder("Swears").withValue(false).withVisibility { p.value == Page.TYPE })
-    private val automated = register(Settings.booleanBuilder("Automated").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { p.value == Page.TYPE })
-    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { p.value == Page.TYPE })
-    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { p.value == Page.TYPE })
+    private val discordLinks = register(Settings.booleanBuilder("Discord").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val slurs = register(Settings.booleanBuilder("Slurs").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val swears = register(Settings.booleanBuilder("Swears").withValue(false).withVisibility { page.value == Page.TYPE })
+    private val automated = register(Settings.booleanBuilder("Automated").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { page.value == Page.TYPE })
+    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { page.value == Page.TYPE })
+    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { page.value == Page.TYPE })
 
     /* Page Two */
-    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { p.value == Page.SETTINGS })
-    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { p.value == Page.SETTINGS })
-    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(1, 600).withStep(5).withVisibility { duplicates.value && p.value == Page.SETTINGS })
-    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { p.value == Page.SETTINGS })
-    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { p.value == Page.SETTINGS })
-    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { p.value == Page.SETTINGS })
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java, "ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { p.value == Page.SETTINGS })
-
-    private var messageHistory: ConcurrentHashMap<String, Long>? = null
+    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { page.value == Page.SETTINGS })
+    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { page.value == Page.SETTINGS })
+    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(1, 600).withStep(5).withVisibility { duplicates.value && page.value == Page.SETTINGS })
+    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { page.value == Page.SETTINGS })
+    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { page.value == Page.SETTINGS })
+    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { page.value == Page.SETTINGS })
+    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java, "ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { page.value == Page.SETTINGS })
 
     private enum class Mode {
         REPLACE, HIDE
@@ -67,46 +61,53 @@ object AntiSpam : Module() {
         NONE, LOG_FILE, CHAT, BOTH
     }
 
+    private val messageHistory = ConcurrentHashMap<String, Long>()
+    private val settingMap = hashMapOf(
+            greenText to SpamFilters.greenText,
+            specialCharBegin to SpamFilters.specialBeginning,
+            specialCharEnding to SpamFilters.specialEnding,
+            automated to SpamFilters.ownsMeAndAll,
+            automated to SpamFilters.thanksTo,
+            discordLinks to SpamFilters.discordInvite,
+            ips to SpamFilters.ipAddress,
+            automated to SpamFilters.announcer,
+            automated to SpamFilters.spammer,
+            automated to SpamFilters.insulter,
+            automated to SpamFilters.greeter,
+            slurs to SpamFilters.slurs,
+            swears to SpamFilters.swears
+    )
+
     init {
-        listener<ClientChatReceivedEvent> {
+        listener<ClientChatReceivedEvent> { event ->
             if (mc.player == null) return@listener
 
-            /* leijurv's sexy lambda to remove older entries in messageHistory */
-            messageHistory?.let {
-                it.entries.stream()
-                        .filter { entry: Map.Entry<String, Long> -> entry.value < System.currentTimeMillis() - 600000 } // 10 minutes delay
-                        .collect(Collectors.toList())
-                        .forEach(Consumer { entry: Map.Entry<String, Long> -> it.remove(entry.key) })
+            messageHistory.values.removeIf { System.currentTimeMillis() - it > 600000 }
+
+            if (duplicates.value && checkDupes(event.message.unformattedText)) {
+                event.isCanceled = true
             }
 
-            if (duplicates.value && checkDupes(it.message.unformattedText)) {
-                it.isCanceled = true
-            }
-
-            val pattern = isSpam(it.message.unformattedText)
+            val pattern = isSpam(event.message.unformattedText)
             if (pattern != null) { // null means no pattern found
                 if (mode.value == Mode.HIDE) {
-                    it.isCanceled = true
+                    event.isCanceled = true
                 } else if (mode.value == Mode.REPLACE) {
-                    it.message = TextComponentString(sanitize(it.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
+                    event.message = TextComponentString(sanitize(event.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
                 }
             }
 
             if (fancyChat.value) {
-                val message = sanitizeFancyChat(it.message.unformattedText)
+                val message = sanitizeFancyChat(event.message.unformattedText)
                 if (message.trim { it <= ' ' }.isEmpty()) { // this should be removed if we are going for an intelligent de-fancy
-                    it.message = TextComponentString(getUsername(it.message.unformattedText) + " [Fancychat]")
+                    event.message = TextComponentString(getUsername(event.message.unformattedText) + " [Fancychat]")
                 }
             }
         }
     }
 
-    public override fun onEnable() {
-        messageHistory = ConcurrentHashMap()
-    }
-
-    public override fun onDisable() {
-        messageHistory = null
+    override fun onDisable() {
+        messageHistory.clear()
     }
 
     private fun sanitize(toClean: String, matcher: String, replacement: String): String {
@@ -154,11 +155,10 @@ object AntiSpam : Module() {
     }
 
     private fun checkDupes(message: String): Boolean {
-        if (messageHistory == null) messageHistory = ConcurrentHashMap()
         var isDuplicate = false
 
-        if (messageHistory!!.containsKey(message) && (System.currentTimeMillis() - messageHistory!![message]!!) / 1000 < duplicatesTimeout.value) isDuplicate = true
-        messageHistory!![message] = System.currentTimeMillis()
+        if (messageHistory.containsKey(message) && (System.currentTimeMillis() - messageHistory[message]!!) / 1000 < duplicatesTimeout.value) isDuplicate = true
+        messageHistory[message] = System.currentTimeMillis()
 
         if (isDuplicate) {
             sendResult("Duplicate", message)
@@ -187,25 +187,6 @@ object AntiSpam : Module() {
     private fun sanitizeFancyChat(toClean: String): String {
         // this has the potential to be intelligent and convert to ascii instead of just delete
         return toClean.replace("[^\\u0000-\\u007F]".toRegex(), "")
-    }
-
-
-    private val settingMap: HashMap<Setting<Boolean>, Array<String>> = object : HashMap<Setting<Boolean>, Array<String>>() {
-        init {
-            put(greenText, SpamFilters.greenText)
-            put(specialCharBegin, SpamFilters.specialBeginning)
-            put(specialCharEnding, SpamFilters.specialEnding)
-            put(automated, SpamFilters.ownsMeAndAll)
-            put(automated, SpamFilters.thanksTo)
-            put(discordLinks, SpamFilters.discordInvite)
-            put(ips, SpamFilters.ipAddress)
-            put(automated, SpamFilters.announcer)
-            put(automated, SpamFilters.spammer)
-            put(automated, SpamFilters.insulter)
-            put(automated, SpamFilters.greeter)
-            put(slurs, SpamFilters.slurs)
-            put(swears, SpamFilters.swears)
-        }
     }
 
     private fun sendResult(name: String, message: String) {

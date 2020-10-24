@@ -51,7 +51,7 @@ object Tracers : Module() {
     private val aFar = register(Settings.integerBuilder("FarAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
     private val a = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING }.build())
     private val yOffset = register(Settings.integerBuilder("yOffsetPercentage").withValue(0).withRange(0, 100).withStep(5).withVisibility { page.value == Page.RENDERING }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
 
     private enum class Page {
         ENTITY_TYPE, COLOR, RENDERING

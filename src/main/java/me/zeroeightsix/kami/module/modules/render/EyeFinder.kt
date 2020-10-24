@@ -42,7 +42,7 @@ object EyeFinder : Module() {
     private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.5f, 8.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
+    private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
 
 
     private enum class Page {

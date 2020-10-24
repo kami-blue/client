@@ -2,50 +2,76 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.network.play.client.CPacketChatMessage
-
+import kotlin.math.min
 
 @Module.Info(
         name = "CustomChat",
         category = Module.Category.CHAT,
         description = "Add a custom ending to your message!",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        modulePriority = 200
 )
 object CustomChat : Module() {
-    val textMode: Setting<TextMode> = register(Settings.e("Message", TextMode.JAPANESE))
+    private val textMode = register(Settings.e<TextMode>("Message", TextMode.JAPANESE))
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
-    val customText: Setting<String> = register(Settings.s("CustomText", "unchanged"))
-
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val spammer = register(Settings.b("Spammer", false))
+    val customText = register(Settings.s("CustomText", "unchanged"))
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE
     }
 
-    enum class TextMode {
+    private enum class TextMode {
         NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM
     }
 
+    val isCustomMode get() = textMode.value == TextMode.CUSTOM
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val modifier = newMessageModifier(
+            filter = {
+                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                        && (spammer.value || it.source !is Spammer)
+            },
+            modifier = {
+                val message = it.packet.message + getFull()
+                message.substring(0, min(256, message.length))
+            }
+    )
+
+    override fun onEnable() {
+        modifier.enable()
+    }
+
+    override fun onDisable() {
+        modifier.disable()
+    }
+
+    private fun getText() = when (textMode.value) {
+        TextMode.NAME -> "ᴋᴀᴍɪ ʙʟᴜᴇ"
+        TextMode.ON_TOP -> "ᴋᴀᴍɪ ʙʟᴜᴇ ᴏɴ ᴛᴏᴘ"
+        TextMode.WEBSITE -> "ｋａｍｉｂｌｕｅ．ｏｒｇ"
+        TextMode.JAPANESE -> "上にカミブルー"
+        TextMode.CUSTOM -> customText.value
+        else -> ""
+    }
+
+    private fun getFull() = when (decoMode.value) {
+        DecoMode.NONE -> " " + getText()
+        DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
+        DecoMode.SEPARATOR -> " " + KamiMod.separator + " " + getText()
+        else -> ""
+    }
+
     init {
-        listener<PacketEvent.Send> {
-            if (mc.player == null || it.packet !is CPacketChatMessage) return@listener
-            var s = it.packet.getMessage()
-            if (!commands.value && isCommand(s)) return@listener
-            s += getFull(decoMode.value)
-
-            if (s.length >= 256) s = s.substring(0, 256)
-            it.packet.message = s
-        }
-
         listener<SafeTickEvent> {
             if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
                 MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
@@ -53,34 +79,5 @@ object CustomChat : Module() {
         }
     }
 
-    private fun getText(t: TextMode): String {
-        return when (t) {
-            TextMode.NAME -> "\u1d0b\u1d00\u1d0d\u026a \u0299\u029f\u1d1c\u1d07"
-            TextMode.ON_TOP -> "\u1d0b\u1d00\u1d0d\u026a \u0299\u029f\u1d1c\u1d07 \u1d0f\u0274 \u1d1b\u1d0f\u1d18"
-            TextMode.WEBSITE -> "\uff4b\uff41\uff4d\uff49\uff42\uff4c\uff55\uff45\uff0e\uff4f\uff52\uff47"
-            TextMode.JAPANESE -> "\u4e0a\u306b\u30ab\u30df\u30d6\u30eb\u30fc"
-            TextMode.CUSTOM -> customText.value
-        }
-    }
-
-    private fun getFull(d: DecoMode): String {
-        return when (d) {
-            DecoMode.NONE -> " " + getText(textMode.value)
-            DecoMode.CLASSIC -> " \u00ab " + getText(textMode.value) + " \u00bb"
-            DecoMode.SEPARATOR -> " " + KamiMod.separator + " " + getText(textMode.value)
-        }
-    }
-
-    private fun isCommand(s: String): Boolean {
-        for (value in cmdCheck) {
-            if (s.startsWith(value)) return true
-        }
-        return false
-    }
-
-    val cmdCheck: Array<String>
-        get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
-                Command.getCommandPrefix(),
-                ChatEncryption.delimiterValue.value)
 
 }

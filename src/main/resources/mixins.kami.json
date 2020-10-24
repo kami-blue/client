@@ -24,7 +24,6 @@
     "MixinFrustum",
     "MixinGuiChat",
     "MixinGuiContainer",
-    "MixinGuiContainerCreative",
     "MixinGuiIngameMenu",
     "MixinGuiInventory",
     "MixinGuiMainMenu",

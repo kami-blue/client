@@ -97,7 +97,7 @@ object AutoEZ : Module() {
 
             // Update attacked Entity
             val attacked = mc.player.lastAttackedEntity
-            if (attacked is EntityPlayer && attacked != mc.player && !attacked.isDead && attacked.health > 0.0f) {
+            if (attacked is EntityPlayer && !attacked.isDead && attacked.health > 0.0f) {
                 attackedPlayers[attacked] = mc.player.lastAttackedEntityTime
             }
 
