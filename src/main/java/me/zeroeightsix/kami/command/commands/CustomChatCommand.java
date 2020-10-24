@@ -6,10 +6,6 @@ import me.zeroeightsix.kami.module.modules.chat.CustomChat;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
-/**
- * @author l1ving
- * Created by l1ving on 17/02/20
- */
 public class CustomChatCommand extends Command {
     public CustomChatCommand() {
         super("customchat", new ChunkBuilder().append("ending").build(), "chat");
@@ -26,7 +22,7 @@ public class CustomChatCommand extends Command {
             sendWarningMessage("&6Warning: The CustomChat module is not enabled!");
             sendWarningMessage("The command will still work, but will not visibly do anything.");
         }
-        if (!CustomChat.INSTANCE.getTextMode().getValue().equals(CustomChat.TextMode.CUSTOM)) {
+        if (CustomChat.INSTANCE.isCustomMode()) {
             sendWarningMessage("&6Warning: You don't have custom mode enabled in CustomChat!");
             sendWarningMessage("The command will still work, but will not visibly do anything.");
         }

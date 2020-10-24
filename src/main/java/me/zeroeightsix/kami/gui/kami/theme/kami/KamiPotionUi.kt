@@ -55,8 +55,8 @@ class KamiPotionUi : AbstractComponentUI<Potions>() {
          * Formats name and time based on UI alignment
          */
         fun formattedName(right: Boolean) =
-                if (right) "${KamiMod.colour}7${formattedTimeLeft()}${KamiMod.colour}r ${formattedName()}"
-                else "${formattedName()} ${KamiMod.colour}7${formattedTimeLeft()}"
+                if (right) "${KamiMod.color}7${formattedTimeLeft()}${KamiMod.color}r ${formattedName()}"
+                else "${formattedName()} ${KamiMod.color}7${formattedTimeLeft()}"
 
         /**
          * (min:secs)

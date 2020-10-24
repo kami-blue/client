@@ -1,17 +1,18 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
-import net.minecraft.network.play.client.CPacketChatMessage
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import kotlin.math.min
 
 @Module.Info(
         name = "FancyChat",
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = Module.ShowOnArray.OFF,
+        modulePriority = 100
 )
 object FancyChat : Module() {
     private val uwu = register(Settings.b("uwu", true))
@@ -21,18 +22,25 @@ object FancyChat : Module() {
     private val blue = register(Settings.b("`", false))
     private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value })
     private val commands = register(Settings.b("Commands", false))
+    private val spammer = register(Settings.b("Spammer", false))
 
-    init {
-        listener<PacketEvent.Send> {
-            if (it.packet !is CPacketChatMessage) return@listener
-            var s = it.packet.getMessage()
+    private val modifier = newMessageModifier(
+            filter = {
+                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                        && (spammer.value || it.source !is Spammer)
+            },
+            modifier = {
+                val message = getText(it.packet.message)
+                message.substring(0, min(256, message.length))
+            }
+    )
 
-            if (!commands.value && isCommand(s)) return@listener
-            s = getText(s)
+    override fun onEnable() {
+        modifier.enable()
+    }
 
-            if (s.length >= 256) s = s.substring(0, 256)
-            it.packet.message = s
-        }
+    override fun onDisable() {
+        modifier.disable()
     }
 
     private fun getText(s: String): String {
@@ -71,13 +79,6 @@ object FancyChat : Module() {
             returned.append(" `")
         }
         return returned.toString()
-    }
-
-    private fun isCommand(s: String): Boolean {
-        for (value in CustomChat.cmdCheck) {
-            if (s.startsWith(value)) return true
-        }
-        return false
     }
 
     private fun leetConverter(input: String): String {

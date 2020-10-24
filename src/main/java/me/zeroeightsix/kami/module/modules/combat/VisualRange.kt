@@ -34,7 +34,7 @@ object VisualRange : Module() {
 
             val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
             for (player in loadedPlayerSet) {
-                if (player == mc.player || !friends.value && Friends.isFriend(player.name)) continue
+                if (player == mc.renderViewEntity || player == mc.player || !friends.value && Friends.isFriend(player.name)) continue
                 if (playerSet.add(player) && isEnabled) {
                     onEnter(player)
                 }

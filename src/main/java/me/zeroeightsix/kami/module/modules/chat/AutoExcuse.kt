@@ -7,13 +7,15 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketUpdateHealth
 import java.io.File
 
 @Module.Info(
         name = "AutoExcuse",
         description = "Makes an excuse for you when you die",
-        category = Module.Category.CHAT
+        category = Module.Category.CHAT,
+        modulePriority = 500
 )
 object AutoExcuse : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.INTERNAL))
@@ -36,7 +38,7 @@ object AutoExcuse : Module() {
             "I'm not using $CLIENT_NAME client"
     )
 
-    private val file = File("excuses.txt")
+    private val file = File(KamiMod.DIRECTORY + "excuses.txt")
     private var loadedExcuses = defaultExcuses
 
     private val clients = arrayOf(
@@ -50,9 +52,9 @@ object AutoExcuse : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (mc.player == null || it.packet !is SPacketUpdateHealth) return@listener
+            if (mc.player == null || loadedExcuses.isEmpty() || it.packet !is SPacketUpdateHealth) return@listener
             if (it.packet.health <= 0f && timer.tick(3L)) {
-                MessageSendHelper.sendServerMessage(getExcuse())
+                sendServerMessage(getExcuse())
             }
         }
     }
@@ -63,6 +65,7 @@ object AutoExcuse : Module() {
                 val cacheList = ArrayList<String>()
                 try {
                     file.forEachLine { if (it.isNotEmpty()) cacheList.add(it.removeWhiteSpace()) }
+                    MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
                 } catch (e: Exception) {
                     KamiMod.log.error("Failed loading excuses", e)
                 }
@@ -70,7 +73,7 @@ object AutoExcuse : Module() {
             } else {
                 file.createNewFile()
                 MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!" +
-                        ", please add them in the &7excuses.txt&f under the &7.minecraft&f directory.")
+                        ", please add them in the &7excuses.txt&f under the &7.minecraft/kamiblue&f directory.")
                 defaultExcuses
             }
         } else {

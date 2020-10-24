@@ -24,12 +24,12 @@ object SelectionHighlight : Module() {
     private val throughBlocks = register(Settings.b("ThroughBlocks", false))
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(200).withRange(0, 255).withVisibility { outline.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
+    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withStep(1))
+    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1))
+    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1))
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withStep(1).withVisibility { filled.value })
+    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { outline.value })
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f))
 
     private val renderer = ESPRenderer()
 
@@ -38,22 +38,22 @@ object SelectionHighlight : Module() {
             val viewEntity = mc.renderViewEntity ?: mc.player ?: return@listener
             val eyePos = viewEntity.getPositionEyes(KamiTessellator.pTicks())
             if (!mc.world.isAirBlock(eyePos.toBlockPos())) return@listener
-            val colour = ColorHolder(r.value, g.value, b.value)
+            val color = ColorHolder(r.value, g.value, b.value)
             val hitObject = mc.objectMouseOver ?: return@listener
 
             if (entity.value && hitObject.typeOfHit == Type.ENTITY) {
-                val lookVec = mc.player.lookVec
+                val lookVec = viewEntity.lookVec
                 val sightEnd = eyePos.add(lookVec.scale(6.0))
-                val hitSide = hitObject.entityHit.boundingBox.calculateIntercept(eyePos, sightEnd)!!.sideHit
-                val side = if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide]!! else GeometryMasks.Quad.ALL
-                renderer.add(hitObject.entityHit, colour, side)
+                val hitSide = hitObject.entityHit?.boundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
+                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide] else GeometryMasks.Quad.ALL)?: return@listener
+                renderer.add(hitObject.entityHit, color, side)
             }
 
             if (block.value && hitObject.typeOfHit == Type.BLOCK) {
-                val box = mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos)
-                        ?: return@listener
-                val side = if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit]!! else GeometryMasks.Quad.ALL
-                renderer.add(box.grow(0.002), colour, side)
+                val blockState = mc.world.getBlockState(hitObject.blockPos)
+                val box = blockState.getSelectedBoundingBox(mc.world, hitObject.blockPos) ?: return@listener
+                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit] else GeometryMasks.Quad.ALL)?: return@listener
+                renderer.add(box.grow(0.002), color, side)
             }
             renderer.render(true)
         }
