@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
@@ -17,7 +17,7 @@ object AntiFriendHit : Module() {
         listener<PacketEvent.Send> {
             if (it.packet !is CPacketUseEntity || it.packet.action != CPacketUseEntity.Action.ATTACK) return@listener
             val entity = mc.world?.let { world -> it.packet.getEntityFromWorld(world) } ?: return@listener
-            if (entity is EntityPlayer && Friends.isFriend(entity.name)) {
+            if (entity is EntityPlayer && FriendManager.isFriend(entity.name)) {
                 it.cancel()
             }
         }

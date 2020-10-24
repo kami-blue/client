@@ -23,7 +23,6 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
-import me.zeroeightsix.kami.util.Friends;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.math.MathUtils;
 import net.minecraft.client.Minecraft;
@@ -303,17 +302,18 @@ public class KamiGUI extends GUI {
         friendList.setCloseable(false);
         friendList.setPinnable(false);
         friendList.setMinimizeable(true);
-        friendList.setMinimumWidth(80);
+        friendList.setMinimumWidth(50);
         friendList.setMinimumHeight(10);
         Label friends = new Label("");
-        friends.setShadow(true);
+        friends.setShadow(false);
         friends.addTickListener(() -> {
             friends.setText("");
             if (!friendList.isMinimized()) {
-                if (FriendManager.INSTANCE.getFriendFile().enabled) {
-                    for (Friends.Friend friend : FriendManager.INSTANCE.getFriendFile().friends) {
-                        if (friend.getUsername().isEmpty()) continue;
-                        friends.addLine(friend.getUsername());
+                if (FriendManager.INSTANCE.getEnabled()) {
+                    for (FriendManager.Friend friend : FriendManager.INSTANCE.getFriends().values()) {
+                        final String name = friend.getUsername();
+                        if (name.isEmpty()) continue;
+                        friends.addLine(name);
                     }
                 } else {
                     friends.addLine(KamiMod.color + "cDisabled");

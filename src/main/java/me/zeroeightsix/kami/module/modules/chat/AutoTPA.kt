@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -31,7 +31,7 @@ object AutoTPA : Module() {
             when (mode.value) {
                 Mode.ACCEPT -> MessageSendHelper.sendServerMessage("/tpaccept $name")
                 Mode.DENY -> {
-                    if (friends.value && Friends.isFriend(name)) {
+                    if (friends.value && FriendManager.isFriend(name)) {
                         MessageSendHelper.sendServerMessage("/tpaccept $name")
                     } else {
                         MessageSendHelper.sendServerMessage("/tpdeny $name")

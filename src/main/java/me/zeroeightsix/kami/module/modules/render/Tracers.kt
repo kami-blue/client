@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
@@ -104,7 +104,7 @@ object Tracers : Module() {
 
     private fun getColor(entity: Entity): ColorHolder {
         val color = (when {
-            Friends.isFriend(entity.name) -> colorFriend.value
+            FriendManager.isFriend(entity.name) -> colorFriend.value
             entity is EntityPlayer -> colorPlayer.value
             EntityUtils.isPassiveMob(entity) -> colorPassive.value
             EntityUtils.isCurrentlyNeutral(entity) -> colorNeutral.value

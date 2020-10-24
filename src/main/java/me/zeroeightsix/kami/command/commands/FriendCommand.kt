@@ -4,9 +4,6 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.managers.FriendManager
-import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.Friends.addFriend
-import me.zeroeightsix.kami.util.Friends.removeFriend
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 /**
@@ -21,25 +18,25 @@ class FriendCommand : Command("friend", ChunkBuilder()
 
     override fun call(args: Array<String?>) {
         val subCommand = getSubCommand(args)
-        if (!FriendManager.friendFile.enabled && subCommand != SubCommands.NULL && subCommand != SubCommands.TOGGLE) {
+        if (!FriendManager.enabled && subCommand != SubCommands.NULL && subCommand != SubCommands.TOGGLE) {
             MessageSendHelper.sendWarningMessage("&6Warning: Friends is disabled!")
             MessageSendHelper.sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
         }
         when (subCommand) {
             SubCommands.IS_FRIEND -> {
                 MessageSendHelper.sendChatMessage(String.format(
-                        if (Friends.isFriend(args[1]!!)) "Yes, %s is your friend."
+                        if (FriendManager.isFriend(args[1]!!)) "Yes, %s is your friend."
                         else "No, %s isn't a friend of yours.",
                         args[1]))
             }
 
             SubCommands.ADD -> {
-                if (Friends.isFriend(args[1]!!)) {
+                if (FriendManager.isFriend(args[1]!!)) {
                     MessageSendHelper.sendChatMessage("That player is already your friend.")
                 } else {
                     // New thread because of potential internet connection made
                     Thread {
-                        if (addFriend(args[1]!!)) {
+                        if (FriendManager.addFriend(args[1]!!)) {
                             MessageSendHelper.sendChatMessage("&7${args[1]}&r has been friended.")
                         } else {
                             MessageSendHelper.sendChatMessage("Failed to find UUID of ${args[1]}")
@@ -49,24 +46,22 @@ class FriendCommand : Command("friend", ChunkBuilder()
             }
 
             SubCommands.DEL -> {
-                if (removeFriend(args[1]!!)) MessageSendHelper.sendChatMessage("&7${args[1]}&r has been unfriended.")
+                if (FriendManager.removeFriend(args[1]!!)) MessageSendHelper.sendChatMessage("&7${args[1]}&r has been unfriended.")
                 else MessageSendHelper.sendChatMessage("That player isn't your friend.")
             }
 
             SubCommands.LIST -> {
-                if (FriendManager.friendFile.friends.isEmpty()) {
+                if (FriendManager.empty) {
                     MessageSendHelper.sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
                 } else {
-                    val f = FriendManager.friendFile.friends.joinToString(prefix = "\n    ", separator = "\n    ") { friend ->
-                        friend.username
-                    } // nicely format the chat output
+                    val f = FriendManager.friends.values.joinToString(prefix = "\n    ", separator = "\n    ") { it.username } // nicely format the chat output
                     MessageSendHelper.sendChatMessage("Your friends: $f")
                 }
             }
 
             SubCommands.TOGGLE -> {
-                FriendManager.friendFile.enabled = !FriendManager.friendFile.enabled
-                if (FriendManager.friendFile.enabled) {
+                FriendManager.enabled = !FriendManager.enabled
+                if (FriendManager.enabled) {
                     MessageSendHelper.sendChatMessage("Friends have been &aenabled")
                 } else {
                     MessageSendHelper.sendChatMessage("Friends have been &cdisabled")
@@ -79,7 +74,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
                     MessageSendHelper.sendChatMessage("This will delete ALL your friends, run &7${commandPrefix.value}friend clear&f again to confirm")
                 } else {
                     confirmTime = 0L
-                    FriendManager.friendFile.friends.clear()
+                    FriendManager.clearFriend()
                     MessageSendHelper.sendChatMessage("Friends have been &ccleared")
                 }
             }

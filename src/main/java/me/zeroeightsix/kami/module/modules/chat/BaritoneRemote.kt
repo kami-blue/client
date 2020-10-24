@@ -3,16 +3,15 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.text.TextFormatting
-
 
 @Module.Info(
         name = "BaritoneRemote",
@@ -73,9 +72,9 @@ object BaritoneRemote : Module() {
     private fun isValidUser(username: String): Boolean {
         return when (allow.value) {
             Allow.ANYBODY -> true
-            Allow.FRIENDS -> Friends.isFriend(username)
+            Allow.FRIENDS -> FriendManager.isFriend(username)
             Allow.CUSTOM -> isCustomUser(username)
-            Allow.FRIENDS_AND_CUSTOM -> Friends.isFriend(username) || isCustomUser(username)
+            Allow.FRIENDS_AND_CUSTOM -> FriendManager.isFriend(username) || isCustomUser(username)
             else -> false /* never happens */
         }
     }

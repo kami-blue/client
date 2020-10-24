@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.gui.kami.theme.staticui
 
 import me.zeroeightsix.kami.gui.kami.component.Radar
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.EntityUtils.isCurrentlyNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassiveMob
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -69,7 +69,7 @@ class RadarUI : AbstractComponentUI<Radar?>() {
     }
 
     private fun getColor(entity: Entity): ColorHolder {
-        return if (isPassiveMob(entity) || Friends.isFriend(entity.name)) { // green
+        return if (isPassiveMob(entity) || FriendManager.isFriend(entity.name)) { // green
             ColorHolder(32, 224, 32, 224)
         } else if (isCurrentlyNeutral(entity)) { // yellow
             ColorHolder(255, 240, 32)
