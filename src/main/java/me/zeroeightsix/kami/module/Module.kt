@@ -17,7 +17,7 @@ open class Module {
     @JvmField var alwaysListening: Boolean = annotation.alwaysListening
 
     val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
-    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != showOnArray }
+    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != visible }
 
     private val annotation: Info get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
@@ -37,10 +37,6 @@ open class Module {
             val alwaysEnabled: Boolean = false,
             val enabledByDefault: Boolean = false
     )
-
-    enum class ShowOnArray {
-        ON, OFF
-    }
 
     /**
      * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
@@ -64,7 +60,7 @@ open class Module {
     @JvmField val name = setting("Name", originalName)
     @JvmField val bind = setting("Bind")
     private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
-    private val showOnArray = setting("Visible", annotation.showOnArray)
+    private val visible = setting("Visible", annotation.showOnArray)
     /* End of settings */
 
     /* Properties */
@@ -114,7 +110,7 @@ open class Module {
 
     private fun sendToggleMessage() {
         if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
+            MessageSendHelper.sendChatMessage(name.value + if (enabled.value) " &aenabled" else " &cdisabled")
         }
     }
 

@@ -19,8 +19,8 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = setting("Scale", 100, 10..400, 10)
-    val blur = register(Settings.floatBuilder("Blur").withValue(0.5f).withRange(0.0f, 1.0f).withStep(0.05f))
-    val darkness = register(Settings.floatBuilder("Darkness").withValue(0.25f).withRange(0.0f, 1.0f).withStep(0.05f))
+    val blur = setting("Blur", 0.5f, 0.0f..1.0f, 0.05f)
+    val darkness = setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale

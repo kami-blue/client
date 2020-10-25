@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.setting.impl.numerical.DoubleSetting
-import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting
-import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting
+import me.zeroeightsix.kami.setting.impl.number.DoubleSetting
+import me.zeroeightsix.kami.setting.impl.number.FloatSetting
+import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
+import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.MathUtils
@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0) {
     private val range = setting.max.toDouble() - setting.min.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()
-    private val settingStep = if (setting.step != null && setting.step.toDouble() > 0.0) setting.step else getDefaultStep()
+    private val settingStep = if (setting.step.toDouble() > 0.0) setting.step else getDefaultStep()
     private val stepDouble = settingStep.toDouble()
     private val places = when (setting) {
         is IntegerSetting -> 1

@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.setting.impl.EnumSetting
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0) {
-    private val enumValues = setting.clazz.enumConstants
+    private val enumValues = setting.enumValues
 
     override fun onTick() {
         super.onTick()
@@ -22,7 +21,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        setting.value = enumValues[(setting.value.ordinal + 1) % enumValues.size]
+        setting.setValue(enumValues[(setting.value.ordinal + 1) % enumValues.size].name)
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
@@ -32,7 +31,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
 
     private fun updateValue(mousePos: Vec2f) {
         value = (mousePos.x / width).toDouble()
-        setting.setValueFromString(enumValues[roundInput(value)].name, false)
+        setting.setValue(enumValues[roundInput(value)].name)
     }
 
     private fun roundInput(valueIn: Double) = floor(valueIn * enumValues.size).toInt().coerceIn(0, enumValues.size - 1)
