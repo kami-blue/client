@@ -67,7 +67,7 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        val valueText = setting.valueAsString
+        val valueText = setting.toString()
         protectedWidth = KamiFontRenderer.getStringWidth(valueText, 0.75f).toDouble()
 
         super.onRender(vertexHelper, absolutePos)

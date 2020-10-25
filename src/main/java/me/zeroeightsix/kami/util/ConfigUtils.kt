@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.util
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.FriendManager
-import me.zeroeightsix.kami.manager.mangers.MacroManager
-import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.manager.managers.MacroManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File
