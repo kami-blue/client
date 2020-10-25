@@ -29,7 +29,7 @@ class SetCommand : Command("set", ChunkBuilder()
         }
 
         if (args[1] == null) {
-            val settings = module.fullSettingList.joinToString()
+            val settings = module.fullSettingList.joinToString { it.name }
             if (settings.isEmpty()) sendChatMessage("Module &b" + module.name.value + "&r has no settings.") else {
                 sendStringChatMessage(arrayOf(
                         "Please specify a setting! Choose one of the following:", settings
@@ -46,7 +46,7 @@ class SetCommand : Command("set", ChunkBuilder()
 
         var arg2 = args[2]
         if (arg2 == null) {
-            sendChatMessage("&b" + setting.name + "&r is a &3" + setting.value.javaClass.simpleName + "&r. Its current value is &3" + setting.toString())
+            sendChatMessage("&b" + setting.name + "&r is a &3" + setting.valueClass.simpleName + "&r. Its current value is &3" + setting.toString())
             return
         }
 

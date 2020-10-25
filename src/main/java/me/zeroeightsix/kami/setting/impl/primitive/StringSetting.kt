@@ -12,6 +12,10 @@ class StringSetting(
         description: String = ""
 ) : Setting<String>(name, value, visibility, consumer, description) {
 
+    override fun setValue(valueIn: String) {
+        value = valueIn
+    }
+
     override fun write() = JsonPrimitive(value)
 
     override fun read(jsonElement: JsonElement?) {
