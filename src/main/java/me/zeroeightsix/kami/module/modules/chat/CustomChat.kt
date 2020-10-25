@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
@@ -20,11 +20,11 @@ import kotlin.math.min
         modulePriority = 200
 )
 object CustomChat : Module() {
-    private val textMode = register(Settings.e<TextMode>("Message", TextMode.JAPANESE))
-    private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
-    private val commands = register(Settings.b("Commands", false))
-    private val spammer = register(Settings.b("Spammer", false))
-    val customText = register(Settings.s("CustomText", "unchanged"))
+    private val textMode = setting("Message", TextMode.JAPANESE)
+    private val decoMode = setting("Separator", DecoMode.NONE)
+    private val commands = setting("Commands", false)
+    private val spammer = setting("Spammer", false)
+    val customText = setting("CustomText", "unchanged")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE

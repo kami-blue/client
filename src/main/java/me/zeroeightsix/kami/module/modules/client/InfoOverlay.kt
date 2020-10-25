@@ -3,14 +3,13 @@ package me.zeroeightsix.kami.module.modules.client
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.InfoCalculator.chunkSize
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColorCode
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.client.Minecraft
@@ -27,38 +26,38 @@ import kotlin.math.max
 )
 object InfoOverlay : Module() {
     /* This is so horrible // TODO: FIX */
-    private val page = register(Settings.enumBuilder(Page::class.java, "Page").withValue(Page.ONE))
+    private val page = setting("Page", Page.ONE)
 
     /* Page One */
-    private val version = register(Settings.booleanBuilder("Version").withValue(true).withVisibility { page.value == Page.ONE })
-    private val username = register(Settings.booleanBuilder("Username").withValue(true).withVisibility { page.value == Page.ONE })
-    private val tps = register(Settings.booleanBuilder("TPS").withValue(true).withVisibility { page.value == Page.ONE })
-    private val fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility { page.value == Page.ONE })
-    private val ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility { page.value == Page.ONE })
-    private val server = register(Settings.booleanBuilder("ServerType").withValue(true).withVisibility { page.value == Page.ONE })
-    private val chunkSize = register(Settings.booleanBuilder("ChunkSize").withValue(true).withVisibility { page.value == Page.ONE })
-    private val durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility { page.value == Page.ONE })
-    private val biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility { page.value == Page.ONE })
+    private val version = setting("Version", true, { page.value == Page.ONE })
+    private val username = setting("Username", true, { page.value == Page.ONE })
+    private val tps = setting("TPS", true, { page.value == Page.ONE })
+    private val fps = setting("FPS", true, { page.value == Page.ONE })
+    private val ping = setting("Ping", false, { page.value == Page.ONE })
+    private val server = setting("ServerType", true, { page.value == Page.ONE })
+    private val chunkSize = setting("ChunkSize", true, { page.value == Page.ONE })
+    private val durability = setting("ItemDamage", false, { page.value == Page.ONE })
+    private val biome = setting("Biome", false, { page.value == Page.ONE })
 
     /* Page Two */
-    private val totems = register(Settings.booleanBuilder("Totems").withValue(false).withVisibility { page.value == Page.TWO })
-    private val endCrystals = register(Settings.booleanBuilder("EndCrystals").withValue(false).withVisibility { page.value == Page.TWO })
-    private val expBottles = register(Settings.booleanBuilder("EXPBottles").withValue(false).withVisibility { page.value == Page.TWO })
-    private val godApples = register(Settings.booleanBuilder("GodApples").withValue(false).withVisibility { page.value == Page.TWO })
+    private val totems = setting("Totems", false, { page.value == Page.TWO })
+    private val endCrystals = setting("EndCrystals", false, { page.value == Page.TWO })
+    private val expBottles = setting("EXPBottles", false, { page.value == Page.TWO })
+    private val godApples = setting("GodApples", false, { page.value == Page.TWO })
 
     /* Page Three */
-    private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withRange(0, 10).withVisibility { page.value == Page.THREE })
-    private val speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility { page.value == Page.THREE })
-    private val averageSpeedTime = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
-    private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java, "SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value })
-    private val time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility { page.value == Page.THREE })
-    val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java, "TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value })
-    val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java, "TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility { page.value == Page.THREE && time.value })
-    val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
-    private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.THREE })
-    private val timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility { page.value == Page.THREE })
-    private val firstColor = register(Settings.enumBuilder(ColourCode::class.java, "FirstColour").withValue(ColourCode.WHITE).withVisibility { page.value == Page.THREE })
-    private val secondColor = register(Settings.enumBuilder(ColourCode::class.java, "SecondColour").withValue(ColourCode.BLUE).withVisibility { page.value == Page.THREE })
+    private val decimalPlaces = setting("DecimalPlaces", 2, 0..10, 1, { page.value == Page.THREE })
+    private val speed = setting("Speed", true, { page.value == Page.THREE })
+    private val averageSpeedTime = setting("AverageSpeedTime(s)", 1f, 0f..5f, 0.25f, { page.value == Page.THREE && speed.value })
+    private val speedUnit = setting("SpeedUnit", SpeedUnit.KMH, { page.value == Page.THREE && speed.value })
+    private val time = setting("Time", true, { page.value == Page.THREE })
+    val timeTypeSetting = setting("TimeFormat", TimeUtils.TimeType.HHMMSS, { page.value == Page.THREE && time.value })
+    val timeUnitSetting = setting("TimeUnit", TimeUtils.TimeUnit.H12, { page.value == Page.THREE && time.value })
+    val doLocale = setting("TimeShowAM/PM", true, { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
+    private val memory = setting("RAMUsed", false, { page.value == Page.THREE })
+    private val timerSpeed = setting("TimerSpeed", false, { page.value == Page.THREE })
+    private val firstColor = setting("FirstColour", ColorCode.WHITE, { page.value == Page.THREE })
+    private val secondColor = setting("SecondColour", ColorCode.BLUE, { page.value == Page.THREE })
 
     private enum class Page {
         ONE, TWO, THREE
@@ -71,14 +70,16 @@ object InfoOverlay : Module() {
         // No retarded imperial unit here
     }
 
-    private val speedList = LinkedList<Double>()
+    private val speedList = ArrayDeque<Double>()
     private var currentChunkSize = 0
 
     init {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
             updateSpeedList()
-            if (chunkSize.value) updateChunkSize()
+            if (chunkSize.value && mc.player.ticksExisted % 4 == 0) {
+                currentChunkSize = InfoCalculator.chunkSize()
+            }
         }
     }
 
@@ -119,19 +120,13 @@ object InfoOverlay : Module() {
 
     fun second() = setToText(secondColor.value)
 
-    private fun setToText(colourCode: ColourCode) = ColorTextFormatting.toTextMap[colourCode]!!
+    private fun setToText(colourCode: ColorCode) = ColorTextFormatting.toTextMap[colourCode]!!
 
     fun calcSpeedWithUnit(place: Int) = "${calcSpeed(place)} ${speedUnit.value.displayName}"
 
     private fun calcSpeed(place: Int): Double {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
         return round(averageSpeed, place)
-    }
-
-    private fun updateChunkSize() {
-        if (mc.player.ticksExisted % 4 == 0) {
-            currentChunkSize = chunkSize()
-        }
     }
 
     private fun updateSpeedList() {

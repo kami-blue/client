@@ -2,8 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TimerUtils
@@ -20,10 +19,10 @@ import net.minecraft.init.Items
         description = "Automatically steal items from containers"
 )
 object ChestStealer : Module() {
-    val stealMode: Setting<StealMode> = register(Settings.e<StealMode>("StealMode", StealMode.TOGGLE))
-    private val movingMode = register(Settings.e<MovingMode>("MovingMode", MovingMode.QUICK_MOVE))
-    private val ignoreEjectItem = register(Settings.b("IgnoresEjectItem", false))
-    private val delay = register(Settings.integerBuilder("Delay(ms)").withValue(250).withRange(0, 1000).build())
+    val stealMode = setting("StealMode", StealMode.TOGGLE)
+    private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
+    private val ignoreEjectItem = setting("IgnoresEjectItem", false)
+    private val delay = setting("Delay(ms)", 250, 0..1000, 25)
 
     enum class StealMode {
         ALWAYS, TOGGLE, MANUAL
@@ -76,8 +75,6 @@ object ChestStealer : Module() {
                 MovingMode.QUICK_MOVE -> InventoryUtils.quickMoveSlot(windowID, slot)
                 MovingMode.PICKUP -> InventoryUtils.moveToSlot(windowID, slot, slotTo)
                 MovingMode.THROW -> InventoryUtils.throwAllInSlot(windowID, slot)
-                else -> {
-                }
             }
         }
         return true
@@ -85,7 +82,7 @@ object ChestStealer : Module() {
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = InventoryManager.ejectArrayList
+        val ejectList = InventoryManager.ejectList.value
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].getItem()
             if (item == Items.AIR) continue

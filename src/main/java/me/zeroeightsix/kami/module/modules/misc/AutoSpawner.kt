@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -30,14 +30,14 @@ import net.minecraft.util.math.Vec3d
         description = "Automatically spawns Withers, Iron Golems and Snowmen"
 )
 object AutoSpawner : Module() {
-    private val useMode = register(Settings.e<UseMode>("UseMode", UseMode.SPAM))
-    private val party = register(Settings.b("Party", false))
-    private val partyWithers = register(Settings.booleanBuilder("Withers").withValue(false).withVisibility { party.value })
-    private val entityMode = register(Settings.enumBuilder(EntityMode::class.java).withName("EntityMode").withValue(EntityMode.SNOW).withVisibility { !party.value })
-    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(3.5f).withRange(2f, 10f))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(20).withRange(10, 100).withVisibility { useMode.value == UseMode.SPAM })
-    private val rotate = register(Settings.b("Rotate", true))
-    private val debug = register(Settings.b("Info", true))
+    private val useMode = setting("UseMode", UseMode.SPAM)
+    private val party = setting("Party", false)
+    private val partyWithers = setting("Withers", false, { party.value })
+    private val entityMode = setting("EntityMode", EntityMode.SNOW, { !party.value })
+    private val placeRange = setting("PlaceRange", 3.5f, 2f..10f, 0.5f)
+    private val delay = setting("Delay", 20, 10..100, 5, { useMode.value == UseMode.SPAM })
+    private val rotate = setting("Rotate", true)
+    private val debug = setting("Info", true)
 
     private enum class UseMode {
         SINGLE, SPAM

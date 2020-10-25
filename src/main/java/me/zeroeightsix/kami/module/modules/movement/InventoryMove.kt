@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
@@ -16,8 +16,8 @@ import org.lwjgl.input.Keyboard
         category = Module.Category.MOVEMENT
 )
 object InventoryMove : Module() {
-    private val rotateSpeed = register(Settings.integerBuilder("RotateSpeed").withValue(5).withRange(0, 20).withStep(1))
-    val sneak = register(Settings.b("Sneak", false))
+    private val rotateSpeed = setting("RotateSpeed", 5, 0..20, 1)
+    val sneak = setting("Sneak", false)
 
     private var hasSent = false
 

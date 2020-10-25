@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -18,7 +18,7 @@ import java.io.File
         modulePriority = 500
 )
 object AutoExcuse : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.INTERNAL))
+    private val mode = setting("Mode", Mode.INTERNAL)
 
     private enum class Mode {
         INTERNAL, EXTERNAL

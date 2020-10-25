@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
@@ -20,56 +20,27 @@ import kotlin.math.ceil
         description = "Manages your inventory automatically"
 )
 object InventoryManager : Module() {
-    private const val defaultEjectList = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone,minecraft:cobblestone"
+    private val defaultEjectList = linkedSetOf(
+            "minecraft:grass",
+            "minecraft:dirt",
+            "minecraft:netherrack",
+            "minecraft:gravel",
+            "minecraft:sand",
+            "minecraft:stone",
+            "minecraft:cobblestone"
+    )
 
-    private val autoRefill = register(Settings.b("AutoRefill", true))
-    private val buildingMode = register(Settings.booleanBuilder("BuildingMode").withValue(false).withVisibility { autoRefill.value })
-    val buildingBlockID: Setting<Int> = register(Settings.integerBuilder("BuildingBlockID").withValue(0).withVisibility { false })
-    private val refillThreshold = register(Settings.integerBuilder("RefillThreshold").withValue(16).withRange(1, 63).withStep(1).withVisibility { autoRefill.value })
-    private val itemSaver = register(Settings.b("ItemSaver", false))
-    private val duraThreshold = register(Settings.integerBuilder("DurabilityThreshold").withValue(5).withRange(1, 50).withStep(1).withVisibility { itemSaver.value })
-    val autoEject = register(Settings.b("AutoEject", false))
-    private val fullOnly = register(Settings.booleanBuilder("OnlyAtFull").withValue(false).withVisibility { autoEject.value })
-    private val pauseMovement: Setting<Boolean> = register(Settings.b("PauseMovement", true))
-    private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false })
-    private val delay = register(Settings.integerBuilder("DelayTicks").withValue(1).withRange(0, 20).withStep(1))
-
-    /* Eject list */
-    var ejectArrayList = ejectGetArrayList(); private set
-
-    private fun ejectGetArrayList(): ArrayList<String> {
-        return ArrayList(ejectList.value.split(","))
-    }
-
-    fun ejectGetString(): String {
-        return ejectArrayList.joinToString(separator = ",")
-    }
-
-    fun ejectAdd(name: String) {
-        ejectArrayList.add(name)
-        ejectList.value = ejectGetString()
-    }
-
-    fun ejectRemove(name: String) {
-        ejectArrayList.remove(name)
-        ejectList.value = ejectGetString()
-    }
-
-    fun ejectSet(name: String) {
-        ejectClear()
-        ejectAdd(name)
-    }
-
-    fun ejectDefault() {
-        ejectList.value = defaultEjectList
-        ejectArrayList = ejectGetArrayList()
-    }
-
-    fun ejectClear() {
-        ejectList.value = ""
-        ejectArrayList.clear()
-    }
-    /* End of eject list */
+    private val autoRefill = setting("AutoRefill", true)
+    private val buildingMode = setting("BuildingMode", false, { autoRefill.value })
+    val buildingBlockID = setting("BuildingBlockID", 0, 0..1000, 1, { false })
+    private val refillThreshold = setting("RefillThreshold", 16, 1..63, 1, { autoRefill.value })
+    private val itemSaver = setting("ItemSaver", false)
+    private val duraThreshold = setting("DurabilityThreshold", 5, 1..50, 1, { itemSaver.value })
+    val autoEject = setting("AutoEject", false)
+    private val fullOnly = setting("OnlyAtFull", false, { autoEject.value })
+    private val pauseMovement = setting("PauseMovement", true)
+    private val delay = setting("DelayTicks", 1, 0..20, 1)
+    val ejectList = setting(CollectionSetting("EjectList", defaultEjectList))
 
     enum class State {
         IDLE, SAVING_ITEM, REFILLING_BUILDING, REFILLING, EJECTING
@@ -81,10 +52,6 @@ object InventoryManager : Module() {
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE
-    }
-
-    override fun onEnable() {
-        ejectArrayList = ejectGetArrayList()
     }
 
     override fun onToggle() {
@@ -157,7 +124,7 @@ object InventoryManager : Module() {
     }
 
     private fun ejectCheck(): Boolean {
-        if (!autoEject.value || ejectArrayList.isEmpty()) return false
+        if (!autoEject.value || ejectList.value.isEmpty()) return false
 
         return getEjectSlot() != null && ((InventoryUtils.getSlots(0, 35, 0) == null && fullOnly.value) || !fullOnly.value)
     }
@@ -267,7 +234,7 @@ object InventoryManager : Module() {
             if (currentStack.isEmpty) continue
             if (!currentStack.isStackable || currentStack.count > stackTarget) continue
             if (getIdFromItem(currentStack.getItem()) == buildingBlockID.value && buildingMode.value) continue
-            if (ejectArrayList.contains(currentStack.getItem().registryName.toString()) && autoEject.value) continue
+            if (ejectList.value.contains(currentStack.getItem().registryName.toString()) && autoEject.value) continue
             if (getCompatibleStack(currentStack) == null) continue
             return i
         }
@@ -290,7 +257,7 @@ object InventoryManager : Module() {
         for (slot in 9..44) {
             val currentStack = mc.player.inventoryContainer.inventory[slot]
             if (((getIdFromItem(currentStack.getItem()) != buildingBlockID.value && buildingMode.value) || !buildingMode.value) && /* Don't throw the building block */
-                    ejectArrayList.contains(currentStack.getItem().registryName.toString())) {
+                    ejectList.value.contains(currentStack.getItem().registryName.toString())) {
                 return slot
             }
         }

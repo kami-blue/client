@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -23,16 +23,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
         modulePriority = 50
 )
 object Aura : Module() {
-    private val delayMode = register(Settings.e<WaitMode>("Mode", WaitMode.DELAY))
-    private val multi = register(Settings.b("Multi", false))
-    private val lockView = register(Settings.booleanBuilder("LockView").withValue(false).withVisibility { !multi.value })
-    private val spoofRotation = register(Settings.booleanBuilder("SpoofRotation").withValue(true).withVisibility { !multi.value && !lockView.value })
-    private val waitTick = register(Settings.floatBuilder("SpamDelay").withValue(2.0f).withRange(1.0f, 40.0f).withStep(0.5f).withVisibility { delayMode.value == WaitMode.SPAM })
-    val range = register(Settings.floatBuilder("Range").withValue(5f).withRange(0f, 8f).withStep(0.25f))
-    private val tpsSync = register(Settings.b("TPSSync", false))
-    private val autoTool = register(Settings.b("AutoWeapon", true))
-    private val prefer = register(Settings.enumBuilder(CombatUtils.PreferWeapon::class.java).withName("Prefer").withValue(CombatUtils.PreferWeapon.SWORD).withVisibility { autoTool.value })
-    private val disableOnDeath = register(Settings.b("DisableOnDeath", false))
+    private val delayMode = setting("Mode", WaitMode.DELAY)
+    private val lockView = setting("LockView", false)
+    private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })
+    private val waitTick = setting("SpamDelay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
+    val range = setting("Range", 5f, 0f..8f, 0.25f)
+    private val tpsSync = setting("TPSSync", false)
+    private val autoTool = setting("AutoWeapon", true)
+    private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoTool.value })
+    private val disableOnDeath = setting("DisableOnDeath", false)
 
     private var inactiveTicks = 0
     private var tickCount = 0
@@ -55,18 +54,9 @@ object Aura : Module() {
                 return@listener
             }
             if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val targetList = CombatManager.targetList
             val target = CombatManager.target
 
-            if (multi.value && targetList.isNotEmpty()) {
-                inactiveTicks = 0
-                if (canAttack()) {
-                    for (entity in targetList) {
-                        if (mc.player.getDistance(entity) > range.value) continue
-                        attack(entity)
-                    }
-                }
-            } else if (target != null && mc.player.getDistance(target) < range.value) {
+            if (target != null && mc.player.getDistance(target) < range.value) {
                 inactiveTicks = 0
                 if (lockView.value) {
                     faceEntityClosest(target)
@@ -95,7 +85,7 @@ object Aura : Module() {
     }
 
     private fun attack(e: Entity) {
-        if (autoTool.value) CombatUtils.equipBestWeapon(prefer.value as CombatUtils.PreferWeapon)
+        if (autoTool.value) CombatUtils.equipBestWeapon(prefer.value)
         mc.playerController.attackEntity(mc.player, e)
         mc.player.swingArm(EnumHand.MAIN_HAND)
     }

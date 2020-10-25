@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
@@ -37,14 +37,14 @@ import kotlin.math.sqrt
         modulePriority = 70
 )
 object BedAura : Module() {
-    private val ignoreSecondBaseBlock = register(Settings.b("IgnoreSecondBaseBlock", false))
-    private val suicideMode = register(Settings.b("SuicideMode", false))
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(5).withRange(1, 10))
-    private val refillDelay = register(Settings.integerBuilder("RefillDelay").withValue(2).withRange(1, 5))
-    private val minDamage = register(Settings.floatBuilder("MinDamage").withValue(10f).withRange(1f, 20f))
-    private val maxSelfDamage = register(Settings.floatBuilder("MaxSelfDamage").withValue(4f).withRange(1f, 10f).withVisibility { !suicideMode.value })
-    private val range = register(Settings.floatBuilder("Range").withValue(5f).withRange(1f, 5f))
-    private val wallRange = register(Settings.floatBuilder("WallRange").withValue(2.5f).withRange(1f, 5f))
+    private val ignoreSecondBaseBlock = setting("IgnoreSecondBaseBlock", false)
+    private val suicideMode = setting("SuicideMode", false)
+    private val hitDelay = setting("HitDelay", 5, 1..10, 1)
+    private val refillDelay = setting("RefillDelay", 2, 1..5, 1)
+    private val minDamage = setting("MinDamage", 10f, 1f..20f, 0.25f)
+    private val maxSelfDamage = setting("MaxSelfDamage", 4f, 1f..10f, 0.25f, { !suicideMode.value })
+    private val range = setting("Range", 5f, 1f..5f, 0.25f)
+    private val wallRange = setting("WallRange", 2.5f, 1f..5f, 0.25f)
 
     private val placeMap = TreeMap<Pair<Float, Float>, BlockPos>(compareByDescending { it.first }) // <<TargetDamage, SelfDamage>, BlockPos>
     private val bedMap = TreeMap<Float, BlockPos>(compareBy { it }) // <SquaredDistance, BlockPos>

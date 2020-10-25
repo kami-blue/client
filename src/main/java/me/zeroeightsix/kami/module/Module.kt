@@ -1,22 +1,13 @@
 package me.zeroeightsix.kami.module
 
-import com.google.common.base.Converter
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.setting.builder.SettingBuilder
-import me.zeroeightsix.kami.util.Bind
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
-import org.lwjgl.input.Keyboard
-import java.util.*
 
 open class Module {
     /* Annotations */
@@ -26,7 +17,7 @@ open class Module {
     @JvmField val modulePriority: Int = annotation.modulePriority
     @JvmField var alwaysListening: Boolean = annotation.alwaysListening
 
-    @JvmField var settingList = ArrayList<Setting<*>>()
+    val settingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
 
     private val annotation: Info get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
@@ -70,10 +61,10 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField val name = register(Settings.s("Name", originalName))
-    @JvmField val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
-    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
-    private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
+    @JvmField val name = setting("Name", originalName)
+    @JvmField val bind = setting("Bind")
+    private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
+    private val showOnArray = setting("Visible", annotation.showOnArray)
     /* End of settings */
 
     /* Properties */
@@ -85,6 +76,13 @@ open class Module {
     val isProduction: Boolean get() = name.value == "clickGUI" || category != Category.EXPERIMENTAL && category != Category.HIDDEN
     /* End of properties */
 
+
+    fun resetSettings() {
+        for (setting in settingList) {
+            if (setting == name || setting == bind || setting == enabled || setting == showOnArray) continue
+            setting.resetValue()
+        }
+    }
 
     fun toggle() {
         setEnabled(!isEnabled)
@@ -137,53 +135,6 @@ open class Module {
     protected open fun onEnable() {}
     protected open fun onDisable() {}
     protected open fun onToggle() {}
-
-    /* Setting registering */
-    protected fun <T> register(setting: Setting<T>): Setting<T> {
-        settingList.add(setting)
-        return SettingBuilder.register(setting, "modules.$originalName")
-    }
-
-    protected fun <T> register(builder: SettingBuilder<T>): Setting<T> {
-        val setting = builder.build()
-        settingList.add(setting)
-        return SettingBuilder.register(setting, "modules.$originalName")
-    }
-    /* End of setting registering */
-
-    /* Key binding */
-    protected class BindConverter : Converter<Bind, JsonElement>() {
-        override fun doForward(bind: Bind): JsonElement {
-            return JsonPrimitive(bind.toString())
-        }
-
-        override fun doBackward(jsonElement: JsonElement): Bind {
-            var s = jsonElement.asString
-            if (s.equals("None", ignoreCase = true)) return Bind.none()
-            var ctrl = false
-            var alt = false
-            var shift = false
-            if (s.startsWith("Ctrl+")) {
-                ctrl = true
-                s = s.substring(5)
-            }
-            if (s.startsWith("Alt+")) {
-                alt = true
-                s = s.substring(4)
-            }
-            if (s.startsWith("Shift+")) {
-                shift = true
-                s = s.substring(6)
-            }
-            var key = -1
-            try {
-                key = Keyboard.getKeyIndex(s.toUpperCase())
-            } catch (ignored: Exception) {
-            }
-            return if (key == 0) Bind.none() else Bind(ctrl, alt, shift, key)
-        }
-    }
-    /* End of key binding */
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()

@@ -1,0 +1,65 @@
+package me.zeroeightsix.kami.setting
+
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+
+open class Setting<T : Any>(
+        val name: String,
+        value: T,
+        val visibility: () -> Boolean,
+        val consumer: (prev: T, input: T) -> T,
+        val description: String
+) {
+
+    open var value = value
+        set(value) {
+            if (value != field) {
+                field = consumer(field, value)
+                settingListener?.let { it(field) }
+            }
+        }
+    open val defaultValue = value
+    private val valueClass = value::class.java
+    val isVisible get() = visibility()
+    var settingListener: ((T) -> Unit)? = null
+
+    fun setValue(value: String) {
+        read(parser.parse(value))
+    }
+
+    fun resetValue() {
+        value = defaultValue
+    }
+
+    override fun toString() = value.toString()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Setting<*>) return false
+
+        if (name != other.name) return false
+        if (value != other.value) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode() * 31 + value.hashCode()
+    }
+
+    open fun write(): JsonElement = gson.toJsonTree(value)
+
+    open fun read(jsonElement: JsonElement?) {
+        jsonElement?.let {
+            value = gson.fromJson(it, valueClass)
+        }
+    }
+
+    protected companion object {
+        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+        val parser = JsonParser()
+    }
+
+}

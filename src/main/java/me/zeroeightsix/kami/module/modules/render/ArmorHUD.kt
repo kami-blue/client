@@ -2,8 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.color.ColorConverter
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -11,10 +10,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
-import net.minecraft.item.ItemStack
-import net.minecraft.util.NonNullList
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.GameType
 import kotlin.math.floor
 
 @Module.Info(
@@ -24,8 +20,8 @@ import kotlin.math.floor
         showOnArray = Module.ShowOnArray.OFF
 )
 object ArmorHUD : Module() {
-    private val damage = register(Settings.b("Damage", false))
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.25f, 2.0f).withStep(0.05f))
+    private val damage = setting("Damage", false)
+    private val scale = setting("Scale", 1.0f, 0.25f..2.0f, 0.05f)
 
     init {
         listener<RenderOverlayEvent> {

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.boss.EntityWither
@@ -19,9 +19,13 @@ import net.minecraft.util.EnumHand
         category = Module.Category.MISC
 )
 object AutoNametag : Module() {
-    private val modeSetting = register(Settings.e<Mode>("Mode", Mode.ANY))
-    private val range = register(Settings.floatBuilder("Range").withValue(3.5f).withRange(2.0f, 8.0f).withStep(0.5f))
-    private val debug = register(Settings.b("Debug", false))
+    private val modeSetting = setting("Mode", Mode.ANY)
+    private val range = setting("Range", 3.5f, 2.0f..8.0f, 0.5f)
+    private val debug = setting("Debug", false)
+
+    private enum class Mode {
+        WITHER, ANY
+    }
 
     private var currentName = ""
     private var currentSlot = -1
@@ -83,9 +87,5 @@ object AutoNametag : Module() {
         val stack = mc.player.inventory.getStackInSlot(i)
         val tag = stack.getItem()
         return tag is ItemNameTag && stack.displayName != "Name Tag"
-    }
-
-    private enum class Mode {
-        WITHER, ANY
     }
 }

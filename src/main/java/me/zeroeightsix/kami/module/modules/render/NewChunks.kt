@@ -5,8 +5,7 @@ import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting.SettingListeners
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -33,19 +32,19 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 object NewChunks : Module() {
-    private val relative = register(Settings.b("Relative", true))
-    private val autoClear = register(Settings.b("AutoClear", true))
-    private val saveNewChunks = register(Settings.b("SaveNewChunks", false))
-    private val saveOption = register(Settings.enumBuilder(SaveOption::class.java, "SaveOption").withValue(SaveOption.EXTRA_FOLDER).withVisibility { saveNewChunks.value })
-    private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value })
-    private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
-    private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
-    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4))
-    private val customColor = register(Settings.b("CustomColor", false))
-    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
-    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
-    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
-    private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
+    private val relative = setting("Relative", true)
+    private val autoClear = setting("AutoClear", true)
+    private val saveNewChunks = setting("SaveNewChunks", false)
+    private val saveOption = setting("SaveOption", SaveOption.EXTRA_FOLDER, { saveNewChunks.value })
+    private val saveInRegionFolder = setting("InRegion", false, { saveNewChunks.value })
+    private val alsoSaveNormalCoords = setting("SaveNormalCoords", false, { saveNewChunks.value })
+    private val closeFile = setting("CloseFile", false, { saveNewChunks.value })
+    private val yOffset = setting("YOffset", 0, -256..256, 4)
+    private val customColor = setting("CustomColor", false)
+    private val red = setting("Red", 255, 0..255, 1, { customColor.value })
+    private val green = setting("Green", 255, 0..255, 1, { customColor.value })
+    private val blue = setting("Blue", 255, 0..255, 1, { customColor.value })
+    private val range = setting("RenderRange", 256, 64..1024, 64)
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
@@ -294,8 +293,8 @@ object NewChunks : Module() {
     }
 
     init {
-        closeFile.settingListener = SettingListeners {
-            if (closeFile.value) {
+        closeFile.settingListener = {
+            if (it) {
                 logWriterClose()
                 MessageSendHelper.sendChatMessage("$chatName Saved file!")
                 closeFile.value = false

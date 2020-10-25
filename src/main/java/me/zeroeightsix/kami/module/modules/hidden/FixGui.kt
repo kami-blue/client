@@ -7,11 +7,7 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GuiFrameUtil
 
 /**
- * @author l1ving
  * @see me.zeroeightsix.kami.command.commands.FixGuiCommand
- *
- * Created by l1ving on 24/03/20
- * Updated by Xiaro on 28/08/20
  */
 @Module.Info(
         name = "FixGui",

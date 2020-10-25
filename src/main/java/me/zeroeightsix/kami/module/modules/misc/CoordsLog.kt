@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -18,9 +18,9 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.MISC
 )
 object CoordsLog : Module() {
-    private val saveOndeath = register(Settings.b("SaveOnDeath", true))
-    private val autoLog = register(Settings.b("AutoLog", false))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(15).withRange(1, 60).withStep(1))
+    private val saveOnDeath = setting("SaveOnDeath", true)
+    private val autoLog = setting("AutoLog", false)
+    private val delay = setting("Delay", 15, 1..60, 1)
 
     private var previousCoord: String? = null
     private var savedDeath = false
@@ -32,7 +32,7 @@ object CoordsLog : Module() {
                 timeout()
             }
 
-            if (saveOndeath.value) {
+            if (saveOnDeath.value) {
                 savedDeath = if (!savedDeath && (mc.player.isDead || mc.player.health <= 0.0f)) {
                     val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType())
                     MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")

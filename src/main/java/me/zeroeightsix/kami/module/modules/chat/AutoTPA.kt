@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -15,8 +15,8 @@ import net.minecraft.network.play.server.SPacketChat
         category = Module.Category.CHAT
 )
 object AutoTPA : Module() {
-    private val friends = register(Settings.b("AlwaysAcceptFriends", true))
-    private val mode = register(Settings.e<Mode>("Response", Mode.DENY))
+    private val friends = setting("AlwaysAcceptFriends", true)
+    private val mode = setting("Response", Mode.DENY)
 
     private enum class Mode {
         ACCEPT, DENY

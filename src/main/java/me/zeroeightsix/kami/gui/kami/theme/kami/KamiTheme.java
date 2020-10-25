@@ -27,7 +27,6 @@ public class KamiTheme extends AbstractTheme {
         installUI(new RootSliderUI());
         installUI(new KamiEnumButtonUI());
         installUI(new RootColorizedCheckButtonUI());
-        installUI(new KamiUnboundSliderUI());
 
         installUI(new RadarUI());
         installUI(new InventoryViewerUI());

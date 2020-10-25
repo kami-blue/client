@@ -6,8 +6,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -23,7 +22,7 @@ import net.minecraftforge.client.event.InputUpdateEvent
         description = "Automatically walks somewhere"
 )
 object AutoWalk : Module() {
-    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
+    val mode = setting("Direction", AutoWalkMode.BARITONE)
 
     enum class AutoWalkMode {
         FORWARD, BACKWARDS, BARITONE
@@ -118,7 +117,7 @@ object AutoWalk : Module() {
     }
 
     init {
-        mode.settingListener = Setting.SettingListeners {
+        mode.settingListener = {
             mc.player?.let {
                 if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
                     sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()

@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
+import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColorCode
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -24,13 +24,13 @@ import kotlin.collections.ArrayList
         category = Module.Category.COMBAT
 )
 object TotemPopCounter : Module() {
-    private val countFriends = register(Settings.b("CountFriends", true))
-    private val countSelf = register(Settings.b("CountSelf", false))
-    private val resetOnDeath = register(Settings.b("ResetOnDeath", true))
-    private val announceSetting = register(Settings.e<Announce>("Announce", Announce.CLIENT))
-    private val thanksTo = register(Settings.b("ThanksTo", false))
-    private val colorName = register(Settings.e<ColourCode>("ColorName", ColourCode.DARK_PURPLE))
-    private val colorNumber = register(Settings.e<ColourCode>("ColorNumber", ColourCode.LIGHT_PURPLE))
+    private val countFriends = setting("CountFriends", true)
+    private val countSelf = setting("CountSelf", false)
+    private val resetOnDeath = setting("ResetOnDeath", true)
+    private val announceSetting = setting("Announce", Announce.CLIENT)
+    private val thanksTo = setting("ThanksTo", false)
+    private val colorName = setting("ColorName", ColorCode.DARK_PURPLE)
+    private val colorNumber = setting("ColorNumber", ColorCode.LIGHT_PURPLE)
 
     private enum class Announce {
         CLIENT, EVERYONE
@@ -119,5 +119,5 @@ object TotemPopCounter : Module() {
         }
     }
 
-    private fun setToText(colourCode: ColourCode) = ColorTextFormatting.toTextMap[colourCode]!!.toString()
+    private fun setToText(colourCode: ColorCode) = ColorTextFormatting.toTextMap[colourCode]!!.toString()
 }

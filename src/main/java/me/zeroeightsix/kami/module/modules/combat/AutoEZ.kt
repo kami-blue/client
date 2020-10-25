@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -19,9 +18,9 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
         description = "Sends an insult in chat after killing someone"
 )
 object AutoEZ : Module() {
-    private val detectMode = register(Settings.e<DetectMode>("DetectMode", DetectMode.HEALTH))
-    val messageMode: Setting<MessageMode> = register(Settings.e("MessageMode", MessageMode.ONTOP))
-    val customText: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("unchanged"))
+    private val detectMode = setting("DetectMode", DetectMode.HEALTH)
+    val messageMode = setting("MessageMode", MessageMode.ONTOP)
+    val customText = setting("CustomText", "unchanged")
 
     private enum class DetectMode {
         BROADCAST, HEALTH

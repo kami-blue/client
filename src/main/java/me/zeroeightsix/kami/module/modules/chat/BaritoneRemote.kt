@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -19,16 +19,16 @@ import net.minecraft.util.text.TextFormatting
         category = Module.Category.CHAT
 )
 object BaritoneRemote : Module() {
-    private val feedback = register(Settings.b("SendFeedback", true))
-    private val allow: Setting<Allow> = register(Settings.e("Allow", Allow.FRIENDS))
-    private val custom = register(Settings.s("Custom", "unchanged"))
+    private val feedback = setting("SendFeedback", true)
+    private val allow: Setting<Allow> = setting("Allow", Allow.FRIENDS)
+    private val custom = setting("Custom", "unchanged")
 
     private var sendNextMsg = false
     private var lastController = "-" /* - is default, ie invalid name */
 
     init {
         /* instructions for changing custom setting */
-        allow.settingListener = Setting.SettingListeners {
+        allow.settingListener = {
             mc.player?.let {
                 if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
                     MessageSendHelper.sendChatMessage("$chatName Use the &7" + Command.getCommandPrefix()

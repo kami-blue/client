@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
@@ -15,9 +15,9 @@ import kotlin.math.min
         alwaysListening = true
 )
 object FullBright : Module() {
-    private val gamma = register(Settings.floatBuilder("Gamma").withValue(12.0f).withRange(1.0f, 15f))
-    private val transitionLength = register(Settings.floatBuilder("TransitionLength").withValue(3.0f).withRange(0.0f, 10.0f))
-    private val oldValue = register(Settings.floatBuilder("OldValue").withValue(1.0f).withRange(0.0f, 1.0f).withVisibility { false })
+    private val gamma = setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
+    private val transitionLength = setting("TransitionLength", 3.0f, 0.0f..10.0f, 0.5f)
+    private val oldValue = setting("OldValue", 1.0f, 0.0f..1.0f, 0.1f, { false })
 
     private var gammaSetting: Float
         get() = mc.gameSettings.gammaSetting

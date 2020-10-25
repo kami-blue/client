@@ -4,8 +4,7 @@ import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.CardinalMain
@@ -19,9 +18,9 @@ import net.minecraft.entity.player.EntityPlayer
         category = Module.Category.MISC
 )
 object AutoTunnel : Module() {
-    private val backfill = register(Settings.b("Backfill", false))
-    private val height = register(Settings.integerBuilder("Height").withValue(2).withRange(1, 10))
-    private val width = register(Settings.integerBuilder("Width").withValue(1).withRange(1, 10))
+    private val backfill = setting("Backfill", false)
+    private val height = setting("Height", 2, 1..10, 1)
+    private val width = setting("Width", 1, 1..10, 1)
 
     private var lastCommand = arrayOf("")
     private var startingDirection = CardinalMain.POS_X
@@ -74,12 +73,12 @@ object AutoTunnel : Module() {
     }
 
     init {
-        with(Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }) {
+        with( { _: Int -> if (mc.player != null && isEnabled) sendTunnel() }) {
             height.settingListener = this
             width.settingListener = this
         }
 
-        backfill.settingListener = Setting.SettingListeners { BaritoneUtils.settings()?.backfill?.value = backfill.value }
+        backfill.settingListener = { BaritoneUtils.settings()?.backfill?.value = backfill.value }
 
         listener<ConnectionEvent.Disconnect> {
             BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()

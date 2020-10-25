@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
@@ -24,12 +24,12 @@ import kotlin.math.sqrt
         category = Module.Category.CHAT
 )
 object ChatEncryption : Module() {
-    private val self = register(Settings.b("DecryptOwn", true))
-    private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
-    private val keyA = register(Settings.integerBuilder("KeyA").withValue(3).withRange(0, 26).withStep(1))
-    private val keyB = register(Settings.integerBuilder("KeyB").withValue(10).withRange(0, 26).withStep(1))
-    private val delimiterSetting = register(Settings.b("Delimiter", true))
-    val delimiterValue = register(Settings.s("delimiterV", "unchanged"))
+    private val self = setting("DecryptOwn", true)
+    private val mode = setting("Mode", EncryptionMode.SHUFFLE)
+    private val keyA = setting("KeyA", 3, 0..26,1)
+    private val keyB = setting("KeyB", 10, 0..26, 1)
+    private val delimiterSetting = setting("Delimiter", true)
+    val delimiterValue = setting("delimiterV", "unchanged")
 
     private enum class EncryptionMode {
         SHUFFLE, SHIFT

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
@@ -20,8 +20,8 @@ import kotlin.random.Random
         modulePriority = 100
 )
 object Spammer : Module() {
-    private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
-    private val delay = register(Settings.integerBuilder("Delay(s)").withRange(1, 240).withValue(10).withStep(5))
+    private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
+    private val delay = setting("Delay(s)", 10, 1..240, 5)
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = ArrayList<String>()

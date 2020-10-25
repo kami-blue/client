@@ -8,13 +8,13 @@ import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.impl.BooleanSetting;
-import me.zeroeightsix.kami.setting.impl.EnumSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.DoubleSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting;
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting;
-import me.zeroeightsix.kami.util.Bind;
+import me.zeroeightsix.kami.setting.impl.number.DoubleSetting;
+import me.zeroeightsix.kami.setting.impl.number.FloatSetting;
+import me.zeroeightsix.kami.setting.impl.number.IntegerSetting;
+import me.zeroeightsix.kami.setting.impl.number.NumberSetting;
+import me.zeroeightsix.kami.setting.impl.other.BindSetting;
+import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting;
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting;
 
 import java.util.Arrays;
 
@@ -47,67 +47,47 @@ public class SettingsPanel extends OrganisedContainer {
             setVisible(false);
             return;
         }
-        if (!module.settingList.isEmpty()) {
-            for (Setting setting : module.settingList) {
+        if (!module.getSettingList().isEmpty()) {
+            for (Setting<?> setting : module.getSettingList()) {
                 if (!setting.isVisible()) continue;
                 String name = setting.getName();
                 boolean isNumber = setting instanceof NumberSetting;
                 boolean isBoolean = setting instanceof BooleanSetting;
                 boolean isEnum = setting instanceof EnumSetting;
 
-                if (setting.getValue() instanceof Bind) {
-                    addChild(new BindButton(setting.getName(), null, module, setting));
+                if (setting instanceof BindSetting) {
+                    addChild(new BindButton(setting.getName(), null, module, (BindSetting) setting));
                 }
 
                 if (isNumber) {
-                    NumberSetting numberSetting = (NumberSetting) setting;
-                    boolean isBound = numberSetting.isBound();
+                    NumberSetting<?> numberSetting = (NumberSetting<?>) setting;
 
                     // Terrible terrible bug fix.
                     // I know, these parseDoubles look awful, but any conversions I tried here would end up with weird floating point conversion errors.
                     // This is really the easiest solution..
                     double value = Double.parseDouble(numberSetting.getValue().toString());
-                    if (!isBound) {
-                        UnboundSlider slider = new UnboundSlider(value, name, setting instanceof IntegerSetting);
-                        slider.addPoof(new Slider.SliderPoof<UnboundSlider, Slider.SliderPoof.SliderPoofInfo>() {
-                            @Override
-                            public void execute(UnboundSlider component, SliderPoofInfo info) {
-                                if (setting instanceof IntegerSetting)
-                                    setting.setValue((int) info.getNewValue());
-                                else if (setting instanceof FloatSetting)
-                                    setting.setValue((float) info.getNewValue());
-                                else if (setting instanceof DoubleSetting)
-                                    setting.setValue(info.getNewValue());
-                                setModule(module);
-                            }
-                        });
-                        if (numberSetting.getMax() != null) slider.setMax(numberSetting.getMax().doubleValue());
-                        if (numberSetting.getMin() != null) slider.setMin(numberSetting.getMin().doubleValue());
-                        addChild(slider);
-                    } else {
-                        double min = numberSetting.getMin().doubleValue();
-                        double max = numberSetting.getMax().doubleValue();
-                        double step;
-                        if (numberSetting.getStep() != null) step = numberSetting.getStep().doubleValue();
-                        else step = Slider.getDefaultStep(min, max);
-                        Slider slider = new Slider(
-                                value, min, max,
-                                step,
-                                name,
-                                setting instanceof IntegerSetting);
-                        slider.addPoof(new Slider.SliderPoof<Slider, Slider.SliderPoof.SliderPoofInfo>() {
-                            @Override
-                            public void execute(Slider component, SliderPoofInfo info) {
-                                if (setting instanceof IntegerSetting)
-                                    setting.setValue((int) info.getNewValue());
-                                else if (setting instanceof FloatSetting)
-                                    setting.setValue((float) info.getNewValue());
-                                else if (setting instanceof DoubleSetting)
-                                    setting.setValue(info.getNewValue());
-                            }
-                        });
-                        addChild(slider);
-                    }
+                    double min = numberSetting.getMin().doubleValue();
+                    double max = numberSetting.getMax().doubleValue();
+                    double step;
+                    numberSetting.getStep();
+                    step = numberSetting.getStep().doubleValue();
+                    Slider slider = new Slider(
+                            value, min, max,
+                            step,
+                            name,
+                            setting instanceof IntegerSetting);
+                    slider.addPoof(new Slider.SliderPoof<Slider, Slider.SliderPoof.SliderPoofInfo>() {
+                        @Override
+                        public void execute(Slider component, SliderPoofInfo info) {
+                            if (setting instanceof IntegerSetting)
+                                ((IntegerSetting) setting).setValue((int) info.getNewValue());
+                            else if (setting instanceof FloatSetting)
+                                ((FloatSetting) setting).setValue((float) info.getNewValue());
+                            else if (setting instanceof DoubleSetting)
+                                ((DoubleSetting) setting).setValue(info.getNewValue());
+                        }
+                    });
+                    addChild(slider);
                 } else if (isBoolean) {
                     CheckButton checkButton = new CheckButton(name, null);
                     checkButton.setToggled(((BooleanSetting) setting).getValue());
@@ -115,21 +95,21 @@ public class SettingsPanel extends OrganisedContainer {
                         @Override
                         public void execute(CheckButton checkButton1, CheckButtonPoofInfo info) {
                             if (info.getAction() == CheckButtonPoofInfo.CheckButtonPoofInfoAction.TOGGLE) {
-                                setting.setValue(checkButton.isToggled());
+                                ((BooleanSetting) setting).setValue(checkButton.isToggled());
                                 setModule(module);
                             }
                         }
                     });
                     addChild(checkButton);
                 } else if (isEnum) {
-                    Class<? extends Enum> type = ((EnumSetting) setting).clazz;
+                    Class<? extends Enum> type = ((EnumSetting) setting).getEnumClass();
                     Object[] con = type.getEnumConstants();
                     String[] modes = Arrays.stream(con).map(o -> o.toString().toUpperCase()).toArray(String[]::new);
                     EnumButton enumbutton = new EnumButton(name, null, modes);
                     enumbutton.addPoof(new EnumButton.EnumbuttonIndexPoof<EnumButton, EnumButton.EnumbuttonIndexPoof.EnumbuttonInfo>() {
                         @Override
                         public void execute(EnumButton component, EnumbuttonInfo info) {
-                            setting.setValue(con[info.getNewIndex()]);
+                            ((EnumSetting) setting).setValue(con[info.getNewIndex()]);
                             setModule(module);
                         }
                     });
@@ -138,13 +118,7 @@ public class SettingsPanel extends OrganisedContainer {
                 }
             }
         }
-        if (children.isEmpty()) {
-            setVisible(false);
-            return;
-        } else {
-            setVisible(true);
-            return;
-        }
+        setVisible(!children.isEmpty());
     }
 
     public void setModule(Module module) {

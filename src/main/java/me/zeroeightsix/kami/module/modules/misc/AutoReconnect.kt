@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiDisconnected
@@ -16,7 +16,7 @@ import net.minecraft.client.multiplayer.ServerData
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withValue(5000).withRange(100, 10000).withStep(100))
+    private val delay = setting("Delay", 5000, 100..10000, 100)
 
     private var prevServerDate: ServerData? = null
 

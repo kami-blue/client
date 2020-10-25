@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 @Module.Info(
         name = "ExtraChatHistory",
@@ -10,5 +10,5 @@ import me.zeroeightsix.kami.setting.Settings
         showOnArray = Module.ShowOnArray.OFF
 )
 object ExtraChatHistory : Module() {
-    val maxMessages = register(Settings.integerBuilder("MaxMessage").withValue(1000).withRange(100, 5000).withStep(100))
+    val maxMessages = setting("MaxMessage", 1000, 100..5000, 100)
 }

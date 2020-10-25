@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -24,11 +24,11 @@ import java.util.stream.IntStream
         description = "Crashes servers by sending large packets"
 )
 object BookCrash : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.RAION))
-    private val fillMode = register(Settings.e<FillMode>("FillMode", FillMode.RANDOM))
-    private val uses = register(Settings.integerBuilder("Uses").withValue(2).withRange(1, 10))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(0).withRange(0, 40))
-    private val pages = register(Settings.integerBuilder("Pages").withValue(50).withRange(1, 100))
+    private val mode = setting("Mode", Mode.RAION)
+    private val fillMode = setting("FillMode", FillMode.RANDOM)
+    private val uses = setting("Uses", 2, 1..10, 1)
+    private val delay = setting("Delay", 0, 0..40, 1)
+    private val pages = setting("Pages", 50, 1..100, 5)
 
     private enum class Mode {
         JESSICA, RAION

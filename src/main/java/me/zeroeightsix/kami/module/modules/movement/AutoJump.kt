@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.event.listener
         description = "Automatically jumps if possible"
 )
 object AutoJump : Module() {
-    private val delay = register(Settings.integerBuilder("TickDelay").withValue(10).withRange(0, 40).withStep(1))
+    private val delay = setting("TickDelay", 10, 0..40, 1)
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 

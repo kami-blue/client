@@ -4,7 +4,7 @@ import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -34,11 +34,11 @@ import kotlin.math.floor
         description = "Mines ender chest automatically to fill inventory with obsidian"
 )
 object AutoObsidian : Module() {
-    private val searchShulker = register(Settings.b("SearchShulker", false))
-    private val autoRefill = register(Settings.b("AutoRefill", false))
-    private val threshold = register(Settings.integerBuilder("RefillThreshold").withValue(8).withRange(1, 56).withVisibility { autoRefill.value })
-    private val targetStacks = register(Settings.integerBuilder("TargetStacks").withValue(1).withRange(1, 20))
-    private val delayTicks = register(Settings.integerBuilder("DelayTicks").withValue(5).withRange(0, 10))
+    private val searchShulker = setting("SearchShulker", false)
+    private val autoRefill = setting("AutoRefill", false)
+    private val threshold = setting("RefillThreshold", 8, 1..56, 1, { autoRefill.value })
+    private val targetStacks = setting("TargetStacks", 1, 1..20, 1)
+    private val delayTicks = setting("DelayTicks", 5, 0..10, 1)
 
     enum class State {
         SEARCHING, PLACING, PRE_MINING, MINING, COLLECTING, DONE

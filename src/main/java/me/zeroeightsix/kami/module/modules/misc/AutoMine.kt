@@ -4,8 +4,7 @@ import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
@@ -15,11 +14,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         category = Module.Category.MISC
 )
 object AutoMine : Module() {
-    private val iron = register(Settings.b("Iron", true))
-    private val diamond = register(Settings.b("Diamond", true))
-    private val gold = register(Settings.b("Gold", false))
-    private val coal = register(Settings.b("Coal", false))
-    private val log = register(Settings.b("Logs", false))
+    private val iron = setting("Iron", true)
+    private val diamond = setting("Diamond", true)
+    private val gold = setting("Gold", false)
+    private val coal = setting("Coal", false)
+    private val log = setting("Logs", false)
 
     override fun onEnable() {
         if (mc.player == null) {
@@ -59,7 +58,7 @@ object AutoMine : Module() {
     }
 
     init {
-        with(Setting.SettingListeners { run() }) {
+        with( { it: Boolean -> run() }) {
             iron.settingListener = this
             diamond.settingListener = this
             gold.settingListener = this

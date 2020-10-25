@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.EntityLivingBase
@@ -17,8 +17,8 @@ import net.minecraft.network.play.client.CPacketUseEntity
         description = "Always do critical attacks"
 )
 object Criticals : Module() {
-    private val mode = register(Settings.e<CriticalMode>("Mode", CriticalMode.PACKET))
-    private val miniJump = register(Settings.booleanBuilder("MiniJump").withValue(true).withVisibility { mode.value == CriticalMode.DELAY }.build())
+    private val mode = setting("Mode", CriticalMode.PACKET)
+    private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
 
     private enum class CriticalMode {
         PACKET, DELAY

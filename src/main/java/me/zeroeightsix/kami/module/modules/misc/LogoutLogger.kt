@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
@@ -19,8 +19,8 @@ import net.minecraft.util.math.BlockPos
         description = "Logs when a player leaves the game"
 )
 object LogoutLogger : Module() {
-    private val saveToFile = register(Settings.b("SaveToFile", true))
-    private val print = register(Settings.b("PrintToChat", true))
+    private val saveToFile = setting("SaveToFile", true)
+    private val print = setting("PrintToChat", true)
 
     private val loggedPlayers = HashMap<String, BlockPos>()
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)

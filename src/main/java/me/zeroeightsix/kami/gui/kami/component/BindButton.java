@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.kami.component;
 import me.zeroeightsix.kami.gui.rgui.component.listen.KeyListener;
 import me.zeroeightsix.kami.gui.rgui.component.listen.MouseListener;
 import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.setting.Setting;
+import me.zeroeightsix.kami.setting.impl.other.BindSetting;
 import me.zeroeightsix.kami.util.Bind;
 import org.lwjgl.input.Keyboard;
 
@@ -19,7 +19,7 @@ public class BindButton extends EnumButton {
 
     boolean ctrl = false, shift = false, alt = false;
 
-    public BindButton(String name, String description, Module m, Setting<Bind> bindSetting) {
+    public BindButton(String name, String description, Module m, BindSetting bindSetting) {
         super(name, description, none);
         this.m = m;
 

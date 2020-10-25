@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -24,25 +24,25 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.RENDER
 )
 object BreakingESP : Module() {
-    private val espSelf = register(Settings.b("ESPSelf", true))
-    private val warnSelf = register(Settings.b("WarnSelf", false))
-    private val obsidianOnly = register(Settings.b("ObsidianOnly", false))
-    private val warning = register(Settings.b("Warn", false))
-    private val warningProgress = register(Settings.integerBuilder("WarnProgress").withMinimum(0).withValue(4).withMaximum(9).build())
-    private val chatWarn = register(Settings.b("ChatWarning", false))
-    private val screenWarn = register(Settings.b("HUDWarning", true))
-    private val soundWarn = register(Settings.b("SoundWarning", false))
-    private val range = register(Settings.floatBuilder("Range").withValue(16.0f).withRange(0.0f, 64.0f).build())
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val tracer = register(Settings.b("Tracer", false))
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(255).withMaximum(255).build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(255).withMaximum(255).build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(200).withRange(0, 255).withVisibility { outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withVisibility { outline.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
+    private val espSelf = setting("ESPSelf", true)
+    private val warnSelf = setting("WarnSelf", false)
+    private val obsidianOnly = setting("ObsidianOnly", false)
+    private val warning = setting("Warn", false)
+    private val warningProgress = setting("WarnProgress", 4, 0..10, 1)
+    private val chatWarn = setting("ChatWarning", false)
+    private val screenWarn = setting("HUDWarning", true)
+    private val soundWarn = setting("SoundWarning", false)
+    private val range = setting("Range", 16.0f, 2.0f..32.0f, 2.0f)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val tracer = setting("Tracer", false)
+    private val r = setting("Red", 255, 0..255, 1)
+    private val g = setting("Green", 255, 0..255, 1)
+    private val b = setting("Blue", 255, 0..255, 1)
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("OutlineAlpha", 200, 0..255, 1, { outline.value })
+    private val aTracer = setting("TracerAlpha", 255, 0..255, 1, { outline.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
 
     private val breakingBlockList = LinkedHashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
     private var warn = false

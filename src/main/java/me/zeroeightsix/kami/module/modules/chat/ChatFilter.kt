@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirectOther
@@ -12,16 +12,15 @@ import java.io.*
 import java.util.*
 import java.util.regex.Pattern
 
-
 @Module.Info(
         name = "ChatFilter",
         description = "Filters custom words or phrases from the chat",
         category = Module.Category.CHAT
 )
 object ChatFilter : Module() {
-    private val filterOwn = register(Settings.b("FilterOwn", false))
-    private val filterDMs = register(Settings.b("FilterDMs", false))
-    private val hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility { false })
+    private val filterOwn = setting("FilterOwn", false)
+    private val filterDMs = setting("FilterDMs", false)
+    private val hasRunInfo = setting("Info", false, { false })
 
     private val chatFilter = ArrayList<Pattern>()
 

@@ -4,9 +4,8 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -26,11 +25,11 @@ import java.util.concurrent.Future
         modulePriority = 60
 )
 object AutoTrap : Module() {
-    private val trapMode = register(Settings.e<TrapMode>("TrapMode", TrapMode.FULL_TRAP))
-    private val selfTrap = register(Settings.b("SelfTrap", false))
-    private val bindSelfTrap = register(Settings.custom("BindSelfTrap", Bind.none(), BindConverter()))
-    private val autoDisable = register(Settings.b("AutoDisable", true))
-    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
+    private val trapMode = setting("TrapMode", TrapMode.FULL_TRAP)
+    private val selfTrap = setting("SelfTrap", false)
+    private val bindSelfTrap = setting("BindSelfTrap")
+    private val autoDisable = setting("AutoDisable", true)
+    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
 
     private val placeThread = Thread { runAutoTrap() }.apply { name = "AutoTrap" }
     private val threadPool = Executors.newSingleThreadExecutor()

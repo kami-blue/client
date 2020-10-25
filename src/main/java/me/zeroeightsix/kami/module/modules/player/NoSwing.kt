@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketAnimation
 
@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.CPacketAnimation
         description = "Cancels server or client swing animation"
 )
 object NoSwing : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.CLIENT))
+    private val mode = setting("Mode", Mode.CLIENT)
 
     private enum class Mode {
         CLIENT, SERVER

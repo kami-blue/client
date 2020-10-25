@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
@@ -18,11 +18,11 @@ import java.util.*
         description = "Cancels server side packets"
 )
 object Blink : Module() {
-    private val cancelPacket = register(Settings.b("CancelPackets", false))
-    private val autoReset = register(Settings.b("AutoReset", true))
-    private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value })
+    private val cancelPacket = setting("CancelPackets", false)
+    private val autoReset = setting("AutoReset", true)
+    private val resetThreshold = setting("ResetThreshold", 20, 1..100, 5, { autoReset.value })
 
-    private val packets = LinkedList<CPacketPlayer>()
+    private val packets = ArrayDeque<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
 

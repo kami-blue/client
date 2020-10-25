@@ -8,8 +8,6 @@ import me.zeroeightsix.kami.gui.rgui.poof.IPoof;
 import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
 import me.zeroeightsix.kami.gui.rgui.render.ComponentUI;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
-import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
 
 import java.util.ArrayList;
 
@@ -29,10 +27,10 @@ public abstract class AbstractComponent implements Component {
     int maxHeight = Integer.MAX_VALUE;
 
     protected int priority = 0;
-    private Setting<Boolean> visible = Settings.b("Visible", true);
+    private boolean visible = true;
     float opacity = 1f;
     private boolean focus = false;
-    ComponentUI ui;
+    ComponentUI<?> ui;
     Theme theme;
     Container parent;
 
@@ -48,7 +46,7 @@ public abstract class AbstractComponent implements Component {
     ArrayList<UpdateListener> updateListeners = new ArrayList<>();
     ArrayList<TickListener> tickListeners = new ArrayList<>();
 
-    ArrayList<IPoof> poofs = new ArrayList<>();
+    ArrayList<IPoof<? extends Component, ? extends PoofInfo>> poofs = new ArrayList<>();
 
     public AbstractComponent() {
         addMouseListener(new MouseListener() {
@@ -192,12 +190,12 @@ public abstract class AbstractComponent implements Component {
 
     @Override
     public boolean isVisible() {
-        return visible.getValue();
+        return visible;
     }
 
     @Override
     public void setVisible(boolean visible) {
-        this.visible.setValue(visible);
+        this.visible = visible;
     }
 
     @Override

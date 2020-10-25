@@ -3,13 +3,14 @@ package me.zeroeightsix.kami.gui
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import org.lwjgl.opengl.GL11.*
 
 object UIRenderer {
     fun renderAndUpdateFrames() {
-        if (Wrapper.minecraft.currentScreen is DisplayGuiScreen || Wrapper.minecraft.gameSettings.showDebugInfo) return
+        if (Wrapper.minecraft.currentScreen is DisplayGuiScreen || Wrapper.minecraft.gameSettings.showDebugInfo || ConfigUtils.inProcess) return
         val gui = KamiMod.getInstance().guiManager
         GlStateUtils.rescaleKami()
 

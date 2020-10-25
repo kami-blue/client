@@ -1,30 +1,25 @@
 package me.zeroeightsix.kami.util
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.kami.KamiGUI
-import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent
-import me.zeroeightsix.kami.gui.rgui.component.Component
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
-import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
-import me.zeroeightsix.kami.gui.rgui.util.Docking
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
-import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.setting.config.Configuration
+import me.zeroeightsix.kami.setting.GenericConfig
+import me.zeroeightsix.kami.setting.GuiConfig
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.config.AbstractConfig
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.NoSuchFileException
-import java.nio.file.Paths
 
 object ConfigUtils {
 
+    var inProcess = false
+
     fun loadAll(): Boolean {
         var success = true
+        inProcess = true
         val loadingThreads = arrayOf(
                 Thread {
                     Thread.currentThread().name = "Macro Loading Thread"
@@ -39,14 +34,19 @@ object ConfigUtils {
                     success = FriendManager.loadFriends() && success
                 },
                 Thread {
-                    Thread.currentThread().name = "Config Loading Thread"
-                    success = loadConfiguration() && success
+                    Thread.currentThread().name = "Generic Config Loading Thread"
+                    success = loadConfig(GenericConfig) && success
                 },
                 Thread {
-                    Thread.currentThread().name = "Gui Loading Thread"
+                    Thread.currentThread().name = "Module Config Loading Thread"
+                    success = loadConfig(ModuleConfig) && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Gui Config Loading Thread"
+                    GuiConfig.clearSettings()
                     KamiMod.getInstance().guiManager = KamiGUI()
                     KamiMod.getInstance().guiManager.initializeGUI()
-                    KamiMod.log.info("Gui loaded")
+                    success = loadConfig(GuiConfig) && success
                 }
         )
 
@@ -58,11 +58,13 @@ object ConfigUtils {
             thread.join()
         }
 
+        inProcess = false
         return success
     }
 
     fun saveAll(): Boolean {
         var success = true
+        inProcess = true
         val savingThreads = arrayOf(
                 Thread {
                     Thread.currentThread().name = "Macro Saving Thread"
@@ -77,8 +79,16 @@ object ConfigUtils {
                     success = FriendManager.saveFriends() && success
                 },
                 Thread {
-                    Thread.currentThread().name = "Config Saving Thread"
-                    success = saveConfiguration() && success
+                    Thread.currentThread().name = "Generic Config Loading Thread"
+                    success = saveConfig(GenericConfig) && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Module Config Saving Thread"
+                    success = saveConfig(ModuleConfig) && success
+                },
+                Thread {
+                    Thread.currentThread().name = "Gui Config Saving Thread"
+                    success = saveConfig(GuiConfig) && success
                 }
         )
 
@@ -90,6 +100,7 @@ object ConfigUtils {
             thread.join()
         }
 
+        inProcess = false
         return success
     }
 
@@ -98,14 +109,13 @@ object ConfigUtils {
      *
      * @return false if exception caught
      */
-    fun loadConfiguration(): Boolean {
+    fun loadConfig(config: AbstractConfig<*>): Boolean {
         return try {
-            loadConfigurationUnsafe()
-            KamiMod.log.info("Config loaded")
+            config.load()
+            KamiMod.log.info("${config.name} config loaded")
             true
         } catch (e: IOException) {
-            KamiMod.log.error("Failed to load config! ${e.message}")
-            e.printStackTrace()
+            KamiMod.log.error("Failed to load ${config.name} config", e)
             false
         }
     }
@@ -115,38 +125,15 @@ object ConfigUtils {
      *
      * @return false if exception caught
      */
-    fun saveConfiguration(): Boolean {
+    fun saveConfig(config: AbstractConfig<*>): Boolean {
         return try {
-            saveConfigurationUnsafe()
+            config.save()
             KamiMod.log.info("Config saved")
             true
         } catch (e: IOException) {
-            KamiMod.log.error("Failed to save config! ${e.message}")
-            e.printStackTrace()
+            KamiMod.log.error("Failed to save config!", e)
             false
         }
-    }
-
-    fun getConfigName(): String {
-        val config = Paths.get("KAMIBlueLastConfig.txt")
-        var kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
-        try {
-            Files.newBufferedReader(config).use { reader ->
-                val line = reader.readLine()
-                if (isFilenameValid(line)) kamiConfigName = line
-            }
-        } catch (e: NoSuchFileException) {
-            try {
-                Files.newBufferedWriter(config).use { writer ->
-                    writer.write(KAMI_CONFIG_NAME_DEFAULT)
-                }
-            } catch (e1: IOException) {
-                e1.printStackTrace()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return kamiConfigName
     }
 
     fun isFilenameValid(file: String?): Boolean {
@@ -173,63 +160,4 @@ object ConfigUtils {
             }
         }
     }
-
-    @Throws(IOException::class)
-    private fun loadConfigurationUnsafe() {
-        val kamiConfigName = getConfigName()
-        val kamiConfig = Paths.get(kamiConfigName)
-        if (!Files.exists(kamiConfig)) return
-        Configuration.loadConfiguration(kamiConfig)
-        val gui = KamiMod.getInstance().guiStateSetting.value
-        for ((key, value) in gui.entrySet()) {
-            val optional = KamiMod.getInstance().guiManager.children.stream()
-                    .filter { component: Component? -> component is Frame }
-                    .filter { component: Component -> (component as Frame).title == key }
-                    .findFirst()
-            if (optional.isPresent) {
-                val `object` = value.asJsonObject
-                val frame = optional.get() as Frame
-                frame.x = `object`["x"].asInt
-                frame.y = `object`["y"].asInt
-                val docking = Docking.values()[`object`["docking"].asInt]
-                if (docking.isLeft) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.LEFT) else if (docking.isRight) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.RIGHT) else if (docking.isCenterVertical) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.CENTER)
-                frame.docking = docking
-                frame.isMinimized = `object`["minimized"].asBoolean
-                frame.isPinned = `object`["pinned"].asBoolean
-            } else {
-                System.err.println("Found GUI config entry for $key, but found no frame with that name")
-            }
-        }
-        for (component in KamiMod.getInstance().guiManager.children) {
-            if (component !is Frame) continue
-            if (!component.isPinnable || !component.isVisible) continue
-            component.opacity = 0f
-        }
-    }
-
-    @Throws(IOException::class)
-    private fun saveConfigurationUnsafe() {
-        val `object` = JsonObject()
-        KamiMod.getInstance().guiManager.children.stream()
-                .filter { component: Component? -> component is Frame }
-                .map { component: Component? -> component as Frame? }
-                .forEach { frame ->
-                    val frameObject = JsonObject()
-                    frameObject.add("x", JsonPrimitive(frame!!.x))
-                    frameObject.add("y", JsonPrimitive(frame.y))
-                    frameObject.add("docking", JsonPrimitive(listOf(*Docking.values()).indexOf(frame.docking)))
-                    frameObject.add("minimized", JsonPrimitive(frame.isMinimized))
-                    frameObject.add("pinned", JsonPrimitive(frame.isPinned))
-                    `object`.add(frame.title, frameObject)
-                }
-        KamiMod.getInstance().guiStateSetting.value = `object`
-        val outputFile = Paths.get(getConfigName())
-        if (!Files.exists(outputFile)) Files.createFile(outputFile)
-        Configuration.saveConfiguration(outputFile)
-        for (module in ModuleManager.getModules()) {
-            module.destroy()
-        }
-    }
-
-    private const val KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json"
 }

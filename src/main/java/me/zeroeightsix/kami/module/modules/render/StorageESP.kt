@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
@@ -23,37 +23,37 @@ import java.util.concurrent.ConcurrentHashMap
         category = Module.Category.RENDER
 )
 object StorageESP : Module() {
-    private val page = register(Settings.e<Page>("Page", Page.TYPE))
+    private val page = setting("Page", Page.TYPE)
 
     /* Type settings */
-    private val chest = register(Settings.booleanBuilder("Chest").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val shulker = register(Settings.booleanBuilder("Shulker").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val enderChest = register(Settings.booleanBuilder("EnderChest").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val frame = register(Settings.booleanBuilder("ItemFrame").withValue(true).withVisibility { page.value == Page.TYPE }.build())
-    private val frameShulker = register(Settings.booleanBuilder("ItFShulkerOnly").withValue(true).withVisibility { frame.value && page.value == Page.TYPE }.build())
-    private val furnace = register(Settings.booleanBuilder("Furnace").withValue(false).withVisibility { page.value == Page.TYPE }.build())
-    private val dispenser = register(Settings.booleanBuilder("Dispenser").withValue(false).withVisibility { page.value == Page.TYPE }.build())
-    private val hopper = register(Settings.booleanBuilder("Hopper").withValue(false).withVisibility { page.value == Page.TYPE }.build())
-    private val cart = register(Settings.booleanBuilder("Minecart").withValue(false).withVisibility { page.value == Page.TYPE }.build())
+    private val chest = setting("Chest", true, { page.value == Page.TYPE })
+    private val shulker = setting("Shulker", true, { page.value == Page.TYPE })
+    private val enderChest = setting("EnderChest", true, { page.value == Page.TYPE })
+    private val frame = setting("ItemFrame", true, { page.value == Page.TYPE })
+    private val frameShulker = setting("ItFShulkerOnly", true, { frame.value && page.value == Page.TYPE })
+    private val furnace = setting("Furnace", false, { page.value == Page.TYPE })
+    private val dispenser = setting("Dispenser", false, { page.value == Page.TYPE })
+    private val hopper = setting("Hopper", false, { page.value == Page.TYPE })
+    private val cart = setting("Minecart", false, { page.value == Page.TYPE })
 
     /* Color settings */
-    private val colorChest = register(Settings.enumBuilder(DyeColors::class.java).withName("ChestColor").withValue(DyeColors.ORANGE).withVisibility { page.value == Page.COLOR }.build())
-    private val colorDispenser = register(Settings.enumBuilder(DyeColors::class.java).withName("DispenserColor").withValue(DyeColors.LIGHT_GRAY).withVisibility { page.value == Page.COLOR }.build())
-    private val colorShulker = register(Settings.enumBuilder(DyeColors::class.java).withName("ShulkerColor").withValue(DyeColors.MAGENTA).withVisibility { page.value == Page.COLOR }.build())
-    private val colorEnderChest = register(Settings.enumBuilder(DyeColors::class.java).withName("EnderChestColor").withValue(DyeColors.PURPLE).withVisibility { page.value == Page.COLOR }.build())
-    private val colorFurnace = register(Settings.enumBuilder(DyeColors::class.java).withName("FurnaceColor").withValue(DyeColors.LIGHT_GRAY).withVisibility { page.value == Page.COLOR }.build())
-    private val colorHopper = register(Settings.enumBuilder(DyeColors::class.java).withName("HopperColor").withValue(DyeColors.GRAY).withVisibility { page.value == Page.COLOR }.build())
-    private val colorCart = register(Settings.enumBuilder(DyeColors::class.java).withName("CartColor").withValue(DyeColors.GREEN).withVisibility { page.value == Page.COLOR }.build())
-    private val colorFrame = register(Settings.enumBuilder(DyeColors::class.java).withName("FrameColor").withValue(DyeColors.ORANGE).withVisibility { page.value == Page.COLOR }.build())
+    private val colorChest = setting("ChestColor", DyeColors.ORANGE, { page.value == Page.COLOR })
+    private val colorDispenser = setting("DispenserColor", DyeColors.LIGHT_GRAY, { page.value == Page.COLOR })
+    private val colorShulker = setting("ShulkerColor", DyeColors.MAGENTA, { page.value == Page.COLOR })
+    private val colorEnderChest = setting("EnderChestColor", DyeColors.PURPLE, { page.value == Page.COLOR })
+    private val colorFurnace = setting("FurnaceColor", DyeColors.LIGHT_GRAY, { page.value == Page.COLOR })
+    private val colorHopper = setting("HopperColor", DyeColors.GRAY, { page.value == Page.COLOR })
+    private val colorCart = setting("CartColor", DyeColors.GREEN, { page.value == Page.COLOR })
+    private val colorFrame = setting("FrameColor", DyeColors.ORANGE, { page.value == Page.COLOR })
 
     /* Render settings */
-    private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.RENDER }.build())
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDER }.build())
-    private val tracer = register(Settings.booleanBuilder("Tracer").withValue(false).withVisibility { page.value == Page.RENDER }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { page.value == Page.RENDER && filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDER && outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.RENDER && tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).withVisibility { page.value == Page.RENDER }.build())
+    private val filled = setting("Filled", true, { page.value == Page.RENDER })
+    private val outline = setting("Outline", true, { page.value == Page.RENDER })
+    private val tracer = setting("Tracer", false, { page.value == Page.RENDER })
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { page.value == Page.RENDER && filled.value })
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { page.value == Page.RENDER && outline.value })
+    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.RENDER && tracer.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDER })
 
     private enum class Page {
         TYPE, COLOR, RENDER

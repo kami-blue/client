@@ -44,8 +44,7 @@ class ConfigCommand : Command("config", ChunkBuilder()
 
 
             "path" -> if (args[1] == null) {
-                val file = Paths.get(ConfigUtils.getConfigName())
-                MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
+                //MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
             } else {
                 val newPath = args[1]!!
                 if (!ConfigUtils.isFilenameValid(newPath)) {

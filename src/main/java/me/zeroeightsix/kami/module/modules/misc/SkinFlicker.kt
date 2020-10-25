@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.player.EnumPlayerModelParts
@@ -13,8 +13,8 @@ import net.minecraft.entity.player.EnumPlayerModelParts
         category = Module.Category.MISC
 )
 object SkinFlicker : Module() {
-    private val mode = register(Settings.e<FlickerMode>("Mode", FlickerMode.HORIZONTAL))
-    private val delay = register(Settings.integerBuilder("Delay(ms)").withValue(10).withRange(0, 500))
+    private val mode = setting("Mode", FlickerMode.HORIZONTAL)
+    private val delay = setting("Delay(ms)", 10, 0..500, 10)
 
     private enum class FlickerMode {
         HORIZONTAL, VERTICAL, RANDOM

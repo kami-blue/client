@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 @Module.Info(
         name = "ChatSetting",
@@ -11,6 +11,6 @@ import me.zeroeightsix.kami.setting.Settings
         alwaysEnabled = true
 )
 object ChatSetting : Module() {
-    val delay = register(Settings.floatBuilder("MessageSpeedLimit(s)").withValue(3.0f).withRange(1.0f, 20.0f).withStep(0.5f))
-    val maxMessageQueueSize = register(Settings.integerBuilder("MaxMessageQueueSize").withValue(50).withRange(10, 200).withStep(5))
+    val delay = setting("MessageSpeedLimit(s)", 3.0f, 1.0f..20.0f, 0.5f)
+    val maxMessageQueueSize = setting("MaxMessageQueueSize", 50, 10..200, 5)
 }

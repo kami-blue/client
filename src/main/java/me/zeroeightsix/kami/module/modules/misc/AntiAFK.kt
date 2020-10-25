@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -30,15 +30,15 @@ import kotlin.random.Random
         description = "Prevents being kicked for AFK"
 )
 object AntiAFK : Module() {
-    private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(0, 100))
-    private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
-    private val autoReply = register(Settings.b("AutoReply", true))
-    private val swing = register(Settings.b("Swing", true))
-    private val jump = register(Settings.b("Jump", true))
-    private val turn = register(Settings.b("Turn", true))
-    private val walk = register(Settings.b("Walk", true))
-    private val radius = register(Settings.integerBuilder("Radius").withValue(64).withRange(1, 128))
-    private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15))
+    private val delay = setting("ActionDelay", 50, 0..100, 5)
+    private val variation = setting("Variation", 25, 0..50, 5)
+    private val autoReply = setting("AutoReply", true)
+    private val swing = setting("Swing", true)
+    private val jump = setting("Jump", true)
+    private val turn = setting("Turn", true)
+    private val walk = setting("Walk", true)
+    private val radius = setting("Radius", 64, 8..128, 8)
+    private val inputTimeout = setting("InputTimeout(m)", 0, 0..15, 1)
 
     private var startPos: BlockPos? = null
     private var nextActionTick = 0
@@ -160,7 +160,7 @@ object AntiAFK : Module() {
     }
 
     init {
-        walk.settingListener = Setting.SettingListeners {
+        walk.settingListener = {
             if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
         }
     }

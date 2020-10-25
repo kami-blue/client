@@ -1,0 +1,139 @@
+package me.zeroeightsix.kami.setting.config
+
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.setting.IFinalGroup
+import me.zeroeightsix.kami.setting.groups.SettingGroup
+import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
+import me.zeroeightsix.kami.setting.impl.number.DoubleSetting
+import me.zeroeightsix.kami.setting.impl.number.FloatSetting
+import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
+import me.zeroeightsix.kami.setting.impl.other.BindSetting
+import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
+import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
+import me.zeroeightsix.kami.util.ConfigUtils
+import java.io.File
+import java.io.FileWriter
+import java.io.InputStreamReader
+import java.nio.file.Files
+
+abstract class AbstractConfig<T>(
+        name: String,
+        private val filePath: String
+) : SettingMultiGroup(name), IFinalGroup<T> {
+
+    /* Setting registering */
+    /** Integer Setting */
+    fun T.setting(
+            name: String,
+            value: Int,
+            range: IntRange,
+            step: Int,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
+            description: String = ""
+    ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
+
+    /** Double Setting */
+    fun T.setting(
+            name: String,
+            value: Double,
+            range: ClosedFloatingPointRange<Double>,
+            step: Double,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
+            description: String = ""
+    ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
+
+    /** Float Setting */
+    fun T.setting(
+            name: String,
+            value: Float,
+            range: ClosedFloatingPointRange<Float>,
+            step: Float,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
+            description: String = ""
+    ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
+
+    /** Bind Setting */
+    fun T.setting(
+            name: String,
+            visibility: () -> Boolean = { true },
+            description: String = ""
+    ) = setting(BindSetting(name, visibility, description))
+
+    /** Boolean Setting */
+    fun T.setting(
+            name: String,
+            value: Boolean,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
+            description: String = ""
+    ) = setting(BooleanSetting(name, value, visibility, consumer, description))
+
+    /** Enum Setting */
+    fun <E : Enum<E>> T.setting(
+            name: String,
+            value: E,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: E, input: E) -> E = { _, input -> input },
+            description: String = ""
+    ) = setting(EnumSetting(name, value, visibility, consumer, description))
+
+    /** Boolean Setting */
+    fun T.setting(
+            name: String,
+            value: String,
+            visibility: () -> Boolean = { true },
+            consumer: (prev: String, input: String) -> String = { _, input -> input },
+            description: String = ""
+    ) = setting(StringSetting(name, value, visibility, consumer, description))
+    /* End of setting registering */
+
+
+    override val file get() = File("$filePath$name.json")
+    override val backup get() =  File("$filePath$name.bak")
+
+    override fun save() {
+        saveToFile(this, file, backup)
+    }
+
+    override fun load() {
+        try {
+            loadFromFile(this, file)
+        } catch (e: Exception) {
+            KamiMod.log.warn("Failed to load latest, loading backup.", e)
+            loadFromFile(this, backup)
+        }
+    }
+
+    protected fun saveToFile(group: SettingGroup, file: File, backup: File) {
+        ConfigUtils.fixEmptyJson(file)
+        ConfigUtils.fixEmptyJson(backup)
+
+        if (file.exists()) file.copyTo(backup, true)
+
+        val fileWriter = FileWriter(file, false)
+        gson.toJson(group.write(), fileWriter)
+        fileWriter.flush()
+        fileWriter.close()
+    }
+
+    protected fun loadFromFile(group: SettingGroup, file: File) {
+        ConfigUtils.fixEmptyJson(file)
+        val stream = Files.newInputStream(file.toPath())
+        val jsonObject = parser.parse(InputStreamReader(stream)).asJsonObject
+        group.read(jsonObject)
+        stream.close()
+    }
+
+    protected companion object {
+        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+        val parser = JsonParser()
+    }
+
+}

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component.container.use;
 
+import kotlin.ranges.IntRange;
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.OrganisedContainer;
@@ -13,6 +14,10 @@ import me.zeroeightsix.kami.gui.rgui.poof.use.FramePoof;
 import me.zeroeightsix.kami.gui.rgui.poof.use.Poof;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import me.zeroeightsix.kami.gui.rgui.util.Docking;
+import me.zeroeightsix.kami.setting.GuiConfig;
+import me.zeroeightsix.kami.setting.impl.number.IntegerSetting;
+import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting;
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,20 +32,23 @@ public class Frame extends OrganisedContainer {
     int trueheight = 0;
     int truemaxheight = 0;
 
+    final IntegerSetting posX;
+    final IntegerSetting posY;
+
     int dx = 0;
     int dy = 0;
     boolean doDrag = false;
     boolean startDrag = false;
 
-    boolean isMinimized = false;
     boolean isMinimizeable = true;
-    boolean isCloseable = true;
-    boolean isPinned = false;
     boolean isPinneable = false;
+    boolean isCloseable = true;
+
+    final BooleanSetting minimized;
+    final BooleanSetting pinned;
+    final EnumSetting<Docking> docking;
 
     boolean isLayoutWorking = false;
-
-    Docking docking = Docking.NONE;
 
     HashMap<Component, Boolean> visibilityMap = new HashMap<>();
 
@@ -51,6 +59,12 @@ public class Frame extends OrganisedContainer {
     public Frame(Theme theme, Layout layout, String title) {
         super(theme, layout);
         this.title = title;
+        this.posX = GuiConfig.INSTANCE.setting(this, "x", super.getX(), new IntRange(Integer.MIN_VALUE, Integer.MAX_VALUE), 1, () -> false, (prev, value) -> value, "");
+        this.posY = GuiConfig.INSTANCE.setting(this, "y", super.getY(), new IntRange(Integer.MIN_VALUE, Integer.MAX_VALUE), 1, () -> false, (prev, value) -> value, "");
+
+        this.minimized = GuiConfig.INSTANCE.setting(this, "minimized", false, () -> false, (prev, value) -> value, "");
+        this.pinned = GuiConfig.INSTANCE.setting(this, "pinned", false, () -> false, (prev, value) -> value, "");
+        this.docking = GuiConfig.INSTANCE.setting(this,"docking", Docking.NONE, () -> false, (prev, value) -> value, "");
 
         addPoof(new FramePoof<Frame, FramePoof.FramePoofInfo>() {
             @Override
@@ -121,12 +135,9 @@ public class Frame extends OrganisedContainer {
         public void onMouseDown(MouseButtonEvent event) {
             dx = event.getX() + getOriginOffsetX();
             dy = event.getY() + getOriginOffsetY();
-            if (dy <= getOriginOffsetY() && event.getButton() == 0 && dy > 0)
-                doDrag = true;
-            else
-                doDrag = false;
+            doDrag = dy <= getOriginOffsetY() && event.getButton() == 0 && dy > 0;
 
-            if (isMinimized && event.getY() > getOriginOffsetY())
+            if (minimized.getValue() && event.getY() > getOriginOffsetY())
                 event.cancel();
         }
 
@@ -153,6 +164,28 @@ public class Frame extends OrganisedContainer {
         }
     }
 
+    @Override
+    public int getX() {
+        return posX.getValue();
+    }
+
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+        posX.setValue(super.getX());
+    }
+
+    @Override
+    public int getY() {
+        return posY.getValue();
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        posY.setValue(super.getY());
+    }
+
     public void setCloseable(boolean closeable) {
         isCloseable = closeable;
     }
@@ -166,11 +199,11 @@ public class Frame extends OrganisedContainer {
     }
 
     public boolean isMinimized() {
-        return isMinimized;
+        return minimized.getValue();
     }
 
     public void setMinimized(boolean minimized) {
-        if (minimized && !isMinimized) {
+        if (minimized && !this.minimized.getValue()) {
             trueheight = getHeight();
             truemaxheight = getMaximumHeight();
             setHeight(0);
@@ -179,7 +212,7 @@ public class Frame extends OrganisedContainer {
                 visibilityMap.put(c, c.isVisible());
                 c.setVisible(false);
             }
-        } else if (!minimized && isMinimized) {
+        } else if (!minimized && this.minimized.getValue()) {
             setMaximumHeight(truemaxheight);
             setHeight(trueheight - getOriginOffsetY());
             for (Map.Entry<Component, Boolean> entry : visibilityMap.entrySet()) {
@@ -187,7 +220,7 @@ public class Frame extends OrganisedContainer {
             }
         }
 
-        isMinimized = minimized;
+        this.minimized.setValue(minimized);
     }
 
     public boolean isCloseable() {
@@ -199,7 +232,7 @@ public class Frame extends OrganisedContainer {
     }
 
     public boolean isPinned() {
-        return isPinned;
+        return pinned.getValue();
     }
 
     public void setPinnable(boolean pinneable) {
@@ -207,7 +240,7 @@ public class Frame extends OrganisedContainer {
     }
 
     public void setPinned(boolean pinned) {
-        isPinned = pinned && isPinneable;
+        this.pinned.setValue(pinned && isPinneable);
     }
 
     public String getTitle() {
@@ -215,11 +248,11 @@ public class Frame extends OrganisedContainer {
     }
 
     public Docking getDocking() {
-        return docking;
+        return docking.getValue();
     }
 
     public void setDocking(Docking docking) {
-        this.docking = docking;
+        this.docking.setValue(docking);
     }
 
     public abstract static class FrameDragPoof<T extends Frame, S extends FrameDragPoof.DragInfo> extends Poof<T, S> {

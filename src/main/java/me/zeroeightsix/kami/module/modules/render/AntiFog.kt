@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 /**
  * Created by 086 on 9/04/2018.
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.setting.Settings
         category = Module.Category.RENDER
 )
 object AntiFog : Module() {
-    val mode = register(Settings.e<VisionMode>("Mode", VisionMode.NO_FOG))
+    val mode = setting("Mode", VisionMode.NO_FOG)
 
     enum class VisionMode {
         NO_FOG, AIR
