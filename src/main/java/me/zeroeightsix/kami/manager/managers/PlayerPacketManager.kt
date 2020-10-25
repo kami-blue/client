@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
@@ -21,9 +21,13 @@ object PlayerPacketManager : Manager() {
     private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })
 
     var serverSidePosition: Vec3d = Vec3d.ZERO; private set
-    var prevServerSideRotation = Vec2f.ZERO; private set
+    var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
+
     var serverSideRotation = Vec2f.ZERO; private set
+    var prevServerSideRotation = Vec2f.ZERO; private set
+
     var clientSidePitch = Vec2f.ZERO; private set
+
     var serverSideHotbar = 0; private set
     var lastSwapTime = 0L; private set
 
@@ -33,7 +37,6 @@ object PlayerPacketManager : Manager() {
     init {
         listener<OnUpdateWalkingPlayerEvent> {
             if (it.era != KamiEvent.Era.PERI) return@listener
-            prevServerSideRotation = serverSideRotation
             if (packetList.isNotEmpty()) {
                 packetList.values.first().apply(it) // Apply the packet from the module that has the highest priority
                 packetList.clear()
@@ -42,8 +45,12 @@ object PlayerPacketManager : Manager() {
 
         listener<PacketEvent.Send> {
                 if (it.packet is CPacketPlayer) {
-                    if (it.packet.moving) serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+                    if (it.packet.moving) {
+                        prevServerSidePosition = serverSidePosition
+                        serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+                    }
                     if (it.packet.rotating) {
+                        prevServerSideRotation = serverSideRotation
                         serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
                         Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
                     }

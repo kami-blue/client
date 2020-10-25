@@ -1,9 +1,12 @@
 package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
+import baritone.api.Settings
 import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {
+    var settingsInitialized = false
+
     var paused = false
         private set
     val isPathing get() = BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.isPathing
@@ -23,6 +26,14 @@ object BaritoneUtils {
                 paused = false
                 process.get().onLostControl()
             }
+        }
+    }
+
+    fun settings(): Settings? {
+        return if (!settingsInitialized) {
+            null
+        } else {
+            BaritoneAPI.getSettings()
         }
     }
 }

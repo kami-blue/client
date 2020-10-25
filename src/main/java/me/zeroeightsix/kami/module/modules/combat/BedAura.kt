@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.CombatManager
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -29,6 +29,7 @@ import kotlin.collections.HashMap
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "BedAura",
         description = "Place bed and kills enemies",

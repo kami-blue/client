@@ -5,9 +5,10 @@
 
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.manager.mangers.KamiMojiManager;
+import me.zeroeightsix.kami.manager.managers.KamiMojiManager;
 import me.zeroeightsix.kami.module.modules.chat.KamiMoji;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -105,7 +106,7 @@ public abstract class MixinFontRenderer {
         bufferbuilder.pos(x, y, 0.0).tex(0.0, 0.0).endVertex();
         tessellator.draw();
 
-        GlStateManager.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GlStateUtils.resetTexParam();
     }
 
     private String getReplacement() {

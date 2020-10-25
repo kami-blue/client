@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.WaypointManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -34,7 +34,7 @@ object VisualRange : Module() {
 
             val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
             for (player in loadedPlayerSet) {
-                if (player == mc.player || !friends.value && Friends.isFriend(player.name)) continue
+                if (player == mc.renderViewEntity || player == mc.player || !friends.value && FriendManager.isFriend(player.name)) continue
                 if (playerSet.add(player) && isEnabled) {
                     onEnter(player)
                 }
@@ -65,7 +65,7 @@ object VisualRange : Module() {
         }
     }
 
-    private fun getColor(player: EntityPlayer) = if (Friends.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
+    private fun getColor(player: EntityPlayer) = if (FriendManager.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
 
     private fun sendNotification(message: String) {
         if (playSound.value) mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -8,7 +9,10 @@ import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
@@ -29,16 +33,16 @@ object FastUse : Module() {
     private val chargeSetting = register(Settings.integerBuilder("BowCharge").withValue(3).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
     private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(5).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
 
+    private var lastUsedHand = EnumHand.MAIN_HAND
     private var randomVariation = 0
-    private var time = 0
+    private var tickCount = 0
 
     val bowCharge get() = if (isEnabled && (allItems.value || bow.value)) 72000.0 - (chargeSetting.value.toDouble() + chargeVariation.value / 2.0) else null
 
     init {
         listener<SafeTickEvent> {
-            if (mc.player.isSpectator) return@listener
+            if (it.phase != TickEvent.Phase.END || mc.player.isSpectator) return@listener
 
-            @Suppress("SENSELESS_COMPARISON") // IDE meme
             if ((allItems.value || bow.value) && mc.player.isHandActive && (mc.player.activeItemStack.getItem() == Items.BOW) && mc.player.itemInUseMaxCount >= getBowCharge()) {
                 randomVariation = 0
                 mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
@@ -47,22 +51,23 @@ object FastUse : Module() {
             }
 
             if (delay.value > 0) {
-                if (time <= 0) {
-                    time = delay.value
+                if (tickCount <= 0) {
+                    tickCount = delay.value
                 } else {
-                    time--
+                    tickCount--
                     return@listener
                 }
             }
 
-            if (mc.player.isHandActive && passItemCheck(mc.player.activeItemStack.getItem())) {
+            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).getItem())) {
                 mc.rightClickDelayTimer = 0
             }
         }
-    }
 
-    override fun onDisable() {
-        mc.rightClickDelayTimer = 4
+        listener<PacketEvent.PostSend> {
+            if (it.packet is CPacketPlayerTryUseItem) lastUsedHand = it.packet.hand
+            if (it.packet is CPacketPlayerTryUseItemOnBlock) lastUsedHand = it.packet.hand
+        }
     }
 
     private fun getBowCharge(): Int {
@@ -73,10 +78,11 @@ object FastUse : Module() {
     }
 
     private fun passItemCheck(item: Item): Boolean {
-        return item !is ItemAir && ((allItems.value && item !is ItemBlock)
-                || (blocks.value && item is ItemBlock)
-                || (expBottles.value && item is ItemExpBottle)
-                || (endCrystals.value && item is ItemEndCrystal)
-                || (fireworks.value && item is ItemFirework))
+        return item !is ItemAir
+                && (allItems.value && item !is ItemBlock
+                || blocks.value && item is ItemBlock
+                || expBottles.value && item is ItemExpBottle
+                || endCrystals.value && item is ItemEndCrystal
+                || fireworks.value && item is ItemFirework)
     }
 }

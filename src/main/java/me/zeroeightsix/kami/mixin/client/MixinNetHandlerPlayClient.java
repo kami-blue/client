@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleChunkData",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;read(Lnet/minecraft/network/PacketBuffer;IZ)V"),
+            at = @At(value = "RETURN", target = "Lnet/minecraft/world/chunk/Chunk;read(Lnet/minecraft/network/PacketBuffer;IZ)V"),
             locals = LocalCapture.CAPTURE_FAILHARD)
     private void read(SPacketChunkData data, CallbackInfo info, Chunk chunk) {
         KamiEventBus.INSTANCE.post(new ChunkEvent(chunk, data));

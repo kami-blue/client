@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import baritone.api.BaritoneAPI
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.event.listener
 
 /**
@@ -36,34 +36,30 @@ object Baritone : Module() {
 
     init {
         settingList.forEach {
-            it.settingListener = SettingListeners { set() }
+            it.settingListener = SettingListeners { sync() }
         }
 
-        // not triggered until in game
-        listener<SafeTickEvent> {
-            if (!hasRun) {
-                set()
-                hasRun = true
-            }
+        listener<BaritoneSettingsInitEvent> {
+            sync()
         }
     }
 
-    private fun set() {
-        mc.player?.let {
-            BaritoneAPI.getSettings().chatControl.value = false // enable chatControlAnyway if you want to use it
-            BaritoneAPI.getSettings().allowBreak.value = allowBreak.value
-            BaritoneAPI.getSettings().allowSprint.value = allowSprint.value
-            BaritoneAPI.getSettings().allowPlace.value = allowPlace.value
-            BaritoneAPI.getSettings().allowInventory.value = allowInventory.value
-            BaritoneAPI.getSettings().freeLook.value = freeLook.value
-            BaritoneAPI.getSettings().allowDownward.value = allowDownwardTunneling.value
-            BaritoneAPI.getSettings().allowParkour.value = allowParkour.value
-            BaritoneAPI.getSettings().allowParkourPlace.value = allowParkourPlace.value
-            BaritoneAPI.getSettings().enterPortal.value = !avoidPortals.value
-            BaritoneAPI.getSettings().mapArtMode.value = mapArtMode.value
-            BaritoneAPI.getSettings().renderGoal.value = renderGoal.value
-            BaritoneAPI.getSettings().failureTimeoutMS.value = failureTimeout.value * 1000L
-            BaritoneAPI.getSettings().blockReachDistance.value = blockReachDistance.value
+    private fun sync() {
+        BaritoneUtils.settings()?.let {
+            it.chatControl.value = false // enable chatControlAnyway if you want to use it
+            it.allowBreak.value = allowBreak.value
+            it.allowSprint.value = allowSprint.value
+            it.allowPlace.value = allowPlace.value
+            it.allowInventory.value = allowInventory.value
+            it.freeLook.value = freeLook.value
+            it.allowDownward.value = allowDownwardTunneling.value
+            it.allowParkour.value = allowParkour.value
+            it.allowParkourPlace.value = allowParkourPlace.value
+            it.enterPortal.value = !avoidPortals.value
+            it.mapArtMode.value = mapArtMode.value
+            it.renderGoal.value = renderGoal.value
+            it.failureTimeoutMS.value = failureTimeout.value * 1000L
+            it.blockReachDistance.value = blockReachDistance.value
         }
     }
 }

@@ -2,26 +2,11 @@ package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
 import net.minecraft.inventory.ClickType
-import net.minecraft.item.Item.getIdFromItem
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.CPacketClickWindow
 
 object InventoryUtils {
     private val mc = Minecraft.getMinecraft()
-
-    /**
-     * Returns slots contains item with given item id in player inventory
-     *
-     * @return Array contains slot index, null if no item found
-     */
-    fun getSlots(min: Int, max: Int, itemID: Int): Array<Int>? {
-        val slots = arrayListOf<Int>()
-        for (i in min..max) {
-            if (getIdFromItem(mc.player.inventory.getStackInSlot(i).getItem()) == itemID) {
-                slots.add(i)
-            }
-        }
-        return if (slots.isNotEmpty()) slots.toTypedArray() else null
-    }
 
     /**
      * Returns slots contains item with given item id in player hotbar
@@ -41,6 +26,23 @@ object InventoryUtils {
         return getSlots(9, 35, itemId)
     }
 
+    /**
+     * Returns slots contains item with given item id in player inventory
+     *
+     * @return Array contains slot index, null if no item found
+     */
+    fun getSlots(min: Int, max: Int, itemID: Int): Array<Int>? {
+        val slots = ArrayList<Int>()
+        mc.player?.inventory?.mainInventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in min..max) {
+                if (Item.getIdFromItem(clonedList[i].getItem()) != itemID) continue
+                slots.add(i)
+            }
+        }
+        return if (slots.isNotEmpty()) slots.toTypedArray() else null
+    }
+
     fun getEmptySlotContainer(min: Int, max: Int): Int? {
         return getSlotsContainer(min, max, 0)?.get(0)
     }
@@ -55,25 +57,11 @@ object InventoryUtils {
      * @return Array contains full inventory slot index, null if no item found
      */
     fun getSlotsContainer(min: Int, max: Int, itemId: Int): Array<Int>? {
-        val slots = arrayListOf<Int>()
-        for (i in min..max) {
-            if (getIdFromItem(mc.player.openContainer.inventory[i].getItem()) == itemId) {
-                slots.add(i)
-            }
-        }
-        return if (slots.isNotEmpty()) slots.toTypedArray() else null
-    }
-
-    /**
-     * Returns slots in full inventory contains item with given [itemId] in player inventory
-     * This is same as [getSlots] but it returns full inventory slot index
-     *
-     * @return Array contains full inventory slot index, null if no item found
-     */
-    fun getSlotsFullInv(min: Int = 9, max: Int = 44, itemId: Int): Array<Int>? {
-        val slots = arrayListOf<Int>()
-        for (i in min..max) {
-            if (getIdFromItem(mc.player.inventoryContainer.inventory[i].getItem()) == itemId) {
+        val slots = ArrayList<Int>()
+        mc.player?.openContainer?.inventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in min..max) {
+                if (Item.getIdFromItem(clonedList[i].getItem()) != itemId) continue
                 slots.add(i)
             }
         }
@@ -98,6 +86,24 @@ object InventoryUtils {
      */
     fun getSlotsFullInvNoHotbar(itemId: Int): Array<Int>? {
         return getSlotsFullInv(9, 35, itemId)
+    }
+
+    /**
+     * Returns slots in full inventory contains item with given [itemId] in player inventory
+     * This is same as [getSlots] but it returns full inventory slot index
+     *
+     * @return Array contains full inventory slot index, null if no item found
+     */
+    fun getSlotsFullInv(min: Int = 9, max: Int = 44, itemId: Int): Array<Int>? {
+        val slots = ArrayList<Int>()
+        mc.player?.inventoryContainer?.inventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in min..max) {
+                if (Item.getIdFromItem(clonedList[i].getItem()) != itemId) continue
+                slots.add(i)
+            }
+        }
+        return if (slots.isNotEmpty()) slots.toTypedArray() else null
     }
 
     /**
@@ -136,8 +142,15 @@ object InventoryUtils {
     fun countItem(min: Int, max: Int, itemId: Int): Int {
         val itemList = getSlotsFullInv(min, max, itemId)
         var currentCount = 0
-        if (itemList != null) for (i in itemList) {
-            currentCount += mc.player.inventoryContainer.inventory[i].count
+        if (itemList != null) {
+            mc.player?.inventoryContainer?.inventory?.let {
+                val clonedList = ArrayList(it)
+                for (i in min..max) {
+                    val itemStack = clonedList.getOrNull(i) ?: continue
+                    if (Item.getIdFromItem(itemStack.getItem()) != itemId) continue
+                    currentCount += if (itemId == 0) 1 else itemStack.count
+                }
+            }
         }
         return currentCount
     }
@@ -147,18 +160,16 @@ object InventoryUtils {
      * Swap current held item to given [slot]
      */
     fun swapSlot(slot: Int) {
-        mc.player.inventory.currentItem = slot
-        mc.playerController.syncCurrentPlayItem()
+        mc.player?.inventory?.currentItem = slot
+        mc.playerController?.syncCurrentPlayItem()
     }
 
     /**
      * Try to swap current held item to item with given [itemID]
      */
     fun swapSlotToItem(itemID: Int) {
-        if (getSlotsHotbar(itemID) != null) {
-            swapSlot(getSlotsHotbar(itemID)!![0])
-        }
-        mc.playerController.syncCurrentPlayItem()
+        val slot = getSlotsHotbar(itemID)?.getOrNull(0) ?: return
+        swapSlot(slot)
     }
 
     /**
@@ -166,17 +177,16 @@ object InventoryUtils {
      * If none of those found, then move it to slot 0
      */
     fun moveToHotbar(itemID: Int, exceptionID: Int) {
-        val slot1 = getSlotsFullInvNoHotbar(itemID)!![0]
+        val slot1 = getSlotsFullInvNoHotbar(itemID)?.getOrNull(0) ?: return
         var slot2 = 36
-        for (i in 36..44) { /* Finds slot contains no exception item first */
-            val currentItemStack = mc.player.inventoryContainer.inventory[i]
-            if (currentItemStack.isEmpty) {
-                slot2 = i
-                break
-            }
-            if (getIdFromItem(currentItemStack.getItem()) != exceptionID) {
-                slot2 = i
-                break
+        mc.player?.inventoryContainer?.inventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in 36..44) { /* Finds slot contains no exception item first */
+                val itemStack = clonedList[i]
+                if (Item.getIdFromItem(itemStack.getItem()) != exceptionID) {
+                    slot2 = i
+                    break
+                }
             }
         }
         moveToSlot(slot1, slot2)
@@ -187,8 +197,7 @@ object InventoryUtils {
      * if [slotTo] contains an item, then move it to [slotFrom]
      */
     fun moveToSlot(slotFrom: Int, slotTo: Int): ShortArray {
-        val transactionIds = moveToSlot(0, slotFrom, slotTo)
-        return transactionIds
+        return moveToSlot(0, slotFrom, slotTo)
     }
 
     /**
@@ -246,7 +255,7 @@ object InventoryUtils {
      * Put the item currently holding by mouse to somewhere or throw it
      */
     fun removeHoldingItem() {
-        if (mc.player.inventory.getItemStack().isEmpty()) return
+        if (mc.player?.inventory?.getItemStack()?.isEmpty() != false) return
         val slot = (getSlotsFullInv(9, 45, 0) // Get empty slots in inventory and offhand
                 ?: getSlotsFullInv(1, 4, 0))?.get(0) // Get empty slots in crafting slot
                 ?: -999 // Throw on the ground
@@ -259,10 +268,12 @@ object InventoryUtils {
      * @return Transaction id
      */
     fun inventoryClick(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
-        val container = if (windowId == 0) mc.player.inventoryContainer else mc.player.openContainer
-        val transactionID = container.getNextTransactionID(mc.player.inventory)
-        val itemStack = container.slotClick(slot, mouseButton, type, mc.player)
-        mc.connection!!.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+        val player = mc.player ?: return -32768
+        val container = (if (windowId == 0) player.inventoryContainer else player.openContainer) ?: return -32768
+        val playerInventory = player.inventory ?: return -32768
+        val transactionID = container.getNextTransactionID(playerInventory)
+        val itemStack = container.slotClick(slot, mouseButton, type, player)
+        mc.connection?.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
         return transactionID
     }
     /* End of inventory management */

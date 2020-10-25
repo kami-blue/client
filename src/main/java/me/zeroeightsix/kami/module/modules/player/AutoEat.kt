@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.event.listener
@@ -58,7 +58,7 @@ object AutoEat : Module() {
                 eating = false
                 unpause()
 
-                BaritoneAPI.getSettings().allowInventory.value = false
+                BaritoneUtils.settings()?.allowInventory?.value = false
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
                 return@listener
@@ -76,7 +76,7 @@ object AutoEat : Module() {
                 }
 
                 eating = true
-                BaritoneAPI.getSettings().allowInventory.value = Baritone.allowInventory.value
+                BaritoneUtils.settings()?.allowInventory?.value = Baritone.allowInventory.value
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                 mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)

@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.manager.ManagerLoader;
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager;
+import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
@@ -23,6 +23,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
+import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -54,9 +56,10 @@ public class KamiMod {
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
     public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
-    public static final char colour = '\u00A7';
+    public static final char color = '\u00A7';
     public static final char separator = '|';
 
+    public static final String DIRECTORY = "kamiblue/";
     public static final Logger log = LogManager.getLogger("KAMI Blue");
 
     public static Thread MAIN_THREAD;
@@ -70,8 +73,12 @@ public class KamiMod {
 
     public CommandManager commandManager;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        final File directory = new File(DIRECTORY);
+        if (!directory.exists()) directory.mkdir();
+
         MAIN_THREAD = Thread.currentThread();
         updateCheck();
         ModuleManager.preLoad();

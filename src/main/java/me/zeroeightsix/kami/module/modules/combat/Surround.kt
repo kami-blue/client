@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.CombatManager
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Setting
@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "Surround",
         category = Module.Category.COMBAT,

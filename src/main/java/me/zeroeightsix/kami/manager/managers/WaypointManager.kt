@@ -1,14 +1,15 @@
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyFile
-import me.zeroeightsix.kami.util.Waypoint
+import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyJson
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.math.CoordinateConverter
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.util.math.BlockPos
 import java.io.*
@@ -126,7 +127,7 @@ object WaypointManager : Manager() {
     }
 
     fun remove(id: String): Boolean {
-        val waypoint = get(id)?: return false
+        val waypoint = get(id) ?: return false
         val removed = waypoints.remove(waypoint)
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))
         return removed
@@ -153,6 +154,57 @@ object WaypointManager : Manager() {
     }
 
     init {
-        fixEmptyFile(file)
+        fixEmptyJson(file)
+    }
+
+    class Waypoint(
+            @SerializedName("position")
+            val pos: BlockPos,
+
+            @SerializedName("name")
+            val name: String,
+
+            @SerializedName("time") // NEEDS to stay "time" to maintain backwards compat
+            val date: String
+    ) {
+
+        @SerializedName("id")
+        val id: Int = genID()
+
+        @SerializedName("server")
+        val server: String? = genServer() /* can be null from old configs */
+
+        @SerializedName("dimension")
+        val dimension: Int = genDimension()
+
+        fun currentPos() = CoordinateConverter.toCurrent(dimension, pos)
+
+        private fun genID(): Int = waypoints.lastOrNull()?.id?.plus(1) ?: 0
+
+        override fun toString() = currentPos().let { "${it.x}, ${it.y}, ${it.z}" }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is Waypoint) return false
+
+            if (pos != other.pos) return false
+            if (name != other.name) return false
+            if (date != other.date) return false
+            if (id != other.id) return false
+            if (server != other.server) return false
+            if (dimension != other.dimension) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = pos.hashCode()
+            result = 31 * result + name.hashCode()
+            result = 31 * result + date.hashCode()
+            result = 31 * result + id
+            result = 31 * result + (server?.hashCode() ?: 0)
+            result = 31 * result + dimension
+            return result
+        }
     }
 }

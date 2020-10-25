@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.util.math.Vec2f;
+import me.zeroeightsix.kami.util.text.MessageSendHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -102,6 +103,15 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     protected void mixinIsCurrentViewEntity(CallbackInfoReturnable<Boolean> cir) {
         if (Freecam.INSTANCE.isEnabled() && Freecam.INSTANCE.getCameraGuy() != null) {
             cir.setReturnValue(mc.getRenderViewEntity() == Freecam.INSTANCE.getCameraGuy());
+        }
+    }
+
+    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
+    public void sendChatMessage(String message, CallbackInfo ci) {
+        ci.cancel();
+        final EntityPlayerSP player = mc.player;
+        if (player != null) {
+            MessageSendHelper.sendServerMessage(message, player, Integer.MAX_VALUE - 1);
         }
     }
 

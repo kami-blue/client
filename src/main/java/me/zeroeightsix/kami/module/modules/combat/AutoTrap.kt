@@ -1,19 +1,24 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.CombatManager
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.lwjgl.input.Keyboard
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "AutoTrap",
         category = Module.Category.COMBAT,
@@ -23,6 +28,7 @@ import java.util.concurrent.Future
 object AutoTrap : Module() {
     private val trapMode = register(Settings.e<TrapMode>("TrapMode", TrapMode.FULL_TRAP))
     private val selfTrap = register(Settings.b("SelfTrap", false))
+    private val bindSelfTrap = register(Settings.custom("BindSelfTrap", Bind.none(), BindConverter()))
     private val autoDisable = register(Settings.b("AutoDisable", true))
     private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
 
@@ -50,7 +56,16 @@ object AutoTrap : Module() {
                 PlayerPacketManager.resetHotbar()
             }
         }
+
+        listener<InputEvent.KeyInputEvent> {
+            if (bindSelfTrap.value.isDown(Keyboard.getEventKey())) {
+                selfTrap.value = !selfTrap.value
+                MessageSendHelper.sendChatMessage(selfTrap.toggleMsg())
+            }
+        }
     }
+
+    private fun Setting<Boolean>.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
 
     private fun isPlaceable(): Boolean {
         (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {

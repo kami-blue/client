@@ -2,12 +2,12 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
-import me.zeroeightsix.kami.manager.mangers.CombatManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -81,7 +81,7 @@ object AutoLog : Module() {
             if (AntiBot.botSet.contains(entity)) continue
             if (entity == mc.player) continue
             if (mc.player.getDistance(entity) > playerDistance.value) continue
-            if (!friends.value && Friends.isFriend(entity.name)) continue
+            if (!friends.value && FriendManager.isFriend(entity.name)) continue
             log(PLAYER, entity.name)
             return true
         }

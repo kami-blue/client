@@ -4,6 +4,10 @@ import baritone.api.BaritoneAPI
 import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.manager.managers.MessageManager
+import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.launchwrapper.LogWrapper
 import net.minecraft.network.play.client.CPacketChatMessage
@@ -17,17 +21,17 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendChatMessage(message: String) {
-        sendRawChatMessage("&7[&9" + KamiMod.KAMI_KANJI + "&7] &r" + message)
+        sendRawChatMessage(coloredName('9') + message)
     }
 
     @JvmStatic
     fun sendWarningMessage(message: String) {
-        sendRawChatMessage("&7[&6" + KamiMod.KAMI_KANJI + "&7] &r" + message)
+        sendRawChatMessage(coloredName('6') + message)
     }
 
     @JvmStatic
     fun sendErrorMessage(message: String) {
-        sendRawChatMessage("&7[&4" + KamiMod.KAMI_KANJI + "&7] &r" + message)
+        sendRawChatMessage(coloredName('4') + message)
     }
 
     @JvmStatic
@@ -50,9 +54,9 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendBaritoneCommand(vararg args: String?) {
-        val chatControl = BaritoneAPI.getSettings().chatControl
-        val prevValue = chatControl.value
-        chatControl.value = true
+        val chatControl = BaritoneUtils.settings()?.chatControl
+        val prevValue = chatControl?.value
+        chatControl?.value = true
 
         // ty leijuwuv <--- quit it :monkey:
         val event = ChatEvent(java.lang.String.join(" ", *args))
@@ -60,7 +64,7 @@ object MessageSendHelper {
         if (!event.isCancelled && args[0] != "damn") { // don't remove the 'damn', it's critical code that will break everything if you remove it
             sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md")
         }
-        chatControl.value = prevValue
+        chatControl?.value = prevValue
     }
 
     @JvmStatic
@@ -80,6 +84,19 @@ object MessageSendHelper {
         if (message.isNullOrBlank()) return
         mc.player?.connection?.sendPacket(CPacketChatMessage(message))
                 ?: LogWrapper.warning("Could not send server message: \"$message\"")
+    }
+
+    @JvmStatic
+    @Deprecated("For Java use only", ReplaceWith("this.sendServerMessage(message)", "me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage"))
+    fun sendServerMessage(message: String?, source: Any, priority: Int): TaskState {
+        if (message.isNullOrBlank()) return TaskState(true)
+        return MessageManager.addMessageToQueue(message, source, priority)
+    }
+
+    fun Any.sendServerMessage(message: String?): TaskState {
+        if (message.isNullOrBlank()) return TaskState(true)
+        val priority = if (this is Module) modulePriority else 0
+        return MessageManager.addMessageToQueue(message, this, priority)
     }
 
     class ChatMessage internal constructor(text: String) : TextComponentBase() {
@@ -104,4 +121,6 @@ object MessageSendHelper {
             this.text = sb.toString()
         }
     }
+
+    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KANJI + "&7] &r"
 }

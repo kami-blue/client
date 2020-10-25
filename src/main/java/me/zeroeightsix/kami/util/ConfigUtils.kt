@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.mangers.FriendManager
 import me.zeroeightsix.kami.manager.mangers.MacroManager
@@ -150,14 +152,15 @@ object ConfigUtils {
         }
     }
 
-    /**
-     * Super lazy fix for Windows users sometimes saving empty files
-     */
-    fun fixEmptyFile(file: File) {
-        if (!file.exists()) {
+    fun fixEmptyJson(file: File) {
+        if (!file.exists()) file.createNewFile()
+        var notEmpty = false
+        file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() }
+
+        if (!notEmpty) {
             try {
                 val fileWriter = FileWriter(file)
-                fileWriter.write("[]")
+                fileWriter.write("{}")
                 fileWriter.close()
             } catch (exception: IOException) {
                 exception.printStackTrace()

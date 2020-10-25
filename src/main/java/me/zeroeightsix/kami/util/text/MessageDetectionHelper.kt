@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util.text
 
+import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.module.modules.chat.ChatEncryption
 import java.util.regex.Pattern
 
 /**
@@ -52,4 +54,13 @@ object MessageDetectionHelper {
     fun shouldSend(all: Boolean, restart: Boolean, direct: Boolean, directSent: Boolean, queue: Boolean, importantPings: Boolean, message: String): Boolean {
         return if (all) true else isRestart(restart, message) || isDirect(direct, message) || isDirectOther(directSent, message) || isQueue(queue, message) || isImportantQueue(importantPings, message)
     }
+
+    fun isCommand(string: String) = commandPrefixes.firstOrNull { string.startsWith(it) } != null
+
+    fun isKamiCommand(string: String) = string.startsWith(Command.getCommandPrefix())
+
+    private val commandPrefixes: Array<String>
+        get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
+                Command.getCommandPrefix(),
+                ChatEncryption.delimiterValue.value)
 }

@@ -1,9 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.Friends
-import me.zeroeightsix.kami.util.Friends.addFriend
-import me.zeroeightsix.kami.util.Friends.removeFriend
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -28,7 +26,7 @@ object MidClickFriends : Module() {
             if (Mouse.getEventButton() != 2 || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != RayTraceResult.Type.ENTITY) return@listener
             val player = mc.objectMouseOver.entityHit as? EntityOtherPlayerMP ?: return@listener
             if (timer.tick(5000L) || player != lastPlayer && timer.tick(500L)) {
-                if (Friends.isFriend(player.name)) remove(player.name)
+                if (FriendManager.isFriend(player.name)) remove(player.name)
                 else add(player.name)
                 lastPlayer = player
             }
@@ -36,14 +34,14 @@ object MidClickFriends : Module() {
     }
 
     private fun remove(name: String) {
-        if (removeFriend(name)) {
+        if (FriendManager.removeFriend(name)) {
             MessageSendHelper.sendChatMessage("&b$name&r has been unfriended.")
         }
     }
 
     private fun add(name: String) {
         Thread {
-            if (addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
+            if (FriendManager.addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
             else MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
         }.start()
     }

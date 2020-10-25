@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.CombatManager
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Bind
@@ -32,7 +32,9 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
+import java.util.*
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "CrystalBasePlace",
         description = "Places obby for placing crystal on",
@@ -83,6 +85,7 @@ object CrystalBasePlace : Module() {
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
+                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot)
                     mc.player.swingArm(EnumHand.MAIN_HAND)
                     mc.connection!!.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
@@ -90,13 +93,10 @@ object CrystalBasePlace : Module() {
                 }
             }
 
-            if (placePacket == null && CrystalAura.isEnabled && CrystalAura.inactiveTicks > 20) prePlace(target)
+            if (placePacket == null && CrystalAura.isEnabled && CrystalAura.inactiveTicks > 15) prePlace(target)
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    if (!isHoldingObby(mc.player.heldItemMainhand) && !isHoldingObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))) {
-                        PlayerPacketManager.spoofHotbar(slot)
-                    }
                     val rotation = RotationUtils.getRotationTo(hitVec, true)
                     PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation)))
                 }
@@ -106,15 +106,15 @@ object CrystalBasePlace : Module() {
         }
     }
 
-    private fun isHoldingObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.getItem()) == Blocks.OBSIDIAN
+    private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+
+    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.getItem()) == Blocks.OBSIDIAN
 
     private fun getObby(): Int? {
         val slots = InventoryUtils.getSlotsHotbar(49)
         if (slots == null) { // Obsidian check
-            if (isEnabled) {
-                MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
-                disable()
-            }
+            MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
+            disable()
             return null
         }
         return slots[0]
@@ -138,54 +138,50 @@ object CrystalBasePlace : Module() {
     }
 
     private fun getPlaceInfo(entity: EntityLivingBase): Pair<EnumFacing, BlockPos>? {
+        val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
         val prediction = CombatSetting.getPrediction(entity)
         val eyePos = mc.player.getPositionEyes(1.0f)
-        val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value).sortedBy { entity.getDistanceSqToCenter(it) }
+        val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.crystalPlaceList
                 .filter { eyePos.distanceTo(it.first.toVec3d()) < range.value }
-                .maxBy { it.second }?.second ?: 0.0f
-        val minDamage = CrystalAura.minDamage
-        val maxSelfDamage = CrystalAura.maxSelfDamage
+                .map { it.second }
+                .max() ?: 0.0f
 
-        return calcPlaceInfo(prediction, posList, maxCurrentDamage, maxSelfDamage, minDamage, entity)
-    }
-
-    private fun calcPlaceInfo(
-            prediction: Pair<Vec3d, AxisAlignedBB>,
-            posList: List<BlockPos>,
-            maxCurrentDamage: Float,
-            maxSelfDamage: Float,
-            minDamage: Float,
-            entity: EntityLivingBase
-    ): Pair<EnumFacing, BlockPos>? {
         for (pos in posList) {
             // Placeable check
             if (!BlockUtils.isPlaceable(pos, false)) continue
 
-            // Checks neighbour blocks
+            // Neighbour blocks check
             if (!BlockUtils.hasNeighbour(pos)) continue
 
-            // Checks distance
-            val crystalPos = pos.toVec3d().add(0.0, 0.5, 0.0)
-            if (prediction.first.distanceTo(crystalPos) > 5.0) continue
+            // Damage check
+            val damage = calcDamage(pos, entity, prediction.first, prediction.second)
+            if (!checkDamage(damage.first, damage.second, maxCurrentDamage)) continue
 
-            // Set up a fake obsidian here for proper damage calculation
-            val prevState = mc.world.getBlockState(pos)
-            mc.world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
+            cacheMap[damage.first] = pos
+        }
 
-            // Checks damage
-            val damage = CrystalUtils.calcDamage(pos, entity, prediction.first, prediction.second)
-            val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
-            val passed = selfDamage < maxSelfDamage && damage > minDamage && (maxCurrentDamage < minDamage || damage - maxCurrentDamage >= minDamageInc.value)
-
-            // Revert the block state
-            mc.world.setBlockState(pos, prevState)
-
-            // We need to revert the block state because continue the loop
-            if (!passed) continue
-
+        for (pos in cacheMap.values) {
             return BlockUtils.getNeighbour(pos, 1) ?: continue
         }
         return null
     }
+
+    private fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d, entityBB: AxisAlignedBB): Pair<Float, Float> {
+        // Set up a fake obsidian here for proper damage calculation
+        val prevState = mc.world.getBlockState(pos)
+        mc.world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
+
+        // Checks damage
+        val damage = CrystalUtils.calcDamage(pos, entity, entityPos, entityBB)
+        val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+
+        // Revert the block state before return
+        mc.world.setBlockState(pos, prevState)
+
+        return damage to selfDamage
+    }
+
+    private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) =
+            selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
 }

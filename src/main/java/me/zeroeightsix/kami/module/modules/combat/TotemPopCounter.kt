@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Friends.isFriend
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.event.listener
@@ -82,14 +82,14 @@ object TotemPopCounter : Module() {
         playerList.clear()
     }
 
-    private fun friendCheck(player: EntityPlayer) = isFriend(player.name) && countFriends.value
+    private fun friendCheck(player: EntityPlayer) = FriendManager.isFriend(player.name) && countFriends.value
 
     private fun selfCheck(player: EntityPlayer) = player == mc.player && countSelf.value
 
     private fun formatName(player: EntityPlayer): String {
         val name = when {
             player == mc.player -> "I"
-            isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
+            FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
             else -> player.name
         }
         return setToText(colorName.value) + name + TextFormatting.RESET

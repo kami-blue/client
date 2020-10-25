@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -12,123 +13,93 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.Explosion
-import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.max
 
 object CrystalUtils {
-    private val mc = Minecraft.getMinecraft()
+    private val mc = Wrapper.minecraft
 
     /* Position Finding */
-    @JvmStatic
     fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float): List<BlockPos> {
         if (target == null || center == null) return emptyList()
         val centerPos = if (center == mc.player) center.getPositionEyes(1f) else center.positionVector
         return VectorUtils.getBlockPosInSphere(centerPos, radius).filter { canPlace(it, target) }
     }
 
-    fun getAxisRange(d1: Double, d2: Float): IntRange {
-        return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
-    }
-
-    @JvmStatic
-    fun getCrystalList(range: Float): ArrayList<EntityEnderCrystal> {
-        return getCrystalList(mc.player.positionVector, range)
-    }
-
-    @JvmStatic
     fun getCrystalList(center: Vec3d, range: Float): ArrayList<EntityEnderCrystal> {
         val crystalList = ArrayList<EntityEnderCrystal>()
-        val entityList = ArrayList<Entity>()
-        synchronized(mc.world.loadedEntityList) {
-            entityList.addAll(mc.world.loadedEntityList)
-        }
-        for (entity in entityList) {
-            if (entity.isDead) continue
-            if (entity !is EntityEnderCrystal) continue
-            if (center.distanceTo(entity.positionVector) > range) continue
-            crystalList.add(entity)
+        mc.world?.loadedEntityList?.let {
+            for (entity in ArrayList(it)) {
+                if (entity !is EntityEnderCrystal) continue
+                if (entity.isDead) continue
+                if (center.distanceTo(entity.positionVector) > range) continue
+                crystalList.add(entity)
+            }
         }
         return crystalList
     }
 
-    @JvmStatic
-    fun canPlace(blockPos: BlockPos): Boolean {
-        val placingBB = getCrystalPlacingBB(blockPos.up())
-        return mc.world.checkNoEntityCollision(placingBB)
-                && (mc.world.getBlockState(blockPos).block == Blocks.BEDROCK
-                || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
-                && !mc.world.checkBlockCollision(placingBB)
+    /** Checks colliding with blocks and given entity */
+    fun canPlace(pos: BlockPos, entity: EntityLivingBase? = null): Boolean {
+        val placeBB = getCrystalPlacingBB(pos.up())
+        return canPlaceOn(pos)
+                && (entity == null || !placeBB.intersects(entity.boundingBox))
+                && mc.world?.checkBlockCollision(placeBB) == false
     }
 
-    /** Checks colliding with blocks and given entity only */
-    @JvmStatic
-    fun canPlace(blockPos: BlockPos, entity: Entity): Boolean {
-        val entityBB = entity.boundingBox
-        val placingBB = getCrystalPlacingBB(blockPos.up())
-        return !entityBB.intersects(placingBB)
-                && (mc.world.getBlockState(blockPos).block == Blocks.BEDROCK
-                || mc.world.getBlockState(blockPos).block == Blocks.OBSIDIAN)
-                && !mc.world.checkBlockCollision(placingBB)
+    /** Checks if the block is valid for placing crystal */
+    fun canPlaceOn(pos: BlockPos): Boolean {
+        val block = mc.world?.getBlockState(pos)?.block
+        return block == Blocks.BEDROCK || block == Blocks.OBSIDIAN
     }
 
-    /** Checks if the block below is valid for placing crystal */
-    @JvmStatic
-    fun canPlaceOn(blockPos: BlockPos) = mc.world.getBlockState(blockPos.down()).block == Blocks.BEDROCK || mc.world.getBlockState(blockPos.down()).block == Blocks.OBSIDIAN
+    private fun getCrystalPlacingBB(pos: BlockPos) = AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 2.0, 0.5).offset(Vec3d(pos).add(0.5, 0.0, 0.5))
 
-    @JvmStatic
-    private fun getCrystalPlacingBB(blockPos: BlockPos) = crystalPlacingBB.offset(Vec3d(blockPos).add(0.5, 0.0, 0.5))
+    fun getCrystalBB(pos: BlockPos): AxisAlignedBB = AxisAlignedBB(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0).offset(Vec3d(pos).add(0.5, 0.0, 0.5))
 
-    @JvmStatic
-    fun getCrystalBB(blockPos: BlockPos): AxisAlignedBB = crystalBB.offset(Vec3d(blockPos).add(0.5, 0.0, 0.5))
-
-    private val crystalPlacingBB: AxisAlignedBB get() = AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 2.0, 0.5)
-
-    private val crystalBB: AxisAlignedBB get() = AxisAlignedBB(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0)
-
-    /* Checks colliding with all entity */
-    @JvmStatic
-    fun canPlaceCollide(blockPos: BlockPos): Boolean {
-        val placingBB = getCrystalPlacingBB(blockPos.up())
-        return mc.world.checkNoEntityCollision(placingBB)
+    /** Checks colliding with all entity */
+    fun canPlaceCollide(pos: BlockPos): Boolean {
+        val placingBB = getCrystalPlacingBB(pos.up())
+        return mc.world?.let { world ->
+            world.getEntitiesWithinAABBExcludingEntity(null, placingBB).firstOrNull { !it.isDead } == null
+        } ?: false
     }
     /* End of position finding */
 
     /* Damage calculation */
-    @JvmStatic
-    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox, calcBlastReduction: Boolean = true): Float {
-        return calcDamage(crystal.positionVector, entity, entityPos, entityBB, calcBlastReduction)
+    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox) =
+        calcDamage(crystal.positionVector, entity, entityPos, entityBB)
+
+    fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox) =
+        calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
+
+    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox): Float {
+        // Return 0 directly if entity is a player and in creative mode
+        if (entity is EntityPlayer && entity.isCreative) return 0.0f
+
+        // Calculate raw damage (based on blocks and distance)
+        var damage = calcRawDamage(pos, entityPos, entityBB)
+
+        // Calculate damage after armor, enchantment, resistance effect absorption
+        damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos)?: return 0.0f)
+
+        // Multiply the damage based on difficulty if the entity is player
+        if (entity is EntityPlayer) damage *= mc.world.difficulty.id * 0.5f
+
+        // The damage cannot be less than 0 lol
+        return max(damage, 0.0f)
     }
 
-    @JvmStatic
-    fun calcDamage(blockPos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox, calcBlastReduction: Boolean = true): Float {
-        return calcDamage(Vec3d(blockPos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB, calcBlastReduction)
-    }
-
-    @JvmStatic
-    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox, calcBlastReduction: Boolean = true): Float {
-        if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
-        var damage = calcRawDamage(pos, entity, entityPos, entityBB)
-        if (calcBlastReduction) damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos))
-        if (entity is EntityPlayer) damage *= getDamageMultiplier()
-        return max(damage, 0f)
-    }
-
-    @JvmStatic
-    private fun calcRawDamage(pos: Vec3d, entity: Entity, entityPos: Vec3d, entityBB: AxisAlignedBB): Float {
+    private fun calcRawDamage(pos: Vec3d, entityPos: Vec3d, entityBB: AxisAlignedBB): Float {
         val distance = pos.distanceTo(entityPos)
-        val v = (1.0 - (distance / 12.0)) * entity.world.getBlockDensity(pos, entityBB)
+        val v = (1.0 - (distance / 12.0)) * (mc.world?.getBlockDensity(pos, entityBB)?: return 0.0f)
         return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
     }
 
-    @JvmStatic
-    private fun getDamageSource(damagePos: Vec3d): DamageSource {
-        return DamageSource.causeExplosionDamage(Explosion(mc.world, mc.player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
-    }
-
-    @JvmStatic
-    private fun getDamageMultiplier(): Float {
-        return mc.world.difficulty.id * 0.5f
-    }
+    private fun getDamageSource(damagePos: Vec3d) =
+            mc.world?.let { world ->
+                mc.player?.let {
+                    DamageSource.causeExplosionDamage(Explosion(world, it, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
+                }
+            }
     /* End of damage calculation */
 }

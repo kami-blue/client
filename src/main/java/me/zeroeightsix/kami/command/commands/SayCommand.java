@@ -2,13 +2,8 @@ package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
+import me.zeroeightsix.kami.util.text.MessageSendHelper;
 
-import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage;
-
-/**
- * @author l1ving
- * Created by l1ving on 12/03/20
- */
 public class SayCommand extends Command {
     public SayCommand() {
         super("say", new ChunkBuilder().append("message").build());
@@ -23,6 +18,6 @@ public class SayCommand extends Command {
                 message.append(" ").append(arg);
             }
         }
-        sendServerMessage(message.toString());
+        MessageSendHelper.sendServerMessage(message.toString(), this, Integer.MAX_VALUE);
     }
 }

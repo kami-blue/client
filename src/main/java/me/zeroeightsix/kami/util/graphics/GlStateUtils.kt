@@ -7,6 +7,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 import java.util.*
+import org.lwjgl.opengl.GL12.*
 
 object GlStateUtils {
     private val mc = Wrapper.minecraft
@@ -102,6 +103,18 @@ object GlStateUtils {
         } else {
             GlStateManager.disableLighting()
         }
+    }
+
+    @JvmStatic
+    fun resetTexParam() {
+        GlStateManager.bindTexture(0)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 1000)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1000)
     }
 
     @JvmStatic

@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -207,6 +208,9 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
 
             glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1)
             TextureUtil.uploadTextureImageSub(textureId, bufferedImage, 0, 0, true, true)
+
+            GlStateUtils.resetTexParam()
+
             dynamicTexture
         } catch (e: Exception) {
             KamiMod.log.error("Failed to create font texture.")

@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
-import me.zeroeightsix.kami.util.Friends
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
@@ -51,7 +51,7 @@ object Tracers : Module() {
     private val aFar = register(Settings.integerBuilder("FarAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
     private val a = register(Settings.integerBuilder("TracerAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING }.build())
     private val yOffset = register(Settings.integerBuilder("yOffsetPercentage").withValue(0).withRange(0, 100).withStep(5).withVisibility { page.value == Page.RENDERING }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
+    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING }.build())
 
     private enum class Page {
         ENTITY_TYPE, COLOR, RENDERING
@@ -104,7 +104,7 @@ object Tracers : Module() {
 
     private fun getColor(entity: Entity): ColorHolder {
         val color = (when {
-            Friends.isFriend(entity.name) -> colorFriend.value
+            FriendManager.isFriend(entity.name) -> colorFriend.value
             entity is EntityPlayer -> colorPlayer.value
             EntityUtils.isPassiveMob(entity) -> colorPassive.value
             EntityUtils.isCurrentlyNeutral(entity) -> colorNeutral.value

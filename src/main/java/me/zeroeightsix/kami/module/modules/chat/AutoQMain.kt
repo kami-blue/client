@@ -11,13 +11,12 @@ import java.util.*
 
 @Module.Info(
         name = "AutoQMain",
-        description = "Automatically does '/queue main' on servers",
+        description = "Automatically does '/queue 2b2t-lobby'",
         category = Module.Category.CHAT,
         showOnArray = false
 )
 object AutoQMain : Module() {
     private val showWarns = register(Settings.b("ShowWarnings", true))
-    private val connectionWarning = register(Settings.b("ConnectionWarning", true))
     private val dimensionWarning = register(Settings.b("DimensionWarning", true))
     private val delay = register(Settings.integerBuilder("Delay").withValue(30).withRange(5, 120).withStep(5))
 
@@ -27,13 +26,12 @@ object AutoQMain : Module() {
         listener<SafeTickEvent> {
             if (!timer.tick(delay.value.toLong())) return@listener
 
-            if (mc.getCurrentServerData() == null && connectionWarning.value) {
+            if (mc.getCurrentServerData() == null) {
                 sendMessage("&l&6Error: &r&6You are in singleplayer")
                 return@listener
             }
 
-            if (!mc.getCurrentServerData()!!.serverIP.equals("2b2t.org", ignoreCase = true) && connectionWarning.value) {
-                sendMessage("&l&6Warning: &r&6You are not connected to 2b2t.org")
+            if (!mc.getCurrentServerData()!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
                 return@listener
             }
 
@@ -50,8 +48,8 @@ object AutoQMain : Module() {
         val formatter = SimpleDateFormat("HH:mm:ss")
         val date = Date(System.currentTimeMillis())
 
-        MessageSendHelper.sendChatMessage("&7Run &b/queue main&7 at " + formatter.format(date))
-        MessageSendHelper.sendServerMessage("/queue main")
+        MessageSendHelper.sendChatMessage("&7Run &b/queue 2b2t-lobby&7 at " + formatter.format(date))
+        MessageSendHelper.sendServerMessage("/queue 2b2t-lobby")
     }
 
     private fun sendMessage(message: String) {

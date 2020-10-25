@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -75,6 +76,10 @@ object Freecam : Module() {
 
                 if (arrowKeyMove.value) updatePlayerMovement()
             }
+        }
+
+        listener<ClientPlayerAttackEvent> {
+            if (it.entity == mc.player) it.cancel()
         }
     }
 

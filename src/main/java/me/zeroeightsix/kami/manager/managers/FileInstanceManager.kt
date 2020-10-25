@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.manager.mangers
+package me.zeroeightsix.kami.manager.managers
 
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
@@ -21,15 +21,6 @@ object FileInstanceManager : Manager() {
         if (!Macro.file.exists()) {
             try {
                 val w = FileWriter(Macro.file)
-                w.write("{}")
-                w.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        if (!FriendManager.file.exists()) {
-            try {
-                val w = FileWriter(FriendManager.file)
                 w.write("{}")
                 w.close()
             } catch (e: IOException) {

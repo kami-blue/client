@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
@@ -151,7 +152,7 @@ object EntityUtils {
     }
 
     @JvmStatic
-    fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !Friends.isFriend(player.name)) && (sleeping || !player.isPlayerSleeping)
+    fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name)) && (sleeping || !player.isPlayerSleeping)
 
     /**
      * Ray tracing the 8 vertex of the entity bounding box

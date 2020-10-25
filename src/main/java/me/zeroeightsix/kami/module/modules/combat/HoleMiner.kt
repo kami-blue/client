@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.manager.mangers.CombatManager
-import me.zeroeightsix.kami.manager.mangers.PlayerPacketManager
+import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -23,6 +23,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import kotlin.math.pow
 
+@CombatManager.CombatModule
 @Module.Info(
         name = "HoleMiner",
         category = Module.Category.COMBAT,
@@ -112,7 +113,7 @@ object HoleMiner : Module() {
     }
 
     private fun checkPos(pos: BlockPos, facingIn: EnumFacing): Boolean {
-        if (CrystalUtils.canPlaceOn(pos) && mc.world.isAirBlock(pos.up())) return true
+        if (CrystalUtils.canPlaceOn(pos.down()) && mc.world.isAirBlock(pos.up())) return true
         for (facing in EnumFacing.HORIZONTALS) {
             if (facing == facingIn.opposite) continue
             if (!CrystalUtils.canPlace(pos.offset(facing))) continue

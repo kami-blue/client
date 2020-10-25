@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.manager.mangers.FileInstanceManager
+import me.zeroeightsix.kami.manager.managers.FileInstanceManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 import java.util.*

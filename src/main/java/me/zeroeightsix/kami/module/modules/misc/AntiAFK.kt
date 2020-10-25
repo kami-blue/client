@@ -2,11 +2,13 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.BaritoneAPI
 import baritone.api.pathing.goals.GoalXZ
+import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
@@ -49,20 +51,20 @@ object AntiAFK : Module() {
     }
 
     override fun onEnable() {
-        if (mc.player == null) return
-        with(BaritoneAPI.getSettings().disconnectOnArrival) {
-            baritoneDisconnectOnArrival = value
-            value = false
-        }
+        baritoneDisconnectOnArrival()
     }
 
     override fun onDisable() {
         startPos = null
-        BaritoneAPI.getSettings().disconnectOnArrival.value = baritoneDisconnectOnArrival
+        BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
         baritoneCancel()
     }
 
     init {
+        listener<BaritoneSettingsInitEvent> {
+            baritoneDisconnectOnArrival()
+        }
+
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
             if (MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) {
@@ -117,6 +119,13 @@ object AntiAFK : Module() {
         }
     }
 
+    private fun baritoneDisconnectOnArrival() {
+        BaritoneUtils.settings()?.disconnectOnArrival?.let {
+            baritoneDisconnectOnArrival = it.value
+            it.value = false
+        }
+    }
+
     private fun isInputting(): Boolean {
         return (mc.gameSettings.keyBindAttack.isKeyDown
                 || mc.gameSettings.keyBindUseItem.isKeyDown
@@ -140,8 +149,7 @@ object AntiAFK : Module() {
         TURN(turn)
     }
 
-    private val isBaritoneActive: Boolean
-        get() = if (mc.player == null) false else BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive
+    private val isBaritoneActive: Boolean = if (mc.player != null) BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive else false
 
     private fun baritoneGotoXZ(x: Int, z: Int) {
         BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(x, z))

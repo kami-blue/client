@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import me.zeroeightsix.kami.util.color.HueCycler
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -66,12 +67,13 @@ object Chams : Module() {
             if (it.entity == null || !checkEntityType(it.entity)) return@listener
             if (!texture.value) glDisable(GL_TEXTURE_2D)
             if (!lightning.value) glDisable(GL_LIGHTING)
-            if (throughWall.value) {
-                frameBuffer.bindFramebuffer(false)
-            }
             if (customColor.value) {
                 if (rainbow.value) cycler.setCurrent()
                 else glColor3f(r.value / 255f, g.value / 255f, b.value / 255f)
+            }
+            if (throughWall.value) {
+                glPushMatrix()
+                frameBuffer.bindFramebuffer(false)
             }
         }
 
@@ -79,20 +81,23 @@ object Chams : Module() {
             if (it.entity == null || !checkEntityType(it.entity)) return@listener
             if (!texture.value) glEnable(GL_TEXTURE_2D)
             if (!lightning.value) glEnable(GL_LIGHTING)
-            if (throughWall.value) {
-                mc.framebuffer.bindFramebuffer(false)
-            }
             if (customColor.value) {
                 glColor4f(1f, 1f, 1f, 1f)
+            }
+            if (throughWall.value) {
+                mc.framebuffer.bindFramebuffer(false)
+                glPopMatrix()
             }
         }
 
         listener<RenderWorldEvent> {
             if (!throughWall.value) return@listener
             GlStateUtils.depth(false)
+            glPushMatrix()
             frameBuffer.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
             frameBuffer.framebufferClear()
             mc.framebuffer.bindFramebuffer(false)
+            glPopMatrix()
             GlStateUtils.depth(true)
         }
 
