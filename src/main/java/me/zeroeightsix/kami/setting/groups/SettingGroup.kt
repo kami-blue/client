@@ -8,16 +8,36 @@ open class SettingGroup(
         val name: String
 ) {
 
+    /** Settings in this group */
     protected val subSetting = LinkedHashMap<String, Setting<*>>()
 
 
+    /**
+     * Get a copy of the list of settings in this group
+     *
+     * @return A copy of [subSetting]
+     */
     fun getSettings() = subSetting.values.toList()
 
-    open fun addSetting(setting: Setting<*>) {
+    /**
+     * Adds a setting to this group
+     *
+     * @param S type of the setting
+     * @param setting Setting to add
+     *
+     * @return [setting]
+     */
+    open fun <S: Setting<*>> addSetting(setting: S): S {
         subSetting[setting.name.toLowerCase()] = setting
+        return setting
     }
 
 
+    /**
+     * Writes setting values to a [JsonObject]
+     *
+     * @return [JsonObject] contains all the setting values
+     */
     open fun write(): JsonObject = JsonObject().apply {
         add("Name", JsonPrimitive(name))
 
@@ -28,6 +48,11 @@ open class SettingGroup(
         })
     }
 
+    /**
+     * Read setting values from a [JsonObject]
+     *
+     * @param jsonObject [JsonObject] to read from
+     */
     open fun read(jsonObject: JsonObject?) {
         if (jsonObject == null) return
 

@@ -111,6 +111,13 @@ abstract class AbstractConfig<T>(
         }
     }
 
+    /**
+     * Save a group to a file
+     *
+     * @param group Group to save
+     * @param file Main file of [group]'s json
+     * @param backup Backup file of [group]'s json
+     */
     protected fun saveToFile(group: SettingGroup, file: File, backup: File) {
         ConfigUtils.fixEmptyJson(file)
         ConfigUtils.fixEmptyJson(backup)
@@ -123,6 +130,12 @@ abstract class AbstractConfig<T>(
         fileWriter.close()
     }
 
+    /**
+     * Load settings values of a group
+     *
+     * @param group Group to load
+     * @param file file of [group]'s json
+     */
     protected fun loadFromFile(group: SettingGroup, file: File) {
         ConfigUtils.fixEmptyJson(file)
         val stream = Files.newInputStream(file.toPath())
@@ -131,6 +144,9 @@ abstract class AbstractConfig<T>(
         stream.close()
     }
 
+    /**
+     * Contains a gson object and a parser object
+     */
     protected companion object {
         val gson: Gson = GsonBuilder().setPrettyPrinting().create()
         val parser = JsonParser()

@@ -12,8 +12,8 @@ class EnumSetting<T : Enum<T>>(
         description: String = ""
 ) : Setting<T>(name, value, visibility, consumer, description) {
 
-    val enumClass = value.declaringClass
-    val enumValues = enumClass.enumConstants
+    val enumClass: Class<T> = value.declaringClass
+    val enumValues: Array<out T> = enumClass.enumConstants
 
     override fun write(): JsonElement = JsonPrimitive(value.name)
 

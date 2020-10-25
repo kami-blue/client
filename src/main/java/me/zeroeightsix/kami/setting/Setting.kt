@@ -5,6 +5,15 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 
+/**
+ * Basic Setting class
+ *
+ * @param T Type of this setting
+ * @param name Name of this setting
+ * @param visibility Called by [isVisible]
+ * @param consumer Called on setting [value] to process the value input
+ * @param description Description of this setting
+ */
 open class Setting<T : Any>(
         val name: String,
         value: T,

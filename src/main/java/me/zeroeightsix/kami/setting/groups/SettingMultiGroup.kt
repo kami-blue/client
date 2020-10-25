@@ -12,27 +12,81 @@ open class SettingMultiGroup(
 
 
     /* Settings */
-    inline fun <reified T : Setting<T>> getSettingTyped(settingName: String) = `access$subSetting`[settingName.toLowerCase()] as? T
+    /**
+     * Get a setting by name and type
+     *
+     * @param S type of the setting
+     * @param settingName Name of the setting
+     *
+     * @return Setting that matches [settingName] and [S] or null if none
+     */
+    inline fun <reified S : Setting<S>> getSettingTyped(settingName: String) = `access$subSetting`[settingName.toLowerCase()] as? S
 
+    /**
+     * Get a setting by name
+     *
+     * @param settingName Name of the setting
+     *
+     * @return Setting that matches [settingName] or null if none
+     */
     fun getSetting(settingName: String) = subSetting[settingName.toLowerCase()]
 
-    fun addSetting(settingGroup: SettingMultiGroup, setting: Setting<*>) {
+    /**
+     * Add a setting to a group under
+     *
+     * @param settingGroup Group to add to
+     * @param setting Setting to add
+     *
+     * @return [setting]
+     */
+    fun <S : Setting<*>> addSetting(settingGroup: SettingMultiGroup, setting: S): S {
         subGroup.getOrPut(settingGroup.name.toLowerCase(), { settingGroup }).addSetting(setting)
+        return setting
     }
 
-    fun addSetting(groupName: String, setting: Setting<*>) {
+    /**
+     * Add a setting to a group under
+     *
+     * @param groupName Name of the group to add to
+     * @param setting Setting to add
+     *
+     * @return [setting]
+     */
+    fun <S : Setting<*>> addSetting(groupName: String, setting: S): S {
         subGroup.getOrPut(groupName.toLowerCase(), { SettingMultiGroup(groupName) }).addSetting(setting)
+        return setting
     }
     /* End of settings */
 
 
     /* Groups */
+    /**
+     * Get a copy of the list of group in this group
+     *
+     * @return A copy of [subGroup]
+     */
     fun getGroups() = subGroup.values.toList()
 
+    /**
+     * Get a group by name or add a group if not found
+     *
+     * @return The group that matches [groupName]
+     */
     fun getGroupOrPut(groupName: String) = subGroup.getOrPut(groupName.toLowerCase()) { SettingMultiGroup(groupName) }
 
+
+    /**
+     * Get a group by name
+     *
+     * @return The group that matches [groupName] or null if none
+     */
     fun getGroup(groupName: String) = subGroup[groupName.toLowerCase()]
 
+    /**
+     * Adds a group to this group
+     *
+     * @param settingGroup Group to add
+     */
     fun addGroup(settingGroup: SettingMultiGroup) {
         subGroup[settingGroup.name.toLowerCase()] = settingGroup
     }
@@ -46,6 +100,7 @@ open class SettingMultiGroup(
             }
         })
     }
+
 
     override fun read(jsonObject: JsonObject?) {
         if (jsonObject == null) return

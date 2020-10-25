@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.setting.config
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.IFinalGroup
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import java.io.File
 
@@ -18,12 +17,10 @@ abstract class AbstractMultiConfig<T>(
         for (groupName in groupNames) addGroup(SettingMultiGroup(groupName))
     }
 
-    override fun addSetting(setting: Setting<*>) {}
-
     override fun save() {
         if (!file.exists()) file.mkdir()
 
-        for ((name, group) in subGroup) {
+        for (group in subGroup.values) {
             val file = getFiles(group)
             saveToFile(group, file.first, file.second)
         }
@@ -32,7 +29,7 @@ abstract class AbstractMultiConfig<T>(
     override fun load() {
         if (!file.exists()) file.mkdir()
 
-        for ((name, group) in subGroup) {
+        for (group in subGroup.values) {
             val file = getFiles(group)
             try {
                 loadFromFile(group, file.first)
@@ -43,6 +40,13 @@ abstract class AbstractMultiConfig<T>(
         }
     }
 
+    /**
+     * Get the file pair for a group
+     *
+     * @param group Group to get the file pair
+     *
+     * @return Pair of this group's main file to its backup file
+     */
     private fun getFiles(group: SettingMultiGroup) =
             File("$directoryPath$name/${group.name}.json") to File("$directoryPath$name/${group.name}.bak")
 
