@@ -28,7 +28,7 @@ object BaritoneRemote : Module() {
 
     init {
         /* instructions for changing custom setting */
-        allow.settingListener = {
+        allow.listeners.add {
             mc.player?.let {
                 if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
                     MessageSendHelper.sendChatMessage("$chatName Use the &7" + Command.getCommandPrefix()

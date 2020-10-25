@@ -29,7 +29,7 @@ class SetCommand : Command("set", ChunkBuilder()
         }
 
         if (args[1] == null) {
-            val settings = module.settingList.joinToString()
+            val settings = module.fullSettingList.joinToString()
             if (settings.isEmpty()) sendChatMessage("Module &b" + module.name.value + "&r has no settings.") else {
                 sendStringChatMessage(arrayOf(
                         "Please specify a setting! Choose one of the following:", settings

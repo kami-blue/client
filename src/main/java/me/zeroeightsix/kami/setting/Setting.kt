@@ -26,13 +26,14 @@ open class Setting<T : Any>(
         set(value) {
             if (value != field) {
                 field = consumer(field, value)
-                settingListener?.let { it(field) }
+                for (listener in listeners) listener()
             }
         }
     open val defaultValue = value
     private val valueClass = value::class.java
     val isVisible get() = visibility()
-    var settingListener: ((T) -> Unit)? = null
+    val listeners = ArrayList<() -> Unit>()
+    val valueListeners = ArrayList<(T) -> Unit>()
 
     fun setValue(value: String) {
         read(parser.parse(value))

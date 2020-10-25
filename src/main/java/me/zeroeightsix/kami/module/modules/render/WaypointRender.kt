@@ -196,17 +196,17 @@ object WaypointRender : Module() {
     }
 
     init {
-        with({ _: Boolean ->
-            synchronized(lockObject) { waypointMap.clear(); updateList() } // This could be called from another thread so we have to synchronize the map
-        }) {
-            showName.settingListener = this
-            showDate.settingListener = this
-            showCoords.settingListener = this
-            showDist.settingListener = this
+        with(
+                { synchronized(lockObject) { waypointMap.clear(); updateList() } } // This could be called from another thread so we have to synchronize the map
+        ) {
+            showName.listeners.add(this)
+            showDate.listeners.add(this)
+            showCoords.listeners.add(this)
+            showDist.listeners.add(this)
         }
 
 
-        dimension.settingListener = {
+        dimension.listeners.add {
             synchronized(lockObject) {
                 waypointMap.clear(); updateList()
             }

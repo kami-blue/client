@@ -50,7 +50,7 @@ object CustomFont : Module() {
     }
 
     init {
-        fontName.settingListener = {
+        fontName.listeners.add {
             if (Thread.currentThread() == KamiMod.MAIN_THREAD) KamiFontRenderer.reloadFonts()
         }
     }

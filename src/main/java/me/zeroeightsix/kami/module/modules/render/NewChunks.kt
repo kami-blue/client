@@ -293,7 +293,7 @@ object NewChunks : Module() {
     }
 
     init {
-        closeFile.settingListener = {
+        closeFile.valueListeners.add {
             if (it) {
                 logWriterClose()
                 MessageSendHelper.sendChatMessage("$chatName Saved file!")

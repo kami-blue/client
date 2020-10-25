@@ -497,12 +497,12 @@ object ElytraFlight : Module() {
     }
 
     init {
-        defaultSetting.settingListener = {
+        defaultSetting.valueListeners.add {
             if (it) resetSettings()
         }
 
         /* Reset isFlying states when switching mode */
-        mode.settingListener = {
+        mode.listeners.add {
             reset(true)
         }
     }

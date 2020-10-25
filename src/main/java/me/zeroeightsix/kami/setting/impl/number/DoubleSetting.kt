@@ -15,7 +15,7 @@ class DoubleSetting(
     override var value: Double = value
         set(value) {
             field = consumer(field, value.coerceIn(min, max))
-            settingListener?.let { it(field) }
+            for (listener in listeners) listener()
         }
 
     override fun read(jsonElement: JsonElement?) {

@@ -35,7 +35,7 @@ object Baritone : Module() {
 
     init {
         settingList.forEach {
-            it.settingListener = { sync() }
+            it.listeners.add { sync() }
         }
 
         listener<BaritoneSettingsInitEvent> {

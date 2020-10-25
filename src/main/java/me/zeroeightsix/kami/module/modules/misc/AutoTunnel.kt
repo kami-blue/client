@@ -73,12 +73,12 @@ object AutoTunnel : Module() {
     }
 
     init {
-        with( { _: Int -> if (mc.player != null && isEnabled) sendTunnel() }) {
-            height.settingListener = this
-            width.settingListener = this
+        with( { if (mc.player != null && isEnabled) sendTunnel() }) {
+            height.listeners.add(this)
+            width.listeners.add(this)
         }
 
-        backfill.settingListener = { BaritoneUtils.settings()?.backfill?.value = backfill.value }
+        backfill.listeners.add { BaritoneUtils.settings()?.backfill?.value = backfill.value }
 
         listener<ConnectionEvent.Disconnect> {
             BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()

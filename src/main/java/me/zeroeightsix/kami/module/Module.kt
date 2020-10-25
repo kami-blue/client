@@ -17,7 +17,8 @@ open class Module {
     @JvmField val modulePriority: Int = annotation.modulePriority
     @JvmField var alwaysListening: Boolean = annotation.alwaysListening
 
-    val settingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
+    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
+    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != showOnArray }
 
     private val annotation: Info get() {
             if (javaClass.isAnnotationPresent(Info::class.java)) {
@@ -79,7 +80,6 @@ open class Module {
 
     fun resetSettings() {
         for (setting in settingList) {
-            if (setting == name || setting == bind || setting == enabled || setting == showOnArray) continue
             setting.resetValue()
         }
     }

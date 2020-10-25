@@ -117,7 +117,7 @@ object AutoWalk : Module() {
     }
 
     init {
-        mode.settingListener = {
+        mode.listeners.add {
             mc.player?.let {
                 if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
                     sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()

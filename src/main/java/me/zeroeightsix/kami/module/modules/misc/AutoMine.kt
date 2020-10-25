@@ -58,12 +58,12 @@ object AutoMine : Module() {
     }
 
     init {
-        with( { it: Boolean -> run() }) {
-            iron.settingListener = this
-            diamond.settingListener = this
-            gold.settingListener = this
-            coal.settingListener = this
-            log.settingListener = this
+        with( { run() }) {
+            iron.listeners.add(this)
+            diamond.listeners.add(this)
+            gold.listeners.add(this)
+            coal.listeners.add(this)
+            log.listeners.add(this)
         }
 
         listener<ConnectionEvent.Disconnect> {

@@ -173,7 +173,7 @@ object Surround : Module() {
 
     init {
         alwaysListening = enableInHole.value
-        enableInHole.settingListener = {
+        enableInHole.listeners.add {
             alwaysListening = enableInHole.value
         }
     }

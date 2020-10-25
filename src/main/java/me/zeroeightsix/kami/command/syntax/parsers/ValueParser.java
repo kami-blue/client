@@ -24,7 +24,7 @@ public class ValueParser extends AbstractParser {
             HashMap<String, Setting<?>> possibilities = new HashMap<>();
 
             assert m != null;
-            for (Setting<?> v : m.getSettingList()) {
+            for (Setting<?> v : m.getFullSettingList()) {
                 if (v.getName().toLowerCase().startsWith(chunkValue.toLowerCase()))
                     possibilities.put(v.getName(), v);
             }

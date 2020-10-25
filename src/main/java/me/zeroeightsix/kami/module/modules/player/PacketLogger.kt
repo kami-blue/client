@@ -83,7 +83,7 @@ object PacketLogger : Module() {
     }
 
     init {
-        clear.settingListener = {
+        clear.listeners.add {
             if (clear.value) {
                 lines.clear()
                 write()

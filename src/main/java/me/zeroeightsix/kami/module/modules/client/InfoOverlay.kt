@@ -85,7 +85,7 @@ object InfoOverlay : Module() {
 
     fun infoContents(): ArrayList<String> {
         val infoContents = ArrayList<String>()
-        for (setting in settingList) {
+        for (setting in fullSettingList) {
             if (setting.value != true) continue // make sure it is a Boolean setting and enabled
 
             setting.infoMap()?.let {

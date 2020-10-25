@@ -35,9 +35,9 @@ object Zoom : Module() {
     }
 
     init {
-        fovChange.settingListener = { if (isEnabled) mc.gameSettings.fovSetting = fovChange.value }
-        modifySensitivity.settingListener = { if (isEnabled) if (modifySensitivity.value) mc.gameSettings.mouseSensitivity = sensi * sensitivityMultiplier.value else mc.gameSettings.mouseSensitivity = sensi }
-        sensitivityMultiplier.settingListener = { if (isEnabled) mc.gameSettings.mouseSensitivity = sensi * sensitivityMultiplier.value }
-        smoothCamera.settingListener = { if (isEnabled) mc.gameSettings.smoothCamera = smoothCamera.value }
+        fovChange.listeners.add { if (isEnabled) mc.gameSettings.fovSetting = fovChange.value }
+        modifySensitivity.listeners.add { if (isEnabled) if (modifySensitivity.value) mc.gameSettings.mouseSensitivity = sensi * sensitivityMultiplier.value else mc.gameSettings.mouseSensitivity = sensi }
+        sensitivityMultiplier.listeners.add { if (isEnabled) mc.gameSettings.mouseSensitivity = sensi * sensitivityMultiplier.value }
+        smoothCamera.listeners.add { if (isEnabled) mc.gameSettings.smoothCamera = smoothCamera.value }
     }
 }

@@ -82,6 +82,6 @@ object AutoTool : Module() {
     }
 
     init {
-        switchBack.settingListener = { if (!switchBack.value) shouldMoveBack = false }
+        switchBack.listeners.add { if (!switchBack.value) shouldMoveBack = false }
     }
 }

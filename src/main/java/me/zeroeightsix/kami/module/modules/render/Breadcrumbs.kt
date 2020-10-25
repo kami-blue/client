@@ -157,7 +157,7 @@ object Breadcrumbs : Module() {
     }
 
     init {
-        clear.settingListener = {
+        clear.listeners.add {
             if (clear.value) {
                 mainList.clear()
                 sendChatMessage("$chatName Cleared!")

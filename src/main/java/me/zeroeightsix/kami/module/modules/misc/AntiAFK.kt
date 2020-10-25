@@ -160,7 +160,7 @@ object AntiAFK : Module() {
     }
 
     init {
-        walk.settingListener = {
+        walk.listeners.add {
             if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
         }
     }

@@ -74,7 +74,7 @@ object ESP : Module() {
     val frameBuffer = shaderHelper.getFrameBuffer("final")
 
     init {
-        mode.settingListener = {
+        mode.listeners.add {
             drawingOutline = false
             drawNametag = false
             resetGlow()
