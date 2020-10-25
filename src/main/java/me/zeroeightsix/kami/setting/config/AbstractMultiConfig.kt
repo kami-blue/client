@@ -18,7 +18,7 @@ abstract class AbstractMultiConfig<T>(
     }
 
     override fun save() {
-        if (!file.exists()) file.mkdir()
+        if (!file.exists()) file.mkdirs()
 
         for (group in subGroup.values) {
             val file = getFiles(group)
@@ -27,14 +27,14 @@ abstract class AbstractMultiConfig<T>(
     }
 
     override fun load() {
-        if (!file.exists()) file.mkdir()
+        if (!file.exists()) file.mkdirs()
 
         for (group in subGroup.values) {
             val file = getFiles(group)
             try {
                 loadFromFile(group, file.first)
             } catch (e: Exception) {
-                KamiMod.log.warn("Failed to load latest, loading backup.", e)
+                KamiMod.log.warn("Failed to load latest, loading backup.")
                 loadFromFile(group, file.second)
             }
         }
@@ -48,6 +48,6 @@ abstract class AbstractMultiConfig<T>(
      * @return Pair of this group's main file to its backup file
      */
     private fun getFiles(group: SettingMultiGroup) =
-            File("$directoryPath$name/${group.name}.json") to File("$directoryPath$name/${group.name}.bak")
+            File("${file.path}/${group.name}.json") to File("${file.path}/${group.name}.bak")
 
 }

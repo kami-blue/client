@@ -15,10 +15,7 @@ import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.ConfigUtils
-import java.io.File
-import java.io.FileWriter
-import java.io.InputStreamReader
-import java.nio.file.Files
+import java.io.*
 
 abstract class AbstractConfig<T>(
         name: String,
@@ -106,7 +103,7 @@ abstract class AbstractConfig<T>(
         try {
             loadFromFile(this, file)
         } catch (e: Exception) {
-            KamiMod.log.warn("Failed to load latest, loading backup.", e)
+            KamiMod.log.warn("Failed to load latest, loading backup.")
             loadFromFile(this, backup)
         }
     }
@@ -121,13 +118,17 @@ abstract class AbstractConfig<T>(
     protected fun saveToFile(group: SettingGroup, file: File, backup: File) {
         ConfigUtils.fixEmptyJson(file)
         ConfigUtils.fixEmptyJson(backup)
-
         if (file.exists()) file.copyTo(backup, true)
 
-        val fileWriter = FileWriter(file, false)
-        gson.toJson(group.write(), fileWriter)
-        fileWriter.flush()
-        fileWriter.close()
+        val fileWriter = BufferedWriter(FileWriter(file, false))
+        try {
+            gson.toJson(group.write(), fileWriter)
+            fileWriter.flush()
+            fileWriter.close()
+        } catch (e: Exception) {
+            fileWriter.flush()
+            fileWriter.close()
+        }
     }
 
     /**
@@ -137,11 +138,16 @@ abstract class AbstractConfig<T>(
      * @param file file of [group]'s json
      */
     protected fun loadFromFile(group: SettingGroup, file: File) {
-        ConfigUtils.fixEmptyJson(file)
-        val stream = Files.newInputStream(file.toPath())
-        val jsonObject = parser.parse(InputStreamReader(stream)).asJsonObject
-        group.read(jsonObject)
-        stream.close()
+        val fileReader = BufferedReader(FileReader(file))
+        try {
+            ConfigUtils.fixEmptyJson(file)
+            val jsonObject = parser.parse(fileReader).asJsonObject
+            group.read(jsonObject)
+            fileReader.close()
+        } catch (e: Exception) {
+            fileReader.close()
+            throw e
+        }
     }
 
     /**

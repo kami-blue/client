@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
+import me.zeroeightsix.kami.setting.GenericConfig
+import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
 
 /**
  * Created by 086 on 14/10/2018.
@@ -38,25 +38,27 @@ class ConfigCommand : Command("config", ChunkBuilder()
                 Thread {
                     val saved = ConfigUtils.saveAll()
                     if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
-                    else MessageSendHelper.sendErrorMessage("Failed to load config!")
+                    else MessageSendHelper.sendErrorMessage("Failed to save config!")
                 }.start()
             }
 
-
             "path" -> if (args[1] == null) {
-                //MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
+                MessageSendHelper.sendChatMessage("Path to configuration: &b" + ModuleConfig.currentPath)
             } else {
                 val newPath = args[1]!!
                 if (!ConfigUtils.isFilenameValid(newPath)) {
                     MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                 }
+                val prevPath = ModuleConfig.currentPath.value
                 try {
-                    Files.newBufferedWriter(Paths.get("KAMILastConfig.txt")).use { writer ->
-                        writer.write(newPath)
-                        ConfigUtils.loadAll()
-                        MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
-                    }
+                    ConfigUtils.saveConfig(ModuleConfig)
+                    ModuleConfig.currentPath.value = newPath
+                    ConfigUtils.saveConfig(GenericConfig)
+                    ConfigUtils.loadAll()
+                    MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
                 } catch (e: IOException) {
+                    ModuleConfig.currentPath.value = prevPath
+                    ConfigUtils.saveConfig(ModuleConfig)
                     e.printStackTrace()
                     MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                 }

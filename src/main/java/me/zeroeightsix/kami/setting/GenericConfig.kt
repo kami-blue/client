@@ -12,5 +12,4 @@ object GenericConfig : AbstractConfig<Any>(
         getGroupOrPut(this::class.simpleName!!).addSetting(setting)
         return setting
     }
-
 }

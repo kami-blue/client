@@ -18,8 +18,9 @@ object ConfigUtils {
     var inProcess = false
 
     fun loadAll(): Boolean {
-        var success = true
         inProcess = true
+        var success = loadConfig(GenericConfig)
+
         val loadingThreads = arrayOf(
                 Thread {
                     Thread.currentThread().name = "Macro Loading Thread"
@@ -32,10 +33,6 @@ object ConfigUtils {
                 Thread {
                     Thread.currentThread().name = "Friend Loading Thread"
                     success = FriendManager.loadFriends() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Generic Config Loading Thread"
-                    success = loadConfig(GenericConfig) && success
                 },
                 Thread {
                     Thread.currentThread().name = "Module Config Loading Thread"
@@ -136,9 +133,9 @@ object ConfigUtils {
         }
     }
 
-    fun isFilenameValid(file: String?): Boolean {
+    fun isFilenameValid(file: String): Boolean {
         return try {
-            File(file!!).canonicalPath
+            File(file).canonicalPath
             true
         } catch (e: Throwable) {
             false
@@ -151,13 +148,13 @@ object ConfigUtils {
         file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() }
 
         if (!notEmpty) {
+            val fileWriter = FileWriter(file)
             try {
-                val fileWriter = FileWriter(file)
                 fileWriter.write("{}")
-                fileWriter.close()
             } catch (exception: IOException) {
                 exception.printStackTrace()
             }
+            fileWriter.close()
         }
     }
 }
