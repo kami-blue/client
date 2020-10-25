@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.module.modules.ClickGUI
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
@@ -89,17 +89,17 @@ class TextComponent(val separator: String = "  ") {
              scale: Float = 1f,
              drawShadow: Boolean = true,
              skipEmptyLine: Boolean = true,
-             horizontalAlign: TextProperties.HAlign = TextProperties.HAlign.LEFT,
-             verticalAlign: TextProperties.VAlign = TextProperties.VAlign.TOP,
+             horizontalAlign: Alignment.HAlign = Alignment.HAlign.LEFT,
+             verticalAlign: Alignment.VAlign = Alignment.VAlign.TOP,
              customFont: Boolean = FontRenderAdapter.useCustomFont
     ) {
         if (isEmpty()) return
         glPushMatrix()
         glTranslated(pos.x, pos.y, 0.0) // Rounding it to int so stupid Minecraftia doesn't fucked up
         glScalef(scale, scale, 1f)
-        if (verticalAlign != TextProperties.VAlign.TOP) {
+        if (verticalAlign != Alignment.VAlign.TOP) {
             var height = getHeight(lineSpace, customFont)
-            if (verticalAlign == TextProperties.VAlign.CENTER) height /= 2
+            if (verticalAlign == Alignment.VAlign.CENTER) height /= 2
             glTranslatef(0f, -height, 0f)
         }
         for (line in textLines) {
@@ -132,11 +132,11 @@ class TextComponent(val separator: String = "  ") {
             textElementList.add(textElement)
         }
 
-        fun drawLine(drawShadow: Boolean, horizontalAlign: TextProperties.HAlign, customFont: Boolean) {
+        fun drawLine(drawShadow: Boolean, horizontalAlign: Alignment.HAlign, customFont: Boolean) {
             glPushMatrix()
-            if (horizontalAlign != TextProperties.HAlign.LEFT) {
+            if (horizontalAlign != Alignment.HAlign.LEFT) {
                 var width = getWidth(customFont)
-                if (horizontalAlign == TextProperties.HAlign.CENTER) width /= 2
+                if (horizontalAlign == Alignment.HAlign.CENTER) width /= 2
                 glTranslatef(-width, 0f, 0f)
             }
             for (textElement in textElementList) {

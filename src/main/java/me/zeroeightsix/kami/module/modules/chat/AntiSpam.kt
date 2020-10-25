@@ -16,7 +16,7 @@ import java.util.regex.Pattern
         name = "AntiSpam",
         category = Module.Category.CHAT,
         description = "Removes spam and advertising from the chat",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object AntiSpam : Module() {
     private val mode = setting("Mode", Mode.REPLACE)

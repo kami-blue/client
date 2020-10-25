@@ -18,7 +18,7 @@ import net.minecraft.network.play.client.CPacketClickWindow
         name = "AntiBookKick",
         category = Module.Category.MISC,
         description = "Prevents being kicked by clicking on books",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object AntiBookKick : Module() {
     init {

@@ -7,6 +7,8 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
+import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
@@ -18,7 +20,7 @@ import org.lwjgl.opengl.GL11.*
         name = "InventoryViewer",
         category = Module.Category.CLIENT,
         description = "Configures Inventory Viewer's options",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object InventoryViewer : Module() {

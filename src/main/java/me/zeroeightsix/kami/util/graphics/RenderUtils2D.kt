@@ -192,9 +192,10 @@ object RenderUtils2D {
     private fun getArcVertices(center: Vec2d, radius: Double, angleRange: Pair<Float, Float>, segments: Int): Array<Vec2d> {
         val range = max(angleRange.first, angleRange.second) - min(angleRange.first, angleRange.second)
         val seg = calcSegments(segments, radius, range)
+        val segAngle = (range.toDouble() / seg.toDouble())
 
         return Array(seg + 1) {
-            val angle = Math.toRadians(it * (range / seg.toDouble()) + angleRange.first)
+            val angle = Math.toRadians(it * segAngle + angleRange.first.toDouble())
             Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
         }
     }

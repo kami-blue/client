@@ -13,7 +13,7 @@ import java.util.*
         name = "AutoQMain",
         description = "Automatically does '/queue 2b2t-lobby'",
         category = Module.Category.CHAT,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object AutoQMain : Module() {
     private val showWarns = setting("ShowWarnings", true)

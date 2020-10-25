@@ -15,7 +15,7 @@ import java.awt.Color
         name = "ActiveModules",
         category = Module.Category.CLIENT,
         description = "Configures ActiveModules colours and modes",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object ActiveModules : Module() {

@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
         name = "ChatSetting",
         category = Module.Category.CLIENT,
         description = "Configures chat message manager",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object ChatSetting : Module() {

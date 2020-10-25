@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
-import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -34,7 +33,7 @@ open class Module {
             val category: Category,
             val modulePriority: Int = -1,
             val alwaysListening: Boolean = false,
-            val showOnArray: ShowOnArray = ShowOnArray.ON,
+            val showOnArray: Boolean = true,
             val alwaysEnabled: Boolean = false,
             val enabledByDefault: Boolean = false
     )
@@ -73,7 +72,7 @@ open class Module {
     val isDisabled: Boolean get() = !isEnabled
     val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name.value}]"
-    val isOnArray: Boolean get() = showOnArray.value == ShowOnArray.ON
+    val isVisible: Boolean get() = visible.value
     val isProduction: Boolean get() = name.value == "clickGUI" || category != Category.EXPERIMENTAL && category != Category.HIDDEN
     /* End of properties */
 
@@ -114,7 +113,7 @@ open class Module {
     }
 
     private fun sendToggleMessage() {
-        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && CommandConfig.toggleMessages.value) {
+        if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
             MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &aenabled" else " &cdisabled")
         }
     }

@@ -1,0 +1,98 @@
+{
+    "targets": [
+        "final",
+        "swap"
+    ],
+    "passes": [
+        {
+            "name": "kawase_blur",
+            "intarget": "minecraft:main",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 0.5 ]
+                }
+            ]
+        },
+        {
+            "name": "kawase_blur",
+            "intarget": "swap",
+            "outtarget": "final",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 1.5 ]
+                }
+            ]
+        },
+        {
+            "name": "kawase_blur",
+            "intarget": "final",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 2.5 ]
+                }
+            ]
+        },
+        {
+            "name": "kawase_blur",
+            "intarget": "swap",
+            "outtarget": "final",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 3.5 ]
+                }
+            ]
+        },
+        {
+            "name": "kawase_blur",
+            "intarget": "final",
+            "outtarget": "swap",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 4.5 ]
+                }
+            ]
+        },
+        {
+            "name": "kawase_blur",
+            "intarget": "swap",
+            "outtarget": "final",
+            "uniforms": [
+                {
+                    "name": "multiplier",
+                    "values": [ 1.0 ]
+                },
+                {
+                    "name": "baseOffset",
+                    "values": [ 5.5 ]
+                }
+            ]
+        }
+    ]
+}

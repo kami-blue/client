@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 @Module.Info(
         name = "CustomFont",
         description = "Use the better font instead of the stupid Minecraft font",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         category = Module.Category.CLIENT,
         enabledByDefault = true
 )

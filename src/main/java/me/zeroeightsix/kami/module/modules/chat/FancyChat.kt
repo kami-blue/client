@@ -11,7 +11,7 @@ import kotlin.math.min
         name = "FancyChat",
         category = Module.Category.CHAT,
         description = "Makes messages you send fancy",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         modulePriority = 100
 )
 object FancyChat : Module() {

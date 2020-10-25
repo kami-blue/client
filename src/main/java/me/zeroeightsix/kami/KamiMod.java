@@ -4,7 +4,6 @@ import com.google.gson.JsonParser;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
@@ -69,7 +68,6 @@ public class KamiMod {
     @Mod.Instance
     private static KamiMod INSTANCE;
 
-    private KamiGUI guiManager;
     public CommandManager commandManager;
 
     @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
@@ -100,9 +98,6 @@ public class KamiMod {
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
-        guiManager = new KamiGUI();
-        guiManager.initializeGUI();
-
         commandManager = new CommandManager();
 
         FileInstanceManager.fixEmptyFiles();
@@ -125,14 +120,6 @@ public class KamiMod {
 
     public static KamiMod getInstance() {
         return INSTANCE;
-    }
-
-    public KamiGUI getGuiManager() {
-        return this.guiManager;
-    }
-
-    public void setGuiManager(KamiGUI guiManager) {
-        this.guiManager = guiManager;
     }
 
     public CommandManager getCommandManager() {

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -14,7 +14,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         name = "CommandConfig",
         category = Module.Category.CLIENT,
         description = "Configures client chat related stuff",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         alwaysEnabled = true
 )
 object CommandConfig : Module() {
@@ -32,7 +32,7 @@ object CommandConfig : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
+            if (autoSaving.value && mc.currentScreen !is KamiClickGui && timer.tick(savingInterval.value.toLong())) {
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
                 ConfigUtils.saveConfig(ModuleConfig)
             }

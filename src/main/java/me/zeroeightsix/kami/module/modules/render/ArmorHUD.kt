@@ -14,10 +14,10 @@ import net.minecraft.util.math.BlockPos
 import kotlin.math.floor
 
 @Module.Info(
-        name = "ArmorHUD",
+        name = "ArmourHUD",
         category = Module.Category.RENDER,
-        description = "Displays your armor and it's durability on screen",
-        showOnArray = Module.ShowOnArray.OFF
+        description = "Displays your armour and it's durability on screen",
+        showOnArray = false
 )
 object ArmorHUD : Module() {
     private val damage = setting("Damage", false)

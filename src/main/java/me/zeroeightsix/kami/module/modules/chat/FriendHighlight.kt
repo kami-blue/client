@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
         name = "FriendHighlight",
         description = "Highlights your friends names in chat",
         category = Module.Category.CHAT,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object FriendHighlight : Module() {
     private val bold = setting("Bold", true)

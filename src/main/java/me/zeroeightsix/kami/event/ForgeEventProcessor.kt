@@ -3,9 +3,6 @@ package me.zeroeightsix.kami.event
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.*
-import me.zeroeightsix.kami.gui.UIRenderer
-import me.zeroeightsix.kami.gui.kami.KamiGUI
-import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
@@ -46,13 +43,6 @@ object ForgeEventProcessor {
                 prevWidth = mc.displayWidth
                 prevHeight = mc.displayHeight
                 KamiEventBus.post(ResolutionUpdateEvent(mc.displayWidth, mc.displayHeight))
-                for (component in KamiMod.getInstance().guiManager.children) {
-                    if (component !is Frame) continue
-                    KamiGUI.dock(component)
-                }
-            }
-            if (mc.world != null && mc.player != null) {
-                KamiMod.getInstance().guiManager.callTick(KamiMod.getInstance().guiManager)
             }
         }
     }
@@ -88,7 +78,6 @@ object ForgeEventProcessor {
 
         if (event.type == target) {
             KamiEventBus.post(RenderOverlayEvent(event.partialTicks))
-            UIRenderer.renderAndUpdateFrames()
         }
     }
 

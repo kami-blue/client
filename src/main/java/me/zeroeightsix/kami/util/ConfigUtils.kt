@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
@@ -36,10 +35,10 @@ object ConfigUtils {
         success = loadConfig(ModuleConfig) && success
 
         // GUI
-        GuiConfig.clearSettings()
-        KamiMod.getInstance().guiManager = KamiGUI()
-        KamiMod.getInstance().guiManager.initializeGUI()
-        success = loadConfig(GuiConfig) && success
+        //GuiConfig.clearSettings()
+        //KamiMod.getInstance().guiManager = KamiGUI()
+        //KamiMod.getInstance().guiManager.initializeGUI()
+        //success = loadConfig(GuiConfig) && success
 
         inProcess = false
         return success
@@ -65,7 +64,7 @@ object ConfigUtils {
         success = saveConfig(ModuleConfig) && success
 
         // GUI
-        success = saveConfig(GuiConfig) && success
+        //success = saveConfig(GuiConfig) && success
 
         inProcess = false
         return success

@@ -16,7 +16,7 @@ import kotlin.math.min
         name = "CustomChat",
         category = Module.Category.CHAT,
         description = "Add a custom ending to your message!",
-        showOnArray = Module.ShowOnArray.OFF,
+        showOnArray = false,
         modulePriority = 200
 )
 object CustomChat : Module() {

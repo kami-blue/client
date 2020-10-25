@@ -31,16 +31,21 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun round(value: Float, places: Int): Double {
-        val scale = 10.0.pow(places.toDouble())
-        return round(value * scale) / scale
+    fun round(value: Float, places: Int): Float {
+        return round(value.toDouble(), places).toFloat()
     }
 
     @JvmStatic
     fun round(value: Double, places: Int): Double {
-        val scale = 10.0.pow(places.toDouble())
+        val scale = 10.0.pow(places)
         return round(value * scale) / scale
     }
+
+    @JvmStatic
+    fun decimalPlaces(value: Double) = value.toString().split('.').getOrElse(1) { "0" }.length
+
+    @JvmStatic
+    fun decimalPlaces(value: Float) = value.toString().split('.').getOrElse(1) { "0" }.length
 
     @JvmStatic
     fun isNumberEven(i: Int): Boolean {

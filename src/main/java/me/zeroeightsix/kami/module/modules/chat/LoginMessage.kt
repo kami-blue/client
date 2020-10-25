@@ -15,7 +15,7 @@ import java.io.*
         name = "LoginMessage",
         description = "Sends a given message to public chat on login.",
         category = Module.Category.CHAT,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object LoginMessage : Module() {
     private val sendAfterMoving = setting("SendAfterMoving", false)
