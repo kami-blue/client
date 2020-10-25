@@ -19,41 +19,27 @@ object ConfigUtils {
 
     fun loadAll(): Boolean {
         inProcess = true
+
+        // Generic
         var success = loadConfig(GenericConfig)
 
-        val loadingThreads = arrayOf(
-                Thread {
-                    Thread.currentThread().name = "Macro Loading Thread"
-                    success = MacroManager.loadMacros() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Waypoint Loading Thread"
-                    success = WaypointManager.loadWaypoints() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Friend Loading Thread"
-                    success = FriendManager.loadFriends() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Module Config Loading Thread"
-                    success = loadConfig(ModuleConfig) && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Gui Config Loading Thread"
-                    GuiConfig.clearSettings()
-                    KamiMod.getInstance().guiManager = KamiGUI()
-                    KamiMod.getInstance().guiManager.initializeGUI()
-                    success = loadConfig(GuiConfig) && success
-                }
-        )
+        // Macro
+        success = MacroManager.loadMacros() && success
 
-        for (thread in loadingThreads) {
-            thread.start()
-        }
+        // Waypoint
+        success = WaypointManager.loadWaypoints() && success
 
-        for (thread in loadingThreads) {
-            thread.join()
-        }
+        // Friends
+        success = FriendManager.loadFriends() && success
+
+        // Modules
+        success = loadConfig(ModuleConfig) && success
+
+        // GUI
+        GuiConfig.clearSettings()
+        KamiMod.getInstance().guiManager = KamiGUI()
+        KamiMod.getInstance().guiManager.initializeGUI()
+        success = loadConfig(GuiConfig) && success
 
         inProcess = false
         return success
@@ -62,40 +48,24 @@ object ConfigUtils {
     fun saveAll(): Boolean {
         var success = true
         inProcess = true
-        val savingThreads = arrayOf(
-                Thread {
-                    Thread.currentThread().name = "Macro Saving Thread"
-                    success = MacroManager.saveMacros() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Waypoint Saving Thread"
-                    success = WaypointManager.saveWaypoints() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Friend Saving Thread"
-                    success = FriendManager.saveFriends() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Generic Config Loading Thread"
-                    success = saveConfig(GenericConfig) && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Module Config Saving Thread"
-                    success = saveConfig(ModuleConfig) && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Gui Config Saving Thread"
-                    success = saveConfig(GuiConfig) && success
-                }
-        )
 
-        for (thread in savingThreads) {
-            thread.start()
-        }
+        // Generic
+        success = saveConfig(GenericConfig) && success
 
-        for (thread in savingThreads) {
-            thread.join()
-        }
+        // Macro
+        success = MacroManager.saveMacros() && success
+
+        // Waypoint
+        success = WaypointManager.saveWaypoints() && success
+
+        // Friends
+        success = FriendManager.saveFriends() && success
+
+        // Modules
+        success = saveConfig(ModuleConfig) && success
+
+        // GUI
+        success = saveConfig(GuiConfig) && success
 
         inProcess = false
         return success
@@ -127,7 +97,7 @@ object ConfigUtils {
             config.save()
             KamiMod.log.info("Config saved")
             true
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             KamiMod.log.error("Failed to save config!", e)
             false
         }

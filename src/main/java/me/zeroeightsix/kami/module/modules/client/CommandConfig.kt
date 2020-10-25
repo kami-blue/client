@@ -28,16 +28,13 @@ object CommandConfig : Module() {
     val commandPrefix = setting("CommandPrefix", ";", { false })
     val modifierEnabled = setting("ModifierEnabled", false, { false })
 
-    val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     init {
         listener<SafeTickEvent> {
             if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
-                Thread {
-                    Thread.currentThread().name = "Auto Saving Thread"
-                    if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                    ConfigUtils.saveConfig(ModuleConfig)
-                }.start()
+                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
+                ConfigUtils.saveConfig(ModuleConfig)
             }
         }
     }
