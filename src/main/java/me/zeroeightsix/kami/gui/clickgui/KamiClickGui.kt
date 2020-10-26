@@ -30,7 +30,9 @@ object KamiClickGui : GuiScreen() {
     private val windowList = LinkedList<WindowComponent>()
     private val settingMap = HashMap<Module, SettingWindow>()
 
+    private var lastEventButton = -1
     private var lastClickPos = Vec2f(0.0f, 0.0f)
+    private var lastClickedWindow: WindowComponent? = null
     private var hoveredWindow: WindowComponent? = null
         set(value) {
             if (value == field) return
@@ -38,16 +40,18 @@ object KamiClickGui : GuiScreen() {
             value?.onHover(getRealMousePos())
             field = value
         }
-    private var lastClickedWindow: WindowComponent? = null
     private var settingWindow: SettingWindow? = null
     private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
 
     init {
         val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
-        for ((index, category) in Module.Category.values().withIndex()) {
+        var posX = 10.0f
+
+        for (category in Module.Category.values()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
             if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.categoryName, 90.0f * index, 64.0f, 80.0f, 256.0f, *buttons))
+            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 80.0f, 256.0f, *buttons))
+            posX += 90.0f
         }
 
         listener<SafeTickEvent> { event ->
@@ -100,8 +104,28 @@ object KamiClickGui : GuiScreen() {
 
     override fun handleMouseInput() {
         val mousePos = getRealMousePos()
-        if (Mouse.getEventButtonState()) lastClickPos = mousePos
-        else hoveredWindow = windowList.lastOrNull { it.isInWindow(lastClickPos) }
+        val eventButton = Mouse.getEventButton()
+
+        when {
+            // Click
+            Mouse.getEventButtonState() -> {
+                lastClickPos = mousePos
+                lastEventButton = eventButton
+            }
+            // Release
+            eventButton != -1 -> {
+                lastEventButton = -1
+            }
+            // Drag
+            lastEventButton != -1 -> {
+
+            }
+            // Move
+            else -> {
+                hoveredWindow = windowList.lastOrNull { it.isInWindow(mousePos) }
+            }
+        }
+
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
 
