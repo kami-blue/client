@@ -23,7 +23,7 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
         }
         when {
             args[0] == null || args[0].equals("help", ignoreCase = true) -> {
-                MessageSendHelper.sendWarningMessage("""Available options: 
+                MessageSendHelper.sendChatMessage("""Available options: 
   +item: Adds item to the list
   -item: Removes item from the list
   =item: Changes the list to only contain item
@@ -35,13 +35,13 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
             args[0]!!.startsWith("+", true) -> {
                 val name = args[0]!!.replace("+", "")
                 if (Item.getByNameOrId(name) == null) {
-                    MessageSendHelper.sendWarningMessage("&cInvalid item name/id $name")
+                    MessageSendHelper.sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
                     if (InventoryManager.ejectList.value.add(itemName)) {
-                        MessageSendHelper.sendWarningMessage("$itemName has been added to the AutoEject item list")
+                        MessageSendHelper.sendChatMessage("$itemName has been added to the AutoEject item list")
                     } else {
-                        MessageSendHelper.sendWarningMessage("&c$itemName already exist")
+                        MessageSendHelper.sendChatMessage("&c$itemName already exist")
                     }
                 }
             }
@@ -49,13 +49,13 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
             args[0]!!.startsWith("-", true) -> {
                 val name = args[0]!!.replace("-", "")
                 if (Item.getByNameOrId(name) == null) {
-                    MessageSendHelper.sendWarningMessage("&cInvalid item name/id $name")
+                    MessageSendHelper.sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
                     if (!InventoryManager.ejectList.value.remove(itemName)) {
-                        MessageSendHelper.sendWarningMessage("$itemName has been removed from the AutoEject item list")
+                        MessageSendHelper.sendChatMessage("$itemName has been removed from the AutoEject item list")
                     } else {
-                        MessageSendHelper.sendWarningMessage("&c$itemName doesn't exist")
+                        MessageSendHelper.sendChatMessage("&c$itemName doesn't exist")
                     }
                 }
             }
@@ -63,33 +63,33 @@ class EjectCommand : Command("eject", ChunkBuilder().append("command", true, Enu
             args[0]!!.startsWith("=", true) -> {
                 val name = args[0]!!.replace("=", "")
                 if (Item.getByNameOrId(name) == null) {
-                    MessageSendHelper.sendWarningMessage("&cInvalid item name/id $name")
+                    MessageSendHelper.sendChatMessage("&cInvalid item name/id $name")
                 } else {
                     val itemName = Item.getByNameOrId(name)!!.registryName.toString()
                     InventoryManager.ejectList.value.apply { 
                         clear()
                         add(itemName)
                     }
-                    MessageSendHelper.sendWarningMessage("AutoEject item list has been to $itemName")
+                    MessageSendHelper.sendChatMessage("AutoEject item list has been to $itemName")
                 }
             }
 
             args[0].equals("list", true) -> {
-                MessageSendHelper.sendWarningMessage(InventoryManager.ejectList.value.joinToString())
+                MessageSendHelper.sendChatMessage(InventoryManager.ejectList.value.joinToString())
             }
 
             args[0].equals("default", true) -> {
                 InventoryManager.ejectList.resetValue()
-                MessageSendHelper.sendWarningMessage("Reset the AutoEject item list to default")
+                MessageSendHelper.sendChatMessage("Reset the AutoEject item list to default")
             }
 
             args[0].equals("clear", true) -> {
                 InventoryManager.ejectList.value.clear()
-                MessageSendHelper.sendWarningMessage("Cleared the AutoEject item list")
+                MessageSendHelper.sendChatMessage("Cleared the AutoEject item list")
             }
 
             else -> {
-                MessageSendHelper.sendWarningMessage("&cInvalid subcommand ${args[0]}")
+                MessageSendHelper.sendChatMessage("&cInvalid subcommand ${args[0]}")
             }
         }
     }
