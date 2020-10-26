@@ -50,6 +50,7 @@ object StorageESP : Module() {
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val tracer = register(Settings.booleanBuilder("Tracer").withValue(false).withVisibility { page.value == Page.RENDER }.build())
+    val cull = register(Settings.booleanBuilder("OnlyVisible").withValue(false).withVisibility { page.value == Page.RENDER }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { page.value == Page.RENDER && filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDER && outline.value }.build())
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.RENDER && tracer.value }.build())

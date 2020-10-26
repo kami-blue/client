@@ -1,13 +1,17 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.module.modules.render.StorageESP
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.color.ColorHolder
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.GL_LINES
 import org.lwjgl.opengl.GL11.GL_QUADS
+import kotlin.math.acos
 
 /**
  * @author Xiaro
@@ -15,6 +19,9 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer {
+    private lateinit var lookvec: Vec3d
+    private lateinit var campos: Vec3d
+    private val mc = Minecraft.getMinecraft();
     private val toRender = HashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
     var aFilled = 0
     var aOutline = 0
@@ -73,6 +80,9 @@ class ESPRenderer {
 
     private fun drawList(type: Type) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
+        campos = KamiTessellator.camPos
+        lookvec = mc.renderViewEntity!!.lookVec
+        if (mc.gameSettings.thirdPersonView == 2) lookvec = lookvec.scale(-1.0)
         for ((box, pair) in toRender) when (type) {
             Type.FILLED -> drawFilled(box, pair)
             Type.OUTLINE -> drawOutline(box, pair)
@@ -83,13 +93,15 @@ class ESPRenderer {
 
     private fun drawFilled(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aFilled * (pair.first.a / 255f)).toInt()
-        KamiTessellator.drawBox(box, pair.first, a, pair.second)
+        if (!StorageESP.cull.value || threeDCull(box))
+            KamiTessellator.drawBox(box, pair.first, a, pair.second)
     }
 
     private fun drawOutline(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aOutline * (pair.first.a / 255f)).toInt()
         val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
-        KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
+        if (!StorageESP.cull.value || threeDCull(box))
+            KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
     }
 
     private fun drawTracer(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
@@ -101,5 +113,11 @@ class ESPRenderer {
 
     private enum class Type {
         FILLED, OUTLINE, TRACER
+    }
+
+    private fun threeDCull(box: AxisAlignedBB): Boolean {
+        val boxvec = box.center.subtract(campos)
+        //fov changes the cone size change for testing
+        return acos(boxvec.dotProduct(lookvec) / (boxvec.length() * lookvec.length())) < (mc.gameSettings.fovSetting/180 * Math.PI)
     }
 }
