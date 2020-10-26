@@ -24,7 +24,7 @@ object Baritone : Module() {
     private val freeLook = setting("FreeLook", true)
     private val allowDownwardTunneling = setting("DownwardTunneling", true)
     private val allowParkour = setting("AllowParkour", true)
-    private val allowParkourPlace = setting("AllowParkour Place", true)
+    private val allowParkourPlace = setting("AllowParkourPlace", true)
     private val avoidPortals = setting("AvoidPortals", false)
     private val mapArtMode = setting("MapArtMode", false)
     private val renderGoal = setting("RenderGoals", true)

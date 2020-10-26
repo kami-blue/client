@@ -24,7 +24,7 @@ object VisualRange : Module() {
     private val leaving = setting("CountLeaving", false)
     private val friends = setting("Friends", true)
     private val uwuAura = setting("UwUAura", false)
-    private val logToFile = setting("LogTo File", false)
+    private val logToFile = setting("LogToFile", false)
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
 
