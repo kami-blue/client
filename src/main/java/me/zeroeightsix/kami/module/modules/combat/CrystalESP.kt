@@ -90,9 +90,7 @@ object CrystalESP : Module() {
                 crystalMap.putAll(cacheMap)
             } else {
                 crystalMap.clear()
-                val s = (0.0f..0.1f)
             }
-            Mode.BLOCK.declaringClass
         }
 
         listener<RenderWorldEvent> {
