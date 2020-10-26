@@ -23,31 +23,36 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
     private var frameBuffersInitialized = false
 
     init {
-        shader = if (!OpenGlHelper.shadersSupported) {
-            KamiMod.log.warn("Shaders are unsupported by OpenGL!")
-
-            null
-        } else if (isIntegratedGraphics()) {
-            KamiMod.log.warn("Running on Intel Integrated Graphics!")
-
-            null
-        } else {
-            try {
-                ShaderLinkHelper.setNewStaticShaderLinkHelper()
-
-                ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shaderIn).also {
-                    it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-                }
-            } catch (e: Exception) {
-                KamiMod.log.warn("Failed to load shaders")
-                e.printStackTrace()
-
+        shader = when {
+            !OpenGlHelper.shadersSupported -> {
+                KamiMod.log.warn("Shaders are unsupported by OpenGL!")
                 null
-            }?.also {
-                for (name in frameBufferNames) {
-                    frameBufferMap[name] = it.getFramebufferRaw(name)
+            }
+
+            isIntegratedGraphics() -> {
+                KamiMod.log.warn("Running on Intel Integrated Graphics!")
+                null
+            }
+
+            else -> {
+                try {
+                    ShaderLinkHelper.setNewStaticShaderLinkHelper()
+
+                    ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shaderIn).also {
+                        it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+                    }
+                } catch (e: Exception) {
+                    KamiMod.log.warn("Failed to load shaders")
+                    e.printStackTrace()
+
+                    null
+                }?.also {
+                    for (name in frameBufferNames) {
+                        frameBufferMap[name] = it.getFramebufferRaw(name)
+                    }
                 }
             }
+
         }
 
         listener<TickEvent.ClientTickEvent> {
@@ -71,8 +76,10 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
         private var cachedIsIntegratedGraphics: Boolean? = null
 
         fun isIntegratedGraphics() = cachedIsIntegratedGraphics ?: run {
-            cachedIsIntegratedGraphics = GlStateManager.glGetString(GL11.GL_VENDOR).contains("Intel")
-            cachedIsIntegratedGraphics!! // cannot be null, we just set the value
+            GlStateManager.glGetString(GL11.GL_VENDOR).contains("Intel").apply {
+                cachedIsIntegratedGraphics = this
+                return this
+            }
         }
     }
 }
