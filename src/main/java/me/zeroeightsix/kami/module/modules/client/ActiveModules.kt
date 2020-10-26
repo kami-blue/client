@@ -53,7 +53,6 @@ object ActiveModules : Module() {
         return when (category) {
             Category.CHAT -> chat
             Category.COMBAT -> combat
-            Category.EXPERIMENTAL -> experimental
             Category.CLIENT -> client
             Category.HIDDEN -> null // This should never be reached
             Category.MISC -> misc
@@ -88,7 +87,6 @@ object ActiveModules : Module() {
         return when (module.category) {
             Category.CHAT -> rgbToHex(getRgb(chat.value, 0), getRgb(chat.value, 1), getRgb(chat.value, 2))
             Category.COMBAT -> rgbToHex(getRgb(combat.value, 0), getRgb(combat.value, 1), getRgb(combat.value, 2))
-            Category.EXPERIMENTAL -> rgbToHex(getRgb(experimental.value, 0), getRgb(experimental.value, 1), getRgb(experimental.value, 2))
             Category.CLIENT -> rgbToHex(getRgb(client.value, 0), getRgb(client.value, 1), getRgb(client.value, 2))
             Category.RENDER -> rgbToHex(getRgb(render.value, 0), getRgb(render.value, 1), getRgb(render.value, 2))
             Category.PLAYER -> rgbToHex(getRgb(player.value, 0), getRgb(player.value, 1), getRgb(player.value, 2))

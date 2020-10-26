@@ -10,23 +10,17 @@ import net.minecraft.client.Minecraft
 
 open class Module {
     /* Annotations */
-    @JvmField val originalName: String = annotation.name
-    @JvmField val category: Category = annotation.category
-    @JvmField val description: String = annotation.description
-    @JvmField val modulePriority: Int = annotation.modulePriority
-    @JvmField var alwaysListening: Boolean = annotation.alwaysListening
+    private val annotation =
+            javaClass.annotations.firstOrNull { it is Info } as? Info
+                    ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
-    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
-    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != visible }
+    val originalName: String = annotation.name
+    val category: Category = annotation.category
+    val description: String = annotation.description
+    val modulePriority: Int = annotation.modulePriority
+    var alwaysListening: Boolean = annotation.alwaysListening
 
-    private val annotation: Info get() {
-            if (javaClass.isAnnotationPresent(Info::class.java)) {
-                return javaClass.getAnnotation(Info::class.java)
-            }
-            throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
-        }
-
-    @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+    @Retention(AnnotationRetention.RUNTIME)
     annotation class Info(
             val name: String,
             val description: String,
@@ -46,7 +40,6 @@ open class Module {
     enum class Category(val categoryName: String, val isHidden: Boolean) {
         CHAT("Chat", false),
         COMBAT("Combat", false),
-        EXPERIMENTAL("Experimental", false),
         CLIENT("Client", false),
         HIDDEN("Hidden", true),
         MISC("Misc", false),
@@ -57,8 +50,11 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    @JvmField val name = setting("Name", originalName)
-    @JvmField val bind = setting("Bind")
+
+    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
+    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != visible }
+    val name = setting("Name", originalName)
+    val bind = setting("Bind")
     private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
     private val visible = setting("Visible", annotation.showOnArray)
     /* End of settings */
@@ -69,7 +65,7 @@ open class Module {
     val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name.value}]"
     val isVisible: Boolean get() = visible.value
-    val isProduction: Boolean get() = name.value == "clickGUI" || category != Category.EXPERIMENTAL && category != Category.HIDDEN
+    val isProduction: Boolean get() = category != Category.HIDDEN
     /* End of properties */
 
 

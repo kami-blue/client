@@ -6,12 +6,12 @@ import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
 import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
+import me.zeroeightsix.kami.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.util.math.Vec2f;
-import me.zeroeightsix.kami.util.text.MessageSendHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -108,11 +108,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
     public void sendChatMessage(String message, CallbackInfo ci) {
-        ci.cancel();
-        final EntityPlayerSP player = mc.player;
-        if (player != null) {
-            MessageSendHelper.sendServerMessage(message, player, Integer.MAX_VALUE - 1);
-        }
+        MessageManager.INSTANCE.setLastPlayerMessage(message);
     }
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)

@@ -106,7 +106,7 @@ public class KamiMod {
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         for (Module module : ModuleManager.getModules()) {
-            if (module.alwaysListening) {
+            if (module.getAlwaysListening()) {
                 KamiEventBus.INSTANCE.subscribe(module);
             }
             if (module.isEnabled()) module.enable();

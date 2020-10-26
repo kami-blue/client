@@ -54,7 +54,7 @@ object EntitySpeed : Module() {
         }
 
         listener<PlayerTravelEvent> {
-            mc.player.ridingEntity?.let {
+            mc.player?.ridingEntity?.let {
                 if (it is EntityPig || it is AbstractHorse || it is EntityBoat && it.controllingPassenger == mc.player) {
                     steerEntity(it)
                     if (flight.value) fly(it)

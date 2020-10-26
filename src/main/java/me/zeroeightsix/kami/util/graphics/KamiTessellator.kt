@@ -111,7 +111,7 @@ object KamiTessellator : Tessellator(0x200000) {
      */
     @JvmStatic
     fun drawBox(box: AxisAlignedBB, color: ColorHolder, a: Int, sides: Int) {
-        val vertexList = LinkedHashSet<Vec3d>()
+        val vertexList = ArrayList<Vec3d>()
 
         if (sides and GeometryMasks.Quad.DOWN != 0) {
             vertexList.addAll(SquareVec(box.minX, box.maxX, box.minZ, box.maxZ, box.minY, EnumFacing.DOWN).toQuad())

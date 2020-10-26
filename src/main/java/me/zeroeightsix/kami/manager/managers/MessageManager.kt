@@ -21,6 +21,7 @@ object MessageManager : Manager() {
     private val messageQueue = TreeSet<QueuedMessage>(Comparator.reverseOrder())
     private val packetSet = HashSet<CPacketChatMessage>()
     private val timer = TimerUtils.TickTimer()
+    var lastPlayerMessage = ""
     private var currentId = 0
 
     private val activeModifiers = TreeSet<MessageModifier>(Comparator.reverseOrder())
@@ -30,7 +31,8 @@ object MessageManager : Manager() {
         listener<PacketEvent.Send>(0) {
             if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
             it.cancel()
-            addMessageToQueue(it.packet, it)
+            if (it.packet.message != lastPlayerMessage) addMessageToQueue(it.packet, it)
+            else addMessageToQueue(it.packet, mc.player?: it, Int.MAX_VALUE - 1)
         }
 
         listener<SafeTickEvent>(-69420) { event ->

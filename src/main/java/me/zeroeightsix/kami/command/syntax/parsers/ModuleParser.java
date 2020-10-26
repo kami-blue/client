@@ -14,13 +14,13 @@ public class ModuleParser extends AbstractParser {
         Module chosen = null;
         for (Module module : ModuleManager.getModules()) {
             if (!module.isProduction()) continue;
-            if (!module.name.getValue().toLowerCase().startsWith(chunkValue.toLowerCase())) continue;
+            if (!module.getName().getValue().toLowerCase().startsWith(chunkValue.toLowerCase())) continue;
             chosen = module;
             break;
         }
 
         if (chosen == null) return null;
-        return chosen.name.getValue().substring(chunkValue.length());
+        return chosen.getName().getValue().substring(chunkValue.length());
     }
 
 }

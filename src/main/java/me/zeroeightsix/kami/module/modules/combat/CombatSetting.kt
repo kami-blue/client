@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
@@ -85,7 +86,11 @@ object CombatSetting : Module() {
     private var overrideRange = range.value
     private var paused = false
     private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private val threadList = arrayOf(Thread { updateTarget() }, Thread { updatePlacingList() }, Thread { updateCrystalList() })
+    private val threadMap = hashMapOf<Thread, Future<*>?>(
+            Thread { updateTarget() } to null,
+            Thread { updatePlacingList() } to null,
+            Thread { updateCrystalList() } to null
+    )
     private val threadPool = Executors.newCachedThreadPool()
 
     val pause
@@ -116,7 +121,10 @@ object CombatSetting : Module() {
         }
 
         listener<SafeTickEvent>(5000) {
-            for (thread in threadList) threadPool.execute(thread)
+            for ((thread, future) in threadMap) {
+                if (future?.isDone == false) continue // Skip if the previous thread isn't done
+                threadMap[thread] = threadPool.submit(thread)
+            }
 
             if (pauseBaritone.value && !paused && isActive()) {
                 BaritoneUtils.pause()

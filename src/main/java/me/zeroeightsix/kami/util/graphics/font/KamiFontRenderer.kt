@@ -179,7 +179,7 @@ object KamiFontRenderer {
         glPushMatrix()
         glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(CustomFont.size * scale, CustomFont.size * scale, 1.0f)
-        glTranslatef(0f, -4f, 0f)
+        glTranslatef(0f, CustomFont.baselineOffset, 0f)
 
         resetStyle()
 
