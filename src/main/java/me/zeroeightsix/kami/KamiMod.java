@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami;
 
 import com.google.gson.JsonParser;
-import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
@@ -10,7 +9,6 @@ import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
-import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
 import net.minecraftforge.common.MinecraftForge;
@@ -104,8 +102,6 @@ public class KamiMod {
 
         FileInstanceManager.fixEmptyFiles();
 
-        /* Custom static Settings, which can't register normally if they're static */
-        SettingsRegister.register("commandPrefix", Command.commandPrefix);
         ConfigUtils.INSTANCE.loadAll();
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)

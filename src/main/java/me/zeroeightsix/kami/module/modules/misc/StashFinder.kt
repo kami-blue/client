@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -20,24 +20,24 @@ import kotlin.math.roundToInt
         description = "Logs storage units in render distance."
 )
 object StashFinder : Module() {
-    private val saveToFile = register(Settings.b("SaveToFile"))
-    private val logToChat = register(Settings.b("LogToChat"))
-    private val playSound = register(Settings.b("PlaySound"))
+    private val saveToFile = setting("SaveToFile", true)
+    private val logToChat = setting("LogToChat", true)
+    private val playSound = setting("PlaySound", true)
 
-    private val logChests = register(Settings.b("Chests"))
-    private val chestDensity = register(Settings.integerBuilder("MinChests").withValue(5).withRange(1, 20).withVisibility { logChests.value })
+    private val logChests = setting("Chests", true)
+    private val chestDensity = setting("MinChests", 5, 1..20, 1, { logChests.value })
 
-    private val logShulkers = register(Settings.b("Shulkers"))
-    private val shulkerDensity = register(Settings.integerBuilder("MinShulkers").withValue(1).withRange(1, 20).withVisibility { logShulkers.value })
+    private val logShulkers = setting("Shulkers", true)
+    private val shulkerDensity = setting("MinShulkers", 1, 1..20,1, { logShulkers.value })
 
-    private val logDroppers = register(Settings.b("Droppers", false))
-    private val dropperDensity = register(Settings.integerBuilder("MinDroppers").withValue(5).withRange(1, 20).withVisibility { logDroppers.value })
+    private val logDroppers = setting("Droppers", true)
+    private val dropperDensity = setting("MinDroppers", 5, 1..20, 1, { logDroppers.value })
 
-    private val logDispensers = register(Settings.b("Dispensers", false))
-    private val dispenserDensity = register(Settings.integerBuilder("MinDispensers").withValue(5).withRange(1, 20).withVisibility { logDispensers.value })
+    private val logDispensers = setting("Dispensers", true)
+    private val dispenserDensity = setting("MinDispensers", 5, 1..20, 1, { logDispensers.value })
 
-    private val logHoppers = register(Settings.b("Hoppers", false))
-    private val hopperDensity = register(Settings.integerBuilder("MinHoppers").withValue(5).withRange(1, 20).withVisibility { logHoppers.value })
+    private val logHoppers = setting("Hoppers", true)
+    private val hopperDensity = setting("MinHoppers", 5, 1..20, 1, { logHoppers.value })
 
 
     private val chunkData = LinkedHashMap<Long, ChunkStats>()

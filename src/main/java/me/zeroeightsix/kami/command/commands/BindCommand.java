@@ -6,9 +6,8 @@ import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.setting.builder.SettingBuilder;
+import me.zeroeightsix.kami.module.modules.client.CommandConfig;
+import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting;
 import me.zeroeightsix.kami.util.Wrapper;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
@@ -18,7 +17,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
  */
 public class BindCommand extends Command {
 
-    public static Setting<Boolean> modifiersEnabled = SettingBuilder.register(Settings.b("modifiersEnabled", false), "binds");
+    public final static BooleanSetting modifiersEnabled = CommandConfig.INSTANCE.getModifierEnabled();
 
     public BindCommand() {
         super("bind", new ChunkBuilder()

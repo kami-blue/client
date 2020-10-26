@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import org.lwjgl.input.Keyboard
@@ -19,9 +18,9 @@ import kotlin.math.round
         alwaysListening = true
 )
 object ClickGUI : Module() {
-    private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(10, 400))
-    val blur = register(Settings.floatBuilder("Blur").withValue(0.5f).withRange(0.0f, 1.0f).withStep(0.05f))
-    val darkness = register(Settings.floatBuilder("Darkness").withValue(0.25f).withRange(0.0f, 1.0f).withStep(0.05f))
+    private val scaleSetting = setting("Scale", 100, 10..400, 10)
+    val blur = setting("Blur", 0.5f, 0.0f..1.0f, 0.05f)
+    val darkness = setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale
@@ -71,7 +70,7 @@ object ClickGUI : Module() {
 
     init {
         bind.value.key = Keyboard.KEY_Y
-        scaleSetting.settingListener = Setting.SettingListeners {
+        scaleSetting.listeners.add {
             settingTimer.reset()
         }
     }

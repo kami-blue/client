@@ -110,7 +110,7 @@ public class MixinGuiScreen {
             BufferBuilder bufferbuilder = tessellator.getBuffer();
 
             GlStateManager.translate(xl, yl, 0.0);
-            GlStateManager.scale(MapPreview.INSTANCE.getScale().getValue() / 5.0, MapPreview.INSTANCE.getScale().getValue() / 5.0, 0.0);
+            GlStateManager.scale(MapPreview.INSTANCE.getScale().getValue() / 5.0f, MapPreview.INSTANCE.getScale().getValue() / 5.0f, 0.0f);
             RenderHelper.enableGUIStandardItemLighting(); // needed to make lighting work inside non inventory containers
             mc.getTextureManager().bindTexture(RES_MAP_BACKGROUND);
 

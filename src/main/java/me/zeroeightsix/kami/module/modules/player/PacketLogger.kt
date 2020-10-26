@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
@@ -19,8 +18,8 @@ import java.util.*
         category = Module.Category.PLAYER
 )
 object PacketLogger : Module() {
-    private val append = register(Settings.b("Append", false))
-    private val clear = register(Settings.b("Clear", false))
+    private val append = setting("Append", false)
+    private val clear = setting("Clear", false)
 
     private const val filename = "KAMIBluePackets.txt"
     private val lines = ArrayList<String>()
@@ -84,7 +83,7 @@ object PacketLogger : Module() {
     }
 
     init {
-        clear.settingListener = Setting.SettingListeners {
+        clear.listeners.add {
             if (clear.value) {
                 lines.clear()
                 write()

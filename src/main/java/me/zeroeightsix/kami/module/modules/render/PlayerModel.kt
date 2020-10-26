@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -16,12 +16,12 @@ import net.minecraft.util.math.MathHelper
         category = Module.Category.RENDER
 )
 object PlayerModel : Module() {
-    private val scale = register(Settings.integerBuilder("Size").withValue(100).withRange(10, 200).withStep(10))
-    private val resetDelay = register(Settings.integerBuilder("ResetDelay").withValue(100).withRange(0, 200).withStep(10))
-    private val emulatePitch = register(Settings.b("EmulatePitch", true))
-    private val emulateYaw = register(Settings.b("EmulateYaw", false))
-    private val x = register(Settings.integerBuilder("X").withValue(200).withRange(0, 2000).withStep(10))
-    private val y = register(Settings.integerBuilder("Y").withValue(240).withRange(0, 2000).withStep(10))
+    private val scale = setting("Size", 100, 10..200, 10)
+    private val resetDelay = setting("ResetDelay", 100, 0..200, 10)
+    private val emulatePitch = setting("EmulatePitch", true)
+    private val emulateYaw = setting("EmulateYaw", false)
+    private val x = setting("X", 200, 0..2000, 10)
+    private val y = setting("Y", 240, 0..2000, 10)
 
     init {
         listener<RenderOverlayEvent> {

@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.gui.rgui.component.EnumSlider
 import me.zeroeightsix.kami.gui.rgui.component.SettingButton
 import me.zeroeightsix.kami.gui.rgui.component.SettingSlider
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.impl.BooleanSetting
-import me.zeroeightsix.kami.setting.impl.EnumSetting
-import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting
+import me.zeroeightsix.kami.setting.impl.number.NumberSetting
+import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 
 class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f) {
     override val minWidth: Float
@@ -18,7 +18,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         for (setting in module.settingList) {
             when (setting) {
                 is BooleanSetting -> SettingButton(setting)
-                is NumberSetting -> if (setting.isBound()) SettingSlider(setting) else null
+                is NumberSetting -> SettingSlider(setting)
                 is EnumSetting -> EnumSlider(setting)
                 else -> null
             }?.also {

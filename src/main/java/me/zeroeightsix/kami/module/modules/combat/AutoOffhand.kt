@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Bind
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
@@ -32,32 +31,32 @@ import kotlin.math.max
         category = Module.Category.COMBAT
 )
 object AutoOffhand : Module() {
-    private val type = register(Settings.enumBuilder(Type::class.java, "Type").withValue(Type.TOTEM))
+    private val type = setting("Type", Type.TOTEM)
 
     // Totem
-    private val hpThreshold = register(Settings.floatBuilder("HpThreshold").withValue(5f).withRange(1f, 20f).withStep(0.5f).withVisibility { type.value == Type.TOTEM })
-    private val bindTotem = register(Settings.custom("BindTotem", Bind.none(), BindConverter()).withVisibility { type.value == Type.TOTEM })
-    private val checkDamage = register(Settings.booleanBuilder("CheckDamage").withValue(true).withVisibility { type.value == Type.TOTEM })
-    private val mob = register(Settings.booleanBuilder("Mob").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })
-    private val player = register(Settings.booleanBuilder("Player").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })
-    private val crystal = register(Settings.booleanBuilder("Crystal").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })
-    private val falling = register(Settings.booleanBuilder("Falling").withValue(true).withVisibility { type.value == Type.TOTEM && checkDamage.value })
+    private val hpThreshold = setting("HpThreshold", 5f, 1f..20f, 0.5f, { type.value == Type.TOTEM })
+    private val bindTotem = setting("BindTotem", { type.value == Type.TOTEM })
+    private val checkDamage = setting("CheckDamage", true, { type.value == Type.TOTEM })
+    private val mob = setting("Mob", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val player = setting("Player", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val crystal = setting("Crystal", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val falling = setting("Falling", true, { type.value == Type.TOTEM && checkDamage.value })
 
     // Gapple
-    private val offhandGapple = register(Settings.booleanBuilder("OffhandGapple").withValue(false).withVisibility { type.value == Type.GAPPLE })
-    private val bindGapple = register(Settings.custom("BindGapple", Bind.none(), BindConverter()).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkAura = register(Settings.booleanBuilder("CheckAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkWeapon = register(Settings.booleanBuilder("CheckWeapon").withValue(false).withVisibility { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkCAGapple = register(Settings.booleanBuilder("CheckCrystalAura").withValue(true).withVisibility { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
+    private val offhandGapple = setting("OffhandGapple", false, { type.value == Type.GAPPLE })
+    private val bindGapple = setting("BindGapple", { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkAura = setting("CheckAura", true, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkWeapon = setting("CheckWeapon", false, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkCAGapple = setting("CheckCrystalAura", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
 
     // Crystal
-    private val offhandCrystal = register(Settings.booleanBuilder("OffhandCrystal").withValue(false).withVisibility { type.value == Type.CRYSTAL })
-    private val bindCrystal = register(Settings.custom("BindCrystal", Bind.none(), BindConverter()).withVisibility { type.value == Type.CRYSTAL && offhandCrystal.value })
-    private val checkCACrystal = register(Settings.booleanBuilder("CheckCrystalAura").withValue(false).withVisibility { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val offhandCrystal = setting("OffhandCrystal", false, { type.value == Type.CRYSTAL })
+    private val bindCrystal = setting("BindCrystal", { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val checkCACrystal = setting("CheckCrystalAura", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
 
     // General
-    private val priority = register(Settings.enumBuilder(Priority::class.java, "Priority").withValue(Priority.HOTBAR))
-    private val switchMessage = register(Settings.b("SwitchMessage", true))
+    private val priority = setting("Priority", Priority.HOTBAR)
+    private val switchMessage = setting("SwitchMessage", true)
 
     private enum class Type(val itemId: Int) {
         TOTEM(449),

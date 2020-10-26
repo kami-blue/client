@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
 @Module.Info(
@@ -12,27 +12,27 @@ import me.zeroeightsix.kami.util.color.ColorHolder
         alwaysEnabled = true
 )
 object GuiColors : Module() {
-    private val rPrimary = register(Settings.integerBuilder("PrimaryRed").withValue(155).withRange(0, 255).withStep(1))
-    private val gPrimary = register(Settings.integerBuilder("PrimaryGreen").withValue(144).withRange(0, 255).withStep(1))
-    private val bPrimary = register(Settings.integerBuilder("PrimaryBlue").withValue(255).withRange(0, 255).withStep(1))
-    private val aPrimary = register(Settings.integerBuilder("PrimaryAlpha").withValue(240).withRange(0, 255).withStep(1))
+    private val rPrimary = setting("PrimaryRed", 155, 0..255, 1)
+    private val gPrimary = setting("PrimaryGreen", 144, 0..255, 1)
+    private val bPrimary = setting("PrimaryBlue", 255, 0..255, 1)
+    private val aPrimary = setting("PrimaryAlpha", 240, 0..255, 1)
 
-    private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(175).withRange(0, 255).withStep(1))
-    private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(171).withRange(0, 255).withStep(1))
-    private val bOutline = register(Settings.integerBuilder("OutlineBlue").withValue(204).withRange(0, 255).withStep(1))
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withStep(1))
+    private val rOutline = setting("OutlineRed", 175, 0..255, 1)
+    private val gOutline = setting("OutlineGreen", 171, 0..255, 1)
+    private val bOutline = setting("OutlineBlue", 204, 0..255, 1)
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1)
 
-    private val rBg = register(Settings.integerBuilder("BackgroundRed").withValue(32).withRange(0, 255).withStep(1))
-    private val gBg = register(Settings.integerBuilder("BackgroundGreen").withValue(30).withRange(0, 255).withStep(1))
-    private val bBg = register(Settings.integerBuilder("BackgroundBlue").withValue(40).withRange(0, 255).withStep(1))
-    private val aBg = register(Settings.integerBuilder("BackgroundAlpha").withValue(200).withRange(0, 255).withStep(1))
+    private val rBg = setting("BackgroundRed", 32, 0..255, 1)
+    private val gBg = setting("BackgroundGreen", 30, 0..255, 1)
+    private val bBg = setting("BackgroundBlue", 40, 0..255, 1)
+    private val aBg = setting("BackgroundAlpha", 200, 0..255, 1)
 
-    private val rText = register(Settings.integerBuilder("TextRed").withValue(255).withRange(0, 255).withStep(1))
-    private val gText = register(Settings.integerBuilder("TextGreen").withValue(255).withRange(0, 255).withStep(1))
-    private val bText = register(Settings.integerBuilder("TextBlue").withValue(255).withRange(0, 255).withStep(1))
-    private val aText = register(Settings.integerBuilder("TextAlpha").withValue(255).withRange(0, 255).withStep(1))
+    private val rText = setting("TextRed", 255, 0..255, 1)
+    private val gText = setting("TextGreen", 255, 0..255, 1)
+    private val bText = setting("TextBlue", 255, 0..255, 1)
+    private val aText = setting("TextAlpha", 255, 0..255, 1)
 
-    private val aHover = register(Settings.integerBuilder("HoverAlpha").withValue(16).withRange(0, 255).withStep(1))
+    private val aHover = setting("HoverAlpha", 16, 0..255, 1)
 
     val primary get() = ColorHolder(rPrimary.value, gPrimary.value, bPrimary.value, aPrimary.value)
     val idle get() = if (primary.averageBrightness < 0.9f) ColorHolder(255, 255, 255, 0) else ColorHolder(0, 0, 0, 0)

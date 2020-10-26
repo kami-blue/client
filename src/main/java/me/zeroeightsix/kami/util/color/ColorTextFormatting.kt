@@ -35,22 +35,22 @@ object ColorTextFormatting {
 
     @JvmField
     val toTextMap = hashMapOf(
-            (ColourCode.BLACK to TextFormatting.BLACK),
-            (ColourCode.DARK_BLUE to TextFormatting.DARK_BLUE),
-            (ColourCode.DARK_GREEN to TextFormatting.DARK_GREEN),
-            (ColourCode.DARK_AQUA to TextFormatting.DARK_AQUA),
-            (ColourCode.DARK_RED to TextFormatting.DARK_RED),
-            (ColourCode.DARK_PURPLE to TextFormatting.DARK_PURPLE),
-            (ColourCode.GOLD to TextFormatting.GOLD),
-            (ColourCode.GRAY to TextFormatting.GRAY),
-            (ColourCode.DARK_GRAY to TextFormatting.DARK_GRAY),
-            (ColourCode.BLUE to TextFormatting.BLUE),
-            (ColourCode.GREEN to TextFormatting.GREEN),
-            (ColourCode.AQUA to TextFormatting.AQUA),
-            (ColourCode.RED to TextFormatting.RED),
-            (ColourCode.LIGHT_PURPLE to TextFormatting.LIGHT_PURPLE),
-            (ColourCode.YELLOW to TextFormatting.YELLOW),
-            (ColourCode.WHITE to TextFormatting.WHITE)
+            (ColorCode.BLACK to TextFormatting.BLACK),
+            (ColorCode.DARK_BLUE to TextFormatting.DARK_BLUE),
+            (ColorCode.DARK_GREEN to TextFormatting.DARK_GREEN),
+            (ColorCode.DARK_AQUA to TextFormatting.DARK_AQUA),
+            (ColorCode.DARK_RED to TextFormatting.DARK_RED),
+            (ColorCode.DARK_PURPLE to TextFormatting.DARK_PURPLE),
+            (ColorCode.GOLD to TextFormatting.GOLD),
+            (ColorCode.GRAY to TextFormatting.GRAY),
+            (ColorCode.DARK_GRAY to TextFormatting.DARK_GRAY),
+            (ColorCode.BLUE to TextFormatting.BLUE),
+            (ColorCode.GREEN to TextFormatting.GREEN),
+            (ColorCode.AQUA to TextFormatting.AQUA),
+            (ColorCode.RED to TextFormatting.RED),
+            (ColorCode.LIGHT_PURPLE to TextFormatting.LIGHT_PURPLE),
+            (ColorCode.YELLOW to TextFormatting.YELLOW),
+            (ColorCode.WHITE to TextFormatting.WHITE)
     )
 
     enum class ColourEnum(@JvmField var colorLocal: Color) {
@@ -72,7 +72,7 @@ object ColorTextFormatting {
         WHITE(Color(255, 255, 255));
     }
 
-    enum class ColourCode {
+    enum class ColorCode {
         BLACK,
         DARK_BLUE,
         DARK_GREEN,

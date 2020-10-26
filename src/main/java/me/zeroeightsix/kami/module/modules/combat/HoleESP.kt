@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -19,19 +19,19 @@ import java.util.concurrent.ConcurrentHashMap
         description = "Show safe holes for crystal pvp"
 )
 object HoleESP : Module() {
-    private val renderDistance = register(Settings.floatBuilder("RenderDistance").withValue(8.0f).withRange(0.0f, 32.0f).build())
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val r1 = register(Settings.integerBuilder("Red(Obby)").withMinimum(0).withValue(208).withMaximum(255).withVisibility { shouldAddObby() }.build())
-    private val g1 = register(Settings.integerBuilder("Green(Obby)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddObby() }.build())
-    private val b1 = register(Settings.integerBuilder("Blue(Obby)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { shouldAddObby() }.build())
-    private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
-    private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withMinimum(0).withValue(144).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
-    private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withMinimum(0).withValue(255).withMaximum(255).withVisibility { shouldAddBedrock() }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withMinimum(0).withValue(31).withMaximum(255).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withMinimum(0).withValue(127).withMaximum(255).withVisibility { outline.value }.build())
-    private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
-    private val holeType = register(Settings.e<HoleType>("HoleType", HoleType.BOTH))
+    private val renderDistance = setting("RenderDistance", 8.0f, 0.0f..32.0f, 0.5f)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObby() })
+    private val g1 = setting("Green(Obby)", 144, 0..255, 1, { shouldAddObby() })
+    private val b1 = setting("Blue(Obby)", 255, 0..255, 1, { shouldAddObby() })
+    private val r2 = setting("Red(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val g2 = setting("Green(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val b2 = setting("Blue(Bedrock)", 255, 0..255, 1, { shouldAddBedrock() })
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
+    private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
+    private val holeType = setting("HoleType", HoleType.BOTH)
 
     private val safeHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
 

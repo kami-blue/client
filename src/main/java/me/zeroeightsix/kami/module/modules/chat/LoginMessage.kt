@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -18,7 +18,7 @@ import java.io.*
         showOnArray = false
 )
 object LoginMessage : Module() {
-    private val sendAfterMoving = register(Settings.b("SendAfterMoving", false))
+    private val sendAfterMoving = setting("SendAfterMoving", false)
 
     private var loginMessage: String? = null
     private var sent = false

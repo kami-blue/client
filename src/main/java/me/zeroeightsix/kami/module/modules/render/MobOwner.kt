@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getNameFromUUID
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils.round
@@ -18,11 +18,11 @@ import kotlin.math.pow
         category = Module.Category.RENDER)
 
 object MobOwner : Module() {
-    private val speed = register(Settings.b("Speed", true))
-    private val jump = register(Settings.b("Jump", true))
-    private val hp = register(Settings.b("Health", true))
-    private val requestTime = register(Settings.integerBuilder("CacheReset").withValue(20).withRange(10, 200).withStep(10))
-    private val debug = register(Settings.b("Debug", true))
+    private val speed = setting("Speed", true)
+    private val jump = setting("Jump", true)
+    private val hp = setting("Health", true)
+    private val requestTime = setting("CacheReset", 20, 10..200, 10)
+    private val debug = setting("Debug", true)
 
     private var startTime = 0L /* Periodically try to re-request invalid UUIDs */
     private var startTime1 = 0L /* Super safe method to limit requests to the Mojang API in case you load more then 10 different UUIDs */

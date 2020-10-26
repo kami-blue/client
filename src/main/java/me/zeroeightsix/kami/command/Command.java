@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
-import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.module.modules.client.CommandConfig;
+import me.zeroeightsix.kami.setting.impl.primitive.StringSetting;
 import net.minecraft.client.Minecraft;
 
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public abstract class Command {
 
     protected SyntaxChunk[] syntaxChunks;
 
-    public static Setting<String> commandPrefix = Settings.s("commandPrefix", ";");
+    public final static StringSetting commandPrefix = CommandConfig.INSTANCE.getCommandPrefix();
 
     public Command(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
         this.label = label;

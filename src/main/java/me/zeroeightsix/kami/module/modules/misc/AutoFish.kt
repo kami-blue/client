@@ -3,8 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting.SettingListeners
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils.isWater
 import me.zeroeightsix.kami.util.TimerUtils.TickTimer
 import me.zeroeightsix.kami.util.event.listener
@@ -26,13 +25,13 @@ import kotlin.math.abs
         description = "Automatically catch fish"
 )
 object AutoFish : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
-    private val defaultSetting = register(Settings.b("Defaults", false))
-    private val autoCast = register(Settings.b("AutoCast", true))
-    private val castDelay = register(Settings.integerBuilder("AutoCastDelay(s)").withValue(5).withRange(1, 20).withVisibility { autoCast.value })
-    private val catchDelay = register(Settings.integerBuilder("CatchDelay(ms)").withValue(300).withRange(50, 2000))
-    private val recastDelay = register(Settings.integerBuilder("RecastDelay(ms)").withValue(450).withRange(50, 2000))
-    private val variation = register(Settings.integerBuilder("Variation(ms)").withValue(100).withRange(0, 1000))
+    private val mode = setting("Mode", Mode.BOUNCE)
+    private val defaultSetting = setting("Defaults", false)
+    private val autoCast = setting("AutoCast", true)
+    private val castDelay = setting("AutoCastDelay(s)", 5, 1..20, 1, { autoCast.value })
+    private val catchDelay = setting("CatchDelay(ms)", 300, 50..2000, 50)
+    private val recastDelay = setting("RecastDelay(ms)", 450, 50..2000, 50)
+    private val variation = setting("Variation(ms)", 100, 0..1000, 50)
 
     @Suppress("UNUSED")
     private enum class Mode {
@@ -144,16 +143,16 @@ object AutoFish : Module() {
     }
 
     private fun defaults() {
-        autoCast.value = true
-        castDelay.value = 5
-        catchDelay.value = 300
-        recastDelay.value = 450
-        variation.value = 100
-        defaultSetting.value = false
+        autoCast.resetValue()
+        castDelay.resetValue()
+        catchDelay.resetValue()
+        recastDelay.resetValue()
+        variation.resetValue()
+        defaultSetting.resetValue()
         MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
     }
 
     init {
-        defaultSetting.settingListener = SettingListeners { if (defaultSetting.value) defaults() }
+        defaultSetting.valueListeners.add { if (it) defaults() }
     }
 }

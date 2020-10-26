@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.Items
 import net.minecraft.item.*
@@ -23,15 +23,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
         description = "Use items faster"
 )
 object FastUse : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withMinimum(0).withMaximum(20).withValue(0).build())
-    private val blocks = register(Settings.b("Blocks", false))
-    private val allItems = register(Settings.b("AllItems", false))
-    private val expBottles = register(Settings.booleanBuilder().withName("ExpBottles").withValue(true).withVisibility { !allItems.value }.build())
-    private val endCrystals = register(Settings.booleanBuilder().withName("EndCrystals").withValue(true).withVisibility { !allItems.value }.build())
-    private val fireworks = register(Settings.booleanBuilder().withName("Fireworks").withValue(false).withVisibility { !allItems.value }.build())
-    private val bow = register(Settings.booleanBuilder().withName("Bow").withValue(true).withVisibility { !allItems.value }.build())
-    private val chargeSetting = register(Settings.integerBuilder("BowCharge").withValue(3).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
-    private val chargeVariation = register(Settings.integerBuilder("ChargeVariation").withValue(5).withRange(0, 20).withVisibility { allItems.value || bow.value }.build())
+    private val delay = setting("Delay", 0, 0..10, 1)
+    private val blocks = setting("Blocks", false)
+    private val allItems = setting("AllItems", false)
+    private val expBottles = setting("ExpBottles", true, { !allItems.value })
+    private val endCrystals = setting("EndCrystals", true, { !allItems.value })
+    private val fireworks = setting("Fireworks", false, { !allItems.value })
+    private val bow = setting("Bow", true, { !allItems.value })
+    private val chargeSetting = setting("BowCharge", 3, 0..20, 1, { allItems.value || bow.value })
+    private val chargeVariation = setting("ChargeVariation", 5, 0..20, 1, { allItems.value || bow.value })
 
     private var lastUsedHand = EnumHand.MAIN_HAND
     private var randomVariation = 0

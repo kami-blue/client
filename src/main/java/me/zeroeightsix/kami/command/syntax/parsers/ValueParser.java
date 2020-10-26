@@ -23,7 +23,8 @@ public class ValueParser extends AbstractParser {
             Module m = ModuleManager.getModule(module);
             HashMap<String, Setting<?>> possibilities = new HashMap<>();
 
-            for (Setting<?> v : m.settingList) {
+            assert m != null;
+            for (Setting<?> v : m.getFullSettingList()) {
                 if (v.getName().toLowerCase().startsWith(chunkValue.toLowerCase()))
                     possibilities.put(v.getName(), v);
             }

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 @Module.Info(
         name = "CleanGUI",
@@ -10,6 +10,6 @@ import me.zeroeightsix.kami.setting.Settings
         description = "Modifies parts of the GUI to be transparent"
 )
 object CleanGUI : Module() {
-    val inventoryGlobal = register(Settings.b("Inventory", true))
-    val chatGlobal = register(Settings.b("Chat", false))
+    val inventoryGlobal = setting("Inventory", true)
+    val chatGlobal = setting("Chat", false)
 }

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -20,8 +20,8 @@ import kotlin.math.floor
         showOnArray = false
 )
 object ArmorHUD : Module() {
-    private val damage = register(Settings.b("Damage", false))
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.25f, 2.0f).withStep(0.05f))
+    private val damage = setting("Damage", false)
+    private val scale = setting("Scale", 1.0f, 0.25f..2.0f, 0.05f)
 
     init {
         listener<RenderOverlayEvent> {

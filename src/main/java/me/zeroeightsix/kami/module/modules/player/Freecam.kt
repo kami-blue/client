@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -30,11 +30,11 @@ import kotlin.math.sin
         description = "Leave your body and transcend into the realm of the gods"
 )
 object Freecam : Module() {
-    private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
-    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
-    private val autoRotate = register(Settings.b("AutoRotate", true))
-    private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
-    private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
+    private val horizontalSpeed = setting("HorizontalSpeed", 20f, 1f..50f, 1f)
+    private val verticalSpeed = setting("VerticalSpeed", 20f, 1f..50f, 1f)
+    private val autoRotate = setting("AutoRotate", true)
+    private val arrowKeyMove = setting("ArrowKeyMove", true)
+    private val disableOnDisconnect = setting("DisconnectDisable", true)
 
     private var prevThirdPersonViewSetting = -1
     var cameraGuy: EntityPlayer? = null; private set

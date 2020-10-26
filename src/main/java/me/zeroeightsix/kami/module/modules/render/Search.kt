@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -30,61 +30,24 @@ import kotlin.math.sqrt
         category = Module.Category.RENDER
 )
 object Search : Module() {
-    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).withStep(100).build())
-    val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
-    private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(0, 256).withStep(8).build())
-    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).withStep(128).build())
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val tracer = register(Settings.b("Tracer", true))
-    private val customColours = register(Settings.b("CustomColours", false))
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withStep(1).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).build())
+    private val defaultSearchList = linkedSetOf("minecraft:portal", "minecraft:end_portal_frame", "minecraft:bed")
 
-    /* Search list */
-    private const val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"
-    private val searchList = register(Settings.stringBuilder("SearchList").withValue(defaultSearchList).withVisibility { false }.build())
-
-    var searchArrayList = searchGetArrayList()
-
-    private fun searchGetArrayList(): ArrayList<String> {
-        return ArrayList(searchList.value.split(","))
-    }
-
-    fun searchGetString(): String {
-        return searchArrayList.joinToString(separator = ",")
-    }
-
-    fun searchAdd(name: String) {
-        searchArrayList.add(name)
-        searchList.value = searchGetString()
-    }
-
-    fun searchRemove(name: String) {
-        searchArrayList.remove(name)
-        searchList.value = searchGetString()
-    }
-
-    fun searchSet(name: String) {
-        searchClear()
-        searchAdd(name)
-    }
-
-    fun searchDefault() {
-        searchList.value = defaultSearchList
-        searchArrayList = searchGetArrayList()
-    }
-
-    fun searchClear() {
-        searchList.value = ""
-        searchArrayList.clear()
-    }
-    /* End of eject list */
+    private val renderUpdate = setting("RenderUpdate", 1500, 500..3000, 100)
+    val overrideWarning = setting("OverrideWarning", false, { false })
+    private val range = setting("SearchRange", 128, 0..256, 8)
+    private val maximumBlocks = setting("MaximumBlocks", 256, 16..4096, 128)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val tracer = setting("Tracer", true)
+    private val customColours = setting("CustomColours", false)
+    private val r = setting("Red", 155, 0..255, 1, { customColours.value })
+    private val g = setting("Green", 144, 0..255, 1, { customColours.value })
+    private val b = setting("Blue", 255, 0..255, 1, { customColours.value })
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
+    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { tracer.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    val searchList = setting(CollectionSetting("SearchList", defaultSearchList, { false }))
 
     private val chunkThreads = ConcurrentHashMap<ChunkPos, Thread>()
     private val chunkThreadPool = Executors.newCachedThreadPool()
@@ -107,7 +70,6 @@ object Search : Module() {
             disable()
             return
         }
-        searchArrayList = searchGetArrayList()
         startTimeChunk = 0L
         startTimeRender = 0L
     }
@@ -171,7 +133,7 @@ object Search : Module() {
         Thread {
             for (chunkPos in loadedChunks) {
                 val thread = Thread {
-                    findBlocksInChunk(chunkPos, searchArrayList.toHashSet())
+                    findBlocksInChunk(chunkPos, searchList.value.toHashSet())
                 }
                 thread.priority = 1
                 chunkThreads.putIfAbsent(chunkPos, thread)

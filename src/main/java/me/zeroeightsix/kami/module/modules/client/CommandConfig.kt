@@ -3,15 +3,13 @@ package me.zeroeightsix.kami.module.modules.client
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-/**
- * @author l1ving
- */
 @Module.Info(
         name = "CommandConfig",
         category = Module.Category.CLIENT,
@@ -20,24 +18,23 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
         alwaysEnabled = true
 )
 object CommandConfig : Module() {
-    val aliasInfo = register(Settings.b("AliasInfo", true))
-    val prefixChat = register(Settings.b("PrefixChat", true))
-    val toggleMessages = register(Settings.b("ToggleMessages", false))
-    val customTitle = register(Settings.b("WindowTitle", true))
-    private val autoSaving = register(Settings.b("AutoSavingSettings", true))
-    private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value })
-    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value })
+    val aliasInfo = setting("AliasInfo", true)
+    val prefixChat = setting("PrefixChat", true)
+    val toggleMessages = setting("ToggleMessages", false)
+    val customTitle = setting("WindowTitle", true)
+    private val autoSaving = setting("AutoSavingSettings", true)
+    private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
+    private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
+    val commandPrefix = setting("CommandPrefix", ";", { false })
+    val modifierEnabled = setting("ModifierEnabled", false, { false })
 
-    val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
 
     init {
         listener<SafeTickEvent> {
             if (autoSaving.value && mc.currentScreen !is KamiClickGui && timer.tick(savingInterval.value.toLong())) {
-                Thread {
-                    Thread.currentThread().name = "Auto Saving Thread"
-                    if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                    ConfigUtils.saveConfiguration()
-                }.start()
+                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
+                ConfigUtils.saveConfig(ModuleConfig)
             }
         }
     }

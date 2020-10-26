@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -23,20 +23,20 @@ import net.minecraft.network.play.server.SPacketChat
         description = "Sends your chat to a set Discord channel"
 )
 object DiscordNotifs : Module() {
-    private val timeout = register(Settings.b("Timeout", true))
-    private val timeoutTime = register(Settings.integerBuilder("Seconds").withValue(10).withRange(0, 120).withStep(5).withVisibility { timeout.value })
-    private val time = register(Settings.b("Timestamp", true))
-    private val importantPings = register(Settings.b("ImportantPings", false))
-    private val disconnect = register(Settings.b("DisconnectMsgs", true))
-    private val all = register(Settings.b("AllMessages", false))
-    private val queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility { !all.value })
-    private val restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility { !all.value })
-    private val direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility { !all.value })
-    private val directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility { !all.value })
+    private val timeout = setting("Timeout", true)
+    private val timeoutTime = setting("Seconds", 10, 0..120, 5, { timeout.value })
+    private val time = setting("Timestamp", true)
+    private val importantPings = setting("ImportantPings", false)
+    private val disconnect = setting("DisconnectMsgs", true)
+    private val all = setting("AllMessages", false)
+    private val queue = setting("QueuePosition", true, { !all.value })
+    private val restart = setting("RestartMsgs", true, { !all.value })
+    private val direct = setting("ReceivedDMs", true, { !all.value })
+    private val directSent = setting("SendDMs", true, { !all.value })
 
-    val url = register(Settings.s("URL", "unchanged"))
-    val pingID = register(Settings.s("PingID", "unchanged"))
-    val avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
+    val url = setting("URL", "unchanged")
+    val pingID = setting("PingID", "unchanged")
+    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png")
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)

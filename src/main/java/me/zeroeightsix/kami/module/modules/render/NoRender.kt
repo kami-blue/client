@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.BlockSnow
 import net.minecraft.entity.item.EntityItem
@@ -19,20 +19,20 @@ import net.minecraftforge.client.event.RenderBlockOverlayEvent
         description = "Ignore entity spawn packets"
 )
 object NoRender : Module() {
-    private val mob = register(Settings.b("Mob", false))
-    private val gEntity = register(Settings.b("GEntity", false))
-    private val `object` = register(Settings.b("Object", false))
-    private val items = register(Settings.b("Items", false))
-    private val xp = register(Settings.b("XP", false))
-    private val paint = register(Settings.b("Paintings", false))
-    private val fire = register(Settings.b("Fire", true))
-    private val explosion = register(Settings.b("Explosions", true))
-    val beacon = register(Settings.b("BeaconBeams", false))
-    val skylight = register(Settings.b("SkyLightUpdates", true))
-    private val particles = register(Settings.b("Particles", false))
-    val enchantingTable = register(Settings.b("EnchantingBooks", true))
-    private val enchantingTableSnow = register(Settings.b("EnchantBookSnow", false))
-    val signText = register(Settings.b("SignText", false))
+    private val mob = setting("Mob", false)
+    private val gEntity = setting("GEntity", false)
+    private val `object` = setting("Object", false)
+    private val items = setting("Items", false)
+    private val xp = setting("XP", false)
+    private val paint = setting("Paintings", false)
+    private val fire = setting("Fire", true)
+    private val explosion = setting("Explosions", true)
+    val beacon = setting("BeaconBeams", false)
+    val skylight = setting("SkyLightUpdates", true)
+    private val particles = setting("Particles", false)
+    val enchantingTable = setting("EnchantingBooks", true)
+    private val enchantingTableSnow = setting("EnchantBookSnow", false)
+    val signText = setting("SignText", false)
 
     init {
         listener<PacketEvent.Receive> {

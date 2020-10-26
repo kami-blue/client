@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 
 @Module.Info(
@@ -11,9 +11,9 @@ import me.zeroeightsix.kami.util.event.listener
         description = "Changes your client tick speed"
 )
 object Timer : Module() {
-    private val slow = register(Settings.b("SlowMode", false))
-    private val tickNormal = register(Settings.floatBuilder("TickN").withValue(2.0f).withRange(1f, 10f).withStep(0.1f).withVisibility { !slow.value })
-    private val tickSlow = register(Settings.floatBuilder("TickS").withValue(8f).withRange(1f, 10f).withStep(0.1f).withVisibility { slow.value })
+    private val slow = setting("SlowMode", false)
+    private val tickNormal = setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow.value })
+    private val tickSlow = setting("TickS", 8f, 1f..10f, 0.1f, { slow.value })
 
     public override fun onDisable() {
         mc.timer.tickLength = 50.0f

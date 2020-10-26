@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.player.EntityPlayer
@@ -18,12 +18,12 @@ import kotlin.math.abs
         alwaysListening = true
 )
 object AntiBot : Module() {
-    private val tabList = register(Settings.b("TabList", true))
-    private val ping = register(Settings.b("Ping", true))
-    private val hp = register(Settings.b("HP", true))
-    private val sleeping = register(Settings.b("Sleeping", false))
-    private val hoverOnTop = register(Settings.b("HoverOnTop", true))
-    private val ticksExists = register(Settings.integerBuilder("TicksExists").withValue(200).withRange(0, 500))
+    private val tabList = setting("TabList", true)
+    private val ping = setting("Ping", true)
+    private val hp = setting("HP", true)
+    private val sleeping = setting("Sleeping", false)
+    private val hoverOnTop = setting("HoverOnTop", true)
+    private val ticksExists = setting("TicksExists", 200, 0..500, 10)
 
     val botSet = HashSet<EntityPlayer>()
 

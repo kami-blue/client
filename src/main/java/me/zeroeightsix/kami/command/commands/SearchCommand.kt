@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.modules.render.Search
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.Block
 
 /**
@@ -20,13 +19,13 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
 
     override fun call(args: Array<String?>) {
         if (Search.isDisabled) {
-            sendWarningMessage("&6Warning: The ${Search.name.value} module is not enabled!")
-            sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
+            MessageSendHelper.sendWarningMessage("&6Warning: The ${Search.name.value} module is not enabled!")
+            MessageSendHelper.sendWarningMessage("These commands will still have effect, but will not visibly do anything.")
         }
         when {
             args[0] == null || args[0].equals("help", ignoreCase = true) -> {
                 val p = getCommandPrefix()
-                sendChatMessage("Search command help\n\n" +
+                MessageSendHelper.sendChatMessage("Search command help\n\n" +
                         "    &7+block&f <name>\n" +
                         "        &7${p}search +cobblestone\n\n" +
                         "    &7-block&f <name>\n" +
@@ -43,28 +42,28 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
             args[0]!!.startsWith("+", true) -> {
                 val name = args[0]!!.replace("+", "").replace("?", "")
                 if (Block.getBlockFromName(name) == null) {
-                    sendChatMessage("&cInvalid block name <$name>")
+                    MessageSendHelper.sendChatMessage("&cInvalid block name <$name>")
                 } else {
                     val blockName = Block.getBlockFromName(name)!!.registryName.toString()
                     when {
                         bannedBlocks.contains(blockName) -> {
-                            sendChatMessage("You can't add <$blockName> to the ${Search.name.value} block list")
+                            MessageSendHelper.sendChatMessage("You can't add <$blockName> to the ${Search.name.value} block list")
                         }
                         warningBlocks.contains(blockName) -> {
                             if (args[0]!!.replace("+", "").startsWith("?", true)) {
-                                Search.searchAdd(blockName)
-                                sendChatMessage("<$blockName> has been added to the ${Search.name.value} block list")
+                                Search.searchList.value.add(blockName)
+                                MessageSendHelper.sendChatMessage("<$blockName> has been added to the ${Search.name.value} block list")
                             } else {
-                                sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to add it." +
+                                MessageSendHelper.sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to add it." +
                                         " If you are sure you want to add it run &7${commandPrefix.value}search +?$name")
                             }
                         }
-                        Search.searchArrayList.contains(blockName) -> {
-                            sendChatMessage("&c<$blockName> already exist")
-                        }
                         else -> {
-                            Search.searchAdd(blockName)
-                            sendChatMessage("<$blockName> has been added to the ${Search.name.value} block list")
+                            if (Search.searchList.value.add(blockName)) {
+                                MessageSendHelper.sendChatMessage("<$blockName> has been added to the ${Search.name.value} block list")
+                            } else {
+                                MessageSendHelper.sendChatMessage("&c<$blockName> already exist")
+                            }
                         }
                     }
                 }
@@ -72,60 +71,61 @@ class SearchCommand : Command("search", ChunkBuilder().append("command", true, E
             args[0]!!.startsWith("-", true) -> {
                 val name = args[0]!!.replace("-", "")
                 if (Block.getBlockFromName(name) == null) {
-                    sendChatMessage("&cInvalid block name/id <$name>")
+                    MessageSendHelper.sendChatMessage("&cInvalid block name/id <$name>")
                 } else {
                     val blockName = Block.getBlockFromName(name)!!.registryName.toString()
-                    if (!Search.searchArrayList.contains(blockName)) {
-                        sendChatMessage("&c<$blockName> doesn't exist")
+                    if (Search.searchList.value.remove(blockName)) {
+                        MessageSendHelper.sendChatMessage("<$blockName> has been removed from the ${Search.name.value} block list")
                     } else {
-                        Search.searchRemove(blockName)
-                        sendChatMessage("<$blockName> has been removed from the ${Search.name.value} block list")
+                        MessageSendHelper.sendChatMessage("&c<$blockName> doesn't exist")
                     }
                 }
             }
             args[0]!!.startsWith("=", true) -> {
                 val name = args[0]!!.replace("=", "").replace("?", "")
                 if (Block.getBlockFromName(name) == null) {
-                    sendChatMessage("&cInvalid block name/id <$name>")
+                    MessageSendHelper.sendChatMessage("&cInvalid block name/id <$name>")
                 } else {
                     val blockName = Block.getBlockFromName(name)!!.registryName.toString()
                     when {
                         bannedBlocks.contains(blockName) -> {
-                            sendChatMessage("You can't set ${Search.name.value} block list to <$blockName>")
+                            MessageSendHelper.sendChatMessage("You can't set ${Search.name.value} block list to <$blockName>")
                         }
                         warningBlocks.contains(blockName) -> {
                             if (args[0]!!.replace("+", "").startsWith("?", true)) {
-                                Search.searchSet(blockName)
-                                sendChatMessage("${Search.name.value} block list has been set to <$blockName>")
+                                Search.searchList.value.clear()
+                                Search.searchList.value.add(blockName)
+                                MessageSendHelper.sendChatMessage("${Search.name.value} block list has been set to <$blockName>")
                             } else {
-                                sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to set to it." +
+                                MessageSendHelper.sendWarningMessage("Your world contains lots of <$blockName>, it might cause extreme lag to set to it." +
                                         " If you are sure you want to set to it run &7${commandPrefix.value}search +?$name")
                             }
                         }
                         else -> {
-                            Search.searchSet(blockName)
-                            sendChatMessage("${Search.name.value} block list has been set to <$blockName>")
+                            Search.searchList.value.clear()
+                            Search.searchList.value.add(blockName)
+                            MessageSendHelper.sendChatMessage("${Search.name.value} block list has been set to <$blockName>")
                         }
                     }
                 }
             }
             args[0].equals("list", true) -> {
-                sendChatMessage(Search.searchGetString())
+                MessageSendHelper.sendChatMessage(Search.searchList.value.joinToString())
             }
             args[0].equals("default", true) -> {
-                Search.searchDefault()
-                sendChatMessage("Reset the ${Search.name.value} block list to default")
+                Search.searchList.resetValue()
+                MessageSendHelper.sendChatMessage("Reset the ${Search.name.value} block list to default")
             }
             args[0].equals("clear", true) -> {
-                Search.searchClear()
-                sendChatMessage("Cleared the ${Search.name.value} block list")
+                Search.searchList.value.clear()
+                MessageSendHelper.sendChatMessage("Cleared the ${Search.name.value} block list")
             }
             args[0].equals("override", true) -> {
                 Search.overrideWarning.value = true
-                sendWarningMessage("${Search.chatName} Override for Intel Integrated GPUs enabled!")
+                MessageSendHelper.sendWarningMessage("${Search.chatName} Override for Intel Integrated GPUs enabled!")
             }
             else -> {
-                sendChatMessage("&cInvalid subcommand ${args[0]}")
+                MessageSendHelper.sendChatMessage("&cInvalid subcommand ${args[0]}")
             }
         }
     }

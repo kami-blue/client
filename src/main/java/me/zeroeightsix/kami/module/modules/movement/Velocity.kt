@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
@@ -17,9 +17,9 @@ import net.minecraft.network.play.server.SPacketExplosion
         category = Module.Category.MOVEMENT
 )
 object Velocity : Module() {
-    private val noPush = register(Settings.b("NoPush", true))
-    private val horizontal = register(Settings.floatBuilder("Horizontal").withValue(0f).withRange(-5f, 5f))
-    private val vertical = register(Settings.floatBuilder("Vertical").withValue(0f).withRange(-5f, 5f))
+    private val noPush = setting("NoPush", true)
+    private val horizontal = setting("Horizontal", 0f, -5f..5f, 0.05f)
+    private val vertical = setting("Vertical", 0f, -5f..5f, 0.05f)
 
     init {
         listener<PacketEvent.Receive> {

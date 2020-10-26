@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -27,12 +27,12 @@ import kotlin.math.round
         description = "Places blocks under you"
 )
 object Scaffold : Module() {
-    private val placeBlocks = register(Settings.b("PlaceBlocks", true))
-    private val tower = register(Settings.b("Tower", true))
-    private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
-    private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT })
-    private val delayRange = register(Settings.integerBuilder("DelayRange").withValue(6).withRange(0, 10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value })
-    private val ticks = register(Settings.integerBuilder("Ticks").withValue(2).withRange(0, 60).withStep(2).withVisibility { modeSetting.value == Mode.NORMAL })
+    private val placeBlocks = setting("PlaceBlocks", true)
+    private val tower = setting("Tower", true)
+    private val modeSetting = setting("Mode", Mode.NORMAL)
+    private val randomDelay = setting("RandomDelay", false, { modeSetting.value == Mode.LEGIT })
+    private val delayRange = setting("DelayRange", 6, 0..10, 1, { modeSetting.value == Mode.LEGIT && randomDelay.value })
+    private val ticks = setting("Ticks", 2, 0..60, 2, { modeSetting.value == Mode.NORMAL })
 
     private var shouldSlow = false
     private var towerStart = 0.0

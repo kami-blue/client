@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import kotlin.math.round
 
@@ -12,9 +12,9 @@ import kotlin.math.round
         description = "Locks your camera pitch"
 )
 object PitchLock : Module() {
-    private val auto = register(Settings.b("Auto", true))
-    private val pitch = register(Settings.floatBuilder("Pitch").withValue(180.0f).withRange(-90.0f, 90.0f).withStep(1.0f))
-    private val slice = register(Settings.integerBuilder("Slice").withValue(8).withRange(2, 32).withStep(1).withVisibility { auto.value })
+    private val auto = setting("Auto", true)
+    private val pitch = setting("Pitch", 180.0f, -90.0f..90.0f, 1.0f)
+    private val slice = setting("Slice", 8, 2..32, 1, { auto.value })
 
     init {
         listener<SafeTickEvent> {

@@ -5,8 +5,7 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
@@ -27,13 +26,13 @@ import java.util.concurrent.Future
         modulePriority = 200
 )
 object Surround : Module() {
-    private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
-    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
-    private val autoDisable = register(Settings.e<AutoDisableMode>("AutoDisable", AutoDisableMode.OUT_OF_HOLE))
-    private val outOfHoleTimeout = register(Settings.integerBuilder("OutOfHoleTimeout(t)").withValue(10).withRange(1, 50).withVisibility { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
-    private val enableInHole = register(Settings.b("EnableInHole", true))
-    private val inHoleTimeout = register(Settings.integerBuilder("InHoleTimeout(t)").withValue(50).withRange(1, 100).withVisibility { enableInHole.value })
-    private val disableStrafe = register(Settings.b("DisableStrafe", true))
+    private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
+    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
+    private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout = setting("OutOfHoleTimeout(t)", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
+    private val enableInHole = setting("EnableInHole", true)
+    private val inHoleTimeout = setting("InHoleTimeout(t)", 50, 1..100, 5, { enableInHole.value })
+    private val disableStrafe = setting("DisableStrafe", true)
 
     enum class AutoCenterMode {
         OFF, TP, MOTION
@@ -174,7 +173,7 @@ object Surround : Module() {
 
     init {
         alwaysListening = enableInHole.value
-        enableInHole.settingListener = Setting.SettingListeners {
+        enableInHole.listeners.add {
             alwaysListening = enableInHole.value
         }
     }

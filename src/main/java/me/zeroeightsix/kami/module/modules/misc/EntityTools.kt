@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -17,7 +17,7 @@ import org.lwjgl.input.Mouse
         description = "Right click entities to perform actions on them"
 )
 object EntityTools : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.INFO))
+    private val mode = setting("Mode", Mode.INFO)
 
     private enum class Mode {
         DELETE, INFO
@@ -37,9 +37,6 @@ object EntityTools : Module() {
                     Mode.INFO -> {
                         val tag = NBTTagCompound().apply { mc.objectMouseOver.entityHit.writeToNBT(this) }
                         MessageSendHelper.sendChatMessage("""$chatName &6Entity Tags:$tag""".trimIndent())
-                    }
-                    else -> {
-
                     }
                 }
             }

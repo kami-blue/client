@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
@@ -24,14 +24,14 @@ import org.lwjgl.opengl.GL11.*
         alwaysEnabled = true
 )
 object InventoryViewer : Module() {
-    private val mcTexture = register(Settings.b("UseMinecraftTexture", false))
-    private val showIcon = register(Settings.booleanBuilder("ShowIcon").withValue(false).withVisibility { !mcTexture.value })
-    private val iconScale = register(Settings.floatBuilder("IconScale").withValue(0.5f).withRange(0.1f, 1.0f).withStep(0.1f).withVisibility { !mcTexture.value && showIcon.value })
-    private val coloredBackground = register(Settings.booleanBuilder("ColoredBackground").withValue(true).withVisibility { !mcTexture.value })
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withStep(1).withVisibility { coloredBackground.value && !mcTexture.value })
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1).withVisibility { coloredBackground.value && !mcTexture.value })
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1).withVisibility { coloredBackground.value && !mcTexture.value })
-    private val a = register(Settings.integerBuilder("Alpha").withValue(32).withRange(0, 255).withStep(1).withVisibility { coloredBackground.value && !mcTexture.value })
+    private val mcTexture = setting("UseMinecraftTexture", false)
+    private val showIcon = setting("ShowIcon", false, { !mcTexture.value })
+    private val iconScale = setting("IconScale", 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture.value && showIcon.value })
+    private val coloredBackground = setting("ColoredBackground", true, { !mcTexture.value })
+    private val r = setting("Red", 155, 0..255, 1, { coloredBackground.value && !mcTexture.value })
+    private val g = setting("Green", 144, 0..255, 1, { coloredBackground.value && !mcTexture.value })
+    private val b = setting("Blue", 255, 0..255, 1, { coloredBackground.value && !mcTexture.value })
+    private val a = setting("Alpha", 32, 0..255, 1, { coloredBackground.value && !mcTexture.value })
 
     private val containerTexture = ResourceLocation("textures/gui/container/inventory.png")
     private val kamiIcon = ResourceLocation("kamiblue/kami_icon.png")

@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -20,11 +20,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
         alwaysListening = true
 )
 object VisualRange : Module() {
-    private val playSound = register(Settings.b("PlaySound", false))
-    private val leaving = register(Settings.b("CountLeaving", false))
-    private val friends = register(Settings.b("Friends", true))
-    private val uwuAura = register(Settings.b("UwUAura", false))
-    private val logToFile = register(Settings.b("LogTo File", false))
+    private val playSound = setting("PlaySound", false)
+    private val leaving = setting("CountLeaving", false)
+    private val friends = setting("Friends", true)
+    private val uwuAura = setting("UwUAura", false)
+    private val logToFile = setting("LogToFile", false)
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
 

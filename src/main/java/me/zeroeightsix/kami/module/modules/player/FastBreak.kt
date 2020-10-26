@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketPlayerDigging
 
@@ -13,9 +13,9 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
         description = "Breaks block faster and nullifies the break delay"
 )
 object FastBreak : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withValue(0).withRange(0, 5).build())
-    private val packetMine = register(Settings.b("PacketMine", true))
-    private val sneakTrigger = register(Settings.booleanBuilder("SneakTrigger").withValue(true).withVisibility { packetMine.value }.build())
+    private val delay = setting("Delay", 0, 0..5, 1)
+    private val packetMine = setting("PacketMine", true)
+    private val sneakTrigger = setting("SneakTrigger", true, { packetMine.value })
 
     init {
         listener<PacketEvent.Send> {

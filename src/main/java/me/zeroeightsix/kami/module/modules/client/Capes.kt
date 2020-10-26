@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.client
 import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.IImageBuffer
 import net.minecraft.client.renderer.ThreadDownloadImageData
@@ -23,7 +23,7 @@ import javax.net.ssl.HttpsURLConnection
 )
 object Capes : Module() {
     // This allows controlling if other capes (Mojang, OptiFine) should override the KAMI Blue cape.
-    val overrideOtherCapes = register(Settings.b("Override Other Capes", true))
+    val overrideOtherCapes = setting("OverrideOtherCapes", true)
 
     // This starts out null, and then is replaced from another thread if the Capes module is enabled.
     // It maps the UUIDs to CachedCape instances.

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -15,11 +15,11 @@ import net.minecraft.util.math.BlockPos
         description = "Logs when a player teleports somewhere"
 )
 object TeleportLogger : Module() {
-    private val saveToFile = register(Settings.b("SaveToFile", true))
-    private val remove = register(Settings.b("RemoveInRange", true))
-    private val printAdd = register(Settings.b("PrintAdd", true))
-    private val printRemove = register(Settings.booleanBuilder("PrintRemove").withValue(true).withVisibility { remove.value })
-    private val minimumDistance = register(Settings.integerBuilder("MinimumDistance").withValue(512).withRange(128, 2048).withStep(128))
+    private val saveToFile = setting("SaveToFile", true)
+    private val remove = setting("RemoveInRange", true)
+    private val printAdd = setting("PrintAdd", true)
+    private val printRemove = setting("PrintRemove", true, { remove.value })
+    private val minimumDistance = setting("MinimumDistance", 512, 128..2048, 128)
 
     private val teleportedPlayers = HashMap<String, BlockPos>()
 

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -16,8 +16,8 @@ import java.util.*
         category = Module.Category.MISC
 )
 object FakePlayer : Module() {
-    private val copyInventory = register(Settings.b("CopyInventory", false))
-    val playerName = register(Settings.stringBuilder("PlayerName").withValue("Player").withVisibility { false })
+    private val copyInventory = setting("CopyInventory", false)
+    val playerName = setting("PlayerName", "Player", { false })
 
     init {
         listener<ConnectionEvent.Disconnect> {

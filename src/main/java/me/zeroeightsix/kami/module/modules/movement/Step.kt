@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketPlayer
@@ -26,14 +25,14 @@ import org.lwjgl.input.Keyboard
         modulePriority = 200
 )
 object Step : Module() {
-    private val mode: Setting<Mode> = register(Settings.e("Mode", Mode.PACKET))
-    private val upStep = register(Settings.b("UpStep", true))
-    private val downStep = register(Settings.b("DownStep", false))
-    private val entityStep = register(Settings.booleanBuilder("Entities").withValue(true))
-    private val height = register(Settings.floatBuilder("Height").withRange(0.25f, 2.0f).withValue(1.0f).withStep(0.25f))
-    private val downSpeed = register(Settings.floatBuilder("DownSpeed").withRange(0.0f, 1.0f).withValue(0.2f).withStep(0.05f))
-    private val bindUpStep = register(Settings.custom("BindUpStep", Bind.none(), BindConverter()))
-    private val bindDownStep = register(Settings.custom("BindDownStep", Bind.none(), BindConverter()))
+    private val mode = setting("Mode", Mode.PACKET)
+    private val upStep = setting("UpStep", true)
+    private val downStep = setting("DownStep", false)
+    private val entityStep = setting("Entities", true)
+    private val height = setting("Height", 1.0f, 0.25f..2.0f, 0.25f)
+    private val downSpeed = setting("DownSpeed", 0.2f, 0.0f..1.0f, 0.05f)
+    private val bindUpStep = setting("BindUpStep")
+    private val bindDownStep = setting("BindDownStep")
 
     private const val defaultHeight = 0.6f
     private val shouldRunStep get() = !mc.player.isElytraFlying && !mc.player.capabilities.isFlying && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava

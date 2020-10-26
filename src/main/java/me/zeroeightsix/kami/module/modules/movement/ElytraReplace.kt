@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -20,13 +20,13 @@ import net.minecraft.item.ItemStack
         category = Module.Category.MOVEMENT
 )
 object ElytraReplace : Module() {
-    private val inventoryMode = register(Settings.b("Inventory", false))
-    private val autoChest = register(Settings.b("AutoChest", false))
-    private val elytraFlightCheck = register(Settings.b("ElytraFlightCheck", true))
-    private val logToChat = register(Settings.booleanBuilder("MissingWarning").withValue(false))
-    private val playSound = register(Settings.booleanBuilder("PlaySound").withValue(false).withVisibility { logToChat.value })
-    private val logThreshold = register(Settings.integerBuilder("WarningThreshold").withValue(2).withRange(1, 10).withVisibility { logToChat.value })
-    private val threshold = register(Settings.integerBuilder("Broken%").withValue(7).withRange(1, 50).withStep(1))
+    private val inventoryMode = setting("Inventory", false)
+    private val autoChest = setting("AutoChest", false)
+    private val elytraFlightCheck = setting("ElytraFlightCheck", true)
+    private val logToChat = setting("MissingWarning", false)
+    private val playSound = setting("PlaySound", false, { logToChat.value })
+    private val logThreshold = setting("WarningThreshold", 2, 1..10, 1, { logToChat.value })
+    private val threshold = setting("Broken%", 7, 1..50, 1)
 
     private var elytraCount = 0
     private var chestPlateCount = 0
