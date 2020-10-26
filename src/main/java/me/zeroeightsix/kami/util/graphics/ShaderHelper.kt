@@ -19,7 +19,6 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
 
     val shader: ShaderGroup?
     private val frameBufferMap = HashMap<String, Framebuffer>()
-
     private var frameBuffersInitialized = false
 
     init {
