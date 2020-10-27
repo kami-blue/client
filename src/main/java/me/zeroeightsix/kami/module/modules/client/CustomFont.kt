@@ -24,7 +24,7 @@ object CustomFont : Module() {
     private val sizeSetting = setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val gapSetting = setting("Gap", 0.0f, -10f..10f, 0.5f)
     private val lineSpaceSetting = setting("LineSpace", 0.0f, -10f..10f, 0.5f)
-    private val baselineOffsetSetting = setting("LodBias", 0.0f, -10.0f..10.0f, 0.25f)
+    private val baselineOffsetSetting = setting("BaselineOffset", 0.0f, -10.0f..10.0f, 0.25f)
     private val lodBiasSetting = setting("LodBias", 2.0f, 0.0f..5.0f, 0.05f)
 
     val isDefaultFont get() = fontName.value.equals(DEFAULT_FONT_NAME, true)
