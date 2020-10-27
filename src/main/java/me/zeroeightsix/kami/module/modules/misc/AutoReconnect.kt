@@ -16,9 +16,11 @@ import net.minecraft.client.multiplayer.ServerData
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val delay = setting("Delay", 5000, 100..10000, 100)
+    private val delay = setting("Delay", 5.0f, 1.0f..100.0f, 0.5f)
 
     private var prevServerDate: ServerData? = null
+
+    private var sToMs = 1000.0f
 
     init {
         listener<GuiScreenEvent.Closed> {
@@ -37,14 +39,14 @@ object AutoReconnect : Module() {
         private val timer = TimerUtils.StopTimer()
 
         override fun updateScreen() {
-            if (timer.stop() >= delay.value) {
+            if (timer.stop() >= (delay.value * sToMs)) {
                 mc.displayGuiScreen(GuiConnecting(parentScreen, mc, mc.currentServerData ?: prevServerDate ?: return))
             }
         }
 
         override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
             super.drawScreen(mouseX, mouseY, partialTicks)
-            val text = "Reconnecting in ${timer.stop()}ms"
+            val text = "Reconnecting in ${((delay.value * sToMs) - timer.stop()).toInt()}ms"
             fontRenderer.drawString(text, width / 2f - fontRenderer.getStringWidth(text) / 2f, height - 32f, 0xffffff, true)
         }
     }

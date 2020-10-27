@@ -51,13 +51,14 @@ object AntiAFK : Module() {
     }
 
     override fun onEnable() {
+        inputTimer.reset()
         baritoneDisconnectOnArrival()
     }
 
     override fun onDisable() {
         startPos = null
         BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
-        baritoneCancel()
+        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     }
 
     init {
@@ -86,7 +87,7 @@ object AntiAFK : Module() {
 
         listener<SafeTickEvent> {
             if (inputTimeout.value != 0) {
-                if (isBaritoneActive) inputTimer.reset()
+                if (BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) inputTimer.reset()
                 if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
                     startPos = null
                     return@listener
@@ -103,7 +104,7 @@ object AntiAFK : Module() {
                     Action.TURN -> mc.player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
                 }
 
-                if (walk.value && !isBaritoneActive) {
+                if (walk.value && !BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
                     if (startPos == null) startPos = mc.player.position
                     startPos?.let {
                         when (squareStep) {
@@ -149,19 +150,15 @@ object AntiAFK : Module() {
         TURN(turn)
     }
 
-    private val isBaritoneActive: Boolean = if (mc.player != null) BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive else false
-
     private fun baritoneGotoXZ(x: Int, z: Int) {
         BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(x, z))
     }
 
-    private fun baritoneCancel() {
-        if (walk.value && isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-    }
-
     init {
         walk.listeners.add {
-            if (isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+            if (BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
+                BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+            }
         }
     }
 }
