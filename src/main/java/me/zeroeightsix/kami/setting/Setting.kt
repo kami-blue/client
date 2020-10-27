@@ -25,7 +25,9 @@ open class Setting<T : Any>(
     open var value = value
         set(value) {
             if (value != field) {
+                val prev = field
                 field = consumer(field, value)
+                for (listener in valueListeners) listener(prev, field)
                 for (listener in listeners) listener()
             }
         }
@@ -33,7 +35,7 @@ open class Setting<T : Any>(
     val valueClass = value::class.java
     val isVisible get() = visibility()
     val listeners = ArrayList<() -> Unit>()
-    val valueListeners = ArrayList<(T) -> Unit>()
+    val valueListeners = ArrayList<(T, T) -> Unit>()
 
     open fun setValue(valueIn: String) {
         read(parser.parse(valueIn))

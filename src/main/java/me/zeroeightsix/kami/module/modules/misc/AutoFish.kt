@@ -153,6 +153,6 @@ object AutoFish : Module() {
     }
 
     init {
-        defaultSetting.valueListeners.add { if (it) defaults() }
+        defaultSetting.valueListeners.add { _, it -> if (it) defaults() }
     }
 }

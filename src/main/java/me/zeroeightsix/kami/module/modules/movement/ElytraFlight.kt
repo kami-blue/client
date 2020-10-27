@@ -497,7 +497,7 @@ object ElytraFlight : Module() {
     }
 
     init {
-        defaultSetting.valueListeners.add {
+        defaultSetting.valueListeners.add { _, it ->
             if (it) resetSettings()
         }
 
