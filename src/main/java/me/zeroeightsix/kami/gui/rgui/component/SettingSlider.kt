@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.round
 
@@ -59,7 +60,8 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.value.toDouble()
         else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.value.toDouble()
 
-        val roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
+        var roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
+        if (abs(roundedValue) == 0.0) roundedValue = 0.0
         setting.setValue(roundedValue.toString())
     }
 
