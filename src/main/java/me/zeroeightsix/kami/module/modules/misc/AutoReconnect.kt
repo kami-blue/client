@@ -44,7 +44,7 @@ object AutoReconnect : Module() {
 
         override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
             super.drawScreen(mouseX, mouseY, partialTicks)
-            val text = "Reconnecting in ${timer.stop()}ms"
+            val text = "Reconnecting in ${delay.value - timer.stop()}ms"
             fontRenderer.drawString(text, width / 2f - fontRenderer.getStringWidth(text) / 2f, height - 32f, 0xffffff, true)
         }
     }
