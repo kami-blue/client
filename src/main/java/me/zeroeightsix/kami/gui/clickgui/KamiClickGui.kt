@@ -8,12 +8,11 @@ import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.graphics.RenderUtils2D
-import me.zeroeightsix.kami.util.graphics.ShaderHelper
-import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.*
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.client.gui.GuiScreen
@@ -42,6 +41,17 @@ object KamiClickGui : GuiScreen() {
         }
     private var settingWindow: SettingWindow? = null
     private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
+
+    private var typedString = ""
+    private var lastTypedTime = 0L
+    private var prevStringWidth = 0.0f
+    private var stringWidth = 0.0f
+        set(value) {
+            prevStringWidth = renderStringPosX
+            field = value
+        }
+    private val renderStringPosX
+        get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 250.0f, prevStringWidth, stringWidth)
 
     init {
         val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
@@ -94,6 +104,9 @@ object KamiClickGui : GuiScreen() {
 
     override fun onGuiClosed() {
         hoveredWindow = null
+        typedString = ""
+        lastTypedTime = 0L
+        setModuleVisibility{ true }
     }
 
     override fun handleMouseInput() {
@@ -152,15 +165,46 @@ object KamiClickGui : GuiScreen() {
 
     private val topWindow get() = windowList.lastOrNull { it.isInWindow(lastClickPos) }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
-            ClickGUI.disable()
+    override fun handleKeyboardInput() {
+        super.handleKeyboardInput()
+        val keyCode = Keyboard.getEventKey()
+        val keyState = Keyboard.getEventKeyState()
+
+        hoveredWindow?.onKeyInput(keyCode, keyState)
+
+        if (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE) {
+            typedString = ""
+            lastTypedTime = 0L
+            stringWidth = 0.0f
+            prevStringWidth = 0.0f
+
+            setModuleVisibility { true }
         }
     }
 
-    override fun handleKeyboardInput() {
-        super.handleKeyboardInput()
-        hoveredWindow?.onKeyInput(Keyboard.getEventKey(), Keyboard.getEventKeyState())
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
+            ClickGUI.disable()
+        } else {
+            when {
+                typedChar.isLetter() || typedChar == ' ' -> {
+                    typedString += typedChar
+                    stringWidth = FontRenderAdapter.getStringWidth(typedString, 2.0f)
+                    lastTypedTime = System.currentTimeMillis()
+
+                    setModuleVisibility{ it.name.value.contains(typedString, true) }
+                }
+            }
+        }
+    }
+
+    private fun setModuleVisibility(function: (ModuleButton) -> Boolean) {
+        windowList.filterIsInstance<ListWindow>().forEach {
+            for (child in it.children) {
+                if (child !is ModuleButton) continue
+                child.visible.value = function(child)
+            }
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -189,7 +233,17 @@ object KamiClickGui : GuiScreen() {
             window.onRender(vertexHelper, Vec2f(window.renderPosX, window.renderPosY))
             glPopMatrix()
         }
+
+        // Typed Char
         GlStateUtils.rescaleMc()
+        if (typedString.isNotBlank() && System.currentTimeMillis() - lastTypedTime <= 5000L) {
+            val scaledResolution = ScaledResolution(mc)
+            val posX = scaledResolution.scaledWidth / 2.0f - renderStringPosX / 2.0f
+            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(2.0f) / 2.0f
+            val color = GuiColors.text
+            color.a = AnimationUtils.halfSineDec(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 5000.0f, 0.0f, 255.0f).toInt()
+            FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 2.0f)
+        }
     }
 
     fun getRealMousePos(): Vec2f {
