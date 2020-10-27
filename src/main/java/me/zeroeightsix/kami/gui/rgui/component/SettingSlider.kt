@@ -38,7 +38,7 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         if (mouseState != MouseState.DRAG) {
             val min = setting.min.toDouble()
             val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
-            if (value * range + min !in (flooredSettingValue - stepDouble)..(flooredSettingValue + stepDouble)) {
+            if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
                 value = (setting.value.toDouble() - min) / range
             }
         }

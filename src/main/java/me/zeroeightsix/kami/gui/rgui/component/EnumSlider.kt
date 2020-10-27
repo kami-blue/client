@@ -12,16 +12,18 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
 
     override fun onTick() {
         super.onTick()
-        val settingValue = setting.value.ordinal
-        if (roundInput(value) != settingValue) {
-            value = settingValue / enumValues.size.toDouble()
+        if (mouseState != MouseState.DRAG) {
+            val settingValue = setting.value.ordinal
+            if (roundInput(value) != settingValue) {
+                value = (settingValue + settingValue / (enumValues.size - 1.0)) / enumValues.size.toDouble()
+            }
         }
         visible.value = setting.isVisible
     }
 
-    override fun onClick(mousePos: Vec2f, buttonId: Int) {
-        super.onClick(mousePos, buttonId)
-        setting.setValue(enumValues[(setting.value.ordinal + 1) % enumValues.size].name)
+    override fun onRelease(mousePos: Vec2f, buttonId: Int) {
+        super.onRelease(mousePos, buttonId)
+        if (prevState != MouseState.DRAG) setting.setValue(enumValues[(setting.value.ordinal + 1) % enumValues.size].name)
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
