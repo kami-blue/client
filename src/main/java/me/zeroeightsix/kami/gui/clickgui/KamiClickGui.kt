@@ -96,12 +96,6 @@ object KamiClickGui : GuiScreen() {
         hoveredWindow = null
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
-            ClickGUI.disable()
-        }
-    }
-
     override fun handleMouseInput() {
         val mousePos = getRealMousePos()
         val eventButton = Mouse.getEventButton()
@@ -157,6 +151,17 @@ object KamiClickGui : GuiScreen() {
     }
 
     private val topWindow get() = windowList.lastOrNull { it.isInWindow(lastClickPos) }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
+            ClickGUI.disable()
+        }
+    }
+
+    override fun handleKeyboardInput() {
+        super.handleKeyboardInput()
+        hoveredWindow?.onKeyInput(Keyboard.getEventKey(), Keyboard.getEventKeyState())
+    }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())

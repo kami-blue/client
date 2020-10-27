@@ -54,6 +54,10 @@ abstract class InteractiveComponent(
         mouseState = MouseState.DRAG
     }
 
+    open fun onKeyInput(keyCode: Int, keyState: Boolean) {
+
+    }
+
     fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width.value && mousePos.y in 0.0f..height.value
 
     @Suppress("UNUSED")

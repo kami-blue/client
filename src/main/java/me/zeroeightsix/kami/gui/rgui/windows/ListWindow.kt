@@ -163,6 +163,11 @@ open class ListWindow(
         }
     }
 
+    override fun onKeyInput(keyCode: Int, keyState: Boolean) {
+        super.onKeyInput(keyCode, keyState)
+        (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
+    }
+
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =
             mousePos.subtract(posX.value, posY.value - renderScrollProgress).subtract(component.posX.value, component.posY.value)
 }

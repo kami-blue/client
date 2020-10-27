@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.setting.impl.number.DoubleSetting
 import me.zeroeightsix.kami.setting.impl.number.FloatSetting
 import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.number.NumberSetting
@@ -9,11 +8,12 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0) {
+
     private val range = setting.max.toDouble() - setting.min.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()
     private val settingStep = if (setting.step.toDouble() > 0.0) setting.step else getDefaultStep()
@@ -23,6 +23,8 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         is FloatSetting -> MathUtils.decimalPlaces(settingStep.toFloat())
         else -> MathUtils.decimalPlaces(settingStep.toDouble())
     }
+
+    private var preDragMousePos = Vec2f(0.0f, 0.0f)
 
     private fun getDefaultStep() = when (setting) {
         is IntegerSetting -> range / 20
@@ -44,6 +46,7 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
+        preDragMousePos = mousePos
         updateValue(mousePos)
     }
 
@@ -53,19 +56,11 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
     }
 
     private fun updateValue(mousePos: Vec2f) {
-        value = mousePos.x.toDouble() / width.value.toDouble()
+        value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.value.toDouble()
+        else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.value.toDouble()
+
         val roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
-        when (setting) {
-            is IntegerSetting -> {
-                setting.value = roundedValue.roundToInt().coerceIn(setting.min, setting.max)
-            }
-            is FloatSetting -> {
-                setting.value = roundedValue.toFloat().coerceIn(setting.min, setting.max)
-            }
-            is DoubleSetting -> {
-                setting.value = roundedValue.coerceIn(setting.min, setting.max)
-            }
-        }
+        setting.setValue(roundedValue.toString())
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
@@ -77,4 +72,5 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
         FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
     }
+
 }
