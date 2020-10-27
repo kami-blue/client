@@ -35,10 +35,7 @@ object ConfigUtils {
         success = loadConfig(ModuleConfig) && success
 
         // GUI
-        //GuiConfig.clearSettings()
-        //KamiMod.getInstance().guiManager = KamiGUI()
-        //KamiMod.getInstance().guiManager.initializeGUI()
-        //success = loadConfig(GuiConfig) && success
+        success = loadConfig(GuiConfig) && success
 
         inProcess = false
         return success
@@ -64,7 +61,7 @@ object ConfigUtils {
         success = saveConfig(ModuleConfig) && success
 
         // GUI
-        //success = saveConfig(GuiConfig) && success
+        success = saveConfig(GuiConfig) && success
 
         inProcess = false
         return success

@@ -1,20 +1,27 @@
 package me.zeroeightsix.kami.gui.rgui
 
-import com.google.gson.annotations.Expose
+import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
-import java.util.*
 
-abstract class Component {
+abstract class Component(
+        name: String,
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float,
+        val saveToConfig: Boolean
+) {
+
     // Basic info
-    val id: UUID = UUID.randomUUID()
-    @Expose open var name = id.toString(); protected set
-    @Expose open var posX = 0.0f
-    @Expose open var posY = 0.0f
-    @Expose open var width = 0.0f
-    @Expose open var height = 0.0f
-    @Expose var visible = true
+    val originalName = name
+    val name = setting("Name", name)
+    val posX = setting("PosX", posX, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayWidth - 40.0f)})
+    val posY = setting("PosY", posY, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayHeight - 40.0f)})
+    val width = setting("Width", width, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayWidth.toFloat())})
+    val height = setting("Height", height, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayHeight.toFloat())})
+    val visible = setting("Visible", true)
 
     // Extra info
     protected val mc = Wrapper.minecraft
@@ -26,12 +33,12 @@ abstract class Component {
     // Rendering info
     var prevPosX = 0.0f; protected set
     var prevPosY = 0.0f; protected set
-    val renderPosX get() = prevPosX + (posX - prevPosX) * mc.renderPartialTicks
-    val renderPosY get() = prevPosY + (posY - prevPosY) * mc.renderPartialTicks
+    val renderPosX get() = prevPosX + (posX.value - prevPosX) * mc.renderPartialTicks
+    val renderPosY get() = prevPosY + (posY.value - prevPosY) * mc.renderPartialTicks
     var prevWidth = 0.0f; protected set
     var prevHeight = 0.0f; protected set
-    val renderWidth get() = prevWidth + (width - prevWidth) * mc.renderPartialTicks
-    val renderHeight get() = prevHeight + (height - prevHeight) * mc.renderPartialTicks
+    val renderWidth get() = prevWidth + (width.value - prevWidth) * mc.renderPartialTicks
+    val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
 
     // Update methods
     open fun onGuiInit() {
@@ -43,13 +50,14 @@ abstract class Component {
     }
 
     private fun updatePrevSize() {
-        prevWidth = width
-        prevHeight = height
+        prevWidth = width.value
+        prevHeight = height.value
+    }
+
+    protected fun updatePrevPos() {
+        prevPosX = posX.value
+        prevPosY = posY.value
     }
 
     open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
-
-    override fun equals(other: Any?) = other === this || other is Component && other.id == id
-
-    override fun hashCode() = id.hashCode()
 }

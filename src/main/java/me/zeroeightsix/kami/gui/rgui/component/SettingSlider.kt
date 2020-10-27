@@ -39,7 +39,7 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
                 value = (setting.value.toDouble() - min) / range
             }
         }
-        visible = setting.isVisible
+        visible.value = setting.isVisible
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -53,7 +53,7 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
     }
 
     private fun updateValue(mousePos: Vec2f) {
-        value = mousePos.x.toDouble() / width.toDouble()
+        value = mousePos.x.toDouble() / width.value.toDouble()
         val roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
         when (setting) {
             is IntegerSetting -> {

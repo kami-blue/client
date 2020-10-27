@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.util.math.Vec2f
 
-class CheckButton(override var name: String, stateIn: Boolean) : AbstractBooleanSlider(name, 0.0) {
+class CheckButton(name: String, stateIn: Boolean) : AbstractBooleanSlider(name, 0.0) {
     init {
         value = if (stateIn) 1.0 else 0.0
     }

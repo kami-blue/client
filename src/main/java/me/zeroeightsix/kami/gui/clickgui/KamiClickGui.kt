@@ -50,8 +50,8 @@ object KamiClickGui : GuiScreen() {
         for (category in Module.Category.values()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
             if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 80.0f, 256.0f, *buttons))
-            posX += 90.0f
+            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 100.0f, 256.0f, true, *buttons))
+            posX += 110.0f
         }
 
         listener<SafeTickEvent> { event ->
@@ -74,8 +74,8 @@ object KamiClickGui : GuiScreen() {
         settingMap.getOrPut(module) {
             SettingWindow(module, mousePos.x, mousePos.y)
         }.apply {
-            posX = mousePos.x
-            posY = mousePos.y
+            posX.value = mousePos.x
+            posY.value = mousePos.y
         }.also {
             lastClickedWindow = it
             settingWindow = it

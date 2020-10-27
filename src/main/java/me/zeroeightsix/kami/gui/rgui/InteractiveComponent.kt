@@ -2,16 +2,24 @@ package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.util.math.Vec2f
 
-abstract class InteractiveComponent : Component() {
+abstract class InteractiveComponent(
+        name: String,
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float,
+        saveToConfig: Boolean
+) : Component(name, posX, posY, width, height, saveToConfig) {
+
     // Interactive info
-    protected var lastStateUpdateTime = System.currentTimeMillis(); private set
-    protected var prevState = MouseState.NONE; private set
     var mouseState = MouseState.NONE
         private set(value) {
             prevState = field
             lastStateUpdateTime = System.currentTimeMillis()
             field = value
         }
+    protected var prevState = MouseState.NONE; private set
+    protected var lastStateUpdateTime = System.currentTimeMillis(); private set
 
     override fun onGuiInit() {
         super.onGuiInit()
@@ -46,7 +54,7 @@ abstract class InteractiveComponent : Component() {
         mouseState = MouseState.DRAG
     }
 
-    fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width && mousePos.y in 0.0f..height
+    fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width.value && mousePos.y in 0.0f..height.value
 
     @Suppress("UNUSED")
     enum class MouseState {

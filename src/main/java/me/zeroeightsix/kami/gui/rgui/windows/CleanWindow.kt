@@ -6,12 +6,10 @@ import me.zeroeightsix.kami.gui.rgui.WindowComponent
  * Window with no rendering
  */
 open class CleanWindow(
-        override var name: String,
-        override var posX: Float,
-        override var posY: Float,
-        override var width: Float,
-        override var height: Float
-) : WindowComponent() {
-    override val draggableHeight: Float
-        get() = height
-}
+        name: String,
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float,
+        saveToConfig: Boolean
+) : WindowComponent(name, posX, posY, width, height, saveToConfig)

@@ -15,14 +15,15 @@ open class TitledWindow(
         posX: Float,
         posY: Float,
         width: Float,
-        height: Float
-) : BasicWindow(name, posX, posY, width, height) {
+        height: Float,
+        saveToConfig: Boolean
+) : BasicWindow(name, posX, posY, width, height, saveToConfig) {
     override val draggableHeight: Float
         get() = KamiFontRenderer.getFontHeight() + 4.0f
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
         RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, draggableHeight), GuiColors.primary)
-        KamiFontRenderer.drawString(name, 3f, 2f, colorIn = GuiColors.text)
+        KamiFontRenderer.drawString(name.value, 3f, 2f, colorIn = GuiColors.text)
     }
 }

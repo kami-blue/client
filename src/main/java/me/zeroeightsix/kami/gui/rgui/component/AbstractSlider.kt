@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
@@ -11,9 +10,11 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
-import kotlin.math.roundToInt
 
-abstract class AbstractSlider(override var name: String, valueIn: Double) : InteractiveComponent() {
+abstract class AbstractSlider(
+        name: String,
+        valueIn: Double
+) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, false) {
     protected var value = valueIn
         set(value) {
             if (value != field) {
@@ -38,7 +39,7 @@ abstract class AbstractSlider(override var name: String, valueIn: Double) : Inte
 
     override fun onTick() {
         super.onTick()
-        height = maxHeight
+        height.value = maxHeight
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
@@ -62,7 +63,7 @@ abstract class AbstractSlider(override var name: String, valueIn: Double) : Inte
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        KamiFontRenderer.drawString(name, 2f, 1f, colorIn = GuiColors.text)
+        KamiFontRenderer.drawString(name.value, 2f, 1f, colorIn = GuiColors.text)
         GlStateUtils.popScissor()
     }
 

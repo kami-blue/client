@@ -14,8 +14,10 @@ open class BasicWindow(
         posX: Float,
         posY: Float,
         width: Float,
-        height: Float
-) : CleanWindow(name, posX, posY, width, height) {
+        height: Float,
+        saveToConfig: Boolean
+) : CleanWindow(name, posX, posY, width, height, saveToConfig) {
+
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
         RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), GuiColors.backGround)

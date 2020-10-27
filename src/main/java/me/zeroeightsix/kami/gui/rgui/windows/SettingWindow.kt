@@ -8,11 +8,9 @@ import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 
-class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f) {
-    override val minWidth: Float
-        get() = 100.0f
-    override val minHeight: Float
-        get() = draggableHeight
+class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f, false) {
+    override val minWidth: Float get() = 100.0f
+    override val minHeight: Float get() = draggableHeight
 
     init {
         for (setting in module.settingList) {
@@ -31,6 +29,6 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         super.onGuiInit()
         prevHeight = draggableHeight
         lastActiveTime = System.currentTimeMillis() + 1000L
-        name = module.name.value
+        name.value = module.name.value
     }
 }

@@ -16,7 +16,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
         if (roundInput(value) != settingValue) {
             value = settingValue / enumValues.size.toDouble()
         }
-        visible = setting.isVisible
+        visible.value = setting.isVisible
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -30,7 +30,7 @@ class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0
     }
 
     private fun updateValue(mousePos: Vec2f) {
-        value = (mousePos.x / width).toDouble()
+        value = (mousePos.x / width.value).toDouble()
         setting.setValue(enumValues[roundInput(value)].name)
     }
 

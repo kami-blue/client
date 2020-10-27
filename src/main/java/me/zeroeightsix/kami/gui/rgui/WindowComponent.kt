@@ -5,9 +5,16 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class WindowComponent : InteractiveComponent() {
+abstract class WindowComponent(
+        name: String,
+        posX: Float,
+        posY: Float,
+        width: Float,
+        height: Float,
+        saveToConfig: Boolean
+) : InteractiveComponent(name, posX, posY, width, height, saveToConfig) {
     // Interactive info
-    open val draggableHeight get() = height
+    open val draggableHeight get() = height.value
     var lastActiveTime: Long = System.currentTimeMillis(); protected set
     var preDragPos = Vec2f(0.0f, 0.0f); private set
     var preDragSize = Vec2f(0.0f, 0.0f); private set
@@ -28,11 +35,6 @@ abstract class WindowComponent : InteractiveComponent() {
         updatePrevPos()
     }
 
-    private fun updatePrevPos() {
-        prevPosX = posX
-        prevPosY = posY
-    }
-
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         updatePreDrag()
@@ -46,8 +48,8 @@ abstract class WindowComponent : InteractiveComponent() {
     }
 
     private fun updatePreDrag() {
-        preDragPos = Vec2f(posX, posY)
-        preDragSize = Vec2f(width, height)
+        preDragPos = Vec2f(posX.value, posY.value)
+        preDragSize = Vec2f(width.value, height.value)
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
@@ -65,7 +67,7 @@ abstract class WindowComponent : InteractiveComponent() {
             else -> null
         }
 
-        val centerSplitterVCenter = if (draggableHeight != height && horizontalSide == Alignment.HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
+        val centerSplitterVCenter = if (draggableHeight != height.value && horizontalSide == Alignment.HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
         val verticalSide = when (relativeClickPos.y) {
             in -5.0..centerSplitterVCenter -> Alignment.VAlign.TOP
             in centerSplitterVCenter..preDragSize.y - centerSplitterV -> Alignment.VAlign.CENTER
@@ -83,14 +85,14 @@ abstract class WindowComponent : InteractiveComponent() {
                         var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
-                        posX += width - newWidth
-                        width = newWidth
+                        posX.value += width.value - newWidth
+                        width.value = newWidth
                     }
                     Alignment.HAlign.RIGHT -> {
                         var newWidth = max(preDragSize.x + draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
-                        width = newWidth
+                        width.value = newWidth
                     }
                     else -> {
                         // Nothing lol
@@ -102,14 +104,14 @@ abstract class WindowComponent : InteractiveComponent() {
                         var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
-                        posY += height - newHeight
-                        height = newHeight
+                        posY.value += height.value - newHeight
+                        height.value = newHeight
                     }
                     Alignment.VAlign.BOTTOM -> {
                         var newHeight = max(preDragSize.y + draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
-                        height = newHeight
+                        height.value = newHeight
                     }
                     else -> {
                         // Nothing lol
@@ -118,8 +120,8 @@ abstract class WindowComponent : InteractiveComponent() {
 
                 onResize()
             } else if (relativeClickPos.y <= draggableHeight) {
-                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width)
-                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height)
+                posX.value = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width.value)
+                posY.value = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height.value)
 
                 onReposition()
             } else {

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
-import com.google.gson.annotations.Expose
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
@@ -21,17 +20,18 @@ open class ListWindow(
         posY: Float,
         width: Float,
         height: Float,
+        saveToConfig: Boolean,
         vararg childrenIn: Component
-) : TitledWindow(name, posX, posY, width, height) {
-    @Expose val children = LinkedList<Component>()
+) : TitledWindow(name, posX, posY, width, height, saveToConfig) {
+    val children = LinkedList<Component>()
 
-    override val minWidth = 50.0f
+    override val minWidth = 80.0f
     override val minHeight = 200.0f
     override val maxWidth = 200.0f
     override val maxHeight get() = mc.displayHeight.toFloat()
     override val resizable: Boolean get() = hoveredChild == null
 
-    protected val lineSpace = 2.0f
+    protected val lineSpace = 3.0f
     private var hoveredChild: Component? = null
         set(value) {
             if (value == field) return
@@ -58,13 +58,13 @@ open class ListWindow(
     }
 
     private fun updateChild() {
-        var y = (if (draggableHeight != height) draggableHeight else 0.0f) + lineSpace
+        var y = (if (draggableHeight != height.value) draggableHeight else 0.0f) + lineSpace
         for (child in children) {
-            if (!child.visible) continue
-            child.posX = lineSpace
-            child.posY = y
-            child.width = width - lineSpace * 2.0f
-            y += child.height + lineSpace
+            if (!child.visible.value) continue
+            child.posX.value = lineSpace * 1.618f
+            child.posY.value = y
+            child.width.value = width.value - lineSpace * 3.236f
+            y += child.height.value + lineSpace
         }
     }
 
@@ -82,8 +82,8 @@ open class ListWindow(
     override fun onTick() {
         super.onTick()
         if (children.isEmpty()) return
-        val lastVisible = children.lastOrNull { it.visible }
-        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height + lineSpace - height, 0.01f) }?: draggableHeight
+        val lastVisible = children.lastOrNull { it.visible.value }
+        val maxScrollProgress = lastVisible?.let { max(it.posY.value + it.height.value + lineSpace - height.value, 0.01f) }?: draggableHeight
 
         scrollProgress = (scrollProgress + scrollSpeed)
         scrollSpeed *= 0.5f
@@ -102,18 +102,18 @@ open class ListWindow(
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
         GlStateUtils.scissor(
-                ((renderPosX + lineSpace) * ClickGUI.getScaleFactor()).roundToInt(),
+                ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
-                ((renderWidth - lineSpace * 2.0) * ClickGUI.getScaleFactor()).roundToInt(),
+                ((renderWidth - lineSpace * 3.236) * ClickGUI.getScaleFactor()).roundToInt(),
                 ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor()).roundToInt()
         )
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
         for (child in children) {
-            if (!child.visible) continue
+            if (!child.visible.value) continue
             glPushMatrix()
-            glTranslatef(child.posX, child.posY, 0.0f)
-            child.onRender(vertexHelper, absolutePos.add(child.posX, child.posY))
+            glTranslatef(child.posX.value, child.posY.value, 0.0f)
+            child.onRender(vertexHelper, absolutePos.add(child.posX.value, child.posY.value))
             glPopMatrix()
         }
         glDisable(GL_SCISSOR_TEST)
@@ -121,7 +121,7 @@ open class ListWindow(
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
-        val relativeMousePos = mousePos.subtract(posX, posY - renderScrollProgress)
+        val relativeMousePos = mousePos.subtract(posX.value, posY.value - renderScrollProgress)
         if (Mouse.getEventDWheel() != 0) {
             scrollTimer.reset()
             scrollSpeed -= Mouse.getEventDWheel() * 0.1f
@@ -134,7 +134,7 @@ open class ListWindow(
 
     private fun updateHovered(relativeMousePos: Vec2f) {
         hoveredChild = if (relativeMousePos.y < draggableHeight || relativeMousePos.x < lineSpace || relativeMousePos.x > renderWidth - lineSpace) null
-        else children.firstOrNull { it.visible && relativeMousePos.y in it.posY..it.posY + it.height }
+        else children.firstOrNull { it.visible.value && relativeMousePos.y in it.posY.value..it.posY.value + it.height.value }
     }
 
     override fun onLeave(mousePos: Vec2f) {
@@ -145,24 +145,24 @@ open class ListWindow(
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         (hoveredChild as? InteractiveComponent)?.let {
-            val relativePos = mousePos.subtract(posX, posY - renderScrollProgress).subtract(it.posX, it.posY)
-            it.onClick(relativePos, buttonId)
+            it.onClick(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         (hoveredChild as? InteractiveComponent)?.let {
-            val relativePos = mousePos.subtract(posX, posY - renderScrollProgress).subtract(it.posX, it.posY)
-            it.onRelease(relativePos, buttonId)
+            it.onRelease(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
         (hoveredChild as? InteractiveComponent)?.let {
-            val relativePos = mousePos.subtract(posX, posY - renderScrollProgress).subtract(it.posX, it.posY)
-            it.onDrag(relativePos, clickPos, buttonId)
+            it.onDrag(getRelativeMousePos(mousePos, it), clickPos, buttonId)
         }
     }
+
+    private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =
+            mousePos.subtract(posX.value, posY.value - renderScrollProgress).subtract(component.posX.value, component.posY.value)
 }
