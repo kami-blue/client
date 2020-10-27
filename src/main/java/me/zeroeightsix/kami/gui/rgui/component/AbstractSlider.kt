@@ -28,7 +28,7 @@ abstract class AbstractSlider(
         get() = AnimationUtils.linear(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 50.0, prevValue.value, value)
 
     override val maxHeight
-        get() = KamiFontRenderer.getFontHeight() + 4.0f
+        get() = KamiFontRenderer.getFontHeight() + 3.0f
     protected var protectedWidth = 0.0
 
     override fun onGuiInit() {
@@ -51,7 +51,7 @@ abstract class AbstractSlider(
         RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), overlayColor)
 
         // Slider frame
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.0f, GuiColors.outline)
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.5f, GuiColors.outline)
 
         // Slider name
         GlStateUtils.pushScissor()
@@ -63,7 +63,7 @@ abstract class AbstractSlider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        KamiFontRenderer.drawString(name.value, 2f, 1f, colorIn = GuiColors.text)
+        KamiFontRenderer.drawString(name.value, 2f, 1.0f, colorIn = GuiColors.text)
         GlStateUtils.popScissor()
     }
 
