@@ -32,10 +32,12 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onTick() {
         super.onTick()
-        val min = setting.min.toDouble()
-        val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
-        if (value * range + min !in (flooredSettingValue - stepDouble)..(flooredSettingValue + stepDouble)) {
-            value = (setting.value.toDouble() - min) / range
+        if (mouseState != MouseState.DRAG) {
+            val min = setting.min.toDouble()
+            val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
+            if (value * range + min !in (flooredSettingValue - stepDouble)..(flooredSettingValue + stepDouble)) {
+                value = (setting.value.toDouble() - min) / range
+            }
         }
         visible = setting.isVisible
     }
