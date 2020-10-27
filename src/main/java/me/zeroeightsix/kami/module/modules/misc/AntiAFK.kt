@@ -51,13 +51,14 @@ object AntiAFK : Module() {
     }
 
     override fun onEnable() {
+        inputTimer.reset()
         baritoneDisconnectOnArrival()
     }
 
     override fun onDisable() {
         startPos = null
-        BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
         baritoneCancel()
+        BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
     }
 
     init {
@@ -156,7 +157,7 @@ object AntiAFK : Module() {
     }
 
     private fun baritoneCancel() {
-        if (walk.value && isBaritoneActive) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
     }
 
     init {
