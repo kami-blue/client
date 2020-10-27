@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.module.modules.client.Tooltips
 import me.zeroeightsix.kami.util.TimedFlag
@@ -55,8 +56,8 @@ abstract class AbstractSlider(
 
             for (string in descriptionIn.split(' ')) {
                 lineWidth += FontRenderAdapter.getStringWidth(string) + spaceWidth
-                if (lineWidth > 200) {
-                    description.addLine(lineString)
+                if (lineWidth > 169) {
+                    description.addLine(lineString.trimEnd())
                     lineWidth = -spaceWidth
                     lineString = ""
                 } else {
@@ -98,10 +99,10 @@ abstract class AbstractSlider(
         GlStateUtils.popScissor()
 
         // Tooltips
-        if (Tooltips.isEnabled && descriptionIn.isNotBlank()) drawToolTips(vertexHelper)
+        if (Tooltips.isEnabled && descriptionIn.isNotBlank()) drawToolTips(vertexHelper, absolutePos)
     }
 
-    private fun drawToolTips(vertexHelper: VertexHelper) {
+    private fun drawToolTips(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         var deltaTime = AnimationUtils.toDeltaTimeFloat(lastStateUpdateTime)
 
         if (mouseState == MouseState.HOVER && deltaTime > 500L || prevState == MouseState.HOVER && shown) {
@@ -121,14 +122,19 @@ abstract class AbstractSlider(
             val textWidth = description.getWidth()
             val textHeight = description.getHeight(2)
 
+            val relativeCorner = Vec2f(mc.displayWidth.toFloat(), mc.displayHeight.toFloat()).divide(ClickGUI.getScaleFactorFloat()).subtract(absolutePos)
+
+            val posX = descriptionPosX.coerceIn(-absolutePos.x, relativeCorner.x - textWidth - 10.0f)
+            val posY = (renderHeight + 4.0f).coerceIn(-absolutePos.y, relativeCorner.y - textHeight - 10.0f)
+
             glDisable(GL_SCISSOR_TEST)
             glPushMatrix()
-            glTranslatef(descriptionPosX, height.value + 4.0f, 696.0f)
+            glTranslatef(posX, posY, 696.0f)
 
             RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(textWidth, textHeight).add(4.0), color = GuiColors.backGround.apply { a = (a * alpha).toInt() })
             RenderUtils2D.drawRectOutline(vertexHelper, posEnd = Vec2d(textWidth, textHeight).add(4.0), lineWidth = 2.0f, color = GuiColors.primary.apply { a = (a * alpha).toInt() })
 
-            description.draw(Vec2d(1.0f, 1.0f), 2, alpha)
+            description.draw(Vec2d(2.0f, 2.0f), 2, alpha)
 
             glEnable(GL_SCISSOR_TEST)
             glPopMatrix()

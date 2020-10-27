@@ -115,7 +115,7 @@ open class ListWindow(
             if (child.renderPosY - renderScrollProgress > renderHeight) continue
             glPushMatrix()
             glTranslatef(child.renderPosX, child.renderPosY, 0.0f)
-            child.onRender(vertexHelper, absolutePos.add(child.renderPosX, child.renderPosY))
+            child.onRender(vertexHelper, absolutePos.add(child.renderPosX, child.renderPosY - renderScrollProgress))
             glPopMatrix()
         }
         glDisable(GL_SCISSOR_TEST)
