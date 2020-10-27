@@ -153,10 +153,4 @@ object AntiAFK : Module() {
     private fun baritoneGotoXZ(x: Int, z: Int) {
         BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(x, z))
     }
-
-    init {
-        walk.settingListener = Setting.SettingListeners {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-        }
-    }
 }
