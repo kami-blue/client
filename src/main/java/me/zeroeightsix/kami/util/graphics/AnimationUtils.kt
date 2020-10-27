@@ -4,11 +4,25 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import kotlin.math.*
 
 object AnimationUtils {
+    private val piFloat = PI.toFloat()
+
     fun toDeltaTimeFloat(startTime: Long) = (System.currentTimeMillis() - startTime).toFloat()
 
     fun toDeltaTimeDouble(startTime: Long) = (System.currentTimeMillis() - startTime).toDouble()
 
     // Linear
+    // Float
+    fun linear(deltaTime: Float, length: Float, from: Float, to: Float) =
+            if (from < to) linearInc(deltaTime, length, from, to)
+            else linearDec(deltaTime, length, to, from)
+
+    fun linearInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            MathUtils.convertRange(deltaTime, 0.0f, length, minValue, maxValue)
+
+    fun linearDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            MathUtils.convertRange(deltaTime, 0.0f, length, maxValue, minValue)
+
+    // Double
     fun linear(deltaTime: Double, length: Double, from: Double, to: Double) =
             if (from < to) linearInc(deltaTime, length, from, to)
             else linearDec(deltaTime, length, to, from)
@@ -21,6 +35,24 @@ object AnimationUtils {
 
 
     // Sine
+    // Float
+    fun sine(deltaTime: Float, length: Float, from: Float, to: Float) =
+            if (from < to) halfSineInc(deltaTime, length, from, to)
+            else halfSineDec(deltaTime, length, to, from)
+
+    fun fullSineInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            (cos(deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * 0.5f + 0.5f) * (maxValue - minValue) + minValue
+
+    fun fullSineDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            (cos(deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * -0.5f + 0.5f) * (maxValue - minValue) + minValue
+
+    fun halfSineInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            sin(0.5f * deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * (maxValue - minValue) + minValue
+
+    fun halfSineDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
+            cos(0.5f * deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * (maxValue - minValue) + minValue
+
+    // Double
     fun sine(deltaTime: Double, length: Double, from: Double, to: Double) =
             if (from < to) halfSineInc(deltaTime, length, from, to)
             else halfSineDec(deltaTime, length, to, from)
