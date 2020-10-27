@@ -16,7 +16,7 @@ import net.minecraft.client.multiplayer.ServerData
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withValue(5000).withRange(100, 10000).withStep(100))
+    private val delay = register(Settings.integerBuilder("Delay").withValue(5000).withRange(100, 100000).withStep(100))
 
     private var prevServerDate: ServerData? = null
 
