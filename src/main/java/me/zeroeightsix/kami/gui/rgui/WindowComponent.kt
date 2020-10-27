@@ -32,8 +32,8 @@ abstract class WindowComponent(
     private val renderMinimizeProgress: Float
         get() {
             val deltaTime = AnimationUtils.toDeltaTimeFloat(minimizedTime)
-            return if (minimized.value) AnimationUtils.halfSineDec(deltaTime, 300.0f)
-            else AnimationUtils.halfSineInc(deltaTime, 300.0f)
+            return if (minimized.value) AnimationUtils.halfSineDec(deltaTime, 200.0f)
+            else AnimationUtils.halfSineInc(deltaTime, 200.0f)
         }
     override val renderHeight: Float
         get() = max(super.renderHeight * renderMinimizeProgress, draggableHeight)
@@ -49,6 +49,14 @@ abstract class WindowComponent(
 
     open fun onResize() {}
     open fun onReposition() {}
+
+    override fun onDisplayed() {
+        super.onDisplayed()
+        if (!minimized.value) {
+            minimized.value = true
+            minimized.value = false
+        }
+    }
 
     override fun onGuiInit() {
         super.onGuiInit()

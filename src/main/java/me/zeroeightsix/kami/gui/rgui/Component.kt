@@ -42,6 +42,8 @@ abstract class Component(
     open val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
 
     // Update methods
+    open fun onDisplayed() {}
+
     open fun onGuiInit() {
         updatePrevPos()
         updatePrevSize()

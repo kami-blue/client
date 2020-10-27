@@ -92,7 +92,12 @@ object KamiClickGui : GuiScreen() {
             settingWindow = it
             windowList.add(it)
             it.onGuiInit()
+            it.onDisplayed()
         }
+    }
+
+    fun onDisplayed() {
+        for (window in windowList) window.onDisplayed()
     }
 
     override fun initGui() {
@@ -104,10 +109,12 @@ object KamiClickGui : GuiScreen() {
     }
 
     override fun onGuiClosed() {
+        lastClickedWindow = null
         hoveredWindow = null
         typedString = ""
         lastTypedTime = 0L
         setModuleVisibility{ true }
+        updateSettingWindow()
     }
 
     override fun handleMouseInput() {
@@ -137,6 +144,10 @@ object KamiClickGui : GuiScreen() {
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
 
+        updateSettingWindow()
+    }
+
+    private fun updateSettingWindow() {
         settingWindow?.let {
             if (lastClickedWindow != it) {
                 windowList.remove(it)

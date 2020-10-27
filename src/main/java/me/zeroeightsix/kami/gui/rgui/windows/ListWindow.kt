@@ -68,6 +68,11 @@ open class ListWindow(
         }
     }
 
+    override fun onDisplayed() {
+        super.onDisplayed()
+        for (child in children) child.onDisplayed()
+    }
+
     override fun onGuiInit() {
         super.onGuiInit()
         for (child in children) child.onGuiInit()

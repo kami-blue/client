@@ -40,8 +40,8 @@ abstract class AbstractSlider(
     private var descriptionPosX = 0.0f
     private var shown = false
 
-    override fun onGuiInit() {
-        super.onGuiInit()
+    override fun onDisplayed() {
+        super.onDisplayed()
         prevValue.value = 0.0
         value = 0.0
         setupDescription()

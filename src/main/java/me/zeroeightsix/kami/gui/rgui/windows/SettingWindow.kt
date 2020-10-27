@@ -27,12 +27,10 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         }
     }
 
-    override fun onGuiInit() {
-        super.onGuiInit()
-        prevHeight = draggableHeight
+    override fun onDisplayed() {
+        super.onDisplayed()
         lastActiveTime = System.currentTimeMillis() + 1000L
         name.value = module.name.value
-        minimized.value = true
-        minimized.value = false
     }
+
 }

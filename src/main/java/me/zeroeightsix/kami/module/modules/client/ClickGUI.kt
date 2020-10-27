@@ -58,6 +58,7 @@ object ClickGUI : Module() {
         if (mc.currentScreen !is KamiClickGui) {
             mc.displayGuiScreen(KamiClickGui)
             KamiEventBus.subscribe(KamiClickGui)
+            KamiClickGui.onDisplayed()
         }
     }
 
