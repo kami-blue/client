@@ -111,9 +111,11 @@ open class ListWindow(
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
         for (child in children) {
             if (!child.visible.value) continue
+            if (child.renderPosY + child.renderHeight - renderScrollProgress < draggableHeight) continue
+            if (child.renderPosY - renderScrollProgress > renderHeight) continue
             glPushMatrix()
-            glTranslatef(child.posX.value, child.posY.value, 0.0f)
-            child.onRender(vertexHelper, absolutePos.add(child.posX.value, child.posY.value))
+            glTranslatef(child.renderPosX, child.renderPosY, 0.0f)
+            child.onRender(vertexHelper, absolutePos.add(child.renderPosX, child.renderPosY))
             glPopMatrix()
         }
         glDisable(GL_SCISSOR_TEST)

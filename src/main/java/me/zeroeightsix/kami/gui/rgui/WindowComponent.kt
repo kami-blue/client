@@ -26,13 +26,7 @@ abstract class WindowComponent(
 
     override fun onGuiInit() {
         super.onGuiInit()
-        updatePrevPos()
         updatePreDrag()
-    }
-
-    override fun onTick() {
-        super.onTick()
-        updatePrevPos()
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {

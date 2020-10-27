@@ -35,6 +35,7 @@ abstract class Component(
     var prevPosY = 0.0f; protected set
     val renderPosX get() = prevPosX + (posX.value - prevPosX) * mc.renderPartialTicks
     val renderPosY get() = prevPosY + (posY.value - prevPosY) * mc.renderPartialTicks
+
     var prevWidth = 0.0f; protected set
     var prevHeight = 0.0f; protected set
     val renderWidth get() = prevWidth + (width.value - prevWidth) * mc.renderPartialTicks
@@ -42,11 +43,18 @@ abstract class Component(
 
     // Update methods
     open fun onGuiInit() {
+        updatePrevPos()
         updatePrevSize()
     }
 
     open fun onTick() {
+        updatePrevPos()
         updatePrevSize()
+    }
+
+    private fun updatePrevPos() {
+        prevPosX = posX.value
+        prevPosY = posY.value
     }
 
     private fun updatePrevSize() {
@@ -54,10 +62,6 @@ abstract class Component(
         prevHeight = height.value
     }
 
-    protected fun updatePrevPos() {
-        prevPosX = posX.value
-        prevPosY = posY.value
-    }
-
     open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
+
 }
