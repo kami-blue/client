@@ -12,6 +12,8 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
     override val minWidth: Float get() = 100.0f
     override val minHeight: Float get() = draggableHeight
 
+    override val minimizable get() = false
+
     init {
         for (setting in module.settingList) {
             when (setting) {
@@ -30,5 +32,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
         prevHeight = draggableHeight
         lastActiveTime = System.currentTimeMillis() + 1000L
         name.value = module.name.value
+        minimized.value = true
+        minimized.value = false
     }
 }

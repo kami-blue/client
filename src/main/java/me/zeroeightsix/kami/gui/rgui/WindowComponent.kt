@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.gui.rgui
 
+import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.Alignment
+import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
@@ -13,13 +15,37 @@ abstract class WindowComponent(
         height: Float,
         saveToConfig: Boolean
 ) : InteractiveComponent(name, posX, posY, width, height, saveToConfig) {
+
+    // Basic info
+    val minimized = setting("Minimized", false,
+            consumer = { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
+    )
+
     // Interactive info
     open val draggableHeight get() = height.value
     var lastActiveTime: Long = System.currentTimeMillis(); protected set
     var preDragPos = Vec2f(0.0f, 0.0f); private set
     var preDragSize = Vec2f(0.0f, 0.0f); private set
 
-    open val resizable = true
+    // Render info
+    private var minimizedTime = 0L
+    private val renderMinimizeProgress: Float
+        get() {
+            val deltaTime = AnimationUtils.toDeltaTimeFloat(minimizedTime)
+            return if (minimized.value) AnimationUtils.halfSineDec(deltaTime, 300.0f)
+            else AnimationUtils.halfSineInc(deltaTime, 300.0f)
+        }
+    override val renderHeight: Float
+        get() = max(super.renderHeight * renderMinimizeProgress, draggableHeight)
+
+    open val resizable get() = true
+    open val minimizable get() = false
+
+    init {
+        minimized.valueListeners.add { prev, it ->
+            if (it != prev) minimizedTime = System.currentTimeMillis()
+        }
+    }
 
     open fun onResize() {}
     open fun onReposition() {}
@@ -39,6 +65,7 @@ abstract class WindowComponent(
         super.onRelease(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
+        if (minimizable && buttonId == 1 && mousePos.y - posY.value < draggableHeight) minimized.value = !minimized.value
     }
 
     private fun updatePreDrag() {
@@ -72,7 +99,7 @@ abstract class WindowComponent(
         val draggedDist = mousePos.subtract(clickPos)
 
         if (horizontalSide != null && verticalSide != null) {
-            if (horizontalSide != Alignment.HAlign.CENTER || verticalSide != Alignment.VAlign.CENTER) {
+            if (!minimized.value && (horizontalSide != Alignment.HAlign.CENTER || verticalSide != Alignment.VAlign.CENTER)) {
 
                 when (horizontalSide) {
                     Alignment.HAlign.LEFT -> {
@@ -126,6 +153,6 @@ abstract class WindowComponent(
 
     fun isInWindow(mousePos: Vec2f): Boolean {
         return mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
-                && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + preDragSize.y + 5.0f
+                && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
     }
 }

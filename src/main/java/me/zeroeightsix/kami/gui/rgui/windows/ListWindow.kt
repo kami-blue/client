@@ -146,28 +146,28 @@ open class ListWindow(
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
             it.onClick(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
-        super.onClick(mousePos, buttonId)
-        (hoveredChild as? InteractiveComponent)?.let {
+        super.onRelease(mousePos, buttonId)
+        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
             it.onRelease(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
-        (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
             it.onDrag(getRelativeMousePos(mousePos, it), clickPos, buttonId)
         }
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
         super.onKeyInput(keyCode, keyState)
-        (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
+        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =

@@ -39,7 +39,7 @@ abstract class Component(
     var prevWidth = 0.0f; protected set
     var prevHeight = 0.0f; protected set
     val renderWidth get() = prevWidth + (width.value - prevWidth) * mc.renderPartialTicks
-    val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
+    open val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
 
     // Update methods
     open fun onGuiInit() {

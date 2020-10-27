@@ -16,8 +16,9 @@ open class TitledWindow(
         height: Float,
         saveToConfig: Boolean
 ) : BasicWindow(name, posX, posY, width, height, saveToConfig) {
-    override val draggableHeight: Float
-        get() = FontRenderAdapter.getFontHeight() + 5.0f
+    override val draggableHeight: Float get() = FontRenderAdapter.getFontHeight() + 5.0f
+
+    override val minimizable get() = true
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
