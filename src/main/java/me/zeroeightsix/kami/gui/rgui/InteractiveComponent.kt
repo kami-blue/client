@@ -12,6 +12,7 @@ abstract class InteractiveComponent(
 ) : Component(name, posX, posY, width, height, saveToConfig) {
 
     // Interactive info
+    protected var lastMousePos = Vec2f.ZERO
     var mouseState = MouseState.NONE
         private set(value) {
             prevState = field
@@ -30,7 +31,7 @@ abstract class InteractiveComponent(
 
     // Interactive methods
     open fun onMouseInput(mousePos: Vec2f) {
-
+        lastMousePos = mousePos
     }
 
     open fun onHover(mousePos: Vec2f) {

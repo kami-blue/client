@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
@@ -209,7 +210,13 @@ object KamiClickGui : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+        drawBackground(vertexHelper, partialTicks)
+        drawWindows(vertexHelper)
+        GlStateUtils.rescaleMc()
+        drawTypedString()
+    }
 
+    private fun drawBackground(vertexHelper: VertexHelper, partialTicks: Float) {
         // Blur effect
         if (ClickGUI.blur.value > 0.0f) {
             glPushMatrix()
@@ -225,8 +232,15 @@ object KamiClickGui : GuiScreen() {
             val color = ColorHolder(0, 0, 0, (ClickGUI.darkness.value * 255.0f).toInt())
             RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(mc.displayWidth.toDouble(), mc.displayHeight.toDouble()), color = color)
         }
+    }
 
+    private fun drawWindows(vertexHelper: VertexHelper) {
         GlStateUtils.rescaleKami()
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        GlStateManager.depthMask(true)
+        GlStateManager.depthFunc(GL_LEQUAL)
+        GlStateUtils.depth(true)
+
         for (window in windowList) {
             glPushMatrix()
             glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
@@ -234,8 +248,11 @@ object KamiClickGui : GuiScreen() {
             glPopMatrix()
         }
 
-        // Typed Char
-        GlStateUtils.rescaleMc()
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        GlStateUtils.depth(false)
+    }
+
+    private fun drawTypedString() {
         if (typedString.isNotBlank() && System.currentTimeMillis() - lastTypedTime <= 5000L) {
             val scaledResolution = ScaledResolution(mc)
             val posX = scaledResolution.scaledWidth / 2.0f - renderStringPosX / 2.0f

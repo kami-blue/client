@@ -32,8 +32,8 @@ open class ListWindow(
     override val resizable: Boolean get() = hoveredChild == null
 
     protected val lineSpace = 3.0f
-    private var hoveredChild: Component? = null
-        set(value) {
+    var hoveredChild: Component? = null
+        private set(value) {
             if (value == field) return
             (field as? InteractiveComponent)?.onLeave(KamiClickGui.getRealMousePos())
             (value as? InteractiveComponent)?.onHover(KamiClickGui.getRealMousePos())

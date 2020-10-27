@@ -12,7 +12,7 @@ import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 import kotlin.math.round
 
-class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0) {
+class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0, setting.description) {
 
     private val range = setting.max.toDouble() - setting.min.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()
