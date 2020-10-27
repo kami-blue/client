@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 
@@ -28,7 +28,7 @@ abstract class AbstractSlider(
         get() = AnimationUtils.linear(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 50.0, prevValue.value, value)
 
     override val maxHeight
-        get() = KamiFontRenderer.getFontHeight() + 3.0f
+        get() = FontRenderAdapter.getFontHeight() + 3.0f
     protected var protectedWidth = 0.0
 
     override fun onGuiInit() {
@@ -63,7 +63,7 @@ abstract class AbstractSlider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        KamiFontRenderer.drawString(name.value, 2f, 1.0f, colorIn = GuiColors.text)
+        FontRenderAdapter.drawString(name.value, 2f, 1.0f, color = GuiColors.text)
         GlStateUtils.popScissor()
     }
 

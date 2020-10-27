@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.impl.number.FloatSetting
 import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.floor
@@ -70,11 +70,11 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         val valueText = setting.toString()
-        protectedWidth = KamiFontRenderer.getStringWidth(valueText, 0.75f).toDouble()
+        protectedWidth = FontRenderAdapter.getStringWidth(valueText, 0.75f).toDouble()
 
         super.onRender(vertexHelper, absolutePos)
         val posX = (renderWidth - protectedWidth - 2.0f).toFloat()
-        val posY = renderHeight - 2.0f - KamiFontRenderer.getFontHeight(0.75f)
-        KamiFontRenderer.drawString(valueText, posX, posY, colorIn = GuiColors.text, scale = 0.75f)
+        val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
+        FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
     }
 }

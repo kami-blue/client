@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.rgui.windows
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.VertexHelper
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
 
 /**
@@ -17,10 +17,10 @@ open class TitledWindow(
         saveToConfig: Boolean
 ) : BasicWindow(name, posX, posY, width, height, saveToConfig) {
     override val draggableHeight: Float
-        get() = KamiFontRenderer.getFontHeight() + 6.0f
+        get() = FontRenderAdapter.getFontHeight() + 5.0f
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
-        KamiFontRenderer.drawString(name.value, 3.0f, 3.0f, colorIn = GuiColors.text)
+        FontRenderAdapter.drawString(name.value, 3.0f, 3.0f, color = GuiColors.text)
     }
 }
