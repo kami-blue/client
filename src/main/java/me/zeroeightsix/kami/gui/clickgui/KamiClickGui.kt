@@ -195,9 +195,9 @@ object KamiClickGui : GuiScreen() {
         val keyState = Keyboard.getEventKeyState()
 
         hoveredWindow?.onKeyInput(keyCode, keyState)
-        settingWindow?.onKeyInput(keyCode, keyState)
+        if (settingWindow != hoveredWindow) settingWindow?.onKeyInput(keyCode, keyState)
 
-        if (settingWindow?.activeBindButton == null && (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE)) {
+        if (settingWindow?.listeningChild == null && (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE)) {
             typedString = ""
             lastTypedTime = 0L
             stringWidth = 0.0f
@@ -210,7 +210,7 @@ object KamiClickGui : GuiScreen() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
             ClickGUI.disable()
-        } else if (settingWindow?.activeBindButton == null) {
+        } else if (settingWindow?.listeningChild == null) {
             when {
                 typedChar.isLetter() || typedChar == ' ' -> {
                     typedString += typedChar

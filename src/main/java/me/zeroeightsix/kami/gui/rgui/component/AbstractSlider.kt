@@ -40,6 +40,8 @@ abstract class AbstractSlider(
     private var descriptionPosX = 0.0f
     private var shown = false
 
+    var listening = false; protected set
+
     override fun onDisplayed() {
         super.onDisplayed()
         prevValue.value = 0.0

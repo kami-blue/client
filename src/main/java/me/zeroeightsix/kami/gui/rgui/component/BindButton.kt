@@ -12,7 +12,6 @@ class BindButton(
 ) : AbstractSlider(setting.name, 0.0, setting.description) {
 
     override val renderProgress: Double = 0.0
-    private var listening = false
 
     override fun onClosed() {
         super.onClosed()

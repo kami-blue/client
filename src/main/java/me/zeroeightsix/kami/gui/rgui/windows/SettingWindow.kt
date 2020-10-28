@@ -1,15 +1,13 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
-import me.zeroeightsix.kami.gui.rgui.component.BindButton
-import me.zeroeightsix.kami.gui.rgui.component.EnumSlider
-import me.zeroeightsix.kami.gui.rgui.component.SettingButton
-import me.zeroeightsix.kami.gui.rgui.component.SettingSlider
+import me.zeroeightsix.kami.gui.rgui.component.*
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.setting.impl.other.BindSetting
 import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.lwjgl.input.Keyboard
 
 class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f, false) {
 
@@ -18,7 +16,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
 
     override val minimizable get() = false
 
-    var activeBindButton: BindButton? = null
+    var listeningChild: AbstractSlider? = null; private set
 
     init {
         for (setting in module.settingList) {
@@ -42,17 +40,23 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        activeBindButton = (hoveredChild as? BindButton)
+        (hoveredChild as? AbstractSlider)?.let {
+            if (it.listening) listeningChild = it
+        }
+    }
+
+    override fun onTick() {
+        super.onTick()
+        Keyboard.enableRepeatEvents(listeningChild != null)
     }
 
     override fun onClosed() {
         super.onClosed()
-        activeBindButton = null
+        listeningChild = null
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
-        super.onKeyInput(keyCode, keyState)
-        activeBindButton?.onKeyInput(keyCode, keyState)
+        listeningChild?.onKeyInput(keyCode, keyState)
     }
 
 }

@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
+import javafx.scene.input.Clipboard
+import javafx.scene.input.DataFormat
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.impl.number.FloatSetting
 import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
@@ -11,6 +13,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.max
 import kotlin.math.round
 
 class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0, setting.description) {
@@ -33,9 +36,15 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         else -> range / 20.0
     }
 
+    override fun onClosed() {
+        super.onClosed()
+        listening = false
+        name.value = originalName
+    }
+
     override fun onTick() {
         super.onTick()
-        if (mouseState != MouseState.DRAG) {
+        if (mouseState != MouseState.DRAG && !listening) {
             val min = setting.min.toDouble()
             val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
             if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
@@ -47,13 +56,24 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        preDragMousePos = mousePos
-        updateValue(mousePos)
+        if (buttonId == 0) {
+            preDragMousePos = mousePos
+            updateValue(mousePos)
+        }
+    }
+
+    override fun onRelease(mousePos: Vec2f, buttonId: Int) {
+        super.onRelease(mousePos, buttonId)
+        if (buttonId == 1 && !listening) {
+            listening = true
+            value = 0.0
+            name.value = "0"
+        }
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
-        updateValue(mousePos)
+        if (!listening && buttonId == 0) updateValue(mousePos)
     }
 
     private fun updateValue(mousePos: Vec2f) {
@@ -65,14 +85,42 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
         setting.setValue(roundedValue.toString())
     }
 
+    override fun onKeyInput(keyCode: Int, keyState: Boolean) {
+        super.onKeyInput(keyCode, keyState)
+        val typedChar = Keyboard.getEventCharacter()
+        if (keyState) {
+            when (keyCode) {
+                Keyboard.KEY_RETURN -> {
+                    name.value.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
+                    listening = false
+                    name.value = originalName
+                }
+                Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
+                    name.value = name.value.substring(0, max(name.value.length - 1, 0))
+                    if (name.value.isBlank()) name.value = "0"
+                }
+                Keyboard.KEY_V -> if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+                    name.value = Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT).toString()
+                            .filter { it.isDigit() || it == '.' || it.equals('e', true) }
+                }
+                else -> if (typedChar.isDigit() || typedChar == '.' || typedChar.equals('e', true)) {
+                    if (name.value == "0") name.value = ""
+                    name.value += typedChar
+                }
+            }
+        }
+    }
+
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         val valueText = setting.toString()
         protectedWidth = FontRenderAdapter.getStringWidth(valueText, 0.75f).toDouble()
 
         super.onRender(vertexHelper, absolutePos)
-        val posX = (renderWidth - protectedWidth - 2.0f).toFloat()
-        val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
-        FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
+        if (!listening) {
+            val posX = (renderWidth - protectedWidth - 2.0f).toFloat()
+            val posY = renderHeight - 2.0f - FontRenderAdapter.getFontHeight(0.75f)
+            FontRenderAdapter.drawString(valueText, posX, posY, color = GuiColors.text, scale = 0.75f)
+        }
     }
 
 }
