@@ -3,11 +3,8 @@ package me.zeroeightsix.kami.module
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import net.minecraft.client.Minecraft
 
-@Suppress("UNCHECKED_CAST")
 object ModuleManager {
-    private val mc = Minecraft.getMinecraft()
 
     /** Thread for scanning module during Forge pre-init */
     private var preLoadingThread: Thread? = null
@@ -63,14 +60,12 @@ object ModuleManager {
 
     @JvmStatic
     fun getModule(moduleName: String?): Module? {
-        moduleName?.replace(" ", "").let { name ->
-            for (module in getModules()) {
-                if (!module.name.value.replace(" ", "").equals(name, true)
-                        && !module.alias.any { it.replace(" ", "").equals(name, true) }) continue
-                return module
+        return moduleName?.replace(" ", "").let { name ->
+            getModules().firstOrNull { module ->
+                module.name.value.replace(" ", "").equals(name, true)
+                        || module.alias.any { it.replace(" ", "").equals(name, true) }
             }
-        }
-        throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
+        } ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
