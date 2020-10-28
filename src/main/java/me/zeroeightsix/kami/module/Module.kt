@@ -14,8 +14,8 @@ open class Module {
             javaClass.annotations.firstOrNull { it is Info } as? Info
                     ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
-    val originalName = annotation.name
-    val alias = arrayOf(originalName, *annotation.alias)
+    val name = annotation.name
+    val alias = arrayOf(name, *annotation.alias)
     val category = annotation.category
     val description = annotation.description
     val modulePriority = annotation.modulePriority
@@ -53,9 +53,8 @@ open class Module {
 
     /* Settings */
 
-    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.originalName).getSettings()
-    val settingList get() = fullSettingList.filter { it != name || it != bind || it != enabled || it != visible }
-    val name = setting("Name", originalName)
+    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.name).getSettings()
+    val settingList get() = fullSettingList.filter { it != bind || it != enabled || it != visible }
     val bind = setting("Bind")
     private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
     private val visible = setting("Visible", annotation.showOnArray)
@@ -65,7 +64,7 @@ open class Module {
     val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
     val bindName: String get() = bind.value.toString()
-    val chatName: String get() = "[${name.value}]"
+    val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
     val isProduction: Boolean get() = category != Category.HIDDEN
     /* End of properties */
@@ -108,7 +107,7 @@ open class Module {
 
     private fun sendToggleMessage() {
         if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name.value + if (enabled.value) " &aenabled" else " &cdisabled")
+            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &aenabled" else " &cdisabled")
         }
     }
 

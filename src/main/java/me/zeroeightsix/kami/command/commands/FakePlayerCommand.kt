@@ -8,7 +8,7 @@ class FakePlayerCommand : Command("fakeplayer", null, "fp") {
     override fun call(args: Array<out String?>) {
         args[0]?.let {
             FakePlayer.playerName.value = it
-            MessageSendHelper.sendChatMessage("${FakePlayer.name.value} player name has been set to $it")
+            MessageSendHelper.sendChatMessage("${FakePlayer.name} player name has been set to $it")
         } ?: MessageSendHelper.sendErrorMessage("Invalid name!")
     }
 }

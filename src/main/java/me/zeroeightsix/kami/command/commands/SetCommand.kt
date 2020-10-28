@@ -30,7 +30,7 @@ class SetCommand : Command("set", ChunkBuilder()
 
         if (args[1] == null) {
             val settings = module.fullSettingList.joinToString { it.name }
-            if (settings.isEmpty()) sendChatMessage("Module &b" + module.name.value + "&r has no settings.") else {
+            if (settings.isEmpty()) sendChatMessage("Module &b" + module.name + "&r has no settings.") else {
                 sendStringChatMessage(arrayOf(
                         "Please specify a setting! Choose one of the following:", settings
                 ))
@@ -38,9 +38,9 @@ class SetCommand : Command("set", ChunkBuilder()
             return
         }
 
-        val setting = ModuleConfig.getGroup(module.category.categoryName)?.getGroup(module.originalName)?.getSetting(args[1]!!)
+        val setting = ModuleConfig.getGroup(module.category.categoryName)?.getGroup(module.name)?.getSetting(args[1]!!)
         if (setting == null) {
-            sendChatMessage("Unknown setting &b" + args[1] + "&r in &b" + module.name.value + "&r!")
+            sendChatMessage("Unknown setting &b" + args[1] + "&r in &b" + module.name + "&r!")
             return
         }
 

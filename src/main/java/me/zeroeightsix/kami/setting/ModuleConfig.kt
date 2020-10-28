@@ -16,7 +16,7 @@ object ModuleConfig : AbstractMultiConfig<Module>(
     override val file: File get() = File("$directoryPath$name/$currentPath")
 
     override fun <S : Setting<*>> Module.setting(setting: S): S {
-        getGroupOrPut(category.categoryName).addSetting(originalName, setting)
+        getGroupOrPut(category.categoryName).addSetting(name, setting)
         return setting
     }
 

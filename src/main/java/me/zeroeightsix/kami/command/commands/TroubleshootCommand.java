@@ -38,11 +38,11 @@ public class TroubleshootCommand extends Command {
         for (Module module : mods) {
             if (args[0] == null) {
                 if (module.isEnabled()) {
-                    enabled.set(enabled + module.getName().getValue() + ", ");
+                    enabled.set(enabled + module.getName() + ", ");
                 }
             } else {
-                if (module.isEnabled() && Pattern.compile(args[0], Pattern.CASE_INSENSITIVE).matcher(module.getName().getValue()).find()) {
-                    enabled.set(enabled + module.getName().getValue() + ", ");
+                if (module.isEnabled() && Pattern.compile(args[0], Pattern.CASE_INSENSITIVE).matcher(module.getName()).find()) {
+                    enabled.set(enabled + module.getName() + ", ");
                 }
             }
         }

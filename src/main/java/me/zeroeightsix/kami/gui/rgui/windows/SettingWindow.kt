@@ -35,7 +35,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
     override fun onDisplayed() {
         super.onDisplayed()
         lastActiveTime = System.currentTimeMillis() + 1000L
-        name.value = module.name.value
+        name.value = module.name
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {

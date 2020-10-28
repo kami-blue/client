@@ -44,7 +44,7 @@ public class BindCommand extends Command {
             sendChatMessage("You have the following binds: ");
             for (Module module1 : modules) {
                 if (module1.getBind().getValue().toString().equals("None")) continue;
-                sendRawChatMessage(module1.getBind().getValue().toString() + ": " + module1.getName().getValue());
+                sendRawChatMessage(module1.getBind().getValue().toString() + ": " + module1.getName());
             }
             return;
         } else if (module.equalsIgnoreCase("modifiers")) {
@@ -80,7 +80,7 @@ public class BindCommand extends Command {
                 return;
             }
             m.getBind().getValue().setKey(key);
-            sendChatMessage("Bind for &b" + m.getName().getValue() + "&r set to &b" + rkey.toUpperCase());
+            sendChatMessage("Bind for &b" + m.getName() + "&r set to &b" + rkey.toUpperCase());
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + module + "'!");
         }

@@ -26,7 +26,7 @@ class ToggleCommand : Command("toggle", ChunkBuilder()
             getModule(args[0])?.let {
                 it.toggle()
                 if (it !is ClickGUI && !CommandConfig.toggleMessages.value) {
-                    sendChatMessage(it.name.value + if (it.isEnabled) " &aenabled" else " &cdisabled")
+                    sendChatMessage(it.name + if (it.isEnabled) " &aenabled" else " &cdisabled")
                 }
             }
         } catch (x: ModuleNotFoundException) {

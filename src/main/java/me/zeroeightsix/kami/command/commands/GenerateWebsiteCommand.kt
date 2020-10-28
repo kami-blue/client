@@ -32,7 +32,7 @@ class GenerateWebsiteCommand : Command("genwebsite", null) {
                 if (!module.isProduction) continue
                 if (!module.category.toString().equals(modCategory, ignoreCase = true)) continue
                 totalMods++
-                str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
+                str += "        <li>" + module.name + "<p><i>" + module.description + "</i></p></li>"
             }
             KamiMod.log.info("<details>")
             KamiMod.log.info("    <summary>$modCategory ($totalMods)</summary>")

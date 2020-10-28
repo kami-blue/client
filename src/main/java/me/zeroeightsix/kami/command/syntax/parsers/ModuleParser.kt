@@ -9,8 +9,8 @@ class ModuleParser : AbstractParser() {
 
         for (module in getModules()) {
             if (!module.isProduction) continue
-            if (module.name.value.startsWith(chunkValue, true)) {
-                return module.name.value.subStringSafe(chunkValue.length)
+            if (module.name.startsWith(chunkValue, true)) {
+                return module.name.subStringSafe(chunkValue.length)
             }
             module.alias.firstOrNull { it.startsWith(chunkValue, true) }?.let {
                 return it.subStringSafe(chunkValue.length)

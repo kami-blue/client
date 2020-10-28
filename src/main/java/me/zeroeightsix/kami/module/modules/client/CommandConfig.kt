@@ -44,7 +44,7 @@ object CommandConfig : Module() {
     }
 
     private fun sendDisableMessage() {
-        MessageSendHelper.sendErrorMessage("Error: The ${name.value} module is only for configuring command options, disabling it doesn't do anything.")
+        MessageSendHelper.sendErrorMessage("Error: The $name module is only for configuring command options, disabling it doesn't do anything.")
         enable()
     }
 }

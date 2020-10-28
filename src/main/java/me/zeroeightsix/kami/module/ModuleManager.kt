@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.util.ClassFinder
 import me.zeroeightsix.kami.util.TimerUtils
 import net.minecraft.client.Minecraft
@@ -101,7 +100,7 @@ object ModuleManager {
     fun getModule(moduleName: String?): Module? {
         moduleName?.replace(" ", "").let { name ->
             for (module in getModules()) {
-                if (!module.name.value.replace(" ", "").equals(name, true)
+                if (!module.name.replace(" ", "").equals(name, true)
                         && !module.alias.any { it.replace(" ", "").equals(name, true) }) continue
                 return module
             }

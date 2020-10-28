@@ -40,14 +40,8 @@ object CustomFont : Module() {
     }
 
     override fun onToggle() {
-        MessageSendHelper.sendChatMessage(
-                "Changed font! Run \n" +
-                        "&7${Command.commandPrefix.value}config save\n" +
-                        "&7${Command.commandPrefix.value}config reload\n" +
-                        "&f if it's not sizing correctly"
-        )
         if (isDefaultFont) {
-            MessageSendHelper.sendChatMessage("You can run &7${Command.commandPrefix.value}set $originalName ${fontName.name} <Font Name> to change custom font")
+            MessageSendHelper.sendChatMessage("You can run &7${Command.commandPrefix.value}set $name ${fontName.name} <Font Name> to change custom font")
         }
     }
 
