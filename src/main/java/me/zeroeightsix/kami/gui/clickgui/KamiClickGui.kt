@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.clickgui
 import me.zeroeightsix.kami.KamiGui
 import me.zeroeightsix.kami.gui.clickgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
+import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
 import me.zeroeightsix.kami.module.Module
@@ -24,7 +25,7 @@ object KamiClickGui : KamiGui<WindowComponent>() {
         for (category in Module.Category.values()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
             if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 100.0f, 256.0f, true, *buttons))
+            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.CLICK_GUI, *buttons))
             posX += 110.0f
         }
     }

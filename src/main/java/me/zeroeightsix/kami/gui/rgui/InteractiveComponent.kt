@@ -8,8 +8,8 @@ abstract class InteractiveComponent(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean
-) : Component(name, posX, posY, width, height, saveToConfig) {
+        settingGroup: SettingGroup
+) : Component(name, posX, posY, width, height, settingGroup) {
 
     // Interactive info
     protected var lastMousePos = Vec2f.ZERO

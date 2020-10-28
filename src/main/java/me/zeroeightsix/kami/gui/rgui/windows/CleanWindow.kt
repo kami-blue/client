@@ -11,5 +11,5 @@ open class CleanWindow(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean
-) : WindowComponent(name, posX, posY, width, height, saveToConfig)
+        settingGroup: SettingGroup
+) : WindowComponent(name, posX, posY, width, height, settingGroup)

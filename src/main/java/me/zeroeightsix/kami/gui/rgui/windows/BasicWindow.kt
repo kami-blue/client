@@ -15,8 +15,8 @@ open class BasicWindow(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean
-) : CleanWindow(name, posX, posY, width, height, saveToConfig) {
+        settingGroup: SettingGroup
+) : CleanWindow(name, posX, posY, width, height, settingGroup) {
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)

@@ -11,7 +11,7 @@ object GuiManager {
 
     private var preLoadingThread: Thread? = null
     private var hudElementsClassList: Array<Class<out HudElement>>? = null
-    private var hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
+    val hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
 
     @JvmStatic
     fun preLoad() {

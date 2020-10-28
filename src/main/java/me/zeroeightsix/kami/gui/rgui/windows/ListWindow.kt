@@ -20,7 +20,7 @@ open class ListWindow(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean,
+        saveToConfig: SettingGroup,
         vararg childrenIn: Component
 ) : TitledWindow(name, posX, posY, width, height, saveToConfig) {
     val children = LinkedList<Component>()

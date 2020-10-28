@@ -13,8 +13,8 @@ abstract class WindowComponent(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean
-) : InteractiveComponent(name, posX, posY, width, height, saveToConfig) {
+        settingGroup: SettingGroup
+) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
 
     // Basic info
     val minimized = setting("Minimized", false,
@@ -160,7 +160,7 @@ abstract class WindowComponent(
     }
 
     fun isInWindow(mousePos: Vec2f): Boolean {
-        return mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
+        return visible.value && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
                 && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
     }
 }

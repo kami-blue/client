@@ -14,8 +14,8 @@ open class TitledWindow(
         posY: Float,
         width: Float,
         height: Float,
-        saveToConfig: Boolean
-) : BasicWindow(name, posX, posY, width, height, saveToConfig) {
+        settingGroup: SettingGroup
+) : BasicWindow(name, posX, posY, width, height, settingGroup) {
     override val draggableHeight: Float get() = FontRenderAdapter.getFontHeight() + 5.0f
 
     override val minimizable get() = true

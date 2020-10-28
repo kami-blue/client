@@ -1,19 +1,20 @@
 package me.zeroeightsix.kami.setting
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
-import me.zeroeightsix.kami.gui.rgui.WindowComponent
-import me.zeroeightsix.kami.setting.config.AbstractConfig
+import me.zeroeightsix.kami.setting.config.AbstractMultiConfig
+import java.io.File
 
-object GuiConfig : AbstractConfig<Component>(
+object GuiConfig : AbstractMultiConfig<Component>(
         "Gui",
-        KamiMod.DIRECTORY
+        KamiMod.DIRECTORY,
+        "ClickGUI", "HudGUI"
 ) {
+    override val file: File get() = File("$directoryPath$name")
 
     override fun <S : Setting<*>> Component.setting(setting: S): S {
-        if (this is WindowComponent && this !is ModuleSettingWindow) {
-            getGroupOrPut(this.originalName).addSetting(setting)
+        settingGroup.groupName?.let {
+            getGroupOrPut(it).addSetting(originalName, setting)
         }
         return setting
     }

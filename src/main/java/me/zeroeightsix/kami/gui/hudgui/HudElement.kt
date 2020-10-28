@@ -2,10 +2,11 @@ package me.zeroeightsix.kami.gui.hudgui
 
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
+import me.zeroeightsix.kami.setting.GuiConfig
 
 open class HudElement(
         name: String
-) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, true) {
+) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
     // Annotations
     private val annotation =
@@ -32,6 +33,8 @@ open class HudElement(
     }
     // End of annotations
 
+    val settingList get() = GuiConfig.getGroupOrPut(this.category.displayName).getGroupOrPut(originalName).getSettings()
+            .filter { it != minimized && it != name && it != posX && it != posY && it != width && it != height && it != visible }
 
     override fun onGuiInit() {
         super.onGuiInit()

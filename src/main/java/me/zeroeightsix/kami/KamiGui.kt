@@ -184,6 +184,7 @@ open class KamiGui<T : WindowComponent> : GuiScreen() {
         GlStateUtils.depth(true)
 
         for (window in windowList) {
+            if (!window.visible.value) continue
             glPushMatrix()
             glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
             window.onRender(vertexHelper, Vec2f(window.renderPosX, window.renderPosY))

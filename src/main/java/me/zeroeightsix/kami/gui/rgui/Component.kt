@@ -11,7 +11,7 @@ abstract class Component(
         posY: Float,
         width: Float,
         height: Float,
-        val saveToConfig: Boolean
+        val settingGroup: SettingGroup
 ) {
 
     // Basic info
@@ -68,5 +68,11 @@ abstract class Component(
     }
 
     open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
+
+    enum class SettingGroup(val groupName: String?) {
+        NONE(null),
+        CLICK_GUI("ClickGui"),
+        HUD_GUI("HudGui")
+    }
 
 }

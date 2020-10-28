@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
-class ModuleSettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f, false) {
+class ModuleSettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("", posX, posY, 100.0f, 200.0f, SettingGroup.NONE) {
 
     override val minWidth: Float get() = 100.0f
     override val minHeight: Float get() = draggableHeight
