@@ -13,11 +13,6 @@ class BindButton(
 
     override val renderProgress: Double = 0.0
 
-    override fun onClosed() {
-        super.onClosed()
-        listening = false
-    }
-
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         listening = !listening

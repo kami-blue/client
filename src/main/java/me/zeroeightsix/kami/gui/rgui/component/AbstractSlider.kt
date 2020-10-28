@@ -42,6 +42,11 @@ abstract class AbstractSlider(
 
     var listening = false; protected set
 
+    override fun onClosed() {
+        super.onClosed()
+        listening = false
+    }
+
     override fun onDisplayed() {
         super.onDisplayed()
         prevValue.value = 0.0

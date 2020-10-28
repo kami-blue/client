@@ -161,8 +161,8 @@ object KamiClickGui : GuiScreen() {
     private fun updateSettingWindow() {
         settingWindow?.let {
             if (lastClickedWindow != it) {
-                windowList.remove(it)
                 it.onClosed()
+                windowList.remove(it)
                 settingWindow = null
             }
         }

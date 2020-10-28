@@ -38,7 +38,6 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onClosed() {
         super.onClosed()
-        listening = false
         name.value = originalName
     }
 
@@ -64,10 +63,15 @@ class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        if (buttonId == 1 && !listening) {
-            listening = true
-            value = 0.0
-            name.value = "0"
+        if (buttonId == 1) {
+            if(!listening) {
+                listening = true
+                value = 0.0
+                name.value = "0"
+            } else {
+                listening = false
+                name.value = originalName
+            }
         }
     }
 

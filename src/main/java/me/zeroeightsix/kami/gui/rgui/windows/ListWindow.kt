@@ -142,6 +142,9 @@ open class ListWindow(
         if (mouseState != MouseState.DRAG) {
             updateHovered(relativeMousePos)
         }
+        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
+            it.onMouseInput(getRelativeMousePos(mousePos, it))
+        }
     }
 
     private fun updateHovered(relativeMousePos: Vec2f) {

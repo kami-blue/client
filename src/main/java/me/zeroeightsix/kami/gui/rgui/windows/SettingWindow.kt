@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.setting.impl.other.BindSetting
 import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
+import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
@@ -24,6 +25,7 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
                 is BooleanSetting -> SettingButton(setting)
                 is NumberSetting -> SettingSlider(setting)
                 is EnumSetting -> EnumSlider(setting)
+                is StringSetting -> StringButton(setting)
                 is BindSetting -> BindButton(setting)
                 else -> null
             }?.also {
@@ -41,12 +43,14 @@ class SettingWindow(val module: Module, posX: Float, posY: Float) : ListWindow("
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         (hoveredChild as? AbstractSlider)?.let {
-            if (it.listening) listeningChild = it
+            listeningChild = if (it.listening) it
+            else null
         }
     }
 
     override fun onTick() {
         super.onTick()
+        if (listeningChild?.listening == false) listeningChild = null
         Keyboard.enableRepeatEvents(listeningChild != null)
     }
 
