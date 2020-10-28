@@ -214,10 +214,13 @@ object KamiClickGui : GuiScreen() {
             when {
                 typedChar.isLetter() || typedChar == ' ' -> {
                     typedString += typedChar
-                    stringWidth = FontRenderAdapter.getStringWidth(typedString, 2.0f)
+                    stringWidth = FontRenderAdapter.getStringWidth(typedString, 1.666f)
                     lastTypedTime = System.currentTimeMillis()
 
-                    setModuleVisibility{ it.name.value.contains(typedString, true) }
+                    val string = typedString.replace(" ", "")
+                    setModuleVisibility{ moduleButton ->
+                        moduleButton.module.alias.any { it.contains(string, true) }
+                    }
                 }
             }
         }
@@ -280,10 +283,10 @@ object KamiClickGui : GuiScreen() {
         if (typedString.isNotBlank() && System.currentTimeMillis() - lastTypedTime <= 5000L) {
             val scaledResolution = ScaledResolution(mc)
             val posX = scaledResolution.scaledWidth / 2.0f - renderStringPosX / 2.0f
-            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(2.0f) / 2.0f
+            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(1.666f) / 2.0f
             val color = GuiColors.text
             color.a = AnimationUtils.halfSineDec(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 5000.0f, 0.0f, 255.0f).toInt()
-            FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 2.0f)
+            FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 1.666f)
         }
     }
 
