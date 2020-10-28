@@ -44,6 +44,8 @@ abstract class Component(
     // Update methods
     open fun onDisplayed() {}
 
+    open fun onClosed() {}
+
     open fun onGuiInit() {
         updatePrevPos()
         updatePrevSize()

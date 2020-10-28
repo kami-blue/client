@@ -15,34 +15,63 @@ class Bind(
 ) {
     val isEmpty: Boolean get() = !isCtrl && !isShift && !isAlt && key < 0
 
-    override fun toString(): String {
-        return if (isEmpty) "None" else (if (isCtrl) "Ctrl+" else "") + (if (isAlt) "Alt+" else "") + (if (isShift) "Shift+" else "") + if (key < 0) "None" else capitalise(Keyboard.getKeyName(key))
+    fun clear() {
+        isCtrl = false
+        isShift = false
+        isAlt = false
+        key = -1
     }
 
     fun isDown(eventKey: Int): Boolean {
         return !isEmpty && (!BindCommand.modifiersEnabled.value || isShift == isShiftDown() && isCtrl == isCtrlDown() && isAlt == isAltDown()) && eventKey == key
     }
 
-    fun capitalise(str: String): String {
-        return if (str.isEmpty()) "" else Character.toUpperCase(str[0]).toString() + if (str.length != 1) str.substring(1).toLowerCase() else ""
+    fun setBind(eventKey: Int) {
+        isCtrl = isCtrlDown()
+        isShift = isShiftDown()
+        isAlt = isAltDown()
+        key = eventKey
+    }
+
+    private fun isShiftDown(): Boolean {
+        val eventKey = Keyboard.getEventKey()
+        return eventKey != Keyboard.KEY_LSHIFT && eventKey != Keyboard.KEY_RSHIFT
+                && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+    }
+
+    private fun isCtrlDown(): Boolean {
+        val eventKey = Keyboard.getEventKey()
+        return eventKey != Keyboard.KEY_LCONTROL && eventKey != Keyboard.KEY_RCONTROL
+                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+    }
+
+    private fun isAltDown(): Boolean {
+        val eventKey = Keyboard.getEventKey()
+        return eventKey != Keyboard.KEY_LMENU && eventKey != Keyboard.KEY_RMENU
+                && (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+    }
+
+    override fun toString(): String {
+        return if (isEmpty) "None"
+        else {
+            StringBuffer().apply {
+                if (isCtrl) append("Ctrl+")
+                if (isAlt) append("Alt+")
+                if (isShift) append("Shift+")
+                append(getKeyName())
+            }.toString()
+        }
+    }
+
+    private fun getKeyName(): String {
+        return if (key in 0..255) {
+            Keyboard.getKeyName(key).toLowerCase().capitalize()
+        } else {
+            "None"
+        }
     }
 
     companion object {
-        @JvmStatic
-        fun isShiftDown(): Boolean {
-            return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
-        }
-
-        @JvmStatic
-        fun isCtrlDown(): Boolean {
-            return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
-        }
-
-        @JvmStatic
-        fun isAltDown(): Boolean {
-            return Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU)
-        }
-
         @JvmStatic
         fun none(): Bind {
             return Bind(false, false, false, -1)

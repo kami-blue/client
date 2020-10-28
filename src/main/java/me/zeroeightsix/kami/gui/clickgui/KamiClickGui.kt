@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.gui.clickgui
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
+import me.zeroeightsix.kami.gui.rgui.component.BindButton
 import me.zeroeightsix.kami.gui.rgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
 import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
@@ -27,11 +28,17 @@ import java.util.*
 import kotlin.collections.HashMap
 
 object KamiClickGui : GuiScreen() {
+
+    // Components
     private val windowList = LinkedList<WindowComponent>()
     private val settingMap = HashMap<Module, SettingWindow>()
+    private var activeBindButton: BindButton? = null
 
+    // Mouse
     private var lastEventButton = -1
     private var lastClickPos = Vec2f(0.0f, 0.0f)
+
+    // Window
     private var lastClickedWindow: WindowComponent? = null
     private var hoveredWindow: WindowComponent? = null
         set(value) {
@@ -41,8 +48,8 @@ object KamiClickGui : GuiScreen() {
             field = value
         }
     private var settingWindow: SettingWindow? = null
-    private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
 
+    // Searching
     private var typedString = ""
     private var lastTypedTime = 0L
     private var prevStringWidth = 0.0f
@@ -53,6 +60,9 @@ object KamiClickGui : GuiScreen() {
         }
     private val renderStringPosX
         get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 250.0f, prevStringWidth, stringWidth)
+
+    // Shader
+    private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
 
     init {
         val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
@@ -115,6 +125,7 @@ object KamiClickGui : GuiScreen() {
         lastTypedTime = 0L
         setModuleVisibility{ true }
         updateSettingWindow()
+        for (window in windowList) window.onClosed()
     }
 
     override fun handleMouseInput() {
@@ -151,6 +162,7 @@ object KamiClickGui : GuiScreen() {
         settingWindow?.let {
             if (lastClickedWindow != it) {
                 windowList.remove(it)
+                it.onClosed()
                 settingWindow = null
             }
         }
@@ -183,8 +195,9 @@ object KamiClickGui : GuiScreen() {
         val keyState = Keyboard.getEventKeyState()
 
         hoveredWindow?.onKeyInput(keyCode, keyState)
+        settingWindow?.onKeyInput(keyCode, keyState)
 
-        if (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE) {
+        if (settingWindow?.activeBindButton == null && (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE)) {
             typedString = ""
             lastTypedTime = 0L
             stringWidth = 0.0f
@@ -197,7 +210,7 @@ object KamiClickGui : GuiScreen() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
             ClickGUI.disable()
-        } else {
+        } else if (settingWindow?.activeBindButton == null) {
             when {
                 typedChar.isLetter() || typedChar == ' ' -> {
                     typedString += typedChar
