@@ -19,9 +19,9 @@ abstract class Component(
     val name = setting("Name", name)
     val posX = setting("PosX", posX, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayWidth - 40.0f)})
     val posY = setting("PosY", posY, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayHeight - 40.0f)})
-    val width = setting("Width", width, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayWidth.toFloat())})
-    val height = setting("Height", height, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayHeight.toFloat())})
-    val visible = setting("Visible", true)
+    val width = setting("Width", width, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayWidth.toFloat()) })
+    val height = setting("Height", height, 0.0f..69420.911f, 0.1f, consumer = { _, it -> it.coerceIn(0.0f, mc.displayHeight.toFloat()) })
+    val visible = setting("Visible", true, consumer = { _, it -> it || !closeable })
 
     // Extra info
     protected val mc = Wrapper.minecraft
@@ -29,6 +29,7 @@ abstract class Component(
     open val minHeight = 16.0f
     open val maxWidth = -1.0f
     open val maxHeight = -1.0f
+    val closeable: Boolean get() = true
 
     // Rendering info
     var prevPosX = 0.0f; protected set
