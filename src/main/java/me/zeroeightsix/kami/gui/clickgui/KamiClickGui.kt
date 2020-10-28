@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.gui.clickgui
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.gui.clickgui.component.ModuleButton
+import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
-import me.zeroeightsix.kami.gui.rgui.component.BindButton
-import me.zeroeightsix.kami.gui.rgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
-import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
@@ -31,8 +30,7 @@ object KamiClickGui : GuiScreen() {
 
     // Components
     private val windowList = LinkedList<WindowComponent>()
-    private val settingMap = HashMap<Module, SettingWindow>()
-    private var activeBindButton: BindButton? = null
+    private val settingMap = HashMap<Module, ModuleSettingWindow>()
 
     // Mouse
     private var lastEventButton = -1
@@ -47,7 +45,7 @@ object KamiClickGui : GuiScreen() {
             value?.onHover(getRealMousePos())
             field = value
         }
-    private var settingWindow: SettingWindow? = null
+    private var settingWindow: ModuleSettingWindow? = null
 
     // Searching
     private var typedString = ""
@@ -93,7 +91,7 @@ object KamiClickGui : GuiScreen() {
     fun displaySettingWindow(module: Module) {
         val mousePos = getRealMousePos()
         settingMap.getOrPut(module) {
-            SettingWindow(module, mousePos.x, mousePos.y)
+            ModuleSettingWindow(module, mousePos.x, mousePos.y)
         }.apply {
             posX.value = mousePos.x
             posY.value = mousePos.y

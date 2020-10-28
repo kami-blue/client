@@ -1,10 +1,11 @@
-package me.zeroeightsix.kami.gui.rgui.component
+package me.zeroeightsix.kami.gui.clickgui.component
 
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
+import me.zeroeightsix.kami.gui.rgui.component.AbstractBooleanSlider
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.math.Vec2f
 
-class ModuleButton(val module: Module) : AbstractBooleanSlider (module.name, 0.0, module.description) {
+class ModuleButton(val module: Module) : AbstractBooleanSlider(module.name, 0.0, module.description) {
     init {
         if (module.isEnabled) value = 1.0
     }
