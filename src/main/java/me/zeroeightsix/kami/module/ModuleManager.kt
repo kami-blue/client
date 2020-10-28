@@ -98,10 +98,12 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModule(name: String?): Module? {
-        for (module in moduleMap.entries) {
-            if (module.javaClass.simpleName.equals(name, ignoreCase = true) || module.value.originalName.equals(name, ignoreCase = true)) {
-                return module.value
+    fun getModule(moduleName: String?): Module? {
+        moduleName?.replace(" ", "").let { name ->
+            for (module in getModules()) {
+                if (!module.name.value.replace(" ", "").equals(name, true)
+                        && !module.alias.any { it.replace(" ", "").equals(name, true) }) continue
+                return module
             }
         }
         throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")

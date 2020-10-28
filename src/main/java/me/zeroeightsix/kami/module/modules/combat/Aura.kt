@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 @CombatManager.CombatModule
 @Module.Info(
         name = "Aura",
+        alias = ["KA", "KillAura", "TriggerBot"],
         category = Module.Category.COMBAT,
         description = "Hits entities around you",
         modulePriority = 50

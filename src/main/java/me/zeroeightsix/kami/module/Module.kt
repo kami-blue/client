@@ -14,15 +14,17 @@ open class Module {
             javaClass.annotations.firstOrNull { it is Info } as? Info
                     ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
-    val originalName: String = annotation.name
-    val category: Category = annotation.category
-    val description: String = annotation.description
-    val modulePriority: Int = annotation.modulePriority
-    var alwaysListening: Boolean = annotation.alwaysListening
+    val originalName = annotation.name
+    val alias = arrayOf(originalName, *annotation.alias)
+    val category = annotation.category
+    val description = annotation.description
+    val modulePriority = annotation.modulePriority
+    var alwaysListening = annotation.alwaysListening
 
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Info(
             val name: String,
+            val alias: Array<String> = [],
             val description: String,
             val category: Category,
             val modulePriority: Int = -1,

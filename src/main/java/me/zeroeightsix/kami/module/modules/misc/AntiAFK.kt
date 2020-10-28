@@ -156,7 +156,7 @@ object AntiAFK : Module() {
 
     init {
         walk.listeners.add {
-            if (BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
+            if (BaritoneUtils.settingsInitialized && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
                 BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
             }
         }

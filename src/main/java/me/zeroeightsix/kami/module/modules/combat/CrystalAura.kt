@@ -45,6 +45,7 @@ import kotlin.math.min
 @CombatManager.CombatModule
 @Module.Info(
         name = "CrystalAura",
+        alias = ["CA", "AC", "AutoCrystal"],
         description = "Places End Crystals to kill enemies",
         category = Module.Category.COMBAT,
         modulePriority = 80
