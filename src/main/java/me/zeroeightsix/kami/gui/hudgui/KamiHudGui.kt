@@ -1,7 +1,15 @@
 package me.zeroeightsix.kami.gui.hudgui
 
-import net.minecraft.client.gui.GuiScreen
+import me.zeroeightsix.kami.KamiGui
+import me.zeroeightsix.kami.event.KamiEventBus
 
-object KamiHudGui : GuiScreen() {
+object KamiHudGui : KamiGui<HudElement>() {
 
+    init {
+
+    }
+
+    init {
+        KamiEventBus.subscribe(this)
+    }
 }
