@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
@@ -24,7 +23,7 @@ object CustomChat : Module() {
     private val decoMode = setting("Separator", DecoMode.NONE)
     private val commands = setting("Commands", false)
     private val spammer = setting("Spammer", false)
-    val customText = setting("CustomText", "unchanged")
+    private val customText = setting("CustomText", "unchanged")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE
@@ -34,7 +33,6 @@ object CustomChat : Module() {
         NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM
     }
 
-    val isCustomMode get() = textMode.value == TextMode.CUSTOM
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private val modifier = newMessageModifier(
             filter = {
@@ -61,20 +59,18 @@ object CustomChat : Module() {
         TextMode.WEBSITE -> "ｋａｍｉｂｌｕｅ．ｏｒｇ"
         TextMode.JAPANESE -> "上にカミブルー"
         TextMode.CUSTOM -> customText.value
-        else -> ""
     }
 
     private fun getFull() = when (decoMode.value) {
         DecoMode.NONE -> " " + getText()
         DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
         DecoMode.SEPARATOR -> " " + KamiMod.separator + " " + getText()
-        else -> ""
     }
 
     init {
         listener<SafeTickEvent> {
             if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
-                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + Command.getCommandPrefix() + "customchat&r command to change it")
+                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom $name, please change the CustomText setting in ClickGUI")
             }
         }
     }

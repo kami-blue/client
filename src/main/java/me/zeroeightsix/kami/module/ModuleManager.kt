@@ -17,7 +17,7 @@ object ModuleManager {
     private var moduleClassList: Array<Class<out Module>>? = null
 
     /** HashMap for the registered Modules */
-    private val moduleMap = HashMap<Class<out Module>, Module>()
+    val moduleMap = HashMap<Class<out Module>, Module>()
 
     /** Thread for sorting the modules */
     private var sortingThread: Thread? = null
