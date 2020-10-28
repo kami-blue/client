@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.clickgui
 
-import me.zeroeightsix.kami.KamiGui
+import me.zeroeightsix.kami.gui.KamiGui
 import me.zeroeightsix.kami.gui.clickgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component

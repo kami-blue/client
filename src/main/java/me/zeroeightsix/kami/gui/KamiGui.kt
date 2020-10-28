@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami
+package me.zeroeightsix.kami.gui
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
