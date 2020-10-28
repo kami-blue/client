@@ -22,6 +22,7 @@ class ModuleSettingWindow(val module: Module, posX: Float, posY: Float) : ListWi
 
     init {
         for (setting in module.settingList) {
+            if (setting.name == "Enabled") continue
             when (setting) {
                 is BooleanSetting -> SettingButton(setting)
                 is NumberSetting -> SettingSlider(setting)
