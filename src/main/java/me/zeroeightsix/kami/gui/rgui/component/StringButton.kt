@@ -1,7 +1,5 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
-import javafx.scene.input.Clipboard
-import javafx.scene.input.DataFormat
 import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
@@ -65,9 +63,6 @@ class StringButton(val setting: StringSetting) : AbstractBooleanSlider(setting.n
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
                     name.value = name.value.substring(0, max(name.value.length - 1, 0))
-                }
-                Keyboard.KEY_V -> if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-                    name.value = Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT).toString()
                 }
                 else -> if (typedChar >= ' ') {
                     name.value += typedChar
