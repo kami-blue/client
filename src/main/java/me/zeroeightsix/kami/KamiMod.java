@@ -4,7 +4,7 @@ import com.google.gson.JsonParser;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.gui.clickgui.KamiClickGui;
+import me.zeroeightsix.kami.gui.GuiManager;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
@@ -81,6 +81,7 @@ public class KamiMod {
         updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
+        GuiManager.preLoad();
     }
 
     @Mod.EventHandler
@@ -96,7 +97,7 @@ public class KamiMod {
 
         ModuleManager.load();
         ManagerLoader.load();
-        KamiClickGui.INSTANCE.onGuiClosed();
+        GuiManager.load();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
