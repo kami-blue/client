@@ -6,7 +6,7 @@ import org.lwjgl.input.Keyboard
 
 abstract class SettingWindow<T: Any>(
         name: String,
-        val hudElement: T,
+        val element: T,
         posX: Float,
         posY: Float,
         settingGroup: SettingGroup
