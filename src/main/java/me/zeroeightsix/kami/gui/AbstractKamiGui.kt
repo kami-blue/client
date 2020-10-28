@@ -19,18 +19,20 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 
-open class KamiGui<T : WindowComponent> : GuiScreen() {
+abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
     // Window
-    val windowList = LinkedHashSet<T>()
-    protected var lastClickedWindow: T? = null
-    protected var hoveredWindow: T? = null
+    val windowList = LinkedHashSet<WindowComponent>()
+    protected var lastClickedWindow: WindowComponent? = null
+    protected var hoveredWindow: WindowComponent? = null
         set(value) {
             if (value == field) return
             field?.onLeave(getRealMousePos())
             value?.onHover(getRealMousePos())
             field = value
         }
+    protected val settingMap = HashMap<E, S>()
+    protected var settingWindow: S? = null
 
     // Mouse
     protected var lastEventButton = -1
@@ -68,6 +70,24 @@ open class KamiGui<T : WindowComponent> : GuiScreen() {
         }
     }
 
+    fun displaySettingWindow(element: E) {
+        val mousePos = getRealMousePos()
+        settingMap.getOrPut(element) {
+            newSettingWindow(element, mousePos)
+        }.apply {
+            posX.value = mousePos.x
+            posY.value = mousePos.y
+        }.also {
+            lastClickedWindow = it
+            settingWindow = it
+            windowList.add(it)
+            it.onGuiInit()
+            it.onDisplayed()
+        }
+    }
+
+    abstract fun newSettingWindow(element: E, mousePos: Vec2f): S
+
     // Gui init
     fun onDisplayed() {
         for (window in windowList) window.onDisplayed()
@@ -87,6 +107,7 @@ open class KamiGui<T : WindowComponent> : GuiScreen() {
         typedString = ""
         lastTypedTime = 0L
         for (window in windowList) window.onClosed()
+        updateSettingWindow()
     }
     // End of gui init
 
@@ -118,6 +139,7 @@ open class KamiGui<T : WindowComponent> : GuiScreen() {
 
         hoveredWindow?.onMouseInput(mousePos)
         super.handleMouseInput()
+        updateSettingWindow()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -137,6 +159,16 @@ open class KamiGui<T : WindowComponent> : GuiScreen() {
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         val mousePos = getRealMousePos()
         topWindow?.onDrag(mousePos, lastClickPos, clickedMouseButton)
+    }
+
+    private fun updateSettingWindow() {
+        settingWindow?.let {
+            if (lastClickedWindow != it) {
+                it.onClosed()
+                windowList.remove(it)
+                settingWindow = null
+            }
+        }
     }
 
     private fun updateWindowOrder() {

@@ -1,22 +1,18 @@
 package me.zeroeightsix.kami.gui.clickgui
 
-import me.zeroeightsix.kami.gui.KamiGui
+import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.clickgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
-import me.zeroeightsix.kami.gui.rgui.WindowComponent
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
+import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
-object KamiClickGui : KamiGui<WindowComponent>() {
-
-    // Window
-    private val settingMap = HashMap<Module, ModuleSettingWindow>()
-    private var settingWindow: ModuleSettingWindow? = null
+object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
 
     init {
         val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
@@ -30,42 +26,15 @@ object KamiClickGui : KamiGui<WindowComponent>() {
         }
     }
 
-    fun displaySettingWindow(module: Module) {
-        val mousePos = getRealMousePos()
-        settingMap.getOrPut(module) {
-            ModuleSettingWindow(module, mousePos.x, mousePos.y)
-        }.apply {
-            posX.value = mousePos.x
-            posY.value = mousePos.y
-        }.also {
-            lastClickedWindow = it
-            settingWindow = it
-            windowList.add(it)
-            it.onGuiInit()
-            it.onDisplayed()
-        }
-    }
-
     override fun onGuiClosed() {
         super.onGuiClosed()
         setModuleVisibility{ true }
-        updateSettingWindow()
     }
 
-    override fun handleMouseInput() {
-        super.handleMouseInput()
-        updateSettingWindow()
+    override fun newSettingWindow(element: Module, mousePos: Vec2f): ModuleSettingWindow {
+        return ModuleSettingWindow(element, mousePos.x, mousePos.y)
     }
 
-    private fun updateSettingWindow() {
-        settingWindow?.let {
-            if (lastClickedWindow != it) {
-                it.onClosed()
-                windowList.remove(it)
-                settingWindow = null
-            }
-        }
-    }
 
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()

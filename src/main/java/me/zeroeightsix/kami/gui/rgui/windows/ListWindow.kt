@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
-import me.zeroeightsix.kami.KamiGui
+import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
@@ -35,8 +35,8 @@ open class ListWindow(
     var hoveredChild: Component? = null
         private set(value) {
             if (value == field) return
-            (field as? InteractiveComponent)?.onLeave(KamiGui.getRealMousePos())
-            (value as? InteractiveComponent)?.onHover(KamiGui.getRealMousePos())
+            (field as? InteractiveComponent)?.onLeave(AbstractKamiGui.getRealMousePos())
+            (value as? InteractiveComponent)?.onHover(AbstractKamiGui.getRealMousePos())
             field = value
         }
 
