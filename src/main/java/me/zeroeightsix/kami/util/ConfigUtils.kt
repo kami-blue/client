@@ -14,11 +14,7 @@ import java.io.IOException
 
 object ConfigUtils {
 
-    var inProcess = false
-
     fun loadAll(): Boolean {
-        inProcess = true
-
         // Generic
         var success = loadConfig(GenericConfig)
 
@@ -37,13 +33,11 @@ object ConfigUtils {
         // GUI
         success = loadConfig(GuiConfig) && success
 
-        inProcess = false
         return success
     }
 
     fun saveAll(): Boolean {
         var success = true
-        inProcess = true
 
         // Generic
         success = saveConfig(GenericConfig) && success
@@ -63,7 +57,6 @@ object ConfigUtils {
         // GUI
         success = saveConfig(GuiConfig) && success
 
-        inProcess = false
         return success
     }
 
