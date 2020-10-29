@@ -17,12 +17,12 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.RENDER
 )
 object VoidESP : Module() {
-    private val renderDistance = register(Settings.floatBuilder("RenderDistance").withValue(8.0f).withRange(0.0f, 32.0f).build())
+    private val renderDistance = register(Settings.integerBuilder("RenderDistance").withValue(6).withRange(4, 32).withStep(1))
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
-    private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).withStep(1))
-    private val g = register(Settings.integerBuilder("Green").withValue(127).withRange(0, 255).withStep(1))
-    private val b = register(Settings.integerBuilder("Blue").withValue(127).withRange(0, 255).withStep(1))
+    private val r = register(Settings.integerBuilder("Red").withValue(148).withRange(0, 255).withStep(1))
+    private val g = register(Settings.integerBuilder("Green").withValue(161).withRange(0, 255).withStep(1))
+    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1))
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(127).withRange(0, 255).withStep(1))
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1))
     private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
@@ -36,7 +36,7 @@ object VoidESP : Module() {
     init {
         listener<SafeTickEvent> {
             voidHoles.clear()
-            val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
+            val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value.toFloat())
 
             for (pos in blockPosList) {
                 val isVoid = pos.y == 0
