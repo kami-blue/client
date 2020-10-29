@@ -22,12 +22,12 @@ open class Component(
     val visible = setting("Visible", true, { false }, { _, it -> it || !closeable })
 
     private val relativePosX = setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> absToRelativeX(relativeToAbsX(it).coerceIn(0.0f, mc.displayWidth / ClickGUI.getScaleFactorFloat() - width.value * dockingH.value.multiplier)) })
+            { _, it -> if (this is WindowComponent) absToRelativeX(relativeToAbsX(it).coerceIn(0.0f, scaledWidth - width.value)) else it })
     private val relativePosY = setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> absToRelativeY(relativeToAbsY(it).coerceIn(0.0f, mc.displayHeight / ClickGUI.getScaleFactorFloat() - height.value * dockingV.value.multiplier)) })
+            { _, it -> if (this is WindowComponent) absToRelativeY(relativeToAbsY(it).coerceIn(0.0f, scaledHeight - height.value)) else it })
 
-    val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, mc.displayWidth / ClickGUI.getScaleFactorFloat()) })
-    val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, mc.displayHeight / ClickGUI.getScaleFactorFloat()) })
+    val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, scaledWidth) })
+    val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, scaledHeight) })
 
     val dockingH = setting("DockingH", Alignment.HAlign.LEFT)
     val dockingV = setting("DockingV", Alignment.VAlign.TOP)
@@ -55,11 +55,6 @@ open class Component(
         dockingV.listeners.add { posY = prevPosY }
     }
 
-    private fun relativeToAbsX(xIn: Float) = xIn + mc.displayWidth / ClickGUI.getScaleFactorFloat() * dockingH.value.multiplier - width.value * dockingH.value.multiplier
-    private fun relativeToAbsY(yIn: Float) = yIn + mc.displayHeight / ClickGUI.getScaleFactorFloat() * dockingV.value.multiplier - height.value * dockingV.value.multiplier
-    private fun absToRelativeX(xIn: Float) = xIn - mc.displayWidth / ClickGUI.getScaleFactorFloat() * dockingH.value.multiplier + width.value * dockingH.value.multiplier
-    private fun absToRelativeY(yIn: Float) = yIn - mc.displayHeight / ClickGUI.getScaleFactorFloat() * dockingV.value.multiplier + height.value * dockingV.value.multiplier
-
     // Extra info
     protected val mc = Wrapper.minecraft
     open val minWidth = 16.0f
@@ -71,13 +66,25 @@ open class Component(
     // Rendering info
     var prevPosX = 0.0f; protected set
     var prevPosY = 0.0f; protected set
-    val renderPosX get() = prevPosX + (posX - prevPosX) * mc.renderPartialTicks
-    val renderPosY get() = prevPosY + (posY - prevPosY) * mc.renderPartialTicks
+    val renderPosX get() = prevPosX + prevDockWidth + (posX + dockWidth - (prevPosX + prevDockWidth)) * mc.renderPartialTicks - dockWidth
+    val renderPosY get() = prevPosY + prevDockHeight + (posY + dockHeight - (prevPosY + prevDockHeight)) * mc.renderPartialTicks - dockHeight
 
     var prevWidth = 0.0f; protected set
     var prevHeight = 0.0f; protected set
     val renderWidth get() = prevWidth + (width.value - prevWidth) * mc.renderPartialTicks
     open val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
+
+    private fun relativeToAbsX(xIn: Float) = xIn + scaledWidth * dockingH.value.multiplier - dockWidth
+    private fun relativeToAbsY(yIn: Float) = yIn + scaledHeight * dockingV.value.multiplier - dockHeight
+    private fun absToRelativeX(xIn: Float) = xIn - scaledWidth * dockingH.value.multiplier + dockWidth
+    private fun absToRelativeY(yIn: Float) = yIn - scaledHeight * dockingV.value.multiplier + dockHeight
+
+    protected val scaledWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
+    protected val scaledHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
+    private val dockWidth get() = width.value * dockingH.value.multiplier
+    private val dockHeight get() = height.value * dockingV.value.multiplier
+    private val prevDockWidth get() = prevWidth * dockingH.value.multiplier
+    private val prevDockHeight get() = prevHeight * dockingV.value.multiplier
 
     // Update methods
     open fun onDisplayed() {}

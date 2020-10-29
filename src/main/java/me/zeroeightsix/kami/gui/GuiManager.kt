@@ -10,13 +10,15 @@ import me.zeroeightsix.kami.util.TimerUtils
 object GuiManager {
 
     private var preLoadingThread: Thread? = null
-    private var hudElementsClassList: Array<Class<out HudElement>>? = null
+    private var hudElementsClassList: List<Class<out HudElement>>? = null
     val hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
 
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
+            val annotationClass = HudElement.Info::class.java
             hudElementsClassList = ClassFinder.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
+                    .filter { it.isAnnotationPresent(annotationClass) }
             KamiMod.log.info("${hudElementsClassList!!.size} hud elements found")
         }
         preLoadingThread!!.name = "Gui Pre-Loading"
@@ -37,6 +39,6 @@ object GuiManager {
         hudElementsClassList = null
 
         KamiClickGui.onGuiClosed()
-        KamiHudGui.onGuiClosed()
+        KamiHudGui.initGui()
     }
 }
