@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.gui.hudgui.elements
+package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
