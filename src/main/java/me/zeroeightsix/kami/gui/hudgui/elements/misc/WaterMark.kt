@@ -24,4 +24,8 @@ object WaterMark : LabelHud("Watermark") {
         displayText.add(KamiMod.VER_SMALL)
     }
 
+    init {
+        posX = 0.0f
+        posY = 0.0f
+    }
 }
