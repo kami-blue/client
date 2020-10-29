@@ -61,8 +61,8 @@ open class ListWindow(
         var y = (if (draggableHeight != height.value) draggableHeight else 0.0f) + lineSpace
         for (child in children) {
             if (!child.visible.value) continue
-            child.posX.value = lineSpace * 1.618f
-            child.posY.value = y
+            child.posX = lineSpace * 1.618f
+            child.posY = y
             child.width.value = width.value - lineSpace * 3.236f
             y += child.height.value + lineSpace
         }
@@ -93,7 +93,7 @@ open class ListWindow(
         super.onTick()
         if (children.isEmpty()) return
         val lastVisible = children.lastOrNull { it.visible.value }
-        val maxScrollProgress = lastVisible?.let { max(it.posY.value + it.height.value + lineSpace - height.value, 0.01f) }?: draggableHeight
+        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height.value + lineSpace - height.value, 0.01f) }?: draggableHeight
 
         scrollProgress = (scrollProgress + scrollSpeed)
         scrollSpeed *= 0.5f
@@ -133,7 +133,7 @@ open class ListWindow(
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
-        val relativeMousePos = mousePos.subtract(posX.value, posY.value - renderScrollProgress)
+        val relativeMousePos = mousePos.subtract(posX, posY - renderScrollProgress)
         if (Mouse.getEventDWheel() != 0) {
             scrollTimer.reset()
             scrollSpeed -= Mouse.getEventDWheel() * 0.1f
@@ -149,7 +149,7 @@ open class ListWindow(
 
     private fun updateHovered(relativeMousePos: Vec2f) {
         hoveredChild = if (relativeMousePos.y < draggableHeight || relativeMousePos.x < lineSpace || relativeMousePos.x > renderWidth - lineSpace) null
-        else children.firstOrNull { it.visible.value && relativeMousePos.y in it.posY.value..it.posY.value + it.height.value }
+        else children.firstOrNull { it.visible.value && relativeMousePos.y in it.posY..it.posY + it.height.value }
     }
 
     override fun onLeave(mousePos: Vec2f) {
@@ -184,5 +184,5 @@ open class ListWindow(
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =
-            mousePos.subtract(posX.value, posY.value - renderScrollProgress).subtract(component.posX.value, component.posY.value)
+            mousePos.subtract(posX, posY - renderScrollProgress).subtract(component.posX, component.posY)
 }

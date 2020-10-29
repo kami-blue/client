@@ -57,6 +57,8 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
 
     init {
+        mc = Wrapper.minecraft
+
         listener<SafeTickEvent> { event ->
             if (event.phase != TickEvent.Phase.START) return@listener
             for (window in windowList) window.onTick()
@@ -75,8 +77,8 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
         settingMap.getOrPut(element) {
             newSettingWindow(element, mousePos)
         }.apply {
-            posX.value = mousePos.x
-            posY.value = mousePos.y
+            posX = mousePos.x
+            posY = mousePos.y
         }.also {
             lastClickedWindow = it
             settingWindow = it
@@ -143,7 +145,7 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        with(topWindow) {
+        with(hoveredWindow) {
             this?.onClick(lastClickPos, mouseButton)
             lastClickedWindow = this
         }
@@ -152,13 +154,13 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         val mousePos = getRealMousePos()
-        topWindow?.onRelease(mousePos, state)
+        hoveredWindow?.onRelease(mousePos, state)
         updateWindowOrder()
     }
 
     override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         val mousePos = getRealMousePos()
-        topWindow?.onDrag(mousePos, lastClickPos, clickedMouseButton)
+        hoveredWindow?.onDrag(mousePos, lastClickPos, clickedMouseButton)
     }
 
     private fun updateSettingWindow() {
@@ -176,8 +178,6 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
         windowList.clear()
         windowList.addAll(cacheList)
     }
-
-    private val topWindow get() = windowList.lastOrNull { it.isInWindow(lastClickPos) }
     // End of mouse input
 
 

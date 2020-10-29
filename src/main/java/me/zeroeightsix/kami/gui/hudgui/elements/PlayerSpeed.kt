@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
+import kotlin.math.max
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
@@ -30,7 +31,7 @@ object PlayerSpeed : HudElement("PlayerSpeed") {
     }
 
     override val resizable get() = false
-    override val maxWidth: Float get() = displayText.getWidth() + 4.0f
+    override val maxWidth: Float get() = max(displayText.getWidth(), width.value)
     override val maxHeight: Float get() = FontRenderAdapter.getFontHeight() + 4.0f
 
     private val displayText = TextComponent()

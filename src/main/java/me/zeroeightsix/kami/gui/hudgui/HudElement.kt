@@ -36,7 +36,6 @@ open class HudElement(
     // End of annotations
 
     val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
-            .filter { it != minimized && it != name && it != posX && it != posY && it != width && it != height && it != visible }
 
     override fun onGuiInit() {
         super.onGuiInit()

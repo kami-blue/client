@@ -18,7 +18,7 @@ open class WindowComponent(
 
     // Basic info
     val minimized = setting("Minimized", false,
-            consumer = { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
+            { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
     )
 
     // Interactive info
@@ -73,11 +73,11 @@ open class WindowComponent(
         super.onRelease(mousePos, buttonId)
         updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
-        if (minimizable && buttonId == 1 && mousePos.y - posY.value < draggableHeight) minimized.value = !minimized.value
+        if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized.value = !minimized.value
     }
 
     private fun updatePreDrag() {
-        preDragPos = Vec2f(posX.value, posY.value)
+        preDragPos = Vec2f(posX, posY)
         preDragSize = Vec2f(width.value, height.value)
     }
 
@@ -113,7 +113,7 @@ open class WindowComponent(
                         var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
-                        posX.value += width.value - newWidth
+                        posX += width.value - newWidth
                         width.value = newWidth
                     }
                     Alignment.HAlign.RIGHT -> {
@@ -132,7 +132,7 @@ open class WindowComponent(
                         var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
-                        posY.value += height.value - newHeight
+                        posY += height.value - newHeight
                         height.value = newHeight
                     }
                     Alignment.VAlign.BOTTOM -> {
@@ -148,8 +148,8 @@ open class WindowComponent(
 
                 onResize()
             } else if (draggableHeight == height.value || relativeClickPos.y <= draggableHeight) {
-                posX.value = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width.value)
-                posY.value = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height.value)
+                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width.value)
+                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height.value)
 
                 onReposition()
             } else {
@@ -162,4 +162,12 @@ open class WindowComponent(
         return visible.value && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
                 && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
     }
+
+    init {
+        with({ updatePreDrag() }) {
+            dockingH.listeners.add(this)
+            dockingV.listeners.add(this)
+        }
+    }
+
 }
