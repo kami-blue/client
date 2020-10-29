@@ -33,12 +33,13 @@ object GuiManager {
             hudElementsMap[clazz] = clazz.getDeclaredField("INSTANCE")[null] as HudElement
         }
         val time = stopTimer.stop()
-        KamiMod.log.info("${hudElementsClassList!!.size} managers loaded, took ${time}ms")
+        KamiMod.log.info("${hudElementsClassList!!.size} hud elements loaded, took ${time}ms")
 
         preLoadingThread = null
         hudElementsClassList = null
 
         KamiClickGui.onGuiClosed()
-        KamiHudGui.initGui()
+        KamiHudGui.onGuiClosed()
     }
+
 }

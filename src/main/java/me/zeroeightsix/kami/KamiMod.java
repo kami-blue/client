@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.util.ConfigUtils;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -65,6 +64,7 @@ public class KamiMod {
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
     public static boolean hasAskedToUpdate = false;
+    private static boolean initialized = false;
 
     @Mod.Instance
     private static KamiMod INSTANCE;
@@ -89,6 +89,7 @@ public class KamiMod {
         if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
             Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
         }
+        initialized = true;
     }
 
     @Mod.EventHandler
@@ -115,14 +116,15 @@ public class KamiMod {
             if (module.isEnabled()) module.enable();
         }
 
-        // Need to reload the font after the settings were loaded
-        KamiFontRenderer.INSTANCE.reloadFonts();
-
         log.info(MODNAME + " Mod initialized!");
     }
 
     public static KamiMod getInstance() {
         return INSTANCE;
+    }
+
+    public static boolean isInitialized() {
+        return initialized;
     }
 
     public CommandManager getCommandManager() {
