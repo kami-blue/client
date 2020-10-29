@@ -47,18 +47,27 @@ object FPS : LabelHud("FPS") {
         var avg = 0
         var min = 6969
         var max = 0
-
         for (value in fpsList) {
             avg += value
             if (min != 0) min = min(value, min)
             max = max(value, max)
         }
+        avg /= 300
 
-        displayText.add("$fps")
-        if (showAverage.value) displayText.add("avg. ${avg / 300}")
-        if (showMin.value) displayText.add("min. $min")
-        if (showMax.value) displayText.add("max. $max")
-        displayText.add("fps")
+        displayText.add("FPS")
+        displayText.add(fps.toString())
+        if (showAverage.value) {
+            displayText.add("AVG")
+            displayText.add(avg.toString())
+        }
+        if (showMin.value) {
+            displayText.add("MIN")
+            displayText.add(min.toString())
+        }
+        if (showMax.value) {
+            displayText.add("MAX")
+            displayText.add(max.toString())
+        }
     }
 
 }
