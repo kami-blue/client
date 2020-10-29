@@ -84,7 +84,6 @@ abstract class WindowComponent(
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
 
-        if (!resizable) return
         val relativeClickPos = clickPos.subtract(preDragPos)
         val centerSplitterH = min(10.0, preDragSize.x / 3.0)
         val centerSplitterV = min(10.0, preDragSize.y / 3.0)
@@ -107,7 +106,7 @@ abstract class WindowComponent(
         val draggedDist = mousePos.subtract(clickPos)
 
         if (horizontalSide != null && verticalSide != null) {
-            if (!minimized.value && (horizontalSide != Alignment.HAlign.CENTER || verticalSide != Alignment.VAlign.CENTER)) {
+            if (resizable && !minimized.value && (horizontalSide != Alignment.HAlign.CENTER || verticalSide != Alignment.VAlign.CENTER)) {
 
                 when (horizontalSide) {
                     Alignment.HAlign.LEFT -> {
@@ -148,7 +147,7 @@ abstract class WindowComponent(
                 }
 
                 onResize()
-            } else if (relativeClickPos.y <= draggableHeight) {
+            } else if (draggableHeight == height.value || relativeClickPos.y <= draggableHeight) {
                 posX.value = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width.value)
                 posY.value = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height.value)
 

@@ -40,7 +40,12 @@ open class HudElement(
 
     override fun onGuiInit() {
         super.onGuiInit()
-        if (alwaysListening) KamiEventBus.subscribe(this)
+        if (alwaysListening || visible.value) KamiEventBus.subscribe(this)
+    }
+
+    override fun onClosed() {
+        super.onClosed()
+        if (alwaysListening || visible.value) KamiEventBus.subscribe(this)
     }
 
     final override fun onTick() { super.onTick() }
