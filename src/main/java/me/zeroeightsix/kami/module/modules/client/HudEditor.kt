@@ -5,13 +5,13 @@ import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.module.Module
 
 @Module.Info(
-        name = "HudGUI",
-        description = "Opens the Hud GUI",
+        name = "HudEditor",
+        description = "Edits the Hud",
         category = Module.Category.CLIENT,
         showOnArray = false,
         alwaysListening = true
 )
-object HudGUI : Module() {
+object HudEditor : Module() {
 
     override fun onEnable() {
         if (mc.currentScreen !is KamiHudGui) {
