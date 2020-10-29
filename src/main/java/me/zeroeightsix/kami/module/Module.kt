@@ -85,7 +85,7 @@ open class Module {
     }
 
     fun enable() {
-        if (annotation.alwaysEnabled || isEnabled) return
+        if (annotation.alwaysEnabled) return
         enabled.value = true
         onEnable()
         onToggle()
@@ -96,7 +96,7 @@ open class Module {
     }
 
     fun disable() {
-        if (annotation.alwaysEnabled || isDisabled) return
+        if (annotation.alwaysEnabled) return
         enabled.value = false
         onDisable()
         onToggle()
