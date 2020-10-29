@@ -10,7 +10,7 @@ import kotlin.math.max
 /**
  * Renders multi line text easily
  */
-class TextComponent(val separator: String = "  ") {
+class TextComponent(val separator: String = " ") {
     private val fontRenderer = Wrapper.minecraft.fontRenderer
     private val textLines = ArrayList<TextLine?>()
     var currentLine = 0
@@ -29,7 +29,7 @@ class TextComponent(val separator: String = "  ") {
     /**
      * Create a new text component from a multi line string
      */
-    constructor(string: String, separator: String = "  ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
+    constructor(string: String, separator: String = " ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
         val lines = string.lines()
         for (line in lines) {
             for (splitText in line.split(delimiters = *delimiters)) {
@@ -144,14 +144,17 @@ class TextComponent(val separator: String = "  ") {
                 val color = textElement.color.clone()
                 color.a = (color.a * alpha).toInt()
                 FontRenderAdapter.drawString(textElement.text, drawShadow = drawShadow, color = color, customFont = customFont)
-                glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + separator, customFont = customFont), 0f, 0f)
+                val adjustedSeparator = if (separator == " " && customFont) "  " else " "
+                glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + adjustedSeparator, customFont = customFont), 0f, 0f)
             }
             glPopMatrix()
         }
 
-        fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont) = FontRenderAdapter.getStringWidth(toString(), customFont = customFont)
-
-        override fun toString() = textElementList.joinToString(separator = separator)
+        fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont): Float {
+            val adjustedSeparator = if (separator == " " && customFont) "  " else " "
+            val string = textElementList.joinToString(separator = adjustedSeparator)
+            return FontRenderAdapter.getStringWidth(string, customFont = customFont)
+        }
     }
 
     class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: TextProperties.Style = TextProperties.Style.REGULAR) {
