@@ -56,6 +56,7 @@ object ClickGUI : Module() {
 
     override fun onEnable() {
         if (mc.currentScreen !is KamiClickGui) {
+            HudGUI.disable()
             mc.displayGuiScreen(KamiClickGui)
             KamiEventBus.subscribe(KamiClickGui)
             KamiClickGui.onDisplayed()

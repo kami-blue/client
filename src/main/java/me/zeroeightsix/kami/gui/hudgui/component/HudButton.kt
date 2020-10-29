@@ -19,7 +19,7 @@ class HudButton(val hudElement: HudElement) : AbstractBooleanSlider(hudElement.n
         super.onRelease(mousePos, buttonId)
         if (prevState != MouseState.DRAG) {
             if (buttonId == 0) hudElement.visible.value = !hudElement.visible.value
-            else if (buttonId == 1) KamiHudGui.displaySettingWindow(module)
+            else if (buttonId == 1) KamiHudGui.displaySettingWindow(hudElement)
         }
     }
 }

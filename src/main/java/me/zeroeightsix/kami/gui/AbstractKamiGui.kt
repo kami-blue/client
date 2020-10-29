@@ -18,6 +18,8 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
+import java.util.*
+import kotlin.collections.HashMap
 
 abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
@@ -56,10 +58,8 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
     init {
         listener<SafeTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END) return@listener
-            for (window in windowList) {
-                window.onTick()
-            }
+            if (event.phase != TickEvent.Phase.START) return@listener
+            for (window in windowList) window.onTick()
 
             blurShader.shader?.let {
                 val multiplier = ClickGUI.blur.value / 1.0f

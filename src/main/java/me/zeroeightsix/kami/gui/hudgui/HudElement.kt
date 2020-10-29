@@ -3,6 +3,8 @@ package me.zeroeightsix.kami.gui.hudgui
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.setting.GuiConfig
+import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.math.Vec2f
 
 open class HudElement(
         name: String
@@ -33,7 +35,7 @@ open class HudElement(
     }
     // End of annotations
 
-    val settingList get() = GuiConfig.getGroupOrPut(this.category.displayName).getGroupOrPut(originalName).getSettings()
+    val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
             .filter { it != minimized && it != name && it != posX && it != posY && it != width && it != height && it != visible }
 
     override fun onGuiInit() {
@@ -43,6 +45,12 @@ open class HudElement(
 
     final override fun onTick() { super.onTick() }
 
+    final override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        super.onRender(vertexHelper, absolutePos)
+        renderHud(vertexHelper)
+    }
+
+    open fun renderHud(vertexHelper: VertexHelper) {}
 
     init {
         visible.valueListeners.add { _, it ->

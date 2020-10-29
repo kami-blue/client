@@ -19,7 +19,7 @@ abstract class AbstractSlider(
         name: String,
         valueIn: Double,
         private val descriptionIn: String = ""
-) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, false) {
+) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {
             if (value != field) {
