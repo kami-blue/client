@@ -15,7 +15,7 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.opengl.GL11.*
 
-abstract class AbstractSlider(
+open class Slider(
         name: String,
         valueIn: Double,
         private val descriptionIn: String = ""

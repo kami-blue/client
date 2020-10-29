@@ -6,7 +6,7 @@ class Button(
         name: String,
         private val action: () -> Unit,
         descriptionIn: String
-) : AbstractBooleanSlider(name, 0.0, descriptionIn) {
+) : BooleanSlider(name, 0.0, descriptionIn) {
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         value = 1.0

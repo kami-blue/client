@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class WindowComponent(
+open class WindowComponent(
         name: String,
         posX: Float,
         posY: Float,

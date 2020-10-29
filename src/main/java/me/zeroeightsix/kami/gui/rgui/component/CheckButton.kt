@@ -6,7 +6,7 @@ class CheckButton(
         name: String,
         stateIn: Boolean,
         descriptionIn: String
-) : AbstractBooleanSlider(name, 0.0, descriptionIn) {
+) : BooleanSlider(name, 0.0, descriptionIn) {
     init {
         value = if (stateIn) 1.0 else 0.0
     }

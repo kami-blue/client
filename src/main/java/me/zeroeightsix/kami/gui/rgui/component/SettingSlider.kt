@@ -14,7 +14,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.round
 
-class SettingSlider(val setting: NumberSetting<*>) : AbstractSlider(setting.name, 0.0, setting.description) {
+class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, setting.description) {
 
     private val range = setting.max.toDouble() - setting.min.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()

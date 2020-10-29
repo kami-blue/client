@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.rgui.component
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.util.math.Vec2f
 
-class SettingButton(val setting: Setting<Boolean>) : AbstractBooleanSlider(setting.name, 0.0, setting.description) {
+class SettingButton(val setting: Setting<Boolean>) : BooleanSlider(setting.name, 0.0, setting.description) {
 
     init {
         if (setting.value) value = 1.0

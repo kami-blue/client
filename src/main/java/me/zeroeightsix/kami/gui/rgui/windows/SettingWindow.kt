@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
-import me.zeroeightsix.kami.gui.rgui.component.AbstractSlider
+import me.zeroeightsix.kami.gui.rgui.component.Slider
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
-abstract class SettingWindow<T: Any>(
+open class SettingWindow<T: Any>(
         name: String,
         val element: T,
         posX: Float,
@@ -17,7 +17,7 @@ abstract class SettingWindow<T: Any>(
 
     override val minimizable get() = false
 
-    var listeningChild: AbstractSlider? = null; private set
+    var listeningChild: Slider? = null; private set
 
     override fun onDisplayed() {
         super.onDisplayed()
@@ -26,7 +26,7 @@ abstract class SettingWindow<T: Any>(
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        (hoveredChild as? AbstractSlider)?.let {
+        (hoveredChild as? Slider)?.let {
             listeningChild = if (it.listening) it
             else null
         }

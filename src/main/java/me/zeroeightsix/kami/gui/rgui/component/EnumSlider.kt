@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.floor
 
-class EnumSlider(val setting: EnumSetting<*>) : AbstractSlider(setting.name, 0.0, setting.description) {
+class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, setting.description) {
     private val enumValues = setting.enumValues
 
     override fun onTick() {

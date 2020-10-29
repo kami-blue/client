@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard
 
 class BindButton(
         private val setting: BindSetting
-) : AbstractSlider(setting.name, 0.0, setting.description) {
+) : Slider(setting.name, 0.0, setting.description) {
 
     override val renderProgress: Double = 0.0
 

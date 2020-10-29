@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
 
-abstract class Component(
+open class Component(
         name: String,
         posX: Float,
         posY: Float,

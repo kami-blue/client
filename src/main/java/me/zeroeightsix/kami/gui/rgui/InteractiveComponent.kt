@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.util.math.Vec2f
 
-abstract class InteractiveComponent(
+open class InteractiveComponent(
         name: String,
         posX: Float,
         posY: Float,
