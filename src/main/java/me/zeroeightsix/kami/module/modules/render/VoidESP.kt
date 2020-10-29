@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.util.math.BlockPos
-import java.util.concurrent.ConcurrentHashMap
 
 @Module.Info(
         name = "VoidESP",
@@ -28,7 +27,7 @@ object VoidESP : Module() {
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1))
     private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
 
-    private val voidHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
+    private val voidHoles = ArrayList<BlockPos>()
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_VOID, FLAT
@@ -38,25 +37,31 @@ object VoidESP : Module() {
         listener<SafeTickEvent> {
             voidHoles.clear()
             val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
+
             for (pos in blockPosList) {
                 val isVoid = pos.y == 0
+
                 if (isVoid && mc.world.isAirBlock(pos) && mc.world.isAirBlock(pos.up()) && mc.world.isAirBlock(pos.up().up())) {
-                    voidHoles[pos] = ColorHolder(r.value, g.value, b.value)
+                    voidHoles.add(pos)
                 }
             }
         }
 
         listener<RenderWorldEvent> {
             if (mc.player == null || voidHoles.isEmpty()) return@listener
-            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
-            else GeometryMasks.Quad.DOWN
+
+            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
+
             val renderer = ESPRenderer()
             renderer.aFilled = if (filled.value) aFilled.value else 0
             renderer.aOutline = if (outline.value) aOutline.value else 0
-            for ((pos, colour) in voidHoles) {
+            val color = ColorHolder(r.value, g.value, b.value)
+
+            for (pos in voidHoles) {
                 val renderPos = if (renderMode.value == Mode.BLOCK_VOID) pos.down() else pos
-                renderer.add(renderPos, colour, side)
+                renderer.add(renderPos, color, side)
             }
+
             renderer.render(true)
         }
     }
