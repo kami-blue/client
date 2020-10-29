@@ -28,7 +28,7 @@ object Capes : Module() {
     // This starts out null, and then is replaced from another thread if the Capes module is enabled.
     // It maps the UUIDs to CachedCape instances.
     // When it arrives here it must no longer be modified.
-    private var allCapes = Collections.unmodifiableMap(HashMap<String, CachedCape>())
+    var allCapes = Collections.unmodifiableMap(HashMap<String, CachedCape>()); private set
     private var hasBegunDownload = false
 
     public override fun onEnable() {
@@ -65,10 +65,10 @@ object Capes : Module() {
     }
 
     // This is the raw Gson structure as seen in the assets
-    private class CapeUser(val uuid: String? = null, var url: String? = null)
+    class CapeUser(val uuid: String? = null, var url: String? = null)
 
     // This is the shared cape instance.
-    private class CachedCape(cape: CapeUser) {
+    class CachedCape(cape: CapeUser) {
         val location: ResourceLocation = ResourceLocation("capes/kami/" + formatUUID(cape.uuid))
         private val url: String = cape.url.toString()
         private var hasRequested = false

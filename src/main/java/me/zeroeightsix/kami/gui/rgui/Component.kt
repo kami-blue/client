@@ -64,7 +64,7 @@ open class Component(
     open val minHeight = 16.0f
     open val maxWidth = -1.0f
     open val maxHeight = -1.0f
-    val closeable: Boolean get() = true
+    open val closeable: Boolean get() = true
 
     // Rendering info
     var prevPosX = 0.0f; protected set
