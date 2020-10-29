@@ -47,9 +47,11 @@
     "MixinRenderPlayer",
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
-    "MixinTileEntityEnchantmentTableRenderer",
     "MixinTileEntitySignRenderer",
     "MixinVisGraph",
-    "MixinWorld"
+    "MixinWorld",
+    "MixinTileEntityRendererDispatcher",
+    "MixinMapItemRenderer",
+    "MixinParicleManager"
   ]
 }
