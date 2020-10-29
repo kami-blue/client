@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
@@ -26,9 +25,6 @@ object PlayerSpeed : LabelHud("PlayerSpeed") {
         KMH("km/h")
         // No retarded imperial unit here
     }
-
-    override val maxWidth: Float get() = displayText.getWidth() + 4.0f
-    override val maxHeight: Float get() = FontRenderAdapter.getFontHeight() + 4.0f
 
     private val speedList = ArrayDeque<Double>()
 

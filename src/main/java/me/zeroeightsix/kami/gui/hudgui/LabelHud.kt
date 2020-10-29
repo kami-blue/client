@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 abstract class LabelHud(name: String) : HudElement(name) {
 
     override val resizable get() = false
+    override val maxWidth: Float get() = displayText.getWidth() + 2.0f
+    override val maxHeight: Float get() = displayText.getHeight(2)
 
     protected val displayText = TextComponent()
 
@@ -28,7 +30,7 @@ abstract class LabelHud(name: String) : HudElement(name) {
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
-        displayText.draw(Vec2d(2.0, 2.0))
+        displayText.draw(Vec2d(1.0, 0.0))
     }
 
 }

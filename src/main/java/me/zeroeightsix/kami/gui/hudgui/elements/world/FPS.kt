@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.roundToInt
@@ -16,9 +15,6 @@ import kotlin.math.roundToInt
 object FPS : LabelHud("FPS") {
 
     private val showAverage = setting("ShowAverage", true)
-
-    override val maxWidth: Float get() = displayText.getWidth() + 4.0f
-    override val maxHeight: Float get() = FontRenderAdapter.getFontHeight() + 4.0f
 
     private val fpsList = IntArray(5)
     private var index = 0
