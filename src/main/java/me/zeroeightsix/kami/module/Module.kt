@@ -3,10 +3,8 @@ package me.zeroeightsix.kami.module
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.setting.builder.SettingBuilder
-import me.zeroeightsix.kami.util.Bind
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 

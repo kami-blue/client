@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -17,15 +17,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
         category = Module.Category.RENDER
 )
 object VoidESP : Module() {
-    private val renderDistance = register(Settings.integerBuilder("RenderDistance").withValue(6).withRange(4, 32).withStep(1))
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val r = register(Settings.integerBuilder("Red").withValue(148).withRange(0, 255).withStep(1))
-    private val g = register(Settings.integerBuilder("Green").withValue(161).withRange(0, 255).withStep(1))
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1))
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(127).withRange(0, 255).withStep(1))
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1))
-    private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
+    private val renderDistance = setting("RenderDistance", 6, 4..32, 1)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val r = setting("Red", 148, 0..255, 1)
+    private val g = setting("Green", 161, 0..255, 1)
+    private val b = setting("Blue", 255, 0..255, 1)
+    private val aFilled = setting("FilledAlpha", 127, 0..255, 1)
+    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1)
+    private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
 
     @Suppress("UNUSED")
     private enum class Mode {

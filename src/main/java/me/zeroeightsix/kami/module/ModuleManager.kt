@@ -60,22 +60,14 @@ object ModuleManager {
 
     @JvmStatic
     fun getModule(moduleName: String?): Module? {
-        moduleName?.replace(" ", "").let { name ->
-            for (module in getModules()) {
-                if (!module.name.replace(" ", "").equals(name, true)
-                        && !module.alias.any { it.replace(" ", "").equals(name, true) }) continue
-                return module
+        return moduleName?.replace(" ", "").let { name ->
+            getModules().firstOrNull { module ->
+                !module.name.replace(" ", "").equals(name, true)
+                        && !module.alias.any {
+                    it.replace(" ", "").equals(name, true)
+                }
             }
         } ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
-    }
-
-    @JvmStatic
-    fun isModuleListening(module: Module): Boolean {
-        return module.isEnabled || module.alwaysListening
-    }
-
-    private fun inGame(): Boolean {
-        return mc.player != null && mc.world != null
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)

@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
-import me.zeroeightsix.kami.util.ClassFinder
+import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
 
 object GuiManager {
@@ -17,7 +17,7 @@ object GuiManager {
     fun preLoad() {
         preLoadingThread = Thread {
             val annotationClass = HudElement.Info::class.java
-            hudElementsClassList = ClassFinder.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
+            hudElementsClassList = ClassUtils.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
                     .filter { it.isAnnotationPresent(annotationClass) }
             KamiMod.log.info("${hudElementsClassList!!.size} hud elements found")
         }
