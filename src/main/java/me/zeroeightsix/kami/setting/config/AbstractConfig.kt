@@ -11,10 +11,12 @@ import me.zeroeightsix.kami.setting.impl.number.DoubleSetting
 import me.zeroeightsix.kami.setting.impl.number.FloatSetting
 import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.other.BindSetting
+import me.zeroeightsix.kami.setting.impl.other.ColorSetting
 import me.zeroeightsix.kami.setting.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.ConfigUtils
+import me.zeroeightsix.kami.util.color.ColorHolder
 import java.io.*
 
 abstract class AbstractConfig<T>(
@@ -62,6 +64,14 @@ abstract class AbstractConfig<T>(
             visibility: () -> Boolean = { true },
             description: String = ""
     ) = setting(BindSetting(name, visibility, description))
+
+    /** Color Setting */
+    fun T.setting(
+            name: String,
+            value: ColorHolder,
+            visibility: () -> Boolean = { true },
+            description: String = ""
+    ) = setting(ColorSetting(name, value, visibility, description))
 
     /** Boolean Setting */
     fun T.setting(
