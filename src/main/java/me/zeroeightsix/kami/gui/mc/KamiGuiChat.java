@@ -153,7 +153,7 @@ public class KamiGuiChat extends GuiChat {
         Vec2d pos1 = new Vec2d(this.inputField.x - 2, this.inputField.y - 2);
         Vec2d pos2 = pos1.add(this.inputField.width, this.inputField.height);
 
-        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(155, 144, 255));
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(155, 144, 255, 255));
     }
 
     private String getStartString() {
