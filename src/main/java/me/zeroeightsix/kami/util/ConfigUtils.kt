@@ -15,47 +15,25 @@ import java.io.IOException
 object ConfigUtils {
 
     fun loadAll(): Boolean {
-        // Generic
-        var success = loadConfig(GenericConfig)
-
-        // Macro
-        success = MacroManager.loadMacros() && success
-
-        // Waypoint
-        success = WaypointManager.loadWaypoints() && success
-
-        // Friends
-        success = FriendManager.loadFriends() && success
-
-        // Modules
-        success = loadConfig(ModuleConfig) && success
-
-        // GUI
-        success = loadConfig(GuiConfig) && success
+        var success = loadConfig(GenericConfig) // Generic
+        success = MacroManager.loadMacros() && success // Macro
+        success = WaypointManager.loadWaypoints() && success // Waypoint
+        success = FriendManager.loadFriends() && success // Friends
+        success = loadConfig(ModuleConfig) && success // Modules
+        success = loadConfig(GuiConfig) && success // GUI
 
         return success
     }
 
     fun saveAll(): Boolean {
-        var success = true
+        if (!KamiMod.isInitialized()) return false
 
-        // Generic
-        success = saveConfig(GenericConfig) && success
-
-        // Macro
-        success = MacroManager.saveMacros() && success
-
-        // Waypoint
-        success = WaypointManager.saveWaypoints() && success
-
-        // Friends
-        success = FriendManager.saveFriends() && success
-
-        // Modules
-        success = saveConfig(ModuleConfig) && success
-
-        // GUI
-        success = saveConfig(GuiConfig) && success
+        var success = saveConfig(GenericConfig) // Generic
+        success = MacroManager.saveMacros() && success // Macro
+        success = WaypointManager.saveWaypoints() && success // Waypoint
+        success = FriendManager.saveFriends() && success // Friends
+        success = saveConfig(ModuleConfig) && success // Modules
+        success = saveConfig(GuiConfig) && success // GUI
 
         return success
     }
