@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.math.MathUtils
         category = HudElement.Category.MISC,
         description = "Display server TPS"
 )
-object TPS : LabelHud("FPS") {
+object TPS : LabelHud("TPS") {
 
     private val tpsList = FloatArray(100) { 20.0f }
     private var tpsIndex = 0
