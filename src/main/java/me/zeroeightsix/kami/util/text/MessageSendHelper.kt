@@ -35,7 +35,7 @@ object MessageSendHelper {
     }
 
     @JvmStatic
-    fun sendKamiCommand(command: String, addToHistory: Boolean) {
+    fun sendKamiCommand(command: String, addToHistory: Boolean = false) {
         try {
             if (addToHistory) {
                 mc.ingameGUI.chatGUI.addToSentMessages(command)

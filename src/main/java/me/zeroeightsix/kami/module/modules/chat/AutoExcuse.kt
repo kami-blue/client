@@ -64,7 +64,7 @@ object AutoExcuse : Module() {
             if (file.exists()) {
                 val cacheList = ArrayList<String>()
                 try {
-                    file.forEachLine { if (it.isNotEmpty()) cacheList.add(it.removeWhiteSpace()) }
+                    file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
                     MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
                 } catch (e: Exception) {
                     KamiMod.log.error("Failed loading excuses", e)
@@ -82,6 +82,4 @@ object AutoExcuse : Module() {
     }
 
     private fun getExcuse() = loadedExcuses.random().replace(CLIENT_NAME, clients.random())
-
-    private fun String.removeWhiteSpace() = this.replace("^( )+".toRegex(), "").replace("( )+$".toRegex(), "")
 }

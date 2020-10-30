@@ -26,7 +26,7 @@ import kotlin.math.sin
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
 object EntitySpeed : Module() {
-    private val speed = setting("Speed", 1.0f, 0.1f..10.0f, 0.1f)
+    private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
     private val antiStuck = setting("AntiStuck", true)
     private val flight = setting("Flight", false)
     private val glideSpeed = setting("GlideSpeed", 0.1f, 0.0f..1.0f, 0.01f, { flight.value })

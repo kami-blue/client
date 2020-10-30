@@ -1,34 +1,24 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.ClassFinder
+import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import net.minecraft.client.Minecraft
-import java.util.*
 
-@Suppress("UNCHECKED_CAST")
 object ModuleManager {
-    private val mc = Minecraft.getMinecraft()
 
     /** Thread for scanning module during Forge pre-init */
     private var preLoadingThread: Thread? = null
 
     /** List for module classes found during pre-loading */
-    private var moduleClassList: Array<Class<out Module>>? = null
+    private var moduleClassList: List<Class<out Module>>? = null
 
     /** HashMap for the registered Modules */
-    val moduleMap = HashMap<Class<out Module>, Module>()
-
-    /** Thread for sorting the modules */
-    private var sortingThread: Thread? = null
-
-    /** Array for the registered Modules (sorted) */
-    private lateinit var moduleList: Array<Module>
+    private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
 
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            moduleClassList = ClassFinder.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
+            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java).sortedBy { it.simpleName }
             KamiMod.log.info("${moduleClassList!!.size} modules found")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"
@@ -44,43 +34,18 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
-                try {
-                    // First we try to get the constructor of the class and create a new instance with it.
-                    // This is for modules that are still in Java.
-                    // Because the INSTANCE field isn't assigned yet until the constructor gets called.
-                    val module = clazz.getConstructor().newInstance() as Module
-                    moduleMap[module.javaClass] = module
-                } catch (noSuchMethodException: NoSuchMethodException) {
-                    // If we can't find the constructor for the class then it means it is a Kotlin object class.
-                    // We just get the INSTANCE field from it, because Kotlin object class
-                    // creates a new INSTANCE automatically when it gets called the first time
-                    val module = clazz.getDeclaredField("INSTANCE")[null] as Module
-                    moduleMap[module.javaClass] = module
-                }
+                moduleMap[clazz] = ClassUtils.getInstance(clazz)
             } catch (exception: Throwable) {
-                exception.printStackTrace()
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
+                exception.printStackTrace()
             }
         }
-        initSortedList()
         val time = stopTimer.stop()
         KamiMod.log.info("${moduleMap.size} modules loaded, took ${time}ms")
 
         /* Clean up variables used during pre-loading and registering */
         preLoadingThread = null
         moduleClassList = null
-    }
-
-    private fun initSortedList() {
-        sortingThread = Thread {
-            moduleList = moduleMap.values.stream().sorted(Comparator.comparing { module: Module ->
-                module.javaClass.simpleName
-            }).toArray { size -> arrayOfNulls<Module>(size) }
-            sortingThread = null
-        }.also {
-            it.name = "Modules Sorting Thread"
-            it.start()
-        }
     }
 
     fun onBind(eventKey: Int) {
@@ -91,10 +56,7 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModules(): Array<Module> {
-        sortingThread?.join()
-        return moduleList
-    }
+    fun getModules() = moduleMap.values
 
     @JvmStatic
     fun getModule(moduleName: String?): Module? {
@@ -104,8 +66,7 @@ object ModuleManager {
                         && !module.alias.any { it.replace(" ", "").equals(name, true) }) continue
                 return module
             }
-        }
-        throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
+        } ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
     }
 
     @JvmStatic

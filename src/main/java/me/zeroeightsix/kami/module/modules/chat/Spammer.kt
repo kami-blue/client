@@ -36,7 +36,7 @@ object Spammer : Module() {
         spammer.clear()
         if (file.exists()) {
             try {
-                file.forEachLine { if (it.isNotEmpty()) spammer.add(it) }
+                file.forEachLine { if (it.isNotBlank()) spammer.add(it.trim()) }
                 MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
             } catch (e: Exception) {
                 MessageSendHelper.sendErrorMessage("$chatName Failed loading spammer, $e")

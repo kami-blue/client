@@ -7,19 +7,24 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import java.io.*
+import java.io.File
+import java.io.FileReader
 
 @Module.Info(
         name = "LoginMessage",
         description = "Sends a given message to public chat on login.",
         category = Module.Category.CHAT,
-        showOnArray = false
+        showOnArray = false,
+        modulePriority = 150
 )
 object LoginMessage : Module() {
     private val sendAfterMoving = setting("SendAfterMoving", false)
 
+    private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
     private var loginMessage: String? = null
     private var sent = false
     private var moved = false
@@ -35,7 +40,11 @@ object LoginMessage : Module() {
 
             if (!sent && (!sendAfterMoving.value || moved)) {
                 loginMessage?.let {
-                    MessageSendHelper.sendServerMessage(it)
+                    if (MessageDetectionHelper.isKamiCommand(it)) {
+                        MessageSendHelper.sendKamiCommand(it)
+                    } else {
+                        sendServerMessage(it)
+                    }
                     sent = true
                 }
             }
@@ -45,20 +54,25 @@ object LoginMessage : Module() {
     }
 
     override fun onEnable() {
-        try {
-            MessageSendHelper.sendChatMessage("$chatName Trying to find '&7loginmsg.txt&f'")
-            val reader = BufferedReader(InputStreamReader(FileInputStream("loginmsg.txt"), "UTF-8"))
+        val fileReader = FileReader(file)
 
-            loginMessage = reader.readLine()
-            MessageSendHelper.sendChatMessage("$chatName Found '&7loginmsg.txt&f'!")
-
-            reader.close()
-        } catch (e: FileNotFoundException) {
-            MessageSendHelper.sendErrorMessage("$chatName The file '&7loginmsg.txt&f' was not found in your .minecraft folder. Create it and add a message to enable this module.")
-            disable()
-        } catch (e: IOException) {
-            KamiMod.log.error(e)
+        if (file.exists()) {
+            try {
+                fileReader.readLines().getOrNull(0)?.let {
+                    if (it.isNotBlank()) loginMessage = it.trim()
+                }
+                MessageSendHelper.sendChatMessage("$chatName Loaded login message!")
+            } catch (e: Exception) {
+                MessageSendHelper.sendErrorMessage("$chatName Failed loading login message, $e")
+                disable()
+            }
+        } else {
+            file.createNewFile()
+            MessageSendHelper.sendErrorMessage("$chatName Login Message file is empty!" +
+                    ", please add them in the &7loginmsg.txt&f under the &7.minecraft/kamiblue&f directory.")
             disable()
         }
+
+        fileReader.close()
     }
 }

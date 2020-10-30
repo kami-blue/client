@@ -28,6 +28,10 @@ object GlStateUtils {
     }
 
     @JvmStatic
+    var colorLock = false
+    private set
+
+    @JvmStatic
     fun useVbo(): Boolean {
         return mc.gameSettings.useVbo
     }
@@ -103,6 +107,11 @@ object GlStateUtils {
         } else {
             GlStateManager.disableLighting()
         }
+    }
+
+    @JvmStatic
+    fun colorLock(state: Boolean) {
+        colorLock = state
     }
 
     @JvmStatic

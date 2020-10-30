@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.module.modules.render.AntiFog;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
+import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
@@ -47,15 +48,24 @@ public class MixinEntityRenderer {
 
     @Inject(method = "setupFog", at = @At(value = "HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo callbackInfo) {
-        if (AntiFog.INSTANCE.isEnabled() && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.NO_FOG)
+        if (Wrapper.getPlayer() != null
+                && Wrapper.getPlayer().ticksExisted > 20
+                && AntiFog.INSTANCE.isEnabled()
+                && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.NO_FOG) {
             callbackInfo.cancel();
+        }
     }
 
     @Redirect(method = "setupFog", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ActiveRenderInfo;getBlockStateAtEntityViewpoint(Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;F)Lnet/minecraft/block/state/IBlockState;"))
     public IBlockState getBlockStateAtEntityViewpoint(World worldIn, Entity entityIn, float p_186703_2_) {
-        if (AntiFog.INSTANCE.isEnabled() && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR)
+        if (Wrapper.getPlayer() != null
+                && Wrapper.getPlayer().ticksExisted > 20
+                && AntiFog.INSTANCE.isEnabled()
+                && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR) {
             return Blocks.AIR.defaultBlockState;
-        return ActiveRenderInfo.getBlockStateAtEntityViewpoint(worldIn, entityIn, p_186703_2_);
+        } else {
+            return ActiveRenderInfo.getBlockStateAtEntityViewpoint(worldIn, entityIn, p_186703_2_);
+        }
     }
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
