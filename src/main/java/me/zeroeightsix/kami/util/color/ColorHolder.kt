@@ -2,42 +2,17 @@ package me.zeroeightsix.kami.util.color
 
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import org.lwjgl.opengl.GL11.glColor4f
-import java.awt.Color
 
-/**
- * Created by Gebruiker on 18/04/2017.
- * Updated by Xiaro on 09/08/20
- */
-class ColorHolder {
-    var r = 0
-    var g = 0
-    var b = 0
-    var a = 0
+data class ColorHolder(
+        var r: Int = 255,
+        var g: Int = 255,
+        var b: Int = 255,
+        var a: Int = 255
+) {
 
-    constructor(r: Int, g: Int, b: Int) {
-        this.r = r
-        this.g = g
-        this.b = b
-        a = 255
-    }
+    val brightness get() = intArrayOf(r, g, b).max()!!.toFloat() / 255f
 
-    constructor(r: Int, g: Int, b: Int, a: Int) {
-        this.r = r
-        this.g = g
-        this.b = b
-        this.a = a
-    }
-
-    constructor(color: Color) {
-        this.r = color.red
-        this.g = color.green
-        this.b = color.blue
-        this.a = color.alpha
-    }
-
-    val brightness = intArrayOf(r, g, b).max()!!.toFloat() / 255f
-
-    val averageBrightness = (intArrayOf(r, g, b).average() / 255.0).toFloat()
+    val averageBrightness get() = (intArrayOf(r, g, b).average() / 255.0).toFloat()
 
     fun multiply(multiplier: Float): ColorHolder {
         return ColorHolder((r * multiplier).toInt().coerceIn(0, 255), (g * multiplier).toInt().coerceIn(0, 255), (b * multiplier).toInt().coerceIn(0, 255), a)
@@ -62,10 +37,6 @@ class ColorHolder {
 
     fun toHex(): Int {
         return 0xff shl 24 or (r and 0xff shl 16) or (g and 0xff shl 8) or (b and 0xff)
-    }
-
-    fun toJavaColour(): Color {
-        return Color(r, g, b, a)
     }
 
     fun clone(): ColorHolder {
