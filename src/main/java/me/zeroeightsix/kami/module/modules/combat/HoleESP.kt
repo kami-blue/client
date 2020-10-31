@@ -20,6 +20,7 @@ object HoleESP : Module() {
     private val range = register(Settings.integerBuilder("Range").withValue(8).withRange(4, 16).withStep(1))
     private val filled = register(Settings.b("Filled", true))
     private val outline = register(Settings.b("Outline", true))
+    private val hideOwn = register(Settings.b("HideOwn", true))
     private val r1 = register(Settings.integerBuilder("Red(Obby)").withValue(208).withRange(0, 255).withStep(1).withVisibility { shouldAddObby() })
     private val g1 = register(Settings.integerBuilder("Green(Obby)").withValue(144).withRange(0, 255).withStep(1).withVisibility { shouldAddObby() })
     private val b1 = register(Settings.integerBuilder("Blue(Obby)").withValue(255).withRange(0, 255).withStep(1).withVisibility { shouldAddObby() })
@@ -65,6 +66,7 @@ object HoleESP : Module() {
             val pos = playerPos.add(x, y, z)
             val holeType = SurroundUtils.checkHole(pos)
             if (holeType == SurroundUtils.HoleType.NONE) continue
+            if (hideOwn.value == true && playerPos == pos) continue
 
             val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
 
