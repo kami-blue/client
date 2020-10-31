@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util.color
 
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import org.lwjgl.opengl.GL11.glColor4f
+import java.awt.Color
 
 data class ColorHolder(
         var r: Int = 255,
@@ -9,6 +10,8 @@ data class ColorHolder(
         var b: Int = 255,
         var a: Int = 255
 ) {
+
+    constructor(color: Color) : this (color.red, color.green, color.blue, color.alpha)
 
     val brightness get() = intArrayOf(r, g, b).max()!!.toFloat() / 255f
 
@@ -64,6 +67,4 @@ data class ColorHolder(
         result = 31 * result + a
         return result
     }
-
-    companion object
 }
