@@ -69,9 +69,10 @@ abstract class AbstractConfig<T>(
     fun T.setting(
             name: String,
             value: ColorHolder,
+            hasAlpha: Boolean = true,
             visibility: () -> Boolean = { true },
             description: String = ""
-    ) = setting(ColorSetting(name, value, visibility, description))
+    ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
 
     /** Boolean Setting */
     fun T.setting(
