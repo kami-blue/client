@@ -24,7 +24,7 @@ open class Slider(
         set(value) {
             if (value != field) {
                 prevValue.value = renderProgress
-                field = value
+                field = value.coerceIn(0.0, 1.0)
             }
         }
 
