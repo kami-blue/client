@@ -42,7 +42,7 @@ object AutoEat : Module() {
             return false
         }
         // The player will not auto eat the food below if the EatBadFood setting is disabled
-        if (eatBadFood.value == false) {
+        if (!eatBadFood.value) {
             if (item == Items.ROTTEN_FLESH
                     || item == Items.SPIDER_EYE
                     || item == Items.POISONOUS_POTATO
