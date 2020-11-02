@@ -66,7 +66,7 @@ object HoleESP : Module() {
             val pos = playerPos.add(x, y, z)
             val holeType = SurroundUtils.checkHole(pos)
             if (holeType == SurroundUtils.HoleType.NONE) continue
-            if (hideOwn.value == true && playerPos == pos) continue
+            if (hideOwn.value && playerPos == pos) continue
 
             val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
 
