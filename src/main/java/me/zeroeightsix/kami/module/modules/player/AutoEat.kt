@@ -37,6 +37,10 @@ object AutoEat : Module() {
 
     private fun passItemCheck(stack: ItemStack): Boolean {
         val item: Item = stack.getItem()
+        // Excluded Chorus Fruit since it is mainly used to teleport the player
+        if (item == Items.CHORUS_FRUIT) {
+            return false
+        }
         // The player will not auto eat the food below if the EatBadFood setting is disabled
         if (eatBadFood.value == false) {
             if (item == Items.ROTTEN_FLESH
