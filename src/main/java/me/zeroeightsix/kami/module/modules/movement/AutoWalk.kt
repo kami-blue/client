@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import baritone.api.BaritoneAPI
 import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
@@ -64,7 +63,7 @@ object AutoWalk : Module() {
     }
 
     override fun onDisable() {
-        if (disableBaritone) BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        if (disableBaritone) BaritoneUtils.cancelEverything()
     }
 
     public override fun onEnable() {
@@ -82,14 +81,14 @@ object AutoWalk : Module() {
         }
 
         when (MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)) {
-            Cardinal.POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
-            Cardinal.NEG_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
-            Cardinal.NEG_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
-            Cardinal.NEG_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() - border))
-            Cardinal.NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() - border))
-            Cardinal.POS_X_NEG_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() - border))
-            Cardinal.POS_X -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt()))
-            Cardinal.POS_X_POS_Z -> BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() + border))
+            Cardinal.POS_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
+            Cardinal.NEG_X_POS_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
+            Cardinal.NEG_X -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
+            Cardinal.NEG_X_NEG_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() - border))
+            Cardinal.NEG_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() - border))
+            Cardinal.POS_X_NEG_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() - border))
+            Cardinal.POS_X -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt()))
+            Cardinal.POS_X_POS_Z -> BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() + border))
             else -> {
                 sendErrorMessage("Could not determine direction. Disabling...")
                 disable()
@@ -101,7 +100,7 @@ object AutoWalk : Module() {
     }
 
     override fun getHudInfo(): String {
-        return if (BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.goal != null && direction != null) {
+        return if (BaritoneUtils.primary?.customGoalProcess!!.goal != null && direction != null) {
             direction!!
         } else {
             when (mode.value) {

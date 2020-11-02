@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
@@ -63,7 +62,7 @@ object AutoTunnel : Module() {
 
     override fun onDisable() {
         mc.player?.let {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+            BaritoneUtils.cancelEverything()
         }
         lastCommand = arrayOf("")
     }
@@ -81,7 +80,7 @@ object AutoTunnel : Module() {
         backfill.listeners.add { BaritoneUtils.settings()?.backfill?.value = backfill.value }
 
         listener<ConnectionEvent.Disconnect> {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+            BaritoneUtils.cancelEverything()
         }
     }
 }

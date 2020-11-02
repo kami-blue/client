@@ -1,17 +1,15 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
-import me.zeroeightsix.kami.util.math.VectorUtils
-import net.minecraft.util.math.BlockPos
-import java.util.concurrent.ConcurrentHashMap
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 
 @Module.Info(
         name = "HoleESP",
@@ -19,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
         description = "Show safe holes for crystal pvp"
 )
 object HoleESP : Module() {
-    private val renderDistance = setting("RenderDistance", 8.0f, 0.0f..32.0f, 0.5f)
+    private val renderDistance = setting("RenderDistance", 8, 4..16, 1)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
     private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObby() })
@@ -33,8 +31,6 @@ object HoleESP : Module() {
     private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
     private val holeType = setting("HoleType", HoleType.BOTH)
 
-    private val safeHoles = ConcurrentHashMap<BlockPos, ColorHolder>()
-
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT
     }
@@ -43,43 +39,46 @@ object HoleESP : Module() {
         OBBY, BEDROCK, BOTH
     }
 
-    private fun shouldAddObby(): Boolean {
-        return holeType.value == HoleType.OBBY || holeType.value == HoleType.BOTH
-    }
-
-    private fun shouldAddBedrock(): Boolean {
-        return holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
-    }
+    private val renderer = ESPRenderer()
+    private val timer = TimerUtils.TickTimer()
 
     init {
-        listener<SafeTickEvent> {
-            safeHoles.clear()
-            val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value)
-            for (pos in blockPosList) {
-                val holeType = SurroundUtils.checkHole(pos)
-                if (holeType == SurroundUtils.HoleType.NONE) continue
-
-                if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
-                    safeHoles[pos] = ColorHolder(r1.value, g1.value, b1.value)
-                }
-                if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
-                    safeHoles[pos] = ColorHolder(r2.value, g2.value, b2.value)
-                }
-            }
-        }
-
         listener<RenderWorldEvent> {
-            if (mc.player == null || safeHoles.isEmpty()) return@listener
-            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
-            else GeometryMasks.Quad.DOWN
-            val renderer = ESPRenderer()
-            renderer.aFilled = if (filled.value) aFilled.value else 0
-            renderer.aOutline = if (outline.value) aOutline.value else 0
-            for ((pos, colour) in safeHoles) {
-                val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
-                renderer.add(renderPos, colour, side)
-            }
-            renderer.render(true)
+            if (mc.world == null || mc.player == null) return@listener
+            if (timer.tick(133L)) updateRenderer() // Avoid running this on a tick
+            renderer.render(false)
         }
     }
+
+    private fun updateRenderer() {
+        renderer.clear()
+        renderer.aFilled = if (filled.value) aFilled.value else 0
+        renderer.aOutline = if (outline.value) aOutline.value else 0
+
+        val playerPos = mc.player.positionVector.toBlockPos()
+        val colorObby = ColorHolder(r1.value, g1.value, b1.value)
+        val colorBedrock = ColorHolder(r2.value, g2.value, b2.value)
+        val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
+        else GeometryMasks.Quad.DOWN
+
+        for (x in -range.value..range.value) for (y in -range.value..range.value) for (z in -range.value..range.value) {
+            val pos = playerPos.add(x, y, z)
+            val holeType = SurroundUtils.checkHole(pos)
+            if (holeType == SurroundUtils.HoleType.NONE) continue
+
+            val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
+
+            if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
+                renderer.add(renderPos, colorObby, side)
+            }
+            if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
+                renderer.add(renderPos, colorBedrock, side)
+            }
+        }
+    }
+
+    private fun shouldAddObby() = holeType.value == HoleType.OBBY || holeType.value == HoleType.BOTH
+
+    private fun shouldAddBedrock() = holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
+
 }

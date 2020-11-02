@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirectOther
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -32,7 +31,7 @@ object ChatFilter : Module() {
 
     private fun isDetected(message: String): Boolean {
         val ownMsg = "^<" + mc.player.name + "> "
-        return if (!filterOwn.value && customMatch(ownMsg, message) || isDirect(filterDMs.value, message) || isDirectOther(filterDMs.value, message)) {
+        return if (!filterOwn.value && customMatch(ownMsg, message) || isDirect(filterDMs.value, message)) {
             false
         } else {
             isMatched(message)

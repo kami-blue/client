@@ -58,7 +58,7 @@ object NoFall : Module() {
         }
 
         listener<SafeTickEvent> {
-            if (mc.player.isCreative || mc.player.isSpectator || fallDistCheck()) return@listener
+            if (mc.player.isCreative || mc.player.isSpectator || !fallDistCheck()) return@listener
             if (mode.value == Mode.FALL) {
                 fallMode()
             } else if (mode.value == Mode.CATCH) {

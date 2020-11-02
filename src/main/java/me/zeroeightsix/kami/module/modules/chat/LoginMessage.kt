@@ -54,9 +54,8 @@ object LoginMessage : Module() {
     }
 
     override fun onEnable() {
-        val fileReader = FileReader(file)
-
         if (file.exists()) {
+            val fileReader = FileReader(file)
             try {
                 fileReader.readLines().getOrNull(0)?.let {
                     if (it.isNotBlank()) loginMessage = it.trim()
@@ -66,6 +65,7 @@ object LoginMessage : Module() {
                 MessageSendHelper.sendErrorMessage("$chatName Failed loading login message, $e")
                 disable()
             }
+            fileReader.close()
         } else {
             file.createNewFile()
             MessageSendHelper.sendErrorMessage("$chatName Login Message file is empty!" +
@@ -73,6 +73,5 @@ object LoginMessage : Module() {
             disable()
         }
 
-        fileReader.close()
     }
 }

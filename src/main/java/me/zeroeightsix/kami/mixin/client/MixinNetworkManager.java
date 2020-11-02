@@ -47,10 +47,11 @@ public class MixinNetworkManager {
     }
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)
-    private void exceptionCaught(ChannelHandlerContext p_exceptionCaught_1_, Throwable p_exceptionCaught_2_, CallbackInfo info) {
+    private void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable, CallbackInfo ci) {
         if (NoPacketKick.INSTANCE.isEnabled()) {
-            sendWarningMessage("[NoPacketKick] Caught exception - " + p_exceptionCaught_2_.toString());
-            info.cancel();
+            sendWarningMessage("[NoPacketKick] Caught exception - \"" + throwable.toString() + "\" check log for more info");
+            throwable.printStackTrace();
+            ci.cancel();
         }
         return; // DON'T REMOVE THE FUCKING RETURN
     }

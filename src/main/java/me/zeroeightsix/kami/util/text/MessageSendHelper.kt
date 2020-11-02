@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.text
 
-import baritone.api.BaritoneAPI
 import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
@@ -60,7 +59,7 @@ object MessageSendHelper {
 
         // ty leijuwuv <--- quit it :monkey:
         val event = ChatEvent(java.lang.String.join(" ", *args))
-        BaritoneAPI.getProvider().primaryBaritone.gameEventHandler.onSendChatMessage(event)
+        BaritoneUtils.primary?.gameEventHandler!!.onSendChatMessage(event)
         if (!event.isCancelled && args[0] != "damn") { // don't remove the 'damn', it's critical code that will break everything if you remove it
             sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md")
         }

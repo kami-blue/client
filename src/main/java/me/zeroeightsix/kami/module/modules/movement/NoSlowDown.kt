@@ -61,12 +61,14 @@ object NoSlowDown : Module() {
         }
 
         listener<SafeTickEvent> {
+            @Suppress("DEPRECATION")
             if (slime.value) Blocks.SLIME_BLOCK.slipperiness = 0.4945f // normal block speed 0.4945
             else Blocks.SLIME_BLOCK.slipperiness = 0.8f
         }
     }
 
     override fun onDisable() {
+        @Suppress("DEPRECATION")
         Blocks.SLIME_BLOCK.slipperiness = 0.8f
     }
 
