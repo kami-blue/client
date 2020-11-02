@@ -15,7 +15,6 @@ public class MixinParicleManager {
     public void renderEntityPre(Entity entityIn, float partialTicks, CallbackInfo ci) {
         if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getParticles().getValue()) {
             ci.cancel();
-            return;
         }
     }
 

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderEntityEvent;
-import me.zeroeightsix.kami.module.modules.render.NoRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -27,12 +26,6 @@ public class MixinRenderManager {
 
     @Inject(method = "renderEntity", at = @At("HEAD"), cancellable = true)
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
-        if (!entity.equals(mc.player) && NoRender.INSTANCE.isEnabled() &&
-                (NoRender.INSTANCE.getEntityList().contains(entity.getClass()) ||
-                        NoRender.INSTANCE.getEntityList().contains(entity.getClass().getSuperclass()))) {
-            ci.cancel();
-            return;
-        }
         RenderEntityEvent.Pre event = new RenderEntityEvent.Pre(entity, x, y, z, yaw, partialTicks, debug);
         KamiEventBus.INSTANCE.post(event);
         if (event.isCancelled()) ci.cancel();

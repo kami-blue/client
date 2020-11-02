@@ -34,12 +34,14 @@
     "MixinItemRenderer",
     "MixinLayerArmorBase",
     "MixinLayerHeldItem",
+    "MixinMapItemRenderer",
     "MixinMinecraft",
     "MixinModelBiped",
     "MixinModelBoat",
     "MixinMovementInputFromOptions",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
+    "MixinParicleManager",
     "MixinPlayerControllerMP",
     "MixinRender",
     "MixinRenderGlobal",
@@ -47,11 +49,9 @@
     "MixinRenderPlayer",
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
+    "MixinTileEntityRendererDispatcher",
     "MixinTileEntitySignRenderer",
     "MixinVisGraph",
-    "MixinWorld",
-    "MixinTileEntityRendererDispatcher",
-    "MixinMapItemRenderer",
-    "MixinParicleManager"
+    "MixinWorld"
   ]
 }
