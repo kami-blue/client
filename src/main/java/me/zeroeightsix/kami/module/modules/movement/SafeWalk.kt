@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
         description = "Keeps you from walking off edges"
 )
 object SafeWalk : Module() {
-    private val baritoneCompat = register(Settings.b("BaritoneCompatibility", true))
+    private val baritoneCompat = setting("BaritoneCompatibility", true)
 
     fun shouldSafewalk(): Boolean {
         return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess!!.goal == null || !baritoneCompat.value)

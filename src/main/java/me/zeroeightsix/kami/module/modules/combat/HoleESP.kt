@@ -17,7 +17,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
         description = "Show safe holes for crystal pvp"
 )
 object HoleESP : Module() {
-    private val renderDistance = setting("RenderDistance", 8, 4..16, 1)
+    private val range = setting("RenderDistance", 8, 4..16, 1)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
     private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObby() })

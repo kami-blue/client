@@ -22,7 +22,7 @@ import net.minecraft.network.play.server.SPacketChat
 )
 object BaritoneRemote : Module() {
     private val feedback = setting("SendFeedback", true)
-    private val allow: Setting<Allow> = setting("Allow", Allow.FRIENDS)
+    private val allow = setting("Allow", Allow.FRIENDS)
     private val custom = setting("Custom", "unchanged")
 
     private var sendNextMsg = false
@@ -51,7 +51,9 @@ object BaritoneRemote : Module() {
                 val command = message.detectAndRemove(Regexes.DIRECT) ?: message.detectAndRemove(Regexes.DIRECT_ALT)
                 ?: return@listener
 
-                if ((!command.startsWith("#") && !command.startsWith(";b ")) || !isValidUser(username)) return@listener
+                val bPrefix = BaritoneUtils.prefix
+                val kbPrefix = "${Command.getCommandPrefix()}b "
+                if ((!command.startsWith(bPrefix) && !command.startsWith(kbPrefix)) || !isValidUser(username)) return@listener
 
                 val baritoneCommand =
                         if (command.startsWith(bPrefix)) command.substring(bPrefix.length).split(" ")
