@@ -25,6 +25,7 @@ object AutoEat : Module() {
     private val foodLevel = register(Settings.integerBuilder("BelowHunger").withValue(15).withRange(1, 20).withStep(1))
     private val healthLevel = register(Settings.integerBuilder("BelowHealth").withValue(8).withRange(1, 20).withStep(1))
     private val pauseBaritone = register(Settings.b("PauseBaritone", true))
+    private val eatBadFood = register(Settings.b("EatBadFood", false))
 
     private var lastSlot = -1
     var eating = false
@@ -36,12 +37,15 @@ object AutoEat : Module() {
 
     private fun passItemCheck(stack: ItemStack): Boolean {
         val item: Item = stack.getItem()
-        if (item == Items.ROTTEN_FLESH
-                || item == Items.SPIDER_EYE
-                || item == Items.POISONOUS_POTATO
-                || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Pufferfish, Clown fish
-                || item == Items.CHORUS_FRUIT) {
-            return false
+        // The player will not auto eat the food below if the EatBadFood setting is disabled
+        if (eatBadFood.value == false) {
+            if (item == Items.ROTTEN_FLESH
+                    || item == Items.SPIDER_EYE
+                    || item == Items.POISONOUS_POTATO
+                    || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Pufferfish, Clown fish
+                    || item == Items.CHORUS_FRUIT) {
+                return false
+            }
         }
         return true
     }
