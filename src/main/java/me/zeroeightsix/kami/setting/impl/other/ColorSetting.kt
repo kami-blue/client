@@ -9,4 +9,4 @@ class ColorSetting(
         val hasAlpha: Boolean = true,
         visibility: () -> Boolean = { true },
         description: String = ""
-) : Setting<ColorHolder>(name, value, visibility, { _, input -> input }, description)
+) : Setting<ColorHolder>(name, value, visibility, { _, input -> if (!hasAlpha) input.apply { a = 255 } else input }, description)
