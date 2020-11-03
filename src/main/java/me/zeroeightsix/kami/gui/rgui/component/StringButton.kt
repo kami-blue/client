@@ -28,11 +28,8 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
     override fun onTick() {
         super.onTick()
         if (!listening) {
-            if (mouseState != MouseState.NONE && (System.currentTimeMillis() - lastStateUpdateTime > 1000L || mouseState != MouseState.HOVER)) {
-                name.value = setting.value
-            } else {
-                name.value = originalName
-            }
+            name.value = if (mouseState != MouseState.NONE) setting.value
+            else originalName
         }
     }
 
