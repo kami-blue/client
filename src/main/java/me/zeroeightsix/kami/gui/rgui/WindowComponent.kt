@@ -24,8 +24,9 @@ open class WindowComponent(
     // Interactive info
     open val draggableHeight get() = height.value
     var lastActiveTime: Long = System.currentTimeMillis(); protected set
-    var preDragPos = Vec2f(0.0f, 0.0f); private set
-    var preDragSize = Vec2f(0.0f, 0.0f); private set
+    var preDragMousePos = Vec2f.ZERO; private set
+    var preDragPos = Vec2f.ZERO; private set
+    var preDragSize = Vec2f.ZERO; private set
 
     // Render info
     private var minimizedTime = 0L
@@ -60,23 +61,27 @@ open class WindowComponent(
 
     override fun onGuiInit() {
         super.onGuiInit()
-        updatePreDrag()
+        updatePreDrag(null)
+    }
+
+    override fun onMouseInput(mousePos: Vec2f) {
+        super.onMouseInput(mousePos)
+        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.subtract(posX, posY))
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        updatePreDrag()
         lastActiveTime = System.currentTimeMillis()
         if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized.value = !minimized.value
     }
 
-    private fun updatePreDrag() {
+    private fun updatePreDrag(mousePos: Vec2f?) {
+        mousePos?.let { preDragMousePos = it }
         preDragPos = Vec2f(posX, posY)
         preDragSize = Vec2f(width.value, height.value)
     }
@@ -164,7 +169,7 @@ open class WindowComponent(
     }
 
     init {
-        with({ updatePreDrag() }) {
+        with({ updatePreDrag(null) }) {
             dockingH.listeners.add(this)
             dockingV.listeners.add(this)
         }

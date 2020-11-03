@@ -207,7 +207,7 @@ object RenderUtils2D {
         return max(segments.roundToInt(), 16)
     }
 
-    private fun prepareGl() {
+    fun prepareGl() {
         GlStateUtils.alpha(false)
         GlStateUtils.texture2d(false)
         GlStateUtils.blend(true)
@@ -216,7 +216,7 @@ object RenderUtils2D {
         GlStateUtils.cull(false)
     }
 
-    private fun releaseGl() {
+    fun releaseGl() {
         GlStateUtils.alpha(true)
         GlStateUtils.texture2d(true)
         GlStateUtils.smooth(false)

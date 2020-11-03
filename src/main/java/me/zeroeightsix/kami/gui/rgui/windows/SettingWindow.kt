@@ -37,7 +37,7 @@ abstract class SettingWindow<T : Any>(
                     is BooleanSetting -> SettingButton(setting)
                     is NumberSetting -> SettingSlider(setting)
                     is EnumSetting -> EnumSlider(setting)
-                    is ColorSetting -> Button(setting.name, { listeningChild = it }, setting.description)
+                    is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description)
                     is StringSetting -> StringButton(setting)
                     is BindSetting -> BindButton(setting)
                     else -> null
@@ -47,6 +47,12 @@ abstract class SettingWindow<T : Any>(
             }
             initialized = true
         }
+    }
+
+    private fun displayColorPicker(colorSetting: ColorSetting) {
+        ColorPicker.visible.value = true
+        ColorPicker.setting = colorSetting
+        ColorPicker.onDisplayed()
     }
 
     override fun onDisplayed() {
@@ -71,6 +77,7 @@ abstract class SettingWindow<T : Any>(
     override fun onClosed() {
         super.onClosed()
         listeningChild = null
+        ColorPicker.visible.value = false
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {

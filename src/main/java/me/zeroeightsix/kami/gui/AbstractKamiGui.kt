@@ -2,6 +2,8 @@ package me.zeroeightsix.kami.gui
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
+import me.zeroeightsix.kami.gui.rgui.windows.ColorPicker
+import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.Wrapper
@@ -21,7 +23,7 @@ import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.HashMap
 
-abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
+abstract class AbstractKamiGui<S: SettingWindow<*>, E: Any> : GuiScreen() {
 
     // Window
     val windowList = LinkedHashSet<WindowComponent>()
@@ -58,6 +60,7 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
     init {
         mc = Wrapper.minecraft
+        windowList.add(ColorPicker)
 
         listener<SafeTickEvent> { event ->
             if (event.phase != TickEvent.Phase.START) return@listener
@@ -165,7 +168,7 @@ abstract class AbstractKamiGui<S: WindowComponent, E: Any> : GuiScreen() {
 
     private fun updateSettingWindow() {
         settingWindow?.let {
-            if (lastClickedWindow != it) {
+            if (lastClickedWindow != it && lastClickedWindow != ColorPicker) {
                 it.onClosed()
                 windowList.remove(it)
                 settingWindow = null
