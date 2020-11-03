@@ -23,13 +23,14 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     override val minimizable: Boolean get() = false
 
     var setting: ColorSetting? = null
-    private var hoveredComponent: Slider? = null
+    private var hoveredChild: Slider? = null
         set(value) {
             if (value == field) return
             field?.onLeave(AbstractKamiGui.getRealMousePos())
             value?.onHover(AbstractKamiGui.getRealMousePos())
             field = value
         }
+    private var listeningChild: Slider? = null
 
     // Positions
     private var fieldHeight = 0.0f
@@ -66,7 +67,14 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     override fun onDisplayed() {
         super.onDisplayed()
         updatePos()
-        setting?.value?.clone()?.let { updateHSBFromRGB() }
+        setting?.let {
+            r.value = it.value.r
+            g.value = it.value.g
+            b.value = it.value.b
+            if (it.hasAlpha) a.value = it.value.a
+            sliderA.visible.value = it.hasAlpha
+            updateHSBFromRGB()
+        }
         lastActiveTime = System.currentTimeMillis() + 1000L
         for (component in components) component.onDisplayed()
     }
@@ -77,13 +85,14 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         prevSaturation = saturation
         prevBrightness = brightness
         for (component in components) component.onTick()
-        if (hoveredComponent != null) updateHSBFromRGB()
+        if (hoveredChild != null) updateHSBFromRGB()
+        if (listeningChild?.listening == false) listeningChild = null
     }
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
 
-        hoveredComponent = components.firstOrNull {
+        hoveredChild = components.firstOrNull {
             it.visible.value
                     && preDragMousePos.x in it.posX..it.posX + it.width.value
                     && preDragMousePos.y in it.posY..it.posY + it.height.value
@@ -96,7 +105,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         super.onClick(mousePos, buttonId)
         val relativeMousePos = mousePos.subtract(posX, posY)
 
-        hoveredComponent?.let {
+        hoveredChild?.let {
             it.onClick(relativeMousePos.subtract(it.posX, it.posY), buttonId)
         } ?: run {
             updateValues(relativeMousePos, relativeMousePos)
@@ -107,8 +116,9 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         super.onRelease(mousePos, buttonId)
         val relativeMousePos = mousePos.subtract(posX, posY)
 
-        hoveredComponent?.let {
+        hoveredChild?.let {
             it.onRelease(relativeMousePos.subtract(it.posX, it.posY), buttonId)
+            if (it.listening) listeningChild = it
         } ?: run {
             updateValues(relativeMousePos, relativeMousePos)
         }
@@ -119,7 +129,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val relativeMousePos = mousePos.subtract(posX, posY)
         val relativeClickPos = clickPos.subtract(posX, posY)
 
-        hoveredComponent?.let {
+        hoveredChild?.let {
             it.onDrag(relativeMousePos.subtract(it.posX, it.posY), clickPos, buttonId)
         } ?: run {
             updateValues(relativeMousePos, relativeClickPos)
@@ -143,6 +153,11 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     private fun isInPair(mousePos: Vec2f, pair: Pair<Vec2f, Vec2f>) =
             mousePos.x in pair.first.x..pair.second.x && mousePos.y in pair.first.y..pair.second.y
+
+    override fun onKeyInput(keyCode: Int, keyState: Boolean) {
+        super.onKeyInput(keyCode, keyState)
+        listeningChild?.onKeyInput(keyCode, keyState)
+    }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
