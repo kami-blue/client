@@ -20,8 +20,8 @@ object TPS : LabelHud("TPS") {
 
         val tps = MathUtils.round(tpsList.average(), 2)
 
-        displayText.add("$tps")
-        displayText.add("tps")
+        displayText.add("$tps", primaryColor.value)
+        displayText.add("tps", secondaryColor.value)
     }
 
 }

@@ -41,10 +41,10 @@ object CrystalDamage : LabelHud("CrystalDamage") {
         currentTarget = calcAndRound(prevDamages.third, currentTarget)
         currentSelf = calcAndRound(prevDamages.fourth, currentSelf)
 
-        displayText.add("Potential")
-        displayText.addLine("$potentialTarget/$potentialSelf")
-        displayText.add("Current")
-        displayText.add("$currentTarget/$currentSelf")
+        displayText.add("Potential", secondaryColor.value)
+        displayText.addLine("$potentialTarget/$potentialSelf", primaryColor.value)
+        displayText.add("Current", secondaryColor.value)
+        displayText.add("$currentTarget/$currentSelf", primaryColor.value)
         prevDamages = quad
     }
 

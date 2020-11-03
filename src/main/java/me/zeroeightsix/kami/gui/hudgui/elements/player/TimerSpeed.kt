@@ -12,8 +12,8 @@ object TimerSpeed : LabelHud("TimerSpeed") {
 
     override fun updateText() {
         val timerSpeed = MathUtils.round(50.0f / mc.timer.tickLength, 2)
-        displayText.add(timerSpeed.toString())
-        displayText.add("x")
+        displayText.add(timerSpeed.toString(), primaryColor.value)
+        displayText.add("x", secondaryColor.value)
     }
 
     init {

@@ -54,19 +54,19 @@ object FPS : LabelHud("FPS") {
         }
         avg /= 300
 
-        displayText.add("FPS")
-        displayText.add(fps.toString())
+        displayText.add("FPS", secondaryColor.value)
+        displayText.add(fps.toString(), primaryColor.value)
         if (showAverage.value) {
-            displayText.add("AVG")
-            displayText.add(avg.toString())
+            displayText.add("AVG", secondaryColor.value)
+            displayText.add(avg.toString(), primaryColor.value)
         }
         if (showMin.value) {
-            displayText.add("MIN")
-            displayText.add(min.toString())
+            displayText.add("MIN", secondaryColor.value)
+            displayText.add(min.toString(), primaryColor.value)
         }
         if (showMax.value) {
-            displayText.add("MAX")
-            displayText.add(max.toString())
+            displayText.add("MAX", secondaryColor.value)
+            displayText.add(max.toString(), primaryColor.value)
         }
     }
 
