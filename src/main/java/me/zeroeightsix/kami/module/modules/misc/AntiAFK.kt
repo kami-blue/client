@@ -150,7 +150,7 @@ object AntiAFK : Module() {
     }
 
     private fun baritoneGotoXZ(x: Int, z: Int) {
-        BaritoneUtils.primary?.customGoalProcess!!.setGoalAndPath(GoalXZ(x, z))
+        BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
     }
 
     init {

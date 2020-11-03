@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import net.minecraft.util.math.BlockPos
 
 @Module.Info(
         name = "HoleESP",
@@ -36,7 +37,7 @@ object HoleESP : Module() {
     }
 
     private enum class HoleType {
-        OBBY, BEDROCK, BOTH
+        OBSIDIAN, BEDROCK, BOTH
     }
 
     private val renderer = ESPRenderer()
@@ -56,28 +57,40 @@ object HoleESP : Module() {
         renderer.aOutline = if (outline.value) aOutline.value else 0
 
         val playerPos = mc.player.positionVector.toBlockPos()
-        val colorObby = ColorHolder(r1.value, g1.value, b1.value)
-        val colorBedrock = ColorHolder(r2.value, g2.value, b2.value)
         val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
         else GeometryMasks.Quad.DOWN
 
+        addToRenderer(playerPos, side)
+    }
+
+    private fun addToRenderer(playerPos: BlockPos, side: Int) {
         for (x in -range.value..range.value) for (y in -range.value..range.value) for (z in -range.value..range.value) {
             val pos = playerPos.add(x, y, z)
             val holeType = SurroundUtils.checkHole(pos)
             if (holeType == SurroundUtils.HoleType.NONE) continue
+            if (hideOwn.value && playerPos == pos) continue
 
-            val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
-
-            if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObby()) {
-                renderer.add(renderPos, colorObby, side)
-            }
-            if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
-                renderer.add(renderPos, colorBedrock, side)
-            }
+            renderWithHoleType(
+                    holeType,
+                    if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos,
+                    ColorHolder(r1.value, g1.value, b1.value),
+                    ColorHolder(r2.value, g2.value, b2.value),
+                    side
+            )
         }
     }
 
-    private fun shouldAddObby() = holeType.value == HoleType.OBBY || holeType.value == HoleType.BOTH
+    private fun renderWithHoleType(holeType: SurroundUtils.HoleType, renderPos: BlockPos, colorObsidian: ColorHolder, colorBedrock: ColorHolder, side: Int) {
+        if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObsidian()) {
+            renderer.add(renderPos, colorObsidian, side)
+        }
+
+        if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
+            renderer.add(renderPos, colorBedrock, side)
+        }
+    }
+
+    private fun shouldAddObsidian() = holeType.value == HoleType.OBSIDIAN || holeType.value == HoleType.BOTH
 
     private fun shouldAddBedrock() = holeType.value == HoleType.BEDROCK || holeType.value == HoleType.BOTH
 

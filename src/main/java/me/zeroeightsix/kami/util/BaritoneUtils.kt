@@ -20,17 +20,18 @@ object BaritoneUtils {
 
     fun pause() {
         if (!paused) {
-            primary?.pathingControlManager!!.registerProcess(TemporaryPauseProcess)
+            primary?.pathingControlManager?.registerProcess(TemporaryPauseProcess)
             paused = true
         }
     }
 
     fun unpause() {
         if (paused) {
-            val process = primary?.pathingControlManager!!.mostRecentInControl()
-            if (process.isPresent && process.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
-                paused = false
-                process.get().onLostControl()
+            primary?.pathingControlManager?.mostRecentInControl()?.let {
+                if (it.isPresent && it.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
+                    paused = false
+                    it.get().onLostControl()
+                }
             }
         }
     }

@@ -38,6 +38,10 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -109,10 +113,9 @@ object CrystalAura : Module() {
     }
 
     /* Variables */
-    private val placedBBMap = HashMap<AxisAlignedBB, Long>() // <CrystalBoundingBox, Added Time>
+    private val placedBBMap = Collections.synchronizedMap(HashMap<AxisAlignedBB, Long>()) // <CrystalBoundingBox, Added Time>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private val packetList = ArrayList<Packet<*>>(3)
-    private val lockObject = Any()
 
     private var placeList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>
     private var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage>>
@@ -135,10 +138,6 @@ object CrystalAura : Module() {
     }
 
     override fun onDisable() {
-        placedBBMap.clear()
-        ignoredList.clear()
-        packetList.clear()
-
         lastCrystal = null
         forcePlacing = false
         placeTimer = 0
@@ -161,9 +160,7 @@ object CrystalAura : Module() {
 
             if (it.packet is SPacketSpawnObject && it.packet.type == 51) {
                 val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
-                synchronized(lockObject) {
-                    placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
-                }
+                placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
             }
 
             // Minecraft sends sounds packets a tick before removing the crystal lol

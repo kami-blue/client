@@ -13,6 +13,6 @@ object SafeWalk : Module() {
     private val baritoneCompat = setting("BaritoneCompatibility", true)
 
     fun shouldSafewalk(): Boolean {
-        return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess!!.goal == null || !baritoneCompat.value)
+        return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess?.goal == null || !baritoneCompat.value)
     }
 }
