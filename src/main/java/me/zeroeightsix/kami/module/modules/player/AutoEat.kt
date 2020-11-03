@@ -24,6 +24,7 @@ import net.minecraft.util.EnumHand
 object AutoEat : Module() {
     private val foodLevel = setting("BelowHunger", 15, 1..20, 1)
     private val healthLevel = setting("BelowHealth", 8, 1..20, 1)
+    private val eatBadFood = setting("EatBadFood", true)
     private val pauseBaritone = setting("PauseBaritone", true)
 
     private var lastSlot = -1
