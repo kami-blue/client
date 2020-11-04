@@ -7,7 +7,8 @@ import me.zeroeightsix.kami.module.modules.client.Capes
 
 @HudElement.Info(
         category = HudElement.Category.MISC,
-        description = "KAMI Blue watermark"
+        description = "KAMI Blue watermark",
+        enabledByDefault = true
 )
 object WaterMark : LabelHud("Watermark") {
 

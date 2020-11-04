@@ -24,7 +24,8 @@ open class HudElement(
             val alias: Array<String> = [],
             val description: String,
             val category: Category,
-            val alwaysListening: Boolean = false
+            val alwaysListening: Boolean = false,
+            val enabledByDefault: Boolean = false
     )
 
     enum class Category(val displayName: String) {
@@ -61,6 +62,8 @@ open class HudElement(
             if (it) KamiEventBus.subscribe(this)
             else if (!alwaysListening) KamiEventBus.unsubscribe(this)
         }
+
+        if (!annotation.enabledByDefault) visible.value = false
     }
 
 }
