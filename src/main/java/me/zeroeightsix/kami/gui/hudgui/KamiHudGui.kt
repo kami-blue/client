@@ -8,10 +8,12 @@ import me.zeroeightsix.kami.gui.hudgui.component.HudButton
 import me.zeroeightsix.kami.gui.hudgui.window.HudSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
+import me.zeroeightsix.kami.module.modules.client.HudEditor
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 
 object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
@@ -32,6 +34,14 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
     override fun newSettingWindow(element: HudElement, mousePos: Vec2f): HudSettingWindow {
         return HudSettingWindow(element, mousePos.x, mousePos.y)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (keyCode == Keyboard.KEY_ESCAPE || HudEditor.bind.value.isDown(keyCode)) {
+            HudEditor.disable()
+        } else {
+            super.keyTyped(typedChar, keyCode)
+        }
     }
 
     init {

@@ -39,10 +39,6 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
     override fun handleKeyboardInput() {
         super.handleKeyboardInput()
         val keyCode = Keyboard.getEventKey()
-        val keyState = Keyboard.getEventKeyState()
-
-        hoveredWindow?.onKeyInput(keyCode, keyState)
-        if (settingWindow != hoveredWindow) settingWindow?.onKeyInput(keyCode, keyState)
 
         if (settingWindow?.listeningChild == null && (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE)) {
             typedString = ""

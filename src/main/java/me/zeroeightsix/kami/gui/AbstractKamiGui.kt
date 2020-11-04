@@ -18,6 +18,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
@@ -183,6 +184,16 @@ abstract class AbstractKamiGui<S: SettingWindow<*>, E: Any> : GuiScreen() {
     }
     // End of mouse input
 
+    // Keyboard input
+    override fun handleKeyboardInput() {
+        super.handleKeyboardInput()
+        val keyCode = Keyboard.getEventKey()
+        val keyState = Keyboard.getEventKeyState()
+
+        hoveredWindow?.onKeyInput(keyCode, keyState)
+        if (settingWindow != hoveredWindow) settingWindow?.onKeyInput(keyCode, keyState)
+    }
+    // End of keyboard input
 
     // Rendering
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
