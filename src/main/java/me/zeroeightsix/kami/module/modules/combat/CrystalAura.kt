@@ -93,8 +93,8 @@ object CrystalAura : Module() {
     private val antiWeakness = setting("AntiWeakness", true, { page.value == Page.EXPLODE_ONE })
 
     /* Explode page two */
-    private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO && checkDamage.value })
-    private val maxSelfDamageE = setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO && checkDamage.value })
+    private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
+    private val maxSelfDamageE = setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
     private val swapDelay = setting("SwapDelay", 10, 1..50, 2, { page.value == Page.EXPLODE_TWO })
     private val hitDelay = setting("HitDelay", 1, 1..10, 1, { page.value == Page.EXPLODE_TWO })
     private val hitAttempts = setting("HitAttempts", 4, 0..8, 1, { page.value == Page.EXPLODE_TWO })

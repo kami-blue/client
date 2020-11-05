@@ -17,15 +17,15 @@ object CrystalDamage : LabelHud("CrystalDamage") {
     private var prevDamages = Quad(0.0f, 0.0f, 0.0f, 0.0f)
 
     override fun updateText() {
-        val placeList = CombatManager.crystalPlaceList
+        val placeList = CombatManager.placeMap
         val crystalList = CombatManager.crystalMap.values
 
         var potentialTarget = 0.0f
         var potentialSelf = 0.0f
-        for ((pos, damage, selfDamage) in placeList) {
+        for ((pos, triple) in placeList) {
             if (!CrystalUtils.canPlaceCollide(pos)) continue
-            potentialTarget = max(damage, potentialTarget)
-            potentialSelf = max(selfDamage, potentialSelf)
+            potentialTarget = max(triple.first, potentialTarget)
+            potentialSelf = max(triple.second, potentialSelf)
         }
 
         var currentTarget = 0.0f
