@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.math.MathUtils
 
 @HudElement.Info(
-        category = HudElement.Category.MISC,
+        category = HudElement.Category.WORLD,
         description = "Display size of the chunk you are in"
 )
 object ChunkSize : LabelHud("ChunkSize") {

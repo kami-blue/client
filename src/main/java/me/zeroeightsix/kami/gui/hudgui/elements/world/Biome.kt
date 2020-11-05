@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
 @HudElement.Info(
-        category = HudElement.Category.MISC,
+        category = HudElement.Category.WORLD,
         description = "Display the current biome you are in"
 )
 object Biome : LabelHud("Biome") {
