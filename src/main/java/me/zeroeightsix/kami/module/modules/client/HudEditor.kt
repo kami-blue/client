@@ -25,7 +25,6 @@ object HudEditor : Module() {
     override fun onDisable() {
         if (mc.currentScreen is KamiHudGui) {
             mc.displayGuiScreen(null)
-            KamiEventBus.unsubscribe(KamiHudGui)
         }
     }
 
