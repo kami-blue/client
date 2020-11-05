@@ -11,8 +11,8 @@ import me.zeroeightsix.kami.util.InfoCalculator
 )
 object MemoryUsage : LabelHud("MemoryUsage") {
 
-    private val showAllocated = setting("ShowAllocated", true)
-    private val showMax = setting("ShowMax", true)
+    private val showAllocated = setting("ShowAllocated", false)
+    private val showMax = setting("ShowMax", false)
 
     override fun updateText() {
         displayText.add(InfoCalculator.memory().toString(), primaryColor.value)
