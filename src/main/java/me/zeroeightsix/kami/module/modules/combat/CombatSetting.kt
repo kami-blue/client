@@ -16,6 +16,7 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -23,6 +24,7 @@ import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import java.util.concurrent.Executors
@@ -150,18 +152,19 @@ object CombatSetting : Module() {
     private fun updatePlacingList() {
         if (CrystalAura.isDisabled && CrystalBasePlace.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 != 0) return
 
-        CombatManager.crystalPlaceList = CombatManager.target?.let {
-            val cacheList = ArrayList<Triple<BlockPos, Float, Float>>()
-            val prediction = getPrediction(it)
+        val eyePos = mc.player?.getPositionEyes(1f) ?: Vec3d.ZERO
+        val cacheList = ArrayList<Pair<BlockPos, Triple<Float, Float, Double>>>()
+        val target = CombatManager.target
+        val prediction = target?.let { getPrediction(it) }
 
-            for (pos in CrystalUtils.getPlacePos(it, mc.player, 8f)) {
-                val damage = CrystalUtils.calcDamage(pos, it, prediction.first, prediction.second)
-                val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
-                cacheList.add(Triple(pos, damage, selfDamage))
-            }
+        for (pos in CrystalUtils.getPlacePos(target, mc.player, 8f)) {
+            val dist = eyePos.distanceTo(pos.toVec3d().add(0.0, 0.5, 0.0))
+            val damage = target?.let { CrystalUtils.calcDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
+            val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+            cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
+        }
 
-            cacheList.sortedByDescending { damage -> damage.second }
-        } ?: emptyList()
+        CombatManager.placeMap = linkedMapOf(*cacheList.sortedByDescending { triple -> triple.second.first }.toTypedArray())
     }
 
     private fun updateCrystalList() {
@@ -184,7 +187,7 @@ object CombatSetting : Module() {
             cacheList.add(entity to Triple(damage, selfDamage, dist))
         }
 
-        cacheMap.putAll(cacheList.sortedBy { pair -> pair.second.third })
+        cacheMap.putAll(cacheList.sortedByDescending { pair -> pair.second.first })
         CombatManager.crystalMap = cacheMap
     }
 

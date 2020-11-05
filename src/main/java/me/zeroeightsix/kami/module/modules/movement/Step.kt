@@ -105,7 +105,11 @@ object Step : Module() {
 
             val prevPos = PlayerPacketManager.prevServerSidePosition
             if (mc.player.ticksExisted - lastCollidedTick <= 5) getStepArray(event.packet.y - prevPos.y)?.let {
-                for (posY in it) mc.connection?.sendPacket(CPacketPlayer.Position(prevPos.x, prevPos.y + posY, prevPos.z, true))
+                for (posY in it) {
+                    val packet = CPacketPlayer.Position(prevPos.x, prevPos.y + posY, prevPos.z, true)
+                    ignoredPackets.add(packet)
+                    mc.connection?.sendPacket(packet)
+                }
             }
         }
     }

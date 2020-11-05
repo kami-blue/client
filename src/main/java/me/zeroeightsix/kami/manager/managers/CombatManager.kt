@@ -17,7 +17,7 @@ object CombatManager : Manager() {
             motionTracker.target = value
             field = value
         }
-    var crystalPlaceList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>, immutable list = thread safe
+    var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, <Target Damage, Self Damage, Distance>>
     var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage, Distance>>
     val motionTracker = MotionTracker(null)
 

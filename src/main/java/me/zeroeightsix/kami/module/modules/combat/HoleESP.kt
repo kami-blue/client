@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
-import net.minecraft.util.math.BlockPos
 
 @Module.Info(
         name = "HoleESP",
@@ -22,12 +21,12 @@ object HoleESP : Module() {
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)
     private val hideOwn = setting("HideOwn", true)
-    private val r1 = setting("Red(O)", 208, 0..255, 1, { shouldAddObsidian() })
-    private val g1 = setting("Green(O)", 144, 0..255, 1, { shouldAddObsidian() })
-    private val b1 = setting("Blue(O)", 255, 0..255, 1, { shouldAddObsidian() })
-    private val r2 = setting("Red(B)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val g2 = setting("Green(B)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val b2 = setting("Blue(B)", 255, 0..255, 1, { shouldAddBedrock() })
+    private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObsidian() })
+    private val g1 = setting("Green(Obby)", 144, 0..255, 1, { shouldAddObsidian() })
+    private val b1 = setting("Blue(Obby)", 255, 0..255, 1, { shouldAddObsidian() })
+    private val r2 = setting("Red(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val g2 = setting("Green(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val b2 = setting("Blue(Bedrock)", 255, 0..255, 1, { shouldAddBedrock() })
     private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
     private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
     private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
@@ -57,37 +56,26 @@ object HoleESP : Module() {
         renderer.aFilled = if (filled.value) aFilled.value else 0
         renderer.aOutline = if (outline.value) aOutline.value else 0
 
+        val colorObsidian = ColorHolder(r1.value, g1.value, b1.value)
+        val colorBedrock = ColorHolder(r2.value, g2.value, b2.value)
         val playerPos = mc.player.positionVector.toBlockPos()
         val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL
         else GeometryMasks.Quad.DOWN
 
-        addToRenderer(playerPos, side)
-    }
-
-    private fun addToRenderer(playerPos: BlockPos, side: Int) {
         for (x in -range.value..range.value) for (y in -range.value..range.value) for (z in -range.value..range.value) {
+            if (hideOwn.value && x == 0 && y == 0 && z == 0) continue
             val pos = playerPos.add(x, y, z)
             val holeType = SurroundUtils.checkHole(pos)
             if (holeType == SurroundUtils.HoleType.NONE) continue
-            if (hideOwn.value && playerPos == pos) continue
+            val renderPos = if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos
 
-            renderWithHoleType(
-                    holeType,
-                    if (renderMode.value == Mode.BLOCK_FLOOR) pos.down() else pos,
-                    ColorHolder(r1.value, g1.value, b1.value),
-                    ColorHolder(r2.value, g2.value, b2.value),
-                    side
-            )
-        }
-    }
+            if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObsidian()) {
+                renderer.add(renderPos, colorObsidian, side)
+            }
 
-    private fun renderWithHoleType(holeType: SurroundUtils.HoleType, renderPos: BlockPos, colorObsidian: ColorHolder, colorBedrock: ColorHolder, side: Int) {
-        if (holeType == SurroundUtils.HoleType.OBBY && shouldAddObsidian()) {
-            renderer.add(renderPos, colorObsidian, side)
-        }
-
-        if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
-            renderer.add(renderPos, colorBedrock, side)
+            if (holeType == SurroundUtils.HoleType.BEDROCK && shouldAddBedrock()) {
+                renderer.add(renderPos, colorBedrock, side)
+            }
         }
     }
 

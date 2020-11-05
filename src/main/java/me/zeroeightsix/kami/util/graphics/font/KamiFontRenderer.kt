@@ -143,9 +143,9 @@ object KamiFontRenderer {
         val font = try {
             if (CustomFont.isDefaultFont) {
                 val inputStream = this.javaClass.getResourceAsStream(style.fontPath)
-                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(32f)
+                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(64.0f)
             } else {
-                Font(CustomFont.fontName.value, style.styleConst, 32)
+                Font(CustomFont.fontName.value, style.styleConst, 64)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -155,7 +155,7 @@ object KamiFontRenderer {
 
         // Load fallback font
         val fallbackFont = try {
-            Font(getFallbackFont(), style.styleConst, 32)
+            Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
             e.printStackTrace()
             KamiMod.log.error("Failed loading fallback font. Using Sans Serif font")
@@ -166,7 +166,7 @@ object KamiFontRenderer {
 
     private fun getFallbackFont() = fallbackFonts.firstOrNull { availableFonts.contains(it) }
 
-    private fun getSansSerifFont(style: Int) = Font("SansSerif", style, 32)
+    private fun getSansSerifFont(style: Int) = Font("SansSerif", style, 64)
 
     fun drawString(text: String, posXIn: Float = 0f, posYIn: Float = 0f, drawShadow: Boolean = true, colorIn: ColorHolder = ColorHolder(255, 255, 255), scale: Float = 1f) {
         var posX = 0.0
@@ -202,7 +202,7 @@ object KamiFontRenderer {
             } else {
                 if (drawShadow) {
                     getShadowColor(color).setGLColor()
-                    drawQuad(posX + 2.2, posY + 2.2, charInfo)
+                    drawQuad(posX + 4.5, posY + 4.5, charInfo)
                 }
 
                 color.setGLColor()

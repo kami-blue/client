@@ -74,8 +74,8 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
         // Loads the basic 256 characters on init
         fontHeight = loadGlyphChunk(0)?.let { chunk ->
             chunkMap[0] = chunk
-            chunk.charInfoArray.maxBy { it.height }?.height?.toFloat() ?: 32.0f
-        } ?: 32.0f
+            chunk.charInfoArray.maxBy { it.height }?.height?.toFloat() ?: 64.0f
+        } ?: 64.0f
     }
 
     /** @return CharInfo of [char] */
@@ -193,15 +193,15 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
 
             // Setup mipmap parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 3)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 4)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0f)
             GlStateManager.bindTexture(textureId)
 
-            // We only need 3 levels of mipmaps for 32 sized font
-            // 0: 32 x 32, 1: 16 x 16, 2: 8 x 8, 3: 4 x 4
-            for (mipmapLevel in 0..3) {
+            // We only need 4 levels of mipmaps for 64 sized font
+            // 0: 64 x 64, 1: 32 x 32, 2: 16 x 16, 3: 8 x 8, 4: 4 x 4
+            for (mipmapLevel in 0..4) {
                 // GL_ALPHA means that the texture is a grayscale texture (black & white and alpha only)
                 glTexImage2D(GL_TEXTURE_2D, mipmapLevel, GL_ALPHA, bufferedImage.width shr mipmapLevel, bufferedImage.height shr mipmapLevel, 0, GL_ALPHA, GL_UNSIGNED_BYTE, null as ByteBuffer?)
             }
@@ -300,6 +300,6 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
         const val TEXTURE_WIDTH_DOUBLE = 1024.0
 
         /** Max font texture height */
-        const val MAX_TEXTURE_HEIGHT = 1024
+        const val MAX_TEXTURE_HEIGHT = 4096
     }
 }

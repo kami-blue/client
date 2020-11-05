@@ -28,7 +28,7 @@ object CustomFont : Module() {
     private val lodBiasSetting = setting("LodBias", 2.0f, 0.0f..5.0f, 0.05f)
 
     val isDefaultFont get() = fontName.value.equals(DEFAULT_FONT_NAME, true)
-    val size get() = sizeSetting.value * 0.3f
+    val size get() = sizeSetting.value * 0.15f
     val gap get() = gapSetting.value * 0.5f - 0.8f
     val lineSpace get() = size * (lineSpaceSetting.value * 0.05f + 0.8f)
     val lodBias get() = lodBiasSetting.value * 0.5f - 1.25f

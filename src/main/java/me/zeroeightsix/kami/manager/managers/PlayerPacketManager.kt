@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
@@ -13,6 +14,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
 object PlayerPacketManager : Manager() {
@@ -44,18 +46,6 @@ object PlayerPacketManager : Manager() {
         }
 
         listener<PacketEvent.Send> {
-                if (it.packet is CPacketPlayer) {
-                    if (it.packet.moving) {
-                        prevServerSidePosition = serverSidePosition
-                        serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
-                    }
-                    if (it.packet.rotating) {
-                        prevServerSideRotation = serverSideRotation
-                        serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                        Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
-                    }
-                }
-
                 if (it.packet is CPacketHeldItemChange) {
                     if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
                         if (hotbarResetTimer.tick(2L)) {
@@ -64,11 +54,31 @@ object PlayerPacketManager : Manager() {
                             it.cancel()
                         }
                     }
-                    if (!it.isCancelled) {
-                        serverSideHotbar = it.packet.slotId
-                        lastSwapTime = System.currentTimeMillis()
-                    }
                 }
+        }
+
+        listener<PacketEvent.PostSend>(-6969) {
+            if (it.isCancelled) return@listener
+            if (it.packet is CPacketPlayer) {
+                if (it.packet.moving) {
+                    serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
+                }
+                if (it.packet.rotating) {
+                    serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
+                    Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
+                }
+            }
+
+            if (it.packet is CPacketHeldItemChange) {
+                serverSideHotbar = it.packet.slotId
+                lastSwapTime = System.currentTimeMillis()
+            }
+        }
+
+        listener<SafeTickEvent>(0x2269420) {
+            if (it.phase != TickEvent.Phase.START) return@listener
+            prevServerSidePosition = serverSidePosition
+            prevServerSideRotation = serverSideRotation
         }
 
         listener<RenderEntityEvent.Pre> {

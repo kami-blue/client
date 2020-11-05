@@ -12,6 +12,7 @@
     "MixinBlockWeb",
     "MixinC00Handshake",
     "MixinConfig",
+    "MixinDebugRendererChunkBorder",
     "MixinElytraSound",
     "MixinEntity",
     "MixinEntityLlama",
