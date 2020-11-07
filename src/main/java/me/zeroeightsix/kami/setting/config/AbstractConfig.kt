@@ -149,9 +149,9 @@ abstract class AbstractConfig<T>(
      * @param file file of [group]'s json
      */
     protected fun loadFromFile(group: SettingGroup, file: File) {
+        ConfigUtils.fixEmptyJson(file)
         val fileReader = BufferedReader(FileReader(file))
         try {
-            ConfigUtils.fixEmptyJson(file)
             val jsonObject = parser.parse(fileReader).asJsonObject
             group.read(jsonObject)
             fileReader.close()
