@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
 @HudElement.Info(
         category = HudElement.Category.MISC,
-        description = "Display brand of the server"
+        description = "Brand of the server"
 )
 object ServerBrand : LabelHud("ServerBrand") {
 

@@ -12,7 +12,7 @@ import java.util.*
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
-        description = "Display player movement speed"
+        description = "Player movement speed"
 )
 object PlayerSpeed : LabelHud("PlayerSpeed") {
 

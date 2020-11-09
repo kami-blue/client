@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.InfoCalculator
 
 @HudElement.Info(
         category = HudElement.Category.MISC,
-        description = "Display ping"
+        description = "Delay between client and server"
 )
 object Ping : LabelHud("Ping") {
 

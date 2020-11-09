@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.math.MathUtils
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
-        description = "Display client side timer speed"
+        description = "Client side timer speed"
 )
 object TimerSpeed : LabelHud("TimerSpeed") {
 

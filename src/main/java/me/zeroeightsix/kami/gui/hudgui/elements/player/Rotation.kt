@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
-        description = "Display player rotation"
+        description = "Player rotation"
 )
 object Rotation : LabelHud("Rotation") {
 

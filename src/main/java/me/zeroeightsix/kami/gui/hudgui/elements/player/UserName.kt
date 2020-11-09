@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.GuiConfig.setting
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
-        description = "Display user name"
+        description = "User name"
 )
 object UserName : LabelHud("UserName") {
 

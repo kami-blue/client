@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
 
 @HudElement.Info(
         category = HudElement.Category.MISC,
-        description = "Display game FPS"
+        description = "Frame per second in game"
 )
 object FPS : LabelHud("FPS") {
 

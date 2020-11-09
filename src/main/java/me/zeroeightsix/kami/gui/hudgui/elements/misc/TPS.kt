@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.math.MathUtils
 
 @HudElement.Info(
         category = HudElement.Category.MISC,
-        description = "Display server TPS"
+        description = "Server TPS"
 )
 object TPS : LabelHud("TPS") {
 
