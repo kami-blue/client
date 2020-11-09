@@ -37,7 +37,7 @@ object AutoEZ : Module() {
         CUSTOM("");
     }
 
-     private val hypixelCensorMessages: Array<String> = arrayOf(
+    private val hypixelCensorMessages: Array<String> = arrayOf(
             "Hey Helper, how play game?",
             "Hello everyone! I am an innocent player who loves everything Hypixel.",
             "Please go easy on me, this is my first game!",
@@ -84,7 +84,7 @@ object AutoEZ : Module() {
             "What happens if I add chocolate milk to macaroni and cheese?",
             "Can you paint with all the colors of the wind"
     ) // Got these from the forums, kinda based -humboldt123 
-    // Got an updated version of them - Natan515
+     // Got an updated version of them - Natan515
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>() // <Player, Last Attack Time>
