@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
@@ -142,7 +141,7 @@ object DiscordRPC : Module() {
                 else "No Coords"
             }
             LineInfo.SPEED -> {
-                if (mc.player != null) InfoOverlay.calcSpeedWithUnit(1)
+                if (mc.player != null) "${InfoCalculator.speed(false)} m/s"
                 else "No Speed"
             }
             LineInfo.HELD_ITEM -> {

@@ -8,9 +8,8 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
+import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
@@ -91,10 +90,9 @@ object DiscordNotifs : Module() {
         return if (!importantPings.value) "" else "<@!" + pingID.value + ">: "
     }
 
-    private fun getTime(): String {
-        return if (!time.value) ""
-        else "[" + getFinalTime(InfoOverlay.timeUnitSetting.value, InfoOverlay.timeTypeSetting.value, InfoOverlay.doLocale.value) + "] "
-    }
+    private fun getTime() =
+            if (!time.value) ""
+            else "[${TimeUtils.getTime()}] "
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)

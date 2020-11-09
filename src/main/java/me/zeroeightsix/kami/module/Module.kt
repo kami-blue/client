@@ -36,8 +36,6 @@ open class Module {
 
     /**
      * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
-     *
-     * @see me.zeroeightsix.kami.module.modules.client.ActiveModules
      */
     enum class Category(val categoryName: String, val isHidden: Boolean) {
         CHAT("Chat", false),
