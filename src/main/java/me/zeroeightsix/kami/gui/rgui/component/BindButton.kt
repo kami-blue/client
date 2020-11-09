@@ -13,6 +13,11 @@ class BindButton(
 
     override val renderProgress: Double = 0.0
 
+    override fun onTick() {
+        super.onTick()
+        visible.value = setting.isVisible
+    }
+
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         listening = !listening
