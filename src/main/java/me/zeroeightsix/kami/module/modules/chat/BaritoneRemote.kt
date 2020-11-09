@@ -48,8 +48,9 @@ object BaritoneRemote : Module() {
 
             if (MessageDetectionHelper.isDirect(true, message)) {
                 val username = MessageDetectionHelper.getDirectUsername(message) ?: return@listener
-                val command = message.detectAndRemove(Regexes.DIRECT) ?: message.detectAndRemove(Regexes.DIRECT_ALT)
-                ?: return@listener
+                val command = message.detectAndRemove(Regexes.DIRECT)
+                        ?: message.detectAndRemove(Regexes.DIRECT_ALT_1)
+                        ?: message.detectAndRemove(Regexes.DIRECT_ALT_2) ?: return@listener
 
                 val bPrefix = BaritoneUtils.prefix
                 val kbPrefix = "${Command.getCommandPrefix()}b "

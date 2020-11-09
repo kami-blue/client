@@ -47,6 +47,7 @@ object Flight : Module() {
 
     init {
         listener<PlayerTravelEvent> {
+            if (mc.player == null) return@listener
             when (mode.value) {
                 FlightMode.STATIC -> {
                     mc.player.capabilities.isFlying = false

@@ -24,21 +24,27 @@ object MessageDetectionHelper {
     fun String.detect(setting: Boolean, vararg regex: Regexes) = setting && this.detect(*regex)
 
     fun getMessageType(direct: Boolean, message: String, server: String): String {
-        if (message.detect(direct, Regexes.DIRECT) || message.detect(direct, Regexes.DIRECT_ALT)) return "You got a direct message!\n"
+        if (message.detect(direct, Regexes.DIRECT, Regexes.DIRECT_ALT_1, Regexes.DIRECT_ALT_2)) return "You got a direct message!\n"
         if (message.detect(direct, Regexes.DIRECT_SENT)) return "You sent a direct message!\n"
         if (message == "KamiBlueMessageType1") return "Connected to $server"
         return if (message == "KamiBlueMessageType2") "Disconnected from $server" else ""
     }
 
-    fun isDirect(direct: Boolean, message: String) = message.detect(direct, Regexes.DIRECT, Regexes.DIRECT_ALT, Regexes.DIRECT_SENT)
+    fun isDirect(direct: Boolean, message: String) = message.detect(direct, Regexes.DIRECT, Regexes.DIRECT_ALT_1, Regexes.DIRECT_ALT_2, Regexes.DIRECT_SENT)
 
     fun getDirectUsername(message: String): String? {
         if (!isDirect(true, message)) return null
 
         /* side note: this won't work if some glitched account has spaces in their username, but in all honesty, like 3 people globally have those */
-        var username = message.split(" ")[0]
-        if (username.detect(Regexes.DIRECT_ALT) && username.length > 1) {
-            username = username.substring(1)
+        val split = message.split(" ")
+        var username = split[0]
+
+        if (message.detect(Regexes.DIRECT_ALT_1) && username.length > 1) {
+            username = username.substring(1) // remove preceding [
+        }
+
+        if (message.detect(Regexes.DIRECT_ALT_2)) {
+            username = split[1].dropLast(1) // remove trailing :
         }
 
         return username
@@ -67,8 +73,9 @@ object MessageDetectionHelper {
 
 enum class Regexes(val regex: Regex) {
     DIRECT(Regex("^([0-9A-z_])+ whispers( to you|): ")),
-    DIRECT_ALT(Regex("^\\[.*->.*] ")),
-    DIRECT_SENT(Regex("^to ([0-9A-z_])+: ")),
+    DIRECT_ALT_1(Regex("^\\[.*->.*] ")),
+    DIRECT_ALT_2(Regex("^[Ff]rom ([0-9A-z_])+: ")),
+    DIRECT_SENT(Regex("^[Tt]o ([0-9A-z_])+: ")),
     QUEUE(Regex("^Position in queue: ")),
     QUEUE_IMPORTANT(Regex("^Position in queue: [1-5]$")),
     RESTART(Regex("^\\[SERVER] Server restarting in ")),
