@@ -24,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection
 object Capes : Module() {
     // This allows controlling if other capes (Mojang, OptiFine) should override the KAMI Blue cape.
     val overrideOtherCapes = register(Settings.b("Override Other Capes", true))
-
+    val ears = register(Settings.b("Ears", true))
     // This starts out null, and then is replaced from another thread if the Capes module is enabled.
     // It maps the UUIDs to CachedCape instances.
     // When it arrives here it must no longer be modified.
