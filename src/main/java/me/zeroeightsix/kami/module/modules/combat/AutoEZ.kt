@@ -84,7 +84,6 @@ object AutoEZ : Module() {
             "What happens if I add chocolate milk to macaroni and cheese?",
             "Can you paint with all the colors of the wind"
     ) // Got these from the forums, kinda based -humboldt123 
-     // Got an updated version of them - Natan515
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>() // <Player, Last Attack Time>
