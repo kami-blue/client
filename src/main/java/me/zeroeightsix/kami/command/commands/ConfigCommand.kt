@@ -27,19 +27,15 @@ class ConfigCommand : Command("config", ChunkBuilder()
 
         when (args[0]!!.toLowerCase()) {
             "reload" -> {
-                Thread {
-                    val loaded = ConfigUtils.loadAll()
-                    if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
-                    else MessageSendHelper.sendErrorMessage("Failed to load config!")
-                }.start()
+                val loaded = ConfigUtils.loadAll()
+                if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
+                else MessageSendHelper.sendErrorMessage("Failed to load config!")
             }
 
             "save" -> {
-                Thread {
-                    val saved = ConfigUtils.saveAll()
-                    if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
-                    else MessageSendHelper.sendErrorMessage("Failed to save config!")
-                }.start()
+                val saved = ConfigUtils.saveAll()
+                if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
+                else MessageSendHelper.sendErrorMessage("Failed to save config!")
             }
 
             "path" -> if (args[1] == null) {

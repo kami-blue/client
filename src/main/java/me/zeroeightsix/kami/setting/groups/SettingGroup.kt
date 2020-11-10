@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.setting.groups
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.Setting
 
 open class SettingGroup(
@@ -41,7 +42,7 @@ open class SettingGroup(
     open fun write(): JsonObject = JsonObject().apply {
         add("Name", JsonPrimitive(name))
 
-        add("Settings", JsonObject().apply {
+        if (subSetting.isNotEmpty()) add("Settings", JsonObject().apply {
             for (setting in subSetting.values) {
                 add(setting.name, setting.write())
             }
@@ -54,11 +55,13 @@ open class SettingGroup(
      * @param jsonObject [JsonObject] to read from
      */
     open fun read(jsonObject: JsonObject?) {
-        if (jsonObject == null) return
-
-        jsonObject.getAsJsonObject("Settings").also {
+        if (subSetting.isNotEmpty()) (jsonObject?.get("Settings") as? JsonObject)?.also {
             for (setting in subSetting.values) {
-                setting.read(it.get(setting.name))
+                try {
+                    setting.read(it.get(setting.name))
+                } catch (e: Exception) {
+                    KamiMod.log.warn("Failed loading setting ${setting.name} at $name", e)
+                }
             }
         }
     }

@@ -14,7 +14,7 @@ object GuiConfig : AbstractMultiConfig<Component>(
 
     override fun <S : Setting<*>> Component.setting(setting: S): S {
         settingGroup.groupName?.let {
-            getGroupOrPut(it).addSetting(originalName, setting)
+            getGroupOrPut(it).getGroupOrPut(originalName).addSetting(setting)
         }
         return setting
     }

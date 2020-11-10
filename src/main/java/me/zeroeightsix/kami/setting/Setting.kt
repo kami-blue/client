@@ -31,7 +31,7 @@ open class Setting<T : Any>(
                 for (listener in listeners) listener()
             }
         }
-    open val defaultValue = value
+    val defaultValue = value
     val valueClass = value::class.java
     val isVisible get() = visibility()
     val listeners = ArrayList<() -> Unit>()
@@ -43,6 +43,14 @@ open class Setting<T : Any>(
 
     fun resetValue() {
         value = defaultValue
+    }
+
+    open fun write(): JsonElement = gson.toJsonTree(value)
+
+    open fun read(jsonElement: JsonElement?) {
+        jsonElement?.let {
+            value = gson.fromJson(it, valueClass)
+        }
     }
 
     override fun toString() = value.toString()
@@ -59,14 +67,6 @@ open class Setting<T : Any>(
 
     override fun hashCode(): Int {
         return name.hashCode() * 31 + value.hashCode()
-    }
-
-    open fun write(): JsonElement = gson.toJsonTree(value)
-
-    open fun read(jsonElement: JsonElement?) {
-        jsonElement?.let {
-            value = gson.fromJson(it, valueClass)
-        }
     }
 
     protected companion object {
