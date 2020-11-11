@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.mixin.client.MixinAnvilChunkLoader
+import me.zeroeightsix.kami.mixin.client.world.MixinAnvilChunkLoader
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound
