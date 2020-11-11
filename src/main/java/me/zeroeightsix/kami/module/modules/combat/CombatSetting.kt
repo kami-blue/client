@@ -20,6 +20,8 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
+import net.minecraft.entity.passive.AbstractHorse
+import net.minecraft.entity.passive.EntityTameable
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
@@ -55,10 +57,11 @@ object CombatSetting : Module() {
     private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.TARGETING })
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val tamed = register(Settings.booleanBuilder("TamedMobs").withValue(true).withVisibility { page.value == Page.TARGETING && mobs.value })
     private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.TARGETING })
     private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).withVisibility { page.value == Page.TARGETING })
-    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).withVisibility { page.value == Page.TARGETING })
+    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).withStep(2.0f).withVisibility { page.value == Page.TARGETING })
 
     /* In Combat */
     private val pauseForDigging = register(Settings.booleanBuilder("PauseForDigging").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
@@ -167,6 +170,7 @@ object CombatSetting : Module() {
         CombatManager.placeMap = linkedMapOf(*cacheList.sortedByDescending { triple -> triple.second.first }.toTypedArray())
     }
 
+    /* Crystal damage calculation */
     private fun updateCrystalList() {
         if (CrystalAura.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 - 2 != 0) return
 
@@ -199,25 +203,41 @@ object CombatSetting : Module() {
             it.positionVector to it.boundingBox
         }
     } ?: entity.positionVector to entity.boundingBox
+    /* End of crystal damage calculation */
 
     /* Targeting */
     private fun getTargetList(): LinkedList<EntityLivingBase> {
+        val targetList = LinkedList<EntityLivingBase>()
+        for (entity in getCacheList()) {
+            if (AntiBot.isEnabled
+                    && AntiBot.botSet.contains((entity))) continue
+
+            if (!tamed.value
+                    && (entity is EntityTameable && entity.isTamed
+                    || entity is AbstractHorse && entity.isTame)) continue
+
+            if (!teammates.value
+                    && mc.player.isOnSameTeam(entity)) continue
+
+            if (!shouldIgnoreWall()
+                    && mc.player.canEntityBeSeen(entity)
+                    && !EntityUtils.canEntityFeetBeSeen(entity)
+                    && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
+
+            targetList.add(entity)
+        }
+
+        return targetList
+    }
+
+    private fun getCacheList(): LinkedList<EntityLivingBase> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
-        val targetList = LinkedList(EntityUtils.getTargetList(player, mob, invisible.value, overrideRange))
-        if ((targetList.isEmpty() || getTarget(targetList) == null) && overrideRange != range.value) {
-            targetList.addAll(EntityUtils.getTargetList(player, mob, invisible.value, range.value))
+        val cacheList = LinkedList(EntityUtils.getTargetList(player, mob, invisible.value, overrideRange))
+        if ((cacheList.isEmpty() || getTarget(cacheList) == null) && overrideRange != range.value) {
+            cacheList.addAll(EntityUtils.getTargetList(player, mob, invisible.value, range.value))
         }
-        if (!shouldIgnoreWall()) targetList.removeIf {
-            !mc.player.canEntityBeSeen(it) && EntityUtils.canEntityFeetBeSeen(it) && EntityUtils.canEntityHitboxBeSeen(it) == null
-        }
-        if (!teammates.value) targetList.removeIf {
-            mc.player.isOnSameTeam(it)
-        }
-        if (AntiBot.isEnabled) targetList.removeIf {
-            AntiBot.botSet.contains(it)
-        }
-        return targetList
+        return cacheList
     }
 
     private fun shouldIgnoreWall(): Boolean {
