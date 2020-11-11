@@ -58,7 +58,7 @@ object CombatSetting : Module() {
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
     private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
     private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val tamed = register(Settings.booleanBuilder("TamedMobs").withValue(true).withVisibility { page.value == Page.TARGETING && mobs.value })
+    private val tamed = register(Settings.booleanBuilder("TamedMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
     private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.TARGETING })
     private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).withVisibility { page.value == Page.TARGETING })
     private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).withStep(2.0f).withVisibility { page.value == Page.TARGETING })
