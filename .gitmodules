@@ -1,0 +1,3 @@
+[submodule "src/main/java/me/zeroeightsix/kami/util/cape-api"]
+	path = src/main/java/me/zeroeightsix/kami/util/cape-api
+	url = https://github.com/kami-blue/cape-api
