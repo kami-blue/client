@@ -38,7 +38,7 @@ object AutoExcuse : Module() {
             "I'm not using $CLIENT_NAME client",
             "Thers to much lag",
             "My dog ate my pc",
-            "Sorry, %CLIENT_NAME Client is really bad",
+            "Sorry, $CLIENT_NAME Client is really bad",
             "I was lagging",
             "He was cheating!",
             "Your hacking!",
@@ -58,8 +58,6 @@ object AutoExcuse : Module() {
             "Future",
             "Salhack",
             "Pyro",
-            "Xulo",
-            "Phobos",
             "Rusher",
             "Impact"
     )
