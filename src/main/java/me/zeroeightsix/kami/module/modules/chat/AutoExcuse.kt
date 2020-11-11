@@ -35,7 +35,20 @@ object AutoExcuse : Module() {
             "Wow, so many try hards",
             "Lagggg",
             "I wasn't trying",
-            "I'm not using $CLIENT_NAME client"
+            "I'm not using $CLIENT_NAME client",
+            "Thers to much lag",
+            "My dog ate my pc",
+            "Sorry, %CLIENT_NAME Client is really bad",
+            "I was lagging",
+            "He was cheating!",
+            "Your hacking!",
+            "Lol imagine actully trying",
+            "I didn't move my mouse",
+            "I was playing on easy mode(;",
+            "My wifi went down",
+            "I'm playing vanila",
+            "My optifine didn't work",
+            "The CPU cheated!"
     )
 
     private val file = File(KamiMod.DIRECTORY + "excuses.txt")
@@ -45,6 +58,9 @@ object AutoExcuse : Module() {
             "Future",
             "Salhack",
             "Pyro",
+            "Xulo",
+            "Phobos",
+            "Rusher",
             "Impact"
     )
 
