@@ -58,7 +58,7 @@ object AutoExcuse : Module() {
             "Future",
             "Salhack",
             "Pyro",
-            "Rusher",
+            "Rusherhack",
             "Impact"
     )
 
