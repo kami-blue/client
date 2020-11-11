@@ -45,6 +45,7 @@ object AutoWalk : Module() {
     }
 
     override fun onEnable() {
+        if (mode.value != AutoWalkMode.BARITONE) return
         startPathing()
     }
 
