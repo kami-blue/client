@@ -1,14 +1,12 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import CapeColor
 import CapeUser
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import getRequest
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import java.io.InputStreamReader
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 @Module.Info(
         name = "Capes",
@@ -18,102 +16,27 @@ import javax.net.ssl.HttpsURLConnection
         enabledByDefault = true
 )
 object Capes : Module() {
-    // This allows controlling if other capes (Mojang, OptiFine) should override the KAMI Blue cape.
-    val overrideOtherCapes = register(Settings.b("Override Other Capes", true))
-
-    // This starts out null, and then is replaced from another thread if the Capes module is enabled.
-    // It maps the UUIDs to CachedCape instances.
-    // When it arrives here it must no longer be modified.
-//    private var allCapes = Collections.unmodifiableMap(HashMap<String, CachedCape>())
-//    private var hasBegunDownload = false
+    val capeUsers = HashMap<String, CapeColor>() // This will have to be replaced to be <UUID, Cape> in the future, when Star support is added
 
     public override fun onEnable() {
         Thread {
             try {
-                val connection = URL(KamiMod.CAPES_JSON).openConnection() as HttpsURLConnection
-                connection.connect()
-                val capeUser = Gson().fromJson<ArrayList<CapeUser>?>(InputStreamReader(connection.inputStream), object : TypeToken<List<CapeUser>>() {}.type)
-                connection.disconnect()
+                val response = getRequest(KamiMod.CAPES_JSON)
+                val capeUsersCache = Gson().fromJson<ArrayList<CapeUser>?>(response, object : TypeToken<List<CapeUser>>() {}.type)
 
+                capeUsersCache?.forEach { capeUser ->
+                    capeUser.capes.forEach { cape ->
+                        cape.playerUUID?.let { capeUsers[it] = cape.color }
+                    }
+                } ?: run {
+                    KamiMod.log.warn("$chatName Failed to parse / download capes!")
+                }
+
+                KamiMod.log.info("$chatName loaded ${capeUsers.size} capes!")
             } catch (e: Exception) {
                 KamiMod.log.error("Failed to load capes!")
                 e.printStackTrace()
             }
-        }
+        }.start()
     }
-    /*// If we got this far, begin working out the cape details
-    // This first collection contains CachedCape instances by their URL to reduce redundant loading.
-    val capesByURL = HashMap<String?, CachedCape>()
-    // This second collection maps UUIDs to their CachedCape instances.
-    val capesByUUID = HashMap<String?, CachedCape>()
-    for (cape in capeUser) {
-        var o = capesByURL[cape.url]
-        if (o == null) {
-            o = CachedCape(cape)
-            capesByURL[cape.url] = o
-        }
-        capesByUUID[cape.uuid] = o
-    }
-    allCapes = Collections.unmodifiableMap(capesByUUID)
-} catch (e: Exception) {
-    KamiMod.log.error("Failed to load capes")
-    // e.printStackTrace();
-}
-}.start()
-}
-
-// This is the raw Gson structure as seen in the assets
-private class CapeUser(val uuid: String? = null, var url: String? = null)
-
-// This is the shared cape instance.
-private class CachedCape(cape: CapeUser) {
-val location: ResourceLocation = ResourceLocation("capes/kami/" + formatUUID(cape.uuid))
-private val url: String = cape.url.toString()
-private var hasRequested = false
-
-fun request() {
-if (hasRequested) return
-hasRequested = true
-// This is bindTexture moved to runtime (but still on the main thread)
-val iib: IImageBuffer = object : IImageBuffer {
-    override fun parseUserSkin(image: BufferedImage): BufferedImage {
-        return parseCape(image)
-    }
-
-    override fun skinAvailable() {}
-}
-val textureManager = mc.textureManager
-textureManager.getTexture(location)
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") // Big IDE meme
-val textureCape = ThreadDownloadImageData(null, url, null, iib)
-textureManager.loadTexture(location, textureCape)
-}
-
-private fun parseCape(img: BufferedImage): BufferedImage {
-var imageWidth = 64
-var imageHeight = 32
-val srcWidth = img.width
-val srcHeight = img.height
-while (imageWidth < srcWidth || imageHeight < srcHeight) {
-    imageWidth *= 2
-    imageHeight *= 2
-}
-val imgNew = BufferedImage(imageWidth, imageHeight, 2)
-val g = imgNew.graphics
-g.drawImage(img, 0, 0, null)
-g.dispose()
-return imgNew
-}
-}
-
-@JvmStatic
-fun getCapeResource(player: AbstractClientPlayer): ResourceLocation? {
-val result = allCapes[player.uniqueID.toString()] ?: return null
-result.request()
-return result.location
-}
-
-private fun formatUUID(uuid: String?): String {
-return uuid!!.replace("-".toRegex(), "")
-}*/
 }
