@@ -116,8 +116,6 @@ object TotemPopCounter : Module() {
             Announce.EVERYONE -> {
                 MessageSendHelper.sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
             }
-            else -> {
-            }
         }
     }
 

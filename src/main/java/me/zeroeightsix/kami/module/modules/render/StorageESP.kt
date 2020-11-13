@@ -113,7 +113,7 @@ object StorageESP : Module() {
     }
 
     private fun getTileEntityColor(tileEntity: TileEntity): ColorHolder? {
-        val color = (when (tileEntity) {
+        val color = when (tileEntity) {
             is TileEntityChest -> colorChest
             is TileEntityDispenser -> colorDispenser
             is TileEntityShulkerBox -> colorShulker
@@ -121,18 +121,18 @@ object StorageESP : Module() {
             is TileEntityFurnace -> colorFurnace
             is TileEntityHopper -> colorHopper
             else -> return null
-        }.value as DyeColors).color
+        }.value.color
         return if (color == DyeColors.RAINBOW.color) {
             cycler.currentRgb()
         } else color
     }
 
     private fun getEntityColor(entity: Entity): ColorHolder? {
-        val color = (when (entity) {
+        val color = when (entity) {
             is EntityMinecartContainer -> colorCart
             is EntityItemFrame -> colorFrame
             else -> return null
-        }.value as DyeColors).color
+        }.value.color
         return if (color == DyeColors.RAINBOW.color) {
             cycler.currentRgb()
         } else color

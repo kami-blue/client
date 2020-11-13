@@ -39,7 +39,7 @@ object AutoNametag : Module() {
 
     private fun useNameTag() {
         val originalSlot = mc.player.inventory.currentItem
-        loop@ for (entity in mc.world.loadedEntityList) {
+        for (entity in mc.world.loadedEntityList) {
             when (modeSetting.value) {
                 Mode.WITHER -> if (entity is EntityWither && entity.getDisplayName().unformattedText != currentName) {
                     if (mc.player.getDistance(entity) <= range.value) {
@@ -55,7 +55,6 @@ object AutoNametag : Module() {
                         mc.playerController.interactWithEntity(mc.player, entity, EnumHand.MAIN_HAND)
                     }
                 }
-                else -> continue@loop
             }
         }
         mc.player.inventory.currentItem = originalSlot

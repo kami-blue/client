@@ -53,7 +53,7 @@ object BookCrash : Module() {
             val list = NBTTagList()
             val text: String
 
-            text = when (fillMode.value as FillMode) {
+            text = when (fillMode.value) {
                 FillMode.RANDOM -> {
                     val chars = Random().ints(0x80, 0x10FFFF - 0x800).map { if (it < 0xd800) it else it + 0x800 }
                     chars.collectToPages()

@@ -56,7 +56,7 @@ object ChatEncryption : Module() {
                 s = s.substring(1)
             }
             val builder = StringBuilder()
-            when (mode.value as EncryptionMode) {
+            when (mode.value) {
                 EncryptionMode.SHUFFLE -> {
                     builder.append(shuffle(getKey(), s))
                     builder.append("\uD83D\uDE4D")
@@ -88,7 +88,7 @@ object ChatEncryption : Module() {
             }
             val builder = StringBuilder()
             val substring = s.substring(0, s.length - 2)
-            when (mode.value as EncryptionMode) {
+            when (mode.value) {
                 EncryptionMode.SHUFFLE -> {
                     if (!s.endsWith("\uD83D\uDE4D")) return@listener
                     s = substring

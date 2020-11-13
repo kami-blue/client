@@ -102,13 +102,13 @@ object Tracers : Module() {
     }
 
     private fun getColor(entity: Entity): ColorHolder {
-        val color = (when {
+        val color = when {
             FriendManager.isFriend(entity.name) -> colorFriend.value
             entity is EntityPlayer -> colorPlayer.value
             EntityUtils.isPassiveMob(entity) -> colorPassive.value
             EntityUtils.isCurrentlyNeutral(entity) -> colorNeutral.value
             else -> colorHostile.value
-        } as DyeColors).color
+        }.color
 
         return if (color == DyeColors.RAINBOW.color) {
             getRangedColor(entity, cycler.currentRgba(a.value))
@@ -121,7 +121,7 @@ object Tracers : Module() {
     private fun getRangedColor(entity: Entity, rgba: ColorHolder): ColorHolder {
         if (!rangedColor.value || playerOnly.value && entity !is EntityPlayer) return rgba
         val distance = mc.player.getDistance(entity)
-        val colorFar = (colorFar.value as DyeColors).color
+        val colorFar = colorFar.value.color
         colorFar.a = aFar.value
         val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
         val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()

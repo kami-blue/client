@@ -45,7 +45,7 @@ object BossStack : Module() {
         bossInfoMap.clear()
         val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return
 
-        when (mode.value!!) {
+        when (mode.value) {
             BossStackMode.REMOVE -> {
             }
             BossStackMode.MINIMIZE -> {

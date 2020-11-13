@@ -38,9 +38,6 @@ object AutoTPA : Module() {
                         MessageSendHelper.sendServerMessage("/tpdeny $name")
                     }
                 }
-                else -> {
-                    // do nothing
-                }
             }
         }
     }

@@ -183,7 +183,7 @@ object AutoSpawner : Module() {
             val stack = mc.player.inventory.getStackInSlot(slotIndex) ?: continue
             if (stack.isEmpty) continue
 
-            when (entityMode.value as EntityMode) {
+            when (entityMode.value) {
                 EntityMode.SNOW -> {
                     if (stack.getItem() is ItemBlock) {
                         val block = (stack.getItem() as ItemBlock).block

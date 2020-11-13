@@ -28,7 +28,7 @@ object SkinFlicker : Module() {
             if (mc.world == null || mc.player == null) return@listener
             if (!timer.tick(delay.value.toLong())) return@listener
 
-            val part = when (mode.value as FlickerMode) {
+            val part = when (mode.value) {
                 FlickerMode.RANDOM -> EnumPlayerModelParts.values().random()
                 FlickerMode.VERTICAL -> verticalParts[lastIndex]
                 FlickerMode.HORIZONTAL -> horizontalParts[lastIndex]

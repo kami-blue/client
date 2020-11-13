@@ -44,8 +44,6 @@ object FastFall : Module() {
                     mc.timer.tickLength = 50.0f / (fallSpeed.value * 2.0f).toFloat()
                     timering = true
                 }
-                else -> {
-                }
             }
         }
     }

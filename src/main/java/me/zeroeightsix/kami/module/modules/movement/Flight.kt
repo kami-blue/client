@@ -88,8 +88,6 @@ object Flight : Module() {
                     mc.connection!!.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, mc.player.rotationYaw, mc.player.rotationPitch, false))
                     mc.connection!!.sendPacket(CPacketPlayer.Position(posX, mc.player.posY - 42069, posZ, true))
                 }
-                else -> {
-                }
             }
         }
 

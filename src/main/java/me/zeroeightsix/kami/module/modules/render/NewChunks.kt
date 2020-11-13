@@ -284,7 +284,7 @@ object NewChunks : Module() {
         }
 
         private fun update() {
-            lastSaveOption = saveOption.value as SaveOption
+            lastSaveOption = saveOption.value
             lastInRegion = saveInRegionFolder.value
             lastSaveNormal = alsoSaveNormalCoords.value
             dimension = mc.player.dimension

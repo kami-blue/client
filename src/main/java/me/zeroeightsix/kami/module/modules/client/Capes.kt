@@ -28,7 +28,7 @@ object Capes : Module() {
     // This starts out null, and then is replaced from another thread if the Capes module is enabled.
     // It maps the UUIDs to CachedCape instances.
     // When it arrives here it must no longer be modified.
-    var allCapes = Collections.unmodifiableMap(HashMap<String, CachedCape>()); private set
+    var allCapes: Map<String, CachedCape> = Collections.unmodifiableMap(HashMap<String, CachedCape>()); private set
     private var hasBegunDownload = false
 
     public override fun onEnable() {
