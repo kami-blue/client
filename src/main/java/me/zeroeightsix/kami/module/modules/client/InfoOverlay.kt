@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.InfoCalculator.chunkSize
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
@@ -38,7 +37,6 @@ object InfoOverlay : Module() {
     private val fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility { page.value == Page.ONE })
     private val server = register(Settings.booleanBuilder("ServerType").withValue(true).withVisibility { page.value == Page.ONE })
-    private val chunkSize = register(Settings.booleanBuilder("ChunkSize").withValue(true).withVisibility { page.value == Page.ONE })
     private val durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility { page.value == Page.ONE })
     private val biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility { page.value == Page.ONE })
 
@@ -74,13 +72,11 @@ object InfoOverlay : Module() {
     }
 
     private val speedList = LinkedList<Double>()
-    private var currentChunkSize = 0
 
     init {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
             updateSpeedList()
-            if (chunkSize.value) updateChunkSize()
         }
     }
 
@@ -113,7 +109,6 @@ object InfoOverlay : Module() {
         endCrystals -> "${InventoryUtils.countItemAll(426)} ${second()}crystals"
         expBottles -> "${InventoryUtils.countItemAll(384)} ${second()}exp"
         godApples -> "${InventoryUtils.countItemAll(322)} ${second()}gaps"
-        chunkSize -> "${round(currentChunkSize / 1000.0, decimalPlaces.value)} KB ${second()}(chunk)"
         else -> null
     }
 
@@ -128,12 +123,6 @@ object InfoOverlay : Module() {
     private fun calcSpeed(place: Int): Double {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
         return round(averageSpeed, place)
-    }
-
-    private fun updateChunkSize() {
-        if (mc.player.ticksExisted % 4 == 0) {
-            currentChunkSize = chunkSize()
-        }
     }
 
     private fun updateSpeedList() {
