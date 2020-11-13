@@ -19,7 +19,7 @@ object FakeGameMode : Module() {
         SURVIVAL(GameType.SURVIVAL),
         CREATIVE(GameType.CREATIVE),
         ADVENTURE(GameType.ADVENTURE),
-        SPECTATOR(GameType.ADVENTURE)
+        SPECTATOR(GameType.SPECTATOR)
     }
 
     private var prevGameMode: GameType? = null

@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.mixin.client.network.MixinNetworkManager
 import me.zeroeightsix.kami.module.Module
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinNetworkManager
+ * @see MixinNetworkManager
  */
 @Module.Info(
         name = "NoPacketKick",

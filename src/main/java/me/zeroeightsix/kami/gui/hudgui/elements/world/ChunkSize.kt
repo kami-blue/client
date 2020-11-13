@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.mixin.client.MixinAnvilChunkLoader
+import me.zeroeightsix.kami.mixin.client.world.MixinAnvilChunkLoader
 import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.nbt.CompressedStreamTools
 import net.minecraft.nbt.NBTTagCompound

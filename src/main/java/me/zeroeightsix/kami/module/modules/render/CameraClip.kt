@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.mixin.client.render.MixinEntityRenderer
 import me.zeroeightsix.kami.module.Module
 
 /**
- * [me.zeroeightsix.kami.mixin.client.MixinEntityRenderer.rayTraceBlocks]
+ * @see MixinEntityRenderer.rayTraceBlocks
  */
 @Module.Info(
         name = "CameraClip",

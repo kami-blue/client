@@ -16,7 +16,7 @@ import kotlin.math.floor
 @Module.Info(
         name = "ArmourHUD",
         category = Module.Category.RENDER,
-        description = "Displays your armour and it's durability on screen",
+        description = "Displays your armor and it's durability on screen",
         showOnArray = false
 )
 object ArmorHUD : Module() {

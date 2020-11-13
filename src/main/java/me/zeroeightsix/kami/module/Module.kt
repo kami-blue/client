@@ -82,10 +82,11 @@ open class Module {
     }
 
     fun enable() {
+        if (!enabled.value) sendToggleMessage()
+
         enabled.value = true
         onEnable()
         onToggle()
-        sendToggleMessage()
         if (!alwaysListening) {
             KamiEventBus.subscribe(this)
         }
@@ -93,10 +94,11 @@ open class Module {
 
     fun disable() {
         if (annotation.alwaysEnabled) return
+        if (enabled.value) sendToggleMessage()
+
         enabled.value = false
         onDisable()
         onToggle()
-        sendToggleMessage()
         if (!alwaysListening) {
             KamiEventBus.unsubscribe(this)
         }
@@ -104,7 +106,7 @@ open class Module {
 
     private fun sendToggleMessage() {
         if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &aenabled" else " &cdisabled")
+            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &adisabled" else " &cenabled")
         }
     }
 

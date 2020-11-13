@@ -31,8 +31,6 @@ object Baritone : Module() {
     private val failureTimeout = setting("FailTimeout", 2, 1..20, 1)
     private val blockReachDistance = setting("ReachDistance", 4.5f, 1.0f..10.0f, 0.5f)
 
-    private var hasRun = false
-
     init {
         settingList.forEach {
             it.listeners.add { sync() }

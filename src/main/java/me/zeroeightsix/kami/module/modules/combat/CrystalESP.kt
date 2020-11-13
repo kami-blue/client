@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -20,6 +21,7 @@ import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -72,11 +74,18 @@ object CrystalESP : Module() {
     init {
         listener<PacketEvent.PostSend>(0) {
             if (mc.player == null || it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
-            if (mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() == Items.END_CRYSTAL) {
+            if (checkHeldItem(it.packet) && CrystalUtils.canPlaceCollide(it.packet.pos)) {
                 pendingPlacing[it.packet.pos] = System.currentTimeMillis()
             }
         }
+    }
 
+    private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
+            && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() == Items.END_CRYSTAL
+            || packet.hand == EnumHand.OFF_HAND
+            && mc.player.heldItemOffhand.getItem() == Items.END_CRYSTAL
+
+    init {
         listener<SafeTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@listener
             updateDamageESP()

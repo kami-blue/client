@@ -63,7 +63,6 @@ object Tracers : Module() {
 
     init {
         listener<RenderWorldEvent> {
-            val renderer = ESPRenderer()
             renderer.aTracer = a.value
             renderer.thickness = thickness.value
             renderer.tracerOffset = yOffset.value

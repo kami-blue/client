@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyJson
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.CoordinateConverter
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -154,7 +154,7 @@ object WaypointManager : Manager() {
     }
 
     init {
-        fixEmptyJson(file)
+        ConfigUtils.fixEmptyJson(file, true)
     }
 
     class Waypoint(
