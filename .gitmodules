@@ -1,0 +1,3 @@
+[submodule "src/main/cape-api"]
+	path = src/main/cape-api
+	url = https://github.com/kami-blue/cape-api.git

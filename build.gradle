@@ -26,6 +26,10 @@ apply plugin: 'com.github.johnrengelman.shadow'
 version project.modVersion
 group project.modGroup
 
+sourceSets {
+    main.java.srcDirs += 'src/main/cape-api'
+}
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
