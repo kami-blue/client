@@ -46,6 +46,7 @@ object Tracers : Module() {
 
     /* General rendering settings */
     private val rangedColor = register(Settings.booleanBuilder("RangedColor").withValue(true).withVisibility { page.value == Page.RENDERING }.build())
+    private val colorChangeRange = register(Settings.integerBuilder("ColorChangeRange").withValue(16).withRange(1, 128).withVisibility { page.value == Page.RENDERING }.build())
     private val playerOnly = register(Settings.booleanBuilder("PlayerOnly").withValue(true).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
     private val colorFar = register(Settings.enumBuilder(DyeColors::class.java, "FarColor").withValue(DyeColors.WHITE).withVisibility { page.value == Page.COLOR }.build())
     private val aFar = register(Settings.integerBuilder("FarAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && rangedColor.value }.build())
@@ -123,10 +124,10 @@ object Tracers : Module() {
         val distance = mc.player.getDistance(entity)
         val colorFar = (colorFar.value as DyeColors).color
         colorFar.a = aFar.value
-        val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
-        val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
-        val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
-        val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
+        val r = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
+        val g = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
+        val b = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
+        val a = convertRange(distance, 0f, colorChangeRange.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
         return ColorHolder(r, g, b, a)
     }
 }
