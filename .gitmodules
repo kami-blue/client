@@ -4,4 +4,4 @@
 
 [submodule "src/main/commons"]
 	path = src/main/commons
-	url = https://github.com/kami-blue/commons
+	url = https://github.com/kami-blue/commons.git
