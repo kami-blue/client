@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-object WaypointManager : Manager() {
+object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
     private const val configName = "KAMIBlueWaypoints.json"
