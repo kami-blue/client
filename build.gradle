@@ -28,6 +28,7 @@ group project.modGroup
 
 sourceSets {
     main.java.srcDirs += 'src/main/cape-api'
+    main.java.srcDirs += 'src/main/commons'
 }
 
 compileKotlin {
