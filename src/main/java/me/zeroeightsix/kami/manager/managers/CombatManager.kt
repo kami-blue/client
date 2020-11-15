@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
 
-object CombatManager : Manager() {
+object CombatManager : Manager {
     private val combatModules: List<Module>
 
     var targetList = emptyList<EntityLivingBase>()
