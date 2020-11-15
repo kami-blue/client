@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
+import me.zeroeightsix.kami.module.modules.player.ViewLock;
 import me.zeroeightsix.kami.module.modules.render.AntiFog;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
@@ -17,10 +18,12 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MouseHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -96,5 +99,25 @@ public class MixinEntityRenderer {
         KamiEventBus.INSTANCE.post(eventPre);
         RenderShaderEvent eventPost = new RenderShaderEvent(RenderShaderEvent.Phase.POST);
         KamiEventBus.INSTANCE.post(eventPost);
+    }
+
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaX:I", opcode = Opcodes.GETFIELD))
+    public int deltaX(MouseHelper mouseHelper) {
+        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getYaw().getValue() && ViewLock.INSTANCE.getDisableMouseYaw().getValue()) {
+            if (ViewLock.INSTANCE.getAutoYaw().getValue())
+                ViewLock.INSTANCE.handleDeltaX(mouseHelper.deltaX);
+            return 0;
+        }
+        return mouseHelper.deltaX;
+    }
+
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaY:I", opcode = Opcodes.GETFIELD))
+    public int deltaY(MouseHelper mouseHelper) {
+        if ((ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getPitch().getValue() && ViewLock.INSTANCE.getDisableMousePitch().getValue())) {
+            if (ViewLock.INSTANCE.getAutoPitch().getValue())
+                ViewLock.INSTANCE.handleDeltaY(mouseHelper.deltaY);
+            return 0;
+        }
+        return mouseHelper.deltaY;
     }
 }
