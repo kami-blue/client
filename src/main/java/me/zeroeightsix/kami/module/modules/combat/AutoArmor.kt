@@ -29,7 +29,7 @@ object AutoArmor : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (!lastTask.done || !timer.tick(delay.value.toLong(), false)) return@listener
+            if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@listener
 
             if (!mc.player.inventory.getItemStack().isEmpty()) {
                 if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
@@ -77,12 +77,17 @@ object AutoArmor : Module() {
     private fun equipArmor(bestArmors: Array<Pair<Int, Float>>) {
         for ((index, pair) in bestArmors.withIndex()) {
             if (pair.first == -1) continue // Skip if we didn't find a better armor
-            lastTask = addInventoryTask(
-                    PlayerInventoryManager.ClickInfo(0, 8 - index, type = ClickType.PICKUP), // Pick up the old armor from armor slot
-                    PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE), // Move the new one into armor slot
-                    PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
-            )
-            timer.reset()
+            lastTask = if (mc.player.inventoryContainer.inventory[8 - index].isEmpty) {
+                addInventoryTask(
+                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE) // Move the new one into armor slot
+                )
+            } else {
+                addInventoryTask(
+                        PlayerInventoryManager.ClickInfo(0, 8 - index, type = ClickType.PICKUP), // Pick up the old armor from armor slot
+                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE), // Move the new one into armor slot
+                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
+                )
+            }
             break // Don't move more than one at once
         }
     }

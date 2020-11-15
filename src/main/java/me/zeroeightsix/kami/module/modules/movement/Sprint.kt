@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.event.listener
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinEntityPlayerSP
+ * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
  */
 @Module.Info(
         name = "Sprint",

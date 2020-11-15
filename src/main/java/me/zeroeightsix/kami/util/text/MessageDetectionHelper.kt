@@ -30,7 +30,9 @@ object MessageDetectionHelper {
         return if (message == "KamiBlueMessageType2") "Disconnected from $server" else ""
     }
 
-    fun isDirect(direct: Boolean, message: String) = message.detect(direct, Regexes.DIRECT, Regexes.DIRECT_ALT_1, Regexes.DIRECT_ALT_2, Regexes.DIRECT_SENT)
+    fun isDirectReceived(direct: Boolean, message: String) = message.detect(direct, Regexes.DIRECT, Regexes.DIRECT_ALT_1, Regexes.DIRECT_ALT_2)
+
+    fun isDirect(direct: Boolean, message: String) = message.detect(direct, Regexes.DIRECT_SENT) || isDirectReceived(direct, message)
 
     fun getDirectUsername(message: String): String? {
         if (!isDirect(true, message)) return null

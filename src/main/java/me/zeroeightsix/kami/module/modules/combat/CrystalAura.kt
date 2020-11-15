@@ -169,7 +169,6 @@ object CrystalAura : Module() {
 
                 for (crystal in crystalList) {
                     crystal.setDead()
-                    mc.world.removeEntityFromWorld(crystal.entityId)
                 }
 
                 ignoredList.clear()

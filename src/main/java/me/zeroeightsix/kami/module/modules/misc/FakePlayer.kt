@@ -19,6 +19,8 @@ object FakePlayer : Module() {
     private val copyInventory = register(Settings.b("CopyInventory", false))
     val playerName = register(Settings.stringBuilder("PlayerName").withValue("Player").withVisibility { false })
 
+    private var fakePlayer: EntityOtherPlayerMP? = null
+
     init {
         listener<ConnectionEvent.Disconnect> {
             disable()
@@ -31,7 +33,7 @@ object FakePlayer : Module() {
             return
         }
         if (playerName.value == "Player") MessageSendHelper.sendChatMessage("You can use &7'${Command.commandPrefix.value}fp <name>'&r to set a custom name")
-        EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {
+        fakePlayer = EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {
             copyLocationAndAnglesFrom(mc.player)
             rotationYawHead = mc.player.rotationYawHead
             if (copyInventory.value) inventory.copyInventory(mc.player.inventory)
@@ -42,6 +44,6 @@ object FakePlayer : Module() {
 
     override fun onDisable() {
         if (mc.world == null || mc.player == null) return
-        mc.world.removeEntityFromWorld(-911)
+        fakePlayer?.setDead()
     }
 }

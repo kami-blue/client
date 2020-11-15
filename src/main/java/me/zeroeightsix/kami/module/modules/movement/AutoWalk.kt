@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.pathing.goals.GoalXZ
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -10,11 +10,10 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils
-import me.zeroeightsix.kami.util.math.MathUtils.Cardinal
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
-import net.minecraft.entity.player.EntityPlayer
+import me.zeroeightsix.kami.util.math.Direction
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.client.event.InputUpdateEvent
+import kotlin.math.floor
 
 @Module.Info(
         name = "AutoWalk",
@@ -23,105 +22,92 @@ import net.minecraftforge.client.event.InputUpdateEvent
 )
 object AutoWalk : Module() {
     val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
+    private val disableOnDisconnect = register(Settings.b("DisableOnDisconnect", true))
 
     enum class AutoWalkMode {
         FORWARD, BACKWARDS, BARITONE
     }
 
-    private var disableBaritone = false
     private const val border = 30000000
-    var direction: String? = null
-    private var toggleTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val messageTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    var direction = Direction.NORTH; private set
 
-    init {
-        listener<InputUpdateEvent> {
-            when (mode.value) {
-                AutoWalkMode.FORWARD -> {
-                    disableBaritone = false
-                    it.movementInput.moveForward = 1f
-                }
-                AutoWalkMode.BACKWARDS -> {
-                    disableBaritone = false
-                    it.movementInput.moveForward = -1f
-                }
-                AutoWalkMode.BARITONE -> disableBaritone = true
+    override fun isActive(): Boolean {
+        return isEnabled && (mode.value != AutoWalkMode.BARITONE || BaritoneUtils.isActive)
+    }
 
-                else -> {
-                    KamiMod.log.error("Mode is irregular. Value: " + mode.value)
-                }
-            }
-        }
-
-        listener<ConnectionEvent.Disconnect> {
-            disable()
-        }
-
-        listener<SafeTickEvent> {
-            if (mode.value == AutoWalkMode.BARITONE && !BaritoneUtils.isCustomGoalActive && toggleTimer.tick(3L, false)) {
-                disable()
-            }
+    override fun getHudInfo(): String? {
+        return if (BaritoneUtils.isActive) {
+            direction.displayName
+        } else {
+            mode.value.name
         }
     }
 
     override fun onDisable() {
-        if (disableBaritone) BaritoneUtils.cancelEverything()
+        if (mc.player != null) BaritoneUtils.cancelEverything()
     }
 
-    public override fun onEnable() {
-        if (mc.player == null) {
-            disable()
-            return
-        }
-
-        if (mode.value != AutoWalkMode.BARITONE) return
-
-        if (mc.player.isElytraFlying) {
-            sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying")
-            disable()
-            return
-        }
-
-        when (MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)) {
-            Cardinal.POS_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() + border))
-            Cardinal.NEG_X_POS_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() + border))
-            Cardinal.NEG_X -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt()))
-            Cardinal.NEG_X_NEG_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() - border, mc.player.posZ.toInt() - border))
-            Cardinal.NEG_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt(), mc.player.posZ.toInt() - border))
-            Cardinal.POS_X_NEG_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() - border))
-            Cardinal.POS_X -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt()))
-            Cardinal.POS_X_POS_Z -> BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(mc.player.posX.toInt() + border, mc.player.posZ.toInt() + border))
-            else -> {
-                sendErrorMessage("Could not determine direction. Disabling...")
+    init {
+        listener<BaritoneCommandEvent> { event ->
+            if (event.command.names.any { it.contains("cancel") }) {
                 disable()
             }
         }
 
-        direction = MathUtils.getPlayerCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player).cardinalName
-        toggleTimer.reset()
-    }
+        listener<ConnectionEvent.Disconnect> {
+            if (disableOnDisconnect.value) disable()
+        }
 
-    override fun getHudInfo(): String {
-        return if (BaritoneUtils.primary?.customGoalProcess?.goal != null && direction != null) {
-            direction!!
-        } else {
+        listener<InputUpdateEvent> {
             when (mode.value) {
-                AutoWalkMode.BARITONE -> "NONE"
-                AutoWalkMode.FORWARD -> "FORWARD"
-                AutoWalkMode.BACKWARDS -> "BACKWARDS"
-
-                else -> {
-                    "N/A"
+                AutoWalkMode.FORWARD -> {
+                    it.movementInput.moveForward = 1.0f
                 }
+                AutoWalkMode.BACKWARDS -> {
+                    it.movementInput.moveForward = -1.0f
+                }
+                else -> {
+
+                }
+            }
+        }
+
+        listener<SafeTickEvent> {
+            if (mode.value == AutoWalkMode.BARITONE) {
+                if (!checkBaritoneElytra() && !isActive()) startPathing()
             }
         }
     }
 
+    private fun startPathing() {
+        mc.player?.let {
+            if (!mc.world.isChunkGeneratedAt(it.chunkCoordX, it.chunkCoordZ)) return
+
+            direction = Direction.fromEntity(it)
+            val x = floor(it.posX).toInt() + direction.directionVec.x * border
+            val z = floor(it.posZ).toInt() + direction.directionVec.z * border
+
+            BaritoneUtils.cancelEverything()
+            BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
+        }
+    }
+
+    private fun checkBaritoneElytra() = mc.player?.let {
+        if (it.isElytraFlying && messageTimer.tick(10L)) {
+            MessageSendHelper.sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying!" +
+                    " Choose a different mode if you want to use AutoWalk while Elytra flying")
+        }
+        it.isElytraFlying
+    } ?: true
+
     init {
         mode.settingListener = Setting.SettingListeners {
-            mc.player?.let {
-                if (mode.value == AutoWalkMode.BARITONE && mc.player.isElytraFlying) {
-                    sendErrorMessage("$chatName Baritone mode isn't currently compatible with Elytra flying! Choose a different mode if you want to use AutoWalk while Elytra flying"); disable()
-                }
+            if (mc.player == null) return@SettingListeners
+            if (mode.value == AutoWalkMode.BARITONE) {
+                if (!checkBaritoneElytra()) startPathing()
+            } else {
+                BaritoneUtils.cancelEverything()
             }
         }
     }

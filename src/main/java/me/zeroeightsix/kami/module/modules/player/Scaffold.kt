@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -17,7 +18,7 @@ import net.minecraftforge.client.event.InputUpdateEvent
 import kotlin.math.round
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinEntity
+ * @see MixinEntity.isSneaking
  *
  * TODO: Rewrite this
  */

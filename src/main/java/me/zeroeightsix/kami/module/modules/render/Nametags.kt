@@ -429,7 +429,7 @@ object Nametags : Module() {
     fun checkEntityType(entity: Entity) = (self.value || entity != mc.renderViewEntity)
             && (!entity.isInvisible || invisible.value)
             && (entity is EntityXPOrb && experience.value
-            || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, true, true)
+            || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, friend = true, sleeping = true)
             || EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
 
     private class ItemGroup {

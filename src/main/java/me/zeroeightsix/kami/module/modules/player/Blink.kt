@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
@@ -63,8 +62,9 @@ object Blink : Module() {
             rotationYawHead = mc.player.rotationYawHead
             inventory.copyInventory(mc.player.inventory)
             noClip = true
+        }.also {
+            mc.world.addEntityToWorld(-114514, it)
         }
-        mc.world.addEntityToWorld(-114514, clonedPlayer as Entity)
     }
 
     private fun end() {
@@ -77,7 +77,7 @@ object Blink : Module() {
             while (packets.isNotEmpty()) mc.connection!!.sendPacket(packets.poll())
             sending = false
         }
-        mc.world?.removeEntityFromWorld(-114514)
+        clonedPlayer?.setDead()
         clonedPlayer = null
     }
 

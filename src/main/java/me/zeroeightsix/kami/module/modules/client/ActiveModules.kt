@@ -36,7 +36,6 @@ object ActiveModules : Module() {
     private val chat = register(Settings.s("Chat", "162,136,227"))
     private val combat = register(Settings.s("Combat", "229,68,109"))
     private val client = register(Settings.s("Client", "56,2,59"))
-    private val experimental = register(Settings.s("Experimental", "211,188,192"))
     private val misc = register(Settings.s("Misc", "165,102,139"))
     private val movement = register(Settings.s("Movement", "111,60,145"))
     private val player = register(Settings.s("Player", "255,137,102"))

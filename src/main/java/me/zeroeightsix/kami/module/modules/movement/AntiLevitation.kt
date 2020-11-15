@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.MobEffects
-import net.minecraft.potion.Potion
 
 @Module.Info(
         name = "AntiLevitation",
