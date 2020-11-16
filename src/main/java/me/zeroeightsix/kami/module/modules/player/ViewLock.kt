@@ -80,34 +80,27 @@ object ViewLock : Module() {
 
 
     fun handleDeltaX(deltaX: Int) {
-        val currentTime = System.currentTimeMillis()
-        deltaXQueue.add(Pair(deltaX, currentTime))
-
-        val sum = deltaXQueue.sumBy { it.first }
-        if (abs(sum) > threshold.value * 100) {
-            deltaXQueue.clear()
-            changeDirection(sign(sum.toDouble()).toInt(), 0)
-            return
-        }
-
-        while (deltaXQueue.peek().second < currentTime - 500) {
-            deltaXQueue.remove()
-        }
+        handleDelta(deltaX, deltaXQueue, true)
     }
 
     fun handleDeltaY(deltaY: Int) {
-        val currentTime = System.currentTimeMillis()
-        deltaYQueue.add(Pair(deltaY, currentTime))
+        handleDelta(deltaY, deltaYQueue, false)
+    }
 
-        val sum = deltaYQueue.sumBy { it.first }
+    private fun handleDelta(delta: Int, list: LinkedList<Pair<Int, Long>>, isYaw: Boolean) {
+        val currentTime = System.currentTimeMillis()
+        list.add(Pair(delta, currentTime))
+
+        val sum = list.sumBy { it.first }
         if (abs(sum) > threshold.value * 100) {
-            deltaYQueue.clear()
-            changeDirection(0, -sign(sum.toDouble()).toInt())
+            list.clear()
+            if (isYaw) changeDirection(signum(sum), 0)
+            else changeDirection(0, -signum(sum))
             return
         }
 
-        while (deltaYQueue.peek().second < currentTime - 500) {
-            deltaYQueue.remove()
+        while (list.peek().second < currentTime - 500) {
+            list.remove()
         }
     }
 
