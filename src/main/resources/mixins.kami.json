@@ -38,6 +38,7 @@
     "render.MixinItemRenderer",
     "render.MixinLayerArmorBase",
     "render.MixinLayerCape",
+    "render.MixinLayerElytra",
     "render.MixinLayerHeldItem",
     "render.MixinModelBiped",
     "render.MixinModelBoat",

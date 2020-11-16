@@ -17,7 +17,7 @@ public class MixinLayerCape {
 
     @Inject(method = "doRenderLayer", at = @At("HEAD"), cancellable = true)
     public void doRenderLayer(AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        if (Capes.INSTANCE.isEnabled() && Capes.INSTANCE.tryRenderCape(playerRenderer, player, partialTicks))
+        if (Capes.INSTANCE.tryRenderCape(playerRenderer, player, partialTicks))
             ci.cancel();
     }
 }

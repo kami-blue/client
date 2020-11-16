@@ -12,8 +12,12 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.AbstractClientPlayer
+import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.entity.RenderLivingBase
 import net.minecraft.client.renderer.entity.RenderPlayer
+import net.minecraft.client.renderer.entity.layers.LayerArmorBase
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EnumPlayerModelParts
 import net.minecraft.init.Items
 import net.minecraft.inventory.EntityEquipmentSlot
@@ -96,7 +100,8 @@ object Capes : Module() {
     }
 
     fun tryRenderCape(playerRenderer: RenderPlayer, player: AbstractClientPlayer, partialTicks: Float): Boolean {
-        if (!player.hasPlayerInfo()
+        if (isDisabled
+                || !player.hasPlayerInfo()
                 || player.isInvisible
                 || !player.isWearing(EnumPlayerModelParts.CAPE)
                 || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == Items.ELYTRA) return false
@@ -105,19 +110,16 @@ object Capes : Module() {
 
         return if (cape != null) {
             renderCape(playerRenderer, player, partialTicks, cape)
-            true
         } else {
             false
         }
     }
 
-    private fun renderCape(playerRenderer: RenderPlayer, player: AbstractClientPlayer, partialTicks: Float, cape: Cape) {
-        val primaryColor = cape.color.primary.toIntOrNull(16)?.let {
-            ColorConverter.hexToRgb(it)
-        } ?: return
-        val borderColor = cape.color.border.toIntOrNull(16)?.let {
-            ColorConverter.hexToRgb(it)
-        } ?: return
+    private fun renderCape(playerRenderer: RenderPlayer, player: AbstractClientPlayer, partialTicks: Float, cape: Cape): Boolean {
+        val primaryColor = parseColor(cape.color.primary)
+        val borderColor = parseColor(cape.color.border)
+
+        if (primaryColor == null || borderColor == null) return false
 
         renderCapeLayer(playerRenderer, player, CapeTexture.PRIMARY, primaryColor, partialTicks)
         renderCapeLayer(playerRenderer, player, CapeTexture.BORDER, borderColor, partialTicks)
@@ -127,11 +129,13 @@ object Capes : Module() {
         } else {
             renderCapeLayer(playerRenderer, player, CapeTexture.TEXT, DyeColors.WHITE.color, partialTicks)
         }
+
+        return true
     }
 
-    private fun renderCapeLayer(playerRenderer: RenderPlayer, player: AbstractClientPlayer, texture: CapeTexture, color: ColorHolder, partialTicks: Float) {
+    private fun renderCapeLayer(renderer: RenderPlayer, player: AbstractClientPlayer, texture: CapeTexture, color: ColorHolder, partialTicks: Float) {
         GlStateManager.color(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, 1.0f)
-        playerRenderer.bindTexture(texture.location)
+        renderer.bindTexture(texture.location)
         GlStateManager.pushMatrix()
         GlStateManager.translate(0.0f, 0.0f, 0.125f)
 
@@ -164,13 +168,101 @@ object Capes : Module() {
         GlStateManager.rotate(-angle3 / 2.0f, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f)
 
-        playerRenderer.mainModel.renderCape(0.0625f)
+        renderer.mainModel.renderCape(0.0625f)
         GlStateManager.popMatrix()
     }
 
+    fun tryRenderElytra(
+            renderer: RenderLivingBase<*>,
+            model: ModelElytra,
+            entity: EntityLivingBase,
+            limbSwing: Float,
+            limbSwingAmount: Float,
+            ageInTicks: Float,
+            netHeadYaw: Float,
+            headPitch: Float,
+            scale: Float,
+            partialTicks: Float
+    ): Boolean {
+        if (isDisabled
+                || entity !is AbstractClientPlayer
+                || entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) return false
+
+        val cape = capeUsers[entity.gameProfile.id]
+
+        return if (cape != null) {
+            renderElytra(renderer, model, entity, cape, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+        } else {
+            false
+        }
+    }
+
+    private fun renderElytra(
+            renderer: RenderLivingBase<*>,
+            model: ModelElytra,
+            player: AbstractClientPlayer,
+            cape: Cape,
+            limbSwing: Float,
+            limbSwingAmount: Float,
+            ageInTicks: Float,
+            netHeadYaw: Float,
+            headPitch: Float,
+            scale: Float,
+            partialTicks: Float
+    ): Boolean {
+        val primaryColor = parseColor(cape.color.primary)
+        val borderColor = parseColor(cape.color.border)
+
+        if (primaryColor == null || borderColor == null) return false
+
+        renderElytraLayer(renderer, model, player, CapeTexture.PRIMARY, primaryColor, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+        renderElytraLayer(renderer, model, player, CapeTexture.BORDER, borderColor, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+
+        if (cape.type == CapeType.CONTRIBUTOR) {
+            renderElytraLayer(renderer, model, player, CapeTexture.TEXT_ICON, DyeColors.WHITE.color, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+        } else {
+            renderElytraLayer(renderer, model, player, CapeTexture.TEXT, DyeColors.WHITE.color, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+        }
+
+        return true
+    }
+
+    private fun renderElytraLayer(
+            renderer: RenderLivingBase<*>,
+            model: ModelElytra,
+            player: AbstractClientPlayer,
+            texture: CapeTexture,
+            color: ColorHolder,
+            limbSwing: Float,
+            limbSwingAmount: Float,
+            ageInTicks: Float,
+            netHeadYaw: Float,
+            headPitch: Float,
+            scale: Float,
+            partialTicks: Float
+    ) {
+        GlStateManager.color(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, 1.0f)
+        renderer.bindTexture(texture.location)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(0.0f, 0.0f, 0.125f)
+        model.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, player)
+        model.render(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale)
+
+        if (player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).isItemEnchanted) {
+            LayerArmorBase.renderEnchantedGlint(renderer, player, model, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale)
+        }
+
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
+    }
+
+    private fun parseColor(string: String) = string.toIntOrNull(16)?.let {
+        ColorConverter.hexToRgb(it)
+    }
+
     private enum class CapeTexture(val location: ResourceLocation) {
-        BORDER(ResourceLocation("kamiblue/textures/capes/border.png")),
         PRIMARY(ResourceLocation("kamiblue/textures/capes/primary.png")),
+        BORDER(ResourceLocation("kamiblue/textures/capes/border.png")),
         TEXT(ResourceLocation("kamiblue/textures/capes/text.png")),
         TEXT_ICON(ResourceLocation("kamiblue/textures/capes/text_icon.png"))
     }
