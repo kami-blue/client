@@ -31,8 +31,8 @@ object ViewLock : Module() {
 
     private var yawSanp = 0
     private var pitchSnap = 0
-    private val deltaXQueue: Queue<Pair<Int, Long>> = LinkedList()
-    private val deltaYQueue: Queue<Pair<Int, Long>> = LinkedList()
+    private val deltaXQueue = LinkedList<Pair<Int, Long>>()
+    private val deltaYQueue = LinkedList<Pair<Int, Long>>()
     private var pitchSliceAngle = 1.0f
     private var yawSliceAngle = 1.0f
 
