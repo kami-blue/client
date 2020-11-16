@@ -103,20 +103,22 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaX:I", opcode = Opcodes.GETFIELD))
     public int deltaX(MouseHelper mouseHelper) {
-        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getYaw().getValue() && ViewLock.INSTANCE.getDisableMouseYaw().getValue()) {
+        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getYaw().getValue()) {
             if (ViewLock.INSTANCE.getAutoYaw().getValue())
                 ViewLock.INSTANCE.handleDeltaX(mouseHelper.deltaX);
-            return 0;
+            if (ViewLock.INSTANCE.getDisableMouseYaw().getValue())
+                return 0;
         }
         return mouseHelper.deltaX;
     }
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaY:I", opcode = Opcodes.GETFIELD))
     public int deltaY(MouseHelper mouseHelper) {
-        if ((ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getPitch().getValue() && ViewLock.INSTANCE.getDisableMousePitch().getValue())) {
+        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getPitch().getValue()) {
             if (ViewLock.INSTANCE.getAutoPitch().getValue())
                 ViewLock.INSTANCE.handleDeltaY(mouseHelper.deltaY);
-            return 0;
+            if (ViewLock.INSTANCE.getDisableMousePitch().getValue())
+                return 0;
         }
         return mouseHelper.deltaY;
     }
