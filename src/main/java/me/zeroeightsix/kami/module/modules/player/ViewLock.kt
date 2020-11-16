@@ -29,7 +29,7 @@ object ViewLock : Module() {
     private val yawSlice = register(Settings.integerBuilder("YawSlice").withValue(8).withRange(2, 32).withStep(1).withVisibility { autoYaw.value && yaw.value })
     private val pitchSlice = register(Settings.integerBuilder("PitchSlice").withValue(5).withRange(2, 32).withStep(1).withVisibility { autoPitch.value && pitch.value })
 
-    private var yawSanp = 0
+    private var yawSnap = 0
     private var pitchSnap = 0
     private val deltaXQueue = LinkedList<Pair<Int, Long>>()
     private val deltaYQueue = LinkedList<Pair<Int, Long>>()
@@ -57,20 +57,20 @@ object ViewLock : Module() {
     }
 
     private fun snapToNext() {
-        yawSanp = round(mc.player.rotationYaw / yawSliceAngle).toInt()
+        yawSnap = round(mc.player.rotationYaw / yawSliceAngle).toInt()
         pitchSnap = round((mc.player.rotationPitch + 90) / pitchSliceAngle).toInt()
         snapToSlice()
     }
 
     private fun changeDirection(yawChange: Int, pitchChange: Int) {
-        yawSanp = Math.floorMod(yawSanp + yawChange, yawSlice.value)
+        yawSnap = Math.floorMod(yawSnap + yawChange, yawSlice.value)
         pitchSnap = (pitchSnap + pitchChange).coerceIn(0, pitchSlice.value - 1)
         snapToSlice()
     }
 
     private fun snapToSlice() {
         if (yaw.value && autoYaw.value) {
-            mc.player.rotationYaw = (yawSanp * yawSliceAngle).coerceIn(0f, 360f)
+            mc.player.rotationYaw = (yawSnap * yawSliceAngle).coerceIn(0f, 360f)
             mc.player.ridingEntity?.let { it.rotationYaw = mc.player.rotationYaw }
         }
         if (pitch.value && autoPitch.value) {
