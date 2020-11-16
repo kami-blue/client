@@ -1,22 +1,19 @@
 package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
-import baritone.api.Settings
 import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {
-    var settingsInitialized = false
+    var initialized = false
+    var paused = false; private set
 
-    var paused = false
-        private set
+    val provider get() = if (initialized) BaritoneAPI.getProvider() else null
+    val settings get() = if (initialized) BaritoneAPI.getSettings() else null
+    val primary get() = provider?.primaryBaritone
+    val prefix get() = settings?.prefix?.value ?: "#"
 
     val isPathing get() = primary?.pathingBehavior?.isPathing ?: false
-    val isCustomGoalActive get() = primary?.customGoalProcess?.isActive ?: false
     val isActive get() = primary?.customGoalProcess?.isActive ?: false
-
-    val api get() = if (!settingsInitialized) null else BaritoneAPI.getProvider()
-    val primary get() = if (!settingsInitialized) null else BaritoneAPI.getProvider().primaryBaritone
-    val prefix get() = settings()?.prefix?.value ?: "#"
 
     fun pause() {
         if (!paused) {
@@ -37,12 +34,4 @@ object BaritoneUtils {
     }
 
     fun cancelEverything() = primary?.pathingBehavior?.cancelEverything()
-
-    fun settings(): Settings? {
-        return if (!settingsInitialized) {
-            null
-        } else {
-            BaritoneAPI.getSettings()
-        }
-    }
 }

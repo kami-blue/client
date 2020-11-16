@@ -46,6 +46,7 @@ object Tracers : Module() {
 
     /* General rendering settings */
     private val rangedColor = setting("RangedColor", true, { page.value == Page.RENDERING })
+    private val colorChangeRange = setting("ColorChangeRange", 16, 8..128, 8, { page.value == Page.RENDERING })
     private val playerOnly = setting("PlayerOnly", true, { page.value == Page.RENDERING && rangedColor.value })
     private val colorFar = setting("FarColor", DyeColors.WHITE, { page.value == Page.COLOR })
     private val aFar = setting("FarAlpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
@@ -123,10 +124,10 @@ object Tracers : Module() {
         val distance = mc.player.getDistance(entity)
         val colorFar = colorFar.value.color
         colorFar.a = aFar.value
-        val r = convertRange(distance, 0f, range.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
-        val g = convertRange(distance, 0f, range.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
-        val b = convertRange(distance, 0f, range.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
-        val a = convertRange(distance, 0f, range.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
+        val r = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.r.toFloat(), colorFar.r.toFloat()).toInt()
+        val g = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.g.toFloat(), colorFar.g.toFloat()).toInt()
+        val b = convertRange(distance, 0f, colorChangeRange.value.toFloat(), rgba.b.toFloat(), colorFar.b.toFloat()).toInt()
+        val a = convertRange(distance, 0f, colorChangeRange.value.toFloat(), a.value.toFloat(), colorFar.a.toFloat()).toInt()
         return ColorHolder(r, g, b, a)
     }
 }

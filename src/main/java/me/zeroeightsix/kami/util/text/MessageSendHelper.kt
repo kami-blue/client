@@ -53,7 +53,7 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendBaritoneCommand(vararg args: String?) {
-        val chatControl = BaritoneUtils.settings()?.chatControl
+        val chatControl = BaritoneUtils.settings?.chatControl
         val prevValue = chatControl?.value
         chatControl?.value = true
 

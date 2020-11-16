@@ -42,7 +42,7 @@ object Baritone : Module() {
     }
 
     private fun sync() {
-        BaritoneUtils.settings()?.let {
+        BaritoneUtils.settings?.let {
             it.chatControl.value = false // enable chatControlAnyway if you want to use it
             it.allowBreak.value = allowBreak.value
             it.allowSprint.value = allowSprint.value

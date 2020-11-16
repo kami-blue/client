@@ -24,7 +24,7 @@ object AutoReply : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) return@listener
+            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) return@listener
             if (customMessage.value) {
                 sendServerMessage("/r " + customText.value)
             } else {

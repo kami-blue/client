@@ -98,7 +98,6 @@ object ESP : Module() {
 
             mc.framebuffer.bindFramebuffer(false)
             GlStateManager.disableOutlineMode()
-            GlStateManager.popMatrix()
             drawingOutline = false
             drawNametag = false
         }
@@ -126,7 +125,6 @@ object ESP : Module() {
 
     private fun prepareFrameBuffer() {
         drawingOutline = true
-        GlStateManager.pushMatrix()
         GlStateManager.enableOutlineMode(0xFFFFFF)
         frameBuffer?.bindFramebuffer(false)
     }

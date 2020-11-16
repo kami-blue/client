@@ -55,7 +55,7 @@ object Step : Module() {
     }
 
     override fun onToggle() {
-        BaritoneUtils.settings()?.assumeStep?.value = isEnabled
+        BaritoneUtils.settings?.assumeStep?.value = isEnabled
     }
 
     init {

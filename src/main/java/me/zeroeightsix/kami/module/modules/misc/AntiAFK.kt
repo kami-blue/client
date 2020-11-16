@@ -56,7 +56,7 @@ object AntiAFK : Module() {
 
     override fun onDisable() {
         startPos = null
-        BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
+        BaritoneUtils.settings?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
         BaritoneUtils.cancelEverything()
     }
 
@@ -67,7 +67,7 @@ object AntiAFK : Module() {
 
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
-            if (MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) {
+            if (MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) {
                 sendServerMessage("/r I am currently AFK and using KAMI Blue!")
             }
         }
@@ -120,7 +120,7 @@ object AntiAFK : Module() {
     }
 
     private fun baritoneDisconnectOnArrival() {
-        BaritoneUtils.settings()?.disconnectOnArrival?.let {
+        BaritoneUtils.settings?.disconnectOnArrival?.let {
             baritoneDisconnectOnArrival = it.value
             it.value = false
         }

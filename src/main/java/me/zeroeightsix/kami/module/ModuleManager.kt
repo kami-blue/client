@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import org.lwjgl.input.Keyboard
 
 object ModuleManager {
 
@@ -49,7 +50,7 @@ object ModuleManager {
     }
 
     fun onBind(eventKey: Int) {
-        if (eventKey == 0) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
+        if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
         for (module in getModules()) {
             if (module.bind.value.isDown(eventKey)) module.toggle()
         }

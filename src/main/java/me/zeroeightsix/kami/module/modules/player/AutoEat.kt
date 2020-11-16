@@ -67,7 +67,7 @@ object AutoEat : Module() {
                 eating = false
                 unpause()
 
-                BaritoneUtils.settings()?.allowInventory?.value = false
+                BaritoneUtils.settings?.allowInventory?.value = false
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
                 return@listener
@@ -85,7 +85,7 @@ object AutoEat : Module() {
                 }
 
                 eating = true
-                BaritoneUtils.settings()?.allowInventory?.value = Baritone.allowInventory.value
+                BaritoneUtils.settings?.allowInventory?.value = Baritone.allowInventory.value
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                 mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)

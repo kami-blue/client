@@ -75,6 +75,6 @@ object AutoTunnel : Module() {
             width.listeners.add(this)
         }
 
-        backFill.listeners.add { BaritoneUtils.settings()?.backfill?.value = backFill.value }
+        backFill.listeners.add { BaritoneUtils.settings?.backfill?.value = backFill.value }
     }
 }

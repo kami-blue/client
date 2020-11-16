@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.ceil
 
 @Module.Info(
@@ -55,6 +56,7 @@ object InventoryManager : Module() {
     }
 
     override fun onToggle() {
+        paused = false
         BaritoneUtils.unpause()
     }
 
@@ -66,10 +68,10 @@ object InventoryManager : Module() {
         }
 
         listener<SafeTickEvent> {
-            if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
-            setState()
+            if (it.phase != TickEvent.Phase.START || mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
             if (!timer.tick(delay.value.toLong())) return@listener
-            if (currentState != State.IDLE) InventoryUtils.removeHoldingItem()
+            setState()
+            if (currentState == State.IDLE) InventoryUtils.removeHoldingItem()
             when (currentState) {
                 State.SAVING_ITEM -> saveItem()
                 State.REFILLING_BUILDING -> refillBuilding()

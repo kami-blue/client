@@ -14,6 +14,6 @@ public class MixinBaritoneSettings {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void baritoneSettingsInit(CallbackInfo ci) {
         KamiEventBus.INSTANCE.post(new BaritoneSettingsInitEvent());
-        BaritoneUtils.INSTANCE.setSettingsInitialized(true);
+        BaritoneUtils.INSTANCE.setInitialized(true);
     }
 }

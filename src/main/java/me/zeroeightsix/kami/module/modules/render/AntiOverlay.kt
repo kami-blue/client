@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
+import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
@@ -24,6 +25,7 @@ object AntiOverlay : Module() {
     val totems = setting("Totems", true)
     private val vignette = setting("Vignette", true)
     private val helmet = setting("Helmet", true)
+    private val tutorial = setting("Tutorial", true)
 
     init {
         listener<RenderBlockOverlayEvent> {
@@ -47,6 +49,7 @@ object AntiOverlay : Module() {
         listener<SafeTickEvent> {
             if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
             if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
+            if (tutorial.value) mc.gameSettings.tutorialStep = TutorialSteps.NONE
         }
     }
 }

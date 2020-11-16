@@ -31,6 +31,7 @@ object PlayerInventoryManager : Manager() {
 
             getTaskOrNext()?.nextInfo()?.let {
                 InventoryUtils.inventoryClick(it.windowId, it.slot, it.mouseButton, it.type)
+                mc.playerController?.updateController()
             }
 
             if (actionQueue.isEmpty()) currentId = 0
