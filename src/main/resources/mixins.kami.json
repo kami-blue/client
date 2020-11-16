@@ -25,7 +25,6 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "optifine.MixinConfig",
-    "player.MixinAbstractClientPlayer",
     "player.MixinEntityPlayer",
     "player.MixinEntityPlayerSP",
     "player.MixinMovementInputFromOptions",
