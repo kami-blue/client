@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.misc.DiscordRPC
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
@@ -28,7 +29,6 @@ import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
 import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.commons.utils.ThreadUtils
-import java.io.File
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.cos
@@ -42,19 +42,19 @@ import kotlin.math.sin
         enabledByDefault = true
 )
 object Capes : Module() {
-    private val capeUsers: MutableMap<UUID, Cape> = Collections.synchronizedMap(HashMap<UUID, Cape>())
+    val capeUsers: MutableMap<UUID, Cape> = Collections.synchronizedMap(HashMap<UUID, Cape>())
     var isPremium = false; private set
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
-    private val file = File(KamiMod.DIRECTORY + "capes.json")
     private val gson = Gson()
     private val thread = Thread({ updateCapes() }, "Capes Update Thread")
 
-    override fun onEnable() {
-        ThreadUtils.submitTask(thread)
-    }
-
     init {
+        /**
+         *  required for [DiscordRPC]. Since [Capes] is alphabetically before DiscordRPC, it will be init first
+         */
+        ThreadUtils.submitTask(thread)
+
         listener<SafeTickEvent> {
             if (timer.tick(5L)) ThreadUtils.submitTask(thread)
         }
@@ -75,6 +75,8 @@ object Capes : Module() {
                     }
                 }
             }
+
+            DiscordRPC.setCustomIcons()
             KamiMod.log.info("Capes loaded")
         } catch (e: Exception) {
             KamiMod.log.warn("Failed parsing capes", e)
