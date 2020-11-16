@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
+import java.lang.Integer.signum
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.round
-import kotlin.math.sign
 
 @Module.Info(
         name = "ViewLock",
@@ -80,29 +80,33 @@ object ViewLock : Module() {
 
 
     fun handleDeltaX(deltaX: Int) {
-        val currenttime = System.currentTimeMillis()
-        deltaXQueue.add(Pair(deltaX, currenttime))
+        val currentTime = System.currentTimeMillis()
+        deltaXQueue.add(Pair(deltaX, currentTime))
+
         val sum = deltaXQueue.sumBy { it.first }
         if (abs(sum) > threshold.value * 100) {
             deltaXQueue.clear()
             changeDirection(sign(sum.toDouble()).toInt(), 0)
             return
         }
-        while (deltaXQueue.peek().second < currenttime - 500) {
+
+        while (deltaXQueue.peek().second < currentTime - 500) {
             deltaXQueue.remove()
         }
     }
 
     fun handleDeltaY(deltaY: Int) {
-        val currenttime = System.currentTimeMillis()
-        deltaYQueue.add(Pair(deltaY, currenttime))
+        val currentTime = System.currentTimeMillis()
+        deltaYQueue.add(Pair(deltaY, currentTime))
+
         val sum = deltaYQueue.sumBy { it.first }
         if (abs(sum) > threshold.value * 100) {
             deltaYQueue.clear()
             changeDirection(0, -sign(sum.toDouble()).toInt())
             return
         }
-        while (deltaYQueue.peek().second < currenttime - 500) {
+
+        while (deltaYQueue.peek().second < currentTime - 500) {
             deltaYQueue.remove()
         }
     }
