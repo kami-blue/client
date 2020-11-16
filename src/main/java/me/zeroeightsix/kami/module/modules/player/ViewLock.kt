@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.lang.Integer.signum
 import java.util.*
 import kotlin.math.abs
@@ -39,11 +40,12 @@ object ViewLock : Module() {
     override fun onEnable() {
         yawSliceAngle = 360.0f / yawSlice.value
         pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
-        if ((autoYaw.value || autoPitch.value) && mc.player != null) snapToNext()
+        if (autoYaw.value || autoPitch.value) snapToNext()
     }
 
     init {
         listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@listener
             if (autoYaw.value || autoPitch.value) {
                 snapToSlice()
             }
@@ -57,9 +59,11 @@ object ViewLock : Module() {
     }
 
     private fun snapToNext() {
-        yawSnap = round(mc.player.rotationYaw / yawSliceAngle).toInt()
-        pitchSnap = round((mc.player.rotationPitch + 90) / pitchSliceAngle).toInt()
-        snapToSlice()
+        mc.player?.let {
+            yawSnap = round(it.rotationYaw / yawSliceAngle).toInt()
+            pitchSnap = round((it.rotationPitch + 90) / pitchSliceAngle).toInt()
+            snapToSlice()
+        }
     }
 
     private fun changeDirection(yawChange: Int, pitchChange: Int) {
@@ -69,12 +73,14 @@ object ViewLock : Module() {
     }
 
     private fun snapToSlice() {
-        if (yaw.value && autoYaw.value) {
-            mc.player.rotationYaw = (yawSnap * yawSliceAngle).coerceIn(0f, 360f)
-            mc.player.ridingEntity?.let { it.rotationYaw = mc.player.rotationYaw }
-        }
-        if (pitch.value && autoPitch.value) {
-            mc.player.rotationPitch = (pitchSnap * pitchSliceAngle - 90).coerceIn(-90f, 90f)
+        mc.player?.let { player ->
+            if (yaw.value && autoYaw.value) {
+                player.rotationYaw = (yawSnap * yawSliceAngle).coerceIn(0f, 360f)
+                player.ridingEntity?.let { it.rotationYaw = player.rotationYaw }
+            }
+            if (pitch.value && autoPitch.value) {
+                player.rotationPitch = (pitchSnap * pitchSliceAngle - 90).coerceIn(-90f, 90f)
+            }
         }
     }
 
