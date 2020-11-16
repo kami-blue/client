@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
+import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
 import me.zeroeightsix.kami.module.modules.player.ViewLock;
 import me.zeroeightsix.kami.module.modules.render.AntiFog;
@@ -11,19 +12,19 @@ import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MouseHelper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -101,25 +102,13 @@ public class MixinEntityRenderer {
         KamiEventBus.INSTANCE.post(eventPost);
     }
 
-    @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaX:I", opcode = Opcodes.GETFIELD))
-    public int deltaX(MouseHelper mouseHelper) {
-        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getYaw().getValue()) {
-            if (ViewLock.INSTANCE.getAutoYaw().getValue())
-                ViewLock.INSTANCE.handleDeltaX(mouseHelper.deltaX);
-            if (ViewLock.INSTANCE.getDisableMouseYaw().getValue())
-                return 0;
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;turn(FF)V"))
+    public void turn(EntityPlayerSP player, float yaw, float pitch) {
+        if (ViewLock.INSTANCE.isEnabled() && Freecam.INSTANCE.isDisabled()) {
+            Vec2f rotation = ViewLock.INSTANCE.handleTurn(yaw, pitch);
+            player.turn(rotation.x, rotation.y);
+        } else {
+            player.turn(yaw, pitch);
         }
-        return mouseHelper.deltaX;
-    }
-
-    @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MouseHelper;deltaY:I", opcode = Opcodes.GETFIELD))
-    public int deltaY(MouseHelper mouseHelper) {
-        if (ViewLock.INSTANCE.isEnabled() && ViewLock.INSTANCE.getPitch().getValue()) {
-            if (ViewLock.INSTANCE.getAutoPitch().getValue())
-                ViewLock.INSTANCE.handleDeltaY(mouseHelper.deltaY);
-            if (ViewLock.INSTANCE.getDisableMousePitch().getValue())
-                return 0;
-        }
-        return mouseHelper.deltaY;
     }
 }
