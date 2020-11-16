@@ -56,7 +56,7 @@ object Capes : Module() {
             }
             KamiMod.log.info("Capes loaded")
         } catch (e: Exception) {
-            KamiMod.log.warn("Failed parsing capes")
+            KamiMod.log.warn("Failed parsing capes", e)
         }
     }
 
