@@ -22,12 +22,12 @@ object ViewLock : Module() {
     val autoYaw = register(Settings.booleanBuilder("AutoYaw").withValue(true).withVisibility { yaw.value })
     val autoPitch = register(Settings.booleanBuilder("AutoPitch").withValue(true).withVisibility { pitch.value })
     private val threshold = register(Settings.integerBuilder("ChangeThresh").withValue(5).withRange(1, 50).withStep(1).withVisibility { autoPitch.value || autoYaw.value })
-    val disableMouseYaw = register(Settings.booleanBuilder("DisableMouseYaw").withValue(true).withVisibility { yaw.value })
-    val disableMousePitch = register(Settings.booleanBuilder("DisableMousePitch").withValue(true).withVisibility { pitch.value })
-    private val specifcYaw = register(Settings.floatBuilder("SpecificYaw").withValue(180.0f).withRange(-180.0f, 180.0f).withStep(1.0f).withVisibility { !autoYaw.value })
-    private val specificPitch = register(Settings.floatBuilder("SpecificPitch").withValue(0.0f).withRange(-90.0f, 90.0f).withStep(1.0f).withVisibility { !autoPitch.value })
-    private val yawSlice = register(Settings.integerBuilder("YawSlice").withValue(8).withRange(2, 32).withStep(1).withVisibility { autoYaw.value })
-    private val pitchSlice = register(Settings.integerBuilder("PitchSlice").withValue(5).withRange(2, 32).withStep(1).withVisibility { autoPitch.value })
+    val disableMouseYaw = register(Settings.booleanBuilder("DisableMouseYaw").withValue(true).withVisibility { yaw.value && yaw.value })
+    val disableMousePitch = register(Settings.booleanBuilder("DisableMousePitch").withValue(true).withVisibility { pitch.value && pitch.value })
+    private val specificYaw = register(Settings.floatBuilder("SpecificYaw").withValue(180.0f).withRange(-180.0f, 180.0f).withStep(1.0f).withVisibility { !autoYaw.value && yaw.value })
+    private val specificPitch = register(Settings.floatBuilder("SpecificPitch").withValue(0.0f).withRange(-90.0f, 90.0f).withStep(1.0f).withVisibility { !autoPitch.value && pitch.value })
+    private val yawSlice = register(Settings.integerBuilder("YawSlice").withValue(8).withRange(2, 32).withStep(1).withVisibility { autoYaw.value && yaw.value })
+    private val pitchSlice = register(Settings.integerBuilder("PitchSlice").withValue(5).withRange(2, 32).withStep(1).withVisibility { autoPitch.value && pitch.value })
 
     private var yawSanp = 0
     private var pitchSnap = 0
@@ -39,8 +39,7 @@ object ViewLock : Module() {
     override fun onEnable() {
         yawSliceAngle = 360.0f / yawSlice.value
         pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
-        if ((autoYaw.value || autoPitch.value) && mc.player != null)
-            snapToNext()
+        if ((autoYaw.value || autoPitch.value) && mc.player != null) snapToNext()
     }
 
     init {
@@ -48,8 +47,12 @@ object ViewLock : Module() {
             if (autoYaw.value || autoPitch.value) {
                 snapToSlice()
             }
-            if (yaw.value && !autoYaw.value) mc.player.rotationYaw = specifcYaw.value
-            if (pitch.value && !autoPitch.value) mc.player.rotationPitch = specificPitch.value
+            if (yaw.value && !autoYaw.value) {
+                mc.player.rotationYaw = specificYaw.value
+            }
+            if (pitch.value && !autoPitch.value) {
+                mc.player.rotationPitch = specificPitch.value
+            }
         }
     }
 
@@ -70,7 +73,9 @@ object ViewLock : Module() {
             mc.player.rotationYaw = (yawSanp * yawSliceAngle).coerceIn(0f, 360f)
             mc.player.ridingEntity?.let { it.rotationYaw = mc.player.rotationYaw }
         }
-        if (pitch.value && autoPitch.value) mc.player.rotationPitch = (pitchSnap * pitchSliceAngle - 90).coerceIn(-90f, 90f)
+        if (pitch.value && autoPitch.value) {
+            mc.player.rotationPitch = (pitchSnap * pitchSliceAngle - 90).coerceIn(-90f, 90f)
+        }
     }
 
 
@@ -83,8 +88,9 @@ object ViewLock : Module() {
             changeDirection(sign(sum.toDouble()).toInt(), 0)
             return
         }
-        while (deltaXQueue.peek().second < currenttime - 500)
+        while (deltaXQueue.peek().second < currenttime - 500) {
             deltaXQueue.remove()
+        }
     }
 
     fun handleDeltaY(deltaY: Int) {
@@ -96,19 +102,20 @@ object ViewLock : Module() {
             changeDirection(0, -sign(sum.toDouble()).toInt())
             return
         }
-        while (deltaYQueue.peek().second < currenttime - 500)
+        while (deltaYQueue.peek().second < currenttime - 500) {
             deltaYQueue.remove()
+        }
     }
 
     init {
         yawSlice.settingListener = Setting.SettingListeners {
-            if (isEnabled && autoYaw.value) snapToNext()
             yawSliceAngle = 360.0f / yawSlice.value
+            if (isEnabled && autoYaw.value) snapToNext()
         }
 
         pitchSlice.settingListener = Setting.SettingListeners {
-            if (isEnabled && autoPitch.value) snapToNext()
             pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
+            if (isEnabled && autoPitch.value) snapToNext()
         }
 
         autoPitch.settingListener = Setting.SettingListeners { if (isEnabled && autoPitch.value) snapToNext() }
