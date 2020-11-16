@@ -26,9 +26,9 @@ import net.minecraft.util.math.MathHelper
 import org.kamiblue.capeapi.Cape
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
+import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.commons.utils.ThreadUtils
 import java.io.File
-import java.io.FileReader
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.cos
@@ -61,7 +61,7 @@ object Capes : Module() {
     }
 
     private fun updateCapes() {
-        /*val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
+        val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
             KamiMod.log.warn("Failed requesting capes", it)
         } ?: return
 
@@ -78,25 +78,7 @@ object Capes : Module() {
             KamiMod.log.info("Capes loaded")
         } catch (e: Exception) {
             KamiMod.log.warn("Failed parsing capes", e)
-        }*/
-
-        val reader = FileReader(file)
-        try {
-            val cacheList = gson.fromJson<ArrayList<CapeUser>>(reader, object : TypeToken<List<CapeUser>>() {}.type)
-            capeUsers.clear()
-            cacheList.forEach { capeUser ->
-                capeUser.capes.forEach { cape ->
-                    cape.playerUUID?.let {
-                        capeUsers[it] = cape
-                        isPremium = isPremium || mc.session.profile.id == it && capeUser.isPremium
-                    }
-                }
-            }
-            KamiMod.log.info("Capes loaded")
-        } catch (e: Exception) {
-            KamiMod.log.warn("Failed parsing capes", e)
         }
-        println(capeUsers)
     }
 
     fun tryRenderCape(playerRenderer: RenderPlayer, player: AbstractClientPlayer, partialTicks: Float): Boolean {
