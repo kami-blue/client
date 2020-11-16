@@ -121,10 +121,11 @@ object Capes : Module() {
 
         renderCapeLayer(playerRenderer, player, CapeTexture.PRIMARY, primaryColor, partialTicks)
         renderCapeLayer(playerRenderer, player, CapeTexture.BORDER, borderColor, partialTicks)
-        renderCapeLayer(playerRenderer, player, CapeTexture.TEXT, DyeColors.WHITE.color, partialTicks)
 
         if (cape.type == CapeType.CONTRIBUTOR) {
-            renderCapeLayer(playerRenderer, player, CapeTexture.ICON, DyeColors.WHITE.color, partialTicks)
+            renderCapeLayer(playerRenderer, player, CapeTexture.TEXT_ICON, DyeColors.WHITE.color, partialTicks)
+        } else {
+            renderCapeLayer(playerRenderer, player, CapeTexture.TEXT, DyeColors.WHITE.color, partialTicks)
         }
     }
 
@@ -171,7 +172,7 @@ object Capes : Module() {
         BORDER(ResourceLocation("kamiblue/textures/capes/border.png")),
         PRIMARY(ResourceLocation("kamiblue/textures/capes/primary.png")),
         TEXT(ResourceLocation("kamiblue/textures/capes/text.png")),
-        ICON(ResourceLocation("kamiblue/textures/capes/icon.png"))
+        TEXT_ICON(ResourceLocation("kamiblue/textures/capes/text_icon.png"))
     }
 
 }
