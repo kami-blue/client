@@ -45,7 +45,7 @@ object ViewLock : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@listener
+            if (it.phase != TickEvent.Phase.END) return@listener
             if (autoYaw.value || autoPitch.value) {
                 snapToSlice()
             }
