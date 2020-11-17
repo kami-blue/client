@@ -41,7 +41,7 @@
     "MixinMovementInputFromOptions",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
-    "MixinParicleManager",
+    "MixinParticleManager",
     "MixinPlayerControllerMP",
     "MixinRender",
     "MixinRenderGlobal",

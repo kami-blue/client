@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ParticleManager.class)
-public class MixinParicleManager {
+public class MixinParticleManager {
 
     @Inject(method = "renderParticles", at = @At("HEAD"), cancellable = true)
     public void renderEntityPre(Entity entityIn, float partialTicks, CallbackInfo ci) {

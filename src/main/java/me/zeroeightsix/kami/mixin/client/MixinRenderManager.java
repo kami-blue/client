@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(value = RenderManager.class, priority = 114514)
 public class MixinRenderManager {
-    Minecraft mc = Minecraft.getMinecraft();
+
     @Shadow
     public boolean renderOutlines;
     @Shadow

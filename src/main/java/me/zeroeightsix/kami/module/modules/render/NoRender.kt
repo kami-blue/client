@@ -30,7 +30,7 @@ object NoRender : Module() {
     private val packets = register(Settings.b("CancelPackets", true))
     private val page = register(Settings.e<Page>("Page", Page.OTHER))
 
-    //Entities
+    // Entities
     private val paint = register(Settings.booleanBuilder("Paintings").withValue(false).withVisibility { page.value == Page.ENTITIES }.build())
     private val animals = register(Settings.booleanBuilder("Animals").withValue(false).withVisibility { page.value == Page.ENTITIES }.build())
     private val mobs = register(Settings.booleanBuilder("Mobs").withValue(false).withVisibility { page.value == Page.ENTITIES }.build())
@@ -45,22 +45,22 @@ object NoRender : Module() {
     private val items = register(Settings.booleanBuilder("Items").withValue(false).withVisibility { page.value == Page.ENTITIES }.build())
     private val crystal = register(Settings.booleanBuilder("Crystals").withValue(false).withVisibility { page.value == Page.ENTITIES }.build())
 
-    //Others
+    // Others
     val map = register(Settings.booleanBuilder("Maps").withValue(false).withVisibility { page.value == Page.OTHER }.build())
     private val fire = register(Settings.booleanBuilder("Fire").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     private val explosion = register(Settings.booleanBuilder("Explosions").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     val signText = register(Settings.booleanBuilder("SignText").withValue(false).withVisibility { page.value == Page.OTHER }.build())
     val particles = register(Settings.booleanBuilder("Particles").withValue(true).withVisibility { page.value == Page.OTHER }.build())
-    private val falling = register(Settings.booleanBuilder("Falling Blocks").withValue(true).withVisibility { page.value == Page.OTHER }.build())
+    private val falling = register(Settings.booleanBuilder("FallingBlocks").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     val beacon = register(Settings.booleanBuilder("BeaconBeams").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     val skylight = register(Settings.booleanBuilder("SkyLightUpdates").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     private val enchantingTable = register(Settings.booleanBuilder("EnchantingBooks").withValue(true).withVisibility { page.value == Page.OTHER }.build())
     private val enchantingTableSnow = register(Settings.booleanBuilder("EnchantBookSnow").withValue(false).withVisibility { page.value == Page.OTHER }.build())
-    private val projectiles = register(Settings.booleanBuilder("ProjectilesEtc").withValue(false).withVisibility { page.value == Page.OTHER }.build())
+    private val projectiles = register(Settings.booleanBuilder("Projectiles").withValue(false).withVisibility { page.value == Page.OTHER }.build())
     private val lightning = register(Settings.booleanBuilder("Lightning").withValue(true).withVisibility { page.value == Page.OTHER }.build())
 
 
-    val filteredSettingList = mapOf(
+    private val filteredSettingList = mapOf(
             player to EntityOtherPlayerMP::class.java,
             xp to EntityXPOrb::class.java,
             paint to EntityPainting::class.java,
@@ -90,6 +90,7 @@ object NoRender : Module() {
                     it.packet is SPacketSpawnPainting && paint.value && packets.value ||
                     it.packet is SPacketParticles && particles.value
             ) it.cancel()
+
             if (it.packet is SPacketSpawnObject) {
                 when (it.packet.type) {
                     71 -> if (itemFrame.value && packets.value) it.cancel()
@@ -100,6 +101,7 @@ object NoRender : Module() {
                     else -> if (projectiles.value) it.cancel()
                 }
             }
+
             if (it.packet is SPacketSpawnMob && packets.value) {
                 if (EntityMob::class.java.isAssignableFrom(net.minecraftforge.registries.GameData.getEntityRegistry().getValue(it.packet.entityType).entityClass)) {
                     if (mobs.value) it.cancel()
@@ -111,11 +113,10 @@ object NoRender : Module() {
         }
 
         listener<RenderEntityEvent.Pre> {
-            if (it.entity != null) {
-                if (entityList.contains(it.entity::class.java) ||
-                        (animals.value && it.entity is IAnimals && it.entity !is EntityMob) ||
-                        (mobs.value && it.entity is EntityMob))
-                    it.cancel()
+            if (it.entity != null && entityList.contains(it.entity::class.java) ||
+                    (animals.value && it.entity is IAnimals && it.entity !is EntityMob) ||
+                    (mobs.value && it.entity is EntityMob)) {
+                it.cancel()
             }
         }
 
@@ -151,7 +152,7 @@ object NoRender : Module() {
     private fun updatelist() {
         entityList = HashSet()
         filteredSettingList.forEach { if (it.key.value == true) entityList.add(it.value) }
-        //needed beacuse there are 2 entites gateway adn portal
+        // needed because there are 2 entities, the gateway and the portal
         if (endPortal.value) entityList.add(TileEntityEndGateway::class.java)
     }
 
