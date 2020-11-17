@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.commands.BindCommand;
-import me.zeroeightsix.kami.util.ClassUtils;
+import org.kamiblue.commons.utils.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +15,15 @@ public class CommandManager {
 
     public CommandManager() {
         commands = new ArrayList<>();
+        List<Class<? extends Command>> classes = ClassUtils.INSTANCE.findClasses("me.zeroeightsix.kami.command.commands", Command.class);
 
-        for (Class<? extends Command> s : ClassUtils.findClasses(BindCommand.class.getPackage().getName(), Command.class)) {
-            if (Command.class.isAssignableFrom(s)) {
-                try {
-                    Command command = (Command) s.getConstructor().newInstance();
-                    commands.add(command);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.err.println("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
-                }
+        for (Class<? extends Command> s : classes) {
+            try {
+                Command command = s.getConstructor().newInstance();
+                commands.add(command);
+            } catch (Exception e) {
+                e.printStackTrace();
+                KamiMod.log.error("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
             }
         }
         KamiMod.log.info("Commands initialised");

@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
 
 object ModuleManager {
@@ -19,7 +19,7 @@ object ModuleManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java).sortedBy { it.simpleName }
+            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
             KamiMod.log.info("${moduleClassList!!.size} modules found")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"

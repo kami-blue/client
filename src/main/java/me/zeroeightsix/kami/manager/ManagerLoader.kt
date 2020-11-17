@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.manager
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager
-import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import org.kamiblue.commons.utils.ClassUtils
 
 /**
  * @author Xiaro
