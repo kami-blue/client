@@ -67,6 +67,7 @@ object Capes : Module() {
 
         try {
             val cacheList = gson.fromJson<ArrayList<CapeUser>>(rawJson, object : TypeToken<List<CapeUser>>() {}.type)
+            capeUsers.clear()
             cacheList.forEach { capeUser ->
                 capeUser.capes.forEach { cape ->
                     cape.playerUUID?.let {
