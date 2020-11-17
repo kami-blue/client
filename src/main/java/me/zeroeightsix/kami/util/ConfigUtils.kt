@@ -158,19 +158,19 @@ object ConfigUtils {
         }
     }
 
-    fun fixEmptyJson(file: File) {
+    fun fixEmptyJson(file: File, isArray: Boolean = false) {
         if (!file.exists()) file.createNewFile()
         var notEmpty = false
-        file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() }
+        file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() || it == "[]" || it == "{}" }
 
         if (!notEmpty) {
+            val fileWriter = FileWriter(file)
             try {
-                val fileWriter = FileWriter(file)
-                fileWriter.write("{}")
-                fileWriter.close()
+                fileWriter.write(if (isArray) "[]" else "{}")
             } catch (exception: IOException) {
                 exception.printStackTrace()
             }
+            fileWriter.close()
         }
     }
 

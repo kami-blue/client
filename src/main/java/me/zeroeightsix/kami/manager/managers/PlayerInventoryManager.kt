@@ -10,7 +10,7 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
 import java.util.*
 
-object PlayerInventoryManager : Manager() {
+object PlayerInventoryManager : Manager {
     private val mc = Wrapper.minecraft
     private val timer = TimerUtils.TickTimer()
     private val lockObject = Any()
@@ -31,6 +31,7 @@ object PlayerInventoryManager : Manager() {
 
             getTaskOrNext()?.nextInfo()?.let {
                 InventoryUtils.inventoryClick(it.windowId, it.slot, it.mouseButton, it.type)
+                mc.playerController?.updateController()
             }
 
             if (actionQueue.isEmpty()) currentId = 0

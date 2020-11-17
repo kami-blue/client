@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.Blocks
 
+@Suppress("DEPRECATION")
 @Module.Info(
         name = "IceSpeed",
         description = "Changes how slippery ice is",

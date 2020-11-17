@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
-import me.zeroeightsix.kami.util.math.VectorUtils
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "VoidESP",
@@ -27,42 +27,39 @@ object VoidESP : Module() {
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1))
     private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
 
-    private val voidHoles = ArrayList<BlockPos>()
-
+    @Suppress("UNUSED")
     private enum class Mode {
         BLOCK_HOLE, BLOCK_VOID, FLAT
     }
 
+    private val renderer = ESPRenderer()
+
     init {
         listener<SafeTickEvent> {
-            voidHoles.clear()
-            val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, renderDistance.value.toFloat())
+            if (it.phase != TickEvent.Phase.END) return@listener
+            renderer.clear()
+            renderer.aFilled = if (filled.value) aFilled.value else 0
+            renderer.aOutline = if (outline.value) aOutline.value else 0
+            val color = ColorHolder(r.value, g.value, b.value)
+            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
+            val squaredDist = renderDistance.value * renderDistance.value
 
-            for (pos in blockPosList) {
-                val isVoid = pos.y == 0
-
-                if (isVoid && mc.world.isAirBlock(pos) && mc.world.isAirBlock(pos.up()) && mc.world.isAirBlock(pos.up().up())) {
-                    voidHoles.add(pos)
-                }
+            for (x in -renderDistance.value..renderDistance.value) for (z in -renderDistance.value..renderDistance.value) {
+                val pos = BlockPos(mc.player.posX + x, 0.0, mc.player.posZ + z)
+                if (mc.player.getDistanceSqToCenter(pos) > squaredDist) continue
+                if (!isVoid(pos)) continue
+                val renderPos = if (renderMode.value == Mode.BLOCK_VOID) pos.down() else pos
+                renderer.add(renderPos, color, side)
             }
         }
 
         listener<RenderWorldEvent> {
-            if (mc.player == null || voidHoles.isEmpty()) return@listener
-
-            val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
-
-            val renderer = ESPRenderer()
-            renderer.aFilled = if (filled.value) aFilled.value else 0
-            renderer.aOutline = if (outline.value) aOutline.value else 0
-            val color = ColorHolder(r.value, g.value, b.value)
-
-            for (pos in voidHoles) {
-                val renderPos = if (renderMode.value == Mode.BLOCK_VOID) pos.down() else pos
-                renderer.add(renderPos, color, side)
-            }
-
-            renderer.render(true)
+            renderer.render(false)
         }
     }
+
+    private fun isVoid(pos: BlockPos) = mc.world.isAirBlock(pos)
+            && mc.world.isAirBlock(pos.up())
+            && mc.world.isAirBlock(pos.up().up())
+
 }

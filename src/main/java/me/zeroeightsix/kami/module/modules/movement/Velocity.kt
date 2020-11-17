@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
@@ -9,11 +10,11 @@ import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinBlockLiquid
+ * @see MixinBlockLiquid.modifyAcceleration
  */
 @Module.Info(
         name = "Velocity",
-        description = "Modify knockback impact",
+        description = "Modify knock back impact",
         category = Module.Category.MOVEMENT
 )
 object Velocity : Module() {
@@ -23,7 +24,7 @@ object Velocity : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketEntityVelocity && it.packet !is SPacketExplosion) return@listener
+            if (mc.player == null) return@listener
             if (it.packet is SPacketEntityVelocity) {
                 with(it.packet) {
                     if (entityID != mc.player.entityId) return@listener

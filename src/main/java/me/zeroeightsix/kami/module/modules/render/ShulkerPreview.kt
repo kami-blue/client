@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.mixin.client.gui.MixinGuiScreen
 import me.zeroeightsix.kami.module.Module
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinGuiScreen
+ * @see MixinGuiScreen.renderToolTip
  */
 @Module.Info(
         name = "ShulkerPreview",

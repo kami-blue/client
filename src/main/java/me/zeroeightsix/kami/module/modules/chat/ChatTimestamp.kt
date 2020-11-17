@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module

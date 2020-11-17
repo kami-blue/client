@@ -7,4 +7,4 @@ import me.zeroeightsix.kami.module.Module
         description = "Removes rain from your world",
         category = Module.Category.MISC
 )
-object AntiWeather : Module() {}
+object AntiWeather : Module()

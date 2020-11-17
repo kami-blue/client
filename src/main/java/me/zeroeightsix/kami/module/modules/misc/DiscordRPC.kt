@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
-import com.google.gson.Gson
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -11,15 +10,12 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
-import java.io.InputStreamReader
-import java.net.URL
-import javax.net.ssl.HttpsURLConnection
+import org.kamiblue.capeapi.CapeType
 
 @Module.Info(
         name = "DiscordRPC",
@@ -39,7 +35,6 @@ object DiscordRPC : Module() {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
     }
 
-    private lateinit var customUsers: Array<CustomUser>
     private val presence = DiscordRichPresence()
     private val rpc = club.minnced.discord.rpc.DiscordRPC.INSTANCE
     private var connected = false
@@ -170,58 +165,20 @@ object DiscordRPC : Module() {
         }
     }
 
-    private fun setCustomIcons() {
-        if (customUsers.isNullOrEmpty()) return
-        for (user in customUsers) {
-            if (user.uuid.isNullOrBlank() || user.type.isNullOrBlank()) continue
-            if (!user.uuid.equals(Wrapper.minecraft.session.profile.id.toString(), ignoreCase = true)) continue
-            when (user.type.toInt()) {
-                0 -> {
-                    presence.smallImageKey = "booster"
-                    presence.smallImageText = "booster uwu"
-                }
-                1 -> {
-                    presence.smallImageKey = "inviter"
-                    presence.smallImageText = "inviter owo"
-                }
-                2 -> {
-                    presence.smallImageKey = "giveaway"
-                    presence.smallImageText = "giveaway winner"
-                }
-                3 -> {
-                    presence.smallImageKey = "contest"
-                    presence.smallImageText = "contest winner"
-                }
-                4 -> {
-                    presence.smallImageKey = "nine"
-                    presence.smallImageText = "900th member"
-                }
-                5 -> {
-                    presence.smallImageKey = "github1"
-                    presence.smallImageText = "contributor!! uwu"
-                }
-                else -> {
-                    presence.smallImageKey = "donator2"
-                    presence.smallImageText = "donator <3"
-                }
-            }
+    fun setCustomIcons(capeType: CapeType?) {
+        presence.smallImageKey = capeType?.imageKey ?: ""
+        presence.smallImageText = when (capeType) {
+            CapeType.BOOSTER -> "booster"
+            CapeType.CONTEST -> "contest winner!"
+            CapeType.CONTRIBUTOR -> "code contributor!"
+            CapeType.DONOR -> "donator <3"
+            CapeType.INVITER -> "inviter"
+            CapeType.SPECIAL -> "special cape!"
+            else -> ""
         }
     }
 
-    private class CustomUser(val uuid: String?, val type: String?)
-
     init {
-        try {
-            val connection = URL(KamiMod.DONATORS_JSON).openConnection() as HttpsURLConnection
-            connection.connect()
-            customUsers = Gson().fromJson(InputStreamReader(connection.inputStream), Array<CustomUser>::class.java)
-            connection.disconnect()
-            setCustomIcons()
-            KamiMod.log.info("Rich Presence Users init!")
-        } catch (exception: Exception) {
-            KamiMod.log.error("Failed to load donators")
-            exception.printStackTrace()
-        }
         presence.largeImageKey = "kami"
         presence.largeImageText = "kamiblue.org"
     }

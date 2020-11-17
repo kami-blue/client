@@ -169,16 +169,19 @@ object ForgeEventProcessor {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun onServerDisconnect(event: FMLNetworkEvent.ServerDisconnectionFromClientEvent) {
         KamiEventBus.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun onClientDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
         KamiEventBus.post(ConnectionEvent.Disconnect())
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun onClientConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         KamiEventBus.post(ConnectionEvent.Connect())
     }

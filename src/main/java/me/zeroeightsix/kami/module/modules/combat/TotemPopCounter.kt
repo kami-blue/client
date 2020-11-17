@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.KamiMod

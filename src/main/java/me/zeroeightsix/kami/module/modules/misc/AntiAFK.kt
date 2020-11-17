@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
 import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -57,8 +56,8 @@ object AntiAFK : Module() {
 
     override fun onDisable() {
         startPos = null
-        BaritoneUtils.settings()?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
-        BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+        BaritoneUtils.settings?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
+        BaritoneUtils.cancelEverything()
     }
 
     init {
@@ -68,7 +67,7 @@ object AntiAFK : Module() {
 
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
-            if (MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) {
+            if (MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) {
                 sendServerMessage("/r I am currently AFK and using KAMI Blue!")
             }
         }
@@ -87,7 +86,7 @@ object AntiAFK : Module() {
 
         listener<SafeTickEvent> {
             if (inputTimeout.value != 0) {
-                if (BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) inputTimer.reset()
+                if (BaritoneUtils.isActive) inputTimer.reset()
                 if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
                     startPos = null
                     return@listener
@@ -104,7 +103,7 @@ object AntiAFK : Module() {
                     Action.TURN -> mc.player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
                 }
 
-                if (walk.value && !BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
+                if (walk.value && !BaritoneUtils.isActive) {
                     if (startPos == null) startPos = mc.player.position
                     startPos?.let {
                         when (squareStep) {
@@ -121,7 +120,7 @@ object AntiAFK : Module() {
     }
 
     private fun baritoneDisconnectOnArrival() {
-        BaritoneUtils.settings()?.disconnectOnArrival?.let {
+        BaritoneUtils.settings?.disconnectOnArrival?.let {
             baritoneDisconnectOnArrival = it.value
             it.value = false
         }
@@ -151,14 +150,12 @@ object AntiAFK : Module() {
     }
 
     private fun baritoneGotoXZ(x: Int, z: Int) {
-        BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(x, z))
+        BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
     }
 
     init {
         walk.settingListener = Setting.SettingListeners {
-            if (BaritoneUtils.settingsInitialized && BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive) {
-                BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-            }
+            BaritoneUtils.cancelEverything()
         }
     }
 }

@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
@@ -45,7 +45,7 @@ object AutoMine : Module() {
 
         if (current.length < 2) {
             MessageSendHelper.sendBaritoneMessage("Error: you have to choose at least one thing to mine. To mine custom blocks run the &7" + Command.getCommandPrefix() + "b mine block&f command")
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
+            BaritoneUtils.cancelEverything()
             return
         }
 
@@ -53,9 +53,7 @@ object AutoMine : Module() {
     }
 
     override fun onDisable() {
-        mc.player?.let {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-        }
+        BaritoneUtils.cancelEverything()
     }
 
     init {

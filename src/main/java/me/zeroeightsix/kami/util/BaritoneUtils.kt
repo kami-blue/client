@@ -1,39 +1,37 @@
 package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
-import baritone.api.Settings
 import me.zeroeightsix.kami.process.TemporaryPauseProcess
 
 object BaritoneUtils {
-    var settingsInitialized = false
+    var initialized = false
+    var paused = false; private set
 
-    var paused = false
-        private set
-    val isPathing get() = BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.isPathing
-    val isCustomGoalActive get() = BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.isActive
+    val provider get() = if (initialized) BaritoneAPI.getProvider() else null
+    val settings get() = if (initialized) BaritoneAPI.getSettings() else null
+    val primary get() = provider?.primaryBaritone
+    val prefix get() = settings?.prefix?.value ?: "#"
+
+    val isPathing get() = primary?.pathingBehavior?.isPathing ?: false
+    val isActive get() = primary?.customGoalProcess?.isActive ?: false
 
     fun pause() {
         if (!paused) {
-            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(TemporaryPauseProcess)
+            primary?.pathingControlManager?.registerProcess(TemporaryPauseProcess)
             paused = true
         }
     }
 
     fun unpause() {
         if (paused) {
-            val process = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
-            if (process.isPresent && process.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
-                paused = false
-                process.get().onLostControl()
+            primary?.pathingControlManager?.mostRecentInControl()?.let {
+                if (it.isPresent && it.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
+                    paused = false
+                    it.get().onLostControl()
+                }
             }
         }
     }
 
-    fun settings(): Settings? {
-        return if (!settingsInitialized) {
-            null
-        } else {
-            BaritoneAPI.getSettings()
-        }
-    }
+    fun cancelEverything() = primary?.pathingBehavior?.cancelEverything()
 }

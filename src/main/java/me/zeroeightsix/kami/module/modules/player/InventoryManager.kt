@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.ceil
 
 @Module.Info(
@@ -24,13 +24,13 @@ object InventoryManager : Module() {
 
     private val autoRefill = register(Settings.b("AutoRefill", true))
     private val buildingMode = register(Settings.booleanBuilder("BuildingMode").withValue(false).withVisibility { autoRefill.value })
-    val buildingBlockID: Setting<Int> = register(Settings.integerBuilder("BuildingBlockID").withValue(0).withVisibility { false })
+    val buildingBlockID = register(Settings.integerBuilder("BuildingBlockID").withValue(0).withVisibility { false })
     private val refillThreshold = register(Settings.integerBuilder("RefillThreshold").withValue(16).withRange(1, 63).withStep(1).withVisibility { autoRefill.value })
     private val itemSaver = register(Settings.b("ItemSaver", false))
     private val duraThreshold = register(Settings.integerBuilder("DurabilityThreshold").withValue(5).withRange(1, 50).withStep(1).withVisibility { itemSaver.value })
     val autoEject = register(Settings.b("AutoEject", false))
     private val fullOnly = register(Settings.booleanBuilder("OnlyAtFull").withValue(false).withVisibility { autoEject.value })
-    private val pauseMovement: Setting<Boolean> = register(Settings.b("PauseMovement", true))
+    private val pauseMovement = register(Settings.b("PauseMovement", true))
     private val ejectList = register(Settings.stringBuilder("EjectList").withValue(defaultEjectList).withVisibility { false })
     private val delay = register(Settings.integerBuilder("DelayTicks").withValue(1).withRange(0, 20).withStep(1))
 
@@ -88,6 +88,7 @@ object InventoryManager : Module() {
     }
 
     override fun onToggle() {
+        paused = false
         BaritoneUtils.unpause()
     }
 
@@ -99,10 +100,10 @@ object InventoryManager : Module() {
         }
 
         listener<SafeTickEvent> {
-            if (mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
-            setState()
+            if (it.phase != TickEvent.Phase.START || mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
             if (!timer.tick(delay.value.toLong())) return@listener
-            if (currentState != State.IDLE) InventoryUtils.removeHoldingItem()
+            setState()
+            if (currentState == State.IDLE) InventoryUtils.removeHoldingItem()
             when (currentState) {
                 State.SAVING_ITEM -> saveItem()
                 State.REFILLING_BUILDING -> refillBuilding()

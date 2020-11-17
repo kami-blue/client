@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper
 )
 object Jesus : Module() {
     override fun onToggle() {
-        BaritoneUtils.settings()?.assumeWalkOnWater?.value = isEnabled
+        BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
     }
 
     init {

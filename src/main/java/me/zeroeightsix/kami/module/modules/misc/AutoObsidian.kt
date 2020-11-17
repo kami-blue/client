@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -122,9 +122,10 @@ object AutoObsidian : Module() {
     }
 
     override fun onDisable() {
-        val baritoneProcess = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
-        if (baritoneProcess.isPresent && baritoneProcess.get() == AutoObsidianProcess) {
-            baritoneProcess.get().onLostControl()
+        BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl()?.let {
+            if (it.isPresent && it.get() == AutoObsidianProcess) {
+                it.get().onLostControl()
+            }
         }
         reset()
     }
@@ -138,7 +139,7 @@ object AutoObsidian : Module() {
 
         if (!active && state != State.DONE) {
             active = true
-            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(AutoObsidianProcess)
+            BaritoneUtils.primary?.pathingControlManager?.registerProcess(AutoObsidianProcess)
         }
 
         /* Tell baritone to get you back to position */

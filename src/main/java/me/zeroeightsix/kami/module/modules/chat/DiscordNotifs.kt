@@ -14,7 +14,9 @@ import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
 
 @Module.Info(
@@ -31,8 +33,7 @@ object DiscordNotifs : Module() {
     private val all = register(Settings.b("AllMessages", false))
     private val queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility { !all.value })
     private val restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility { !all.value })
-    private val direct = register(Settings.booleanBuilder("ReceivedDMs").withValue(true).withVisibility { !all.value })
-    private val directSent = register(Settings.booleanBuilder("SendDMs").withValue(true).withVisibility { !all.value })
+    private val direct = register(Settings.booleanBuilder("DMs").withValue(true).withVisibility { !all.value })
 
     val url = register(Settings.s("URL", "unchanged"))
     val pingID = register(Settings.s("PingID", "unchanged"))
@@ -46,19 +47,19 @@ object DiscordNotifs : Module() {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketChat) return@listener
             val message = it.packet.getChatComponent().unformattedText
-            if (timeout(message) && MessageDetectionHelper.shouldSend(all.value, restart.value, direct.value, directSent.value, queue.value, importantPings.value, message)) {
-                sendMessage(getPingID(message) + MessageDetectionHelper.getMessageType(direct.value, directSent.value, message, server) + getTime() + message, avatar.value)
+            if (timeout(message) && MessageDetectionHelper.shouldSend(all.value, restart.value, direct.value, queue.value, importantPings.value, message)) {
+                sendMessage(getPingID(message) + MessageDetectionHelper.getMessageType(direct.value, message, server) + getTime() + message, avatar.value)
             }
         }
 
         listener<ConnectionEvent.Connect> {
             if (!disconnect.value) return@listener
-            sendMessage(getPingID("KamiBlueMessageType1") + getTime() + MessageDetectionHelper.getMessageType(direct.value, directSent.value, "KamiBlueMessageType1", server), avatar.value)
+            sendMessage(getPingID("KamiBlueMessageType1") + getTime() + MessageDetectionHelper.getMessageType(direct.value, "KamiBlueMessageType1", server), avatar.value)
         }
 
         listener<ConnectionEvent.Disconnect> {
             if (!disconnect.value) return@listener
-            sendMessage(getPingID("KamiBlueMessageType2") + getTime() + MessageDetectionHelper.getMessageType(direct.value, directSent.value, "KamiBlueMessageType2", server), avatar.value)
+            sendMessage(getPingID("KamiBlueMessageType2") + getTime() + MessageDetectionHelper.getMessageType(direct.value, "KamiBlueMessageType2", server), avatar.value)
         }
 
         /* Always on status code */
@@ -74,16 +75,14 @@ object DiscordNotifs : Module() {
     }
 
     private fun timeout(message: String) = !timeout.value
-            || (MessageDetectionHelper.isRestart(restart.value, message)
-            || MessageDetectionHelper.isDirect(direct.value, message)
-            || MessageDetectionHelper.isDirectOther(directSent.value, message))
+            || (message.detect(restart.value, Regexes.RESTART)
+            || MessageDetectionHelper.isDirect(direct.value, message))
             || timer.tick(timeoutTime.value.toLong())
 
     /* Text formatting and misc methods */
-    private fun getPingID(message: String) = if (MessageDetectionHelper.isRestart(restart.value, message)
+    private fun getPingID(message: String) = if (message.detect(restart.value, Regexes.RESTART)
             || MessageDetectionHelper.isDirect(direct.value, message)
-            || MessageDetectionHelper.isDirectOther(directSent.value, message)
-            || MessageDetectionHelper.isImportantQueue(importantPings.value, message)
+            || message.detect(importantPings.value, Regexes.QUEUE_IMPORTANT)
             || message == "KamiBlueMessageType1"
             || message == "KamiBlueMessageType2") formatPingID()
     else ""

@@ -209,7 +209,7 @@ object Search : Module() {
     }
 
     private fun updateRenderList() {
-        Thread(Runnable {
+        Thread {
             val cacheDistMap = TreeMap<Double, BlockPos>(Comparator.naturalOrder())
             /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
             for (posList in mainList.values) {
@@ -245,7 +245,7 @@ object Search : Module() {
             } else {
                 dirty++
             }
-        }).start()
+        }.start()
     }
 
     private fun getPosColor(pos: BlockPos): ColorHolder {

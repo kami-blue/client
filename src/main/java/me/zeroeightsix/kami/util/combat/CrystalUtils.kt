@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util.combat
 
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.VectorUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -20,7 +19,7 @@ object CrystalUtils {
 
     /* Position Finding */
     fun getPlacePos(target: EntityLivingBase?, center: Entity?, radius: Float): List<BlockPos> {
-        if (target == null || center == null) return emptyList()
+        if (center == null) return emptyList()
         val centerPos = if (center == mc.player) center.getPositionEyes(1f) else center.positionVector
         return VectorUtils.getBlockPosInSphere(centerPos, radius).filter { canPlace(it, target) }
     }
@@ -66,21 +65,21 @@ object CrystalUtils {
     /* End of position finding */
 
     /* Damage calculation */
-    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox) =
-        calcDamage(crystal.positionVector, entity, entityPos, entityBB)
+    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox) =
+            calcDamage(crystal.positionVector, entity, entityPos, entityBB)
 
-    fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox) =
-        calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
+    fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox) =
+            calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
 
-    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d = entity.positionVector, entityBB: AxisAlignedBB = entity.boundingBox): Float {
+    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox): Float {
         // Return 0 directly if entity is a player and in creative mode
         if (entity is EntityPlayer && entity.isCreative) return 0.0f
 
         // Calculate raw damage (based on blocks and distance)
-        var damage = calcRawDamage(pos, entityPos, entityBB)
+        var damage = calcRawDamage(pos, entityPos ?: entity.positionVector, entityBB ?: entity.boundingBox)
 
         // Calculate damage after armor, enchantment, resistance effect absorption
-        damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos)?: return 0.0f)
+        damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos) ?: return 0.0f)
 
         // Multiply the damage based on difficulty if the entity is player
         if (entity is EntityPlayer) damage *= mc.world.difficulty.id * 0.5f

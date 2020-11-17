@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.util.ConfigUtils.fixEmptyJson
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.CoordinateConverter
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-object WaypointManager : Manager() {
+object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
     private const val configName = "KAMIBlueWaypoints.json"
@@ -154,7 +154,7 @@ object WaypointManager : Manager() {
     }
 
     init {
-        fixEmptyJson(file)
+        ConfigUtils.fixEmptyJson(file, true)
     }
 
     class Waypoint(

@@ -1,17 +1,18 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
+import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.CardinalMain
-import me.zeroeightsix.kami.util.math.MathUtils.getPlayerMainCardinal
+import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.EnumFacing
+import kotlin.math.round
 
 @Module.Info(
         name = "AutoTunnel",
@@ -19,70 +20,62 @@ import net.minecraft.entity.player.EntityPlayer
         category = Module.Category.MISC
 )
 object AutoTunnel : Module() {
-    private val backfill = register(Settings.b("Backfill", false))
-    private val height = register(Settings.integerBuilder("Height").withValue(2).withRange(1, 10))
-    private val width = register(Settings.integerBuilder("Width").withValue(1).withRange(1, 10))
+    private val backFill = register(Settings.b("BackFill", false))
+    private val height = register(Settings.integerBuilder("Height").withValue(2).withRange(2, 10).withStep(1))
+    private val width = register(Settings.integerBuilder("Width").withValue(1).withRange(1, 10).withStep(1))
+    private val disableOnDisconnect = register(Settings.b("DisableOnDisconnect", true))
 
-    private var lastCommand = arrayOf("")
-    private var startingDirection = CardinalMain.POS_X
+    private var lastDirection = EnumFacing.NORTH
 
-    override fun onEnable() {
-        if (mc.player == null) {
-            disable()
-            return
-        }
-        if (AutoWalk.isEnabled) AutoWalk.disable()
-
-        startingDirection = getPlayerMainCardinal(mc.getRenderViewEntity() as? EntityPlayer? ?: mc.player)
-        sendTunnel()
-    }
-
-    private fun sendTunnel() {
-        val current = if (height.value == 2 && width.value == 1) arrayOf("tunnel")
-        else arrayOf("tunnel", height.value.toString(), width.value.toString(), "1000000")
-
-        if (!current.contentEquals(lastCommand)) {
-            lastCommand = current
-            when (startingDirection) {
-                CardinalMain.POS_X -> {
-                    mc.player.rotationYaw = -90.0f; mc.player.rotationPitch = 0.0f
-                }
-                CardinalMain.NEG_X -> {
-                    mc.player.rotationYaw = 90.0f; mc.player.rotationPitch = 0.0f
-                }
-                CardinalMain.POS_Z -> {
-                    mc.player.rotationYaw = 0.0f; mc.player.rotationYaw = 0.0f
-                }
-                CardinalMain.NEG_Z -> {
-                    mc.player.rotationYaw = 180.0f; mc.player.rotationYaw = 0.0f
-                }
-                else -> return
-            }
-            MessageSendHelper.sendBaritoneCommand(*current)
-        }
+    override fun isActive(): Boolean {
+        return isEnabled
+                && (BaritoneUtils.isPathing
+                || BaritoneUtils.primary?.builderProcess?.isActive == true)
     }
 
     override fun onDisable() {
-        mc.player?.let {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-        }
-        lastCommand = arrayOf("")
-    }
-
-    override fun getHudInfo(): String? {
-        return startingDirection.cardinalName
+        if (mc.player != null) BaritoneUtils.cancelEverything()
     }
 
     init {
-        with(Setting.SettingListeners { if (mc.player != null && isEnabled) sendTunnel() }) {
+        listener<SafeTickEvent> {
+            if (!isActive()) sendTunnel()
+        }
+
+        listener<BaritoneCommandEvent> { event ->
+            if (event.command.names.any { it.contains("cancel")}) {
+                disable()
+            }
+        }
+
+        listener<ConnectionEvent.Disconnect> {
+            if (disableOnDisconnect.value) disable()
+        }
+    }
+
+    private fun sendTunnel() {
+        mc.player?.let {
+            if (AutoWalk.isEnabled) AutoWalk.disable()
+            BaritoneUtils.cancelEverything()
+            val normalizedYaw = RotationUtils.normalizeAngle(it.rotationYaw)
+            it.rotationYaw = round(normalizedYaw / 90.0f) * 90.0f
+            it.rotationPitch = 0.0f
+            lastDirection = it.horizontalFacing
+
+            MessageSendHelper.sendBaritoneCommand("tunnel", height.value.toString(), width.value.toString(), "100")
+        }
+    }
+
+    override fun getHudInfo(): String? {
+        return lastDirection.name2.capitalize()
+    }
+
+    init {
+        with(Setting.SettingListeners { if (isEnabled) sendTunnel() }) {
             height.settingListener = this
             width.settingListener = this
         }
 
-        backfill.settingListener = Setting.SettingListeners { BaritoneUtils.settings()?.backfill?.value = backfill.value }
-
-        listener<ConnectionEvent.Disconnect> {
-            BaritoneAPI.getProvider().primaryBaritone.pathingBehavior.cancelEverything()
-        }
+        backFill.settingListener = Setting.SettingListeners { BaritoneUtils.settings?.backfill?.value = backFill.value }
     }
 }

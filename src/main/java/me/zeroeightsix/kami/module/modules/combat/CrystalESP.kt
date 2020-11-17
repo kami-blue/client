@@ -1,13 +1,16 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -15,11 +18,18 @@ import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.MathUtils
-import net.minecraft.entity.item.EntityEnderCrystal
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import net.minecraft.init.Items
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11.*
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.sin
 
 @Module.Info(
         name = "CrystalESP",
@@ -35,7 +45,7 @@ object CrystalESP : Module() {
     private val damageRange = register(Settings.floatBuilder("DamageESPRange").withValue(4.0f).withRange(0.0f, 8.0f).withStep(0.5f).withVisibility { page.value == Page.DAMAGE_ESP })
 
     private val crystalESP = register(Settings.booleanBuilder("CrystalESP").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP })
-    private val mode = register(Settings.enumBuilder(Mode::class.java, "Mode").withValue(Mode.BLOCK).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val onlyOwn = register(Settings.booleanBuilder("OnlyOwn").withValue(false).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
     private val tracer = register(Settings.booleanBuilder("Tracer").withValue(true).withVisibility { page.value == Page.CRYSTAL_ESP && crystalESP.value })
@@ -57,52 +67,85 @@ object CrystalESP : Module() {
         DAMAGE_ESP, CRYSTAL_ESP, CRYSTAL_ESP_COLOR
     }
 
-    private enum class Mode {
-        BLOCK, CRYSTAL
-    }
-
-    private var placeList = emptyList<Triple<BlockPos, Float, Float>>()
-    private val crystalMap = LinkedHashMap<EntityEnderCrystal, Quad<Float, Float, Float, Float>>() // <Crystal, <Target Damage, Self Damage, Prev Progress, Progress>>
+    private var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>()
+    private val renderCrystalMap = LinkedHashMap<BlockPos, Quad<Float, Float, Float, Float>>() // <Crystal, <Target Damage, Self Damage, Prev Progress, Progress>>
+    private val pendingPlacing = LinkedHashMap<BlockPos, Long>()
 
     init {
-        listener<SafeTickEvent> {
-            val eyePos = mc.player.getPositionEyes(1.0f)
-
-            placeList = if (damageESP.value) {
-                val squaredRange = damageRange.value.pow(2)
-                CombatManager.crystalPlaceList.filter { it.first.distanceSqToCenter(eyePos.x, eyePos.y, eyePos.z) <= squaredRange }
-            } else {
-                emptyList()
-            }
-
-            if (crystalESP.value) {
-                val cacheMap = CombatManager.crystalMap.entries
-                        .filter { it.key.positionVector.distanceTo(eyePos) < crystalRange.value }
-                        .associate { it.key to Quad(it.value.first, it.value.second, 0.0f, 0.0f) }.toMutableMap()
-                val scale = 1.0f / animationScale.value
-
-                for ((crystal, quad1) in crystalMap) {
-                    cacheMap.computeIfPresent(crystal) { _, quad2 -> Quad(quad2.first, quad2.second, quad1.fourth, min(quad1.fourth + 0.4f * scale, 1.0f)) }
-                    if (quad1.fourth < 2.0f) cacheMap.computeIfAbsent(crystal) { Quad(quad1.first, quad1.second, quad1.fourth, min(quad1.fourth + 0.2f * scale, 2.0f)) }
-                }
-
-                crystalMap.clear()
-                crystalMap.putAll(cacheMap)
-            } else {
-                crystalMap.clear()
+        listener<PacketEvent.PostSend>(0) {
+            if (mc.player == null || it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
+            if (checkHeldItem(it.packet) && CrystalUtils.canPlaceCollide(it.packet.pos)) {
+                pendingPlacing[it.packet.pos] = System.currentTimeMillis()
             }
         }
+    }
 
+    private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
+            && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() == Items.END_CRYSTAL
+            || packet.hand == EnumHand.OFF_HAND
+            && mc.player.heldItemOffhand.getItem() == Items.END_CRYSTAL
+
+    init {
+        listener<SafeTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@listener
+            updateDamageESP()
+            updateCrystalESP()
+        }
+    }
+
+    private fun updateDamageESP() {
+        placeMap = if (damageESP.value) {
+            CombatManager.placeMap.filter { it.value.third <= damageRange.value }
+        } else {
+            emptyMap()
+        }
+    }
+
+    private fun updateCrystalESP() {
+        if (crystalESP.value) {
+            val placeMap = CombatManager.placeMap
+            val crystalMap = CombatManager.crystalMap
+            val cacheMap = HashMap<BlockPos, Quad<Float, Float, Float, Float>>()
+
+            // Removes after 1 second
+            pendingPlacing.entries.removeIf { System.currentTimeMillis() - it.value > 1000L }
+
+            if (!onlyOwn.value) {
+                for ((crystal, triple) in crystalMap) {
+                    if (triple.third > crystalRange.value) continue
+                    cacheMap[crystal.position.down()] = Quad(triple.first, triple.second, 0.0f, 0.0f)
+                }
+            }
+
+            for (pos in pendingPlacing.keys) {
+                val damage = placeMap[pos]?: continue
+                cacheMap[pos] = Quad(damage.first, damage.second, 0.0f, 0.0f)
+            }
+
+            val scale = 1.0f / animationScale.value
+            for ((pos, quad1) in renderCrystalMap) {
+                cacheMap.computeIfPresent(pos) { _, quad2 -> Quad(quad2.first, quad2.second, quad1.fourth, min(quad1.fourth + 0.4f * scale, 1.0f)) }
+                if (quad1.fourth < 2.0f) cacheMap.computeIfAbsent(pos) { Quad(quad1.first, quad1.second, quad1.fourth, min(quad1.fourth + 0.2f * scale, 2.0f)) }
+            }
+
+            renderCrystalMap.clear()
+            renderCrystalMap.putAll(cacheMap)
+        } else {
+            renderCrystalMap.clear()
+        }
+    }
+
+    init {
         listener<RenderWorldEvent> {
             val renderer = ESPRenderer()
 
             /* Damage ESP */
-            if (damageESP.value && placeList.isNotEmpty()) {
+            if (damageESP.value && placeMap.isNotEmpty()) {
                 renderer.aFilled = 255
 
-                for ((pos, damage, _) in placeList) {
-                    val rgb = MathUtils.convertRange(damage.toInt(), 0, 20, 127, 255)
-                    val a = MathUtils.convertRange(damage.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
+                for ((pos, triple) in placeMap) {
+                    val rgb = MathUtils.convertRange(triple.first.toInt(), 0, 20, 127, 255)
+                    val a = MathUtils.convertRange(triple.first.toInt(), 0, 20, minAlpha.value, maxAlpha.value)
                     val rgba = ColorHolder(rgb, rgb, rgb, a)
                     renderer.add(pos, rgba)
                 }
@@ -111,18 +154,17 @@ object CrystalESP : Module() {
             }
 
             /* Crystal ESP */
-            if (crystalESP.value && crystalMap.isNotEmpty()) {
+            if (crystalESP.value && renderCrystalMap.isNotEmpty()) {
                 renderer.aFilled = if (filled.value) aFilled.value else 0
                 renderer.aOutline = if (outline.value) aOutline.value else 0
                 renderer.aTracer = if (tracer.value) aTracer.value else 0
                 renderer.thickness = thickness.value
 
-                for ((crystal, quad) in crystalMap) {
+                for ((pos, quad) in renderCrystalMap) {
                     val progress = getAnimationProgress(quad.third, quad.fourth)
-                    val box = if (mode.value == Mode.CRYSTAL) crystal.boundingBox.shrink(1.0 - progress)
-                    else AxisAlignedBB(crystal.position.down()).shrink(0.5 - progress * 0.5)
-                    val rgba = ColorHolder(r.value, g.value, b.value, (progress * 255.0f).toInt())
-                    renderer.add(box, rgba)
+                    val box = AxisAlignedBB(pos).shrink(0.5 - progress * 0.5)
+                    val color = ColorHolder(r.value, g.value, b.value, (progress * 255.0f).toInt())
+                    renderer.add(box, color)
                 }
 
                 renderer.render(true)
@@ -133,13 +175,10 @@ object CrystalESP : Module() {
             if (!showDamage.value && !showSelfDamage.value) return@listener
             GlStateUtils.rescale(mc.displayWidth.toDouble(), mc.displayHeight.toDouble())
 
-            for ((crystal, quad) in crystalMap) {
+            for ((pos, quad) in renderCrystalMap) {
                 glPushMatrix()
 
-                val screenPos = ProjectionUtils.toScreenPos(
-                        if (mode.value == Mode.CRYSTAL) crystal.boundingBox.center
-                        else crystal.positionVector.subtract(0.0, 0.5, 0.0)
-                )
+                val screenPos = ProjectionUtils.toScreenPos(pos.toVec3d())
                 glTranslated(screenPos.x, screenPos.y, 0.0)
                 glScalef(textScale.value * 2.0f, textScale.value * 2.0f, 1.0f)
 

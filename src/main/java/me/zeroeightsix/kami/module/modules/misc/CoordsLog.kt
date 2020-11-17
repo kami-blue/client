@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos
         category = Module.Category.MISC
 )
 object CoordsLog : Module() {
-    private val saveOndeath = register(Settings.b("SaveOnDeath", true))
+    private val saveOnDeath = register(Settings.b("SaveOnDeath", true))
     private val autoLog = register(Settings.b("AutoLog", false))
     private val delay = register(Settings.integerBuilder("Delay").withValue(15).withRange(1, 60).withStep(1))
 
@@ -32,7 +32,7 @@ object CoordsLog : Module() {
                 timeout()
             }
 
-            if (saveOndeath.value) {
+            if (saveOnDeath.value) {
                 savedDeath = if (!savedDeath && (mc.player.isDead || mc.player.health <= 0.0f)) {
                     val deathPoint = logCoordinates("Death - " + InfoCalculator.getServerType())
                     MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")

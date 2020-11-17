@@ -131,7 +131,7 @@ object AutoOffhand : Module() {
     private fun checkGapple(): Boolean {
         val item = mc.player.heldItemMainhand.getItem()
         return offhandGapple.value
-                && (checkAura.value && CombatManager.isActiveAndTopPriority(Aura)
+                && (checkAura.value && CombatManager.isActiveAndTopPriority(KillAura)
                 || checkWeapon.value && (item is ItemSword || item is ItemAxe)
                 || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isOnTopPriority(CrystalAura))
     }

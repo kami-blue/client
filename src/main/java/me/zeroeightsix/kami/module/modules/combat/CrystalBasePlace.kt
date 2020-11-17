@@ -142,9 +142,9 @@ object CrystalBasePlace : Module() {
         val prediction = CombatSetting.getPrediction(entity)
         val eyePos = mc.player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
-        val maxCurrentDamage = CombatManager.crystalPlaceList
-                .filter { eyePos.distanceTo(it.first.toVec3d()) < range.value }
-                .map { it.second }
+        val maxCurrentDamage = CombatManager.placeMap.entries
+                .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
+                .map { it.value.first }
                 .max() ?: 0.0f
 
         for (pos in posList) {

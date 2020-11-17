@@ -8,8 +8,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
 
-@Suppress("UNUSED_PARAMETER")
-object MacroManager : Manager() {
+object MacroManager : Manager {
 
     init {
         listener<InputEvent.KeyInputEvent> {
