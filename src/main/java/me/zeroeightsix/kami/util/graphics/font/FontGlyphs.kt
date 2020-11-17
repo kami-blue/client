@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.util.graphics.font
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureUtil
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
 import org.lwjgl.opengl.GL14.*

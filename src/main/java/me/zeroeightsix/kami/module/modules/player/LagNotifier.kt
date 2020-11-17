@@ -12,13 +12,13 @@ import me.zeroeightsix.kami.util.WebHelper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.glColor4f
 
 /**

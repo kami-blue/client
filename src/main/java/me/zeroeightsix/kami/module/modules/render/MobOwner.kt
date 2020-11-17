@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getNameFromUUID
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.round
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityTameable
+import org.kamiblue.commons.utils.MathUtils.round
 import java.util.*
 import kotlin.math.pow
 

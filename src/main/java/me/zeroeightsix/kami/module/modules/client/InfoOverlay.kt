@@ -13,9 +13,9 @@ import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils.round
 import java.util.*
 import kotlin.math.max
 
