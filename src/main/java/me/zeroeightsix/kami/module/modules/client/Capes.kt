@@ -73,8 +73,8 @@ object Capes : Module() {
                 capeUser.capes.forEach { cape ->
                     cape.playerUUID?.let {
                         capeUsers[it] = cape
-                        if (it == mc.session.profile.id) {
-                            isPremium = capeUser.isPremium
+                        if (it == mc.session.profile.id) { // if any of the capeUser's capes match current UUID
+                            isPremium = isPremium || capeUser.isPremium // || is to prevent bug if there is somehow a duplicate capeUser
                             type = cape.type
                         }
                     }
