@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.client
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC
 import me.zeroeightsix.kami.util.EntityUtils
@@ -24,6 +23,7 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.Cape
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
@@ -42,20 +42,19 @@ import kotlin.math.sin
         enabledByDefault = true
 )
 object Capes : Module() {
-    val capeUsers: MutableMap<UUID, Cape> = Collections.synchronizedMap(HashMap<UUID, Cape>())
+    private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
     var isPremium = false; private set
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
     private val gson = Gson()
-    private val thread = Thread({ updateCapes() }, "Capes Update Thread")
+    private val thread = Thread { updateCapes() }
+
+    override fun onEnable() {
+        ThreadUtils.submitTask(thread)
+    }
 
     init {
-        /**
-         *  required for [DiscordRPC]. Since [Capes] is alphabetically before DiscordRPC, it will be init first
-         */
-        ThreadUtils.submitTask(thread)
-
-        listener<SafeTickEvent> {
+        listener<TickEvent.ClientTickEvent> {
             if (timer.tick(5L)) ThreadUtils.submitTask(thread)
         }
     }
@@ -66,18 +65,23 @@ object Capes : Module() {
         } ?: return
 
         try {
+            var type: CapeType? = null
             val cacheList = gson.fromJson<ArrayList<CapeUser>>(rawJson, object : TypeToken<List<CapeUser>>() {}.type)
             capeUsers.clear()
+
             cacheList.forEach { capeUser ->
                 capeUser.capes.forEach { cape ->
                     cape.playerUUID?.let {
                         capeUsers[it] = cape
-                        isPremium = isPremium || mc.session.profile.id == it && capeUser.isPremium
+                        if (it == mc.session.profile.id) {
+                            isPremium = capeUser.isPremium
+                            type = cape.type
+                        }
                     }
                 }
             }
 
-            DiscordRPC.setCustomIcons()
+            DiscordRPC.setCustomIcons(type)
             KamiMod.log.info("Capes loaded")
         } catch (e: Exception) {
             KamiMod.log.warn("Failed parsing capes", e)

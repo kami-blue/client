@@ -5,19 +5,17 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.client.Capes
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
-import org.kamiblue.capeapi.CapeType.*
+import org.kamiblue.capeapi.CapeType
 
 @Module.Info(
         name = "DiscordRPC",
@@ -167,21 +165,16 @@ object DiscordRPC : Module() {
         }
     }
 
-    fun setCustomIcons() {
-        if (Capes.capeUsers.isNullOrEmpty()) return
-        for (user in Capes.capeUsers) {
-            if (user.key != Wrapper.minecraft.session.profile.id) continue
-
-            presence.smallImageKey = user.value.type.imageKey
-            presence.smallImageText = when (user.value.type) {
-                BOOSTER -> "booster"
-                CONTEST -> "contest winner!"
-                CONTRIBUTOR -> "code contributor!"
-                DONOR -> "donator <3"
-                INVITER -> "inviter"
-                SPECIAL -> "special cape!"
-            }
-            break
+    fun setCustomIcons(capeType: CapeType?) {
+        presence.smallImageKey = capeType?.imageKey ?: ""
+        presence.smallImageText = when (capeType) {
+            CapeType.BOOSTER -> "booster"
+            CapeType.CONTEST -> "contest winner!"
+            CapeType.CONTRIBUTOR -> "code contributor!"
+            CapeType.DONOR -> "donator <3"
+            CapeType.INVITER -> "inviter"
+            CapeType.SPECIAL -> "special cape!"
+            else -> ""
         }
     }
 
