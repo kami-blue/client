@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.mixin.client;
+package me.zeroeightsix.kami.mixin.client.render;
 
 import me.zeroeightsix.kami.module.modules.render.NoRender;
 import net.minecraft.client.particle.ParticleManager;
