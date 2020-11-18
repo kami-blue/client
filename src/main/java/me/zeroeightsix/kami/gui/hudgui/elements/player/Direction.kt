@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import net.minecraft.util.EnumFacing
+import me.zeroeightsix.kami.util.math.Direction
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,
@@ -11,16 +11,10 @@ import net.minecraft.util.EnumFacing
 object Direction : LabelHud("Direction") {
 
     override fun updateText() {
-        var facing = "Unknown"
-        var axis = "Unknown"
-        mc.player?.horizontalFacing?.let {
-            facing = it.name2.capitalize()
-            axis = it.axisDirection.sign + it.axis.name
-        }
-        displayText.add(facing, secondaryColor.value)
-        displayText.add("($axis)", primaryColor.value)
+        val entity = mc.renderViewEntity ?: mc.player ?: return
+        val direction = Direction.fromEntity(entity)
+        displayText.add(direction.displayName, secondaryColor.value)
+        displayText.add("(${direction.displayNameXY})", primaryColor.value)
     }
-
-    private val EnumFacing.AxisDirection.sign get() = if (this == EnumFacing.AxisDirection.POSITIVE) '+' else '-'
 
 }
