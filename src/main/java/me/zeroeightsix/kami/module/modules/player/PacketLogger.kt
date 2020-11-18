@@ -23,7 +23,7 @@ object PacketLogger : Module() {
 
     private const val filename = "KAMIBluePackets.txt"
     private val lines = ArrayList<String>()
-    private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
+    private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
     override fun onEnable() {
         if (mc.player == null) disable() else if (append.value) readToList()
@@ -40,13 +40,7 @@ object PacketLogger : Module() {
                 return@listener
             }
 
-            /* see https://kotlinlang.org/docs/reference/basic-types.html#string-templates for usage of $*/
-            lines.add("""
-                ${FORMAT.format(Date())}
-                ${it.packet.javaClass.simpleName}
-                ${it.packet.javaClass}
-                ${it.packet}
-                """)
+            lines.add("${sdf.format(Date())}\n${it.packet.javaClass.simpleName}\n${it.packet.javaClass}\n${it.packet}\n\n")
         }
 
         listener<SafeTickEvent> {
@@ -78,7 +72,10 @@ object PacketLogger : Module() {
                 lines.add(line)
             }
             bufferedReader.close()
-        } catch (ignored: IOException) {
+        } catch (ignored: Exception) {
+            // this is fine, just don't load a file
+            KamiMod.log.error("$chatName Error loading!")
+            lines.clear()
         }
     }
 

@@ -20,7 +20,6 @@ object AutoMend : Module() {
     private val autoSwitch = setting("AutoSwitch", true)
     private val autoDisable = setting("AutoDisable", false, { autoSwitch.value })
     private val threshold = setting("Repair%", 75, 1..100, 1)
-    private val fast = setting("FastUse", true)
     private val gui = setting("RunInGUIs", false)
 
     private var initHotbarSlot = -1
@@ -48,7 +47,6 @@ object AutoMend : Module() {
                     mc.player.inventory.currentItem = xpSlot
                 }
                 if (autoThrow.value && mc.player.heldItemMainhand.getItem() === Items.EXPERIENCE_BOTTLE) {
-                    if (fast.value) mc.rightClickDelayTimer = 0
                     mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
                 }
             }
@@ -64,10 +62,8 @@ object AutoMend : Module() {
 
     override fun onDisable() {
         if (mc.player == null) return
-        if (autoSwitch.value) {
-            if (initHotbarSlot != -1 && initHotbarSlot != mc.player.inventory.currentItem) {
-                mc.player.inventory.currentItem = initHotbarSlot
-            }
+        if (autoSwitch.value && initHotbarSlot != -1 && initHotbarSlot != mc.player.inventory.currentItem) {
+            mc.player.inventory.currentItem = initHotbarSlot
         }
     }
 
@@ -83,7 +79,7 @@ object AutoMend : Module() {
     }
 
     private fun shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
-        return if (mc.player.inventory.armorInventory[i].maxDamage == 0) false
-        else 100 * mc.player.inventory.armorInventory[i].getItemDamage() / mc.player.inventory.armorInventory[i].maxDamage > reverseNumber(threshold.value, 1, 100)
+        val stack = mc.player.inventory.armorInventory[i]
+        return stack.isItemDamaged && 100 * stack.getItemDamage() / stack.maxDamage > reverseNumber(threshold.value, 1, 100)
     }
 }

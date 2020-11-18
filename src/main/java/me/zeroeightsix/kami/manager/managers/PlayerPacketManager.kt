@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
-object PlayerPacketManager : Manager() {
+object PlayerPacketManager : Manager {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
     private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })

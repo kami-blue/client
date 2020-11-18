@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.module.modules.client.Capes
 )
 object WaterMark : LabelHud("Watermark") {
 
-    override val closeable: Boolean get() = Capes.allCapes[mc.session.playerID] != null
+    override val closeable: Boolean get() = Capes.isPremium
 
     override fun onGuiInit() {
         super.onGuiInit()

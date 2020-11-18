@@ -106,7 +106,7 @@ open class Module {
 
     private fun sendToggleMessage() {
         if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &adisabled" else " &cenabled")
+            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &cdisabled" else " &aenabled")
         }
     }
 

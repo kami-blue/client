@@ -4,13 +4,17 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
+import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
+import me.zeroeightsix.kami.module.modules.player.ViewLock;
 import me.zeroeightsix.kami.module.modules.render.AntiFog;
 import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.module.modules.render.CameraClip;
 import me.zeroeightsix.kami.module.modules.render.NoHurtCam;
 import me.zeroeightsix.kami.util.Wrapper;
+import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -96,5 +100,15 @@ public class MixinEntityRenderer {
         KamiEventBus.INSTANCE.post(eventPre);
         RenderShaderEvent eventPost = new RenderShaderEvent(RenderShaderEvent.Phase.POST);
         KamiEventBus.INSTANCE.post(eventPost);
+    }
+
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;turn(FF)V"))
+    public void turn(EntityPlayerSP player, float yaw, float pitch) {
+        if (ViewLock.INSTANCE.isEnabled() && Freecam.INSTANCE.isDisabled()) {
+            Vec2f rotation = ViewLock.INSTANCE.handleTurn(yaw, pitch);
+            player.turn(rotation.x, rotation.y);
+        } else {
+            player.turn(yaw, pitch);
+        }
     }
 }

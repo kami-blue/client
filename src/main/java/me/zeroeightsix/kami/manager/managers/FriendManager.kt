@@ -18,7 +18,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashSet
 
-object FriendManager : Manager() {
+object FriendManager : Manager {
     private const val configName = "KAMIBlueFriends.json"
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private val file = File(configName)

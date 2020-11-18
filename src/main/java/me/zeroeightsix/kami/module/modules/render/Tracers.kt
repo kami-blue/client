@@ -46,7 +46,7 @@ object Tracers : Module() {
 
     /* General rendering settings */
     private val rangedColor = setting("RangedColor", true, { page.value == Page.RENDERING })
-    private val colorChangeRange = setting("ColorChangeRange", 16, 8..128, 8, { page.value == Page.RENDERING })
+    private val colorChangeRange = setting("ColorChangeRange", 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
     private val playerOnly = setting("PlayerOnly", true, { page.value == Page.RENDERING && rangedColor.value })
     private val colorFar = setting("FarColor", DyeColors.WHITE, { page.value == Page.COLOR })
     private val aFar = setting("FarAlpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })

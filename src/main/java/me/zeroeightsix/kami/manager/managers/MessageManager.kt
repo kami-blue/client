@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 import kotlin.collections.HashSet
 
-object MessageManager : Manager() {
+object MessageManager : Manager {
     private val mc = Wrapper.minecraft
     private val lockObject = Any()
 

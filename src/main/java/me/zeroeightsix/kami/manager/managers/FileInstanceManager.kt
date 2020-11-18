@@ -6,7 +6,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 
-object FileInstanceManager : Manager() {
+object FileInstanceManager : Manager {
     /**
      * Map of all the macros.
      * KeyCode, Actions
