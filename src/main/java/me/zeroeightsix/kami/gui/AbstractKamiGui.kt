@@ -245,7 +245,7 @@ abstract class AbstractKamiGui<S: SettingWindow<*>, E: Any> : GuiScreen() {
         if (typedString.isNotBlank() && System.currentTimeMillis() - lastTypedTime <= 5000L) {
             val scaledResolution = ScaledResolution(mc)
             val posX = scaledResolution.scaledWidth / 2.0f - renderStringPosX / 2.0f
-            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(1.666f) / 2.0f
+            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(3.0f) / 2.0f
             val color = GuiColors.text
             color.a = AnimationUtils.halfSineDec(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 5000.0f, 0.0f, 255.0f).toInt()
             FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 1.666f)
