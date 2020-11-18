@@ -23,12 +23,12 @@ open class Component(
     val visible = setting("Visible", true, { false }, { _, it -> it || !closeable })
 
     protected val relativePosX = setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeX(relativeToAbsX(it).coerceIn(0.0f, scaledWidth - width.value)) else it })
+            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, scaledWidth - width.value - 2.0f)) else it })
     protected val relativePosY = setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeY(relativeToAbsY(it).coerceIn(0.0f, scaledHeight - height.value)) else it })
+            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, scaledHeight - height.value - 2.0f)) else it })
 
-    val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, scaledWidth) })
-    val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(0.0f, scaledHeight) })
+    val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, scaledWidth) })
+    val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, scaledHeight) })
 
     val dockingH = setting("DockingH", Alignment.HAlign.LEFT)
     val dockingV = setting("DockingV", Alignment.VAlign.TOP)
@@ -60,8 +60,8 @@ open class Component(
 
     // Extra info
     protected val mc = Wrapper.minecraft
-    open val minWidth = 16.0f
-    open val minHeight = 16.0f
+    open val minWidth = 1.0f
+    open val minHeight = 1.0f
     open val maxWidth = -1.0f
     open val maxHeight = -1.0f
     open val closeable: Boolean get() = true

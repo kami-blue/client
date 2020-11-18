@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -12,6 +13,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 abstract class LabelHud(name: String) : HudElement(name) {
 
     override val resizable get() = false
+
+    override val minWidth: Float get() = FontRenderAdapter.getFontHeight()
+    override val minHeight: Float get() = FontRenderAdapter.getFontHeight()
     override val maxWidth: Float get() = displayText.getWidth() + 2.0f
     override val maxHeight: Float get() = displayText.getHeight(2)
 
