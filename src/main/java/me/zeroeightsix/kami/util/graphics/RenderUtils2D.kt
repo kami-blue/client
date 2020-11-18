@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
@@ -196,7 +197,8 @@ object RenderUtils2D {
 
         return Array(seg + 1) {
             val angle = Math.toRadians(it * segAngle + angleRange.first.toDouble())
-            Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
+            val unRounded = Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
+            Vec2d(MathUtils.round(unRounded.x, 8), MathUtils.round(unRounded.y, 8))
         }
     }
 
