@@ -133,8 +133,6 @@ object NoFall : Module() {
                 mc.player.motionY = 10.0
                 mc.player.motionY = -1.0
             }
-            else -> {
-            }
         }
     }
 
