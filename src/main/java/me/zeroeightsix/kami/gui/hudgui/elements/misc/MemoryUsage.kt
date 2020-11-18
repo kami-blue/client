@@ -14,7 +14,7 @@ object MemoryUsage : LabelHud("MemoryUsage") {
     private val showMax = setting("ShowMax", false)
 
     override fun updateText() {
-        val memory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / 1048576L
+        val memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
         displayText.add(memory.toString(), primaryColor.value)
         if (showAllocated.value) {
             val allocatedMemory = Runtime.getRuntime().totalMemory() / 1048576L
