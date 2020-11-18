@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
+import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.Item
 import net.minecraft.network.play.client.CPacketClickWindow
@@ -107,6 +108,24 @@ object InventoryUtils {
     }
 
     /**
+     * Returns slots in full inventory contains [item] in player inventory
+     * This is same as [getSlots] but it returns full inventory slot index
+     *
+     * @return Array contains full inventory slot index, null if no item found
+     */
+    fun getSlotsFullInv(min: Int = 9, max: Int = 44, item: Item): Array<Int>? {
+        val slots = ArrayList<Int>()
+        mc.player?.inventoryContainer?.inventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in min..max) {
+                if (clonedList[i].getItem() != item) continue
+                slots.add(i)
+            }
+        }
+        return if (slots.isNotEmpty()) slots.toTypedArray() else null
+    }
+
+    /**
      * Counts number of item in hotbar
      *
      * @return Number of item with given [itemId] in hotbar
@@ -135,6 +154,16 @@ object InventoryUtils {
     }
 
     /**
+     * Counts number of item in inventory
+     *
+     * @return Number of [item] in inventory
+     */
+    @JvmStatic
+    fun countItemAll(item: Item): Int {
+        return countItem(0, 45, item)
+    }
+
+    /**
      * Counts number of item in range of slots
      *
      * @return Number of item with given [itemId] from slot [min] to slot [max]
@@ -147,9 +176,26 @@ object InventoryUtils {
                 val clonedList = ArrayList(it)
                 for (i in min..max) {
                     val itemStack = clonedList.getOrNull(i) ?: continue
-                    if (Item.getIdFromItem(itemStack.getItem()) != itemId) continue
                     currentCount += if (itemId == 0) 1 else itemStack.count
                 }
+            }
+        }
+        return currentCount
+    }
+
+    /**
+     * Counts number of item in range of slots
+     *
+     * @return Number of [item] from slot [min] to slot [max]
+     */
+    fun countItem(min: Int, max: Int, item: Item): Int {
+        var currentCount = 0
+        mc.player?.inventoryContainer?.inventory?.let {
+            val clonedList = ArrayList(it)
+            for (i in min..max) {
+                val itemStack = clonedList.getOrNull(i) ?: continue
+                if (itemStack.getItem() != item) continue
+                currentCount += if (item == Items.AIR) 1 else itemStack.count
             }
         }
         return currentCount
