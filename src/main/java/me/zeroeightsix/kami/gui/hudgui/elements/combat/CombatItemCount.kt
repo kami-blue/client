@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
@@ -79,7 +78,7 @@ object CombatItemCount : LabelHud("CombatItemCount") {
 
             for (itemStack in itemStacks) {
                 if (itemStack.count == -1) continue
-                drawItem(itemStack)
+                RenderUtils2D.drawItem(itemStack, 2, 2, (itemStack.count - 1).toString())
                 if (horizontal.value) GlStateManager.translate(20.0f, 0.0f, 0.0f)
                 else GlStateManager.translate(0.0f, 20.0f, 0.0f)
             }
@@ -88,20 +87,6 @@ object CombatItemCount : LabelHud("CombatItemCount") {
         } else {
             super.renderHud(vertexHelper)
         }
-    }
-
-    private fun drawItem(itemStack: ItemStack) {
-        GlStateUtils.blend(true)
-        GlStateUtils.depth(true)
-        RenderHelper.enableGUIStandardItemLighting()
-
-        mc.renderItem.zLevel = 0.0f
-        mc.renderItem.renderItemAndEffectIntoGUI(itemStack, 2, 2)
-        mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, 2, 2, (itemStack.count - 1).toString())
-        mc.renderItem.zLevel = 0.0f
-
-        RenderHelper.disableStandardItemLighting()
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
 }

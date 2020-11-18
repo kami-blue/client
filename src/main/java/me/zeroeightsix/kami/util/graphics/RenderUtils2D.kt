@@ -1,8 +1,12 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
 
@@ -10,6 +14,21 @@ import kotlin.math.*
  * Utils for basic 2D shapes rendering
  */
 object RenderUtils2D {
+    val mc = Wrapper.minecraft
+
+    fun drawItem(itemStack: ItemStack, x: Int, y: Int, text: String = "") {
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(true)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        mc.renderItem.zLevel = 0.0f
+        mc.renderItem.renderItemAndEffectIntoGUI(itemStack, x, y)
+        mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, x, y, text)
+        mc.renderItem.zLevel = 0.0f
+
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
 
     @JvmStatic
     @JvmOverloads
