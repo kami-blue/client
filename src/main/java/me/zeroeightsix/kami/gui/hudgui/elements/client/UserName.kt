@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 
 @HudElement.Info(
-        category = HudElement.Category.PLAYER,
+        category = HudElement.Category.CLIENT,
         description = "User name"
 )
 object UserName : LabelHud("UserName") {

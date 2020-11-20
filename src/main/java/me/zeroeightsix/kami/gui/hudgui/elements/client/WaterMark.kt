@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.module.modules.client.Capes
 
 @HudElement.Info(
-        category = HudElement.Category.MISC,
+        category = HudElement.Category.CLIENT,
         description = "KAMI Blue watermark",
         enabledByDefault = true
 )
