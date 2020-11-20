@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.gui.hudgui.elements.player
+package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud

@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.setting.GuiConfig
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.commons.utils.DisplayEnum
 
 open class HudElement(
         name: String
@@ -28,7 +29,8 @@ open class HudElement(
             val enabledByDefault: Boolean = false
     )
 
-    enum class Category(val displayName: String) {
+    enum class Category(override val displayName: String) : DisplayEnum {
+        CLIENT("Client"),
         COMBAT("Combat"),
         PLAYER("Player"),
         WORLD("World"),

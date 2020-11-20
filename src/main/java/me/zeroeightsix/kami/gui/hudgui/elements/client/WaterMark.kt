@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.gui.hudgui.elements.misc
+package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.hudgui.HudElement
