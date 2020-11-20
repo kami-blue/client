@@ -137,7 +137,7 @@ object KamiFontRenderer {
     }
 
     private fun loadFont(index: Int): FontGlyphs {
-        val style = TextProperties.Style.values()[index]
+        val style = Style.values()[index]
 
         // Load main font
         val font = try {
@@ -256,9 +256,9 @@ object KamiFontRenderer {
 
         if (text.getOrNull(index) == '§') {
             when (text.getOrNull(index + 1)) {
-                TextProperties.Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
-                TextProperties.Style.BOLD.codeChar -> currentVariant = glyphArray[1]
-                TextProperties.Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
+                Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
+                Style.BOLD.codeChar -> currentVariant = glyphArray[1]
+                Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
             }
             currentColor = when (text.getOrNull(index + 1)) {
                 TextFormatting.BLACK.toString()[1] -> ColorHolder(0, 0, 0)

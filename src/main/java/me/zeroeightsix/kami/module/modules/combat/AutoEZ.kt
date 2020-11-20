@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.text.ChatType
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 
 @Module.Info(
@@ -35,7 +34,7 @@ object AutoEZ : Module() {
         CUSTOM("");
     }
 
-    private val hypixelCensorMessages: Array<String> = arrayOf(
+    private val hypixelCensorMessages = arrayOf(
             "Hey Helper, how play game?",
             "Hello everyone! I am an innocent player who loves everything Hypixel.",
             "Please go easy on me, this is my first game!",
@@ -90,7 +89,7 @@ object AutoEZ : Module() {
     init {
         listener<ClientChatReceivedEvent> {
             if (detectMode.value != DetectMode.BROADCAST || mc.player == null
-                    || mc.player.isDead || mc.player.health <= 0.0f || it.type == ChatType.CHAT) return@listener
+                    || mc.player.isDead || mc.player.health <= 0.0f) return@listener
 
             val message = it.message.unformattedText
             if (!message.contains(mc.player.name, true)) return@listener
@@ -122,8 +121,8 @@ object AutoEZ : Module() {
                 }
             }
 
-            // Remove players if they are out of world or we haven't attack them again in 300 ticks (15 seconds)
-            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || mc.player.ticksExisted - it.value > 300 }
+            // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
+            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || mc.player.ticksExisted - it.value > 100 }
 
             // Send custom message type help message
             sendHelpMessage()

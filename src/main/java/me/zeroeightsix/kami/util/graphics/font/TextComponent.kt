@@ -42,7 +42,7 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine], and goes to the next line
      */
-    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextProperties.Style = TextProperties.Style.REGULAR) {
+    fun addLine(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR) {
         add(text, color, style)
         currentLine++
     }
@@ -58,7 +58,7 @@ class TextComponent(val separator: String = " ") {
     /**
      * Adds new text element to [currentLine]
      */
-    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: TextProperties.Style = TextProperties.Style.REGULAR) {
+    fun add(text: String, color: ColorHolder = ColorHolder(255, 255, 255), style: Style = Style.REGULAR) {
         add(TextElement(text, color, style))
     }
 
@@ -90,17 +90,17 @@ class TextComponent(val separator: String = " ") {
              scale: Float = 1f,
              drawShadow: Boolean = true,
              skipEmptyLine: Boolean = true,
-             horizontalAlign: Alignment.HAlign = Alignment.HAlign.LEFT,
-             verticalAlign: Alignment.VAlign = Alignment.VAlign.TOP,
+             horizontalAlign: HAlign = HAlign.LEFT,
+             verticalAlign: VAlign = VAlign.TOP,
              customFont: Boolean = FontRenderAdapter.useCustomFont
     ) {
         if (isEmpty()) return
         glPushMatrix()
         glTranslated(pos.x, pos.y, 0.0) // Rounding it to int so stupid Minecraftia doesn't fucked up
         glScalef(scale, scale, 1f)
-        if (verticalAlign != Alignment.VAlign.TOP) {
+        if (verticalAlign != VAlign.TOP) {
             var height = getHeight(lineSpace, customFont)
-            if (verticalAlign == Alignment.VAlign.CENTER) height /= 2
+            if (verticalAlign == VAlign.CENTER) height /= 2
             glTranslatef(0f, -height, 0f)
         }
         for (line in textLines) {
@@ -133,11 +133,11 @@ class TextComponent(val separator: String = " ") {
             textElementList.add(textElement)
         }
 
-        fun drawLine(alpha: Float, drawShadow: Boolean, horizontalAlign: Alignment.HAlign, customFont: Boolean) {
+        fun drawLine(drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
             glPushMatrix()
-            if (horizontalAlign != Alignment.HAlign.LEFT) {
+            if (horizontalAlign != HAlign.LEFT) {
                 var width = getWidth(customFont)
-                if (horizontalAlign == Alignment.HAlign.CENTER) width /= 2
+                if (horizontalAlign == HAlign.CENTER) width /= 2
                 glTranslatef(-width, 0f, 0f)
             }
             for (textElement in textElementList) {
@@ -157,7 +157,7 @@ class TextComponent(val separator: String = " ") {
         }
     }
 
-    class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: TextProperties.Style = TextProperties.Style.REGULAR) {
+    class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: Style = Style.REGULAR) {
         val text = "${style.code}$textIn"
 
         override fun toString(): String {
