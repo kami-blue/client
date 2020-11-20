@@ -4,8 +4,9 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.font.HAlign
+import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2f
 
 open class Component(
@@ -30,8 +31,8 @@ open class Component(
     val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, scaledWidth) })
     val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, scaledHeight) })
 
-    val dockingH = setting("DockingH", Alignment.HAlign.LEFT)
-    val dockingV = setting("DockingV", Alignment.VAlign.TOP)
+    val dockingH = setting("DockingH", HAlign.LEFT)
+    val dockingV = setting("DockingV", VAlign.TOP)
 
     var posX: Float = 0.0f
         get() {

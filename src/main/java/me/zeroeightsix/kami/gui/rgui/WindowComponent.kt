@@ -1,8 +1,9 @@
 package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
+import me.zeroeightsix.kami.util.graphics.font.HAlign
+import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2f
 import kotlin.math.max
 import kotlin.math.min
@@ -94,34 +95,34 @@ open class WindowComponent(
         val centerSplitterV = min(10.0, preDragSize.y / 3.0)
 
         val horizontalSide = when (relativeClickPos.x) {
-            in -5.0..centerSplitterH -> Alignment.HAlign.LEFT
-            in centerSplitterH..preDragSize.x - centerSplitterH -> Alignment.HAlign.CENTER
-            in preDragSize.x - centerSplitterH..preDragSize.x + 5.0 -> Alignment.HAlign.RIGHT
+            in -5.0..centerSplitterH -> HAlign.LEFT
+            in centerSplitterH..preDragSize.x - centerSplitterH -> HAlign.CENTER
+            in preDragSize.x - centerSplitterH..preDragSize.x + 5.0 -> HAlign.RIGHT
             else -> null
         }
 
-        val centerSplitterVCenter = if (draggableHeight != height.value && horizontalSide == Alignment.HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
+        val centerSplitterVCenter = if (draggableHeight != height.value && horizontalSide == HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
         val verticalSide = when (relativeClickPos.y) {
-            in -5.0..centerSplitterVCenter -> Alignment.VAlign.TOP
-            in centerSplitterVCenter..preDragSize.y - centerSplitterV -> Alignment.VAlign.CENTER
-            in preDragSize.y - centerSplitterV..preDragSize.y + 5.0 -> Alignment.VAlign.BOTTOM
+            in -5.0..centerSplitterVCenter -> VAlign.TOP
+            in centerSplitterVCenter..preDragSize.y - centerSplitterV -> VAlign.CENTER
+            in preDragSize.y - centerSplitterV..preDragSize.y + 5.0 -> VAlign.BOTTOM
             else -> null
         }
 
         val draggedDist = mousePos.subtract(clickPos)
 
         if (horizontalSide != null && verticalSide != null) {
-            if (resizable && !minimized.value && (horizontalSide != Alignment.HAlign.CENTER || verticalSide != Alignment.VAlign.CENTER)) {
+            if (resizable && !minimized.value && (horizontalSide != HAlign.CENTER || verticalSide != VAlign.CENTER)) {
 
                 when (horizontalSide) {
-                    Alignment.HAlign.LEFT -> {
+                    HAlign.LEFT -> {
                         var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
                         posX += width.value - newWidth
                         width.value = newWidth
                     }
-                    Alignment.HAlign.RIGHT -> {
+                    HAlign.RIGHT -> {
                         var newWidth = max(preDragSize.x + draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
@@ -133,14 +134,14 @@ open class WindowComponent(
                 }
 
                 when (verticalSide) {
-                    Alignment.VAlign.TOP -> {
+                    VAlign.TOP -> {
                         var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
                         posY += height.value - newHeight
                         height.value = newHeight
                     }
-                    Alignment.VAlign.BOTTOM -> {
+                    VAlign.BOTTOM -> {
                         var newHeight = max(preDragSize.y + draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
@@ -133,7 +132,7 @@ class TextComponent(val separator: String = " ") {
             textElementList.add(textElement)
         }
 
-        fun drawLine(drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
+        fun drawLine(alpha: Float, drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
             glPushMatrix()
             if (horizontalAlign != HAlign.LEFT) {
                 var width = getWidth(customFont)

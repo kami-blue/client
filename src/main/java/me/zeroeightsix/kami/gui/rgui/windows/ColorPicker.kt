@@ -8,9 +8,10 @@ import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.setting.impl.other.ColorSetting
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.graphics.Alignment
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.font.HAlign
+import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.client.renderer.GlStateManager
@@ -317,8 +318,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         buttonCancel.width.value = 50.0f
 
         // Main window
-        dockingH.value = Alignment.HAlign.CENTER
-        dockingV.value = Alignment.VAlign.CENTER
+        dockingH.value = HAlign.CENTER
+        dockingV.value = VAlign.CENTER
         relativePosX.value = 0.0f
         relativePosY.value = 0.0f
         height.value = buttonCancel.posY + buttonCancel.height.value + 4.0f
