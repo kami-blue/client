@@ -10,14 +10,16 @@ KAMI_DIR="$HOME/projects/kamiblue"
 
 if [ -z "$KAMI_DIR" ]; then
   echo "[buildNamed] Environment variable KAMI_DIR is not set, exiting." >&2
-  exit 1
+  exit $?
 fi
 
 cd "$KAMI_DIR" || {
   echo "[buildNamed] Failed to cd into '$KAMI_DIR', exiting."
-  exit 1
+  exit $?
 }
 
 chmod +x gradlew
-./gradlew build
-# TODO: have build safety to check gradlew success
+./gradlew build || {
+  echo "[buildNamed] Gradle build failed, exiting."
+  exit $?
+}
