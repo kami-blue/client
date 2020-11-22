@@ -18,7 +18,7 @@ if [ ! -f "$KAMI_WEBSITE_DIR/api/v1/builds" ]; then
   exit 1
 fi
 
-BUILD_NUMBER_PREVIOUS=$(curl https://kamiblue.org/api/v1/builds)
+BUILD_NUMBER_PREVIOUS=$(curl -s https://kamiblue.org/api/v1/builds)
 BUILD_NUMBER=$((BUILD_NUMBER_PREVIOUS + 1))
 
 if [ "$BUILD_NUMBER" == "$BUILD_NUMBER_PREVIOUS" ]; then
@@ -31,6 +31,11 @@ if [[ ! "$BUILD_NUMBER" =~ ^-?[0-9]+$ ]]; then
   exit 1
 fi
 
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/version.sh"
+VERSION=$("$__dir") || exit $?
+VERSION_MAJOR=$("$__dir" "major") || exit $?
+JAR="kamiblue-$VERSION.jar"
+
 cd "$KAMI_WEBSITE_DIR" || {
   echo "[bumpBuildNumber] Failed to cd into '$KAMI_WEBSITE_DIR', exiting."
   exit 1
@@ -39,18 +44,12 @@ cd "$KAMI_WEBSITE_DIR" || {
 git reset --hard origin/master
 git pull
 
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/version.sh"
-VERSION=$("$__dir") || exit $?
-VERSION_MAJOR=$("$__dir" "major") || exit $?
-JAR="kamiblue-$VERSION.jar"
-
 sed -i "s/^cur_ver:.*/cur_ver: $VERSION_MAJOR/g" _config.yml
 sed -i "s/^beta_ver:.*/beta_ver: $VERSION/g" _config.yml
+sed -i "s/^build_number:.*/build_number: $BUILD_NUMBER/g" _config.yml
 sed -i "s|jar_url:.*|jar_url: https://github.com/kami-blue/client/releases/download/$VERSION/$JAR|g" _config.yml
 sed -i "s|jar_sig_url:.*|jar_sig_url: https://github.com/kami-blue/client/releases/download/$VERSION/$JAR.sig|g" _config.yml
 sed -i "s|beta_jar_url:.*|beta_jar_url: https://github.com/kami-blue/nightly-releases/releases/download/$VERSION/$JAR|g" _config.yml
-
-echo "$BUILD_NUMBER" >"api/v1/builds"
 
 git commit -am "[bump] Release $VERSION"
 git push origin master
