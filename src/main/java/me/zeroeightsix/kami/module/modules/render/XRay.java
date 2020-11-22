@@ -30,7 +30,7 @@ import java.util.Set;
         name = "XRay",
         category = Module.Category.RENDER,
         description = "See through common blocks!")
-@EventBusSubscriber(modid = KamiMod.MODID
+@EventBusSubscriber(modid = KamiMod.ID
 )
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.

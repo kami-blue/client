@@ -46,7 +46,7 @@ public class HelpCommand extends Command {
         String commandPrefix = Command.getCommandPrefix();
         if (args[0] == null) {
             sendStringChatMessage(new String[]{
-                    "KAMI Blue " + KamiMod.VER_FULL_BETA,
+                    "KAMI Blue " + KamiMod.VERSION,
                     "&7Press &r" + ClickGUI.INSTANCE.getBind().getValue().toString() + "&7 to open GUI",
                     "&7see &b" + WEBSITE_LINK + "&7 for a full version of the faq",
                     commandPrefix + "commands&7 to view all available commands",
