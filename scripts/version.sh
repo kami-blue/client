@@ -13,10 +13,6 @@
 #
 # Example beta: 1.11.17-58a47a2f
 
-if [ "$(date +"%d")" == "01" ] && [ "$1" != "beta" ]; then
-  echo uwu
-fi
-
 if [ ! -d .git ]; then
   echo "[version] Could not detect git repository, exiting." >&2
   exit 1
