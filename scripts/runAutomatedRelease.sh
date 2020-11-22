@@ -6,6 +6,7 @@
 #
 # Usage: "./runAutomatedRelease.sh"
 
+source ~/.profile
 KAMI_DIR="$HOME/projects/kamiblue"
 
 if [ -z "$KAMI_DIR" ]; then
@@ -17,3 +18,7 @@ cd "$KAMI_DIR" || {
   echo "[buildNamed] Failed to cd into '$KAMI_DIR', exiting."
   exit 1
 }
+
+git reset --hard origin/master
+./scripts/bumpVersion.sh
+JAR_NAME=$(./scripts/buildNamed.sh) || exit $?

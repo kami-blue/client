@@ -6,6 +6,7 @@
 #
 # Usage: "./buildNamed.sh"
 
+source ~/.profile
 KAMI_DIR="$HOME/projects/kamiblue"
 
 if [ -z "$KAMI_DIR" ]; then

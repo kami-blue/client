@@ -6,6 +6,7 @@
 #
 # Usage: "./bumpWebsite.sh"
 
+source ~/.profile
 KAMI_WEBSITE_DIR="$HOME/projects/kamiblue-website"
 
 if [ -z "$KAMI_WEBSITE_DIR" ]; then
