@@ -4,8 +4,6 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
-import net.minecraft.network.Packet
-import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.CPacketConfirmTeleport
 
 @Module.Info(
@@ -15,6 +13,7 @@ import net.minecraft.network.play.client.CPacketConfirmTeleport
 )
 object PortalGodMode : Module() {
     private val confirm = register(Settings.b("InstantTeleport"))
+
     private var packet: CPacketConfirmTeleport? = null
 
     override fun onEnable() {
@@ -23,7 +22,7 @@ object PortalGodMode : Module() {
 
     override fun onDisable() {
         if (confirm.value) packet?.let {
-            mc.networkManager?.sendPacket(packet as Packet<INetHandlerPlayServer>)
+            mc.connection?.sendPacket(it)
         }
     }
 

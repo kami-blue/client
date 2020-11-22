@@ -3,11 +3,13 @@ package me.zeroeightsix.kami.module.modules.misc
 import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.client.gui.GuiGameOver
 import java.util.*
 
 @Module.Info(
@@ -25,6 +27,10 @@ object FakePlayer : Module() {
         listener<ConnectionEvent.Disconnect> {
             disable()
         }
+
+        listener<GuiScreenEvent.Displayed> {
+            if (it.screen is GuiGameOver) disable()
+        }
     }
 
     override fun onEnable() {
@@ -32,7 +38,10 @@ object FakePlayer : Module() {
             disable()
             return
         }
-        if (playerName.value == "Player") MessageSendHelper.sendChatMessage("You can use &7'${Command.commandPrefix.value}fp <name>'&r to set a custom name")
+        if (playerName.value == "Player") {
+            MessageSendHelper.sendChatMessage("You can use &7'${Command.commandPrefix.value}fp <name>'&r to set a custom name")
+        }
+
         fakePlayer = EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {
             copyLocationAndAnglesFrom(mc.player)
             rotationYawHead = mc.player.rotationYawHead

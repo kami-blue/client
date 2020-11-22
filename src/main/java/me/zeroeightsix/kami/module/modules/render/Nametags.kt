@@ -76,7 +76,7 @@ object Nametags : Module() {
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
-    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
+    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
@@ -502,9 +502,11 @@ object Nametags : Module() {
             val itemCountMap = TreeMap<String, Int>(Comparator.naturalOrder())
             for (entityItem in itemSet) {
                 val itemStack = entityItem.item
-                val name = itemStack.getItem().getItemStackDisplayName(itemStack)
-                val count = itemCountMap.getOrDefault(name, 0) + itemStack.count
-                itemCountMap[name] = count
+                val originalName = itemStack.item.getItemStackDisplayName(itemStack)
+                val displayName = itemStack.displayName
+                val finalName = if (displayName == originalName) originalName else "$displayName ($originalName)"
+                val count = itemCountMap.getOrDefault(finalName, 0) + itemStack.count
+                itemCountMap[finalName] = count
             }
             textComponent.clear()
             for ((index, entry) in itemCountMap.entries.sortedByDescending { it.value }.withIndex()) {

@@ -27,7 +27,6 @@ import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.math.Direction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
@@ -362,26 +361,27 @@ public class KamiGUI extends GUI {
             Minecraft mc = Wrapper.getMinecraft();
 
             if (mc.player == null) return;
-            List<EntityPlayer> entityList = mc.world.playerEntities;
 
             Map<String, Integer> players = new HashMap<>();
-            for (Entity e : entityList) {
-                if (e.getName().equals(mc.player.getName())) continue;
+            for (EntityPlayer entity : mc.world.playerEntities) {
+                if (entity.isDead) continue;
+                if (entity.getName().equals(mc.player.getName())) continue;
 
-                String posString = (e.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (e.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
+                String posString = (entity.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (entity.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
                 String weaknessFactor;
                 String strengthFactor;
                 String extraPaddingForFactors;
-                EntityPlayer ePlayer = (EntityPlayer) e;
 
-                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
+                if (entity.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
                 else weaknessFactor = "";
-                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
+
+                if (entity.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
                 else strengthFactor = "";
+
                 if (weaknessFactor.equals("") && strengthFactor.equals("")) extraPaddingForFactors = "";
                 else extraPaddingForFactors = " ";
 
-                float hpRaw = ((EntityLivingBase) e).getHealth() + ((EntityLivingBase) e).getAbsorptionAmount();
+                float hpRaw = entity.getHealth() + entity.getAbsorptionAmount();
                 String hp = dfHealth.format(hpRaw);
                 healthSB.append(KamiMod.color);
                 if (hpRaw >= 20) {
@@ -395,7 +395,7 @@ public class KamiGUI extends GUI {
                 }
                 healthSB.append(hp);
 
-                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.DARK_GRAY + weaknessFactor + ChatFormatting.DARK_PURPLE + strengthFactor + ChatFormatting.GRAY + extraPaddingForFactors + e.getName(), (int) mc.player.getDistance(e));
+                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.DARK_GRAY + weaknessFactor + ChatFormatting.DARK_PURPLE + strengthFactor + ChatFormatting.GRAY + extraPaddingForFactors + entity.getName(), (int) mc.player.getDistance(entity));
                 healthSB.setLength(0);
             }
 
