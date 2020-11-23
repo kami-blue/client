@@ -2,12 +2,12 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
+import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
@@ -23,17 +23,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-
 /**
  * Created by 086 on 7/11/2017.
  * Updated by l1ving on 25/03/19
@@ -68,14 +63,11 @@ public class KamiMod {
 
     public static Thread MAIN_THREAD;
 
-    public static String latest; // latest version (null if no internet or exception occurred)
-    public static boolean isLatest;
-
     @Mod.Instance
     private static KamiMod INSTANCE;
 
     private KamiGUI guiManager;
-    public CommandManager commandManager;
+    private CommandManager commandManager;
     public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
         @Override
         protected JsonObject doForward(@Nullable JsonObject jsonObject) {
@@ -95,16 +87,9 @@ public class KamiMod {
         if (!directory.exists()) directory.mkdir();
 
         MAIN_THREAD = Thread.currentThread();
-        updateCheck();
+        KamiGuiUpdateNotification.Companion.updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
-            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
-        }
     }
 
     @Mod.EventHandler
@@ -140,6 +125,13 @@ public class KamiMod {
         log.info(MODNAME + " Mod initialized!");
     }
 
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
+            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
+        }
+    }
+
     public static KamiMod getInstance() {
         return INSTANCE;
     }
@@ -154,30 +146,5 @@ public class KamiMod {
 
     public CommandManager getCommandManager() {
         return commandManager;
-    }
-
-    public void updateCheck() {
-        try {
-            KamiMod.log.info("Attempting KAMI Blue update check...");
-
-            JsonParser parser = new JsonParser();
-            String latestVersion = parser.parse(IOUtils.toString(new URL(DOWNLOADS_API), Charset.defaultCharset())).getAsJsonObject().getAsJsonObject("stable").get("name").getAsString();
-
-            isLatest = latestVersion.equals(VER_STABLE);
-            latest = latestVersion;
-
-            if (!isLatest) {
-                KamiMod.log.warn("You are running an outdated version of KAMI Blue.\nCurrent: " + VER_STABLE + "\nLatest: " + latestVersion);
-
-                return;
-            }
-
-            KamiMod.log.info("Your KAMI Blue (" + VER_STABLE + ") is up-to-date with the latest stable release.");
-        } catch (IOException e) {
-            latest = null;
-
-            KamiMod.log.error("Oes noes! An exception was thrown during the update check.");
-            e.printStackTrace();
-        }
     }
 }

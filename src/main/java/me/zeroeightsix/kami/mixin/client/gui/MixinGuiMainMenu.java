@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.mixin.client.gui;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiButton;
@@ -20,7 +19,7 @@ public abstract class MixinGuiMainMenu {
 
     @Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
     public void onActionPerformed(GuiButton button, CallbackInfo ci) {
-        if (!hasAskedToUpdate && KamiMod.latest != null && !KamiMod.isLatest) {
+        if (!hasAskedToUpdate && KamiGuiUpdateNotification.Companion.getLatest() != null && !KamiGuiUpdateNotification.Companion.isLatest()) {
             if (button.id == 1 || button.id == 2) {
                 Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification(button.id));
                 hasAskedToUpdate = true;
