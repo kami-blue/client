@@ -35,9 +35,9 @@ object WebHelper : Runnable {
         isInternetDown = isDown("1.1.1.1", 80, 100)
     }
 
-    fun openWebLink(url: URI) {
+    fun openWebLink(url: String) {
         try {
-            Desktop.getDesktop().browse(url)
+            Desktop.getDesktop().browse(URI(url))
         } catch (e: IOException) {
             KamiMod.log.error("Couldn't open link: $url")
         }
