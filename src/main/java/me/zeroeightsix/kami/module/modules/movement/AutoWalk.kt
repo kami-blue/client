@@ -59,7 +59,7 @@ object AutoWalk : Module() {
             if (disableOnDisconnect.value) disable()
         }
 
-        listener<InputUpdateEvent> {
+        listener<InputUpdateEvent>(6969) {
             when (mode.value) {
                 AutoWalkMode.FORWARD -> {
                     it.movementInput.moveForward = 1.0f

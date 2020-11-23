@@ -11,6 +11,6 @@ import me.zeroeightsix.kami.setting.Settings
         alwaysEnabled = true
 )
 object ChatSetting : Module() {
-    val delay = register(Settings.floatBuilder("MessageSpeedLimit(s)").withValue(1.0f).withRange(0.5f, 20.0f).withStep(0.5f))
+    val delay = register(Settings.floatBuilder("MessageSpeedLimit(s)").withValue(0.5f).withRange(0.1f, 20.0f).withStep(0.1f))
     val maxMessageQueueSize = register(Settings.integerBuilder("MaxMessageQueueSize").withValue(50).withRange(10, 200).withStep(5))
 }

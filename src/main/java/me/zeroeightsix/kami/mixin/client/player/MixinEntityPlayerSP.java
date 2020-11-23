@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.modules.chat.PortalChat;
 import me.zeroeightsix.kami.module.modules.misc.BeaconSelector;
 import me.zeroeightsix.kami.module.modules.movement.Sprint;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
+import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.math.Vec2f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -55,16 +56,14 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         super(worldIn, gameProfileIn);
     }
 
-    @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;closeScreen()V"))
-    public void closeScreen(EntityPlayerSP entityPlayerSP) {
-        if (PortalChat.INSTANCE.isEnabled()) return;
+    public void closeScreen(EntityPlayerSP player) {
+        if (PortalChat.INSTANCE.isDisabled()) player.closeScreen();
     }
 
-    @SuppressWarnings("UnnecessaryReturnStatement")
     @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
     public void closeScreen(Minecraft minecraft, GuiScreen screen) {
-        if (PortalChat.INSTANCE.isEnabled()) return;
+        if (PortalChat.INSTANCE.isDisabled()) Wrapper.getMinecraft().displayGuiScreen(screen);
     }
 
     /**

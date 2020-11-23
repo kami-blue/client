@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.cos
@@ -69,9 +70,16 @@ object Freecam : Module() {
         }
 
         listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@listener
+
+            if (mc.player.isDead || mc.player.health <= 0.0f) {
+                if (cameraGuy != null) onDisable() // Reset the view entity, but not disable it
+                return@listener
+            }
+
             if (cameraGuy == null && mc.player.ticksExisted > 20) spawnCameraGuy()
 
-            if (!BaritoneUtils.isPathing) {
+            if (!BaritoneUtils.isPathing && !BaritoneUtils.isActive) {
                 if (autoRotate.value) updatePlayerRotation()
 
                 if (arrowKeyMove.value) updatePlayerMovement()

@@ -62,7 +62,7 @@ import kotlin.math.min
  *
  * @new version edited by David Aaron Muhar (bobjob)
  */
-class FontGlyphs(val style: TextProperties.Style, private val font: Font, private val fallbackFont: Font) {
+class FontGlyphs(val style: Style, private val font: Font, private val fallbackFont: Font) {
 
     /** HashMap for storing all the glyph chunks, each chunk contains 256 glyphs mapping to characters */
     private val chunkMap = HashMap<Int, GlyphChunk>()

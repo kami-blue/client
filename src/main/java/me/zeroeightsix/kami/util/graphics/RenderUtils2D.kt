@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
@@ -192,10 +193,12 @@ object RenderUtils2D {
     private fun getArcVertices(center: Vec2d, radius: Double, angleRange: Pair<Float, Float>, segments: Int): Array<Vec2d> {
         val range = max(angleRange.first, angleRange.second) - min(angleRange.first, angleRange.second)
         val seg = calcSegments(segments, radius, range)
+        val segAngle = (range.toDouble() / seg.toDouble())
 
         return Array(seg + 1) {
-            val angle = Math.toRadians(it * (range / seg.toDouble()) + angleRange.first)
-            Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
+            val angle = Math.toRadians(it * segAngle + angleRange.first.toDouble())
+            val unRounded = Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
+            Vec2d(MathUtils.round(unRounded.x, 8), MathUtils.round(unRounded.y, 8))
         }
     }
 

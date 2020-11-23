@@ -15,10 +15,10 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Module.Info(
-        name = "Flight",
-        category = Module.Category.MOVEMENT,
-        description = "Makes the player fly",
-        modulePriority = 500
+    name = "Flight",
+    category = Module.Category.MOVEMENT,
+    description = "Makes the player fly",
+    modulePriority = 500
 )
 object Flight : Module() {
     private val mode = register(Settings.enumBuilder(FlightMode::class.java, "Mode").withValue(FlightMode.VANILLA))
@@ -29,28 +29,22 @@ object Flight : Module() {
         VANILLA, STATIC, PACKET
     }
 
-    override fun onEnable() {
-        if (mc.player == null) return
-        if (mode.value == FlightMode.VANILLA) {
-            mc.player.capabilities.isFlying = true
-            if (mc.player.capabilities.isCreativeMode) return
-            mc.player.capabilities.allowFlying = true
-        }
-    }
-
     override fun onDisable() {
-        if (mode.value == FlightMode.VANILLA) {
-            mc.player.capabilities.isFlying = false
-            mc.player.capabilities.flySpeed = 0.05f
+        mc.player?.capabilities?.apply {
+            isFlying = false
+            flySpeed = 0.05f
         }
     }
 
     init {
         listener<PlayerTravelEvent> {
             if (mc.player == null) return@listener
+
             when (mode.value) {
                 FlightMode.STATIC -> {
-                    mc.player.capabilities.isFlying = false
+                    mc.player.capabilities.isFlying = true
+                    mc.player.capabilities.flySpeed = speed.value
+
                     mc.player.motionX = 0.0
                     mc.player.motionY = -glideSpeed.value
                     mc.player.motionZ = 0.0
@@ -59,12 +53,12 @@ object Flight : Module() {
                     if (mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY -= speed.value / 2.0f
                 }
                 FlightMode.VANILLA -> {
-                    mc.player.capabilities.flySpeed = speed.value / 8.0f
                     mc.player.capabilities.isFlying = true
+                    mc.player.capabilities.flySpeed = speed.value / 11.11f
 
                     if (glideSpeed.value != 0.0
-                            && !mc.gameSettings.keyBindJump.isKeyDown
-                            && !mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY = -glideSpeed.value
+                        && !mc.gameSettings.keyBindJump.isKeyDown
+                        && !mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY = -glideSpeed.value
                 }
                 FlightMode.PACKET -> {
                     it.cancel()
@@ -85,8 +79,8 @@ object Flight : Module() {
                     val posY = mc.player.posY + mc.player.motionY
                     val posZ = mc.player.posZ + mc.player.motionZ
 
-                    mc.connection!!.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, mc.player.rotationYaw, mc.player.rotationPitch, false))
-                    mc.connection!!.sendPacket(CPacketPlayer.Position(posX, mc.player.posY - 42069, posZ, true))
+                    mc.connection?.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, mc.player.rotationYaw, mc.player.rotationPitch, false))
+                    mc.connection?.sendPacket(CPacketPlayer.Position(posX, mc.player.posY - 42069, posZ, true))
                 }
                 else -> {
                 }

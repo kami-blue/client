@@ -10,9 +10,7 @@ import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.graphics.font.TextComponent
-import me.zeroeightsix.kami.util.graphics.font.TextProperties
+import me.zeroeightsix.kami.util.graphics.font.*
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
@@ -78,7 +76,7 @@ object Nametags : Module() {
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
-    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
+    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
     private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
     private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
@@ -166,7 +164,7 @@ object Nametags : Module() {
         val halfWidth = textComponent.getWidth(customFont.value) / 2.0 + margins.value + 2.0
         val halfHeight = textComponent.getHeight(2, true, customFont.value) / 2.0 + margins.value + 2.0
         if (drawFrame) drawFrame(vertexHelper, Vec2d(-halfWidth, -halfHeight), Vec2d(halfWidth, halfHeight))
-        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = TextProperties.HAlign.CENTER, verticalAlign = TextProperties.VAlign.CENTER, customFont = customFont.value)
+        textComponent.draw(drawShadow = textShadow.value, skipEmptyLine = true, horizontalAlign = HAlign.CENTER, verticalAlign = VAlign.CENTER, customFont = customFont.value)
         glPopMatrix()
     }
 
@@ -251,7 +249,7 @@ object Nametags : Module() {
         glTranslatef(0f, -2f, 0f)
         if (enchantment.value) {
             val scale = if (customFont.value) 0.6f else 0.5f
-            enchantmentText.draw(lineSpace = 2, scale = scale, drawShadow = textShadow.value, verticalAlign = TextProperties.VAlign.BOTTOM, customFont = customFont.value)
+            enchantmentText.draw(lineSpace = 2, scale = scale, drawShadow = textShadow.value, verticalAlign = VAlign.BOTTOM, customFont = customFont.value)
         }
 
         glTranslatef(28f, 2f, 0f)
@@ -260,7 +258,7 @@ object Nametags : Module() {
     private fun getEnchantmentText(itemStack: ItemStack): TextComponent {
         val textComponent = TextComponent()
         val enchantmentList = EnchantmentUtils.getAllEnchantments(itemStack)
-        val style = if (customFont.value) TextProperties.Style.BOLD else TextProperties.Style.REGULAR
+        val style = if (customFont.value) Style.BOLD else Style.REGULAR
         for (leveledEnchantment in enchantmentList) {
             textComponent.add(leveledEnchantment.alias, ColorHolder(255, 255, 255, aText.value), style)
             textComponent.addLine(leveledEnchantment.levelText, ColorHolder(155, 144, 255, aText.value), style)
@@ -504,9 +502,11 @@ object Nametags : Module() {
             val itemCountMap = TreeMap<String, Int>(Comparator.naturalOrder())
             for (entityItem in itemSet) {
                 val itemStack = entityItem.item
-                val name = itemStack.getItem().getItemStackDisplayName(itemStack)
-                val count = itemCountMap.getOrDefault(name, 0) + itemStack.count
-                itemCountMap[name] = count
+                val originalName = itemStack.item.getItemStackDisplayName(itemStack)
+                val displayName = itemStack.displayName
+                val finalName = if (displayName == originalName) originalName else "$displayName ($originalName)"
+                val count = itemCountMap.getOrDefault(finalName, 0) + itemStack.count
+                itemCountMap[finalName] = count
             }
             textComponent.clear()
             for ((index, entry) in itemCountMap.entries.sortedByDescending { it.value }.withIndex()) {

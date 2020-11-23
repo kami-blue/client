@@ -9,7 +9,7 @@ object InfoCalculator {
     @Invoker
 
     fun getServerType() = if (mc.isIntegratedServerRunning) "Singleplayer" else mc.currentServerData?.serverIP
-            ?: "MainMenu"
+            ?: "Main Menu"
 
     @JvmStatic
     fun ping() = mc.player?.let { mc.connection?.getPlayerInfo(it.uniqueID)?.responseTime ?: 1 } ?: -1
