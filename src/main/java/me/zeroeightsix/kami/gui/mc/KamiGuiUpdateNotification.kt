@@ -8,7 +8,6 @@ import net.minecraft.client.gui.*
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.io.IOException
-import java.net.URI
 
 class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
 

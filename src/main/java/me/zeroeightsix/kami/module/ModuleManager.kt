@@ -66,7 +66,8 @@ object ModuleManager {
                 module.name.value.replace(" ", "").equals(name, true)
                         || module.alias.any { it.replace(" ", "").equals(name, true) }
             }
-        } ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
+        }
+                ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)

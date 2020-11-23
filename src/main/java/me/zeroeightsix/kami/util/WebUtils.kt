@@ -31,7 +31,7 @@ object WebUtils {
         try {
             Desktop.getDesktop().browse(URI(url))
         } catch (e: IOException) {
-            KamiMod.log.error("Couldn't open link: $url")
+            KamiMod.LOG.error("Couldn't open link: $url")
         }
     }
 
