@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
-import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.ConfigUtils;
@@ -19,24 +18,17 @@ import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
 import java.io.File;
 
-/**
- * Created by 086 on 7/11/2017.
- * Updated by l1ving on 25/03/19
- * Updated by Dewy on 09/04/2020
- */
 @Mod(
-        modid = KamiMod.MODID,
-        name = KamiMod.MODNAME,
-        version = KamiMod.VER_FULL_BETA
+    modid = KamiMod.MODID,
+    name = KamiMod.MODNAME,
+    version = KamiMod.VER_FULL_BETA
 )
 public class KamiMod {
 
@@ -58,10 +50,9 @@ public class KamiMod {
     public static final String DIRECTORY = "kamiblue/";
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
-    public static Thread MAIN_THREAD;
-
     @Mod.Instance
-    private static KamiMod INSTANCE;
+    public static KamiMod INSTANCE;
+    public static Thread MAIN_THREAD;
 
     private KamiGUI guiManager;
     private CommandManager commandManager;
@@ -104,14 +95,11 @@ public class KamiMod {
         commandManager = new CommandManager();
 
         FileInstanceManager.fixEmptyFiles();
-
         ConfigUtils.INSTANCE.loadAll();
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         for (Module module : ModuleManager.getModules()) {
-            if (module.getAlwaysListening()) {
-                KamiEventBus.INSTANCE.subscribe(module);
-            }
+            if (module.getAlwaysListening()) KamiEventBus.INSTANCE.subscribe(module);
             if (module.isEnabled()) module.enable();
         }
 
@@ -121,19 +109,8 @@ public class KamiMod {
         LOG.info(MODNAME + " Mod initialized!");
     }
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-        if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
-            Display.setTitle(MODNAME + " " + KAMI_KATAKANA + " " + VER_SMALL);
-        }
-    }
-
-    public static KamiMod getInstance() {
-        return INSTANCE;
-    }
-
     public KamiGUI getGuiManager() {
-        return this.guiManager;
+        return guiManager;
     }
 
     public void setGuiManager(KamiGUI guiManager) {
@@ -147,4 +124,5 @@ public class KamiMod {
     public Setting<JsonObject> getGuiStateSetting() {
         return guiStateSetting;
     }
+
 }

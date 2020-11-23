@@ -24,71 +24,29 @@ import java.nio.file.Paths
 object ConfigUtils {
 
     fun loadAll(): Boolean {
-        var success = true
-        val loadingThreads = arrayOf(
-                Thread {
-                    Thread.currentThread().name = "Macro Loading Thread"
-                    success = MacroManager.loadMacros() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Waypoint Loading Thread"
-                    success = WaypointManager.loadWaypoints() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Friend Loading Thread"
-                    success = FriendManager.loadFriends() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Config Loading Thread"
-                    success = loadConfiguration() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Gui Loading Thread"
-                    KamiMod.getInstance().guiManager = KamiGUI()
-                    KamiMod.getInstance().guiManager.initializeGUI()
-                    KamiMod.LOG.info("Gui loaded")
-                }
-        )
+        var success = MacroManager.loadMacros()
 
-        for (thread in loadingThreads) {
-            thread.start()
-        }
+        success = WaypointManager.loadWaypoints() && success
 
-        for (thread in loadingThreads) {
-            thread.join()
-        }
+        success = FriendManager.loadFriends() && success
+
+        KamiMod.INSTANCE.guiManager = KamiGUI()
+        KamiMod.INSTANCE.guiManager.initializeGUI()
+        KamiMod.LOG.info("Gui loaded")
+
+        success = loadConfiguration() && success
 
         return success
     }
 
     fun saveAll(): Boolean {
-        var success = true
-        val savingThreads = arrayOf(
-                Thread {
-                    Thread.currentThread().name = "Macro Saving Thread"
-                    success = MacroManager.saveMacros() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Waypoint Saving Thread"
-                    success = WaypointManager.saveWaypoints() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Friend Saving Thread"
-                    success = FriendManager.saveFriends() && success
-                },
-                Thread {
-                    Thread.currentThread().name = "Config Saving Thread"
-                    success = saveConfiguration() && success
-                }
-        )
+        var success = MacroManager.saveMacros()
 
-        for (thread in savingThreads) {
-            thread.start()
-        }
+        success = WaypointManager.saveWaypoints() && success
 
-        for (thread in savingThreads) {
-            thread.join()
-        }
+        success = FriendManager.saveFriends() && success
+
+        success = saveConfiguration() && success
 
         return success
     }
@@ -180,9 +138,9 @@ object ConfigUtils {
         val kamiConfig = Paths.get(kamiConfigName)
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
-        val gui = KamiMod.getInstance().guiStateSetting.value
+        val gui = KamiMod.INSTANCE.guiStateSetting.value
         for ((key, value) in gui.entrySet()) {
-            val optional = KamiMod.getInstance().guiManager.children.stream()
+            val optional = KamiMod.INSTANCE.guiManager.children.stream()
                     .filter { component: Component? -> component is Frame }
                     .filter { component: Component -> (component as Frame).title == key }
                     .findFirst()
@@ -200,7 +158,7 @@ object ConfigUtils {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }
         }
-        for (component in KamiMod.getInstance().guiManager.children) {
+        for (component in KamiMod.INSTANCE.guiManager.children) {
             if (component !is Frame) continue
             if (!component.isPinnable || !component.isVisible) continue
             component.opacity = 0f
@@ -210,7 +168,7 @@ object ConfigUtils {
     @Throws(IOException::class)
     private fun saveConfigurationUnsafe() {
         val jsonObject = JsonObject()
-        KamiMod.getInstance().guiManager.children.stream()
+        KamiMod.INSTANCE.guiManager.children.stream()
                 .filter { component: Component? -> component is Frame }
                 .map { component: Component? -> component as Frame? }
                 .forEach { frame ->
@@ -222,7 +180,7 @@ object ConfigUtils {
                     frameObject.add("pinned", JsonPrimitive(frame.isPinned))
                     jsonObject.add(frame.title, frameObject)
                 }
-        KamiMod.getInstance().guiStateSetting.value = jsonObject
+        KamiMod.INSTANCE.guiStateSetting.value = jsonObject
         val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)
