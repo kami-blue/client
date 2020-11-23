@@ -8,6 +8,13 @@
     "MixinMinecraft",
     "MixinStateImplementation",
     "MixinTileEntityBeacon",
+    "accessor.AccessorMinecraft",
+    "accessor.AccessorTimer",
+    "accessor.network.AccessorCPacketChatMessage",
+    "accessor.network.AccessorCPacketPlayer",
+    "accessor.network.AccessorSPacketChat",
+    "accessor.player.AccessorPlayerControllerMP",
+    "accessor.render.AccessorRenderManager",
     "baritone.MixinBaritoneSettings",
     "baritone.MixinExecutionWrapper",
     "entity.MixinEntity",
@@ -53,9 +60,5 @@
     "world.MixinBlockWeb",
     "world.MixinChunkCache",
     "world.MixinWorld"
-  ],
-  "mixins": [
-    "accessor.AccessorMinecraft",
-    "accessor.render.AccessorRenderManager"
   ]
 }

@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Minecraft.class)
 public interface AccessorMinecraft {
+
     @Accessor
     Timer getTimer();
 
@@ -19,4 +20,5 @@ public interface AccessorMinecraft {
 
     @Invoker
     void invokeRightClickMouse();
+
 }

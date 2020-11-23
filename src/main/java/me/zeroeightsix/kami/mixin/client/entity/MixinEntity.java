@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = Entity.class, priority = Integer.MAX_VALUE)
 public class MixinEntity {
 
-    @Shadow public int entityId;
+    @Shadow private int entityId;
 
     @Redirect(method = "applyEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;addVelocity(DDD)V"))
     public void addVelocity(Entity entity, double x, double y, double z) {
