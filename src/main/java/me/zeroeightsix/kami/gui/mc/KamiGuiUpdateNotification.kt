@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.WebHelper
+import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import net.minecraft.client.gui.*
 import net.minecraft.util.text.TextFormatting
@@ -25,7 +25,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
     }
 
     override fun actionPerformed(button: GuiButton) {
-        if (button.id == 0) WebHelper.openWebLink(KamiMod.WEBSITE_LINK + "/download")
+        if (button.id == 0) WebUtils.openWebLink(KamiMod.WEBSITE_LINK + "/download")
 
         val screen = if (buttonId == 1) GuiWorldSelection(GuiMainMenu()) // Single
         else GuiMultiplayer(GuiMainMenu()) // Multi
