@@ -12,9 +12,9 @@ import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
-import me.zeroeightsix.kami.util.math.MathUtils.convertRange
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import org.kamiblue.commons.utils.MathUtils.convertRange
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 

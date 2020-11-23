@@ -8,17 +8,17 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.WebHelper
+import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.glColor4f
 
 /**
@@ -67,8 +67,8 @@ object LagNotifier : Module() {
                 val timeoutMillis = (timeout.value * 1000.0f).toLong()
                 when {
                     lastPacketTimer.tick(timeoutMillis, false) -> {
-                        if (pingTimer.tick(1L)) WebHelper.run()
-                        text = if (WebHelper.isInternetDown) "Your internet is offline! " else "Server Not Responding! "
+                        if (pingTimer.tick(1L)) WebUtils.update()
+                        text = if (WebUtils.isInternetDown) "Your internet is offline! " else "Server Not Responding! "
                         text += timeDifference(lastPacketTimer.time)
                         pause()
                     }

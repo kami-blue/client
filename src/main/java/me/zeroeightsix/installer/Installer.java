@@ -3,7 +3,7 @@ package me.zeroeightsix.installer;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.FolderHelper;
 import me.zeroeightsix.kami.util.OperatingSystemHelper;
-import me.zeroeightsix.kami.util.WebHelper;
+import me.zeroeightsix.kami.util.WebUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,7 +20,7 @@ import java.util.Random;
  * Added more background images by humboldt123 on 15/08/20
  */
 public class Installer extends JPanel {
-    String[] downloadsAPI = WebHelper.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
+    String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
 
     public static void main(String[] args) throws IOException {
         System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer!");
@@ -157,7 +157,7 @@ public class Installer extends JPanel {
         System.out.println(KamiMod.MODNAME + " download started!");
         if (version == VersionType.STABLE) {
             try {
-                WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
+                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
                 dialog[0].hide();
                 System.out.println(KamiMod.MODNAME + " download finished!");
             } catch (IOException e) {
@@ -165,7 +165,7 @@ public class Installer extends JPanel {
             }
         } else if (version == VersionType.BETA) {
             try {
-                WebHelper.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
+                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
                 dialog[0].hide();
                 System.out.println(KamiMod.MODNAME + " download finished!");
             } catch (IOException e) {

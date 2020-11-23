@@ -33,6 +33,7 @@ import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.init.MobEffects;
 import net.minecraft.util.text.TextFormatting;
+import org.kamiblue.capeapi.PlayerProfile;
 
 import javax.annotation.Nonnull;
 import java.math.RoundingMode;
@@ -308,8 +309,8 @@ public class KamiGUI extends GUI {
             friends.setText("");
             if (!friendList.isMinimized()) {
                 if (FriendManager.INSTANCE.getEnabled()) {
-                    for (FriendManager.Friend friend : FriendManager.INSTANCE.getFriends().values()) {
-                        final String name = friend.getUsername();
+                    for (PlayerProfile friend : FriendManager.INSTANCE.getFriends().values()) {
+                        final String name = friend.getName();
                         if (name.isEmpty()) continue;
                         friends.addLine(name);
                     }

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.util.math.MathUtils.round
+import org.kamiblue.commons.utils.MathUtils.round
 import org.spongepowered.asm.mixin.gen.Invoker
 import kotlin.math.hypot
 
