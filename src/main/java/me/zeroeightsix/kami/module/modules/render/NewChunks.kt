@@ -139,7 +139,7 @@ object NewChunks : Module() {
             logWriter!!.println(head)
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.log.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
+            KamiMod.LOG.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
             MessageSendHelper.sendErrorMessage(chatName + " onLogStart: " + e.message)
         }
     }
@@ -157,7 +157,7 @@ object NewChunks : Module() {
                     file = Objects.requireNonNull(mc.getIntegratedServer())!!.getWorld(dimension).chunkSaveLocation
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KamiMod.log.error("some exception happened when getting canonicalFile -> " + e.message)
+                    KamiMod.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
                     MessageSendHelper.sendErrorMessage(chatName + " onGetPath: " + e.message)
                 }
 
@@ -190,7 +190,7 @@ object NewChunks : Module() {
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                KamiMod.log.error("some exception happened when trying to make the file -> " + e.message)
+                KamiMod.LOG.error("some exception happened when trying to make the file -> " + e.message)
                 MessageSendHelper.sendErrorMessage(chatName + " onCreateFile: " + e.message)
             }
             return rV

@@ -81,7 +81,7 @@ object InventoryMove : Module() {
                 }
             } catch (e: IndexOutOfBoundsException) {
                 if (!hasSent) {
-                    KamiMod.log.error("$chatName Error: Key is bound to a mouse button!")
+                    KamiMod.LOG.error("$chatName Error: Key is bound to a mouse button!")
                     e.printStackTrace()
                     hasSent = true
                 }

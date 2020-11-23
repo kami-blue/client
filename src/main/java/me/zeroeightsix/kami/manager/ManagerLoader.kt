@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.manager
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager
-import me.zeroeightsix.kami.util.ClassUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import org.kamiblue.commons.utils.ClassUtils
 
 /**
  * @author Xiaro
@@ -24,7 +24,7 @@ object ManagerLoader {
     fun preLoad() {
         preLoadingThread = Thread {
             managerClassList = ClassUtils.findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)
-            KamiMod.log.info("${managerClassList!!.size} managers found")
+            KamiMod.LOG.info("${managerClassList!!.size} managers found")
         }
         preLoadingThread!!.name = "Managers Pre-Loading"
         preLoadingThread!!.start()
@@ -38,7 +38,7 @@ object ManagerLoader {
             ClassUtils.getInstance(clazz).also { KamiEventBus.subscribe(it) }
         }
         val time = stopTimer.stop()
-        KamiMod.log.info("${managerClassList!!.size} managers loaded, took ${time}ms")
+        KamiMod.LOG.info("${managerClassList!!.size} managers loaded, took ${time}ms")
         preLoadingThread = null
         managerClassList = null
     }

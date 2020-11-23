@@ -88,7 +88,7 @@ object KamiFontRenderer {
 
     init {
         // Prints Slick2D's license to log as required
-        KamiMod.log.info("""
+        KamiMod.LOG.info("""
             Slick2D's TrueTypeFont renderer code was used in this mod
             
             License
@@ -149,7 +149,7 @@ object KamiFontRenderer {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.log.error("Failed loading main font. Using Sans Serif font.")
+            KamiMod.LOG.error("Failed loading main font. Using Sans Serif font.")
             getSansSerifFont(style.styleConst)
         }
 
@@ -158,7 +158,7 @@ object KamiFontRenderer {
             Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.log.error("Failed loading fallback font. Using Sans Serif font")
+            KamiMod.LOG.error("Failed loading fallback font. Using Sans Serif font")
             getSansSerifFont(style.styleConst)
         }
         return FontGlyphs(style, font, fallbackFont)

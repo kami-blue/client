@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
@@ -8,16 +9,15 @@ import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.Display
 
-/**
- * @author l1ving
- */
 @Module.Info(
-        name = "CommandConfig",
-        category = Module.Category.CLIENT,
-        description = "Configures client chat related stuff",
-        showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true
+    name = "CommandConfig",
+    category = Module.Category.CLIENT,
+    description = "Configures client chat related stuff",
+    showOnArray = Module.ShowOnArray.OFF,
+    alwaysEnabled = true
 )
 object CommandConfig : Module() {
     val aliasInfo = register(Settings.b("AliasInfo", true))
@@ -28,7 +28,9 @@ object CommandConfig : Module() {
     private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value })
     private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value })
 
-    val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val prevTitle = Display.getTitle()
+    private const val title = "${KamiMod.MODNAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VER_SMALL}"
 
     init {
         listener<SafeTickEvent> {
@@ -40,6 +42,10 @@ object CommandConfig : Module() {
                 }.start()
             }
         }
+
+        listener<TickEvent.ClientTickEvent> {
+            updateTitle()
+        }
     }
 
     override fun onDisable() {
@@ -49,5 +55,10 @@ object CommandConfig : Module() {
     private fun sendDisableMessage() {
         MessageSendHelper.sendErrorMessage("Error: The ${name.value} module is only for configuring command options, disabling it doesn't do anything.")
         enable()
+    }
+
+    private fun updateTitle() {
+        if (customTitle.value) Display.setTitle(title)
+        else Display.setTitle(prevTitle)
     }
 }

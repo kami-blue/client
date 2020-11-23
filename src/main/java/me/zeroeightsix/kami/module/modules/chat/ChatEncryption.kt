@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.client.accessor.network.packetMessage
@@ -14,6 +13,7 @@ import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.ChatAllowedCharacters
 import net.minecraft.util.text.TextComponentString
+import net.minecraft.util.text.TextFormatting
 import java.nio.CharBuffer
 import java.util.*
 import java.util.regex.Pattern
@@ -102,7 +102,7 @@ object ChatEncryption : Module() {
                     s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
                 }
             }
-            it.packet.textComponent = TextComponentString("<" + username + "> " + KamiMod.color + "lDECRYPTED" + KamiMod.color + "r: " + builder.toString())
+            it.packet.textComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "lDECRYPTED" + TextFormatting.RESET + ": " + builder.toString())
         }
     }
 
