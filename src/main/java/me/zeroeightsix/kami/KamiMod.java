@@ -70,7 +70,6 @@ public class KamiMod {
 
     public static String latest; // latest version (null if no internet or exception occurred)
     public static boolean isLatest;
-    public static boolean hasAskedToUpdate = false;
 
     @Mod.Instance
     private static KamiMod INSTANCE;

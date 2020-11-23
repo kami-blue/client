@@ -16,24 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu {
 
+    private static boolean hasAskedToUpdate = false;
+
     @Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
-    public void onActionPerformed(GuiButton btn, CallbackInfo callbackInfo) {
-        if (!KamiMod.hasAskedToUpdate && KamiMod.latest != null) {
-            if (!KamiMod.isLatest) {
-                if (btn.id == 1) {
-                    Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification("KAMI Blue Update", "A newer release of KAMI Blue is available (" + KamiMod.latest + ").", btn.id));
-                    KamiMod.hasAskedToUpdate = true;
-
-                    callbackInfo.cancel();
-                }
-
-                if (btn.id == 2) {
-                    Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification("KAMI Blue Update", "A newer release of KAMI Blue is available (" + KamiMod.latest + ").", btn.id));
-                    KamiMod.hasAskedToUpdate = true;
-
-                    callbackInfo.cancel();
-                }
+    public void onActionPerformed(GuiButton button, CallbackInfo ci) {
+        if (!hasAskedToUpdate && KamiMod.latest != null && !KamiMod.isLatest) {
+            if (button.id == 1 || button.id == 2) {
+                Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification(button.id));
+                hasAskedToUpdate = true;
+                ci.cancel();
             }
         }
     }
+
 }
