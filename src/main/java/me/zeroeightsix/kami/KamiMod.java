@@ -2,7 +2,6 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
-import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
@@ -15,7 +14,6 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.CommandConfig;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,8 +52,7 @@ public class KamiMod {
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
-    public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
-    public static final char separator = '|';
+    public static final String KAMI_KATAKANA = "\u30ab\u30df\u30d6\u30eb";
 
     public static final String DIRECTORY = "kamiblue/";
     public static final Logger log = LogManager.getLogger("KAMI Blue");
@@ -67,17 +64,7 @@ public class KamiMod {
 
     private KamiGUI guiManager;
     private CommandManager commandManager;
-    public Setting<JsonObject> guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
-        @Override
-        protected JsonObject doForward(@Nullable JsonObject jsonObject) {
-            return jsonObject;
-        }
-
-        @Override
-        protected JsonObject doBackward(@Nullable JsonObject jsonObject) {
-            return jsonObject;
-        }
-    }).buildAndRegister("");
+    private Setting<JsonObject> guiStateSetting;
 
     @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
@@ -100,14 +87,23 @@ public class KamiMod {
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
+        guiStateSetting = Settings.custom("gui", new JsonObject(), new Converter<JsonObject, JsonObject>() {
+            @Override
+            protected JsonObject doForward(@Nullable JsonObject jsonObject) {
+                return jsonObject;
+            }
+
+            @Override
+            protected JsonObject doBackward(@Nullable JsonObject jsonObject) {
+                return jsonObject;
+            }
+        }).buildAndRegister("");
         guiManager = new KamiGUI();
         guiManager.initializeGUI();
         commandManager = new CommandManager();
 
         FileInstanceManager.fixEmptyFiles();
 
-        /* Custom static Settings, which can't register normally if they're static */
-        SettingsRegister.register("commandPrefix", Command.commandPrefix);
         ConfigUtils.INSTANCE.loadAll();
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
@@ -127,7 +123,7 @@ public class KamiMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         if (CommandConfig.INSTANCE.getCustomTitle().getValue()) {
-            Display.setTitle(MODNAME + " " + KAMI_KANJI + " " + VER_SMALL);
+            Display.setTitle(MODNAME + " " + KAMI_KATAKANA + " " + VER_SMALL);
         }
     }
 
@@ -145,5 +141,9 @@ public class KamiMod {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public Setting<JsonObject> getGuiStateSetting() {
+        return guiStateSetting;
     }
 }

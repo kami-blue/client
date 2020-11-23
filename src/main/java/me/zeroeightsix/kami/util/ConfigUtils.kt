@@ -209,7 +209,7 @@ object ConfigUtils {
 
     @Throws(IOException::class)
     private fun saveConfigurationUnsafe() {
-        val `object` = JsonObject()
+        val jsonObject = JsonObject()
         KamiMod.getInstance().guiManager.children.stream()
                 .filter { component: Component? -> component is Frame }
                 .map { component: Component? -> component as Frame? }
@@ -220,9 +220,9 @@ object ConfigUtils {
                     frameObject.add("docking", JsonPrimitive(listOf(*Docking.values()).indexOf(frame.docking)))
                     frameObject.add("minimized", JsonPrimitive(frame.isMinimized))
                     frameObject.add("pinned", JsonPrimitive(frame.isPinned))
-                    `object`.add(frame.title, frameObject)
+                    jsonObject.add(frame.title, frameObject)
                 }
-        KamiMod.getInstance().guiStateSetting.value = `object`
+        KamiMod.getInstance().guiStateSetting.value = jsonObject
         val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)

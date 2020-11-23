@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.gui.kami;
 import baritone.api.process.IBaritoneProcess;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.*;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
 import me.zeroeightsix.kami.gui.rgui.GUI;
@@ -489,7 +488,7 @@ public class KamiGUI extends GUI {
             int hposZ = (int) (player.posZ * f);
 
             /* The 7 and f in the string formatter is the color */
-            String colouredSeparator = TextFormatting.GRAY + " " + KamiMod.separator + TextFormatting.RESET;
+            String colouredSeparator = TextFormatting.GRAY + " |" + TextFormatting.RESET;
             String ow = String.format(" (%s%,d%s, %s%,d%s, %s%,d%s)",
                     TextFormatting.WHITE,
                     posX,

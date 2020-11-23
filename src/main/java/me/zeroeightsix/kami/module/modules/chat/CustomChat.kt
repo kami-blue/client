@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
@@ -67,7 +66,7 @@ object CustomChat : Module() {
     private fun getFull() = when (decoMode.value) {
         DecoMode.NONE -> " " + getText()
         DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
-        DecoMode.SEPARATOR -> " " + KamiMod.separator + " " + getText()
+        DecoMode.SEPARATOR -> " | " + getText()
         else -> ""
     }
 

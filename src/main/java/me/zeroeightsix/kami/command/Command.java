@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
+import me.zeroeightsix.kami.setting.SettingsRegister;
 import net.minecraft.client.Minecraft;
 
 import java.util.Arrays;
@@ -56,5 +57,9 @@ public abstract class Command {
 
     public List<String> getAliases() {
         return aliases;
+    }
+
+    static {
+        SettingsRegister.register("commandPrefix", Command.commandPrefix);
     }
 }

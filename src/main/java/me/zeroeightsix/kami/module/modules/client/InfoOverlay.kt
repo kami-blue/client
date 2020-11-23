@@ -93,7 +93,7 @@ object InfoOverlay : Module() {
     }
 
     private fun Setting<*>.infoMap() = when (this) {
-        version -> "${KamiMod.KAMI_KANJI} ${second()}${KamiMod.VER_SMALL}"
+        version -> "${KamiMod.KAMI_KATAKANA} ${second()}${KamiMod.VER_SMALL}"
         username -> "Welcome ${second()}${mc.session.username}!"
         time -> TimeUtils.getFinalTime(setToText(secondColor.value), setToText(firstColor.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value)
         tps -> "${InfoCalculator.tps(decimalPlaces.value)} ${second()}tps"
