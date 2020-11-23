@@ -23,7 +23,7 @@ public class CommandManager {
                 commands.add(command);
             } catch (Exception e) {
                 e.printStackTrace();
-                KamiMod.log.error("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
+                KamiMod.LOG.error("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
             }
         }
         KamiMod.LOG.info("Commands initialised");
