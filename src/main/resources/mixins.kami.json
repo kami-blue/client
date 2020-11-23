@@ -60,5 +60,15 @@
     "world.MixinBlockWeb",
     "world.MixinChunkCache",
     "world.MixinWorld"
+  ],
+  "mixins": [
+    "accessor.entity.AccessorEntity",
+    "accessor.gui.AccessorGuiBossOverlay",
+    "accessor.gui.AccessorGuiDisconnected",
+    "accessor.gui.AccessorGuiEditSign",
+    "accessor.network.AccessorSPacketEntityVelocity",
+    "accessor.network.AccessorSPacketExplosion",
+    "accessor.network.AccessorSPacketPosLook",
+    "accessor.player.AccessorEntityPlayerSP"
   ]
 }

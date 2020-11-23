@@ -40,7 +40,7 @@ public class MixinEntity {
     // Makes the camera guy instead of original player turn around when we move mouse
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void turn(float yaw, float pitch, CallbackInfo ci) {
-        if (Wrapper.getPlayer() != null && this.entityId != Wrapper.getPlayer().entityId) return;
+        if (Wrapper.getPlayer() != null && this.entityId != Wrapper.getPlayer().getEntityId()) return;
         if (Freecam.INSTANCE.isEnabled() && Freecam.INSTANCE.getCameraGuy() != null) {
             Freecam.INSTANCE.getCameraGuy().turn(yaw, pitch);
             ci.cancel();

@@ -143,11 +143,8 @@ object Breadcrumbs : Module() {
     }
 
     private fun getServerIP(): String {
-        return if (mc.currentServerData != null) {
-            mc.currentServerData.serverIP
-        } else { /* If we are in singlePlayer then we use the world name as IP */
-            mc.integratedServer!!.worldName
-        }
+        return mc.currentServerData?.serverIP
+            ?: mc.integratedServer?.worldName ?: ""
     }
 
     private fun shouldRecord(reset: Boolean): Boolean {

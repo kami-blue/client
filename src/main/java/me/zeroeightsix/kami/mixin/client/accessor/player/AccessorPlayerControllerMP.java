@@ -9,6 +9,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface AccessorPlayerControllerMP {
 
     @Accessor
+    int getBlockHitDelay();
+
+    @Accessor
+    void setBlockHitDelay(int value);
+
+    @Accessor
     int getCurrentPlayerItem();
 
     @Invoker

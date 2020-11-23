@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.client.accessor.player.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
