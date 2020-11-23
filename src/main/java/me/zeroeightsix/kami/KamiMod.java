@@ -36,7 +36,7 @@ public class KamiMod {
     public static final String MODID = "kamiblue";
     public static final String VER_FULL_BETA = "v1.1.7-beta"; // this is changed to v1.x.x-commit for debugging by automatic builds
     public static final String VER_SMALL = "v1.1.7-beta"; // shown to the user, unchanged
-    public static final String VER_STABLE = "v1.1.6"; // used for update checking
+    public static final String VER_STABLE = "1.11.01"; // used for update checking
 
     public static final String APP_ID = "638403216278683661";
 
