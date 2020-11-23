@@ -1,11 +1,14 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.KamiMod
+import java.awt.Desktop
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.URI
 import java.net.URL
 import java.nio.channels.Channels
 
@@ -30,6 +33,14 @@ object WebHelper : Runnable {
 
     override fun run() {
         isInternetDown = isDown("1.1.1.1", 80, 100)
+    }
+
+    fun openWebLink(url: URI) {
+        try {
+            Desktop.getDesktop().browse(url)
+        } catch (e: IOException) {
+            KamiMod.log.error("Couldn't open link: $url")
+        }
     }
 
     fun getUrlContents(_url: String): String {

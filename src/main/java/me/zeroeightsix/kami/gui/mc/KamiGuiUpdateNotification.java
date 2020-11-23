@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.util.WebUtils;
+import me.zeroeightsix.kami.util.WebHelper;
 import net.minecraft.client.gui.*;
 
 import java.net.URI;
@@ -53,7 +53,7 @@ public class KamiGuiUpdateNotification extends GuiScreen {
 
         if (button.id == 0) {
             try {
-                WebUtils.openWebLink(new URI(WEBSITE_LINK + "/download"));
+                WebHelper.INSTANCE.openWebLink(new URI(WEBSITE_LINK + "/download"));
 
                 if (singleOrMulti == 1) {
                     mc.displayGuiScreen(new GuiWorldSelection(new GuiMainMenu()));
