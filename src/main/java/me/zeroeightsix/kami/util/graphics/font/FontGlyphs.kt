@@ -142,7 +142,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
             val charInfoArray = builderArray.map { it.build(textureHeight.toDouble()) }.toTypedArray()
             GlyphChunk(chunk, dynamicTexture.glTextureId, dynamicTexture, charInfoArray)
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to load glyph chunk $chunk.")
+            KamiMod.LOG.error("Failed to load glyph chunk $chunk.")
             e.printStackTrace()
             null
         }
@@ -213,7 +213,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
 
             dynamicTexture
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to create font texture.")
+            KamiMod.LOG.error("Failed to create font texture.")
             e.printStackTrace()
             null
         }

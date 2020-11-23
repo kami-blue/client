@@ -90,7 +90,7 @@ object KamiMojiManager : Manager {
 
     init {
         thread = Thread({
-            KamiMod.log.info("Initialising KamiMoji...")
+            KamiMod.LOG.info("Initialising KamiMoji...")
             val dir = File(FOLDER)
             val kamiMojiDir = File("kamimoji")
 
@@ -147,7 +147,7 @@ object KamiMojiManager : Manager {
 
             jsonObject = gson.fromJson(json, JsonObject::class.java)
         } catch (e: IOException) {
-            KamiMod.log.error(e)
+            KamiMod.LOG.error(e)
         }
 
         return jsonObject

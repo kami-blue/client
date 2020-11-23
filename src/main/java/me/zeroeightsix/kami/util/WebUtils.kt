@@ -20,7 +20,7 @@ object WebUtils {
         try {
             Desktop.getDesktop().browse(url)
         } catch (e: IOException) {
-            KamiMod.log.error("Couldn't open link: $url")
+            KamiMod.LOG.error("Couldn't open link: $url")
         }
     }
 
@@ -32,7 +32,7 @@ object WebUtils {
     @JvmStatic
     fun getContributors(exceptions: HashSet<Int>, chatMessage: Boolean = false): List<GithubUser> {
         // log attempt
-        KamiMod.log.info("Attempting to get contributors from github api...")
+        KamiMod.LOG.info("Attempting to get contributors from github api...")
 
         //initialize list
         val contributorList = ArrayList<GithubUser>()
@@ -54,7 +54,7 @@ object WebUtils {
             }
         } catch (t: Throwable) {
             // throw error
-            KamiMod.log.error("Attempt to get contributors from github api failed.\nError:\n\n$t")
+            KamiMod.LOG.error("Attempt to get contributors from github api failed.\nError:\n\n$t")
             if (chatMessage) sendErrorMessage("Attempt to get contributors from github api failed.\nError:\n\n$t")
         }
         return contributorList

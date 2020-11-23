@@ -27,6 +27,7 @@ import org.lwjgl.opengl.Display;
 
 import javax.annotation.Nullable;
 import java.io.File;
+
 /**
  * Created by 086 on 7/11/2017.
  * Updated by l1ving on 25/03/19
@@ -55,7 +56,7 @@ public class KamiMod {
     public static final String KAMI_KATAKANA = "\u30ab\u30df\u30d6\u30eb";
 
     public static final String DIRECTORY = "kamiblue/";
-    public static final Logger log = LogManager.getLogger("KAMI Blue");
+    public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     public static Thread MAIN_THREAD;
 
@@ -80,7 +81,7 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        log.info("Initializing " + MODNAME + " " + VER_FULL_BETA);
+        LOG.info("Initializing " + MODNAME + " " + VER_FULL_BETA);
 
         ModuleManager.load();
         ManagerLoader.load();
@@ -117,7 +118,7 @@ public class KamiMod {
         // Need to reload the font after the settings were loaded
         KamiFontRenderer.INSTANCE.reloadFonts();
 
-        log.info(MODNAME + " Mod initialized!");
+        LOG.info(MODNAME + " Mod initialized!");
     }
 
     @Mod.EventHandler

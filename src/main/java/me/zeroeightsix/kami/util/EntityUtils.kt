@@ -117,13 +117,13 @@ object EntityUtils {
     @JvmStatic
     fun getNameFromUUID(uuid: String): String? {
         return try {
-            KamiMod.log.info("Attempting to get name from UUID: $uuid")
+            KamiMod.LOG.info("Attempting to get name from UUID: $uuid")
             val jsonUrl = IOUtils.toString(URL("https://api.mojang.com/user/profiles/" + uuid.replace("-", "") + "/names"))
             val parser = JsonParser()
             parser.parse(jsonUrl).asJsonArray[parser.parse(jsonUrl).asJsonArray.size() - 1].asJsonObject["name"].toString()
         } catch (ex: IOException) {
-            KamiMod.log.error(ex.stackTrace)
-            KamiMod.log.error("Failed to get username from UUID due to an exception. Maybe your internet is being the big gay? Somehow?")
+            KamiMod.LOG.error(ex.stackTrace)
+            KamiMod.LOG.error("Failed to get username from UUID due to an exception. Maybe your internet is being the big gay? Somehow?")
             null
         }
     }

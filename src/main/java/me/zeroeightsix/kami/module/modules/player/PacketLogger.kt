@@ -56,7 +56,7 @@ object PacketLogger : Module() {
                 it.close()
             }
         } catch (e: IOException) {
-            KamiMod.log.error("$chatName Error saving!")
+            KamiMod.LOG.error("$chatName Error saving!")
             e.printStackTrace()
         }
         lines.clear()
@@ -75,7 +75,7 @@ object PacketLogger : Module() {
             bufferedReader.close()
         } catch (ignored: Exception) {
             // this is fine, just don't load a file
-            KamiMod.log.error("$chatName Error loading!")
+            KamiMod.LOG.error("$chatName Error loading!")
             lines.clear()
         }
     }

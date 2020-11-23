@@ -28,7 +28,7 @@ public class CommandManager {
                 }
             }
         }
-        KamiMod.log.info("Commands initialised");
+        KamiMod.LOG.info("Commands initialised");
     }
 
     public void callCommand(String command) {

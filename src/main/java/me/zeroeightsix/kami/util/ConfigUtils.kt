@@ -46,7 +46,7 @@ object ConfigUtils {
                     Thread.currentThread().name = "Gui Loading Thread"
                     KamiMod.getInstance().guiManager = KamiGUI()
                     KamiMod.getInstance().guiManager.initializeGUI()
-                    KamiMod.log.info("Gui loaded")
+                    KamiMod.LOG.info("Gui loaded")
                 }
         )
 
@@ -101,10 +101,10 @@ object ConfigUtils {
     fun loadConfiguration(): Boolean {
         return try {
             loadConfigurationUnsafe()
-            KamiMod.log.info("Config loaded")
+            KamiMod.LOG.info("Config loaded")
             true
         } catch (e: IOException) {
-            KamiMod.log.error("Failed to load config! ${e.message}")
+            KamiMod.LOG.error("Failed to load config! ${e.message}")
             e.printStackTrace()
             false
         }
@@ -118,10 +118,10 @@ object ConfigUtils {
     fun saveConfiguration(): Boolean {
         return try {
             saveConfigurationUnsafe()
-            KamiMod.log.info("Config saved")
+            KamiMod.LOG.info("Config saved")
             true
         } catch (e: IOException) {
-            KamiMod.log.error("Failed to save config! ${e.message}")
+            KamiMod.LOG.error("Failed to save config! ${e.message}")
             e.printStackTrace()
             false
         }

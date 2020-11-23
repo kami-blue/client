@@ -24,7 +24,7 @@ object ManagerLoader {
     fun preLoad() {
         preLoadingThread = Thread {
             managerClassList = ClassUtils.findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)
-            KamiMod.log.info("${managerClassList!!.size} managers found")
+            KamiMod.LOG.info("${managerClassList!!.size} managers found")
         }
         preLoadingThread!!.name = "Managers Pre-Loading"
         preLoadingThread!!.start()
@@ -38,7 +38,7 @@ object ManagerLoader {
             ClassUtils.getInstance(clazz).also { KamiEventBus.subscribe(it) }
         }
         val time = stopTimer.stop()
-        KamiMod.log.info("${managerClassList!!.size} managers loaded, took ${time}ms")
+        KamiMod.LOG.info("${managerClassList!!.size} managers loaded, took ${time}ms")
         preLoadingThread = null
         managerClassList = null
     }
