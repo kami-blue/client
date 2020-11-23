@@ -1,6 +1,9 @@
 package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.mixin.client.accessor.renderPosX
+import me.zeroeightsix.kami.mixin.client.accessor.renderPosY
+import me.zeroeightsix.kami.mixin.client.accessor.renderPosZ
 import net.minecraft.client.renderer.Tessellator
 
 /**

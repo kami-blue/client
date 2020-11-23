@@ -145,7 +145,7 @@ object DiscordRPC : Module() {
                 "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme
             }
             LineInfo.FPS -> {
-                "${Minecraft.debugFPS} FPS"
+                "${Minecraft.getDebugFPS()} FPS"
             }
             LineInfo.TPS -> {
                 if (mc.player != null) "${InfoCalculator.tps(1)} tps"

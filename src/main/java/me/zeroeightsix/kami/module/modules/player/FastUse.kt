@@ -59,7 +59,7 @@ object FastUse : Module() {
                 }
             }
 
-            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).getItem())) {
+            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).item)) {
                 mc.rightClickDelayTimer = 0
             }
         }

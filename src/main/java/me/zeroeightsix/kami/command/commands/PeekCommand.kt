@@ -15,17 +15,20 @@ class PeekCommand : Command("peek", SyntaxChunk.EMPTY) {
         Wrapper.world?.let { world ->
             Wrapper.player?.let { player ->
                 val itemStack = player.inventory.getCurrentItem()
-                val item = itemStack.getItem()
+                val item = itemStack.item
                 if (item is ItemShulkerBox) {
-                    val entityBox = TileEntityShulkerBox()
-                    entityBox.blockType = item.block
-                    entityBox.world = world
-                    entityBox.readFromNBT(itemStack.tagCompound!!.getCompoundTag("BlockEntityTag"))
+                    val entityBox = TileEntityShulkerBox().apply {
+                        this.world = world
+                    }
+                    val nbtTag = itemStack.tagCompound ?: return
+                    entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
+
                     val scaledResolution = ScaledResolution(mc)
                     val scaledWidth = scaledResolution.scaledWidth
                     val scaledHeight = scaledResolution.scaledHeight
-                    val gui = GuiShulkerBox(mc.player!!.inventory, entityBox)
+                    val gui = GuiShulkerBox(player.inventory, entityBox)
                     gui.setWorldAndResolution(mc, scaledWidth, scaledHeight)
+
                     Timer().schedule(object : TimerTask() {
                         override fun run() {
                             mc.displayGuiScreen(gui)

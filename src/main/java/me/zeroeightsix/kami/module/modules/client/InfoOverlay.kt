@@ -97,7 +97,7 @@ object InfoOverlay : Module() {
         username -> "Welcome ${second()}${mc.session.username}!"
         time -> TimeUtils.getFinalTime(setToText(secondColor.value), setToText(firstColor.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value)
         tps -> "${InfoCalculator.tps(decimalPlaces.value)} ${second()}tps"
-        fps -> "${Minecraft.debugFPS} ${second()}fps"
+        fps -> "${Minecraft.getDebugFPS()} ${second()}fps"
         speed -> "${calcSpeed(decimalPlaces.value)} ${second()}${speedUnit.value.displayName}"
         timerSpeed -> "${round(50f / mc.timer.tickLength, decimalPlaces.value)} ${second()}x"
         ping -> "${InfoCalculator.ping()} ${second()}ms"

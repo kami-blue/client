@@ -53,5 +53,9 @@
     "world.MixinBlockWeb",
     "world.MixinChunkCache",
     "world.MixinWorld"
+  ],
+  "mixins": [
+    "accessor.AccessorMinecraft",
+    "accessor.render.AccessorRenderManager"
   ]
 }
