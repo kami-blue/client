@@ -8,7 +8,7 @@
 
 checkVar() {
   if [ -z "$2" ]; then
-    echo "[uploadRelease] Variable '$1' is not set, exiting."
+    echo "[uploadRelease] Environment variable '$1' is not set, exiting."
     exit 1
   else
     echo "$2"
@@ -23,8 +23,8 @@ KAMI_DIR="/home/mika/projects/kamiblue"
 checkVar "GH_RELEASE_BINARY" "$GH_RELEASE_BINARY" || exit $?
 checkVar "KAMI_DIR" "$KAMI_DIR" || exit $?
 checkVar "1" "$1"
-checkVar "GITHUB_RELEASE_REPOSITORY" "$GITHUB_RELEASE_REPOSITORY"
-checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$GITHUB_RELEASE_ACCESS_TOKEN"
+checkVar "GITHUB_RELEASE_REPOSITORY" "$GITHUB_RELEASE_REPOSITORY" || exit $?
+checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$GITHUB_RELEASE_ACCESS_TOKEN" || exit $?
 
 # TODO: changelog
 VERSION=$($KAMI_DIR/scripts/version.sh "$2") || exit $?

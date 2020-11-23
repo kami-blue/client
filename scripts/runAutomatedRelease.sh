@@ -6,13 +6,22 @@
 #
 # Usage: "./runAutomatedRelease.sh"
 
+checkVar() {
+  if [ -z "$2" ]; then
+    echo "[uploadRelease] Environment variable '$1' is not set, exiting."
+    exit 1
+  else
+    echo "$2"
+  fi
+}
+
 source ~/.profile
 KAMI_DIR="$HOME/projects/kamiblue"
 
-if [ -z "$KAMI_DIR" ]; then
-  echo "[buildNamed] Environment variable KAMI_DIR is not set, exiting." >&2
-  exit 1
-fi
+checkVar "GH_RELEASE_BINARY" "$GH_RELEASE_BINARY" || exit $?
+checkVar "KAMI_DIR" "$KAMI_DIR" || exit $?
+checkVar "GITHUB_RELEASE_REPOSITORY" "$GITHUB_RELEASE_REPOSITORY" || exit $?
+checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$GITHUB_RELEASE_ACCESS_TOKEN" || exit $?
 
 cd "$KAMI_DIR" || {
   echo "[buildNamed] Failed to cd into '$KAMI_DIR', exiting."
