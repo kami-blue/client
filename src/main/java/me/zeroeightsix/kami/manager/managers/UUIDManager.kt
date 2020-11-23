@@ -25,6 +25,6 @@ object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json"), 
     }
 
     override fun logError(message: String) {
-        KamiMod.log.warn(message)
+        KamiMod.LOG.error(message)
     }
 }
