@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.kami.component.Potions
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI
@@ -11,6 +10,7 @@ import me.zeroeightsix.kami.util.text.RomanNumerals
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.potion.PotionEffect
+import net.minecraft.util.text.TextFormatting
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -55,8 +55,8 @@ class KamiPotionUi : AbstractComponentUI<Potions>() {
          * Formats name and time based on UI alignment
          */
         fun formattedName(right: Boolean) =
-                if (right) "${KamiMod.color}7${formattedTimeLeft()}${KamiMod.color}r ${formattedName()}"
-                else "${formattedName()} ${KamiMod.color}7${formattedTimeLeft()}"
+                if (right) "${TextFormatting.GRAY}${formattedTimeLeft()}${TextFormatting.RESET} ${formattedName()}"
+                else "${formattedName()} ${TextFormatting.GRAY}${formattedTimeLeft()}"
 
         /**
          * (min:secs)

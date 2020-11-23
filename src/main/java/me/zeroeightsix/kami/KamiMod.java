@@ -55,7 +55,6 @@ public class KamiMod {
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
     public static final String KAMI_KANJI = "\u30ab\u30df\u30d6\u30eb";
-    public static final char color = '\u00A7';
     public static final char separator = '|';
 
     public static final String DIRECTORY = "kamiblue/";

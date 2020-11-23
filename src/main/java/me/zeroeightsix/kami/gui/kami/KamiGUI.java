@@ -315,7 +315,7 @@ public class KamiGUI extends GUI {
                         friends.addLine(name);
                     }
                 } else {
-                    friends.addLine(KamiMod.color + "cDisabled");
+                    friends.addLine(TextFormatting.RED + "Disabled");
                 }
             }
         });
@@ -383,15 +383,14 @@ public class KamiGUI extends GUI {
 
                 float hpRaw = entity.getHealth() + entity.getAbsorptionAmount();
                 String hp = dfHealth.format(hpRaw);
-                healthSB.append(KamiMod.color);
                 if (hpRaw >= 20) {
-                    healthSB.append("a");
+                    healthSB.append(TextFormatting.GREEN);
                 } else if (hpRaw >= 10) {
-                    healthSB.append("e");
+                    healthSB.append(TextFormatting.YELLOW);
                 } else if (hpRaw >= 5) {
-                    healthSB.append("6");
+                    healthSB.append(TextFormatting.GOLD);
                 } else {
-                    healthSB.append("c");
+                    healthSB.append(TextFormatting.RED);
                 }
                 healthSB.append(hp);
 
@@ -407,7 +406,7 @@ public class KamiGUI extends GUI {
             players = sortByValue(players);
 
             for (Map.Entry<String, Integer> player : players.entrySet()) {
-                list.addLine(KamiMod.color + "7" + player.getKey() + " " + KamiMod.color + "8" + player.getValue());
+                list.addLine(TextFormatting.GRAY + player.getKey() + " " + TextFormatting.DARK_GRAY + player.getValue());
             }
         });
         textRadar.setCloseable(false);
@@ -490,28 +489,28 @@ public class KamiGUI extends GUI {
             int hposZ = (int) (player.posZ * f);
 
             /* The 7 and f in the string formatter is the color */
-            String colouredSeparator = KamiMod.color + "7 " + KamiMod.separator + KamiMod.color + "r";
-            String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
-                    KamiMod.color,
+            String colouredSeparator = TextFormatting.GRAY + " " + KamiMod.separator + TextFormatting.RESET;
+            String ow = String.format(" (%s%,d%s, %s%,d%s, %s%,d%s)",
+                    TextFormatting.WHITE,
                     posX,
-                    KamiMod.color,
-                    KamiMod.color,
+                    TextFormatting.GRAY,
+                    TextFormatting.WHITE,
                     posY,
-                    KamiMod.color,
-                    KamiMod.color,
+                    TextFormatting.GRAY,
+                    TextFormatting.WHITE,
                     posZ,
-                    KamiMod.color
+                    TextFormatting.GRAY
             );
-            String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
-                    KamiMod.color,
+            String nether = String.format(" (%s%,d%s, %s%,d%s, %s%,d%s)",
+                    TextFormatting.WHITE,
                     hposX,
-                    KamiMod.color,
-                    KamiMod.color,
+                    TextFormatting.GRAY,
+                    TextFormatting.WHITE,
                     posY,
-                    KamiMod.color,
-                    KamiMod.color,
+                    TextFormatting.GRAY,
+                    TextFormatting.WHITE,
                     hposZ,
-                    KamiMod.color
+                    TextFormatting.GRAY
             );
             coordsLabel.setText("");
             coordsLabel.addLine(ow);
