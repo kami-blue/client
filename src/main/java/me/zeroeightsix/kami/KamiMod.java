@@ -65,7 +65,7 @@ public class KamiMod {
         if (!directory.exists()) directory.mkdir();
 
         MAIN_THREAD = Thread.currentThread();
-        KamiGuiUpdateNotification.Companion.updateCheck();
+        KamiGuiUpdateNotification.updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
     }

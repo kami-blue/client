@@ -46,6 +46,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
         var latest: String? = null // latest version (null if no internet or exception occurred)
         var isLatest = false
 
+        @JvmStatic
         fun updateCheck() {
             try {
                 KamiMod.LOG.info("Attempting KAMI Blue update check...")
