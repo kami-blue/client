@@ -50,10 +50,10 @@ object WebUtils {
 
     @Throws(IOException::class)
     fun downloadUsingNIO(url: String, file: String) {
-        val readableByteChannel = Channels.newChannel(URL(url).openStream())
-        val fileOutputStream = FileOutputStream(file)
-        fileOutputStream.channel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
-        fileOutputStream.close()
-        readableByteChannel.close()
+        Channels.newChannel(URL(url).openStream()).use { channel ->
+            FileOutputStream(file).use {
+                it.channel.transferFrom(channel, 0, Long.MAX_VALUE)
+            }
+        }
     }
 }
