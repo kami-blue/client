@@ -13,6 +13,9 @@ public interface AccessorMinecraft {
     Timer getTimer();
 
     @Accessor
+    float getRenderPartialTicksPaused();
+
+    @Accessor
     int getRightClickDelayTimer();
 
     @Accessor

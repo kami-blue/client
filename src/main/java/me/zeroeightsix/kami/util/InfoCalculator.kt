@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.mixin.client.accessor.tickLength
+import me.zeroeightsix.kami.mixin.client.accessor.timer
 import me.zeroeightsix.kami.util.math.MathUtils.round
 import org.spongepowered.asm.mixin.gen.Invoker
 import kotlin.math.hypot
@@ -20,7 +22,7 @@ object InfoCalculator {
         return hypot(mc.player.posX - mc.player.prevPosX, mc.player.posZ - mc.player.prevPosZ) * multiply * tps
     }
 
-    fun heldItemDurability() = with(mc.player.heldItemMainhand) { maxDamage - getItemDamage() }
+    fun heldItemDurability() = with(mc.player.heldItemMainhand) { maxDamage - itemDamage }
 
     fun memory() = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
 

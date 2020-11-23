@@ -5,6 +5,8 @@ import net.minecraft.util.Timer
 
 val Minecraft.timer: Timer get() = (this as AccessorMinecraft).timer
 
+val Minecraft.renderPartialTicksPaused: Float get() = (this as AccessorMinecraft).renderPartialTicksPaused
+
 var Minecraft.rightClickDelayTimer: Int
     get() = (this as AccessorMinecraft).rightClickDelayTimer
     set(value) {

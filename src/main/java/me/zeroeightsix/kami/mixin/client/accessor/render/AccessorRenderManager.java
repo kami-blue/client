@@ -16,4 +16,7 @@ public interface AccessorRenderManager {
     @Accessor
     double getRenderPosZ();
 
+    @Accessor
+    boolean getRenderOutlines();
+
 }
