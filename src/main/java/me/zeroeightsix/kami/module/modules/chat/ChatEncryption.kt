@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.client.accessor.network.packetMessage
-import me.zeroeightsix.kami.mixin.client.accessor.network.textComponent
+import me.zeroeightsix.kami.mixin.extension.packetMessage
+import me.zeroeightsix.kami.mixin.extension.textComponent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener

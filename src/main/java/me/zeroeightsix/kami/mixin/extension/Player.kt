@@ -1,5 +1,6 @@
-package me.zeroeightsix.kami.mixin.client.accessor.player
+package me.zeroeightsix.kami.mixin.extension
 
+import me.zeroeightsix.kami.mixin.client.accessor.player.AccessorPlayerControllerMP
 import net.minecraft.client.multiplayer.PlayerControllerMP
 
 var PlayerControllerMP.blockHitDelay: Int

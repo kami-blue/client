@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import org.kamiblue.commons.utils.MathUtils.round
-import me.zeroeightsix.kami.mixin.client.accessor.tickLength
-import me.zeroeightsix.kami.mixin.client.accessor.timer
 import org.spongepowered.asm.mixin.gen.Invoker
 import kotlin.math.hypot
 

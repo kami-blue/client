@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import static me.zeroeightsix.kami.mixin.client.accessor.gui.AccessorGuiEditSignKt.getTileSign;
+import static me.zeroeightsix.kami.mixin.extension.GuiKt.getTileSign;
 
 @Mixin(TileEntitySignRenderer.class)
 public class MixinTileEntitySignRenderer {

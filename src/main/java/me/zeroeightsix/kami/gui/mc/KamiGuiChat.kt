@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.gui.mc
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC
-import me.zeroeightsix.kami.mixin.client.accessor.gui.historyBuffer
-import me.zeroeightsix.kami.mixin.client.accessor.gui.sentHistoryCursor
+import me.zeroeightsix.kami.mixin.extension.historyBuffer
+import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.useVbo
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawRectOutline

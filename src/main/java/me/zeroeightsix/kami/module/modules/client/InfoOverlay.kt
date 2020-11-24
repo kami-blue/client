@@ -4,8 +4,8 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.mixin.client.accessor.tickLength
-import me.zeroeightsix.kami.mixin.client.accessor.timer
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.combat
 
-import me.zeroeightsix.kami.mixin.client.accessor.attackDamage
+import me.zeroeightsix.kami.mixin.extension.attackDamage
 import me.zeroeightsix.kami.util.InventoryUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.Enchantment

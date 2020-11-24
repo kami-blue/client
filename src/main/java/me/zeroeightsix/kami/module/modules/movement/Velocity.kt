@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.client.accessor.network.packetMotionX
-import me.zeroeightsix.kami.mixin.client.accessor.network.packetMotionY
-import me.zeroeightsix.kami.mixin.client.accessor.network.packetMotionZ
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
+import me.zeroeightsix.kami.mixin.extension.packetMotionX
+import me.zeroeightsix.kami.mixin.extension.packetMotionY
+import me.zeroeightsix.kami.mixin.extension.packetMotionZ
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener

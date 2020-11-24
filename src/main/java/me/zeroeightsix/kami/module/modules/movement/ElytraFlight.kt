@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.mixin.client.accessor.network.rotationPitch
-import me.zeroeightsix.kami.mixin.client.accessor.tickLength
-import me.zeroeightsix.kami.mixin.client.accessor.timer
+import me.zeroeightsix.kami.mixin.extension.rotationPitch
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting

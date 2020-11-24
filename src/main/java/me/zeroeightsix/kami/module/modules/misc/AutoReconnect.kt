@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
-import me.zeroeightsix.kami.mixin.client.accessor.gui.message
-import me.zeroeightsix.kami.mixin.client.accessor.gui.parentScreen
-import me.zeroeightsix.kami.mixin.client.accessor.gui.reason
+import me.zeroeightsix.kami.mixin.extension.message
+import me.zeroeightsix.kami.mixin.extension.parentScreen
+import me.zeroeightsix.kami.mixin.extension.reason
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
