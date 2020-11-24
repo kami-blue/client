@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.*
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
@@ -24,6 +23,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -76,7 +76,7 @@ object Nametags : Module() {
     /* Frame */
     private val nameFrame = setting("NameFrame", true, { page.value == Page.FRAME })
     private val itemFrame = setting("ItemFrame", false, { page.value == Page.FRAME })
-    private val dropItemFrame = setting("DropItemFrame", false, { page.value == Page.FRAME })
+    private val dropItemFrame = setting("DropItemFrame", true, { page.value == Page.FRAME })
     private val filled = setting("Filled", true, { page.value == Page.FRAME })
     private val rFilled = setting("FilledRed", 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
     private val gFilled = setting("FilledGreen", 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
@@ -502,9 +502,11 @@ object Nametags : Module() {
             val itemCountMap = TreeMap<String, Int>(Comparator.naturalOrder())
             for (entityItem in itemSet) {
                 val itemStack = entityItem.item
-                val name = itemStack.getItem().getItemStackDisplayName(itemStack)
-                val count = itemCountMap.getOrDefault(name, 0) + itemStack.count
-                itemCountMap[name] = count
+                val originalName = itemStack.item.getItemStackDisplayName(itemStack)
+                val displayName = itemStack.displayName
+                val finalName = if (displayName == originalName) originalName else "$displayName ($originalName)"
+                val count = itemCountMap.getOrDefault(finalName, 0) + itemStack.count
+                itemCountMap[finalName] = count
             }
             textComponent.clear()
             for ((index, entry) in itemCountMap.entries.sortedByDescending { it.value }.withIndex()) {

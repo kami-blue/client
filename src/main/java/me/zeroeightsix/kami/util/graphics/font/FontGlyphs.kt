@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.util.graphics.font
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureUtil
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
 import org.lwjgl.opengl.GL14.*
@@ -142,7 +142,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
             val charInfoArray = builderArray.map { it.build(textureHeight.toDouble()) }.toTypedArray()
             GlyphChunk(chunk, dynamicTexture.glTextureId, dynamicTexture, charInfoArray)
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to load glyph chunk $chunk.")
+            KamiMod.LOG.error("Failed to load glyph chunk $chunk.")
             e.printStackTrace()
             null
         }
@@ -213,7 +213,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
 
             dynamicTexture
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to create font texture.")
+            KamiMod.LOG.error("Failed to create font texture.")
             e.printStackTrace()
             null
         }

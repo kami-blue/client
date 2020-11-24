@@ -61,7 +61,7 @@ object Capes : Module() {
 
     private fun updateCapes() {
         val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
-            KamiMod.log.warn("Failed requesting capes", it)
+            KamiMod.LOG.warn("Failed requesting capes", it)
         } ?: return
 
         try {
@@ -82,9 +82,9 @@ object Capes : Module() {
             }
 
             DiscordRPC.setCustomIcons(type)
-            KamiMod.log.info("Capes loaded")
+            KamiMod.LOG.info("Capes loaded")
         } catch (e: Exception) {
-            KamiMod.log.warn("Failed parsing capes", e)
+            KamiMod.LOG.warn("Failed parsing capes", e)
         }
     }
 

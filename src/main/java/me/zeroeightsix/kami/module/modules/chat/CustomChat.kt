@@ -64,7 +64,7 @@ object CustomChat : Module() {
     private fun getFull() = when (decoMode.value) {
         DecoMode.NONE -> " " + getText()
         DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
-        DecoMode.SEPARATOR -> " " + KamiMod.separator + " " + getText()
+        DecoMode.SEPARATOR -> " | " + getText()
     }
 
     init {

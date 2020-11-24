@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import org.kamiblue.commons.utils.MathUtils.
 import kotlin.math.hypot
 
 object InfoCalculator {

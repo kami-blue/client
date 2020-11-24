@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
@@ -20,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils
 
 @Module.Info(
         name = "AutoLog",

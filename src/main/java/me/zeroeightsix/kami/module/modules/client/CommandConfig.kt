@@ -1,14 +1,16 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.Display
 
 @Module.Info(
         name = "CommandConfig",
@@ -29,6 +31,8 @@ object CommandConfig : Module() {
     val modifierEnabled = setting("ModifierEnabled", false, { false })
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val prevTitle = Display.getTitle()
+    private const val title = "${KamiMod.MODNAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VER_SMALL}"
 
     init {
         listener<SafeTickEvent> {
@@ -36,6 +40,10 @@ object CommandConfig : Module() {
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
                 ConfigUtils.saveConfig(ModuleConfig)
             }
+        }
+
+        listener<TickEvent.ClientTickEvent> {
+            updateTitle()
         }
     }
 
@@ -46,5 +54,10 @@ object CommandConfig : Module() {
     private fun sendDisableMessage() {
         MessageSendHelper.sendErrorMessage("Error: The $name module is only for configuring command options, disabling it doesn't do anything.")
         enable()
+    }
+
+    private fun updateTitle() {
+        if (customTitle.value) Display.setTitle(title)
+        else Display.setTitle(prevTitle)
     }
 }

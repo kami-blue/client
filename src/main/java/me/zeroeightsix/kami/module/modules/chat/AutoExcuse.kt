@@ -80,7 +80,7 @@ object AutoExcuse : Module() {
                     file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
                     MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
                 } catch (e: Exception) {
-                    KamiMod.log.error("Failed loading excuses", e)
+                    KamiMod.LOG.error("Failed loading excuses", e)
                 }
                 cacheList.toTypedArray()
             } else {

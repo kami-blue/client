@@ -46,15 +46,15 @@ object WaypointManager : Manager {
         val localFile = if (legacyFormat()) oldFile else file
         val success = try {
             waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<LinkedHashSet<Waypoint>?>() {}.type)
-            KamiMod.log.info("Waypoint loaded")
+            KamiMod.LOG.info("Waypoint loaded")
             if (legacyFormat()) oldFile.delete()
             true
         } catch (e: FileNotFoundException) {
-            KamiMod.log.warn("Could not find file $configName, clearing the waypoints list")
+            KamiMod.LOG.warn("Could not find file $configName, clearing the waypoints list")
             waypoints.clear()
             false
         } catch (e: IllegalStateException) {
-            KamiMod.log.warn("$configName is empty!")
+            KamiMod.LOG.warn("$configName is empty!")
             waypoints.clear()
             false
         }
@@ -71,10 +71,10 @@ object WaypointManager : Manager {
             gson.toJson(waypoints, fileWriter)
             fileWriter.flush()
             fileWriter.close()
-            KamiMod.log.info("Waypoint saved")
+            KamiMod.LOG.info("Waypoint saved")
             true
         } catch (e: IOException) {
-            KamiMod.log.info("Failed saving waypoint")
+            KamiMod.LOG.info("Failed saving waypoint")
             e.printStackTrace()
             false
         }
@@ -107,7 +107,7 @@ object WaypointManager : Manager {
             KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
             waypoint
         } else {
-            KamiMod.log.error("Error during waypoint adding")
+            KamiMod.LOG.error("Error during waypoint adding")
             dateFormatter(BlockPos(0, 0, 0), locationName) // This shouldn't happen
         }
     }

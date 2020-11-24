@@ -98,7 +98,7 @@ object ForgeEventProcessor {
         event.isCanceled = true
         try {
             mc.ingameGUI.chatGUI.addToSentMessages(event.message)
-            if (event.message.length > 1) KamiMod.getInstance().commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
+            if (event.message.length > 1) KamiMod.INSTANCE.commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
             else MessageSendHelper.sendChatMessage("Please enter a command!")
         } catch (e: Exception) {
             e.printStackTrace()

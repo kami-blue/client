@@ -18,7 +18,7 @@ import kotlin.math.round
         alwaysListening = true
 )
 object ClickGUI : Module() {
-    private val scaleSetting = setting("Scale", 100, 10..400, 10)
+    private val scaleSetting = setting("Scale", 100, 50..400, 5)
     val blur = setting("Blur", 0.5f, 0.0f..1.0f, 0.05f)
     val darkness = setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
 

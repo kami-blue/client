@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
 @Module.Info(
