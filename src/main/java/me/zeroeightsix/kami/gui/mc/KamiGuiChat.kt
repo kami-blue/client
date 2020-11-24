@@ -87,7 +87,6 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
 
         val autoComplete = getAutoComplete()
 
-        /* debugging */
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !autoComplete.contains("<") && !autoComplete.contains("[")) {
             inputField.text += getAutoComplete()
             commandHint = ""
