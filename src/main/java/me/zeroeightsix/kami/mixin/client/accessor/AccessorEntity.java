@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.mixin.client.accessor.entity;
+package me.zeroeightsix.kami.mixin.client.accessor;
 
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

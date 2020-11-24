@@ -12,8 +12,8 @@ public class MixinDebugRendererChunkBorder {
 
     @ModifyVariable(method = "render", at = @At(value = "STORE", ordinal = 0))
     public EntityPlayer render(EntityPlayer entityPlayer) {
-        if (Wrapper.getMinecraft().renderViewEntity instanceof EntityPlayer) {
-            return (EntityPlayer) Wrapper.getMinecraft().renderViewEntity;
+        if (Wrapper.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+            return (EntityPlayer) Wrapper.getMinecraft().getRenderViewEntity();
         } else {
             return Wrapper.getMinecraft().player;
         }
