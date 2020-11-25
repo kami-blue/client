@@ -13,12 +13,14 @@
 #
 # Example beta: 1.11.17-58a47a2f
 
-source ./utils.sh
+__utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
+source "$__utils"
+
 checkGit || exit $?
 
-CUR_HASH="-"$(git log --pretty=%h | head -n 1) # for the -hash
-CUR_R=$(($(date +"%Y") - 2019))                # Current year - 2019
-CUR_M_D=$(date +".%m.%d")                      # Current month and day, formatted
+CUR_HASH="-"$(git log --pretty=%h -1) # for the -hash
+CUR_R=$(($(date +"%Y") - 2019))       # Current year - 2019
+CUR_M_D=$(date +".%m.%d")             # Current month and day, formatted
 
 if [ "$1" == "major" ]; then
   CUR_HASH=""

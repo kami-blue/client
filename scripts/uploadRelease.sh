@@ -4,26 +4,23 @@
 #
 # ONLY USED IN AUTOMATED BUILDS
 #
-# Usage: "./uploadRelease.sh <file name> <major or empty>"
+# Note: the num= is only for easier reading, you do not include that when using this script
+# Usage: "./uploadRelease.sh 1=<$GH_RELEASE_BINARY> 2=<$KAMI_DIR> 3=<$GITHUB_RELEASE_REPOSITORY> 4=<$GITHUB_RELEASE_ACCESS_TOKEN> 5=<file name> 6=<major or empty>"
 
-source ./utils.sh # include checkVar
-source ~/.profile
+__scripts="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$__scripts/utils.sh" # include checkVar
 
-GH_RELEASE_BINARY="/home/mika/some_binary"
-KAMI_DIR="/home/mika/projects/kamiblue"
-
-checkVar "GH_RELEASE_BINARY" "$GH_RELEASE_BINARY" || exit $?
-checkVar "KAMI_DIR" "$KAMI_DIR" || exit $?
-checkVar "1" "$1"
-checkVar "GITHUB_RELEASE_REPOSITORY" "$GITHUB_RELEASE_REPOSITORY" || exit $?
-checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$GITHUB_RELEASE_ACCESS_TOKEN" || exit $?
+checkVar "GH_RELEASE_BINARY" "$1" || exit $?
+checkVar "KAMI_DIR" "$2" || exit $?
+checkVar "GITHUB_RELEASE_REPOSITORY" "$3" || exit $?
+checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$4" || exit $?
 
 # TODO: changelog
-VERSION=$($KAMI_DIR/scripts/version.sh "$2") || exit $?
+VERSION=$("$__scripts"/version.sh "$6") || exit $?
 
 git tag -d "$VERSION"
 git push origin :refs/tags/"$VERSION"
 
-"$GH_RELEASE_BINARY" "$VERSION" "$KAMI_DIR/build/libs/$1" --commit master --tag "$VERSION" --github-repository "$GITHUB_RELEASE_REPOSITORY" --github-access-token "$GITHUB_RELEASE_ACCESS_TOKEN"
+"$1" "$VERSION" "$2/build/libs/$1" --commit master --tag "$VERSION" --github-repository "$3" --github-access-token "$4"
 
 # TODO: webhook

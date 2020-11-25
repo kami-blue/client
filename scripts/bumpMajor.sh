@@ -6,7 +6,9 @@
 #
 # Usage: "./bumpMajor.sh"
 
-source ./utils.sh
+__utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
+source "$__utils"
+
 checkGit || exit $?
 
 CUR_R=$(($(date +"%Y") - 2019))

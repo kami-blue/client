@@ -4,10 +4,12 @@
 #
 # ONLY USED IN AUTOMATED BUILDS
 #
-# Usage: "./runAutomatedRelease.sh"
+# Usage: "./runAutomatedRelease.sh <major or empty>"
 
 source ~/.profile
-source ./utils.sh
+
+__utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
+source "$__utils"
 
 # TEMP
 KAMI_DIR="$HOME/projects/kamiblue"
@@ -23,8 +25,10 @@ cd "$KAMI_DIR" || {
 }
 
 checkGit || exit $?
-OLD_COMMIT=$(git log --pretty=%h | head -n 1)
-git reset --hard origin/master
+OLD_COMMIT=$(git log --pretty=%h -1)
 
-./scripts/bumpVersion.sh
+git reset --hard origin/master
+git pull
+
+./scripts/bumpVersion.sh "$1"
 JAR_NAME=$(./scripts/buildNamed.sh) || exit $?
