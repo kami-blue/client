@@ -25,7 +25,7 @@ checkGit() {
     echo "Could not detect git repository, exiting" >&2
     exit 1
   elif [ ! "$(git status | head -n 4 | tail -n 1)" == "nothing to commit, working tree clean" ]; then
-    echo "Not working in a clean tree, make sure to commit your changes first. Exiting." >&2
+    echo "Either not working in a clean tree or you have unpushed commits. Exiting." >&2
     exit 1
   fi
 }
