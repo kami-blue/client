@@ -13,7 +13,7 @@ rootKamiDir() {
 
 checkVar() {
   if [ -z "$2" ]; then
-    echo "Environment variable '$1' is not set, exiting."
+    echo "Variable '$1' is not set, exiting."
     exit 1
   else
     echo "$2"
