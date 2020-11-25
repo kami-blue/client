@@ -6,16 +6,10 @@
 #
 # Usage: "./runAutomatedRelease.sh"
 
-checkVar() {
-  if [ -z "$2" ]; then
-    echo "[uploadRelease] Environment variable '$1' is not set, exiting."
-    exit 1
-  else
-    echo "$2"
-  fi
-}
-
 source ~/.profile
+source ./utils.sh
+
+# TEMP
 KAMI_DIR="$HOME/projects/kamiblue"
 
 checkVar "GH_RELEASE_BINARY" "$GH_RELEASE_BINARY" || exit $?
@@ -28,6 +22,9 @@ cd "$KAMI_DIR" || {
   exit 1
 }
 
+checkGit || exit $?
+OLD_COMMIT=$(git log --pretty=%h | head -n 1)
 git reset --hard origin/master
+
 ./scripts/bumpVersion.sh
 JAR_NAME=$(./scripts/buildNamed.sh) || exit $?

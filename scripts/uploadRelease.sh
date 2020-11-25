@@ -6,15 +6,7 @@
 #
 # Usage: "./uploadRelease.sh <file name> <major or empty>"
 
-checkVar() {
-  if [ -z "$2" ]; then
-    echo "[uploadRelease] Environment variable '$1' is not set, exiting."
-    exit 1
-  else
-    echo "$2"
-  fi
-}
-
+source ./utils.sh # include checkVar
 source ~/.profile
 
 GH_RELEASE_BINARY="/home/mika/some_binary"

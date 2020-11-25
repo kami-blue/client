@@ -13,10 +13,8 @@
 #
 # Example beta: 1.11.17-58a47a2f
 
-if [ ! -d .git ]; then
-  echo "[version] Could not detect git repository, exiting." >&2
-  exit 1
-fi
+source ./utils.sh
+checkGit || exit $?
 
 CUR_HASH="-"$(git log --pretty=%h | head -n 1) # for the -hash
 CUR_R=$(($(date +"%Y") - 2019))                # Current year - 2019

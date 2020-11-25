@@ -6,15 +6,8 @@
 #
 # Usage: "./bumpMajor.sh"
 
-if [ ! -d .git ]; then
-  echo "[bumpMajor] Could not detect git repository, exiting" >&2
-  exit 1
-fi
-
-if [ ! "$(git status | head -n 4 | tail -n 1)" == "nothing to commit, working tree clean" ]; then
-  echo "[bumpMajor] Not working in a clean tree, make sure to commit your changes first. Exiting." >&2
-  exit 1
-fi
+source ./utils.sh
+checkGit || exit $?
 
 CUR_R=$(($(date +"%Y") - 2019))
 CUR_M=$(date +".%m")
