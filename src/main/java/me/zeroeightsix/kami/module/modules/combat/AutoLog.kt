@@ -21,6 +21,8 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
+import java.time.LocalTime
+
 
 @Module.Info(
         name = "AutoLog",
@@ -96,7 +98,7 @@ object AutoLog : Module() {
         mc.connection?.networkManager?.closeChannel(TextComponentString(""))
         mc.loadWorld(null as WorldClient?)
 
-        mc.displayGuiScreen(KamiGuiDisconnected(reasonText, screen, disable.value == DisableMode.ALWAYS || (disable.value == DisableMode.NOT_PLAYER && reason != PLAYER)))
+        mc.displayGuiScreen(KamiGuiDisconnected(reasonText, screen, disable.value == DisableMode.ALWAYS || (disable.value == DisableMode.NOT_PLAYER && reason != PLAYER), LocalTime.now()))
     }
 
     private fun getScreen() = if (mc.isIntegratedServerRunning) {
