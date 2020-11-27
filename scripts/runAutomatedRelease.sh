@@ -40,4 +40,4 @@ VERSION_MAJOR="$("$_d"/scripts/version.sh "major")" || exit $?
 JAR_NAME="$("$_d"/scripts/buildNamed.sh)" || exit $?
 
 "$_d"/scripts/uploadRelease.sh "$1" "$HEAD" "$VERSION" "$JAR_NAME" "$CHANGELOG" || exit $?
-"$_d"/scripts/bumpWebsite.sh "$JAR_NAME" "$VERSION" "$VERSION_MAJOR"
+"$_d"/scripts/bumpWebsite.sh "$JAR_NAME" "$VERSION" "$VERSION_MAJOR" || exit $?
