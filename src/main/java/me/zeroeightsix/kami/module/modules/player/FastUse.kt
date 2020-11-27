@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
@@ -59,7 +60,7 @@ object FastUse : Module() {
                 }
             }
 
-            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).getItem())) {
+            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).item)) {
                 mc.rightClickDelayTimer = 0
             }
         }

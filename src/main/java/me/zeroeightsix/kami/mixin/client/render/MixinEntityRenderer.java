@@ -66,7 +66,7 @@ public class MixinEntityRenderer {
                 && Wrapper.getPlayer().ticksExisted > 20
                 && AntiFog.INSTANCE.isEnabled()
                 && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR) {
-            return Blocks.AIR.defaultBlockState;
+            return Blocks.AIR.getDefaultState();
         } else {
             return ActiveRenderInfo.getBlockStateAtEntityViewpoint(worldIn, entityIn, p_186703_2_);
         }

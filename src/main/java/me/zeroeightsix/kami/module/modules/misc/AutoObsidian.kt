@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings

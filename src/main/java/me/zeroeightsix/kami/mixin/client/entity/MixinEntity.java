@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = Entity.class, priority = Integer.MAX_VALUE)
 public class MixinEntity {
 
-    @Shadow public int entityId;
+    @Shadow private int entityId;
 
     @Redirect(method = "applyEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;addVelocity(DDD)V"))
     public void addVelocity(Entity entity, double x, double y, double z) {
@@ -40,7 +40,7 @@ public class MixinEntity {
     // Makes the camera guy instead of original player turn around when we move mouse
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void turn(float yaw, float pitch, CallbackInfo ci) {
-        if (Wrapper.getPlayer() != null && this.entityId != Wrapper.getPlayer().entityId) return;
+        if (Wrapper.getPlayer() != null && this.entityId != Wrapper.getPlayer().getEntityId()) return;
         if (Freecam.INSTANCE.isEnabled() && Freecam.INSTANCE.getCameraGuy() != null) {
             Freecam.INSTANCE.getCameraGuy().turn(yaw, pitch);
             ci.cancel();

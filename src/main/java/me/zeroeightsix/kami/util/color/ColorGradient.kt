@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.color
 
-import me.zeroeightsix.kami.util.math.MathUtils
+import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 import kotlin.math.roundToInt
 

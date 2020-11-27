@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.Item

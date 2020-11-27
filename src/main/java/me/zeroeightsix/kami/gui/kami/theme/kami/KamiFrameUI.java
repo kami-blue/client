@@ -202,7 +202,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
                 component.setDocking(Docking.NONE);
 
-                KamiGUI rootGUI = KamiMod.getInstance().getGuiManager();
+                KamiGUI rootGUI = KamiMod.INSTANCE.getGuiManager();
                 for (Component c : rootGUI.getChildren()) {
                     if (c.equals(component)) continue;
 

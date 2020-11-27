@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings

@@ -61,7 +61,7 @@ object DiscordRPC : Module() {
     private fun start() {
         if (connected) return
 
-        KamiMod.log.info("Starting Discord RPC")
+        KamiMod.LOG.info("Starting Discord RPC")
         connected = true
         rpc.Discord_Initialize(KamiMod.APP_ID, DiscordEventHandlers(), true, "")
         presence.startTimestamp = System.currentTimeMillis() / 1000L
@@ -69,13 +69,13 @@ object DiscordRPC : Module() {
         /* update rpc while thread isn't interrupted  */
         Thread({ setRpcWithDelay() }, "Discord-RPC-Callback-Handler").start()
 
-        KamiMod.log.info("Discord RPC initialised successfully")
+        KamiMod.LOG.info("Discord RPC initialised successfully")
     }
 
     fun end() {
         if (!connected) return
 
-        KamiMod.log.info("Shutting down Discord RPC...")
+        KamiMod.LOG.info("Shutting down Discord RPC...")
         connected = false
         rpc.Discord_Shutdown()
     }
@@ -145,7 +145,7 @@ object DiscordRPC : Module() {
                 "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme
             }
             LineInfo.FPS -> {
-                "${Minecraft.debugFPS} FPS"
+                "${Minecraft.getDebugFPS()} FPS"
             }
             LineInfo.TPS -> {
                 if (mc.player != null) "${InfoCalculator.tps(1)} tps"

@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
+import org.kamiblue.commons.utils.MathUtils.reverseNumber
 
 @Module.Info(
         name = "AutoMend",
@@ -28,6 +28,10 @@ object AutoMend : Module() {
     init {
         listener<GuiScreenEvent.Displayed> {
             isGuiOpened = it.screen != null
+        }
+
+        listener<GuiScreenEvent.Closed> {
+            isGuiOpened = false
         }
 
         listener<SafeTickEvent> {

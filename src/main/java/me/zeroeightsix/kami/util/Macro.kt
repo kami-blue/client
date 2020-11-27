@@ -23,10 +23,10 @@ object Macro {
             gson.toJson(FileInstanceManager.macros, fw)
             fw.flush()
             fw.close()
-            KamiMod.log.info("Macro saved")
+            KamiMod.LOG.info("Macro saved")
             true
         } catch (e: IOException) {
-            KamiMod.log.info("Failed saving macro")
+            KamiMod.LOG.info("Failed saving macro")
             e.printStackTrace()
             false
         }
@@ -37,14 +37,14 @@ object Macro {
         try {
             try {
                 FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<LinkedHashMap<Int?, List<String?>?>?>() {}.type)!!
-                KamiMod.log.info("Macro loaded")
+                KamiMod.LOG.info("Macro loaded")
                 success = true
             } catch (e: FileNotFoundException) {
-                KamiMod.log.warn("Could not find file $configName, clearing the macros list")
+                KamiMod.LOG.warn("Could not find file $configName, clearing the macros list")
                 FileInstanceManager.macros.clear()
             }
         } catch (e: IllegalStateException) {
-            KamiMod.log.warn("$configName is empty!")
+            KamiMod.LOG.warn("$configName is empty!")
             FileInstanceManager.macros.clear()
         }
         return success

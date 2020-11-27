@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils

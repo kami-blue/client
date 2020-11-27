@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.util.math.MathUtils.round
-import org.spongepowered.asm.mixin.gen.Invoker
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
+import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.hypot
 
 object InfoCalculator {
     private val mc = Wrapper.minecraft
-    @Invoker
 
     fun getServerType() = if (mc.isIntegratedServerRunning) "Singleplayer" else mc.currentServerData?.serverIP
             ?: "Main Menu"
@@ -20,7 +20,7 @@ object InfoCalculator {
         return hypot(mc.player.posX - mc.player.prevPosX, mc.player.posZ - mc.player.prevPosZ) * multiply * tps
     }
 
-    fun heldItemDurability() = with(mc.player.heldItemMainhand) { maxDamage - getItemDamage() }
+    fun heldItemDurability() = with(mc.player.heldItemMainhand) { maxDamage - itemDamage }
 
     fun memory() = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
 

@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.mixin.extension.mapBossInfos
+import me.zeroeightsix.kami.mixin.extension.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils

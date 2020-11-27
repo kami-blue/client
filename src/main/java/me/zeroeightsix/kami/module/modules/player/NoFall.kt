@@ -3,6 +3,8 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.command.commands.TeleportCommand
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.onGround
+import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
@@ -107,7 +109,7 @@ object NoFall : Module() {
                 var slot = -1
                 for (i in 0..8) {
                     val stack = mc.player.inventory.getStackInSlot(i)
-                    if (stack != ItemStack.EMPTY && stack.getItem() is ItemBlock) {
+                    if (stack != ItemStack.EMPTY && stack.item is ItemBlock) {
                         slot = i
                     }
                 }

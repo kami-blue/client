@@ -38,7 +38,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
                                         GuiC.buttonHoveredT.color);
         if (component.isHovered()) {
             if (component.hasDescription() && !isSettingsOpen() && Tooltips.INSTANCE.isEnabled()) {
-                Component componentAt = KamiMod.getInstance().getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
+                Component componentAt = KamiMod.INSTANCE.getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
                 if (componentAt.getHeight() != 11)
                     return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
 
@@ -81,7 +81,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     /* in all honesty this is probably resource inefficient but there isn't any other way of getting panels :/ */
     private boolean isSettingsOpen() {
-        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
+        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.INSTANCE.getGuiManager());
         for (SettingsPanel settingsPanel : panels) {
             if (settingsPanel.isVisible()) {
                 return true;

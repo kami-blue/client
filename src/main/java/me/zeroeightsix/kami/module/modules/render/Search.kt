@@ -249,12 +249,13 @@ object Search : Module() {
     }
 
     private fun getPosColor(pos: BlockPos): ColorHolder {
-        val block = mc.world.getBlockState(pos).block
+        val blockState = mc.world.getBlockState(pos)
+        val block = blockState.block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
                 ColorHolder(82, 49, 153)
             } else {
-                val colorInt = block.blockMapColor.colorValue
+                val colorInt = blockState.getMapColor(mc.world, pos).colorValue
                 ColorHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
         } else {

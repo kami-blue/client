@@ -24,12 +24,12 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
     init {
         shader = when {
             !OpenGlHelper.shadersSupported -> {
-                KamiMod.log.warn("Shaders are unsupported by OpenGL!")
+                KamiMod.LOG.warn("Shaders are unsupported by OpenGL!")
                 null
             }
 
             isIntegratedGraphics() -> {
-                KamiMod.log.warn("Running on Intel Integrated Graphics!")
+                KamiMod.LOG.warn("Running on Intel Integrated Graphics!")
                 null
             }
 
@@ -41,7 +41,7 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
                         it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                     }
                 } catch (e: Exception) {
-                    KamiMod.log.warn("Failed to load shaders")
+                    KamiMod.LOG.warn("Failed to load shaders")
                     e.printStackTrace()
 
                     null

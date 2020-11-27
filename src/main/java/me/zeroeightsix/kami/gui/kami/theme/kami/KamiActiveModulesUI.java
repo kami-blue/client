@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
 import kotlin.Pair;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.module.Module;
@@ -11,6 +10,7 @@ import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorGradient;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -92,7 +92,10 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             }
 
             String hudInfo = module.getHudInfo();
-            String text = ActiveModules.INSTANCE.getAlignedText(module.getName().getValue(), (hudInfo == null ? "" : KamiMod.color + "7" + hudInfo + KamiMod.color + "r"), component.getAlignment().equals(AlignedComponent.Alignment.RIGHT));
+            String text = ActiveModules.INSTANCE.getAlignedText(
+                    module.getName().getValue(), (hudInfo == null ? "" : TextFormatting.GRAY + hudInfo + TextFormatting.RESET),
+                    component.getAlignment().equals(AlignedComponent.Alignment.RIGHT)
+            );
             float textWidth = FontRenderAdapter.INSTANCE.getStringWidth(text);
             float textHeight = FontRenderAdapter.INSTANCE.getFontHeight() + 1;
             int red = (rgb >> 16) & 0xFF;

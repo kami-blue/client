@@ -4,6 +4,8 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -13,9 +15,9 @@ import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.round
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils.round
 import java.util.*
 import kotlin.math.max
 
@@ -93,11 +95,11 @@ object InfoOverlay : Module() {
     }
 
     private fun Setting<*>.infoMap() = when (this) {
-        version -> "${KamiMod.KAMI_KANJI} ${second()}${KamiMod.VERSION_SIMPLE}"
+        version -> "${KamiMod.KAMI_KATAKANA} ${second()}${KamiMod.VERSION_SIMPLE}"
         username -> "Welcome ${second()}${mc.session.username}!"
         time -> TimeUtils.getFinalTime(setToText(secondColor.value), setToText(firstColor.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value)
         tps -> "${InfoCalculator.tps(decimalPlaces.value)} ${second()}tps"
-        fps -> "${Minecraft.debugFPS} ${second()}fps"
+        fps -> "${Minecraft.getDebugFPS()} ${second()}fps"
         speed -> "${calcSpeed(decimalPlaces.value)} ${second()}${speedUnit.value.displayName}"
         timerSpeed -> "${round(50f / mc.timer.tickLength, decimalPlaces.value)} ${second()}x"
         ping -> "${InfoCalculator.ping()} ${second()}ms"

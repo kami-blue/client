@@ -3,6 +3,9 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.rotationPitch
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
@@ -120,13 +123,13 @@ object ElytraFlight : Module() {
             if (mc.player == null || mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying || mode.value == ElytraFlightMode.BOOST) return@listener
             if (it.packet is SPacketPlayerPosLook && mode.value != ElytraFlightMode.PACKET) {
                 val packet = it.packet
-                packet.pitch = mc.player.rotationPitch
+                packet.rotationPitch = mc.player.rotationPitch
             }
 
             /* Cancels the elytra opening animation */
             if (it.packet is SPacketEntityMetadata && isPacketFlying) {
                 val packet = it.packet
-                if (packet.entityId == mc.player.getEntityId()) it.cancel()
+                if (packet.entityId == mc.player.entityId) it.cancel()
             }
         }
 
@@ -163,22 +166,22 @@ object ElytraFlight : Module() {
     private fun stateUpdate(event: PlayerTravelEvent) {
         /* Elytra Check */
         val armorSlot = mc.player.inventory.armorInventory[2]
-        elytraIsEquipped = armorSlot.getItem() == Items.ELYTRA
+        elytraIsEquipped = armorSlot.item == Items.ELYTRA
 
         /* Elytra Durability Check */
         if (elytraIsEquipped) {
             val oldDurability = elytraDurability
-            elytraDurability = armorSlot.maxDamage - armorSlot.getItemDamage()
+            elytraDurability = armorSlot.maxDamage - armorSlot.itemDamage
 
             /* Elytra Durability Warning, runs when player is in the air and durability changed */
             if (!mc.player.onGround && oldDurability != elytraDurability) {
                 if (durabilityWarning.value && elytraDurability > 1 && elytraDurability < threshold.value * armorSlot.maxDamage / 100) {
-                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     sendChatMessage("$chatName Warning: Elytra has " + (elytraDurability - 1) + " durability remaining")
                 } else if (elytraDurability <= 1 && !outOfDurability) {
                     outOfDurability = true
                     if (durabilityWarning.value) {
-                        mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                        mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                         sendChatMessage("$chatName Elytra is out of durability, holding player in the air")
                     }
                 }
@@ -191,7 +194,7 @@ object ElytraFlight : Module() {
         } else if (outOfDurability) outOfDurability = false /* Reset if players is on ground or replace with a new elytra */
 
         /* wasInLiquid check */
-        if (mc.player.inWater || mc.player.isInLava) {
+        if (mc.player.isInWater || mc.player.isInLava) {
             wasInLiquid = true
         } else if (mc.player.onGround || isFlying || isPacketFlying) {
             wasInLiquid = false
@@ -261,7 +264,7 @@ object ElytraFlight : Module() {
                         mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
                     }
                     mc.player.motionY != 0.0 -> { /* Pause falling to reset fall distance */
-                        if (!mc.integratedServerIsRunning) mc.timer.tickLength = 200.0f /* Use timer to pause longer */
+                        if (!mc.isSingleplayer) mc.timer.tickLength = 200.0f /* Use timer to pause longer */
                         mc.player.motionY = 0.0
                     }
                     else -> {
@@ -279,7 +282,7 @@ object ElytraFlight : Module() {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
-        val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.integratedServerIsRunning
+        val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.isSingleplayer
         if (!easyTakeOff.value || LagNotifier.paused || mc.player.onGround) {
             if (LagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
@@ -290,11 +293,11 @@ object ElytraFlight : Module() {
                 mc.timer.tickLength = 25.0f
                 return
             }
-            if (!highPingOptimize.value && !wasInLiquid && !mc.integratedServerIsRunning) { /* Cringe moment when you use elytra flight in single player world */
+            if (!highPingOptimize.value && !wasInLiquid && !mc.isSingleplayer) { /* Cringe moment when you use elytra flight in single player world */
                 event.cancel()
                 mc.player.setVelocity(0.0, -0.02, 0.0)
             }
-            if (timerControl.value && !mc.integratedServerIsRunning) mc.timer.tickLength = timerSpeed * 2.0f
+            if (timerControl.value && !mc.isSingleplayer) mc.timer.tickLength = timerSpeed * 2.0f
             mc.connection!!.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = mc.player.posY + 0.2
         } else if (highPingOptimize.value && !closeToGround) {

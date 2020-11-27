@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.mixin.extension.editLine
+import me.zeroeightsix.kami.mixin.extension.tileSign
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiButton
@@ -27,7 +28,7 @@ object ColorSign : Module() {
         @Throws(IOException::class)
         override fun actionPerformed(button: GuiButton) {
             if (button.id == 0) {
-                tileSign.signText[editLine] = TextComponentString(tileSign.signText[editLine].formattedText.replace("(${KamiMod.color})(.)".toRegex(), "$1$1$2$2"))
+                tileSign.signText[editLine] = TextComponentString(tileSign.signText[editLine].formattedText.replace("(§)(.)".toRegex(), "$1$1$2$2"))
             }
             super.actionPerformed(button)
         }
@@ -36,7 +37,7 @@ object ColorSign : Module() {
         override fun keyTyped(typedChar: Char, keyCode: Int) {
             super.keyTyped(typedChar, keyCode)
             var s = (tileSign.signText[editLine] as TextComponentString).text
-            s = s.replace("&", KamiMod.color.toString() + "")
+            s = s.replace('&', '§')
             tileSign.signText[editLine] = TextComponentString(s)
         }
     }

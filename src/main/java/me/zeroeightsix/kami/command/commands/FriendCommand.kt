@@ -54,7 +54,7 @@ class FriendCommand : Command("friend", ChunkBuilder()
                 if (FriendManager.empty) {
                     MessageSendHelper.sendChatMessage("You currently don't have any friends added. run &7${commandPrefix.value}friend add <name>&r to add one.")
                 } else {
-                    val f = FriendManager.friends.values.joinToString(prefix = "\n    ", separator = "\n    ") { it.username } // nicely format the chat output
+                    val f = FriendManager.friends.values.joinToString(prefix = "\n    ", separator = "\n    ") { it.name } // nicely format the chat output
                     MessageSendHelper.sendChatMessage("Your friends: $f")
                 }
             }

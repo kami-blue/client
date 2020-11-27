@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.mixin.extension.attackDamage
 import me.zeroeightsix.kami.util.InventoryUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.Enchantment
@@ -26,7 +27,7 @@ object CombatUtils {
     @JvmStatic
     fun calcDamageFromPlayer(entity: EntityPlayer, assumeCritical: Boolean = false): Float {
         val itemStack = entity.heldItemMainhand
-        var damage = when (val item = itemStack.getItem()) {
+        var damage = when (val item = itemStack.item) {
             is ItemSword -> item.attackDamage
             is ItemTool -> item.attackDamage
             else -> 1f
@@ -64,7 +65,7 @@ object CombatUtils {
     fun getProtectionModifier(entity: EntityPlayer, damageSource: DamageSource): Float {
         var modifier = 0
         for (armor in entity.armorInventoryList) {
-            if (armor.isEmpty()) continue // Skip if item stack is empty
+            if (armor.isEmpty) continue // Skip if item stack is empty
             val nbtTagList = armor.enchantmentTagList
             for (i in 0 until nbtTagList.tagCount()) {
                 val id = nbtTagList.getCompoundTagAt(i).getShort("id").toInt()
@@ -93,23 +94,23 @@ object CombatUtils {
         for (i in 0..8) {
             val stack = mc.player.inventory.getStackInSlot(i)
             if (stack.isEmpty) continue
-            if (stack.getItem() !is ItemAxe && hitMode == PreferWeapon.AXE) continue
-            if (stack.getItem() !is ItemSword && hitMode == PreferWeapon.SWORD) continue
+            if (stack.item !is ItemAxe && hitMode == PreferWeapon.AXE) continue
+            if (stack.item !is ItemSword && hitMode == PreferWeapon.SWORD) continue
 
-            if (stack.getItem() is ItemSword && (hitMode == PreferWeapon.SWORD || hitMode == PreferWeapon.NONE)) {
-                val damage = (stack.getItem() as ItemSword).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+            if (stack.item is ItemSword && (hitMode == PreferWeapon.SWORD || hitMode == PreferWeapon.NONE)) {
+                val damage = (stack.item as ItemSword).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
                 if (damage > maxDamage) {
                     maxDamage = damage
                     bestSlot = i
                 }
-            } else if (stack.getItem() is ItemAxe && (hitMode == PreferWeapon.AXE || hitMode == PreferWeapon.NONE)) {
-                val damage = (stack.getItem() as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+            } else if (stack.item is ItemAxe && (hitMode == PreferWeapon.AXE || hitMode == PreferWeapon.NONE)) {
+                val damage = (stack.item as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
                 if (damage > maxDamage) {
                     maxDamage = damage
                     bestSlot = i
                 }
-            } else if (stack.getItem() is ItemTool) {
-                val damage = (stack.getItem() as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
+            } else if (stack.item is ItemTool) {
+                val damage = (stack.item as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
                 if (damage > maxDamage) {
                     maxDamage = damage
                     bestSlot = i

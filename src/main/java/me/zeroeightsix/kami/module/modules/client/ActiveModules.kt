@@ -7,10 +7,10 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
 import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.math.MathUtils.isNumberEven
-import me.zeroeightsix.kami.util.math.MathUtils.reverseNumber
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.util.text.TextFormatting
+import org.kamiblue.commons.utils.MathUtils.isNumberEven
+import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import java.awt.Color
 
 @Module.Info(

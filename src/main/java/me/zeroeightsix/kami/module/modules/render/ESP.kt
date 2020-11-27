@@ -4,6 +4,9 @@ import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
+import me.zeroeightsix.kami.mixin.extension.listShaders
+import me.zeroeightsix.kami.mixin.extension.renderOutlines
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings

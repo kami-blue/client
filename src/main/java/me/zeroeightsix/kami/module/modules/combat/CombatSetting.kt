@@ -198,11 +198,11 @@ object CombatSetting : Module() {
     fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
             val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
-            CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.boundingBox
+            CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.entityBoundingBox
         } else {
-            it.positionVector to it.boundingBox
+            it.positionVector to it.entityBoundingBox
         }
-    } ?: entity.positionVector to entity.boundingBox
+    } ?: entity.positionVector to entity.entityBoundingBox
     /* End of crystal damage calculation */
 
     /* Targeting */
@@ -271,7 +271,7 @@ object CombatSetting : Module() {
                 val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
                 val lookVec = mc.player.lookVec.scale(range.value.toDouble())
                 val sightEndPos = eyePos.add(lookVec)
-                listIn.removeIf { it.boundingBox.calculateIntercept(eyePos, sightEndPos) == null }
+                listIn.removeIf { it.entityBoundingBox.calculateIntercept(eyePos, sightEndPos) == null }
             }
 
             else -> {

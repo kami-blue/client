@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -94,7 +95,7 @@ object Step : Module() {
 
     private fun downStep() {
         // Down step doesn't work for edge lower than 1 blocks anyways
-        val belowBB = mc.player.boundingBox.expand(0.0, -1.05, 0.0)
+        val belowBB = mc.player.entityBoundingBox.expand(0.0, -1.05, 0.0)
         if (mc.world.collidesWithAnyBlock(belowBB)) mc.player.motionY -= downSpeed.value
     }
 

@@ -3,6 +3,9 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
+import me.zeroeightsix.kami.mixin.extension.packetMotionX
+import me.zeroeightsix.kami.mixin.extension.packetMotionY
+import me.zeroeightsix.kami.mixin.extension.packetMotionZ
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
@@ -31,9 +34,9 @@ object Velocity : Module() {
                     if (isZero) {
                         it.cancel()
                     } else {
-                        motionX = (motionX * horizontal.value).toInt()
-                        motionY = (motionY * vertical.value).toInt()
-                        motionZ = (motionZ * horizontal.value).toInt()
+                        packetMotionX = (packetMotionX * horizontal.value).toInt()
+                        packetMotionY = (packetMotionY * vertical.value).toInt()
+                        packetMotionZ = (packetMotionZ * horizontal.value).toInt()
                     }
                 }
             } else if (it.packet is SPacketExplosion) {
@@ -41,9 +44,9 @@ object Velocity : Module() {
                     if (isZero) {
                         it.cancel()
                     } else {
-                        motionX *= horizontal.value
-                        motionY *= vertical.value
-                        motionZ *= horizontal.value
+                        packetMotionX *= horizontal.value
+                        packetMotionY *= vertical.value
+                        packetMotionZ *= horizontal.value
                     }
                 }
             }

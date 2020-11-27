@@ -111,9 +111,9 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
                 val averageMotion = prevMotion.add(motion.subtract(prevMotion).scale(partialTicks.toDouble()))
                 var movedVec = Vec3d(0.0, 0.0, 0.0)
                 for (ticks in 0..ticksAhead) {
-                    movedVec = if (canMove(world, it.boundingBox, movedVec.add(averageMotion))) { // Attempt to move with full motion
+                    movedVec = if (canMove(world, it.entityBoundingBox, movedVec.add(averageMotion))) { // Attempt to move with full motion
                         movedVec.add(averageMotion)
-                    } else if (canMove(world, it.boundingBox, movedVec.add(averageMotion.x, 0.0, averageMotion.z))) { // Attempt to move horizontally
+                    } else if (canMove(world, it.entityBoundingBox, movedVec.add(averageMotion.x, 0.0, averageMotion.z))) { // Attempt to move horizontally
                         movedVec.add(averageMotion.x, 0.0, averageMotion.z)
                     } else break
                 }

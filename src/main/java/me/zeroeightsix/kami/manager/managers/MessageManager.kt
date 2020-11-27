@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
@@ -121,7 +122,7 @@ object MessageManager : Manager {
          * @return true if [queuedMessage] have been modified
          */
         fun apply(queuedMessage: QueuedMessage) = filter(queuedMessage).also {
-            if (it) queuedMessage.packet.message = modifier(queuedMessage)
+            if (it) queuedMessage.packet.packetMessage = modifier(queuedMessage)
         }
 
         override fun compareTo(other: MessageModifier): Int {

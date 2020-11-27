@@ -44,7 +44,7 @@ object SelectionHighlight : Module() {
             if (entity.value && hitObject.typeOfHit == Type.ENTITY) {
                 val lookVec = viewEntity.lookVec
                 val sightEnd = eyePos.add(lookVec.scale(6.0))
-                val hitSide = hitObject.entityHit?.boundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
+                val hitSide = hitObject.entityHit?.entityBoundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
                 val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide] else GeometryMasks.Quad.ALL)?: return@listener
                 renderer.add(hitObject.entityHit, color, side)
             }

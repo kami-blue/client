@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
@@ -29,8 +30,8 @@ object Jesus : Module() {
         listener<SafeTickEvent> {
             if (EntityUtils.isInWater(mc.player) && !mc.player.isSneaking) {
                 mc.player.motionY = 0.1
-                if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() !is EntityBoat) {
-                    mc.player.getRidingEntity()!!.motionY = 0.3
+                if (mc.player.ridingEntity != null && mc.player.ridingEntity !is EntityBoat) {
+                    mc.player.ridingEntity!!.motionY = 0.3
                 }
             }
         }
@@ -43,7 +44,7 @@ object Jesus : Module() {
                             || it.entity === mc.player)
                     && !EntityUtils.isInWater(mc.player)
                     && (EntityUtils.isAboveWater(mc.player, false)
-                            || EntityUtils.isAboveWater(mc.player.getRidingEntity(), false))
+                            || EntityUtils.isAboveWater(mc.player.ridingEntity, false))
                     && isAboveBlock(mc.player, it.pos)) {
                 val axisAlignedBB = WATER_WALK_AA.offset(it.pos)
                 if (it.entityBox.intersects(axisAlignedBB)) it.collidingBoxes.add(axisAlignedBB)
@@ -74,6 +75,6 @@ object Jesus : Module() {
     }
 
     private fun isAboveBlock(entity: Entity, pos: BlockPos): Boolean {
-        return entity.posY >= pos.getY()
+        return entity.posY >= pos.y
     }
 }

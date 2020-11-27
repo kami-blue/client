@@ -95,7 +95,7 @@ object EyeFinder : Module() {
             for (otherEntity in mc.world.loadedEntityList) {
                 if (otherEntity.getDistance(entity) > 10.0) continue /* Some entity has bigger bounding box */
                 if (otherEntity == entity || otherEntity == mc.player) continue
-                val box = otherEntity.boundingBox
+                val box = otherEntity.entityBoundingBox
                 result = box.calculateIntercept(eyePos, entityLookEnd) ?: continue
                 result.typeOfHit = RayTraceResult.Type.ENTITY
                 result.entityHit = otherEntity

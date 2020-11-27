@@ -26,7 +26,7 @@ object RotationUtils {
     }
 
     fun getRelativeRotation(entity: Entity, pTicks: Float = 1f): Double {
-        return getRelativeRotation(entity.boundingBox.center, pTicks)
+        return getRelativeRotation(entity.entityBoundingBox.center, pTicks)
     }
 
     fun getRelativeRotation(posTo: Vec3d, pTicks: Float = 1f): Double {
@@ -46,7 +46,7 @@ object RotationUtils {
     }
 
     fun getRotationToEntityClosest(entity: Entity, pTicks: Float = 1f): Vec2d {
-        val box = entity.boundingBox
+        val box = entity.entityBoundingBox
         val eyePos = mc.player.getPositionEyes(1f)
         val x = MathHelper.clamp(eyePos.x, box.minX + 0.1, box.maxX - 0.1)
         val y = MathHelper.clamp(eyePos.y, box.minY + 0.1, box.maxY - 0.1)

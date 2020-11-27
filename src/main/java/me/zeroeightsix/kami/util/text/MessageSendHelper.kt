@@ -39,7 +39,7 @@ object MessageSendHelper {
             if (addToHistory) {
                 mc.ingameGUI.chatGUI.addToSentMessages(command)
             }
-            if (command.length > 1) KamiMod.getInstance().commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
+            if (command.length > 1) KamiMod.INSTANCE.commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
         } catch (e: Exception) {
             e.printStackTrace()
             sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
@@ -121,5 +121,5 @@ object MessageSendHelper {
         }
     }
 
-    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KANJI + "&7] &r"
+    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KATAKANA + "&7] &r"
 }
