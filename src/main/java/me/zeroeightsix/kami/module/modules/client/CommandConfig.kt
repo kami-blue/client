@@ -30,7 +30,7 @@ object CommandConfig : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
-    private const val title = "${KamiMod.MODNAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VER_SMALL}"
+    private const val title = "${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION_SIMPLE}"
 
     init {
         listener<SafeTickEvent> {
