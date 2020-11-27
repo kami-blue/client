@@ -19,8 +19,10 @@ object ModuleManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
+            val stopTimer = TimerUtils.StopTimer()
             moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
-            KamiMod.LOG.info("${moduleClassList!!.size} modules found")
+            val time = stopTimer.stop()
+            KamiMod.LOG.info("${moduleClassList!!.size} module(s) found, took ${time}ms")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"
         preLoadingThread!!.start()
