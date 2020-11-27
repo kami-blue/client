@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.CommandUtil.runAliases
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import org.kamiblue.commons.utils.ReflectionUtils
+import org.kamiblue.commons.utils.ClassUtils
 import java.util.*
 
 class CommandManager {
@@ -13,7 +13,7 @@ class CommandManager {
 
     init {
         val stopTimer = TimerUtils.StopTimer()
-        val classes = ReflectionUtils.getSubclassOfFast<Command>("me.zeroeightsix.kami.command.commands")
+        val classes = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", Command::class.java)
         for (clazz in classes) {
             try {
                 commands.add(clazz.getConstructor().newInstance())
