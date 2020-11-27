@@ -24,6 +24,7 @@ OLD_COMMIT=$(git log --pretty=%h -1)
 
 git reset --hard origin/master
 git pull
+git submodule update --init --recursive
 
 # Update mirror
 cd "$KAMI_MIRROR_DIR" || exit $?
@@ -31,6 +32,7 @@ check_git || exit $?
 
 git reset --hard master
 git pull "$KAMI_DIR"
+git submodule update --init --recursive
 git push --force origin master
 
 cd "$KAMI_DIR" || exit $?
