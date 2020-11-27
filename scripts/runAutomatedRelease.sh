@@ -22,18 +22,18 @@ cd "$KAMI_DIR" || exit $?
 check_git || exit $?
 OLD_COMMIT=$(git log --pretty=%h -1)
 
-git reset --hard origin/master
-git pull
-git submodule update --init --recursive
+git reset --hard origin/master || exit $?
+git pull || exit $?
+git submodule update --init --recursive || exit $?
 
 # Update mirror
-cd "$KAMI_MIRROR_DIR" || exit $?
-check_git || exit $?
+cd "$KAMI_MIRROR_DIR" || exit $? || exit $?
+check_git || exit $? || exit $?
 
-git reset --hard master
-git pull "$KAMI_DIR"
-git submodule update --init --recursive
-git push --force origin master
+git reset --hard master || exit $?
+git pull "$KAMI_DIR" || exit $?
+git submodule update --init --recursive || exit $?
+git push --force origin master || exit $?
 
 cd "$KAMI_DIR" || exit $?
 
