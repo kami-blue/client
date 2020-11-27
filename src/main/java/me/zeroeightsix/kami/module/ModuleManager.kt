@@ -2,8 +2,7 @@ package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.TimerUtils
-import org.kamiblue.commons.utils.ReflectionUtils
-import org.kamiblue.commons.utils.ReflectionUtils.getInstance
+import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
 
 object ModuleManager {
@@ -20,10 +19,8 @@ object ModuleManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            val stopTimer = TimerUtils.StopTimer()
-            moduleClassList = ReflectionUtils.getSubclassOfFast("me.zeroeightsix.kami.module.modules")
-            val time = stopTimer.stop()
-            KamiMod.LOG.info("${moduleClassList!!.size} modules found, took ${time}ms")
+            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
+            KamiMod.LOG.info("${moduleClassList!!.size} modules found")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"
         preLoadingThread!!.start()
@@ -38,7 +35,7 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
-                moduleMap[clazz] = clazz.getInstance()
+                moduleMap[clazz] = ClassUtils.getInstance(clazz)
             } catch (exception: Throwable) {
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
                 exception.printStackTrace()
