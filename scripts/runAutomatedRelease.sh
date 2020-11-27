@@ -12,6 +12,10 @@ source ~/.profile
 
 check_var "KAMI_DIR" "$KAMI_DIR" || exit $?
 check_var "KAMI_MIRROR_DIR" "$KAMI_MIRROR_DIR" || exit $?
+check_var "KAMI_REPO_MAJOR" "$KAMI_REPO_MAJOR" || exit $?
+check_var "KAMI_REPO_NIGHTLY" "$KAMI_REPO_NIGHTLY" || exit $?
+check_var "KAMI_OWNER" "$KAMI_OWNER" || exit $?
+check_var "KAMI_WEBHOOK" "$KAMI_WEBHOOK" || exit $?
 
 # Safely update repository
 cd "$KAMI_DIR" || exit $?
@@ -34,10 +38,16 @@ cd "$KAMI_DIR" || exit $?
 # Set some variables, run scripts
 HEAD=$(git log --pretty=%h -1)
 CHANGELOG="$("$_d"/scripts/changelog.sh "$OLD_COMMIT")" || exit $?
-VERSION="$("$_d"/scripts/version.sh)" || exit $?
+VERSION="$("$_d"/scripts/version.sh "$1")" || exit $?
 VERSION_MAJOR="$("$_d"/scripts/version.sh "major")" || exit $?
 "$_d"/scripts/bumpVersion.sh "$1" || exit $?
 JAR_NAME="$("$_d"/scripts/buildNamed.sh)" || exit $?
 
 "$_d"/scripts/uploadRelease.sh "$1" "$HEAD" "$VERSION" "$JAR_NAME" "$CHANGELOG" || exit $?
 "$_d"/scripts/bumpWebsite.sh "$JAR_NAME" "$VERSION" "$VERSION_MAJOR" || exit $?
+
+REPO="$KAMI_REPO_NIGHTLY"
+[ "$1" == "major" ] && REPO="$KAMI_REPO_MAJOR"
+
+curl -H "Content-Type: application/json" -X POST \
+  -d '{"embeds": [{"title": "Download v'"$VERSION"'","color": 10195199,"description": "[**DOWNLOAD**](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/releases/download/'"$VERSION"'/'"$JAR_NAME"')\n\n**Changelog:** \n'"$CHANGELOG"'\n\nDiff: ['"$OLD_COMMIT"'...'"$HEAD"'](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/compare/'"$OLD_COMMIT"'...'"$HEAD"') "}]}' "$KAMI_WEBHOOK"
