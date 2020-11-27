@@ -6,29 +6,38 @@
 #
 # Usage: "./runAutomatedRelease.sh <major or empty>"
 
+_d="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
+source "$_d/scripts/utils.sh"
 source ~/.profile
 
-__utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
-source "$__utils"
+check_var "KAMI_DIR" "$KAMI_DIR" || exit $?
+check_var "KAMI_MIRROR_DIR" "$KAMI_MIRROR_DIR" || exit $?
 
-# TEMP
-KAMI_DIR="$HOME/projects/kamiblue"
-
-checkVar "GH_RELEASE_BINARY" "$GH_RELEASE_BINARY" || exit $?
-checkVar "KAMI_DIR" "$KAMI_DIR" || exit $?
-checkVar "GITHUB_RELEASE_REPOSITORY" "$GITHUB_RELEASE_REPOSITORY" || exit $?
-checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$GITHUB_RELEASE_ACCESS_TOKEN" || exit $?
-
-cd "$KAMI_DIR" || {
-  echo "[buildNamed] Failed to cd into '$KAMI_DIR', exiting."
-  exit 1
-}
-
-checkGit || exit $?
+# Safely update repository
+cd "$KAMI_DIR" || exit $?
+check_git || exit $?
 OLD_COMMIT=$(git log --pretty=%h -1)
 
 git reset --hard origin/master
 git pull
 
-./scripts/bumpVersion.sh "$1"
-JAR_NAME=$(./scripts/buildNamed.sh) || exit $?
+# Update mirror
+cd "$KAMI_MIRROR_DIR" || exit $?
+check_git || exit $?
+
+git reset --hard master
+git pull "$KAMI_DIR"
+git push --force origin master
+
+cd "$KAMI_DIR" || exit $?
+
+# Set some variables, run scripts
+HEAD=$(git log --pretty=%h -1)
+CHANGELOG="$("$_d"/scripts/changelog.sh "$OLD_COMMIT")" || exit $?
+VERSION="$("$_d"/scripts/version.sh)" || exit $?
+VERSION_MAJOR="$("$_d"/scripts/version.sh "major")" || exit $?
+"$_d"/scripts/bumpVersion.sh "$1" || exit $?
+JAR_NAME="$("$_d"/scripts/buildNamed.sh)" || exit $?
+
+"$_d"/scripts/uploadRelease.sh "$1" "$HEAD" "$VERSION" "$JAR_NAME" "$CHANGELOG" || exit $?
+"$_d"/scripts/bumpWebsite.sh "$JAR_NAME" "$VERSION" "$VERSION_MAJOR"

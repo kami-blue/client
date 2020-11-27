@@ -9,13 +9,14 @@
 __scripts="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 source "$__scripts"
 
-checkGit || exit $?
-checkVar "1" "$1" || exit $?
-checkVar "2" "$2" &>/dev/null || 2="HEAD"
+check_git || exit $?
+check_var "1" "$1" || exit $?
 
-CHANGELOG_FULL="$(git log --format=%s "$1"..."$2" | sed ':a;N;$!ba;s/\n/\\n- /g')" || {
-  echo "[changelog] Failed to create changelog from commits, exiting."
+CHANGELOG="$(git log --format=%s "$1"..."$2" | sed ':a;N;$!ba;s/\n/\\n/g')" || {
+  echo "[changelog] Failed to create changelog from commits, exiting." >&2
   exit 1
 }
 
-echo "$CHANGELOG_FULL"
+[ -n "$CHANGELOG" ] || exit 1
+
+echo "$CHANGELOG"

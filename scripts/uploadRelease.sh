@@ -4,23 +4,24 @@
 #
 # ONLY USED IN AUTOMATED BUILDS
 #
-# Note: the num= is only for easier reading, you do not include that when using this script
-# Usage: "./uploadRelease.sh 1=<$GH_RELEASE_BINARY> 2=<$KAMI_DIR> 3=<$GITHUB_RELEASE_REPOSITORY> 4=<$GITHUB_RELEASE_ACCESS_TOKEN> 5=<file name> 6=<major or empty>"
+# Usage: "./uploadRelease.sh <major or empty> <branch or commit> <version> <jar name> <changelog>"
 
 __scripts="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$__scripts/utils.sh" # include checkVar
+source "$__scripts/utils.sh" # include check_var
+source ~/.profile
 
-checkVar "GH_RELEASE_BINARY" "$1" || exit $?
-checkVar "KAMI_DIR" "$2" || exit $?
-checkVar "GITHUB_RELEASE_REPOSITORY" "$3" || exit $?
-checkVar "GITHUB_RELEASE_ACCESS_TOKEN" "$4" || exit $?
+check_var "2" "$2" || exit $?
+check_var "3" "$3" || exit $?
+check_var "KAMI_REPO_MAJOR" "$KAMI_REPO_MAJOR" || exit $?
+check_var "KAMI_REPO" "$KAMI_REPO" || exit $?
+check_var "GITHUB_TOKEN" "$GITHUB_TOKEN" || exit $?
 
-# TODO: changelog
-VERSION=$("$__scripts"/version.sh "$6") || exit $?
+REPO="$KAMI_REPO_NIGHTLY"
 
-git tag -d "$VERSION"
-git push origin :refs/tags/"$VERSION"
+[ "$1" == "major" ] && REPO="$KAMI_REPO_MAJOR"
 
-"$1" "$VERSION" "$2/build/libs/$1" --commit master --tag "$VERSION" --github-repository "$3" --github-access-token "$4"
+# Create release
+curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST --data "$(generate_release_data "$KAMI_OWNER" "$REPO" "$3" "$2" "$3" "$5" "false" "false")" "https://api.github.com/repos/$KAMI_OWNER/$REPO/releases" || exit $?
 
-# TODO: webhook
+# Upload jar to release
+"$__scripts/uploadReleaseAsset.sh" github_api_token="$GITHUB_TOKEN" owner="$KAMI_OWNER" repo="$REPO" tag="$3" filename="$KAMI_DIR/build/libs/$4"

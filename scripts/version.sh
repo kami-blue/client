@@ -16,7 +16,7 @@
 __utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 source "$__utils"
 
-checkGit || exit $?
+check_git || exit $?
 
 CUR_HASH="-"$(git log --pretty=%h -1) # for the -hash
 CUR_R=$(($(date +"%Y") - 2019))       # Current year - 2019

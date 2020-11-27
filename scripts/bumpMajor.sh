@@ -9,7 +9,7 @@
 __utils="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/utils.sh"
 source "$__utils"
 
-checkGit || exit $?
+check_git || exit $?
 
 CUR_R=$(($(date +"%Y") - 2019))
 CUR_M=$(date +".%m")

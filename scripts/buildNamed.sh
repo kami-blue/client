@@ -7,33 +7,26 @@
 # Usage: "./buildNamed.sh"
 
 source ~/.profile
-KAMI_DIR="$HOME/projects/kamiblue"
 
 if [ -z "$KAMI_DIR" ]; then
   echo "[buildNamed] Environment variable KAMI_DIR is not set, exiting." >&2
   exit 1
 fi
 
-cd "$KAMI_DIR" || {
-  echo "[buildNamed] Failed to cd into '$KAMI_DIR', exiting."
-  exit 127
-}
+cd "$KAMI_DIR" || exit $?
 
 rm -rf build/libs/* || {
-  echo "[buildNamed] Failed to remove existing files in 'build/libs/', exiting."
+  echo "[buildNamed] Failed to remove existing files in 'build/libs/', exiting." >&2
   exit 1
 }
 
 chmod +x gradlew
-./gradlew build >/dev/null || {
-  echo "[buildNamed] Gradle build failed, exiting."
+./gradlew build &>/dev/null || {
+  echo "[buildNamed] Gradle build failed, exiting." >&2
   exit 1
 }
 
-cd build/libs/ || {
-  echo "[buildNamed] Failed to cd into build/libs/"
-  exit 127
-}
+cd build/libs/ || exit $?
 
 __named=$(find . -maxdepth 1 -not -name "*release*" | tail -n +2)
 __bad_named=$(find . -maxdepth 1 -name "*release*")

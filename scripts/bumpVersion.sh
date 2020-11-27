@@ -18,12 +18,12 @@ BUILD_NUMBER_PREVIOUS=$(curl -s https://kamiblue.org/api/v1/builds)
 BUILD_NUMBER=$((BUILD_NUMBER_PREVIOUS + 1))
 
 if [ "$BUILD_NUMBER" == "$BUILD_NUMBER_PREVIOUS" ]; then
-  echo "[bumpBuildNumber] Failed to bump build number, exiting."
+  echo "[bumpBuildNumber] Failed to bump build number, exiting." >&2
   exit 1
 fi
 
 if [[ ! "$BUILD_NUMBER" =~ ^-?[0-9]+$ ]]; then
-  echo "[bumpBuildNumber] Could not parse '$BUILD_NUMBER' as an Int, exiting."
+  echo "[bumpBuildNumber] Could not parse '$BUILD_NUMBER' as an Int, exiting." >&2
   exit 1
 fi
 
