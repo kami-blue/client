@@ -41,11 +41,13 @@ object Freecam : Module() {
     var cameraGuy: EntityPlayer? = null; private set
     var resetInput = false
 
+    private const val ENTITY_ID = -6969420
+
     override fun onDisable() {
         mc.renderChunksMany = true
 
         if (mc.player == null) return
-        mc.world.removeEntityFromWorld(-6969420)
+        mc.world.removeEntityFromWorld(ENTITY_ID)
         mc.setRenderViewEntity(mc.player)
         cameraGuy = null
         if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
@@ -100,7 +102,7 @@ object Freecam : Module() {
         // Create a cloned player
         cameraGuy = FakeCamera(mc.player).also {
             // Add it to the world
-            mc.world.addEntityToWorld(-6969420, it)
+            mc.world.addEntityToWorld(ENTITY_ID, it)
 
             // Set the render view entity to our camera guy
             mc.setRenderViewEntity(it)
