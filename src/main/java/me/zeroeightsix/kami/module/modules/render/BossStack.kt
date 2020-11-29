@@ -27,6 +27,7 @@ object BossStack : Module() {
     private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.1f, 5.0f))
     private val censor = register(Settings.b("Censor", false))
 
+    @Suppress("unused")
     private enum class BossStackMode {
         REMOVE, MINIMIZE, STACK
     }
@@ -39,6 +40,7 @@ object BossStack : Module() {
         listener<RenderGameOverlayEvent.Pre> {
             if (it.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH) return@listener
             if (timer.tick(73L)) updateBossInfoMap()
+
             it.isCanceled = true
             drawHealthBar()
         }
@@ -48,30 +50,35 @@ object BossStack : Module() {
         bossInfoMap.clear()
         val bossInfoList = mc.ingameGUI.bossOverlay.mapBossInfos?.values ?: return
 
-        when (mode.value!!) {
-            BossStackMode.REMOVE -> {
-            }
+        when (mode.value) {
             BossStackMode.MINIMIZE -> {
-                val closest = getMatchBoss(bossInfoList)?: return
+                val closest = getMatchBoss(bossInfoList) ?: return
                 bossInfoMap[closest] = -1
             }
+
             BossStackMode.STACK -> {
                 val cacheMap = HashMap<String, ArrayList<BossInfoClient>>()
+
                 for (bossInfo in bossInfoList) {
                     val list = cacheMap.getOrPut(if (censor.value) "Boss" else bossInfo.name.formattedText) { ArrayList() }
                     list.add(bossInfo)
                 }
+
                 for ((name, list) in cacheMap) {
                     val closest = getMatchBoss(list, if (censor.value) null else name) ?: continue
                     bossInfoMap[closest] = list.size
                 }
+            }
+
+            else -> {
+                // Do nothing
             }
         }
     }
 
     private fun getMatchBoss(list: Collection<BossInfoClient>, name: String? = null): BossInfoClient? {
         val closestBossHealth = getClosestBoss(name)?.let {
-            it.health / it.maxHealth.toDouble()
+            it.health / it.maxHealth
         } ?: return null
 
         return list.minBy {
@@ -83,12 +90,15 @@ object BossStack : Module() {
             mc.world?.loadedEntityList?.let {
                 var closest = Float.MAX_VALUE
                 var closestBoss: EntityLivingBase? = null
+
                 for (entity in it) {
                     if (entity !is EntityLivingBase) continue
                     if (entity.isNonBoss) continue
                     if (name != null && entity.displayName.formattedText != name) continue
+
                     val dist = entity.getDistance(mc.player)
                     if (dist >= closest) continue
+
                     closest = dist
                     closestBoss = entity
                 }
@@ -97,11 +107,14 @@ object BossStack : Module() {
 
     private fun drawHealthBar() {
         mc.profiler.startSection("bossHealth")
+
         val width = ScaledResolution(mc).scaledWidth
         var posY = 12
+
         GlStateUtils.blend(true)
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+
         if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
             val posX = (width / scale.value / 2.0f - 91.0f).roundToInt()
             val text = (if (censor.value) "Boss" else bossInfo.name.formattedText) + if (count != -1) " x$count" else ""
@@ -116,6 +129,7 @@ object BossStack : Module() {
 
             posY += 10 + mc.fontRenderer.FONT_HEIGHT
         }
+
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         mc.profiler.endSection()
     }
