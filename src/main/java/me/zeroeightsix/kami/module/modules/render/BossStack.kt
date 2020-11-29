@@ -25,6 +25,7 @@ import kotlin.math.roundToInt
 object BossStack : Module() {
     private val mode = register(Settings.e<BossStackMode>("Mode", BossStackMode.STACK))
     private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.1f, 5.0f))
+    private val censor = register(Settings.b("Censor", false))
 
     private enum class BossStackMode {
         REMOVE, MINIMIZE, STACK
@@ -57,11 +58,11 @@ object BossStack : Module() {
             BossStackMode.STACK -> {
                 val cacheMap = HashMap<String, ArrayList<BossInfoClient>>()
                 for (bossInfo in bossInfoList) {
-                    val list = cacheMap.getOrPut(bossInfo.name.formattedText) { ArrayList() }
+                    val list = cacheMap.getOrPut(if (censor.value) "Boss" else bossInfo.name.formattedText) { ArrayList() }
                     list.add(bossInfo)
                 }
                 for ((name, list) in cacheMap) {
-                    val closest = getMatchBoss(list, name)?: continue
+                    val closest = getMatchBoss(list, if (censor.value) null else name) ?: continue
                     bossInfoMap[closest] = list.size
                 }
             }
@@ -70,7 +71,7 @@ object BossStack : Module() {
 
     private fun getMatchBoss(list: Collection<BossInfoClient>, name: String? = null): BossInfoClient? {
         val closestBossHealth = getClosestBoss(name)?.let {
-            it.health / it.maxHealth * 100.0f
+            it.health / it.maxHealth.toDouble()
         } ?: return null
 
         return list.minBy {
@@ -103,7 +104,7 @@ object BossStack : Module() {
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
             val posX = (width / scale.value / 2.0f - 91.0f).roundToInt()
-            val text = bossInfo.name.formattedText + if (count != -1) " x$count" else ""
+            val text = (if (censor.value) "Boss" else bossInfo.name.formattedText) + if (count != -1) " x$count" else ""
             val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
             val textPosY = posY - 9.0f
 
