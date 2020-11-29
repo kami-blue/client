@@ -98,7 +98,7 @@ object DiscordNotifs : Module() {
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)
-        val dm = DiscordMessage(KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA, content, avatarUrl)
+        val dm = DiscordMessage(KamiMod.NAME + " " + KamiMod.VERSION, content, avatarUrl)
         tm.sendMessage(dm)
     }
 

@@ -20,7 +20,7 @@ import kotlin.math.max
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val delay = register(Settings.floatBuilder("Delay").withValue(5.0f).withRange(1.0f, 100.0f).withStep(0.5f))
+    private val delay = register(Settings.floatBuilder("Delay").withValue(5.0f).withRange(0.5f, 100.0f).withStep(0.5f))
 
     private var prevServerDate: ServerData? = null
 

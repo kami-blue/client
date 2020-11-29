@@ -104,7 +104,7 @@ object TotemPopCounter : Module() {
 
     private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
 
-    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.MODNAME} !" else "!"
+    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
 
     private fun formatNumber(message: Int) = setToText(colorNumber.value) + message + TextFormatting.RESET
 

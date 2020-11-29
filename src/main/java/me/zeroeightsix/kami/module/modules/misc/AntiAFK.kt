@@ -16,7 +16,6 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
-import kotlin.math.max
 import kotlin.random.Random
 
 /**
@@ -24,12 +23,12 @@ import kotlin.random.Random
  * TODO: Render which chunk is selected
  */
 @Module.Info(
-        name = "AntiAFK",
-        category = Module.Category.MISC,
-        description = "Prevents being kicked for AFK"
+    name = "AntiAFK",
+    category = Module.Category.MISC,
+    description = "Prevents being kicked for AFK"
 )
 object AntiAFK : Module() {
-    private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(0, 100))
+    private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(5, 100).withStep(5))
     private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
     private val autoReply = register(Settings.b("AutoReply", true))
     private val swing = register(Settings.b("Swing", true))
@@ -40,18 +39,15 @@ object AntiAFK : Module() {
     private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15))
 
     private var startPos: BlockPos? = null
-    private var nextActionTick = 0
     private var squareStep = 0
     private var baritoneDisconnectOnArrival = false
     private val inputTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val actionTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private var nextActionDelay = 0
 
     override fun getHudInfo(): String? {
-        return ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
-    }
-
-    override fun onEnable() {
-        inputTimer.reset()
-        baritoneDisconnectOnArrival()
+        return if (inputTimeout.value == 0) null
+        else ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
     }
 
     override fun onDisable() {
@@ -60,14 +56,28 @@ object AntiAFK : Module() {
         BaritoneUtils.cancelEverything()
     }
 
+    override fun onEnable() {
+        inputTimer.reset()
+        baritoneDisconnectOnArrival()
+    }
+
     init {
         listener<BaritoneSettingsInitEvent> {
             baritoneDisconnectOnArrival()
         }
+    }
 
+    private fun baritoneDisconnectOnArrival() {
+        BaritoneUtils.settings?.disconnectOnArrival?.let {
+            baritoneDisconnectOnArrival = it.value
+            it.value = false
+        }
+    }
+
+    init {
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
-            if (MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) {
+            if (MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) {
                 sendServerMessage("/r I am currently AFK and using KAMI Blue!")
             }
         }
@@ -83,19 +93,32 @@ object AntiAFK : Module() {
                 inputTimer.reset()
             }
         }
+    }
 
+    private fun isInputting() =
+        mc.gameSettings.keyBindAttack.isKeyDown
+            || mc.gameSettings.keyBindUseItem.isKeyDown
+            || mc.gameSettings.keyBindJump.isKeyDown
+            || mc.gameSettings.keyBindSneak.isKeyDown
+            || mc.gameSettings.keyBindForward.isKeyDown
+            || mc.gameSettings.keyBindBack.isKeyDown
+            || mc.gameSettings.keyBindLeft.isKeyDown
+            || mc.gameSettings.keyBindRight.isKeyDown
+
+    init {
         listener<SafeTickEvent> {
             if (inputTimeout.value != 0) {
-                if (BaritoneUtils.isActive) inputTimer.reset()
-                if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
+                if (BaritoneUtils.isActive) {
+                    inputTimer.reset()
+                } else if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
                     startPos = null
                     return@listener
                 }
             }
 
-            if (mc.player.ticksExisted >= nextActionTick) {
+            if (actionTimer.tick(nextActionDelay.toLong())) {
                 val random = if (variation.value > 0) (0..variation.value).random() else 0
-                nextActionTick = mc.player.ticksExisted + max(delay.value, 1) + random
+                nextActionDelay = delay.value + random
 
                 when ((getAction())) {
                     Action.SWING -> mc.player.swingArm(EnumHand.MAIN_HAND)
@@ -104,37 +127,10 @@ object AntiAFK : Module() {
                 }
 
                 if (walk.value && !BaritoneUtils.isActive) {
-                    if (startPos == null) startPos = mc.player.position
-                    startPos?.let {
-                        when (squareStep) {
-                            0 -> baritoneGotoXZ(it.x, it.z + radius.value)
-                            1 -> baritoneGotoXZ(it.x + radius.value, it.z + radius.value)
-                            2 -> baritoneGotoXZ(it.x + radius.value, it.z)
-                            3 -> baritoneGotoXZ(it.x, it.z)
-                        }
-                    }
-                    squareStep = (squareStep + 1) % 4
+                    squareWalk()
                 }
             }
         }
-    }
-
-    private fun baritoneDisconnectOnArrival() {
-        BaritoneUtils.settings?.disconnectOnArrival?.let {
-            baritoneDisconnectOnArrival = it.value
-            it.value = false
-        }
-    }
-
-    private fun isInputting(): Boolean {
-        return (mc.gameSettings.keyBindAttack.isKeyDown
-                || mc.gameSettings.keyBindUseItem.isKeyDown
-                || mc.gameSettings.keyBindJump.isKeyDown
-                || mc.gameSettings.keyBindSneak.isKeyDown
-                || mc.gameSettings.keyBindForward.isKeyDown
-                || mc.gameSettings.keyBindBack.isKeyDown
-                || mc.gameSettings.keyBindLeft.isKeyDown
-                || mc.gameSettings.keyBindRight.isKeyDown)
     }
 
     private fun getAction(): Action? {
@@ -143,14 +139,29 @@ object AntiAFK : Module() {
         return if (action.setting.value) action else getAction()
     }
 
-    private enum class Action(val setting: Setting<Boolean>) {
-        SWING(swing),
-        JUMP(jump),
-        TURN(turn)
+    private fun squareWalk() {
+        if (startPos == null) startPos = mc.player.position
+
+        startPos?.let {
+            when (squareStep) {
+                0 -> baritoneGotoXZ(it.x, it.z + radius.value)
+                1 -> baritoneGotoXZ(it.x + radius.value, it.z + radius.value)
+                2 -> baritoneGotoXZ(it.x + radius.value, it.z)
+                3 -> baritoneGotoXZ(it.x, it.z)
+            }
+        }
+
+        squareStep = (squareStep + 1) % 4
     }
 
     private fun baritoneGotoXZ(x: Int, z: Int) {
         BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
+    }
+
+    private enum class Action(val setting: Setting<Boolean>) {
+        SWING(swing),
+        JUMP(jump),
+        TURN(turn)
     }
 
     init {

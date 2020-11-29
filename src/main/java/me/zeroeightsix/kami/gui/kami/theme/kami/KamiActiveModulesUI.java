@@ -6,10 +6,12 @@ import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.ActiveModules;
+import me.zeroeightsix.kami.module.modules.render.AntiOverlay;
 import me.zeroeightsix.kami.util.Wrapper;
 import me.zeroeightsix.kami.util.color.ColorGradient;
 import me.zeroeightsix.kami.util.color.ColorHolder;
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
@@ -20,10 +22,6 @@ import java.util.stream.Collectors;
 
 import static me.zeroeightsix.kami.util.color.ColorConverter.toF;
 
-/**
- * Created by 086 on 4/08/2017.
- * Updated by l1ving on 20/03/19
- */
 public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kami.gui.kami.component.ActiveModules> {
 
     final ColorGradient transRights = new ColorGradient(
@@ -36,21 +34,25 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
     @Override
     public void renderComponent(me.zeroeightsix.kami.gui.kami.component.ActiveModules component) {
-
         List<Module> modules = ModuleManager.getModules().stream()
                 .filter(module -> module.isEnabled() && (ActiveModules.INSTANCE.getHidden().getValue() || module.isOnArray()))
                 .sorted(Comparator.comparing(module -> FontRenderAdapter.INSTANCE.getStringWidth(module.getName().getValue() + (module.getHudInfo() == null ? "" : module.getHudInfo() + " ")) * (component.sort_up ? -1 : 1)))
                 .collect(Collectors.toList());
 
+        int y = 2;
 
-        final int[] y = {2};
+        EntityPlayerSP player = Wrapper.getPlayer();
 
-        if (Wrapper.getPlayer() != null) {
-            if (ActiveModules.INSTANCE.getPotion().getValue() && component.getParent().getY() < 26 && Wrapper.getPlayer().getActivePotionEffects().size() > 0 && component.getParent().getOpacity() == 0)
-                y[0] = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
+        if (player != null
+            && ActiveModules.INSTANCE.getPotionMove().getValue()
+            && !AntiOverlay.INSTANCE.getPotionIcons().getValue()
+            && component.getParent().getY() < 26
+            && player.getActivePotionEffects().size() > 0
+            && component.getParent().getOpacity() == 0) {
+            y = Math.max(component.getParent().getY(), 26 - component.getParent().getY());
         }
 
-        final float[] hue = {(System.currentTimeMillis() % (360 * ActiveModules.INSTANCE.getRainbowSpeed())) / (360f * ActiveModules.INSTANCE.getRainbowSpeed())};
+        float hue = (System.currentTimeMillis() % (360 * ActiveModules.INSTANCE.getRainbowSpeed())) / (360f * ActiveModules.INSTANCE.getRainbowSpeed());
 
         Function<Float, Float> xFunc;
         switch (component.getAlignment()) {
@@ -72,7 +74,7 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
 
             switch (ActiveModules.INSTANCE.getMode().getValue()) {
                 case RAINBOW:
-                    rgb = Color.HSBtoRGB(hue[0], toF(ActiveModules.INSTANCE.getSaturationR().getValue()), toF(ActiveModules.INSTANCE.getBrightnessR().getValue()));
+                    rgb = Color.HSBtoRGB(hue, toF(ActiveModules.INSTANCE.getSaturationR().getValue()), toF(ActiveModules.INSTANCE.getBrightnessR().getValue()));
                     break;
                 case CATEGORY:
                     rgb = ActiveModules.INSTANCE.getCategoryColour(module);
@@ -102,12 +104,12 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
             int green = (rgb >> 8) & 0xFF;
             int blue = rgb & 0xFF;
 
-            FontRenderAdapter.INSTANCE.drawString(text, xFunc.apply(textWidth), y[0], true, new ColorHolder(red, green, blue));
-            hue[0] += .02f;
-            y[0] += textHeight;
+            FontRenderAdapter.INSTANCE.drawString(text, xFunc.apply(textWidth), y, true, new ColorHolder(red, green, blue));
+            hue += .02f;
+            y += textHeight;
         }
 
-        component.setHeight(y[0]);
+        component.setHeight(y);
     }
 
     @Override

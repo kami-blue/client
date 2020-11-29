@@ -22,7 +22,7 @@ import java.awt.Color
 )
 object ActiveModules : Module() {
     private val forgeHax = register(Settings.b("ForgeHax", false))
-    val potion = register(Settings.b("PotionsMove", false))
+    val potionMove = register(Settings.b("PotionsMove", true))
     val hidden = register(Settings.b("ShowHidden", false))
     val mode = register(Settings.e<Mode>("Mode", Mode.RAINBOW))
     private val rainbowSpeed = register(Settings.integerBuilder("SpeedR").withValue(30).withRange(0, 255).withVisibility { mode.value == Mode.RAINBOW })
