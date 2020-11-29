@@ -28,13 +28,13 @@ object AutoMine : Module() {
     override fun onEnable() {
         if (mc.player == null) {
             disable()
-        } else if (!manual.value) {
+        } else {
             run()
         }
     }
 
     private fun run() {
-        if (mc.player == null || isDisabled) return
+        if (mc.player == null || isDisabled || manual.value) return
         var current = ""
         if (iron.value) current += " iron_ore"
         if (diamond.value) current += " diamond_ore"
