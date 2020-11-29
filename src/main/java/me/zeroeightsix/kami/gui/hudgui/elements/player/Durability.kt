@@ -1,16 +1,15 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import net.minecraft.util.EnumHand
 import org.kamiblue.commons.utils.MathUtils
 
-@HudElement.Info(
-        category = HudElement.Category.PLAYER,
-        description = "Durability of holding items"
-)
-object Durability : LabelHud("Durability") {
+object Durability : LabelHud(
+    name = "Durability",
+    category = Category.PLAYER,
+    description = "Durability of holding items"
+) {
 
     private val showItemName = setting("ShowItemName", true)
     private val showOffhand = setting("ShowOffhand", false)

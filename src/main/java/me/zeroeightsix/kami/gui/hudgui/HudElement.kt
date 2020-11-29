@@ -8,35 +8,13 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.kamiblue.commons.utils.DisplayEnum
 
 open class HudElement(
-        name: String
+    name: String,
+    val alias: Array<String> = emptyArray(),
+    val category: Category,
+    val description: String,
+    val alwaysListening: Boolean = false,
+    val enabledByDefault: Boolean = false
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
-
-    // Annotations
-    private val annotation =
-            javaClass.annotations.firstOrNull { it is Info } as? Info
-                    ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
-
-    val alias = arrayOf(name, *annotation.alias)
-    val category = annotation.category
-    val description = annotation.description
-    var alwaysListening = annotation.alwaysListening
-
-    annotation class Info(
-            val alias: Array<String> = [],
-            val description: String,
-            val category: Category,
-            val alwaysListening: Boolean = false,
-            val enabledByDefault: Boolean = false
-    )
-
-    enum class Category(override val displayName: String) : DisplayEnum {
-        CLIENT("Client"),
-        COMBAT("Combat"),
-        PLAYER("Player"),
-        WORLD("World"),
-        MISC("Misc")
-    }
-    // End of annotations
 
     val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
 
@@ -50,7 +28,9 @@ open class HudElement(
         if (alwaysListening || visible.value) KamiEventBus.subscribe(this)
     }
 
-    final override fun onTick() { super.onTick() }
+    final override fun onTick() {
+        super.onTick()
+    }
 
     final override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
@@ -65,7 +45,15 @@ open class HudElement(
             else if (!alwaysListening) KamiEventBus.unsubscribe(this)
         }
 
-        if (!annotation.enabledByDefault) visible.value = false
+        if (!enabledByDefault) visible.value = false
+    }
+
+    enum class Category(override val displayName: String) : DisplayEnum {
+        CLIENT("Client"),
+        COMBAT("Combat"),
+        PLAYER("Player"),
+        WORLD("World"),
+        MISC("Misc")
     }
 
 }

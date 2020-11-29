@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.util.TpsCalculator
 import org.kamiblue.commons.utils.MathUtils
 
-@HudElement.Info(
-        category = HudElement.Category.MISC,
-        description = "Server TPS"
-)
-object TPS : LabelHud("TPS") {
+object TPS : LabelHud(
+    name = "TPS",
+    category = Category.MISC,
+    description = "Server TPS"
+) {
 
     private val tpsList = FloatArray(100) { 20.0f }
     private var tpsIndex = 0

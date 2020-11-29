@@ -1,17 +1,16 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.world
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.utils.MathUtils
 
-@HudElement.Info(
-        category = HudElement.Category.WORLD,
-        description = "Display the current coordinate"
-)
-object Coordinate : LabelHud("Coordinate") {
+object Coordinate : LabelHud(
+    name = "Coordinate",
+    category = Category.WORLD,
+    description = "Display the current coordinate"
+) {
 
     private val showX = setting("ShowX", true)
     private val showY = setting("ShowY", true)
@@ -20,7 +19,7 @@ object Coordinate : LabelHud("Coordinate") {
     private val decimalPlaces = setting("DecimalPlaces", 1, 0..4, 1)
 
     override fun updateText() {
-        val entity = mc.renderViewEntity?: mc.player?: return
+        val entity = mc.renderViewEntity ?: mc.player ?: return
 
         displayText.add("Current", secondaryColor.value)
         displayText.addLine(getFormattedCoords(entity.positionVector))
@@ -52,8 +51,8 @@ object Coordinate : LabelHud("Coordinate") {
     }
 
     private fun roundOrInt(double: Double): Number =
-            if (decimalPlaces.value != 0) MathUtils.round(double, decimalPlaces.value)
-            else double.toInt()
+        if (decimalPlaces.value != 0) MathUtils.round(double, decimalPlaces.value)
+        else double.toInt()
 
     private fun StringBuilder.appendWithComma(string: String) = append(if (length > 0) ", $string" else string)
 

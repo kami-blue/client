@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
@@ -10,11 +9,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
-@HudElement.Info(
-        category = HudElement.Category.PLAYER,
-        description = "Player movement speed"
-)
-object PlayerSpeed : LabelHud("PlayerSpeed") {
+object PlayerSpeed : LabelHud(
+    name = "PlayerSpeed",
+    category = Category.PLAYER,
+    description = "Player movement speed"
+) {
 
     private val speedUnit = setting("SpeedUnit", SpeedUnit.MPS)
     private val averageSpeedTime = setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)

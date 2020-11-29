@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 
-@HudElement.Info(
-        category = HudElement.Category.MISC,
-        description = "Display the used, allocated and max memory"
-)
-object MemoryUsage : LabelHud("MemoryUsage") {
+object MemoryUsage : LabelHud(
+    name = "MemoryUsage",
+    category = Category.MISC,
+    description = "Display the used, allocated and max memory"
+) {
 
     private val showAllocated = setting("ShowAllocated", false)
     private val showMax = setting("ShowMax", false)

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
 import me.zeroeightsix.kami.event.events.RenderEvent
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
@@ -12,11 +11,11 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-@HudElement.Info(
-        category = HudElement.Category.MISC,
-        description = "Frame per second in game"
-)
-object FPS : LabelHud("FPS") {
+object FPS : LabelHud(
+    name = "FPS",
+    category = Category.MISC,
+    description = "Frame per second in game"
+) {
 
     private val showAverage = setting("ShowAverage", true)
     private val showMin = setting("ShowMin", false)
@@ -35,7 +34,7 @@ object FPS : LabelHud("FPS") {
 
         listener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
-            fptList[fptIndex] =((fpsCounter * (1000.0f / mc.timer.tickLength)).roundToInt())
+            fptList[fptIndex] = ((fpsCounter * (1000.0f / mc.timer.tickLength)).roundToInt())
             fptIndex = (fptIndex + 1) % 20
             fpsCounter = 0
         }

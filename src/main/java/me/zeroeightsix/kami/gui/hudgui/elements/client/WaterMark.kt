@@ -1,16 +1,15 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.module.modules.client.Capes
 
-@HudElement.Info(
-        category = HudElement.Category.CLIENT,
-        description = "KAMI Blue watermark",
-        enabledByDefault = true
-)
-object WaterMark : LabelHud("Watermark") {
+object WaterMark : LabelHud(
+    name = "Watermark",
+    category = Category.CLIENT,
+    description = "KAMI Blue watermark",
+    enabledByDefault = true
+) {
 
     override val closeable: Boolean get() = Capes.isPremium
 

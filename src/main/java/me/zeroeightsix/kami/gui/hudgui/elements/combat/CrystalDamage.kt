@@ -8,11 +8,11 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
-@HudElement.Info(
-        category = HudElement.Category.COMBAT,
-        description = "Display the max potential damage and the current damage to you and target"
-)
-object CrystalDamage : LabelHud("CrystalDamage") {
+object CrystalDamage : LabelHud(
+    name = "CrystalDamage",
+    category = HudElement.Category.COMBAT,
+    description = "Display the max potential damage and the current damage to you and target"
+) {
 
     private var prevDamages = Quad(0.0f, 0.0f, 0.0f, 0.0f)
 

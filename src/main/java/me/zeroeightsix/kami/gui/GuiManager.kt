@@ -16,9 +16,7 @@ object GuiManager {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
-            val annotationClass = HudElement.Info::class.java
             hudElementsClassList = ClassUtils.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
-                    .filter { it.isAnnotationPresent(annotationClass) }
             KamiMod.LOG.info("${hudElementsClassList!!.size} hud elements found")
         }
         preLoadingThread!!.name = "Gui Pre-Loading"

@@ -10,7 +10,14 @@ import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-abstract class LabelHud(name: String) : HudElement(name) {
+abstract class LabelHud(
+    name: String,
+    alias: Array<String> = emptyArray(),
+    category: Category,
+    description: String,
+    alwaysListening: Boolean = false,
+    enabledByDefault: Boolean = false
+) : HudElement(name, alias, category, description, alwaysListening, enabledByDefault) {
 
     override val resizable get() = false
 
@@ -40,9 +47,9 @@ abstract class LabelHud(name: String) : HudElement(name) {
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
         displayText.draw(
-                Vec2d((width.value * dockingH.value.multiplier).toDouble(), (height.value * dockingV.value.multiplier).toDouble()),
-                horizontalAlign = dockingH.value,
-                verticalAlign = dockingV.value
+            Vec2d((width.value * dockingH.value.multiplier).toDouble(), (height.value * dockingV.value.multiplier).toDouble()),
+            horizontalAlign = dockingH.value,
+            verticalAlign = dockingV.value
         )
     }
 

@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.TimeUtils
 
-@HudElement.Info(
-        category = HudElement.Category.MISC,
-        description = "System date and time"
-)
-object Time : LabelHud("Time") {
+object Time : LabelHud(
+    name = "Time",
+    category = Category.MISC,
+    description = "System date and time"
+) {
 
     private val showDate = setting("ShowDate", true)
     private val showTime = setting("ShowTime", true)

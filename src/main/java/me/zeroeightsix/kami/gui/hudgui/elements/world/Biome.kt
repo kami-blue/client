@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.world
 
-import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
-@HudElement.Info(
-        category = HudElement.Category.WORLD,
-        description = "Display the current biome you are in"
-)
-object Biome : LabelHud("Biome") {
+object Biome : LabelHud(
+    name = "Biome",
+    category = Category.WORLD,
+    description = "Display the current biome you are in"
+) {
 
     override fun updateText() {
         val biome = mc.player?.let {

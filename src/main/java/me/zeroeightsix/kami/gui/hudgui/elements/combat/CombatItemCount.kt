@@ -10,11 +10,11 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
-@HudElement.Info(
-        category = HudElement.Category.COMBAT,
-        description = "Counts combat items like gapples, crystal, etc"
-)
-object CombatItemCount : LabelHud("CombatItemCount") {
+object CombatItemCount : LabelHud(
+    name = "CombatItemCount",
+    category = HudElement.Category.COMBAT,
+    description = "Counts combat items like gapples, crystal, etc"
+) {
 
     private val arrow = setting("Arrow", true)
     private val crystal = setting("Crystal", true)
@@ -26,21 +26,21 @@ object CombatItemCount : LabelHud("CombatItemCount") {
     private val horizontal = setting("Horizontal", true, { showIcon.value })
 
     private val itemSettings = linkedMapOf(
-            arrow to arrayOf(Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW),
-            crystal to arrayOf(Items.END_CRYSTAL),
-            gapple to arrayOf(Items.GOLDEN_APPLE),
-            xpBottle to arrayOf(Items.EXPERIENCE_BOTTLE),
-            pearl to arrayOf(Items.ENDER_PEARL),
-            chorusFruit to arrayOf(Items.CHORUS_FRUIT)
+        arrow to arrayOf(Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW),
+        crystal to arrayOf(Items.END_CRYSTAL),
+        gapple to arrayOf(Items.GOLDEN_APPLE),
+        xpBottle to arrayOf(Items.EXPERIENCE_BOTTLE),
+        pearl to arrayOf(Items.ENDER_PEARL),
+        chorusFruit to arrayOf(Items.CHORUS_FRUIT)
     )
 
     private val itemStacks = arrayOf(
-            ItemStack(Items.ARROW, -1),
-            ItemStack(Items.END_CRYSTAL, -1),
-            ItemStack(Items.GOLDEN_APPLE, -1, 1),
-            ItemStack(Items.EXPERIENCE_BOTTLE, -1),
-            ItemStack(Items.ENDER_PEARL, -1),
-            ItemStack(Items.CHORUS_FRUIT, -1)
+        ItemStack(Items.ARROW, -1),
+        ItemStack(Items.END_CRYSTAL, -1),
+        ItemStack(Items.GOLDEN_APPLE, -1, 1),
+        ItemStack(Items.EXPERIENCE_BOTTLE, -1),
+        ItemStack(Items.ENDER_PEARL, -1),
+        ItemStack(Items.CHORUS_FRUIT, -1)
     )
 
     override val maxWidth: Float
