@@ -2,7 +2,9 @@ package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
-import me.zeroeightsix.kami.util.math.MathUtils
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
+import org.kamiblue.commons.utils.MathUtils
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,

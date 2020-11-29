@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.util.math.MathUtils
+import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.*
 
 object AnimationUtils {
-    private val piFloat = PI.toFloat()
+    private const val PI_FLOAT = PI.toFloat()
 
     fun toDeltaTimeFloat(startTime: Long) = (System.currentTimeMillis() - startTime).toFloat()
 
@@ -41,16 +41,16 @@ object AnimationUtils {
             else halfSineDec(deltaTime, length, to, from)
 
     fun fullSineInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
-            (cos(deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * 0.5f + 0.5f) * (maxValue - minValue) + minValue
+            (cos(deltaTime.coerceIn(0.0f, length) * PI_FLOAT * (1.0f / length)) * 0.5f + 0.5f) * (maxValue - minValue) + minValue
 
     fun fullSineDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
-            (cos(deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * -0.5f + 0.5f) * (maxValue - minValue) + minValue
+            (cos(deltaTime.coerceIn(0.0f, length) * PI_FLOAT * (1.0f / length)) * -0.5f + 0.5f) * (maxValue - minValue) + minValue
 
     fun halfSineInc(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
-            sin(0.5f * deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * (maxValue - minValue) + minValue
+            sin(0.5f * deltaTime.coerceIn(0.0f, length) * PI_FLOAT * (1.0f / length)) * (maxValue - minValue) + minValue
 
     fun halfSineDec(deltaTime: Float, length: Float, minValue: Float = 0.0f, maxValue: Float = 1.0f) =
-            cos(0.5f * deltaTime.coerceIn(0.0f, length) * piFloat * (1.0f / length)) * (maxValue - minValue) + minValue
+            cos(0.5f * deltaTime.coerceIn(0.0f, length) * PI_FLOAT * (1.0f / length)) * (maxValue - minValue) + minValue
 
     // Double
     fun sine(deltaTime: Double, length: Double, from: Double, to: Double) =

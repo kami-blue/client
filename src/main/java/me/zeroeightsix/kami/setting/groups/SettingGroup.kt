@@ -60,7 +60,7 @@ open class SettingGroup(
                 try {
                     setting.read(it.get(setting.name))
                 } catch (e: Exception) {
-                    KamiMod.log.warn("Failed loading setting ${setting.name} at $name", e)
+                    KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
                 }
             }
         }

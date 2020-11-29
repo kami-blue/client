@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.combat.CrystalUtils
-import me.zeroeightsix.kami.util.math.MathUtils
+import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
 @HudElement.Info(
@@ -48,6 +48,6 @@ object CrystalDamage : LabelHud("CrystalDamage") {
         prevDamages = quad
     }
 
-    private fun calcAndRound(prev: Float, curr: Float) = MathUtils.round(max(prev, curr), 1)
+    private fun calcAndRound(prev: Float, curr: Float) = MathUtils.round(max(prev, curr), 1).toFloat()
 
 }

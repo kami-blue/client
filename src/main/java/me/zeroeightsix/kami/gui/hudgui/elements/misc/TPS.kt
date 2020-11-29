@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.misc
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.util.TpsCalculator
-import me.zeroeightsix.kami.util.math.MathUtils
+import org.kamiblue.commons.utils.MathUtils
 
 @HudElement.Info(
         category = HudElement.Category.MISC,

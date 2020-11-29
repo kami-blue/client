@@ -46,10 +46,10 @@ object ConfigUtils {
     fun loadConfig(config: AbstractConfig<*>): Boolean {
         return try {
             config.load()
-            KamiMod.log.info("${config.name} config loaded")
+            KamiMod.LOG.info("${config.name} config loaded")
             true
         } catch (e: IOException) {
-            KamiMod.log.error("Failed to load ${config.name} config", e)
+            KamiMod.LOG.error("Failed to load ${config.name} config", e)
             false
         }
     }
@@ -62,10 +62,10 @@ object ConfigUtils {
     fun saveConfig(config: AbstractConfig<*>): Boolean {
         return try {
             config.save()
-            KamiMod.log.info("Config saved")
+            KamiMod.LOG.info("Config saved")
             true
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to save config!", e)
+            KamiMod.LOG.error("Failed to save config!", e)
             false
         }
     }

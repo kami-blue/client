@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util
 
-import org.kamiblue.commons.utils.MathUtils.
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import kotlin.math.hypot
 
 object InfoCalculator {

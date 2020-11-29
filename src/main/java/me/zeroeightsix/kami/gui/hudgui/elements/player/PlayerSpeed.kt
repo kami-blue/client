@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
 @HudElement.Info(

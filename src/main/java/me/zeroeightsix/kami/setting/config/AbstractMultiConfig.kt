@@ -34,7 +34,7 @@ abstract class AbstractMultiConfig<T>(
             try {
                 loadFromFile(group, file.first)
             } catch (e: Exception) {
-                KamiMod.log.warn("Failed to load latest, loading backup.")
+                KamiMod.LOG.warn("Failed to load latest, loading backup.")
                 loadFromFile(group, file.second)
             }
         }

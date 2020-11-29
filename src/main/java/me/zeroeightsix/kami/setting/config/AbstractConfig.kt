@@ -114,7 +114,7 @@ abstract class AbstractConfig<T>(
         try {
             loadFromFile(this, file)
         } catch (e: Exception) {
-            KamiMod.log.warn("Failed to load latest, loading backup.")
+            KamiMod.LOG.warn("Failed to load latest, loading backup.")
             loadFromFile(this, backup)
         }
     }

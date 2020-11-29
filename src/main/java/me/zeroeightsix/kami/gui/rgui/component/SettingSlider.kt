@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.number.NumberSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.floor

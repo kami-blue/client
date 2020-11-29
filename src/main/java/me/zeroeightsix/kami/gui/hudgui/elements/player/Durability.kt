@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.gui.hudgui.elements.player
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.util.EnumHand
+import org.kamiblue.commons.utils.MathUtils
 
 @HudElement.Info(
         category = HudElement.Category.PLAYER,

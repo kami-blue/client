@@ -4,7 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.event.listener
@@ -19,7 +20,8 @@ import org.lwjgl.opengl.Display
         showOnArray = false,
         alwaysEnabled = true
 )
-object CommandConfig : Module() {
+object CommandConfig : Module()
+{
     val aliasInfo = setting("AliasInfo", true)
     val prefixChat = setting("PrefixChat", true)
     val toggleMessages = setting("ToggleMessages", false)

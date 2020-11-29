@@ -2,10 +2,9 @@ package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
 import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
-import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.useVbo
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawRectOutline
 import me.zeroeightsix.kami.util.graphics.VertexHelper
@@ -134,6 +133,6 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
         val vertexHelper = VertexHelper(useVbo())
         val pos1 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
         val pos2 = pos1.add(inputField.width.toDouble(), inputField.height.toDouble())
-        drawRectOutline(vertexHelper, pos1, pos2, 1.5f, ColorHolder(GuiC.windowOutline.color))
+        drawRectOutline(vertexHelper, pos1, pos2, 1.5f, GuiColors.primary)
     }
 }
