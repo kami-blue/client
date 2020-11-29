@@ -42,6 +42,8 @@ object Freecam : Module() {
     var resetInput = false
 
     override fun onDisable() {
+        mc.renderChunksMany = true
+
         if (mc.player == null) return
         mc.world.removeEntityFromWorld(-6969420)
         mc.setRenderViewEntity(mc.player)
@@ -49,11 +51,14 @@ object Freecam : Module() {
         if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
     }
 
+    override fun onEnable() {
+        mc.renderChunksMany = false
+    }
+
     init {
         listener<ConnectionEvent.Disconnect> {
             prevThirdPersonViewSetting = -1
             cameraGuy = null
-            mc.renderChunksMany = true
             if (disableOnDisconnect.value) disable()
         }
 
