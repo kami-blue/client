@@ -25,7 +25,7 @@ class KamiGuiDisconnected(private val reason: Array<String>, private val screen:
             drawCenteredString(fontRenderer, reason, width / 2, 94 + (14 * index), 0xFFFFFF)
         }
 
-        drawCenteredString(fontRenderer, "Logged out at : $logoutTime", width / 2, 140,0x9B90FF )
+        drawCenteredString(fontRenderer, "Logged out at: $logoutTime", width / 2, 140, 0xFFFFFFF)
 
         if (!disable) drawCenteredString(fontRenderer, "Disabled AutoLog", width / 2, 224, 0xDE413C)
         super.drawScreen(mouseX, mouseY, partialTicks)
