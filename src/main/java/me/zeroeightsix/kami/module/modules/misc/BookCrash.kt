@@ -42,7 +42,7 @@ object BookCrash : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (mc.currentServerData == null || mc.currentServerData.serverIP.isEmpty() || mc.connection == null) {
+            if (mc.currentServerData == null || mc.currentServerData?.serverIP.isNullOrBlank() || mc.connection == null) {
                 sendChatMessage("Not connected to a server")
                 disable()
                 return@listener

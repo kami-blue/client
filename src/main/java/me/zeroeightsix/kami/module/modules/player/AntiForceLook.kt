@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.mixin.extension.rotationPitch
+import me.zeroeightsix.kami.mixin.extension.rotationYaw
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.server.SPacketPlayerPosLook
@@ -15,8 +17,8 @@ object AntiForceLook : Module() {
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketPlayerPosLook || mc.player == null) return@listener
-            it.packet.yaw = mc.player.rotationYaw
-            it.packet.pitch = mc.player.rotationPitch
+            it.packet.rotationYaw = mc.player.rotationYaw
+            it.packet.rotationPitch = mc.player.rotationPitch
         }
     }
 }

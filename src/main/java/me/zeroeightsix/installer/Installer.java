@@ -1,9 +1,9 @@
 package me.zeroeightsix.installer;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.util.FolderHelper;
-import me.zeroeightsix.kami.util.OperatingSystemHelper;
 import me.zeroeightsix.kami.util.WebUtils;
+import me.zeroeightsix.kami.util.filesystem.FolderHelper;
+import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,7 +23,7 @@ public class Installer extends JPanel {
     String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Ran the " + KamiMod.MODNAME + " " + KamiMod.VER_FULL_BETA + " installer!");
+        System.out.println("Ran the " + KamiMod.NAME + " " + KamiMod.VERSION + " installer!");
 
         /* ensure mods exists */
         new File(getModsFolder()).mkdirs();
@@ -154,12 +154,12 @@ public class Installer extends JPanel {
         }).start();
 
         /* please ignore the clusterfuck of code that this is */
-        System.out.println(KamiMod.MODNAME + " download started!");
+        System.out.println(KamiMod.NAME + " download started!");
         if (version == VersionType.STABLE) {
             try {
                 WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
                 dialog[0].hide();
-                System.out.println(KamiMod.MODNAME + " download finished!");
+                System.out.println(KamiMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
             }
@@ -167,7 +167,7 @@ public class Installer extends JPanel {
             try {
                 WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
                 dialog[0].hide();
-                System.out.println(KamiMod.MODNAME + " download finished!");
+                System.out.println(KamiMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
             }

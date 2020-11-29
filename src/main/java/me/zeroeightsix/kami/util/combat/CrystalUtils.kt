@@ -41,7 +41,7 @@ object CrystalUtils {
     fun canPlace(pos: BlockPos, entity: EntityLivingBase? = null): Boolean {
         val placeBB = getCrystalPlacingBB(pos.up())
         return canPlaceOn(pos)
-                && (entity == null || !placeBB.intersects(entity.boundingBox))
+                && (entity == null || !placeBB.intersects(entity.entityBoundingBox))
                 && mc.world?.checkBlockCollision(placeBB) == false
     }
 
@@ -65,18 +65,18 @@ object CrystalUtils {
     /* End of position finding */
 
     /* Damage calculation */
-    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox) =
+    fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox) =
             calcDamage(crystal.positionVector, entity, entityPos, entityBB)
 
-    fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox) =
+    fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox) =
             calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
 
-    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.boundingBox): Float {
+    fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox): Float {
         // Return 0 directly if entity is a player and in creative mode
         if (entity is EntityPlayer && entity.isCreative) return 0.0f
 
         // Calculate raw damage (based on blocks and distance)
-        var damage = calcRawDamage(pos, entityPos ?: entity.positionVector, entityBB ?: entity.boundingBox)
+        var damage = calcRawDamage(pos, entityPos ?: entity.positionVector, entityBB ?: entity.entityBoundingBox)
 
         // Calculate damage after armor, enchantment, resistance effect absorption
         damage = CombatUtils.calcDamage(entity, damage, getDamageSource(pos) ?: return 0.0f)

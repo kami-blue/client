@@ -23,17 +23,18 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(
-    modid = KamiMod.MODID,
-    name = KamiMod.MODNAME,
-    version = KamiMod.VER_FULL_BETA
+        modid = KamiMod.ID,
+        name = KamiMod.NAME,
+        version = KamiMod.VERSION
 )
 public class KamiMod {
 
-    public static final String MODNAME = "KAMI Blue";
-    public static final String MODID = "kamiblue";
-    public static final String VER_FULL_BETA = "v1.1.7-beta"; // this is changed to v1.x.x-commit for debugging by automatic builds
-    public static final String VER_SMALL = "v1.1.7-beta"; // shown to the user, unchanged
-    public static final String VER_STABLE = "1.11.01"; // used for update checking
+    public static final String NAME = "KAMI Blue";
+    public static final String ID = "kamiblue";
+    public static final String VERSION = "1.11.xx-dev"; // Used for debugging. R.MM.DD-hash format.
+    public static final String VERSION_SIMPLE = "1.11.xx-dev"; // Shown to the user. R.MM.DD[-beta] format.
+    public static final String VERSION_MAJOR = "1.11.01"; // Used for update checking. RR.MM.01 format.
+    public static final int BUILD_NUMBER = -1; // Do not remove, currently unused but will be used in the future.
 
     public static final String APP_ID = "638403216278683661";
 
@@ -70,7 +71,7 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        LOG.info("Initializing " + MODNAME + " " + VER_FULL_BETA);
+        LOG.info("Initializing " + NAME + " " + VERSION);
 
         ModuleManager.load();
         ManagerLoader.load();
@@ -90,7 +91,7 @@ public class KamiMod {
             if (module.isEnabled()) module.enable();
         }
 
-        log.info(MODNAME + " Mod initialized!");
+        LOG.info(MODNAME + " Mod initialized!");
     }
 
     @Mod.EventHandler

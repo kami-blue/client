@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.mixin.extension.editLine
+import me.zeroeightsix.kami.mixin.extension.tileSign
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiButton

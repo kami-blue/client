@@ -102,7 +102,7 @@ object BlockUtils {
      * is true or player is above the void
      */
     fun getGroundPosY(checkLiquid: Boolean): Double {
-        val boundingBox = mc.player.boundingBox
+        val boundingBox = mc.player.entityBoundingBox
         var yOffset = mc.player.posY - boundingBox.minY
         val xArray = arrayOf(floor(boundingBox.minX).toInt(), floor(boundingBox.maxX).toInt())
         val zArray = arrayOf(floor(boundingBox.minZ).toInt(), floor(boundingBox.maxZ).toInt())
@@ -120,7 +120,7 @@ object BlockUtils {
     }
 
     fun isLiquid(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).block.material.isLiquid
+        return mc.world.getBlockState(pos).material.isLiquid
     }
 
     fun isWater(pos: BlockPos): Boolean {

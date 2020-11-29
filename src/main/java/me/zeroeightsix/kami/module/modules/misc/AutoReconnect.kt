@@ -1,6 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.mixin.extension.message
+import me.zeroeightsix.kami.mixin.extension.parentScreen
+import me.zeroeightsix.kami.mixin.extension.reason
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
@@ -17,7 +20,7 @@ import kotlin.math.max
         alwaysListening = true
 )
 object AutoReconnect : Module() {
-    private val delay = setting("Delay", 5.0f, 1.0f..100.0f, 0.5f)
+    private val delay = setting("Delay", 5.0f, 0.5f..100.0f, 0.5f)
 
     private var prevServerDate: ServerData? = null
 

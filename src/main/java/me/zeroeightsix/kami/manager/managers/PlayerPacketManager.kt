@@ -6,6 +6,10 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.mixin.*
+import me.zeroeightsix.kami.mixin.client.accessor.*
+import me.zeroeightsix.kami.mixin.client.accessor.network.*
+import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper

@@ -136,7 +136,7 @@ object EntityUtils {
      */
     fun canEntityHitboxBeSeen(entity: Entity): Vec3d? {
         val playerPos = mc.player.positionVector.add(0.0, mc.player.eyeHeight.toDouble(), 0.0)
-        val box = entity.boundingBox
+        val box = entity.entityBoundingBox
         val xArray = arrayOf(box.minX + 0.1, box.maxX - 0.1)
         val yArray = arrayOf(box.minY + 0.1, box.maxY - 0.1)
         val zArray = arrayOf(box.minZ + 0.1, box.maxZ - 0.1)

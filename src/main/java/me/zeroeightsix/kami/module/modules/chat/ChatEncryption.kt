@@ -2,6 +2,8 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.mixin.extension.packetMessage
+import me.zeroeightsix.kami.mixin.extension.textComponent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.event.listener
@@ -50,7 +52,7 @@ object ChatEncryption : Module() {
     init {
         listener<PacketEvent.Send> {
             if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
-            var s = it.packet.getMessage()
+            var s = it.packet.packetMessage
             if (delimiterSetting.value) {
                 if (delimiter == null || !s.startsWith(delimiter!!)) return@listener
                 s = s.substring(1)
@@ -72,12 +74,12 @@ object ChatEncryption : Module() {
                 it.cancel()
                 return@listener
             }
-            it.packet.message = s
+            it.packet.packetMessage = s
         }
 
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketChat) return@listener
-            var s = it.packet.getChatComponent().unformattedText
+            var s = it.packet.textComponent.unformattedText
             if (!self.value && isOwn(s)) return@listener
             val matcher = pattern.matcher(s)
             var username = "unnamed"
@@ -100,7 +102,7 @@ object ChatEncryption : Module() {
                     s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
                 }
             }
-            it.packet.chatComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "lDECRYPTED" + TextFormatting.RESET + ": " + builder.toString())
+            it.packet.textComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "lDECRYPTED" + TextFormatting.RESET + ": " + builder.toString())
         }
     }
 

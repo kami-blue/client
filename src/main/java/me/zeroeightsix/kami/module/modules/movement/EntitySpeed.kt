@@ -37,13 +37,15 @@ object EntitySpeed : Module() {
 
     init {
         listener<PacketEvent.Send> {
-            if (!forceInteract.value || mc.player?.ridingEntity !is EntityBoat) return@listener
+            val ridingEntity = mc.player?.ridingEntity
+
+            if (!forceInteract.value || ridingEntity !is EntityBoat) return@listener
             if (it.packet is CPacketPlayer.Rotation || it.packet is CPacketInput) {
                 it.cancel()
             }
             if (it.packet is CPacketVehicleMove) {
-                if (mc.player?.ridingEntity is EntityBoat && mc.player.ticksExisted % interactTickDelay.value == 0) {
-                    mc.playerController.interactWithEntity(mc.player, mc.player.ridingEntity, EnumHand.MAIN_HAND)
+                if (mc.player.ticksExisted % interactTickDelay.value == 0) {
+                    mc.playerController.interactWithEntity(mc.player, ridingEntity, EnumHand.MAIN_HAND)
                 }
             }
         }

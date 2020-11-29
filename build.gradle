@@ -42,7 +42,6 @@ compileTestKotlin {
     }
 }
 
-sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }

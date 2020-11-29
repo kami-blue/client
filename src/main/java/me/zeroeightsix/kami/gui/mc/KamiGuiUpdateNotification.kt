@@ -53,12 +53,12 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
                 }
 
                 latest = parser.parse(rawJson).asJsonObject.getAsJsonObject("stable")["name"].asString
-                isLatest = latest.equals(KamiMod.VER_STABLE)
+                isLatest = latest.equals(KamiMod.VERSION_MAJOR)
 
                 if (!isLatest) {
-                    KamiMod.LOG.warn("You are running an outdated version of KAMI Blue.\nCurrent: ${KamiMod.VER_STABLE}\nLatest: $latest")
+                    KamiMod.LOG.warn("You are running an outdated version of KAMI Blue.\nCurrent: ${KamiMod.VERSION_MAJOR}\nLatest: $latest")
                 } else {
-                    KamiMod.LOG.info("Your KAMI Blue (" + KamiMod.VER_STABLE + ") is up-to-date with the latest stable release.")
+                    KamiMod.LOG.info("Your KAMI Blue (" + KamiMod.VERSION_MAJOR + ") is up-to-date with the latest stable release.")
                 }
             } catch (e: IOException) {
                 KamiMod.LOG.error("Oes noes! An exception was thrown during the update check.", e)

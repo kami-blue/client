@@ -222,7 +222,7 @@ object AutoSpawner : Module() {
     }
 
     private fun checkItemStackSize(stack: ItemStack, target: Int): Boolean {
-        return mc.player.isCreative && stack.stackSize >= 1 || stack.stackSize >= target
+        return mc.player.isCreative && stack.count >= 1 || stack.count >= target
     }
 
     private fun testStructure(): Boolean {

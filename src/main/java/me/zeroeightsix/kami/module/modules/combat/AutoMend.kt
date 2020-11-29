@@ -30,6 +30,10 @@ object AutoMend : Module() {
             isGuiOpened = it.screen != null
         }
 
+        listener<GuiScreenEvent.Closed> {
+            isGuiOpened = false
+        }
+
         listener<SafeTickEvent> {
             if (isGuiOpened && !gui.value) return@listener
 

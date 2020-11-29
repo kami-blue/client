@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.filesystem
 
-import me.zeroeightsix.kami.util.OperatingSystemHelper.OperatingSystem.*
+import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper.OperatingSystem.*
 
 /**
  * @author l1ving

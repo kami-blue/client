@@ -26,6 +26,7 @@ object AntiOverlay : Module() {
     private val vignette = setting("Vignette", true)
     private val helmet = setting("Helmet", true)
     private val tutorial = setting("Tutorial", true)
+    private val potionIcons = setting("PotionIcons", false)
 
     init {
         listener<RenderBlockOverlayEvent> {
@@ -42,6 +43,7 @@ object AntiOverlay : Module() {
                 RenderGameOverlayEvent.ElementType.VIGNETTE -> vignette.value
                 RenderGameOverlayEvent.ElementType.PORTAL -> portals.value
                 RenderGameOverlayEvent.ElementType.HELMET -> helmet.value
+                RenderGameOverlayEvent.ElementType.POTION_ICONS -> potionIcons.value
                 else -> it.isCanceled
             }
         }

@@ -23,8 +23,10 @@ object ManagerLoader {
     @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
+            val stopTimer = TimerUtils.StopTimer()
             managerClassList = ClassUtils.findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)
-            KamiMod.LOG.info("${managerClassList!!.size} managers found")
+            val time = stopTimer.stop()
+            KamiMod.LOG.info("${managerClassList!!.size} manager(s) found, took ${time}ms")
         }
         preLoadingThread!!.name = "Managers Pre-Loading"
         preLoadingThread!!.start()

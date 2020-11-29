@@ -107,7 +107,7 @@ object DiscordRPC : Module() {
     private fun getLine(line: LineInfo): String {
         return when (line) {
             LineInfo.VERSION -> {
-                KamiMod.VER_SMALL
+                KamiMod.VERSION_SIMPLE
             }
             LineInfo.WORLD -> {
                 when {
@@ -145,7 +145,7 @@ object DiscordRPC : Module() {
                 "Holding ${mc.player?.heldItemMainhand?.displayName ?: "Air"}" // Holding air meme
             }
             LineInfo.FPS -> {
-                "${Minecraft.debugFPS} FPS"
+                "${Minecraft.getDebugFPS()} FPS"
             }
             LineInfo.TPS -> {
                 if (mc.player != null) "${MathUtils.round(TpsCalculator.tickRate, 1)} tps"

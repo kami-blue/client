@@ -41,19 +41,21 @@ object Freecam : Module() {
     var cameraGuy: EntityPlayer? = null; private set
     var resetInput = false
 
+    private const val ENTITY_ID = -6969420
+
     override fun onDisable() {
-        if (mc.player == null) return
-        mc.world.removeEntityFromWorld(-6969420)
-        mc.setRenderViewEntity(mc.player)
-        cameraGuy = null
-        if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
+        mc.renderChunksMany = true
+        resetCameraGuy()
+    }
+
+    override fun onEnable() {
+        mc.renderChunksMany = false
     }
 
     init {
         listener<ConnectionEvent.Disconnect> {
             prevThirdPersonViewSetting = -1
             cameraGuy = null
-            mc.renderChunksMany = true
             if (disableOnDisconnect.value) disable()
         }
 
@@ -73,7 +75,7 @@ object Freecam : Module() {
             if (it.phase != TickEvent.Phase.END) return@listener
 
             if (mc.player.isDead || mc.player.health <= 0.0f) {
-                if (cameraGuy != null) onDisable() // Reset the view entity, but not disable it
+                if (cameraGuy != null) resetCameraGuy()
                 return@listener
             }
 
@@ -95,10 +97,10 @@ object Freecam : Module() {
         // Create a cloned player
         cameraGuy = FakeCamera(mc.player).also {
             // Add it to the world
-            mc.world.addEntityToWorld(-6969420, it)
+            mc.world.addEntityToWorld(ENTITY_ID, it)
 
             // Set the render view entity to our camera guy
-            mc.setRenderViewEntity(it)
+            mc.renderViewEntity = it
 
             // Reset player movement input
             resetInput = true
@@ -137,6 +139,14 @@ object Freecam : Module() {
 
             mc.player.movementInput.jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
         }
+    }
+
+    private fun resetCameraGuy() {
+        if (mc.player == null) return
+        mc.world.removeEntityFromWorld(ENTITY_ID)
+        mc.renderViewEntity = mc.player
+        cameraGuy = null
+        if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
     }
 
     private class FakeCamera(val player: EntityPlayerSP) : EntityOtherPlayerMP(mc.world, mc.session.profile) {
