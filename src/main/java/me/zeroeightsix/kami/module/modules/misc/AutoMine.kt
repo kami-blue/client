@@ -12,26 +12,25 @@ import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
-        name = "AutoMine",
-        description = "Automatically mines chosen ores",
-        category = Module.Category.MISC
+    name = "AutoMine",
+    description = "Automatically mines chosen ores",
+    category = Module.Category.MISC
 )
 object AutoMine : Module() {
 
     private val manual = register(Settings.b("Manual", false))
-    private val iron = register(Settings.booleanBuilder("Iron").withValue(false).withVisibility { !manual.value})
-    private val diamond = register(Settings.booleanBuilder("Diamond").withValue(false).withVisibility { !manual.value})
-    private val gold = register(Settings.booleanBuilder("Gold").withValue(false).withVisibility { !manual.value})
-    private val coal = register(Settings.booleanBuilder("Coal").withValue(false).withVisibility { !manual.value})
-    private val log = register(Settings.booleanBuilder("Log").withValue(false).withVisibility { !manual.value})
+    private val iron = register(Settings.booleanBuilder("Iron").withValue(false).withVisibility { !manual.value })
+    private val diamond = register(Settings.booleanBuilder("Diamond").withValue(false).withVisibility { !manual.value })
+    private val gold = register(Settings.booleanBuilder("Gold").withValue(false).withVisibility { !manual.value })
+    private val coal = register(Settings.booleanBuilder("Coal").withValue(false).withVisibility { !manual.value })
+    private val log = register(Settings.booleanBuilder("Log").withValue(false).withVisibility { !manual.value })
 
     override fun onEnable() {
         if (mc.player == null) {
             disable()
-            return
-        }
-        if(!manual.value)
+        } else if (!manual.value) {
             run()
+        }
     }
 
     private fun run() {
@@ -71,7 +70,7 @@ object AutoMine : Module() {
         }
 
         listener<SafeTickEvent> {
-            if(manual.value){
+            if (manual.value) {
                 mc.sendClickBlockToController(true)
             }
         }
