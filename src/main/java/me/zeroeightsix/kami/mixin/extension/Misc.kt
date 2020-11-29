@@ -23,6 +23,8 @@ var Minecraft.rightClickDelayTimer: Int
 
 fun Minecraft.rightClickMouse() = (this as AccessorMinecraft).invokeRightClickMouse()
 
+fun Minecraft.sendClickBlockToController(leftClick: Boolean) = (this as AccessorMinecraft).invokeSendClickBlockToController(leftClick)
+
 var Timer.tickLength: Float
     get() = (this as AccessorTimer).tickLength
     set(value) {

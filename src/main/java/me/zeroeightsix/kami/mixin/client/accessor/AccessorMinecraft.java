@@ -24,4 +24,7 @@ public interface AccessorMinecraft {
     @Invoker
     void invokeRightClickMouse();
 
+    @Invoker
+    void invokeSendClickBlockToController(boolean leftClick);
+
 }
