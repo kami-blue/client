@@ -36,7 +36,7 @@ object Freecam : Module() {
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
-    private val directionMode = register(Settings.enumBuilder(DirectionMode::class.java, "DirectionMode").withValue(DirectionMode.SpaceUp))
+    private val directionMode = register(Settings.e<DirectionMode>("DirectionMode", DirectionMode.SpaceUp))
 
     private enum class DirectionMode {
         SpaceUp, Look
