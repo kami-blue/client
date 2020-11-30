@@ -161,7 +161,7 @@ object NoRender : Module() {
 
     init {
         val listener = SettingListeners { updateList() }
-        fullSettingList.forEach { it.settingListener = listener }
+        settingList.forEach { it.settingListener = listener }
     }
 
 }
