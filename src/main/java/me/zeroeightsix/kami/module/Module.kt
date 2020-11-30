@@ -64,11 +64,16 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    val settingList = ArrayList<Setting<*>>()
+    val fullSettingList = ArrayList<Setting<*>>()
+    val settingList: List<Setting<*>> by lazy { fullSettingList.filter {
+        it != name && it != bind && it != enabled && it != showOnArray && it != default
+    } }
+
     val name = register(Settings.s("Name", originalName))
-    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()).build())
-    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled).build())
+    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()))
+    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled))
     private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
+    private val default = Settings.booleanBuilder("Default").withValue(false).withVisibility { settingList.isNotEmpty() }.build().also { fullSettingList.add(it) }
     /* End of settings */
 
     /* Properties */
@@ -137,13 +142,13 @@ open class Module {
 
     /* Setting registering */
     protected fun <T> register(setting: Setting<T>): Setting<T> {
-        settingList.add(setting)
+        fullSettingList.add(setting)
         return SettingBuilder.register(setting, "modules.$originalName")
     }
 
     protected fun <T> register(builder: SettingBuilder<T>): Setting<T> {
         val setting = builder.build()
-        settingList.add(setting)
+        fullSettingList.add(setting)
         return SettingBuilder.register(setting, "modules.$originalName")
     }
     /* End of setting registering */
@@ -181,6 +186,16 @@ open class Module {
         }
     }
     /* End of key binding */
+
+    init {
+        default.settingListener = Setting.SettingListeners {
+            if (default.value) {
+                settingList.forEach { it.resetValue() }
+                default.value = false
+                MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
+            }
+        }
+    }
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()

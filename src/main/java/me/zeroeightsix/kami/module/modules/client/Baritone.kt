@@ -35,7 +35,7 @@ object Baritone : Module() {
 
     init {
         val listener = SettingListeners { sync() }
-        settingList.forEach {
+        fullSettingList.forEach {
             it.settingListener = listener
         }
 

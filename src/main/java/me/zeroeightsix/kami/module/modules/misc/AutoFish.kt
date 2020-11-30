@@ -4,12 +4,10 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isWater
 import me.zeroeightsix.kami.util.TimerUtils.TickTimer
 import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import java.lang.Math.random
@@ -28,7 +26,6 @@ import kotlin.math.abs
 )
 object AutoFish : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.BOUNCE))
-    private val defaultSetting = register(Settings.b("Defaults", false))
     private val autoCast = register(Settings.b("AutoCast", true))
     private val castDelay = register(Settings.integerBuilder("AutoCastDelay(s)").withValue(5).withRange(1, 20).withVisibility { autoCast.value })
     private val catchDelay = register(Settings.integerBuilder("CatchDelay(ms)").withValue(300).withRange(50, 2000))
@@ -142,19 +139,5 @@ object AutoFish : Module() {
     private fun resetTimer() {
         val offset = if (variation.value > 0) (random() * (variation.value * 2) - variation.value).toLong() else 0
         timer.reset(offset)
-    }
-
-    private fun defaults() {
-        autoCast.value = true
-        castDelay.value = 5
-        catchDelay.value = 300
-        recastDelay.value = 450
-        variation.value = 100
-        defaultSetting.value = false
-        MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
-    }
-
-    init {
-        defaultSetting.settingListener = SettingListeners { if (defaultSetting.value) defaults() }
     }
 }

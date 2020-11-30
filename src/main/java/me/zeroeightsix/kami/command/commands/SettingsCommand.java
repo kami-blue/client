@@ -33,7 +33,7 @@ public class SettingsCommand extends Command {
 
         try {
             Module m = ModuleManager.getModule(args[0]);
-            List<Setting<?>> settings = m.getSettingList();
+            List<Setting<?>> settings = m.getFullSettingList();
             String[] result = new String[settings.size()];
             for (int i = 0; i < settings.size(); i++) {
                 Setting<?> setting = settings.get(i);

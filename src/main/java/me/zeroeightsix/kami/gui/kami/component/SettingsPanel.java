@@ -47,8 +47,8 @@ public class SettingsPanel extends OrganisedContainer {
             setVisible(false);
             return;
         }
-        if (!module.getSettingList().isEmpty()) {
-            for (Setting setting : module.getSettingList()) {
+        if (!module.getFullSettingList().isEmpty()) {
+            for (Setting setting : module.getFullSettingList()) {
                 if (!setting.isVisible()) continue;
                 String name = setting.getName();
                 boolean isNumber = setting instanceof NumberSetting;
