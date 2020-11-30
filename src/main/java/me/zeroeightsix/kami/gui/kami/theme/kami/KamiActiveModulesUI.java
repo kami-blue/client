@@ -82,9 +82,6 @@ public class KamiActiveModulesUI extends AbstractComponentUI<me.zeroeightsix.kam
                 case CUSTOM:
                     rgb = Color.HSBtoRGB(toF(ActiveModules.INSTANCE.getHueC().getValue()), toF(ActiveModules.INSTANCE.getSaturationC().getValue()), toF(ActiveModules.INSTANCE.getBrightnessC().getValue()));
                     break;
-                case INFO_OVERLAY:
-                    rgb = ActiveModules.INSTANCE.getInfoColour(i);
-                    break;
                 case TRANS_RIGHTS:
                     float value = ((float) i + 1.0f) / (float) modules.size();
                     rgb = transRights.get(value * 100f).toHex();

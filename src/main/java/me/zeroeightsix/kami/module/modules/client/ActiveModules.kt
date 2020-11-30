@@ -6,12 +6,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import net.minecraft.util.text.TextFormatting
-import org.kamiblue.commons.utils.MathUtils.isNumberEven
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
-import java.awt.Color
 
 @Module.Info(
         name = "ActiveModules",
@@ -31,7 +27,10 @@ object ActiveModules : Module() {
     val hueC = register(Settings.integerBuilder("HueC").withValue(178).withRange(0, 255).withVisibility { mode.value == Mode.CUSTOM })
     val saturationC = register(Settings.integerBuilder("SaturationC").withValue(156).withRange(0, 255).withVisibility { mode.value == Mode.CUSTOM })
     val brightnessC = register(Settings.integerBuilder("BrightnessC").withValue(255).withRange(0, 255).withVisibility { mode.value == Mode.CUSTOM })
-    private val alternate = register(Settings.booleanBuilder("Alternate").withValue(true).withVisibility { mode.value == Mode.INFO_OVERLAY })
+
+    enum class Mode {
+        RAINBOW, CUSTOM, CATEGORY, TRANS_RIGHTS
+    }
 
     private val chat = register(Settings.s("Chat", "162,136,227"))
     private val combat = register(Settings.s("Combat", "229,68,109"))
@@ -63,27 +62,6 @@ object ActiveModules : Module() {
         }
     }
 
-    fun getInfoColour(position: Int): Int {
-        return if (!alternate.value) settingsToColour(false) else {
-            if (isNumberEven(position)) {
-                settingsToColour(true)
-            } else {
-                settingsToColour(false)
-            }
-        }
-    }
-
-    private fun settingsToColour(isOne: Boolean): Int {
-        val localColor = when (infoGetSetting(isOne)) {
-            TextFormatting.UNDERLINE, TextFormatting.ITALIC, TextFormatting.RESET, TextFormatting.STRIKETHROUGH, TextFormatting.OBFUSCATED, TextFormatting.BOLD -> ColorTextFormatting.colourEnumMap[TextFormatting.WHITE]?.colorLocal
-                    ?: Color.WHITE
-            else -> ColorTextFormatting.colourEnumMap[infoGetSetting(isOne)]?.colorLocal ?: Color.WHITE
-        }
-        return rgbToHex(localColor.red, localColor.green, localColor.blue)
-    }
-
-    private fun infoGetSetting(isOne: Boolean) = if (isOne) InfoOverlay.first() else InfoOverlay.second()
-
     fun getCategoryColour(module: Module): Int {
         return when (module.category) {
             Category.CHAT -> rgbToHex(getRgb(chat.value, 0), getRgb(chat.value, 1), getRgb(chat.value, 2))
@@ -111,9 +89,5 @@ object ActiveModules : Module() {
     fun getAlignedText(name: String, hudInfo: String, right: Boolean): String {
         val aligned = if (right) "$hudInfo $name" else "$name $hudInfo"
         return if (!forgeHax.value) aligned else if (right) "$aligned<" else ">$aligned"
-    }
-
-    enum class Mode {
-        RAINBOW, CUSTOM, CATEGORY, INFO_OVERLAY, TRANS_RIGHTS
     }
 }
