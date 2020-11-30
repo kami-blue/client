@@ -36,6 +36,11 @@ object Freecam : Module() {
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
+    private val directionMode = register(Settings.enumBuilder(DirectionMode::class.java, "DirectionMode").withValue(DirectionMode.SpaceUp))
+
+    private enum class DirectionMode {
+        SpaceUp, Look
+    }
 
     private var prevThirdPersonViewSetting = -1
     var cameraGuy: EntityPlayer? = null; private set
@@ -179,11 +184,18 @@ object Freecam : Module() {
             isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
 
             val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
+            val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
             val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
 
-            motionX = -sin(yawRad) * speed
-            motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
-            motionZ = cos(yawRad) * speed
+            if (directionMode.value == DirectionMode.Look) {
+                motionX = -sin(yawRad) * cos(pitchRad) * speed
+                motionY = -sin(pitchRad) * speed
+                motionZ = cos(yawRad) * cos(pitchRad) * speed
+            } else {
+                motionX = -sin(yawRad) * speed
+                motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
+                motionZ = cos(yawRad) * speed
+            }
 
             if (isSprinting) {
                 motionX *= 1.5
