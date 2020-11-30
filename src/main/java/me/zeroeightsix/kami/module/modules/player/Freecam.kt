@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.MovementInput
 import net.minecraft.util.MovementInputFromOptions
+import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -131,10 +132,14 @@ object Freecam : Module() {
     }
 
     private fun updatePlayerRotation() {
-        mc.objectMouseOver?.hitVec?.let {
-            val rotation = Vec2f(RotationUtils.getRotationTo(it, true))
-            mc.player?.rotationYaw = rotation.x
-            mc.player?.rotationPitch = rotation.y
+        mc.objectMouseOver?.let {
+            val hitVec = it.hitVec
+            if (it.typeOfHit == RayTraceResult.Type.MISS || hitVec == null) return
+            val rotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+            mc.player?.apply {
+                rotationYaw = rotation.x
+                rotationPitch = rotation.y
+            }
         }
     }
 
