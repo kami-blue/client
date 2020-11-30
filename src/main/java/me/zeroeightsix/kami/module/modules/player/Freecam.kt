@@ -32,14 +32,14 @@ import kotlin.math.sin
 )
 object Freecam : Module() {
     private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
-    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
+    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f).withVisibility { directionMode.value == DirectionMode.CREATIVE })
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
-    private val directionMode = register(Settings.e<DirectionMode>("DirectionMode", DirectionMode.SpaceUp))
+    private val directionMode = register(Settings.e<DirectionMode>("DirectionMode", DirectionMode.CREATIVE))
 
     private enum class DirectionMode {
-        SpaceUp, Look
+        CREATIVE, SOURCE
     }
 
     private var prevThirdPersonViewSetting = -1
@@ -184,10 +184,10 @@ object Freecam : Module() {
             isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
 
             val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
-            val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
             val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
 
-            if (directionMode.value == DirectionMode.Look) {
+            if (directionMode.value == DirectionMode.SOURCE) {
+                val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
                 motionX = -sin(yawRad) * cos(pitchRad) * speed
                 motionY = -sin(pitchRad) * speed
                 motionZ = cos(yawRad) * cos(pitchRad) * speed
