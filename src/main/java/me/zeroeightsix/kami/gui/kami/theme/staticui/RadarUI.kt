@@ -48,33 +48,8 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         drawCircleOutline(vertexHelper, radius = radius.toDouble(), lineWidth = 1.8f, color = ColorHolder(155, 144, 255, 255))
         glRotatef(Wrapper.player!!.rotationYaw + 180, 0f, 0f, -1f)
 
-        if (NewChunks.isEnabled && NewChunks.renderMode.value != NewChunks.RenderMode.WORLD) {
-            val playerOffset = Vec2d((Wrapper.player!!.posX - (Wrapper.player!!.chunkCoordX shl 4)), (Wrapper.player!!.posZ - (Wrapper.player!!.chunkCoordZ shl 4)))
-            val chunkDist = (radius * NewChunks.radarScale.value).toInt() shr 4
-            for (chunkX in -chunkDist..chunkDist) {
-                for (chunkZ in -chunkDist..chunkDist) {
-                    val pos0 = getChunkPos(chunkX, chunkZ, playerOffset)
-                    val pos1 = getChunkPos(chunkX + 1, chunkZ + 1, playerOffset)
-
-                    if (squareInRadius(pos0, pos1)) {
-                        val chunk = Wrapper.world!!.getChunk(Wrapper.player!!.chunkCoordX + chunkX, Wrapper.player!!.chunkCoordZ + chunkZ)
-                        if (!chunk.isLoaded)
-                            drawRectFilled(vertexHelper, pos0, pos1, ColorHolder(100, 100, 100, 100))
-                        drawRectOutline(vertexHelper, pos0, pos1, 0.3f, ColorHolder(255, 0, 0, 100))
-                    }
-                }
-            }
-
-            for (chunk in NewChunks.chunks) {
-
-                val pos0 = getChunkPos(chunk.x - Wrapper.player!!.chunkCoordX, chunk.z - Wrapper.player!!.chunkCoordZ, playerOffset)
-                val pos1 = getChunkPos(chunk.x - Wrapper.player!!.chunkCoordX + 1, chunk.z - Wrapper.player!!.chunkCoordZ + 1, playerOffset)
-
-                if (squareInRadius(pos0, pos1)) {
-                    drawRectFilled(vertexHelper, pos0, pos1, ColorHolder(255, 0, 0, 100))
-                }
-            }
-        }
+        if (NewChunks.isEnabled && NewChunks.renderMode.value != NewChunks.RenderMode.WORLD)
+            renderNewChunks(vertexHelper)
 
         for (entity in Wrapper.world!!.loadedEntityList) {
             if (entity == null || entity.isDead || entity == Wrapper.player) continue
@@ -87,7 +62,6 @@ class RadarUI : AbstractComponentUI<Radar?>() {
             drawCircleFilled(vertexHelper, Vec2d(dX / NewChunks.radarScale.value, dZ / NewChunks.radarScale.value), 2.5 / NewChunks.radarScale.value, color = color)
         }
 
-
         drawCircleFilled(vertexHelper, radius = 1.0, color = ColorHolder(255, 255, 255, 224))
 
         FontRenderAdapter.drawString("\u00A77z+", -FontRenderAdapter.getStringWidth("+z") / 2f, radius - FontRenderAdapter.getFontHeight(), drawShadow = true)
@@ -99,6 +73,34 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         FontRenderAdapter.drawString("\u00A77x+", -FontRenderAdapter.getStringWidth("+x") / 2f, radius - FontRenderAdapter.getFontHeight(), drawShadow = true)
 
         glPopMatrix()
+    }
+
+    private fun renderNewChunks(vertexHelper: VertexHelper){
+        val playerOffset = Vec2d((Wrapper.player!!.posX - (Wrapper.player!!.chunkCoordX shl 4)), (Wrapper.player!!.posZ - (Wrapper.player!!.chunkCoordZ shl 4)))
+        val chunkDist = (radius * NewChunks.radarScale.value).toInt() shr 4
+        for (chunkX in -chunkDist..chunkDist) {
+            for (chunkZ in -chunkDist..chunkDist) {
+                val pos0 = getChunkPos(chunkX, chunkZ, playerOffset)
+                val pos1 = getChunkPos(chunkX + 1, chunkZ + 1, playerOffset)
+
+                if (squareInRadius(pos0, pos1)) {
+                    val chunk = Wrapper.world!!.getChunk(Wrapper.player!!.chunkCoordX + chunkX, Wrapper.player!!.chunkCoordZ + chunkZ)
+                    if (!chunk.isLoaded)
+                        drawRectFilled(vertexHelper, pos0, pos1, ColorHolder(100, 100, 100, 100))
+                    drawRectOutline(vertexHelper, pos0, pos1, 0.3f, ColorHolder(255, 0, 0, 100))
+                }
+            }
+        }
+
+        for (chunk in NewChunks.chunks) {
+
+            val pos0 = getChunkPos(chunk.x - Wrapper.player!!.chunkCoordX, chunk.z - Wrapper.player!!.chunkCoordZ, playerOffset)
+            val pos1 = getChunkPos(chunk.x - Wrapper.player!!.chunkCoordX + 1, chunk.z - Wrapper.player!!.chunkCoordZ + 1, playerOffset)
+
+            if (squareInRadius(pos0, pos1)) {
+                drawRectFilled(vertexHelper, pos0, pos1, ColorHolder(255, 0, 0, 100))
+            }
+        }
     }
 
     private fun getColor(entity: Entity): ColorHolder {
