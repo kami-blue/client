@@ -25,6 +25,7 @@ object AutoExcuse : Module() {
     }
 
     private const val CLIENT_NAME = "%CLIENT%"
+    private const val PLAYER_NAME = "%PLAYER%"
     private val defaultExcuses= arrayOf(
             "Sorry, im using $CLIENT_NAME client",
             "My ping is so bad",
@@ -42,23 +43,32 @@ object AutoExcuse : Module() {
             "I was lagging",
             "He was cheating!",
             "Your hacking!",
-            "Lol imagine actully trying",
+            "Dude you'r using $CLIENT_NAME client i had no chance",
+            "Lol imagine actually trying",
             "I didn't move my mouse",
             "I was playing on easy mode(;",
             "My wifi went down",
             "I'm playing vanila",
             "My optifine didn't work",
+            "$PLAYER_NAME killed me, his too good its not fair",
             "The CPU cheated!"
     )
-
+        
     private val file = File(KamiMod.DIRECTORY + "excuses.txt")
     private var loadedExcuses = defaultExcuses
-
+        
     private val clients = arrayOf(
             "Future",
             "Salhack",
             "Pyro",
             "Impact"
+    )
+            
+         private val players = arrayOf(
+            "Popbob",
+            "Jared2013",
+            "Living",
+            "Fit"
     )
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -94,5 +104,5 @@ object AutoExcuse : Module() {
         }
     }
 
-    private fun getExcuse() = loadedExcuses.random().replace(CLIENT_NAME, clients.random())
+    private fun getExcuse() = loadedExcuses.().replace(CLIENT_NAME, clients.random(), PLAYER_NAME, players.random())
 }
