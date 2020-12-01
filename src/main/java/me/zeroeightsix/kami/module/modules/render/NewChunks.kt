@@ -40,17 +40,21 @@ object NewChunks : Module() {
     private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value })
     private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
     private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
-    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4))
-    private val customColor = register(Settings.b("CustomColor", false))
-    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
-    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
-    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value })
+    val renderMode = register(Settings.enumBuilder(RenderMode::class.java, "RenderMode").withValue(RenderMode.BOTH))
+    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4).withVisibility { renderMode.value != RenderMode.RADAR })
+    private val customColor = register(Settings.booleanBuilder("CustomColor").withValue(false).withVisibility { renderMode.value != RenderMode.RADAR })
+    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
+    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
+    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
     private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
+    val radarScale = register(Settings.doubleBuilder("RadarScale").withRange(1.0,10.0).withValue(4.0).withStep(0.1).withVisibility { renderMode.value != RenderMode.WORLD })
+    private val removeMode = register(Settings.enumBuilder(RemoveMode::class.java, "RemoveMode").withValue(RemoveMode.MAX_NUM))
+    private val maxNum = register(Settings.integerBuilder("MaxNum").withRange(1000, 100_000).withValue(10_000).withStep(1000).withVisibility { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
-    private val chunks = ArrayList<Chunk>()
+    val chunks = HashSet<Chunk>()
 
     override fun onDisable() {
         logWriterClose()
@@ -71,6 +75,7 @@ object NewChunks : Module() {
         }
 
         listener<RenderWorldEvent> {
+            if(renderMode.value == RenderMode.RADAR) return@listener
             val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y else 0.0
             glLineWidth(2.0f)
             GlStateUtils.depth(false)
@@ -92,10 +97,22 @@ object NewChunks : Module() {
             if (it.packet.isFullChunk) return@listener
             chunks.add(it.chunk)
             if (saveNewChunks.value) saveNewChunk(it.chunk)
+            if (removeMode.value == RemoveMode.MAX_NUM && chunks.size > maxNum.value) {
+                var removeChunk = chunks.first()
+                var maxDist = Double.MIN_VALUE
+                chunks.forEach { c ->
+                    if (c.pos.getDistanceSq(mc.player) > maxDist) {
+                        maxDist = c.pos.getDistanceSq(mc.player)
+                        removeChunk = c
+                    }
+                }
+                chunks.remove(removeChunk)
+            }
         }
 
         listener<net.minecraftforge.event.world.ChunkEvent.Unload> {
-            chunks.remove(it.chunk)
+            if (removeMode.value == RemoveMode.UNLOAD)
+                chunks.remove(it.chunk)
         }
     }
 
@@ -258,6 +275,13 @@ object NewChunks : Module() {
 
     private enum class SaveOption {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL
+    }
+
+    private enum class RemoveMode {
+        UNLOAD, MAX_NUM, NEVER
+    }
+    enum class RenderMode {
+        WORLD, RADAR, BOTH
     }
 
     private class LastSetting {
