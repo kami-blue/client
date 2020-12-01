@@ -104,5 +104,5 @@ object AutoExcuse : Module() {
         }
     }
 
-    private fun getExcuse() = loadedExcuses.().replace(CLIENT_NAME, clients.random(), PLAYER_NAME, players.random())
+    private fun getExcuse() = loadedExcuses.random().replace(CLIENT_NAME, clients.random(), PLAYER_NAME, players.random())
 }
