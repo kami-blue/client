@@ -40,7 +40,7 @@ object NewChunks : Module() {
     private val saveInRegionFolder = register(Settings.booleanBuilder("InRegion").withValue(false).withVisibility { saveNewChunks.value })
     private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
     private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
-    val renderMode = register(Settings.enumBuilder(RenderMode::class.java, "RenderMode").withValue(RenderMode.BOTH))
+    val renderMode = register(Settings.e<RenderMode>("RenderMode", RenderMode.BOTH))
     private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4).withVisibility { renderMode.value != RenderMode.RADAR })
     private val customColor = register(Settings.booleanBuilder("CustomColor").withValue(false).withVisibility { renderMode.value != RenderMode.RADAR })
     private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
@@ -48,7 +48,7 @@ object NewChunks : Module() {
     private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
     private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
     val radarScale = register(Settings.doubleBuilder("RadarScale").withRange(1.0,10.0).withValue(4.0).withStep(0.1).withVisibility { renderMode.value != RenderMode.WORLD })
-    private val removeMode = register(Settings.enumBuilder(RemoveMode::class.java, "RemoveMode").withValue(RemoveMode.MAX_NUM))
+    private val removeMode = register(Settings.e<RemoveMode>("RemoveMode", RemoveMode.MAX_NUM))
     private val maxNum = register(Settings.integerBuilder("MaxNum").withRange(1000, 100_000).withValue(10_000).withStep(1000).withVisibility { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
