@@ -97,7 +97,7 @@ dependencies {
 
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
 
-    compile('org.spongepowered:mixin:0.8.2') {
+    compile('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         exclude module: 'launchwrapper'
         exclude module: 'guava'
         exclude module: 'gson'
@@ -120,6 +120,7 @@ dependencies {
 }
 
 mixin {
+    disableAnnotationProcessorCheck = true
     defaultObfuscationEnv 'searge'
     add sourceSets.main, 'mixins.kami.refmap.json'
 }
