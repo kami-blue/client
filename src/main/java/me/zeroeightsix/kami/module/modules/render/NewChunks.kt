@@ -41,13 +41,13 @@ object NewChunks : Module() {
     private val alsoSaveNormalCoords = register(Settings.booleanBuilder("SaveNormalCoords").withValue(false).withVisibility { saveNewChunks.value })
     private val closeFile = register(Settings.booleanBuilder("CloseFile").withValue(false).withVisibility { saveNewChunks.value })
     private val renderMode = register(Settings.e<RenderMode>("RenderMode", RenderMode.BOTH))
-    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4).withVisibility { renderMode.value != RenderMode.RADAR })
-    private val customColor = register(Settings.booleanBuilder("CustomColor").withValue(false).withVisibility { renderMode.value != RenderMode.RADAR })
-    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
-    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
-    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && renderMode.value != RenderMode.RADAR })
+    private val yOffset = register(Settings.integerBuilder("YOffset").withValue(0).withRange(-256, 256).withStep(4).withVisibility { isWorldMode })
+    private val customColor = register(Settings.booleanBuilder("CustomColor").withValue(false).withVisibility { isWorldMode })
+    private val red = register(Settings.integerBuilder("Red").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && isWorldMode })
+    private val green = register(Settings.integerBuilder("Green").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && isWorldMode })
+    private val blue = register(Settings.integerBuilder("Blue").withRange(0, 255).withValue(255).withStep(1).withVisibility { customColor.value && isWorldMode })
     private val range = register(Settings.integerBuilder("RenderRange").withValue(256).withRange(64, 1024).withStep(64))
-    val radarScale = register(Settings.doubleBuilder("RadarScale").withRange(1.0, 10.0).withValue(2.0).withStep(0.1).withVisibility { renderMode.value != RenderMode.WORLD })
+    val radarScale = register(Settings.doubleBuilder("RadarScale").withRange(1.0, 10.0).withValue(2.0).withStep(0.1).withVisibility { isRadarMode })
     private val removeMode = register(Settings.e<RemoveMode>("RemoveMode", RemoveMode.MAX_NUM))
     private val maxNum = register(Settings.integerBuilder("MaxNum").withRange(1000, 100_000).withValue(10_000).withStep(1000).withVisibility { removeMode.value == RemoveMode.MAX_NUM })
 
@@ -171,7 +171,7 @@ object NewChunks : Module() {
             // If there is an integrated server running (Aka Singleplayer) then do magic to find the world save file
             if (mc.isSingleplayer) {
                 try {
-                    file = Objects.requireNonNull(mc.getIntegratedServer())!!.getWorld(dimension).chunkSaveLocation
+                    file = mc.integratedServer?.getWorld(dimension)?.chunkSaveLocation
                 } catch (e: Exception) {
                     e.printStackTrace()
                     KamiMod.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
@@ -218,7 +218,7 @@ object NewChunks : Module() {
         var folderName: String
         when (saveOption.value) {
             SaveOption.LITE_LOADER_WDL -> {
-                folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverName
+                folderName = mc.currentServerData?.serverName ?: "Offline"
                 rV = File(rV, "saves")
                 rV = File(rV, folderName)
             }
@@ -235,7 +235,7 @@ object NewChunks : Module() {
                 }
             }
             else -> {
-                folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverName + "-" + mc.getCurrentServerData()!!.serverIP
+                folderName = mc.currentServerData?.serverName + "-" + mc.currentServerData?.serverIP
                 if (SystemUtils.IS_OS_WINDOWS) {
                     folderName = folderName.replace(":", "_")
                 }
@@ -249,7 +249,7 @@ object NewChunks : Module() {
     // if there is no port then we have to manually include the standard port..
     private val nHackInetName: String
         get() {
-            var folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverIP
+            var folderName = mc.currentServerData?.serverIP ?: "Offline"
             if (SystemUtils.IS_OS_WINDOWS) {
                 folderName = folderName.replace(":", "_")
             }
@@ -277,6 +277,7 @@ object NewChunks : Module() {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL
     }
 
+    @Suppress("unused")
     private enum class RemoveMode {
         UNLOAD, MAX_NUM, NEVER
     }
@@ -285,7 +286,8 @@ object NewChunks : Module() {
         WORLD, RADAR, BOTH
     }
 
-    val renderRadar get() = isActive() && (renderMode.value == RenderMode.BOTH || renderMode.value == RenderMode.RADAR)
+    val isRadarMode get() = renderMode.value == RenderMode.BOTH || renderMode.value == RenderMode.RADAR
+    private val isWorldMode get() = renderMode.value == RenderMode.BOTH || renderMode.value == RenderMode.WORLD
 
     private class LastSetting {
         var lastSaveOption: SaveOption? = null
@@ -308,7 +310,7 @@ object NewChunks : Module() {
                     || saveInRegionFolder.value != lastInRegion
                     || alsoSaveNormalCoords.value != lastSaveNormal
                     || dimension != mc.player.dimension
-                    || mc.getCurrentServerData()?.serverIP != ip
+                    || mc.currentServerData?.serverIP != ip
         }
 
         private fun update() {
@@ -316,7 +318,7 @@ object NewChunks : Module() {
             lastInRegion = saveInRegionFolder.value
             lastSaveNormal = alsoSaveNormalCoords.value
             dimension = mc.player.dimension
-            ip = Objects.requireNonNull(mc.getCurrentServerData())!!.serverIP
+            ip = mc.currentServerData?.serverIP
         }
     }
 

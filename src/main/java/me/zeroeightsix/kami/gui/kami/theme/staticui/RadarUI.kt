@@ -55,7 +55,7 @@ class RadarUI : AbstractComponentUI<Radar?>() {
         drawCircleOutline(vertexHelper, radius = radius.toDouble(), lineWidth = 1.8f, color = outlineCircleColor)
         glRotatef(Wrapper.player!!.rotationYaw + 180, 0f, 0f, -1f)
 
-        if (NewChunks.renderRadar) renderNewChunks(vertexHelper)
+        if (NewChunks.isEnabled && NewChunks.isRadarMode) renderNewChunks(vertexHelper)
 
         for (entity in Wrapper.world!!.loadedEntityList) {
             if (entity == null || entity.isDead || entity == Wrapper.player) continue
