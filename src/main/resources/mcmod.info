@@ -3,7 +3,7 @@
     "modid": "kamiblue",
     "name": "KAMI Blue",
     "description": "カミブル \nA Minecraft utility mod for anarchy servers \nWritten by 086 and continued by l1ving\n",
-    "version": "1.11.xx-dev",
+    "version": "1.12.xx-dev",
     "mcversion": "1.12.2",
     "logoFile": "kami.png",
     "url": "https://github.com/kami-blue/client",

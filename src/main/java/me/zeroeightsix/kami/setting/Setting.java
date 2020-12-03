@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.setting;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import me.zeroeightsix.kami.setting.converter.Convertable;
 
@@ -11,34 +12,26 @@ import java.util.function.Predicate;
  */
 public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
 
-    String name;
-
-    T value;
-
+    private final String name;
+    private final T defaultValue;
+    private final Class<?> valueType;
     /**
      * Returns false if the value is "out of bounds"
      */
-    private Predicate<T> restriction;
-
-    private Predicate<T> visibilityPredicate;
-
-    private BiConsumer<T, T> consumer;
-
-    private final Class valueType;
-
+    private final Predicate<T> restriction;
+    private final Predicate<T> visibilityPredicate;
+    private final BiConsumer<T, T> consumer;
     public SettingListeners settingListener;
-
-    public interface SettingListeners {
-        public void onSettingChange(final Setting setting);
-    }
+    private T value;
 
     public Setting(T value, Predicate<T> restriction, BiConsumer<T, T> consumer, String name, Predicate<T> visibilityPredicate) {
+        this.name = name;
         this.value = value;
+        this.defaultValue = value;
         this.valueType = value.getClass();
         this.restriction = restriction;
-        this.consumer = consumer;
-        this.name = name;
         this.visibilityPredicate = visibilityPredicate;
+        this.consumer = consumer;
     }
 
     @Override
@@ -50,8 +43,12 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
         return value;
     }
 
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
     @Override
-    public Class getValueClass() {
+    public Class<?> getValueClass() {
         return valueType;
     }
 
@@ -66,8 +63,15 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
         this.value = value;
         consumer.accept(old, value);
         if (settingListener != null)
-            settingListener.onSettingChange(this);
+            settingListener.onSettingChange();
         return true;
+    }
+
+    /**
+     * Reset value to default
+     */
+    public void resetValue() {
+        this.value = defaultValue;
     }
 
     @Override
@@ -97,6 +101,15 @@ public abstract class Setting<T> implements ISettingUnknown, Convertable<T> {
 
     @Override
     public String toString() {
-        return this.converter().convert(getValue()).toString();
+        JsonElement converted = this.converter().convert(getValue());
+        if (converted != null) {
+            return converted.toString();
+        } else {
+            return "";
+        }
+    }
+
+    public interface SettingListeners {
+        void onSettingChange();
     }
 }

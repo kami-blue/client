@@ -272,10 +272,8 @@ public class KamiGUI extends GUI {
         infoOverlay.setPinnable(true);
         Label information = new Label("");
         information.setShadow(true);
-        information.addTickListener(() -> {
-            information.setText("");
-            InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
-        });
+        information.setMultiline(true);
+        information.addTickListener(() -> information.setText(InfoOverlay.INSTANCE.infoContents()));
         infoOverlay.addChild(information);
         frames.add(infoOverlay);
 

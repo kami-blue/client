@@ -44,7 +44,7 @@ public class SetCommand extends Command {
         }
 
         if (args[1] == null) {
-            String settings = m.getSettingList().stream().map(Setting::getName).collect(Collectors.joining(", "));
+            String settings = m.getFullSettingList().stream().map(Setting::getName).collect(Collectors.joining(", "));
             if (settings.isEmpty())
                 sendChatMessage("Module &b" + m.getName().getValue() + "&r has no settings.");
             else {
@@ -55,7 +55,7 @@ public class SetCommand extends Command {
             return;
         }
 
-        Optional<Setting<?>> optionalSetting = m.getSettingList().stream().filter(setting1 -> setting1.getName().equalsIgnoreCase(args[1])).findFirst();
+        Optional<Setting<?>> optionalSetting = m.getFullSettingList().stream().filter(setting1 -> setting1.getName().equalsIgnoreCase(args[1])).findFirst();
         if (!optionalSetting.isPresent()) {
             sendChatMessage("Unknown setting &b" + args[1] + "&r in &b" + m.getName().getValue() + "&r!");
             return;
