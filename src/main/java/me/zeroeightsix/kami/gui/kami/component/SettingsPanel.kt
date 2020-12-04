@@ -26,7 +26,7 @@ import java.util.*
 /**
  * Created by 086 on 6/08/2017.
  */
-class SettingsPanel(theme: Theme, module: Module) : OrganisedContainer(theme, Stretcherlayout(1)) {
+class SettingsPanel(theme: Theme?, module: Module?) : OrganisedContainer(theme, Stretcherlayout(1)) {
 
     var module: Module? = module
         set(value) {
