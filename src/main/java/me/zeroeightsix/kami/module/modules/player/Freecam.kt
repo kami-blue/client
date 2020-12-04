@@ -23,6 +23,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.DisplayEnum
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.cos
@@ -35,15 +36,16 @@ import kotlin.math.sin
     description = "Leave your body and transcend into the realm of the gods"
 )
 object Freecam : Module() {
+    private val directionMode = register(Settings.e<FlightMode>("FlightMode", FlightMode.CREATIVE))
     private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
-    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f).withVisibility { directionMode.value == DirectionMode.CREATIVE })
+    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f).withVisibility { directionMode.value == FlightMode.CREATIVE })
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
-    private val directionMode = register(Settings.e<DirectionMode>("DirectionMode", DirectionMode.CREATIVE))
 
-    private enum class DirectionMode {
-        CREATIVE, SOURCE
+    private enum class FlightMode(override val displayName: String) : DisplayEnum {
+        CREATIVE("Creative"),
+        THREE_DEE("3D")
     }
 
     private var prevThirdPersonViewSetting = -1
@@ -214,7 +216,7 @@ object Freecam : Module() {
             val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
             val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
 
-            if (directionMode.value == DirectionMode.SOURCE) {
+            if (directionMode.value == FlightMode.THREE_DEE) {
                 val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
                 motionX = -sin(yawRad) * cos(pitchRad) * speed
                 motionY = -sin(pitchRad) * speed
