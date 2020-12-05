@@ -154,7 +154,6 @@ dependencies {
 }
 
 mixin {
-    disableAnnotationProcessorCheck = true
     defaultObfuscationEnv 'searge'
     add sourceSets.main, 'mixins.kami.refmap.json'
 }
