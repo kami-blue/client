@@ -122,6 +122,7 @@ dependencies {
 
 
     // Kotlin libs
+    // kotlin-stdlib-common and annotations aren't required at runtime
     jarLibs("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version") {
         exclude module: 'kotlin-stdlib-common'
         exclude module: 'annotations'
@@ -132,24 +133,27 @@ dependencies {
         exclude module: 'annotations'
     }
 
-    jarLibs ("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version") {
+    jarLibs("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version") {
         exclude module: 'kotlin-stdlib-common'
         exclude module: 'annotations'
     }
 
-    jarLibs ("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version") {
+    jarLibs("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version") {
         exclude module: 'kotlin-stdlib-common'
         exclude module: 'annotations'
     }
 
-
+    // Add them back to compileOnly (provided)
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
     compileOnly 'org.jetbrains:annotations:13.0'
 
-    jarLibs 'cabaletta:baritone-api:1.2' // This Baritone WILL be included in the jar
+    // This Baritone WILL be included in the jar
+    jarLibs 'cabaletta:baritone-api:1.2'
 
-    compileOnly 'com.github.cabaletta:baritone:1.2.14' // This Baritone will NOT be included in the jar
+    // This Baritone will NOT be included in the jar
+    compileOnly 'com.github.cabaletta:baritone:1.2.14'
 
+    // Add everything in jarLibs to implementation (compile)
     implementation configurations.jarLibs
 }
 
@@ -188,6 +192,4 @@ jar {
             it.isDirectory() ? it : zipTree(it)
         }
     }
-
-    finalizedBy('reobfJar')
 }
