@@ -21,7 +21,6 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
-    "MixinFrustum",
     "MixinGuiChat",
     "MixinGuiContainer",
     "MixinGuiIngameMenu",
