@@ -33,4 +33,3 @@ sed -i "s/VERSION = \".*\";/VERSION = \"$VERSION\";/" src/main/java/me/zeroeight
 sed -i "s/VERSION_SIMPLE = \".*\";/VERSION_SIMPLE = \"$VERSION_SIMPLE\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
 sed -i "s/VERSION_MAJOR = \".*\";/VERSION_MAJOR = \"$VERSION_MAJOR\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
 sed -i "s/BUILD_NUMBER = .*;/BUILD_NUMBER = $BUILD_NUMBER;/" src/main/java/me/zeroeightsix/kami/KamiMod.java
-sed -i "s/\"version\": \".*\",/\"version\": \"$VERSION\",/" src/main/resources/mcmod.info
