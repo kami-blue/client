@@ -16,9 +16,14 @@ import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.MoverType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
+import net.minecraft.util.MovementInput
+import net.minecraft.util.MovementInputFromOptions
+import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 import kotlin.math.cos
@@ -31,21 +36,27 @@ import kotlin.math.sin
     description = "Leave your body and transcend into the realm of the gods"
 )
 object Freecam : Module() {
+    private val directionMode = register(Settings.e<FlightMode>("FlightMode", FlightMode.CREATIVE))
     private val horizontalSpeed = register(Settings.floatBuilder("HorizontalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
-    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f))
+    private val verticalSpeed = register(Settings.floatBuilder("VerticalSpeed").withValue(20f).withRange(1f, 50f).withStep(1f).withVisibility { directionMode.value == FlightMode.CREATIVE })
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
 
+    private enum class FlightMode(override val displayName: String) : DisplayEnum {
+        CREATIVE("Creative"),
+        THREE_DEE("3D")
+    }
+
     private var prevThirdPersonViewSetting = -1
     var cameraGuy: EntityPlayer? = null; private set
-    var resetInput = false
 
     private const val ENTITY_ID = -6969420
 
     override fun onDisable() {
         mc.renderChunksMany = true
         resetCameraGuy()
+        resetMovementInput(mc.player?.movementInput)
     }
 
     override fun onEnable() {
@@ -65,6 +76,10 @@ object Freecam : Module() {
             if (it.packet.getEntityFromWorld(mc.world) == mc.player) it.cancel()
         }
 
+        listener<ClientPlayerAttackEvent> {
+            if (it.entity == mc.player) it.cancel()
+        }
+
         listener<InputEvent.KeyInputEvent> {
             if (mc.world == null || mc.player == null) return@listener
             // Force it to stay in first person lol
@@ -80,16 +95,28 @@ object Freecam : Module() {
             }
 
             if (cameraGuy == null && mc.player.ticksExisted > 20) spawnCameraGuy()
-
-            if (!BaritoneUtils.isPathing && !BaritoneUtils.isActive) {
-                if (autoRotate.value) updatePlayerRotation()
-
-                if (arrowKeyMove.value) updatePlayerMovement()
-            }
         }
 
-        listener<ClientPlayerAttackEvent> {
-            if (it.entity == mc.player) it.cancel()
+        listener<InputUpdateEvent>(9999) {
+            if (it.movementInput !is MovementInputFromOptions || BaritoneUtils.isPathing || BaritoneUtils.isActive) return@listener
+
+            resetMovementInput(it.movementInput)
+            if (autoRotate.value) updatePlayerRotation()
+            if (arrowKeyMove.value) updatePlayerMovement()
+        }
+    }
+
+    private fun resetMovementInput(movementInput: MovementInput?) {
+        if (movementInput !is MovementInputFromOptions) return
+        movementInput.apply {
+            moveForward = 0f
+            moveStrafe = 0f
+            forwardKeyDown = false
+            backKeyDown = false
+            leftKeyDown = false
+            rightKeyDown = false
+            jump = false
+            sneak = false
         }
     }
 
@@ -97,13 +124,13 @@ object Freecam : Module() {
         // Create a cloned player
         cameraGuy = FakeCamera(mc.player).also {
             // Add it to the world
-            mc.world.addEntityToWorld(ENTITY_ID, it)
+            mc.world?.addEntityToWorld(ENTITY_ID, it)
 
             // Set the render view entity to our camera guy
             mc.renderViewEntity = it
 
             // Reset player movement input
-            resetInput = true
+            resetMovementInput(mc.player?.movementInput)
 
             // Stores prev third person view setting
             prevThirdPersonViewSetting = mc.gameSettings.thirdPersonView
@@ -112,32 +139,40 @@ object Freecam : Module() {
     }
 
     private fun updatePlayerRotation() {
-        mc.objectMouseOver?.hitVec?.let {
-            val rotation = Vec2f(RotationUtils.getRotationTo(it, true))
-            mc.player.rotationYaw = rotation.x
-            mc.player.rotationPitch = rotation.y
+        mc.objectMouseOver?.let {
+            val hitVec = it.hitVec
+            if (it.typeOfHit == RayTraceResult.Type.MISS || hitVec == null) return
+            val rotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+            mc.player?.apply {
+                rotationYaw = rotation.x
+                rotationPitch = rotation.y
+            }
         }
     }
 
     private fun updatePlayerMovement() {
-        cameraGuy?.let {
-            val forward = Keyboard.isKeyDown(Keyboard.KEY_UP) to Keyboard.isKeyDown(Keyboard.KEY_DOWN)
-            val strafe = Keyboard.isKeyDown(Keyboard.KEY_LEFT) to Keyboard.isKeyDown(Keyboard.KEY_RIGHT)
-            val movementInput = calcMovementInput(forward, strafe, false to false)
+        mc.player?.let { player ->
+            cameraGuy?.let {
+                val forward = Keyboard.isKeyDown(Keyboard.KEY_UP) to Keyboard.isKeyDown(Keyboard.KEY_DOWN)
+                val strafe = Keyboard.isKeyDown(Keyboard.KEY_LEFT) to Keyboard.isKeyDown(Keyboard.KEY_RIGHT)
+                val movementInput = calcMovementInput(forward, strafe, false to false)
 
-            val yawDiff = mc.player.rotationYaw - it.rotationYaw
-            val yawRad = MovementUtils.calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
-            val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1f)
+                val yawDiff = player.rotationYaw - it.rotationYaw
+                val yawRad = MovementUtils.calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
+                val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1f)
 
-            mc.player.movementInput.moveForward = cos(yawRad) * inputTotal
-            mc.player.movementInput.moveStrafe = sin(yawRad) * inputTotal
+                player.movementInput?.apply {
+                    moveForward = cos(yawRad) * inputTotal
+                    moveStrafe = sin(yawRad) * inputTotal
 
-            mc.player.movementInput.forwardKeyDown = mc.player.movementInput.moveForward > 0f
-            mc.player.movementInput.backKeyDown = mc.player.movementInput.moveForward < 0f
-            mc.player.movementInput.leftKeyDown = mc.player.movementInput.moveStrafe < 0f
-            mc.player.movementInput.rightKeyDown = mc.player.movementInput.moveStrafe > 0f
+                    forwardKeyDown = moveForward > 0f
+                    backKeyDown = moveForward < 0f
+                    leftKeyDown = moveStrafe < 0f
+                    rightKeyDown = moveStrafe > 0f
 
-            mc.player.movementInput.jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+                    jump = Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+                }
+            }
         }
     }
 
@@ -181,9 +216,16 @@ object Freecam : Module() {
             val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
             val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
 
-            motionX = -sin(yawRad) * speed
-            motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
-            motionZ = cos(yawRad) * speed
+            if (directionMode.value == FlightMode.THREE_DEE) {
+                val pitchRad = Math.toRadians(rotationPitch.toDouble()) * moveForward
+                motionX = -sin(yawRad) * cos(pitchRad) * speed
+                motionY = -sin(pitchRad) * speed
+                motionZ = cos(yawRad) * cos(pitchRad) * speed
+            } else {
+                motionX = -sin(yawRad) * speed
+                motionY = moveVertical.toDouble() * (verticalSpeed.value / 20f)
+                motionZ = cos(yawRad) * speed
+            }
 
             if (isSprinting) {
                 motionX *= 1.5

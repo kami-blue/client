@@ -34,7 +34,6 @@ import kotlin.math.*
 object ElytraFlight : Module() {
     private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL))
     private val page = register(Settings.e<Page>("Page", Page.GENERIC_SETTINGS))
-    private val defaultSetting = register(Settings.b("Defaults", false))
     private val durabilityWarning = register(Settings.booleanBuilder("DurabilityWarning").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS })
     private val threshold = register(Settings.integerBuilder("Broken%").withValue(5).withRange(1, 50).withStep(1).withVisibility { durabilityWarning.value && page.value == Page.GENERIC_SETTINGS })
     private val autoLanding = register(Settings.booleanBuilder("AutoLanding").withValue(false).withVisibility { page.value == Page.GENERIC_SETTINGS })
@@ -502,62 +501,7 @@ object ElytraFlight : Module() {
         hoverTarget = -1.0 /* For control mode */
     }
 
-    private fun defaults() {
-        mc.player?.let {
-            durabilityWarning.value = true
-            threshold.value = 5
-            autoLanding.value = false
-
-            easyTakeOff.value = true
-            timerControl.value = true
-            highPingOptimize.value = false
-            minTakeoffHeight.value = 0.5f
-
-            accelerateStartSpeed.value = 100
-            accelerateTime.value = 0.0f
-            autoReset.value = false
-
-            spoofPitch.value = true
-            blockInteract.value = false
-            forwardPitch.value = 0
-
-            elytraSounds.value = true
-            swingSpeed.value = 1.0f
-            swingAmount.value = 0.8f
-
-            speedBoost.value = 1.0f
-            upSpeedBoost.value = 1.0f
-            downSpeedBoost.value = 1.0f
-
-            boostPitchControl.value = 20
-            ncpStrict.value = true
-            legacyLookBoost.value = false
-            altitudeHoldControl.value = false
-            dynamicDownSpeed.value = false
-            speedControl.value = 1.81f
-            fallSpeedControl.value = 0.00000000000003f
-            downSpeedControl.value = 1.0f
-            fastDownSpeedControl.value = 2.0f
-
-            speedCreative.value = 1.8f
-            fallSpeedCreative.value = 0.00001f
-            upSpeedCreative.value = 1.0f
-            downSpeedCreative.value = 1.0f
-
-            speedPacket.value = 1.8f
-            fallSpeedPacket.value = 0.00001f
-            downSpeedPacket.value = 1.0f
-
-            defaultSetting.value = false
-            sendChatMessage("$chatName Set to defaults!")
-        }
-    }
-
     init {
-        defaultSetting.settingListener = SettingListeners {
-            if (defaultSetting.value) defaults()
-        }
-
         /* Reset isFlying states when switching mode */
         mode.settingListener = SettingListeners {
             reset(true)

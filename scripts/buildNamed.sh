@@ -6,6 +6,7 @@
 #
 # Usage: "./buildNamed.sh"
 
+__d="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ~/.profile
 
 if [ -z "$KAMI_DIR" ]; then
@@ -28,10 +29,14 @@ chmod +x gradlew
 
 cd build/libs/ || exit $?
 
-__named=$(find . -maxdepth 1 -not -name "*release*" | tail -n +2)
-__bad_named=$(find . -maxdepth 1 -name "*release*")
+__named="$(find . -maxdepth 1 -not -name "*release*" | tail -n +2 | sed "s/^\.\///g")"
+__bad_named="$(find . -maxdepth 1 -name "*release*")"
 
-rm -f "$__named"
-mv "$__bad_named" "$__named"
+rm "$__named" # remove the one without -release
 
-echo "$__named" | sed "s/^\.\///g"
+# Build release jar with the name without -release
+java -jar "$__d/jar-shrink/jar-shrink.jar" "$__bad_named" -out "$__named" -n -keep "me.zeroeightsix" -keep "baritone" -keep "org.kamiblue" -keep "org.spongepowered"
+
+rm "$__bad_named" # remove the un-shrunk jar with -release
+
+echo "$__named" # echo the shrunk jar, without -release

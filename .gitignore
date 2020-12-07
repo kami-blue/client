@@ -1,24 +1,9 @@
 # Created by https://www.gitignore.io/api/linux,gradle,eclipse,windows,forgegradle,intellij+all,emacs,vim
 
-# MCP
-
-assets/mcp-1.12.2-srg.zip
-assets/*.csv
-mcp/
-src/minecraft/
-src/main/java/net/minecraft/
-
-# lwjgl
-
-src/main/java/org/lwjgl
-
-# Google
-
-src/main/java/com/google
-
-# private
-
-src/main/java/me/zeroeightsix/kami/module/modules/sdashb/experimental/Gen.java
+# Logs
+run/
+scripts/jar-shrink/log.txt
+logs/
 
 ### Eclipse ###
 
@@ -135,11 +120,6 @@ flycheck_*.el
 
 # directory configuration
 .dir-locals.el
-
-### ForgeGradle ###
-# Minecraft client/server files
-run/
-logs/
 
 ### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

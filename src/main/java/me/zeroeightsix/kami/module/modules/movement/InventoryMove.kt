@@ -1,13 +1,14 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.PlayerUpdateMoveEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.GuiEditSign
+import net.minecraft.util.MovementInputFromOptions
+import net.minecraftforge.client.event.InputUpdateEvent
 import org.lwjgl.input.Keyboard
 
 @Module.Info(
@@ -22,8 +23,8 @@ object InventoryMove : Module() {
     private var hasSent = false
 
     init {
-        listener<PlayerUpdateMoveEvent> {
-            if (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiEditSign || mc.currentScreen is GuiRepair) return@listener
+        listener<InputUpdateEvent> {
+            if (it.movementInput !is MovementInputFromOptions || checkGui()) return@listener
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
                 mc.player.rotationYaw = mc.player.rotationYaw - rotateSpeed.value
@@ -40,44 +41,44 @@ object InventoryMove : Module() {
                 mc.player.rotationPitch = (mc.player.rotationPitch + rotateSpeed.value).coerceAtMost(90.0f)
             }
 
-            mc.player.movementInput.moveStrafe = 0.0f
-            mc.player.movementInput.moveForward = 0.0f
+            it.movementInput.moveStrafe = 0.0f
+            it.movementInput.moveForward = 0.0f
 
             try {
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode)) {
-                    ++mc.player.movementInput.moveForward
-                    mc.player.movementInput.forwardKeyDown = true
+                    ++it.movementInput.moveForward
+                    it.movementInput.forwardKeyDown = true
                 } else {
-                    mc.player.movementInput.forwardKeyDown = false
+                    it.movementInput.forwardKeyDown = false
                 }
 
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindBack.keyCode)) {
-                    --mc.player.movementInput.moveForward
-                    mc.player.movementInput.backKeyDown = true
+                    --it.movementInput.moveForward
+                    it.movementInput.backKeyDown = true
                 } else {
-                    mc.player.movementInput.backKeyDown = false
+                    it.movementInput.backKeyDown = false
                 }
 
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)) {
-                    ++mc.player.movementInput.moveStrafe
-                    mc.player.movementInput.leftKeyDown = true
+                    ++it.movementInput.moveStrafe
+                    it.movementInput.leftKeyDown = true
                 } else {
-                    mc.player.movementInput.leftKeyDown = false
+                    it.movementInput.leftKeyDown = false
                 }
 
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)) {
-                    --mc.player.movementInput.moveStrafe
-                    mc.player.movementInput.rightKeyDown = true
+                    --it.movementInput.moveStrafe
+                    it.movementInput.rightKeyDown = true
                 } else {
-                    mc.player.movementInput.rightKeyDown = false
+                    it.movementInput.rightKeyDown = false
                 }
 
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCode)) {
-                    mc.player.movementInput.jump = true
+                    it.movementInput.jump = true
                 }
 
                 if (Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.keyCode) && sneak.value) {
-                    mc.player.movementInput.sneak = true
+                    it.movementInput.sneak = true
                 }
             } catch (e: IndexOutOfBoundsException) {
                 if (!hasSent) {
@@ -88,4 +89,9 @@ object InventoryMove : Module() {
             }
         }
     }
+
+    private fun checkGui() = mc.currentScreen == null
+        || mc.currentScreen is GuiChat
+        || mc.currentScreen is GuiEditSign
+        || mc.currentScreen is GuiRepair
 }
