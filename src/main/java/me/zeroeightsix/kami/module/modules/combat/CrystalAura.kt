@@ -19,6 +19,8 @@ import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
 import net.minecraft.init.SoundEvents
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
 import net.minecraft.network.Packet
@@ -60,6 +62,7 @@ object CrystalAura : Module() {
     private val rotationTolerance = register(Settings.integerBuilder("RotationTolerance").withValue(10).withRange(5, 25).withStep(5).withVisibility { page.value == Page.GENERAL })
     private val maxYawSpeed = register(Settings.integerBuilder("MaxYawSpeed").withValue(25).withRange(10, 100).withStep(5).withVisibility { page.value == Page.GENERAL })
     private val swingMode = register(Settings.enumBuilder(SwingMode::class.java, "SwingMode").withValue(SwingMode.CLIENT).withVisibility { page.value == Page.GENERAL })
+    private val fillHotbar = register(Settings.booleanBuilder("FillHotbarSlot").withValue(true).withVisibility { page.value == Page.GENERAL })
 
     /* Force place */
     private val bindForcePlace = register(Settings.custom("BindForcePlace", Bind.none(), BindConverter()).withVisibility { page.value == Page.FORCE_PLACE })
@@ -201,7 +204,13 @@ object CrystalAura : Module() {
             if (CombatManager.isOnTopPriority(this) && !CombatSetting.pause && packetList.size == 0) {
                 updateMap()
                 if (canExplode()) explode()
-                else if (canPlace()) place()
+                else if (canPlace())
+                {
+                    place()
+
+                    if (fillHotbar.value)
+                        fillHotbarSlot()
+                }
             }
 
             if (it.phase == TickEvent.Phase.END) {
@@ -254,6 +263,35 @@ object CrystalAura : Module() {
             }
         }
     }
+
+    private fun fillHotbarSlot()
+    {
+        val filter = getFilter(426)
+
+        val sublist = mc.player.inventoryContainer.inventory.subList(9, 35)
+
+        var crystalInventorySlot = sublist.indexOfFirst(filter)
+
+        if (crystalInventorySlot == -1)
+            return
+
+        crystalInventorySlot += 9
+
+        val sublist2 = mc.player.inventoryContainer.inventory.subList(36, 44)
+
+        var crystalHotbarSlot = sublist2.indexOfFirst(filter)
+
+        if (crystalHotbarSlot == -1)
+            return
+
+        crystalHotbarSlot += 36
+
+        InventoryUtils.moveToSlot(0, crystalInventorySlot, crystalHotbarSlot)
+
+        mc.playerController.updateController()
+    }
+
+    private fun getFilter(itemId: Int): (ItemStack) -> Boolean = { Item.getIdFromItem(it.getItem()) == itemId }
 
     private fun explode() {
         if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
