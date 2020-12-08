@@ -4,7 +4,7 @@
 #
 # Used to setup workspace on unix and fix building
 #
-# Usage: "./setupWorkspaceUnix.sh"
+# Usage: "./setupWorkspace.sh"
 
 __dir="$(cd "$(dirname "$0")" && pwd)"
 . "$__dir/utils.sh"
@@ -44,22 +44,9 @@ echo "[$(date +"%H:%M:%S")] Downloaded git submodules!"
 
 #
 
-echo "[$(date +"%H:%M:%S")] Setting up runClient..."
-./gradlew prepareRunClient >/dev/null 2>&1 || {
-  echo "[$(date +"%H:%M:%S")] ERROR: Setting up runClient failed! Run './gradlew prepareRunClient' manually"
-  exit 1
-}
-./gradlew prepareRuns >/dev/null 2>&1 || {
-  echo "[$(date +"%H:%M:%S")] ERROR: Setting up runClient failed! Run './gradlew prepareRuns' manually"
-  exit 1
-}
-echo "[$(date +"%H:%M:%S")] Setup runClient!"
-
-#
-
-echo "[$(date +"%H:%M:%S")] Running test build without daemon..."
-./gradlew build --no-daemon || {
-  echo "[$(date +"%H:%M:%S")] ERROR: Gradle build failed"
+echo "[$(date +"%H:%M:%S")] Running gradlew build without daemon..."
+./gradlew --no-daemon build || {
+  echo "[$(date +"%H:%M:%S")] ERROR: Running gradlew build failed! Run './gradlew --no-daemon build' manually"
   exit 1
 }
 
