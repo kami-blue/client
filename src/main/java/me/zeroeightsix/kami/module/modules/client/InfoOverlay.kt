@@ -49,15 +49,15 @@ object InfoOverlay : Module() {
     private val decimalPlaces = register(Settings.integerBuilder("DecimalPlaces").withValue(2).withRange(0, 10).withVisibility { page.value == Page.THREE })
     private val speed = register(Settings.booleanBuilder("Speed").withValue(true).withVisibility { page.value == Page.THREE })
     private val averageSpeedTime = register(Settings.floatBuilder("AverageSpeedTime(s)").withValue(1f).withRange(0f, 5f).withVisibility { page.value == Page.THREE && speed.value })
-    private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java, "SpeedUnit").withValue(SpeedUnit.KMH).withVisibility { page.value == Page.THREE && speed.value })
+    private val speedUnit = register(Settings.enumBuilder(SpeedUnit::class.java, "SpeedUnit").withValue(SpeedUnit.MPS).withVisibility { page.value == Page.THREE && speed.value })
     private val time = register(Settings.booleanBuilder("Time").withValue(true).withVisibility { page.value == Page.THREE })
     val timeTypeSetting = register(Settings.enumBuilder(TimeUtils.TimeType::class.java, "TimeFormat").withValue(TimeUtils.TimeType.HHMMSS).withVisibility { page.value == Page.THREE && time.value })
-    val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java, "TimeUnit").withValue(TimeUtils.TimeUnit.H12).withVisibility { page.value == Page.THREE && time.value })
+    val timeUnitSetting = register(Settings.enumBuilder(TimeUtils.TimeUnit::class.java, "TimeUnit").withValue(TimeUtils.TimeUnit.H24).withVisibility { page.value == Page.THREE && time.value })
     val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
     private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.THREE })
     private val timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility { page.value == Page.THREE })
     private val firstColor = register(Settings.enumBuilder(EnumTextColor::class.java, "FirstColor").withValue(EnumTextColor.WHITE).withVisibility { page.value == Page.THREE })
-    private val secondColor = register(Settings.enumBuilder(EnumTextColor::class.java, "SecondColor").withValue(EnumTextColor.BLUE).withVisibility { page.value == Page.THREE })
+    private val secondColor = register(Settings.enumBuilder(EnumTextColor::class.java, "SecondColor").withValue(EnumTextColor.AQUA).withVisibility { page.value == Page.THREE })
 
     private enum class Page {
         ONE, TWO, THREE
@@ -83,7 +83,7 @@ object InfoOverlay : Module() {
         val contents = ArrayList<String>()
 
         contents.apply {
-            if (version.value) addContent(NecronClient.KAMI_KATAKANA, NecronClient.VERSION_SIMPLE)
+            if (version.value) addContent(NecronClient.NAME, NecronClient.VERSION_SIMPLE)
             if (username.value) addContent("Welcome", "${mc.session.username}!")
             if (time.value) add(TimeUtils.getFinalTime(secondColor.value.textFormatting, firstColor.value.textFormatting, timeUnitSetting.value, timeTypeSetting.value, doLocale.value))
             if (tps.value) addContent("${InfoCalculator.tps(decimalPlaces.value)}", "tps")

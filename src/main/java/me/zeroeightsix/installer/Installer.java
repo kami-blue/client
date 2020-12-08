@@ -56,7 +56,7 @@ public class Installer extends JPanel {
         JButton installButton = new JButton();
         Random rand = new Random();
 
-        String installedStable = "The latest version (\" + downloadsAPI[5] + \") of NECRON Client was installed.";
+        String installedStable = "The latest version (" + downloadsAPI[5] + ") of NECRON Client was installed.";
 
         installButton.setOpaque(false);
         installButton.setContentAreaFilled(false);

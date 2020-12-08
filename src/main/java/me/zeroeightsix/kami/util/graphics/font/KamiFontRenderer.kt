@@ -143,7 +143,7 @@ object KamiFontRenderer {
         val font = try {
             if (CustomFont.isDefaultFont) {
                 val inputStream = this.javaClass.getResourceAsStream(style.fontPath)
-                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(64.0f)
+                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(48.0f)
             } else {
                 Font(CustomFont.fontName.value, style.styleConst, 64)
             }

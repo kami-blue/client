@@ -23,10 +23,10 @@ object CustomFont : Module() {
             .withRestriction { getMatchingFontName(it) != null }
             .withConsumer { _: String, value: String -> getMatchingFontName(value) })
     private val sizeSetting = register(Settings.floatBuilder("Size").withValue(1.0f).withRange(0.5f, 2.0f).withStep(0.05f))
-    private val gapSetting = register(Settings.floatBuilder("Gap").withValue(0.0f).withRange(-10f, 10f).withStep(0.5f))
+    private val gapSetting = register(Settings.floatBuilder("Gap").withValue(-2.0f).withRange(-10f, 10f).withStep(0.5f))
     private val lineSpaceSetting = register(Settings.floatBuilder("LineSpace").withValue(0.0f).withRange(-10f, 10f).withStep(0.5f))
     private val baselineOffsetSetting = register(Settings.floatBuilder("BaselineOffset").withValue(0.0f).withRange(-10.0f, 10.0f).withStep(0.25f))
-    private val lodBiasSetting = register(Settings.floatBuilder("LodBias").withValue(2.0f).withRange(0.0f, 5.0f).withStep(0.05f))
+    private val lodBiasSetting = register(Settings.floatBuilder("LodBias").withValue(0.2f).withRange(0.0f, 5.0f).withStep(0.05f))
 
     val isDefaultFont get() = fontName.value.equals(DEFAULT_FONT_NAME, true)
     val size get() = sizeSetting.value * 0.15f
