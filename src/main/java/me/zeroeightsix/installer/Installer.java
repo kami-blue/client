@@ -27,7 +27,7 @@ public class Installer extends JPanel {
         /* ensure mods exists */
         new File(getModsFolder()).mkdirs();
 
-        URL necronLogo = Installer.class.getResource("/installer/necron.png");
+        URL necronLogo = Installer.class.getResource("/installer/necron_icon.png");
         JFrame frame = new JFrame("NECRON Client Installer");
         frame.setIconImage(ImageIO.read(necronLogo));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

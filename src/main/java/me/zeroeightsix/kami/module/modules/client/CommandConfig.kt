@@ -30,7 +30,7 @@ object CommandConfig : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
-    private const val title = "${NecronClient.NAME} ${NecronClient.KAMI_KATAKANA} ${NecronClient.VERSION_SIMPLE}"
+    private const val title = "${NecronClient.NAME} ${NecronClient.VERSION_SIMPLE}"
 
     init {
         listener<SafeTickEvent> {

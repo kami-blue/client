@@ -170,7 +170,7 @@ object DiscordRPC : Module() {
         presence.smallImageText = when (capeType) {
             CapeType.BOOSTER -> "booster"
             CapeType.CONTEST -> "contest winner!"
-            CapeType.CONTRIBUTOR -> "code contributor!"
+            CapeType.CONTRIBUTOR -> ""
             CapeType.DONOR -> "donator <3"
             CapeType.INVITER -> "inviter"
             CapeType.SPECIAL -> "special cape!"
