@@ -51,7 +51,7 @@ echo "[$(date +"%H:%M:%S")] Running gradlew build without daemon..."
 
 #
 
-cat src/main/resources/ascii.txt 2>/dev/null
+cat scripts/ascii.txt 2>/dev/null
 echo "=========================================================================="
 echo ""
 echo "[$(date +"%H:%M:%S")] Build succeeded! All checks passed, you can build normally now!"
