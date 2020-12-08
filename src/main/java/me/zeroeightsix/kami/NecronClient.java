@@ -42,7 +42,7 @@ public class NecronClient {
     public static final String APP_ID = "63898790870661";
 
     public static final String DOWNLOADS_API = "https://api.topias.xyz/NECRON/download.json";
-    public static final String CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/cape-api/capes/capes.json";
+    public static final String CAPES_JSON = "https://raw.githubusercontent.com/dvorakabc/client/master/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
