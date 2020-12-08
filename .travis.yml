@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk8
-before_install:
-- chmod +x gradlew
-- "./gradlew setupDecompWorkspace"
+  - openjdk8
+install:
+  - chmod +x gradlew
+  - "./gradlew --no-daemon compileJava"
