@@ -283,16 +283,7 @@ object CrystalAura : Module() {
 
         crystalInventorySlot += 9
 
-        val sublist2 = mc.player.inventoryContainer.inventory.subList(36, 44)
-
-        var crystalHotbarSlot = sublist2.indexOfFirst(filter)
-
-        if (crystalHotbarSlot == -1)
-            return
-
-        crystalHotbarSlot += 36
-
-        InventoryUtils.moveToSlot(0, crystalInventorySlot, crystalHotbarSlot)
+        InventoryUtils.quickMoveSlot(0, crystalInventorySlot)
 
         mc.playerController.updateController()
     }
