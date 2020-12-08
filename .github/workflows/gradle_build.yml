@@ -1,0 +1,37 @@
+name: gradle_build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        uses: snickerbockers/submodules-init@v4
+        
+      - name: Gradle Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+    
+      - name: Gradle build
+        uses: OrangeLabs-moe/gradle-actions@v5.0-openjdk-8
+        with:
+          args: build
+
+      - name: Archive artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: build/libs
