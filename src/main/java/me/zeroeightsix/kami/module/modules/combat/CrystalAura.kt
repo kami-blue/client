@@ -64,6 +64,12 @@ object CrystalAura : Module() {
     private val swingMode = register(Settings.enumBuilder(SwingMode::class.java, "SwingMode").withValue(SwingMode.CLIENT).withVisibility { page.value == Page.GENERAL })
     private val fillHotbar = register(Settings.booleanBuilder("FillHotbarSlot").withValue(true).withVisibility { page.value == Page.GENERAL })
 
+    val auraMode = register(Settings.enumBuilder(AuraMode::class.java, "Mode").withValue(AuraMode.NEW).withVisibility { page.value == Page.GENERAL })
+
+    enum class AuraMode{
+        OLD, NEW
+    }
+
     /* Force place */
     private val bindForcePlace = register(Settings.custom("BindForcePlace", Bind.none(), BindConverter()).withVisibility { page.value == Page.FORCE_PLACE })
     private val forcePlaceHealth = register(Settings.floatBuilder("ForcePlaceHealth").withValue(6.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.FORCE_PLACE })
@@ -79,7 +85,7 @@ object CrystalAura : Module() {
     private val extraPlacePacket = register(Settings.booleanBuilder("ExtraPlacePacket").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP = register(Settings.floatBuilder("MinDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO })
+    private val minDamageP = register(Settings.floatBuilder("MinDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO && auraMode.value == AuraMode.OLD })
     private val maxSelfDamageP = register(Settings.floatBuilder("MaxSelfDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO })
     private val placeOffset = register(Settings.floatBuilder("PlaceOffset").withValue(1.0f).withRange(0f, 1f).withStep(0.05f).withVisibility { page.value == Page.PLACE_TWO })
     private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
@@ -89,11 +95,11 @@ object CrystalAura : Module() {
 
     /* Explode page one */
     private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
-    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
+    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE && auraMode.value == AuraMode.OLD})
     private val antiWeakness = register(Settings.booleanBuilder("AntiWeakness").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
 
     /* Explode page two */
-    private val minDamageE = register(Settings.floatBuilder("MinDamageExplode").withValue(6.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val minDamageE = register(Settings.floatBuilder("MinDamageExplode").withValue(6.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.EXPLODE_TWO && auraMode.value == AuraMode.OLD})
     private val maxSelfDamageE = register(Settings.floatBuilder("MaxSelfDamageExplode").withValue(3.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.EXPLODE_TWO })
     private val swapDelay = register(Settings.integerBuilder("SwapDelay").withValue(10).withRange(1, 50).withStep(2).withVisibility { page.value == Page.EXPLODE_TWO })
     private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO })
@@ -384,8 +390,12 @@ object CrystalAura : Module() {
     /**
      * @return True if passed placing damage check
      */
-    private fun checkDamagePlace(damage: Float, selfDamage: Float) =
-            (shouldFacePlace(damage) || damage >= minDamageP.value) && (selfDamage <= maxSelfDamageP.value)
+    private fun checkDamagePlace(damage: Float, selfDamage: Float): Boolean {
+        if (auraMode.value == AuraMode.NEW)
+            return (shouldFacePlace(damage) || damage > selfDamage) && (selfDamage <= maxSelfDamageP.value)
+        else
+            return (shouldFacePlace(damage) || damage >= minDamageP.value) && (selfDamage <= maxSelfDamageP.value)
+    }
     /* End of placing */
 
     /* Exploding */
@@ -411,10 +421,15 @@ object CrystalAura : Module() {
                         && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
             })?.key
 
-
-    private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE.value) && selfDamage <= maxSelfDamageE.value
+    private fun checkDamageExplode(damage: Float, selfDamage: Float): Boolean {
+        if (auraMode.value == AuraMode.NEW)
+            return (shouldFacePlace(damage) || damage >= selfDamage) && selfDamage <= maxSelfDamageE.value && noSuicideCheck(selfDamage)
+        else
+            return (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE.value) && selfDamage <= maxSelfDamageE.value
+    }
 
     private fun shouldForceExplode() = autoForceExplode.value && placeMap.isNotEmpty() && placeMap.values.first().second > minDamageE.value
+
     /* End of exploding */
 
     /* General */

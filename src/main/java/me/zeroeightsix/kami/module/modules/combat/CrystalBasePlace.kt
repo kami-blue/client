@@ -182,6 +182,10 @@ object CrystalBasePlace : Module() {
         return damage to selfDamage
     }
 
-    private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) =
-            selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
+    private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) : Boolean {
+        if (CrystalAura.auraMode.value == CrystalAura.AuraMode.NEW)
+            return selfDamage < CrystalAura.maxSelfDamage && damage > selfDamage && (maxCurrentDamage < selfDamage || damage - maxCurrentDamage >= minDamageInc.value)
+        else
+            return selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
+    }
 }
