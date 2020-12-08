@@ -6,7 +6,7 @@
 [![Paypal](https://img.shields.io/badge/paypal-donate-red?color=169bd7&logo=paypal)](https://paypal.me/mik4a/5USD)
 [![BTC](https://img.shields.io/badge/btc-donate-red?color=f08b16&logo=bitcoin)](https://www.blockchain.com/btc/address/19pH4aNZZMPJkqQ2826BauRokyBs1NYon7)
 
-Please consider donating to help continue this project and get a unique cape in game. 
+Please consider donating to help continue this project and get nothing. 
 
 ***
 
