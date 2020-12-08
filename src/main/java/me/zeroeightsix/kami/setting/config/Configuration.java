@@ -55,7 +55,7 @@ public class Configuration {
         try {
             loadConfiguration(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject());
         } catch (IllegalStateException e) { // The JSON file is probably malformed.
-            NecronClient.LOG.error("KAMI Config malformed: resetting.");
+            NecronClient.LOG.error("NECRON Config malformed: resetting.");
             e.printStackTrace();
             loadConfiguration(new JsonObject()); // Just reset it!
         }

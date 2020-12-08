@@ -42,16 +42,16 @@ object Nametags : Module() {
     private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
 
     /* Entity type settings */
-    private val self = register(Settings.booleanBuilder("Self").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE }.build())
+    private val self = register(Settings.booleanBuilder("Self").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE }.build())
     private val experience = register(Settings.booleanBuilder("Experience").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val items = register(Settings.booleanBuilder("Items").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
+    private val items = register(Settings.booleanBuilder("Items").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE })
     private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
     private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
     private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
     private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(0, 128).withStep(4).withVisibility { page.value == Page.ENTITY_TYPE })
+    private val range = register(Settings.integerBuilder("Range").withValue(128).withRange(0, 128).withStep(4).withVisibility { page.value == Page.ENTITY_TYPE })
 
     /* Content */
     private val line1left = register(Settings.enumBuilder<ContentType>(ContentType::class.java, "Line1Left").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
@@ -71,25 +71,24 @@ object Nametags : Module() {
     private val count = register(Settings.booleanBuilder("Count").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
     private val dura = register(Settings.booleanBuilder("Dura").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
     private val enchantment = register(Settings.booleanBuilder("Enchantment").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val itemScale = register(Settings.floatBuilder("ItemScale").withValue(1f).withRange(0.25f, 2f).withStep(0.25f).withVisibility { page.value == Page.ITEM })
 
     /* Frame */
     private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
     private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val bFilled = register(Settings.integerBuilder("FilledBlue").withValue(64).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(169).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.FRAME })
+    private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(72).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
+    private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(72).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
+    private val bFilled = register(Settings.integerBuilder("FilledBlue").withValue(100).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
+    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(100).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
+    private val outline = register(Settings.booleanBuilder("Outline").withValue(false).withVisibility { page.value == Page.FRAME })
     private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val bOutline = register(Settings.integerBuilder("OutlineBlue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(240).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
     private val outlineWidth = register(Settings.floatBuilder("OutlineWidth").withValue(2f).withRange(0f, 5f).withVisibility { page.value == Page.FRAME && outline.value })
-    private val margins = register(Settings.floatBuilder("Margins").withValue(2f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
-    private val cornerRadius = register(Settings.floatBuilder("CornerRadius").withValue(2f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
+    private val margins = register(Settings.floatBuilder("Margins").withValue(0.5f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
+    private val cornerRadius = register(Settings.floatBuilder("CornerRadius").withValue(1f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
 
     /* Rendering settings */
     private val rText = register(Settings.integerBuilder("TextRed").withValue(232).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
@@ -98,9 +97,10 @@ object Nametags : Module() {
     private val aText = register(Settings.integerBuilder("TextAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
     private val customFont = register(Settings.booleanBuilder("CustomFont").withValue(true).withVisibility { page.value == Page.RENDERING })
     private val textShadow = register(Settings.booleanBuilder("TextShadow").withValue(true).withVisibility { page.value == Page.RENDERING })
-    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(-2.5f, 2.5f).withStep(0.05f).withVisibility { page.value == Page.RENDERING })
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1f).withRange(0.25f, 5f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
-    private val distScaleFactor = register(Settings.floatBuilder("DistanceScaleFactor").withValue(0.0f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
+    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.45f).withRange(-2.5f, 2.5f).withStep(0.05f).withVisibility { page.value == Page.RENDERING })
+    private val scale = register(Settings.floatBuilder("Scale").withValue(1f).withRange(0.25f, 5f).withStep(0.15f).withVisibility { page.value == Page.RENDERING })
+    private val itemScale = register(Settings.floatBuilder("ItemScale").withValue(0.6f).withRange(0.25f, 2f).withStep(0.15f).withVisibility { page.value == Page.RENDERING })
+    private val distScaleFactor = register(Settings.floatBuilder("DistanceScaleFactor").withValue(0.1f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
     private val minDistScale = register(Settings.floatBuilder("MinDistanceScale").withValue(0.35f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
 
     private enum class Page {
@@ -192,7 +192,7 @@ object Nametags : Module() {
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f) // Translate to nametag pos
         glScalef(nameTagScale, nameTagScale, 1f) // Scale to nametag scale
         glTranslated(0.0, -ceil(halfHeight), 0.0) // Translate to top of nametag
-        glScalef((itemScale.value * 2f) / nameTagScale, (itemScale.value * 2f) / nameTagScale, 1f) // Scale to item scale
+        glScalef(itemScale.value * nameTagScale, itemScale.value * nameTagScale, 1f) // Scale to item scale
         glTranslatef(0f, -4f, 0f)
 
         val drawDura = dura.value && itemList.firstOrNull { it.first.isItemStackDamageable } != null

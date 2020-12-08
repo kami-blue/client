@@ -20,7 +20,7 @@ public class HelpCommand extends Command {
                     new String[]{"type", "int", "boolean", "double", "float"},
                     new String[]{
                             "Every module has a value, and that value is always of a certain &btype.\n",
-                            "These types are displayed in kami as the ones java use. They mean the following:",
+                            "These types are displayed in NECRON as the ones java use. They mean the following:",
                             "&bboolean&r: Enabled or not. Values &3true/false",
                             "&bfloat&r: A number with a decimal point",
                             "&bdouble&r: Like a float, but a more accurate decimal point",
@@ -46,7 +46,7 @@ public class HelpCommand extends Command {
         String commandPrefix = Command.getCommandPrefix();
         if (args[0] == null) {
             sendStringChatMessage(new String[]{
-                    "KAMI Blue " + NecronClient.VERSION,
+                    "NECRON Client " + NecronClient.VERSION,
                     "&7Press &r" + ClickGUI.INSTANCE.getBind().getValue().toString() + "&7 to open GUI",
                     "&7see &b" + WEBSITE_LINK + "&7 for a full version of the faq",
                     commandPrefix + "commands&7 to view all available commands",

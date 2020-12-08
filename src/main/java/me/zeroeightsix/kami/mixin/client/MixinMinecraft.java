@@ -79,7 +79,7 @@ public class MixinMinecraft {
     }
 
     private void save() {
-        System.out.println("Shutting down: saving KAMI configuration");
+        System.out.println("Shutting down: saving NECRON configuration");
         ConfigUtils.INSTANCE.saveAll();
         System.out.println("Configuration saved.");
     }

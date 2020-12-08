@@ -4,10 +4,11 @@ import java.awt.*;
 
 /**
  * @author l1ving
- * Class for all the main GUI colours used by the default kami theme
+ * modified by TopiasL for NECRON
+ * Class for all the main GUI colours used by the default necron theme
  * mfw I make it easier for skids to customize kami
  */
-public class KamiGuiColors {
+public class NecronGuiColors {
     public enum GuiC {
         bgColour(new Color(0, 180, 255)), // normal colored
         bgColourHover(new Color(0, 180, 255)), // light colored
@@ -30,7 +31,7 @@ public class KamiGuiColors {
 
         sliderColour(new Color(213, 36, 17)),
 
-        enumColour(new Color(116, 101, 247)),
+        enumColour(new Color(139, 0, 199)),
 
         scrollBar(new Color(213, 36, 17));
 

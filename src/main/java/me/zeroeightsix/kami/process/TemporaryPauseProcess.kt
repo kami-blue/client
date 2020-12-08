@@ -36,6 +36,6 @@ object TemporaryPauseProcess : IBaritoneProcess {
     }
 
     override fun displayName0(): String {
-        return "KAMI Blue Pauser"
+        return "NECRON Client Pauser"
     }
 }

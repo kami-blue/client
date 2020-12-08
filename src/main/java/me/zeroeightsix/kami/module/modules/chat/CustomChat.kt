@@ -19,7 +19,7 @@ import kotlin.math.min
         modulePriority = 200
 )
 object CustomChat : Module() {
-    private val textMode = register(Settings.e<TextMode>("Message", TextMode.JAPANESE))
+    private val textMode = register(Settings.e<TextMode>("Message", TextMode.NAME))
     private val decoMode = register(Settings.e<DecoMode>("Separator", DecoMode.NONE))
     private val commands = register(Settings.b("Commands", false))
     private val spammer = register(Settings.b("Spammer", false))
@@ -30,7 +30,7 @@ object CustomChat : Module() {
     }
 
     private enum class TextMode {
-        NAME, ON_TOP, WEBSITE, JAPANESE, CUSTOM
+        NAME, ON_TOP, WEBSITE, CUSTOM
     }
 
     val isCustomMode get() = textMode.value == TextMode.CUSTOM
@@ -55,17 +55,16 @@ object CustomChat : Module() {
     }
 
     private fun getText() = when (textMode.value) {
-        TextMode.NAME -> "ᴋᴀᴍɪ ʙʟᴜᴇ"
-        TextMode.ON_TOP -> "ᴋᴀᴍɪ ʙʟᴜᴇ ᴏɴ ᴛᴏᴘ"
-        TextMode.WEBSITE -> "ｋａｍｉｂｌｕｅ．ｏｒｇ"
-        TextMode.JAPANESE -> "上にカミブルー"
+        TextMode.NAME -> "ＮＥＣＲＯＮ"
+        TextMode.ON_TOP -> "ɴᴇᴄʀᴏɴ ᴏɴ ᴛᴏᴘ"
+        TextMode.WEBSITE -> ""
         TextMode.CUSTOM -> customText.value
         else -> ""
     }
 
     private fun getFull() = when (decoMode.value) {
         DecoMode.NONE -> " " + getText()
-        DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
+        DecoMode.CLASSIC -> " « " + getText() + " »"
         DecoMode.SEPARATOR -> " | " + getText()
         else -> ""
     }

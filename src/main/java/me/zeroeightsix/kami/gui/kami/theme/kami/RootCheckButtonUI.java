@@ -20,7 +20,7 @@ import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
-import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
+import static me.zeroeightsix.kami.gui.kami.theme.kami.NecronGuiColors.GuiC;
 import static org.lwjgl.opengl.GL11.*;
 
 /**

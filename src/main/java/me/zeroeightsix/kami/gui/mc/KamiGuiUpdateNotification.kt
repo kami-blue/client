@@ -11,7 +11,7 @@ import java.io.IOException
 
 class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
 
-    private val message = "A newer release of KAMI Blue is available ($latest)."
+    private val message = "A newer release of NECRON Client is available ($latest)."
 
     override fun initGui() {
         super.initGui()
@@ -37,7 +37,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
     }
 
     companion object {
-        private const val title = "KAMI Blue Update"
+        private const val title = "NECRON Client Update"
 
         var latest: String? = null // latest version (null if no internet or exception occurred)
         var isLatest = false
@@ -45,7 +45,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
         @JvmStatic
         fun updateCheck() {
             try {
-                NecronClient.LOG.info("Attempting KAMI Blue update check...")
+                NecronClient.LOG.info("Attempting NECRON Client update check...")
 
                 val parser = JsonParser()
                 val rawJson = ConnectionUtils.requestRawJsonFrom(NecronClient.DOWNLOADS_API) {
@@ -56,9 +56,9 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
                 isLatest = latest.equals(NecronClient.VERSION_MAJOR)
 
                 if (!isLatest) {
-                    NecronClient.LOG.warn("You are running an outdated version of KAMI Blue.\nCurrent: ${NecronClient.VERSION_MAJOR}\nLatest: $latest")
+                    NecronClient.LOG.warn("You are running an outdated version of NECRON CLient.\nCurrent: ${NecronClient.VERSION_MAJOR}\nLatest: $latest")
                 } else {
-                    NecronClient.LOG.info("Your KAMI Blue (" + NecronClient.VERSION_MAJOR + ") is up-to-date with the latest stable release.")
+                    NecronClient.LOG.info("Your NECRON Client (" + NecronClient.VERSION_MAJOR + ") is up-to-date with the latest stable release.")
                 }
             } catch (e: IOException) {
                 NecronClient.LOG.error("Oes noes! An exception was thrown during the update check.", e)

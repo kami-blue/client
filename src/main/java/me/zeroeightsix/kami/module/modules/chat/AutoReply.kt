@@ -24,7 +24,7 @@ object AutoReply : Module() {
             if (customMessage.value) {
                 sendServerMessage("/r " + message.value)
             } else {
-                sendServerMessage("/r I just automatically replied, thanks to KAMI Blue's AutoReply module!")
+                sendServerMessage("/r I just automatically replied, thanks to NECRON Client's AutoReply module!")
             }
         }
     }

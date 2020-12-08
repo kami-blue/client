@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
+import me.zeroeightsix.kami.gui.kami.theme.kami.NecronGuiColors.GuiC;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.component.use.Slider;
 import me.zeroeightsix.kami.gui.rgui.render.AbstractComponentUI;

@@ -17,18 +17,18 @@ import java.util.Map;
 public class MixinLoaderForge implements IFMLLoadingPlugin {
 
     /* This is NOT using NecronClient, as importing it causes the issue described here: https://github.com/SpongePowered/Mixin/issues/388 */
-    public static final Logger log = LogManager.getLogger("KAMI Blue");
+    public static final Logger log = LogManager.getLogger("NECRON Client");
     private static boolean isObfuscatedEnvironment = false;
 
     public MixinLoaderForge() {
-        log.info("KAMI Blue and Baritone mixins initializing...");
+        log.info("NECRON CLient and Baritone mixins initializing...");
 
         MixinBootstrap.init();
 
         Mixins.addConfigurations("mixins.kami.json", "mixins.baritone.json");
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
 
-        log.info("KAMI Blue and Baritone mixins initialised.");
+        log.info("NECRON Client and Baritone mixins initialised.");
 
         log.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
     }

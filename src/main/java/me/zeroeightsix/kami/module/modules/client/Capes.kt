@@ -37,7 +37,7 @@ import kotlin.math.sin
 @Module.Info(
         name = "Capes",
         category = Module.Category.CLIENT,
-        description = "Controls the display of KAMI Blue capes",
+        description = "Controls the display of NECRON Client capes",
         showOnArray = Module.ShowOnArray.OFF,
         enabledByDefault = true
 )

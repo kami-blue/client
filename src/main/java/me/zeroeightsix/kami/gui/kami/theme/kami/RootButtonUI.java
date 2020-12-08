@@ -15,15 +15,15 @@ import me.zeroeightsix.kami.util.math.Vec2d;
  */
 public class RootButtonUI<T extends Button> extends AbstractComponentUI<Button> {
 
-    protected ColorHolder idleColour = new ColorHolder(163, 163, 163);
+    protected ColorHolder idleColour = new ColorHolder(255, 0, 0);
     protected ColorHolder downColour = new ColorHolder(255, 255, 255);
 
     @Override
     public void renderComponent(Button component) {
         ColorHolder color = new ColorHolder(
-                component.isHovered() ? KamiGuiColors.GuiC.buttonHoveredN.color :
-                        component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
-                                KamiGuiColors.GuiC.buttonHoveredT.color);
+                component.isHovered() ? NecronGuiColors.GuiC.buttonHoveredN.color :
+                        component.isPressed() ? NecronGuiColors.GuiC.buttonPressed.color :
+                                NecronGuiColors.GuiC.buttonHoveredT.color);
 
         VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
 

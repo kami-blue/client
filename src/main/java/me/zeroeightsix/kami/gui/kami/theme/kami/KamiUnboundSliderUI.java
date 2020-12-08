@@ -16,9 +16,9 @@ public class KamiUnboundSliderUI extends AbstractComponentUI<UnboundSlider> {
         String s = component.getText() + ": " + component.getValue();
 
         ColorHolder color = new ColorHolder(
-                component.isHovered() ? KamiGuiColors.GuiC.buttonHoveredN.color :
-                        component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
-                                KamiGuiColors.GuiC.buttonHoveredT.color);
+                component.isHovered() ? NecronGuiColors.GuiC.buttonHoveredN.color :
+                        component.isPressed() ? NecronGuiColors.GuiC.buttonPressed.color :
+                                NecronGuiColors.GuiC.buttonHoveredT.color);
 
         FontRenderAdapter.INSTANCE.drawString(s, component.getWidth() / 2f - FontRenderAdapter.INSTANCE.getStringWidth(s) / 2f, 1f, false, color);
     }

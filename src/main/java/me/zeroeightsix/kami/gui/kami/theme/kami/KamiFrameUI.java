@@ -23,7 +23,7 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper;
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter;
 import me.zeroeightsix.kami.util.math.Vec2d;
 
-import static me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC;
+import static me.zeroeightsix.kami.gui.kami.theme.kami.NecronGuiColors.GuiC;
 
 /**
  * Created by 086 on 26/06/2017.

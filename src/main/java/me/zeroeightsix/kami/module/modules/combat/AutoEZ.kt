@@ -29,10 +29,10 @@ object AutoEZ : Module() {
     @Suppress("UNUSED")
     enum class MessageMode(val text: String) {
         GG("gg, \$NAME"),
-        ONTOP("KAMI BLUE on top! ez \$NAME"),
+        ONTOP("NECRON Client on top! ez \$NAME"),
         EZD("You just got ez'd \$NAME"),
         EZ_HYPIXEL("\$HYPIXEL_MESSAGE \$NAME"),
-        NAENAE("You just got naenae'd by kami blue plus, \$NAME"),
+        NAENAE("You just got naenae'd by NECRON Client, \$NAME"),
         CUSTOM("");
     }
 

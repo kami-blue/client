@@ -78,7 +78,7 @@ object AntiAFK : Module() {
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
             if (MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) {
-                sendServerMessage("/r I am currently AFK and using KAMI Blue!")
+                sendServerMessage("/r I am currently AFK and using NECRON Client!")
             }
         }
 

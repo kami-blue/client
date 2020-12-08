@@ -21,7 +21,7 @@ public class KamiSettingsPanelUI extends AbstractComponentUI<SettingsPanel> {
         Vec2d pos1 = new Vec2d(0, 0);
         Vec2d pos2 = new Vec2d(component.getWidth(), component.getHeight());
 
-        RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(KamiGuiColors.GuiC.windowFilled.color));
-        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(KamiGuiColors.GuiC.windowOutline.color));
+        RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(NecronGuiColors.GuiC.windowFilled.color));
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(NecronGuiColors.GuiC.windowOutline.color));
     }
 }
