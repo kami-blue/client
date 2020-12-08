@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "capes": [
+      {
+        "cape_uuid": "00001",
+        "player_uuid": "5c649638-e6e9-46a8-b7fc-0362c80d0fc6",
+        "type": "CONTRIBUTOR",
+        "color": {
+          "primary": "9b90ff",
+          "border": "8778ff"
+        }
+      }
+    ],
+    "is_premium": true
+  },
+  {
+    "id": 2,
+    "capes": [
+      {
+        "cape_uuid": "00002",
+        "player_uuid": "aaa66890-7230-4c59-b7d1-b4256c64885b",
+        "type": "CONTRIBUTOR",
+        "color": {
+          "primary": "9b90ff",
+          "border": "8778ff"
+        }
+      }
+    ],
+    "is_premium": true
+  },
+]
