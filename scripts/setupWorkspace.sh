@@ -7,7 +7,6 @@
 # Usage: "./setupWorkspace.sh"
 
 __dir="$(cd "$(dirname "$0")" && pwd)"
-. "$__dir/utils.sh"
 
 #
 
