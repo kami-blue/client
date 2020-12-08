@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -37,7 +37,7 @@ object DiscordNotifs : Module() {
 
     val url = register(Settings.s("URL", "unchanged"))
     val pingID = register(Settings.s("PingID", "unchanged"))
-    val avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
+    val avatar = register(Settings.s("Avatar", NecronClient.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -98,7 +98,7 @@ object DiscordNotifs : Module() {
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)
-        val dm = DiscordMessage(KamiMod.NAME + " " + KamiMod.VERSION, content, avatarUrl)
+        val dm = DiscordMessage(NecronClient.NAME + " " + NecronClient.VERSION, content, avatarUrl)
         tm.sendMessage(dm)
     }
 

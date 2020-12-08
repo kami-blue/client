@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 
@@ -20,7 +20,7 @@ public class CommandsCommand extends Command {
 
     @Override
     public void call(String[] args) {
-        KamiMod.INSTANCE.getCommandManager().getCommands().stream().sorted(Comparator.comparing(Command::getLabel)).forEach(command ->
+        NecronClient.INSTANCE.getCommandManager().getCommands().stream().sorted(Comparator.comparing(Command::getLabel)).forEach(command ->
                 sendChatMessage("&f" + Command.getCommandPrefix() + command.getLabel() + "&r ~ &7" + command.getDescription())
         );
     }

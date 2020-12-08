@@ -1,6 +1,6 @@
 package me.zeroeightsix.installer;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.util.WebUtils;
 import me.zeroeightsix.kami.util.filesystem.FolderHelper;
 import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper;
@@ -20,17 +20,16 @@ import java.util.Random;
  * Added more background images by humboldt123 on 15/08/20
  */
 public class Installer extends JPanel {
-    String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
-
+    String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(NecronClient.DOWNLOADS_API).replace("\n", "").split("\"");
     public static void main(String[] args) throws IOException {
-        System.out.println("Ran the " + KamiMod.NAME + " " + KamiMod.VERSION + " installer!");
+        System.out.println("Ran the " + NecronClient.NAME + " " + NecronClient.VERSION + " installer!");
 
         /* ensure mods exists */
         new File(getModsFolder()).mkdirs();
 
-        URL kamiLogo = Installer.class.getResource("/installer/kami.png");
-        JFrame frame = new JFrame("KAMI Blue Installer");
-        frame.setIconImage(ImageIO.read(kamiLogo));
+        URL necronLogo = Installer.class.getResource("/installer/necron.png");
+        JFrame frame = new JFrame("NECRON Client Installer");
+        frame.setIconImage(ImageIO.read(necronLogo));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(new Installer());
         frame.pack();
@@ -38,16 +37,15 @@ public class Installer extends JPanel {
         frame.setVisible(true);
 
         boolean hasForge = checkForForge();
-        ArrayList<File> kamiJars = getKamiJars();
+        ArrayList<File> NecronJars = getNecronJars();
 
         if (!hasForge) {
-            notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use KAMI Blue. " +
-                    "Head to https://kamiblue.org/faq to get instructions for installing Forge");
+            notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use NECRON Client. ");
         }
-        if (kamiJars != null) {
-            notify("Attention! It looks like you had KAMI Blue installed before. Closing this popup will delete the older versions, " +
+        if (NecronJars != null) {
+            notify("Attention! It looks like you had NECRON Client installed before. Closing this popup will delete the older versions, " +
                     "so if you want to save those jars you should go and make a copy somewhere else");
-            deleteKamiJars(kamiJars);
+            deleteNecronJars(NecronJars);
         }
     }
 
@@ -55,151 +53,95 @@ public class Installer extends JPanel {
      * @throws IOException won't happen due to the files being inside the jar themselves
      */
     private Installer() throws IOException {
-        JButton stableButton = new JButton();
-        JButton betaButton = new JButton();
+        JButton installButton = new JButton();
         Random rand = new Random();
 
-        String installedStable = "The latest stable (" + downloadsAPI[5] + ") version of KAMI Blue was installed.";
-        String installedBeta = "The latest beta (" + downloadsAPI[15] + ") version of KAMI Blue was installed.";
+        String installedStable = "The latest version (\" + downloadsAPI[5] + \") of NECRON Client was installed.";
 
-        stableButton.setOpaque(false);
-        stableButton.setContentAreaFilled(false);
-        stableButton.setBorderPainted(false);
-        betaButton.setOpaque(false);
-        betaButton.setContentAreaFilled(false);
-        betaButton.setBorderPainted(false);
+        installButton.setOpaque(false);
+        installButton.setContentAreaFilled(false);
+        installButton.setBorderPainted(false);
 
-        stableButton.setToolTipText("This version of KAMI Blue is the latest major release");
-        betaButton.setToolTipText("A beta version of KAMI Blue, with frequent updates and bug fixes");
+        installButton.setToolTipText("Install the latest version of NECRON Client");
 
         URL backgroundImage = Installer.class.getResource("/installer/0" + rand.nextInt(4) + ".jpg");
         JLabel backgroundPane = new JLabel(new ImageIcon(ImageIO.read(backgroundImage)));
 
-        URL stableButtonImage = Installer.class.getResource("/installer/stable.png");
-        JLabel stableButtonIcon = new JLabel(new ImageIcon(ImageIO.read(stableButtonImage)));
+        URL installButtonImage = Installer.class.getResource("/installer/install.png");
+        JLabel installButtonIcon = new JLabel(new ImageIcon(ImageIO.read(installButtonImage)));
 
-        URL betaButtonImage = Installer.class.getResource("/installer/beta.png");
-        JLabel betaButtonIcon = new JLabel(new ImageIcon(ImageIO.read(betaButtonImage)));
-
-        URL kamiImage = Installer.class.getResource("/installer/kami.png");
-        JLabel kamiIcon = new JLabel(new ImageIcon(ImageIO.read(kamiImage)));
-
-        URL breadImage = Installer.class.getResource("/installer/bread.png");
-        JLabel breadIcon = new JLabel(new ImageIcon(ImageIO.read(breadImage)));
+        URL necronImage = Installer.class.getResource("/installer/necron.png");
+        JLabel necronIcon = new JLabel(new ImageIcon(ImageIO.read(necronImage)));
 
         setPreferredSize(new Dimension(600, 335));
         setLayout(null);
 
-        add(stableButton);
-        add(betaButton);
-        add(stableButtonIcon);
-        add(betaButtonIcon);
-        add(kamiIcon);
+        add(installButton);
+        add(installButtonIcon);
+        add(necronIcon);
 
-        int bread = rand.nextInt(50);
-        if (bread == 1) { /* easter egg :3 */
-            add(breadIcon);
-        }
 
         add(backgroundPane); // Add this *LAST* so renders over everything else.
 
-        stableButtonIcon.setBounds(90, 245, 200, 50);
-        stableButton.setBounds(90, 245, 200, 50);
-        betaButtonIcon.setBounds(310, 245, 200, 50);
-        betaButton.setBounds(310, 245, 200, 50);
-        kamiIcon.setBounds(236, 70, 128, 128);
-        breadIcon.setBounds(200, 150, 128, 128);
+        installButtonIcon.setBounds(200, 245, 200, 60);
+        installButton.setBounds(200, 245, 200, 60);
+        necronIcon.setBounds(190, 70, 220, 128);
         backgroundPane.setBounds(0, 0, 600, 355);
 
-        stableButton.addActionListener(e -> {
-            stableButton.disable();
-            betaButton.disable();
-            stableButtonIcon.setOpaque(false);
-            betaButtonIcon.setOpaque(false);
-            download(VersionType.STABLE);
+        installButton.addActionListener(e -> {
+            installButton.disable();
+            installButtonIcon.setOpaque(false);
+            download();
             notify(installedStable);
             System.exit(0);
         });
-
-        betaButton.addActionListener(e -> {
-            stableButton.disable();
-            betaButton.disable();
-            stableButtonIcon.setOpaque(false);
-            betaButtonIcon.setOpaque(false);
-            download(VersionType.BETA);
-            notify(installedBeta);
-            System.exit(0);
-        });
     }
 
-    /**
-     * This wasn't supposed to be hardcoded, but we cannot include gson in the shadowjar because Minecraft already provides it
-     * And the installer does not have access to Minecraft's libraries when run, so we are forced to manually parse the json
-     * <p>
-     * 5 = stable name
-     * 9 = stable url
-     * 15 = beta name
-     * 19 = beta url
-     *
-     * @param version which type you want to download, stable or the beta
-     */
-    private void download(VersionType version) {
+    private void download() {
+        System.out.println(downloadsAPI[9]);
+
         final JDialog[] dialog = {null};
         new Thread(() -> {
-            dialog[0] = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
+            dialog[0] = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "NECRON Client - Downloading");
             dialog[0].setResizable(false);
             dialog[0].setSize(300, 0);
             dialog[0].show();
-//            notify("KAMI Blue is currently being downloaded, please wait")
+//            notify("NECRON Client is currently being downloaded, please wait")
         }).start();
 
         /* please ignore the clusterfuck of code that this is */
-        System.out.println(KamiMod.NAME + " download started!");
-        if (version == VersionType.STABLE) {
-            try {
-                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
-                dialog[0].hide();
-                System.out.println(KamiMod.NAME + " download finished!");
-            } catch (IOException e) {
-                notifyAndExitWeb(e);
-            }
-        } else if (version == VersionType.BETA) {
-            try {
-                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
-                dialog[0].hide();
-                System.out.println(KamiMod.NAME + " download finished!");
-            } catch (IOException e) {
-                notifyAndExitWeb(e);
-            }
-        } else {
-            notify("Error when downloading, invalid VersionType entered!");
-            throw new IllegalStateException();
+        System.out.println(NecronClient.NAME + " download started!");
+        try {
+            WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
+            dialog[0].hide();
+            System.out.println(NecronClient.NAME + " download finished!");
+        } catch (IOException e) {
+            notifyAndExitWeb(e);
         }
-
     }
 
     /**
-     * Deletes all the older KAMI Jars
+     * Deletes all the older NECRON Jars
      *
-     * @param files list of KAMI jar Files
+     * @param files list of NECRON jar Files
      */
-    private static void deleteKamiJars(ArrayList<File> files) {
+    private static void deleteNecronJars(ArrayList<File> files) {
         for (File file : files) {
             file.delete();
         }
     }
 
     /**
-     * @return null if there were no KAMI jars, otherwise returns a list of files to delete
+     * @return null if there were no NECRON jars, otherwise returns a list of files to delete
      */
-    private static ArrayList<File> getKamiJars() {
+    private static ArrayList<File> getNecronJars() {
         File mods = new File(getModsFolder());
         File[] files = mods.listFiles();
         ArrayList<File> foundFiles = new ArrayList<>();
         boolean found = false;
 
         for (File file : files) {
-            boolean match = file.getName().matches(".*[Kk][Aa][Mm][Ii].*");
+            boolean match = file.getName().matches(".*[Nn][En][Cc][Rr][Oo][Nn].*");
             if (match) {
                 foundFiles.add(file);
                 found = true;
@@ -260,10 +202,6 @@ public class Installer extends JPanel {
         notify("Error when downloading, couldn't connect to URL. Firewall / ISP is blocking it or you're offline");
         e.printStackTrace();
         System.exit(1);
-    }
-
-    private enum VersionType {
-        STABLE, BETA
     }
 }
 

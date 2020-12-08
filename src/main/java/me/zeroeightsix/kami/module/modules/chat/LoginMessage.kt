@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -24,7 +24,7 @@ import java.io.FileReader
 object LoginMessage : Module() {
     private val sendAfterMoving = register(Settings.b("SendAfterMoving", false))
 
-    private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
+    private val file = File(NecronClient.DIRECTORY + "loginmsg.txt")
     private var loginMessage: String? = null
     private var sent = false
     private var moved = false

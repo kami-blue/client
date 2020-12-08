@@ -2,7 +2,7 @@
 
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -103,7 +103,7 @@ object TotemPopCounter : Module() {
 
     private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
 
-    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
+    private fun ending(): String = if (thanksTo.value) " thanks to ${NecronClient.NAME} !" else "!"
 
     private fun formatNumber(message: Int) = colorNumber.value.textFormatting.toString() + message + TextFormatting.RESET
 

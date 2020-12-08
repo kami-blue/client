@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -51,7 +51,7 @@ object AutoExcuse : Module() {
             "The CPU cheated!"
     )
 
-    private val file = File(KamiMod.DIRECTORY + "excuses.txt")
+    private val file = File(NecronClient.DIRECTORY + "excuses.txt")
     private var loadedExcuses = defaultExcuses
 
     private val clients = arrayOf(
@@ -80,7 +80,7 @@ object AutoExcuse : Module() {
                     file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
                     MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
                 } catch (e: Exception) {
-                    KamiMod.LOG.error("Failed loading excuses", e)
+                    NecronClient.LOG.error("Failed loading excuses", e)
                 }
                 cacheList.toTypedArray()
             } else {

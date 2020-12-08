@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.rgui.component.AlignedComponent
 import me.zeroeightsix.kami.gui.rgui.component.Component
@@ -30,9 +30,9 @@ object ConfigUtils {
 
         success = FriendManager.loadFriends() && success
 
-        KamiMod.INSTANCE.guiManager = KamiGUI()
-        KamiMod.INSTANCE.guiManager.initializeGUI()
-        KamiMod.LOG.info("Gui loaded")
+        NecronClient.INSTANCE.guiManager = KamiGUI()
+        NecronClient.INSTANCE.guiManager.initializeGUI()
+        NecronClient.LOG.info("Gui loaded")
 
         success = loadConfiguration() && success
 
@@ -59,10 +59,10 @@ object ConfigUtils {
     fun loadConfiguration(): Boolean {
         return try {
             loadConfigurationUnsafe()
-            KamiMod.LOG.info("Config loaded")
+            NecronClient.LOG.info("Config loaded")
             true
         } catch (e: IOException) {
-            KamiMod.LOG.error("Failed to load config! ${e.message}")
+            NecronClient.LOG.error("Failed to load config! ${e.message}")
             e.printStackTrace()
             false
         }
@@ -76,10 +76,10 @@ object ConfigUtils {
     fun saveConfiguration(): Boolean {
         return try {
             saveConfigurationUnsafe()
-            KamiMod.LOG.info("Config saved")
+            NecronClient.LOG.info("Config saved")
             true
         } catch (e: IOException) {
-            KamiMod.LOG.error("Failed to save config! ${e.message}")
+            NecronClient.LOG.error("Failed to save config! ${e.message}")
             e.printStackTrace()
             false
         }
@@ -138,9 +138,9 @@ object ConfigUtils {
         val kamiConfig = Paths.get(kamiConfigName)
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
-        val gui = KamiMod.INSTANCE.guiStateSetting.value
+        val gui = NecronClient.INSTANCE.guiStateSetting.value
         for ((key, value) in gui.entrySet()) {
-            val optional = KamiMod.INSTANCE.guiManager.children.stream()
+            val optional = NecronClient.INSTANCE.guiManager.children.stream()
                     .filter { component: Component? -> component is Frame }
                     .filter { component: Component -> (component as Frame).title == key }
                     .findFirst()
@@ -158,7 +158,7 @@ object ConfigUtils {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }
         }
-        for (component in KamiMod.INSTANCE.guiManager.children) {
+        for (component in NecronClient.INSTANCE.guiManager.children) {
             if (component !is Frame) continue
             if (!component.isPinnable || !component.isVisible) continue
             component.opacity = 0f
@@ -168,7 +168,7 @@ object ConfigUtils {
     @Throws(IOException::class)
     private fun saveConfigurationUnsafe() {
         val jsonObject = JsonObject()
-        KamiMod.INSTANCE.guiManager.children.stream()
+        NecronClient.INSTANCE.guiManager.children.stream()
                 .filter { component: Component? -> component is Frame }
                 .map { component: Component? -> component as Frame? }
                 .forEach { frame ->
@@ -180,7 +180,7 @@ object ConfigUtils {
                     frameObject.add("pinned", JsonPrimitive(frame.isPinned))
                     jsonObject.add(frame.title, frameObject)
                 }
-        KamiMod.INSTANCE.guiStateSetting.value = jsonObject
+        NecronClient.INSTANCE.guiStateSetting.value = jsonObject
         val outputFile = Paths.get(getConfigName())
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)

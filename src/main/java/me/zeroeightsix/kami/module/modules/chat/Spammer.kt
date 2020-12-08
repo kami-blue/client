@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -23,7 +23,7 @@ object Spammer : Module() {
     private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
     private val delay = register(Settings.integerBuilder("Delay(s)").withRange(1, 240).withValue(10).withStep(5))
 
-    private val file = File(KamiMod.DIRECTORY + "spammer.txt")
+    private val file = File(NecronClient.DIRECTORY + "spammer.txt")
     private val spammer = ArrayList<String>()
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var currentLine = 0

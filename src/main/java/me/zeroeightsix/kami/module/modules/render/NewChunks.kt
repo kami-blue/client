@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -156,7 +156,7 @@ object NewChunks : Module() {
             logWriter!!.println(head)
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.LOG.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
+            NecronClient.LOG.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
             MessageSendHelper.sendErrorMessage(chatName + " onLogStart: " + e.message)
         }
     }
@@ -174,7 +174,7 @@ object NewChunks : Module() {
                     file = mc.integratedServer?.getWorld(dimension)?.chunkSaveLocation
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KamiMod.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
+                    NecronClient.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
                     MessageSendHelper.sendErrorMessage(chatName + " onGetPath: " + e.message)
                 }
 
@@ -207,7 +207,7 @@ object NewChunks : Module() {
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                KamiMod.LOG.error("some exception happened when trying to make the file -> " + e.message)
+                NecronClient.LOG.error("some exception happened when trying to make the file -> " + e.message)
                 MessageSendHelper.sendErrorMessage(chatName + " onCreateFile: " + e.message)
             }
             return rV

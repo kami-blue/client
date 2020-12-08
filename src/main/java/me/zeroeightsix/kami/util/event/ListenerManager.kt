@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.event
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -20,7 +20,7 @@ object ListenerManager {
     fun register(`object`: Any, listener: Listener<*>) {
         listenerMap.getOrPut(`object`, ::ArrayList).let {
             val thread = Thread.currentThread()
-            if (thread == KamiMod.MAIN_THREAD) {
+            if (thread == NecronClient.MAIN_THREAD) {
                 it.add(listener)
             } else {
                 synchronized(thread) {

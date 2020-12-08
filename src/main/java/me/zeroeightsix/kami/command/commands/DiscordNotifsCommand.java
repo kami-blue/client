@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs;
@@ -37,7 +37,7 @@ public class DiscordNotifsCommand extends Command {
             DiscordNotifs.INSTANCE.getAvatar().setValue(args[2]);
             sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Set Avatar to \"" + args[2] + "\"!");
         } else {
-            DiscordNotifs.INSTANCE.getAvatar().setValue(KamiMod.GITHUB_LINK + "raw/assets/assets/icons/kami.png");
+            DiscordNotifs.INSTANCE.getAvatar().setValue(NecronClient.GITHUB_LINK + "raw/assets/assets/icons/kami.png");
             sendChatMessage(DiscordNotifs.INSTANCE.getChatName() + " Reset Avatar!");
         }
     }

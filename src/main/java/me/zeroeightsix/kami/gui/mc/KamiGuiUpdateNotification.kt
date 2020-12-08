@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import com.google.gson.JsonParser
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import net.minecraft.client.gui.*
@@ -28,7 +28,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
     }
 
     override fun actionPerformed(button: GuiButton) {
-        if (button.id == 0) WebUtils.openWebLink(KamiMod.WEBSITE_LINK + "/download")
+        if (button.id == 0) WebUtils.openWebLink(NecronClient.WEBSITE_LINK + "/download")
 
         val screen = if (buttonId == 1) GuiWorldSelection(GuiMainMenu()) // Single
         else GuiMultiplayer(GuiMainMenu()) // Multi
@@ -45,23 +45,23 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
         @JvmStatic
         fun updateCheck() {
             try {
-                KamiMod.LOG.info("Attempting KAMI Blue update check...")
+                NecronClient.LOG.info("Attempting KAMI Blue update check...")
 
                 val parser = JsonParser()
-                val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.DOWNLOADS_API) {
+                val rawJson = ConnectionUtils.requestRawJsonFrom(NecronClient.DOWNLOADS_API) {
                     throw it
                 }
 
                 latest = parser.parse(rawJson).asJsonObject.getAsJsonObject("stable")["name"].asString
-                isLatest = latest.equals(KamiMod.VERSION_MAJOR)
+                isLatest = latest.equals(NecronClient.VERSION_MAJOR)
 
                 if (!isLatest) {
-                    KamiMod.LOG.warn("You are running an outdated version of KAMI Blue.\nCurrent: ${KamiMod.VERSION_MAJOR}\nLatest: $latest")
+                    NecronClient.LOG.warn("You are running an outdated version of KAMI Blue.\nCurrent: ${NecronClient.VERSION_MAJOR}\nLatest: $latest")
                 } else {
-                    KamiMod.LOG.info("Your KAMI Blue (" + KamiMod.VERSION_MAJOR + ") is up-to-date with the latest stable release.")
+                    NecronClient.LOG.info("Your KAMI Blue (" + NecronClient.VERSION_MAJOR + ") is up-to-date with the latest stable release.")
                 }
             } catch (e: IOException) {
-                KamiMod.LOG.error("Oes noes! An exception was thrown during the update check.", e)
+                NecronClient.LOG.error("Oes noes! An exception was thrown during the update check.", e)
             }
         }
     }

@@ -7,7 +7,7 @@ package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -90,7 +90,7 @@ object KamiMojiManager : Manager {
 
     init {
         thread = Thread({
-            KamiMod.LOG.info("Initialising KamiMoji...")
+            NecronClient.LOG.info("Initialising KamiMoji...")
             val dir = File(FOLDER)
             val kamiMojiDir = File("kamimoji")
 
@@ -147,7 +147,7 @@ object KamiMojiManager : Manager {
 
             jsonObject = gson.fromJson(json, JsonObject::class.java)
         } catch (e: IOException) {
-            KamiMod.LOG.error(e)
+            NecronClient.LOG.error(e)
         }
 
         return jsonObject

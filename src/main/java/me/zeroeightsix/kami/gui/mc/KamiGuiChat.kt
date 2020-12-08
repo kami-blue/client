@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.mc
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
@@ -96,7 +96,7 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
     private fun getCommand(string: String): Command? {
         val treeMap = TreeMap<String, Command>()
 
-        for (command in KamiMod.INSTANCE.commandManager.commands) {
+        for (command in NecronClient.INSTANCE.commandManager.commands) {
             if (command.label.startsWith(string, true)) {
                 treeMap[command.label] = command
             } else {

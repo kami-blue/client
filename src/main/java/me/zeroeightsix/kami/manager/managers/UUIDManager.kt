@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
 import org.kamiblue.capeapi.AbstractUUIDManager
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.capeapi.UUIDUtils
 
-object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json"), Manager {
+object UUIDManager : AbstractUUIDManager(NecronClient.DIRECTORY + "UUIDCache.json"), Manager {
 
     override fun getOrRequest(nameOrUUID: String): PlayerProfile? {
         return Wrapper.minecraft.connection?.playerInfoMap?.let { playerInfoMap ->
@@ -25,6 +25,6 @@ object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json"), 
     }
 
     override fun logError(message: String) {
-        KamiMod.LOG.error(message)
+        NecronClient.LOG.error(message)
     }
 }

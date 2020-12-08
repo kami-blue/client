@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -56,7 +56,7 @@ object PacketLogger : Module() {
                 it.close()
             }
         } catch (e: IOException) {
-            KamiMod.LOG.error("$chatName Error saving!")
+            NecronClient.LOG.error("$chatName Error saving!")
             e.printStackTrace()
         }
         lines.clear()
@@ -75,7 +75,7 @@ object PacketLogger : Module() {
             bufferedReader.close()
         } catch (ignored: Exception) {
             // this is fine, just don't load a file
-            KamiMod.LOG.error("$chatName Error loading!")
+            NecronClient.LOG.error("$chatName Error loading!")
             lines.clear()
         }
     }

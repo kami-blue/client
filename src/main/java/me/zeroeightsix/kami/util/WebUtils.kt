@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.awt.Desktop
 import java.io.BufferedReader
@@ -31,7 +31,7 @@ object WebUtils {
         try {
             Desktop.getDesktop().browse(URI(url))
         } catch (e: IOException) {
-            KamiMod.LOG.error("Couldn't open link: $url")
+            NecronClient.LOG.error("Couldn't open link: $url")
         }
     }
 

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
@@ -17,7 +17,7 @@ class GenerateWebsiteCommand : Command("genwebsite", null) {
     override fun call(args: Array<String>) {
         val mods = ModuleManager.getModules()
         val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
-        KamiMod.LOG.info("\n"
+        NecronClient.LOG.info("\n"
                 + "---\n"
                 + "layout: default\n"
                 + "title: Modules\n"
@@ -34,12 +34,12 @@ class GenerateWebsiteCommand : Command("genwebsite", null) {
                 totalMods++
                 str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
             }
-            KamiMod.LOG.info("<details>")
-            KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
-            KamiMod.LOG.info("    <p><ul>")
-            KamiMod.LOG.info(str)
-            KamiMod.LOG.info("    </ul></p>")
-            KamiMod.LOG.info("</details>")
+            NecronClient.LOG.info("<details>")
+            NecronClient.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
+            NecronClient.LOG.info("    <p><ul>")
+            NecronClient.LOG.info(str)
+            NecronClient.LOG.info("    </ul></p>")
+            NecronClient.LOG.info("</details>")
         }
         sendChatMessage(getLabel().substring(0, 1).toUpperCase() + getLabel().substring(1) + ": Generated website to log file!")
     }

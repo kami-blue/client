@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.Module;
@@ -50,7 +50,7 @@ public class TroubleshootCommand extends Command {
         sendChatMessage("Enabled modules: " + f + "\n" + TextFormatting.GRAY + enabled);
         if (args.length >= 2) return;
         sendChatMessage(ForgeVersion.getMajorVersion() + "." + ForgeVersion.getMinorVersion() + "." + ForgeVersion.getRevisionVersion() + "." + ForgeVersion.getBuildVersion());
-        sendChatMessage(KamiMod.NAME + " " + KamiMod.KAMI_KATAKANA + " " + KamiMod.VERSION);
+        sendChatMessage(NecronClient.NAME + " " + NecronClient.KAMI_KATAKANA + " " + NecronClient.VERSION);
         sendChatMessage("CPU: " + OpenGlHelper.getCpu() + " GPU: " + GlStateManager.glGetString(GL11.GL_VENDOR));
         sendChatMessage("Please send a screenshot of the full output to the developer or moderator who's helping you!");
     }

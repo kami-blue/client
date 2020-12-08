@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import org.kamiblue.commons.utils.ClassUtils;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ public class CommandManager {
                 commands.add(command);
             } catch (Exception e) {
                 e.printStackTrace();
-                KamiMod.LOG.error("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
+                NecronClient.LOG.error("Couldn't initiate command " + s.getSimpleName() + "! Err: " + e.getClass().getSimpleName() + ", message: " + e.getMessage());
             }
         }
-        KamiMod.LOG.info("Commands initialised");
+        NecronClient.LOG.info("Commands initialised");
     }
 
     public void callCommand(String command) {

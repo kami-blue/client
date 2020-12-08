@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.event.listener
@@ -82,7 +82,7 @@ object InventoryMove : Module() {
                 }
             } catch (e: IndexOutOfBoundsException) {
                 if (!hasSent) {
-                    KamiMod.LOG.error("$chatName Error: Key is bound to a mouse button!")
+                    NecronClient.LOG.error("$chatName Error: Key is bound to a mouse button!")
                     e.printStackTrace()
                     hasSent = true
                 }

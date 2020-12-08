@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
@@ -83,7 +83,7 @@ object InfoOverlay : Module() {
         val contents = ArrayList<String>()
 
         contents.apply {
-            if (version.value) addContent(KamiMod.KAMI_KATAKANA, KamiMod.VERSION_SIMPLE)
+            if (version.value) addContent(NecronClient.KAMI_KATAKANA, NecronClient.VERSION_SIMPLE)
             if (username.value) addContent("Welcome", "${mc.session.username}!")
             if (time.value) add(TimeUtils.getFinalTime(secondColor.value.textFormatting, firstColor.value.textFormatting, timeUnitSetting.value, timeTypeSetting.value, doLocale.value))
             if (tps.value) addContent("${InfoCalculator.tps(decimalPlaces.value)}", "tps")

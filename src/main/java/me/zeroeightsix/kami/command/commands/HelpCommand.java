@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.command.Command;
 import me.zeroeightsix.kami.module.modules.client.ClickGUI;
 
 import java.util.Arrays;
 
-import static me.zeroeightsix.kami.KamiMod.WEBSITE_LINK;
+import static me.zeroeightsix.kami.NecronClient.WEBSITE_LINK;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage;
 
@@ -46,7 +46,7 @@ public class HelpCommand extends Command {
         String commandPrefix = Command.getCommandPrefix();
         if (args[0] == null) {
             sendStringChatMessage(new String[]{
-                    "KAMI Blue " + KamiMod.VERSION,
+                    "KAMI Blue " + NecronClient.VERSION,
                     "&7Press &r" + ClickGUI.INSTANCE.getBind().getValue().toString() + "&7 to open GUI",
                     "&7see &b" + WEBSITE_LINK + "&7 for a full version of the faq",
                     commandPrefix + "commands&7 to view all available commands",

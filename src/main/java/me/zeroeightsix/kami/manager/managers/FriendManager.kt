@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils
 import org.kamiblue.capeapi.PlayerProfile
@@ -54,10 +54,10 @@ object FriendManager : Manager {
             friendFile = gson.fromJson(FileReader(file), object : TypeToken<FriendFile>() {}.type)
             friends.clear()
             friends.putAll(friendFile.friends.associateBy { it.name.toLowerCase() })
-            KamiMod.LOG.info("Friend loaded")
+            NecronClient.LOG.info("Friend loaded")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed loading friends", e)
+            NecronClient.LOG.error("Failed loading friends", e)
             false
         }
     }
@@ -72,10 +72,10 @@ object FriendManager : Manager {
             gson.toJson(friendFile, fileWriter)
             fileWriter.flush()
             fileWriter.close()
-            KamiMod.LOG.info("Friends config saved")
+            NecronClient.LOG.info("Friends config saved")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed saving friends config", e)
+            NecronClient.LOG.error("Failed saving friends config", e)
             e.printStackTrace()
             false
         }

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.setting.config;
 
 import com.google.gson.*;
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.SettingsRegister;
 import me.zeroeightsix.kami.setting.converter.Convertable;
@@ -55,7 +55,7 @@ public class Configuration {
         try {
             loadConfiguration(new JsonParser().parse(new InputStreamReader(stream)).getAsJsonObject());
         } catch (IllegalStateException e) { // The JSON file is probably malformed.
-            KamiMod.LOG.error("KAMI Config malformed: resetting.");
+            NecronClient.LOG.error("KAMI Config malformed: resetting.");
             e.printStackTrace();
             loadConfiguration(new JsonObject()); // Just reset it!
         }

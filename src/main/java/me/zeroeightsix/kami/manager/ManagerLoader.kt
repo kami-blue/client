@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager
 import me.zeroeightsix.kami.util.TimerUtils
@@ -26,7 +26,7 @@ object ManagerLoader {
             val stopTimer = TimerUtils.StopTimer()
             managerClassList = ClassUtils.findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)
             val time = stopTimer.stop()
-            KamiMod.LOG.info("${managerClassList!!.size} manager(s) found, took ${time}ms")
+            NecronClient.LOG.info("${managerClassList!!.size} manager(s) found, took ${time}ms")
         }
         preLoadingThread!!.name = "Managers Pre-Loading"
         preLoadingThread!!.start()
@@ -40,7 +40,7 @@ object ManagerLoader {
             ClassUtils.getInstance(clazz).also { KamiEventBus.subscribe(it) }
         }
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${managerClassList!!.size} managers loaded, took ${time}ms")
+        NecronClient.LOG.info("${managerClassList!!.size} managers loaded, took ${time}ms")
         preLoadingThread = null
         managerClassList = null
     }

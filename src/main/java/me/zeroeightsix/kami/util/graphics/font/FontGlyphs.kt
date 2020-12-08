@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.renderer.GlStateManager
@@ -142,7 +142,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
             val charInfoArray = builderArray.map { it.build(textureHeight.toDouble()) }.toTypedArray()
             GlyphChunk(chunk, dynamicTexture.glTextureId, dynamicTexture, charInfoArray)
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to load glyph chunk $chunk.")
+            NecronClient.LOG.error("Failed to load glyph chunk $chunk.")
             e.printStackTrace()
             null
         }
@@ -213,7 +213,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
 
             dynamicTexture
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed to create font texture.")
+            NecronClient.LOG.error("Failed to create font texture.")
             e.printStackTrace()
             null
         }

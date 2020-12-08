@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
 import me.zeroeightsix.kami.util.Wrapper
@@ -24,12 +24,12 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
     init {
         shader = when {
             !OpenGlHelper.shadersSupported -> {
-                KamiMod.LOG.warn("Shaders are unsupported by OpenGL!")
+                NecronClient.LOG.warn("Shaders are unsupported by OpenGL!")
                 null
             }
 
             isIntegratedGraphics -> {
-                KamiMod.LOG.warn("Running on Intel Integrated Graphics!")
+                NecronClient.LOG.warn("Running on Intel Integrated Graphics!")
                 null
             }
 
@@ -41,7 +41,7 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
                         it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                     }
                 } catch (e: Exception) {
-                    KamiMod.LOG.warn("Failed to load shaders")
+                    NecronClient.LOG.warn("Failed to load shaders")
                     e.printStackTrace()
 
                     null

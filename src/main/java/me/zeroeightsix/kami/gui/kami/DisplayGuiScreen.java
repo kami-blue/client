@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.kami;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame;
 import me.zeroeightsix.kami.module.modules.client.ClickGUI;
@@ -30,7 +30,7 @@ public class DisplayGuiScreen extends GuiScreen {
     public DisplayGuiScreen(GuiScreen lastScreen) {
         this.lastScreen = lastScreen;
 
-        KamiGUI gui = KamiMod.INSTANCE.getGuiManager();
+        KamiGUI gui = NecronClient.INSTANCE.getGuiManager();
 
         for (Component c : gui.getChildren()) {
             if (c instanceof Frame) {
@@ -50,14 +50,14 @@ public class DisplayGuiScreen extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        KamiGUI gui = KamiMod.INSTANCE.getGuiManager();
+        KamiGUI gui = NecronClient.INSTANCE.getGuiManager();
 
         gui.getChildren().stream().filter(component -> (component instanceof Frame) && (((Frame) component).isPinnable()) && component.isVisible()).forEach(component -> component.setOpacity(0f));
     }
 
     @Override
     public void initGui() {
-        gui = KamiMod.INSTANCE.getGuiManager();
+        gui = NecronClient.INSTANCE.getGuiManager();
     }
 
     @Override

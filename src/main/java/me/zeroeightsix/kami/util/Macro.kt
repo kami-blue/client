@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.manager.managers.FileInstanceManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
@@ -23,10 +23,10 @@ object Macro {
             gson.toJson(FileInstanceManager.macros, fw)
             fw.flush()
             fw.close()
-            KamiMod.LOG.info("Macro saved")
+            NecronClient.LOG.info("Macro saved")
             true
         } catch (e: IOException) {
-            KamiMod.LOG.info("Failed saving macro")
+            NecronClient.LOG.info("Failed saving macro")
             e.printStackTrace()
             false
         }
@@ -37,14 +37,14 @@ object Macro {
         try {
             try {
                 FileInstanceManager.macros = gson.fromJson(FileReader(file), object : TypeToken<LinkedHashMap<Int?, List<String?>?>?>() {}.type)!!
-                KamiMod.LOG.info("Macro loaded")
+                NecronClient.LOG.info("Macro loaded")
                 success = true
             } catch (e: FileNotFoundException) {
-                KamiMod.LOG.warn("Could not find file $configName, clearing the macros list")
+                NecronClient.LOG.warn("Could not find file $configName, clearing the macros list")
                 FileInstanceManager.macros.clear()
             }
         } catch (e: IllegalStateException) {
-            KamiMod.LOG.warn("$configName is empty!")
+            NecronClient.LOG.warn("$configName is empty!")
             FileInstanceManager.macros.clear()
         }
         return success

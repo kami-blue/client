@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
 import me.zeroeightsix.kami.util.Wrapper
@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11.*
 object UIRenderer {
     fun renderAndUpdateFrames() {
         if (Wrapper.minecraft.currentScreen is DisplayGuiScreen || Wrapper.minecraft.gameSettings.showDebugInfo) return
-        val gui = KamiMod.INSTANCE.guiManager
+        val gui = NecronClient.INSTANCE.guiManager
         GlStateUtils.rescaleKami()
 
         for (child in gui.children) {

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.client
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC
 import me.zeroeightsix.kami.util.EntityUtils
@@ -60,8 +60,8 @@ object Capes : Module() {
     }
 
     private fun updateCapes() {
-        val rawJson = ConnectionUtils.requestRawJsonFrom(KamiMod.CAPES_JSON) {
-            KamiMod.LOG.warn("Failed requesting capes", it)
+        val rawJson = ConnectionUtils.requestRawJsonFrom(NecronClient.CAPES_JSON) {
+            NecronClient.LOG.warn("Failed requesting capes", it)
         } ?: return
 
         try {
@@ -82,9 +82,9 @@ object Capes : Module() {
             }
 
             DiscordRPC.setCustomIcons(type)
-            KamiMod.LOG.info("Capes loaded")
+            NecronClient.LOG.info("Capes loaded")
         } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed parsing capes", e)
+            NecronClient.LOG.warn("Failed parsing capes", e)
         }
     }
 

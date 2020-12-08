@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
@@ -30,7 +30,7 @@ import java.util.Set;
         name = "XRay",
         category = Module.Category.RENDER,
         description = "See through common blocks!")
-@EventBusSubscriber(modid = KamiMod.ID
+@EventBusSubscriber(modid = NecronClient.ID
 )
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.

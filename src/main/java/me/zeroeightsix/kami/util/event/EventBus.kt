@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.util.event
 
 import io.netty.util.internal.ConcurrentSet
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
@@ -28,7 +28,7 @@ object EventBus {
     open class SynchronizedEventBus(val mainThread: Thread) : SingleThreadEventBus() {
         override fun subscribe(`object`: Any) {
             val thread = Thread.currentThread()
-            if (thread == KamiMod.MAIN_THREAD) {
+            if (thread == NecronClient.MAIN_THREAD) {
                 super.subscribe(`object`)
             } else {
                 synchronized(thread) {
@@ -39,7 +39,7 @@ object EventBus {
 
         override fun unsubscribe(`object`: Any) {
             val thread = Thread.currentThread()
-            if (thread == KamiMod.MAIN_THREAD) {
+            if (thread == NecronClient.MAIN_THREAD) {
                 super.unsubscribe(`object`)
             } else {
                 synchronized(thread) {
@@ -50,7 +50,7 @@ object EventBus {
 
         override fun post(event: Any) {
             val thread = Thread.currentThread()
-            if (thread == KamiMod.MAIN_THREAD) {
+            if (thread == NecronClient.MAIN_THREAD) {
                 super.post(event)
             } else {
                 synchronized(thread) {

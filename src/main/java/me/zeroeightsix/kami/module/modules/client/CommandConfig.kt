@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
@@ -30,7 +30,7 @@ object CommandConfig : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
-    private const val title = "${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION_SIMPLE}"
+    private const val title = "${NecronClient.NAME} ${NecronClient.KAMI_KATAKANA} ${NecronClient.VERSION_SIMPLE}"
 
     init {
         listener<SafeTickEvent> {

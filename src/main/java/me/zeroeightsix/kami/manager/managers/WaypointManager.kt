@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
 import me.zeroeightsix.kami.manager.Manager
@@ -47,15 +47,15 @@ object WaypointManager : Manager {
         val localFile = if (legacyFormat()) oldFile else file
         val success = try {
             waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<LinkedHashSet<Waypoint>?>() {}.type)
-            KamiMod.LOG.info("Waypoint loaded")
+            NecronClient.LOG.info("Waypoint loaded")
             if (legacyFormat()) oldFile.delete()
             true
         } catch (e: FileNotFoundException) {
-            KamiMod.LOG.warn("Could not find file $configName, clearing the waypoints list")
+            NecronClient.LOG.warn("Could not find file $configName, clearing the waypoints list")
             waypoints.clear()
             false
         } catch (e: IllegalStateException) {
-            KamiMod.LOG.warn("$configName is empty!")
+            NecronClient.LOG.warn("$configName is empty!")
             waypoints.clear()
             false
         }
@@ -72,10 +72,10 @@ object WaypointManager : Manager {
             gson.toJson(waypoints, fileWriter)
             fileWriter.flush()
             fileWriter.close()
-            KamiMod.LOG.info("Waypoint saved")
+            NecronClient.LOG.info("Waypoint saved")
             true
         } catch (e: IOException) {
-            KamiMod.LOG.info("Failed saving waypoint")
+            NecronClient.LOG.info("Failed saving waypoint")
             e.printStackTrace()
             false
         }
@@ -108,7 +108,7 @@ object WaypointManager : Manager {
             KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.ADD, waypoint))
             waypoint
         } else {
-            KamiMod.LOG.error("Error during waypoint adding")
+            NecronClient.LOG.error("Error during waypoint adding")
             dateFormatter(BlockPos(0, 0, 0), locationName) // This shouldn't happen
         }
     }

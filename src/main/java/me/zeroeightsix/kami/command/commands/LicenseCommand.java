@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.command.Command;
 import net.minecraft.util.text.TextFormatting;
 
@@ -61,7 +61,7 @@ public class LicenseCommand extends Command {
             "If the Library as you received it specifies that a proxy can decide whether future versions of the GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any version is permanent authorization for you to choose that version for the Library.\n" +
             "\n" +
             "For a full copy of this license please visit\n" +
-            TextFormatting.AQUA + TextFormatting.STRIKETHROUGH + KamiMod.GITHUB_LINK;
+            TextFormatting.AQUA + TextFormatting.STRIKETHROUGH + NecronClient.GITHUB_LINK;
 
 
     @Override

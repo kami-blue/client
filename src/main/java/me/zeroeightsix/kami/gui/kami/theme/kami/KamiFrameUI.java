@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.rgui.GUI;
@@ -202,7 +202,7 @@ public class KamiFrameUI<T extends Frame> extends AbstractComponentUI<Frame> {
 
                 component.setDocking(Docking.NONE);
 
-                KamiGUI rootGUI = KamiMod.INSTANCE.getGuiManager();
+                KamiGUI rootGUI = NecronClient.INSTANCE.getGuiManager();
                 for (Component c : rootGUI.getChildren()) {
                     if (c.equals(component)) continue;
 

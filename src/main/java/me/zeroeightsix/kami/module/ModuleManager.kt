@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
@@ -22,7 +22,7 @@ object ModuleManager {
             val stopTimer = TimerUtils.StopTimer()
             moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
             val time = stopTimer.stop()
-            KamiMod.LOG.info("${moduleClassList!!.size} module(s) found, took ${time}ms")
+            NecronClient.LOG.info("${moduleClassList!!.size} module(s) found, took ${time}ms")
         }
         preLoadingThread!!.name = "Modules Pre-Loading"
         preLoadingThread!!.start()
@@ -44,7 +44,7 @@ object ModuleManager {
             }
         }
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${moduleMap.size} modules loaded, took ${time}ms")
+        NecronClient.LOG.info("${moduleMap.size} modules loaded, took ${time}ms")
 
         /* Clean up variables used during pre-loading and registering */
         preLoadingThread = null

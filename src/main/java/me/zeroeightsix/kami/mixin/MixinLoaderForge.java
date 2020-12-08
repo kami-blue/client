@@ -16,7 +16,7 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class MixinLoaderForge implements IFMLLoadingPlugin {
 
-    /* This is NOT using KamiMod, as importing it causes the issue described here: https://github.com/SpongePowered/Mixin/issues/388 */
+    /* This is NOT using NecronClient, as importing it causes the issue described here: https://github.com/SpongePowered/Mixin/issues/388 */
     public static final Logger log = LogManager.getLogger("KAMI Blue");
     private static boolean isObfuscatedEnvironment = false;
 

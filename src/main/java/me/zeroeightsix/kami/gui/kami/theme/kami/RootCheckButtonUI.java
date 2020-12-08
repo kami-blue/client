@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.kami.theme.kami;
 
-import me.zeroeightsix.kami.KamiMod;
+import me.zeroeightsix.kami.NecronClient;
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen;
 import me.zeroeightsix.kami.gui.kami.component.SettingsPanel;
 import me.zeroeightsix.kami.gui.rgui.component.Component;
@@ -38,7 +38,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
                                         GuiC.buttonHoveredT.color);
         if (component.isHovered()) {
             if (component.hasDescription() && !isSettingsOpen() && Tooltips.INSTANCE.isEnabled()) {
-                Component componentAt = KamiMod.INSTANCE.getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
+                Component componentAt = NecronClient.INSTANCE.getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
                 if (componentAt.getHeight() != 11)
                     return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
 
@@ -81,7 +81,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     /* in all honesty this is probably resource inefficient but there isn't any other way of getting panels :/ */
     private boolean isSettingsOpen() {
-        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.INSTANCE.getGuiManager());
+        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, NecronClient.INSTANCE.getGuiManager());
         for (SettingsPanel settingsPanel : panels) {
             if (settingsPanel.isVisible()) {
                 return true;

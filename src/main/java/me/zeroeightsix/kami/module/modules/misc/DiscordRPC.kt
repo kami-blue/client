@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
@@ -61,21 +61,21 @@ object DiscordRPC : Module() {
     private fun start() {
         if (connected) return
 
-        KamiMod.LOG.info("Starting Discord RPC")
+        NecronClient.LOG.info("Starting Discord RPC")
         connected = true
-        rpc.Discord_Initialize(KamiMod.APP_ID, DiscordEventHandlers(), true, "")
+        rpc.Discord_Initialize(NecronClient.APP_ID, DiscordEventHandlers(), true, "")
         presence.startTimestamp = System.currentTimeMillis() / 1000L
 
         /* update rpc while thread isn't interrupted  */
         Thread({ setRpcWithDelay() }, "Discord-RPC-Callback-Handler").start()
 
-        KamiMod.LOG.info("Discord RPC initialised successfully")
+        NecronClient.LOG.info("Discord RPC initialised successfully")
     }
 
     fun end() {
         if (!connected) return
 
-        KamiMod.LOG.info("Shutting down Discord RPC...")
+        NecronClient.LOG.info("Shutting down Discord RPC...")
         connected = false
         rpc.Discord_Shutdown()
     }
@@ -107,7 +107,7 @@ object DiscordRPC : Module() {
     private fun getLine(line: LineInfo): String {
         return when (line) {
             LineInfo.VERSION -> {
-                KamiMod.VERSION_SIMPLE
+                NecronClient.VERSION_SIMPLE
             }
             LineInfo.WORLD -> {
                 when {

@@ -26,33 +26,33 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 @Mod(
-        modid = KamiMod.ID,
-        name = KamiMod.NAME,
-        version = KamiMod.VERSION
+        modid = NecronClient.ID,
+        name = NecronClient.NAME,
+        version = NecronClient.VERSION
 )
-public class KamiMod {
+public class NecronClient {
 
-    public static final String NAME = "KAMI Blue";
-    public static final String ID = "kamiblue";
-    public static final String VERSION = "1.12.xx-dev"; // Used for debugging. R.MM.DD-hash format.
-    public static final String VERSION_SIMPLE = "1.12.xx-dev"; // Shown to the user. R.MM.DD[-beta] format.
+    public static final String NAME = "NECRON";
+    public static final String ID = "necron";
+    public static final String VERSION = "1.12.2-dev"; // Used for debugging. R.MM.DD-hash format.
+    public static final String VERSION_SIMPLE = "1.12.2-dev"; // Shown to the user. R.MM.DD[-beta] format.
     public static final String VERSION_MAJOR = "1.12.01"; // Used for update checking. RR.MM.01 format.
     public static final int BUILD_NUMBER = -1; // Do not remove, currently unused but will be used in the future.
 
-    public static final String APP_ID = "638403216278683661";
+    public static final String APP_ID = "63898790870661";
 
-    public static final String DOWNLOADS_API = "https://kamiblue.org/api/v1/downloads.json";
+    public static final String DOWNLOADS_API = "https://api.topias.xyz/NECRON/download.json";
     public static final String CAPES_JSON = "https://raw.githubusercontent.com/kami-blue/cape-api/capes/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
-    public static final String KAMI_KATAKANA = "\u30ab\u30df\u30d6\u30eb";
+    public static final String KAMI_KATAKANA = "";
 
-    public static final String DIRECTORY = "kamiblue/";
-    public static final Logger LOG = LogManager.getLogger("KAMI Blue");
+    public static final String DIRECTORY = "necron/";
+    public static final Logger LOG = LogManager.getLogger("NECRON");
 
     @Mod.Instance
-    public static KamiMod INSTANCE;
+    public static NecronClient INSTANCE;
     public static Thread MAIN_THREAD;
 
     private KamiGUI guiManager;

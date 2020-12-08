@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -54,7 +54,7 @@ object CustomFont : Module() {
 
     init {
         fontName.settingListener = Setting.SettingListeners {
-            if (Thread.currentThread() == KamiMod.MAIN_THREAD) KamiFontRenderer.reloadFonts()
+            if (Thread.currentThread() == NecronClient.MAIN_THREAD) KamiFontRenderer.reloadFonts()
         }
     }
 }
