@@ -15,7 +15,7 @@ jobs:
       - name: Checkout submodules
         uses: snickerbockers/submodules-init@v4
         
-      - name: Gradle Cache
+      - name: Gradle cache
         uses: actions/cache@v2
         with:
           path: |
@@ -24,11 +24,14 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-    
-      - name: Gradle build
-        uses: OrangeLabs-moe/gradle-actions@v5.0-openjdk-8
+            
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
-          args: build
+          java-version: 1.8
+    
+      - name: Build using gradle
+        run: ./gradlew build
 
       - name: Archive artifact
         uses: actions/upload-artifact@v2
