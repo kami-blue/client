@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Setting
@@ -15,6 +16,7 @@ import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import net.minecraft.util.math.BlockPos
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -34,6 +36,8 @@ object Surround : Module() {
     private val enableInHole = register(Settings.b("EnableInHole", true))
     private val inHoleTimeout = register(Settings.integerBuilder("InHoleTimeout(t)").withValue(50).withRange(1, 100).withVisibility { enableInHole.value })
     private val disableStrafe = register(Settings.b("DisableStrafe", true))
+    private val swapToObsidian = register(Settings.b("SwapToObsidian", false))
+
 
     enum class AutoCenterMode {
         OFF, TP, MOTION
@@ -48,13 +52,15 @@ object Surround : Module() {
     private val placeThread = Thread { runSurround() }.apply { name = "Surround" }
     private val threadPool = Executors.newSingleThreadExecutor()
     private var future: Future<*>? = null
+    private var oldSlot = 0
 
     override fun onEnable() {
         toggleTimer.reset()
     }
 
     override fun onDisable() {
-        PlayerPacketManager.resetHotbar()
+        if (swapToObsidian.value) swapSlot(oldSlot)
+        else PlayerPacketManager.resetHotbar()
         toggleTimer.reset()
         holePos = null
     }
@@ -99,7 +105,8 @@ object Surround : Module() {
                 spoofHotbar()
                 PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
             } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
-                PlayerPacketManager.resetHotbar()
+                if (swapToObsidian.value) swapSlot(oldSlot)
+                else PlayerPacketManager.resetHotbar()
             }
         }
     }
@@ -128,7 +135,15 @@ object Surround : Module() {
 
     private fun spoofHotbar() {
         val slot = getObby()
-        if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+        if (slot != mc.player.inventory.currentItem) oldSlot = mc.player.inventory.currentItem
+        if (swapToObsidian.value) {
+            if (slot != -1) {
+                swapSlot(slot)
+            }
+        }
+        else {
+            if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+        }
     }
 
     private fun getObby(): Int {
@@ -170,6 +185,8 @@ object Surround : Module() {
                 null
             }
         }
+        if (swapToObsidian.value) swapSlot(oldSlot)
+        else PlayerPacketManager.resetHotbar()
     }
 
     init {
