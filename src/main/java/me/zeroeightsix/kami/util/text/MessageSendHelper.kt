@@ -121,5 +121,5 @@ object MessageSendHelper {
         }
     }
 
-    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + NecronClient.KAMI_KATAKANA + "&7] &r"
+    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + NecronClient.NAME + "&7] &r"
 }

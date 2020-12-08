@@ -39,14 +39,12 @@ public class NecronClient {
     public static final String VERSION_MAJOR = "1.12.01"; // Used for update checking. RR.MM.01 format.
     public static final int BUILD_NUMBER = -1; // Do not remove, currently unused but will be used in the future.
 
-    public static final String APP_ID = "63898790870661";
+    public static final String APP_ID = "785818119242514432";
 
     public static final String DOWNLOADS_API = "https://api.topias.xyz/NECRON/download.json";
     public static final String CAPES_JSON = "https://raw.githubusercontent.com/dvorakabc/client/master/capes.json";
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
     public static final String WEBSITE_LINK = "https://kamiblue.org";
-
-    public static final String KAMI_KATAKANA = "";
 
     public static final String DIRECTORY = "necron/";
     public static final Logger LOG = LogManager.getLogger("NECRON");
