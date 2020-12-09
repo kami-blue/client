@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.event
 
+import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
@@ -11,7 +13,6 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
@@ -106,17 +107,11 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
         if (!event.message.startsWith(CommandOld.getCommandPrefix())) return
-        event.isCanceled = true
-        try {
-            mc.ingameGUI.chatGUI.addToSentMessages(event.message)
-            if (event.message.length > 1) KamiMod.INSTANCE.commandManager.callCommand(event.message.substring(
-                CommandOld.getCommandPrefix().length - 1))
-            else MessageSendHelper.sendChatMessage("Please enter a command!")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
+        runBlocking {
+            event.isCanceled = true
+            CommandManager.runCommand(event.message.substring(1))
+            event.message = ""
         }
-        event.message = ""
     }
 
     @SubscribeEvent

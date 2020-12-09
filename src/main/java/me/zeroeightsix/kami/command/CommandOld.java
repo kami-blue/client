@@ -2,8 +2,6 @@ package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
 import me.zeroeightsix.kami.setting.Setting;
-import me.zeroeightsix.kami.setting.Settings;
-import me.zeroeightsix.kami.setting.SettingsRegister;
 import net.minecraft.client.Minecraft;
 
 import java.util.Arrays;
@@ -20,7 +18,7 @@ public abstract class CommandOld {
 
     protected SyntaxChunk[] syntaxChunks;
 
-    public static Setting<String> commandPrefix = Settings.s("commandPrefix", ";");
+    public static Setting<String> commandPrefix = CommandManager.INSTANCE.getPrefix();
 
     public CommandOld(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
         this.label = label;
@@ -59,7 +57,4 @@ public abstract class CommandOld {
         return aliases;
     }
 
-    static {
-        SettingsRegister.register("commandPrefix", CommandOld.commandPrefix);
-    }
 }
