@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util.text
 
 import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.manager.managers.MessageManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
@@ -39,7 +39,7 @@ object MessageSendHelper {
             if (addToHistory) {
                 mc.ingameGUI.chatGUI.addToSentMessages(command)
             }
-            if (command.length > 1) KamiMod.INSTANCE.commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
+            if (command.length > 1) KamiMod.INSTANCE.commandManager.callCommand(command.substring(CommandOld.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
         } catch (e: Exception) {
             e.printStackTrace()
             sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")

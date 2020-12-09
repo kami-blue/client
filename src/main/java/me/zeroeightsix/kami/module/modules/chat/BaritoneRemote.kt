@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
@@ -34,9 +34,9 @@ object BaritoneRemote : Module() {
         allow.settingListener = Setting.SettingListeners {
             mc.player?.let {
                 if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
-                    MessageSendHelper.sendChatMessage("$chatName Use the &7" + Command.getCommandPrefix()
+                    MessageSendHelper.sendChatMessage("$chatName Use the &7" + CommandOld.getCommandPrefix()
                             + "set ${name.value} Custom names&f command to change the custom users list. Use , to separate players, for example &7"
-                            + Command.getCommandPrefix()
+                            + CommandOld.getCommandPrefix()
                             + "set ${name.value} Custom dominika,Dewy,086&f")
                 }
             }
@@ -54,7 +54,7 @@ object BaritoneRemote : Module() {
                         ?: message.detectAndRemove(Regexes.DIRECT_ALT_2) ?: return@listener
 
                 val bPrefix = BaritoneUtils.prefix
-                val kbPrefix = "${Command.getCommandPrefix()}b "
+                val kbPrefix = "${CommandOld.getCommandPrefix()}b "
                 if ((!command.startsWith(bPrefix) && !command.startsWith(kbPrefix)) || !isValidUser(username)) return@listener
 
                 val baritoneCommand =

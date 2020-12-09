@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
 import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
@@ -15,7 +15,7 @@ import java.nio.file.Paths
  * Created by 086 on 14/10/2018.
  * Updated by Xiaro on 21/08/20
  */
-class ConfigCommand : Command("config", ChunkBuilder()
+class ConfigCommand : CommandOld("config", ChunkBuilder()
         .append("mode", true, EnumParser(arrayOf("reload", "save", "path")))
         .append("path", true, DependantParser(0, Dependency(arrayOf(arrayOf("path", "path")), "")))
         .build(), "cfg") {

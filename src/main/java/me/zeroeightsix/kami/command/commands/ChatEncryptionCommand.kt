@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.module.modules.chat.ChatEncryption
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
 
-class ChatEncryptionCommand : Command("chatencryption", ChunkBuilder().append("delimiter").build(), "delimiter") {
+class ChatEncryptionCommand : CommandOld("chatencryption", ChunkBuilder().append("delimiter").build(), "delimiter") {
     override fun call(args: Array<String?>) {
         if (!ChatEncryption.isEnabled) {
             sendWarningMessage("&6Warning: The ChatEncryption module is not enabled!")

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import io.netty.util.internal.ConcurrentSet
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -102,7 +102,7 @@ object Search : Module() {
     override fun onEnable() {
         if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
-            MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${Command.getCommandPrefix()}search override&f command")
+            MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${CommandOld.getCommandPrefix()}search override&f command")
             disable()
             return
         }

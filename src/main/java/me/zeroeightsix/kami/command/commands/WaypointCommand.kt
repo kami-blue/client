@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.managers.WaypointManager
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
 
-class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", true, EnumParser(arrayOf("add", "remove", "goto", "list", "clear", "stashes", "del", "help"))).build(), "wp", "pos") {
+class WaypointCommand : CommandOld("waypoint", ChunkBuilder().append("command", true, EnumParser(arrayOf("add", "remove", "goto", "list", "clear", "stashes", "del", "help"))).build(), "wp", "pos") {
     private var confirmTime = 0L
 
     override fun call(args: Array<out String?>?) {

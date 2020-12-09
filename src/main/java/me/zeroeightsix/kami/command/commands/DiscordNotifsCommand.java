@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs;
 
@@ -12,7 +12,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
  * @author l1ving
  * Created by l1ving on 26/03/20
  */
-public class DiscordNotifsCommand extends Command {
+public class DiscordNotifsCommand extends CommandOld {
     public DiscordNotifsCommand() {
         super("discordnotifs", new ChunkBuilder().append("webhook url").append("discord id").append("avatar url").build(), "webhook");
     }

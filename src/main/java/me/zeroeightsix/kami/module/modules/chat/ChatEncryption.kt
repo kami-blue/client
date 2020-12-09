@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.mixin.extension.textComponent
@@ -42,7 +42,7 @@ object ChatEncryption : Module() {
     private val delimiter: String?
         get() {
             if (delimiterValue.value.equals("unchanged", ignoreCase = true)) {
-                sendErrorMessage(chatName + " Please change the delimiter with &7" + Command.getCommandPrefix() + "chatencryption&f, disabling")
+                sendErrorMessage(chatName + " Please change the delimiter with &7" + CommandOld.getCommandPrefix() + "chatencryption&f, disabling")
                 disable()
                 return null
             }

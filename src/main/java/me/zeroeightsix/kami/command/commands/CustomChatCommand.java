@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.CustomChat;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
-public class CustomChatCommand extends Command {
+public class CustomChatCommand extends CommandOld {
     public CustomChatCommand() {
         super("customchat", new ChunkBuilder().append("ending").build(), "chat");
         setDescription("Allows you to customize CustomChat's custom setting");

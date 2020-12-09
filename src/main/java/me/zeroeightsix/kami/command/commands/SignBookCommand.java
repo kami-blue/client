@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import io.netty.buffer.Unpooled;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 /**
  * @author 0x2E | PretendingToCode
  */
-public class SignBookCommand extends Command {
+public class SignBookCommand extends CommandOld {
 
     public SignBookCommand() {
         super("signbook", new ChunkBuilder().append("name").build(), "sign");

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.module.modules.render.XRay;
@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage;
 
-public class XRayCommand extends Command {
+public class XRayCommand extends CommandOld {
     public XRayCommand() {
         super("xray", new ChunkBuilder().append("command", true, new EnumParser(new String[]{"help", "list", "+block", "-block", "=block", "defaults", "clear", "invert"})).build());
         setDescription("Allows you to add or remove blocks from the &fxray &7module");

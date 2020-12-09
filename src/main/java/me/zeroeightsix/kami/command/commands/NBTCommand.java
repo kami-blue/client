@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
  * @author d1gress/Qther
  * Created by d1gress/Qther on 4/12/2019.
  */
-public class NBTCommand extends Command {
+public class NBTCommand extends CommandOld {
 
     public NBTCommand() {
         super("nbt", new ChunkBuilder()

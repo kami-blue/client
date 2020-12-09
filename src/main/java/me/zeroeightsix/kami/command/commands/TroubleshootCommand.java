@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
@@ -21,7 +21,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
  * @author l1ving
  * Updated by l1ving on 07/02/20
  */
-public class TroubleshootCommand extends Command {
+public class TroubleshootCommand extends CommandOld {
     public TroubleshootCommand() {
         super("troubleshoot", new ChunkBuilder().append("filter").append("minified").build(), "tsc");
         setDescription("Prints troubleshooting information");

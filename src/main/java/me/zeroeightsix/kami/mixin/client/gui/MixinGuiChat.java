@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client.gui;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.gui.mc.KamiGuiChat;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiChat;
@@ -23,7 +23,7 @@ public abstract class MixinGuiChat extends GuiScreen {
     public void returnKeyTyped(char typedChar, int keyCode, CallbackInfo info) {
         GuiScreen currentScreen = Wrapper.getMinecraft().currentScreen;
         if (currentScreen instanceof GuiChat && !(currentScreen instanceof KamiGuiChat)
-            && inputField.getText().startsWith(Command.getCommandPrefix())) {
+            && inputField.getText().startsWith(CommandOld.getCommandPrefix())) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiChat(inputField.getText(), historyBuffer, sentHistoryCursor));
         }
     }

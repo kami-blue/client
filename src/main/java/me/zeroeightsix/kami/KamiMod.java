@@ -2,7 +2,7 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
-import me.zeroeightsix.kami.command.CommandManager;
+import me.zeroeightsix.kami.command.CommandManagerOld;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
@@ -56,7 +56,7 @@ public class KamiMod {
     public static Thread MAIN_THREAD;
 
     private KamiGUI guiManager;
-    private CommandManager commandManager;
+    private CommandManagerOld commandManager;
     private Setting<JsonObject> guiStateSetting;
 
     @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
@@ -93,7 +93,7 @@ public class KamiMod {
         }).buildAndRegister("");
         guiManager = new KamiGUI();
         guiManager.initializeGUI();
-        commandManager = new CommandManager();
+        commandManager = new CommandManagerOld();
 
         FileInstanceManager.fixEmptyFiles();
         ConfigUtils.INSTANCE.loadAll();
@@ -118,7 +118,7 @@ public class KamiMod {
         this.guiManager = guiManager;
     }
 
-    public CommandManager getCommandManager() {
+    public CommandManagerOld getCommandManager() {
         return commandManager;
     }
 

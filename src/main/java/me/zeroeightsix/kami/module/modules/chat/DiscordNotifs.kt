@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -65,10 +65,10 @@ object DiscordNotifs : Module() {
         /* Always on status code */
         listener<SafeTickEvent> {
             if (url.value == "unchanged") {
-                MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + CommandOld.getCommandPrefix() + "discordnotifs&r' command")
                 disable()
             } else if (pingID.value == "unchanged" && importantPings.value) {
-                MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the '&7" + CommandOld.getCommandPrefix() + "discordnotifs&r' command")
                 disable()
             }
         }

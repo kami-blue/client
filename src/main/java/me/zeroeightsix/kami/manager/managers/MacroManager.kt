@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
 import me.zeroeightsix.kami.util.event.listener
@@ -37,7 +37,7 @@ object MacroManager : Manager {
     fun sendMacro(keyCode: Int) {
         val macrosForThisKey = Macro.getMacrosForKey(keyCode) ?: return
         for (currentMacro in macrosForThisKey) {
-            if (currentMacro!!.startsWith(Command.getCommandPrefix())) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
+            if (currentMacro!!.startsWith(CommandOld.getCommandPrefix())) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
                 MessageSendHelper.sendKamiCommand(currentMacro, false) // ie, the false here
             } else {
                 MessageSendHelper.sendServerMessage(currentMacro)

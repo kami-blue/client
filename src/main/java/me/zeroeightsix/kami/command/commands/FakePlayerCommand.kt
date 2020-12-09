@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-class FakePlayerCommand : Command("fakeplayer", null, "fp") {
+class FakePlayerCommand : CommandOld("fakeplayer", null, "fp") {
     override fun call(args: Array<out String?>) {
         args[0]?.let {
             FakePlayer.playerName.value = it

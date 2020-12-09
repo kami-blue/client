@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
  */
 object CommandUtil {
     @JvmStatic
-    fun runAliases(command: Command) {
+    fun runAliases(command: CommandOld) {
         if (!CommandConfig.aliasInfo.value) return
         val amount = command.aliases.size
         if (amount > 0) {

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import net.minecraft.entity.Entity;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
@@ -9,7 +9,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
  * Created by d1gress/Qther on 25/11/2017.
  */
 
-public class VanishCommand extends Command {
+public class VanishCommand extends CommandOld {
 
     private static Entity vehicle;
 

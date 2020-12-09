@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import net.minecraft.util.text.TextFormatting;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
@@ -10,7 +10,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
  * Created by l1ving on 01/12/2019.
  */
 
-public class LicenseCommand extends Command {
+public class LicenseCommand extends CommandOld {
 
     public LicenseCommand() {
         super("license", null);

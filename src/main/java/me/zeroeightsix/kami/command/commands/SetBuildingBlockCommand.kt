@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.Block.getBlockFromItem
@@ -10,7 +10,7 @@ import net.minecraft.item.Item.getIdFromItem
 /**
  * @author Xiaro
  */
-class SetBuildingBlockCommand : Command("setbuildingblock", null) {
+class SetBuildingBlockCommand : CommandOld("setbuildingblock", null) {
 
     override fun call(args: Array<out String>?) {
         if (mc.player == null || mc.player.isSpectator) return

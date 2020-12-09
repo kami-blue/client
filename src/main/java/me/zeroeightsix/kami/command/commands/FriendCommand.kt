@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.manager.managers.FriendManager
@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
  * Created by 086 on 14/12/2017.
  * Updated by Xiaro on 14/08/20
  */
-class FriendCommand : Command("friend", ChunkBuilder()
+class FriendCommand : CommandOld("friend", ChunkBuilder()
         .append("mode", true, EnumParser(arrayOf("is", "add", "del", "list", "toggle", "clear")))
         .append("name")
         .build(), "f") {

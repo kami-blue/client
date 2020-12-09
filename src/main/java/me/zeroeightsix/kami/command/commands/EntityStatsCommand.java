@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.manager.managers.UUIDManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.AbstractHorse;
@@ -15,7 +15,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
  * Updated by EmotionalLove on 16/12/2019
  * Updated by Dewy on 4th April, 2020
  */
-public class EntityStatsCommand extends Command {
+public class EntityStatsCommand extends CommandOld {
 
     public EntityStatsCommand() {
         super("entitystats", null, "estats");

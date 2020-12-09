@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
@@ -13,7 +13,7 @@ import net.minecraft.item.Item
  * Updated by l1ving on 17/02/20
  * Modified for use with AutoEject by Xiaro on 19/07/2020
  */
-class EjectCommand : Command("eject", ChunkBuilder().append("command", true, EnumParser(arrayOf("help", "+item", "-item", "=item", "list", "default", "clear"))).build()) {
+class EjectCommand : CommandOld("eject", ChunkBuilder().append("command", true, EnumParser(arrayOf("help", "+item", "-item", "=item", "list", "default", "clear"))).build()) {
     override fun call(args: Array<String?>) {
         if (!InventoryManager.autoEject.value) {
             sendWarningMessage("&6Warning: AutoEject in ${InventoryManager.name} module is not enabled!")

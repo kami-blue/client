@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -16,7 +16,7 @@ import net.minecraft.network.play.server.SPacketChat
 )
 object AutoReply : Module() {
     val customMessage = register(Settings.b("CustomMessage", false))
-    val message = register(Settings.stringBuilder("CustomText").withValue("Use &7" + Command.getCommandPrefix() + "autoreply&r to modify this").withVisibility { customMessage.value })
+    val message = register(Settings.stringBuilder("CustomText").withValue("Use &7" + CommandOld.getCommandPrefix() + "autoreply&r to modify this").withVisibility { customMessage.value })
 
     init {
         listener<PacketEvent.Receive> {

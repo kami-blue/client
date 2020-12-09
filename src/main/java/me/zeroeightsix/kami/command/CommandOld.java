@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class Command {
+public abstract class CommandOld {
 
     protected String label;
     protected String syntax;
@@ -22,7 +22,7 @@ public abstract class Command {
 
     public static Setting<String> commandPrefix = Settings.s("commandPrefix", ";");
 
-    public Command(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
+    public CommandOld(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
         this.label = label;
         this.syntaxChunks = syntaxChunks;
         this.description = "Descriptionless";
@@ -60,6 +60,6 @@ public abstract class Command {
     }
 
     static {
-        SettingsRegister.register("commandPrefix", Command.commandPrefix);
+        SettingsRegister.register("commandPrefix", CommandOld.commandPrefix);
     }
 }

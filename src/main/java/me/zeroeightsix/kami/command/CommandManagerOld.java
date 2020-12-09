@@ -9,17 +9,17 @@ import java.util.List;
 import static me.zeroeightsix.kami.util.CommandUtil.runAliases;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
-public class CommandManager {
+public class CommandManagerOld {
 
-    private final ArrayList<Command> commands;
+    private final ArrayList<CommandOld> commands;
 
-    public CommandManager() {
+    public CommandManagerOld() {
         commands = new ArrayList<>();
-        List<Class<? extends Command>> classes = ClassUtils.INSTANCE.findClasses("me.zeroeightsix.kami.command.commands", Command.class);
+        List<Class<? extends CommandOld>> classes = ClassUtils.INSTANCE.findClasses("me.zeroeightsix.kami.command.commands", CommandOld.class);
 
-        for (Class<? extends Command> s : classes) {
+        for (Class<? extends CommandOld> s : classes) {
             try {
-                Command command = s.getConstructor().newInstance();
+                CommandOld command = s.getConstructor().newInstance();
                 commands.add(command);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -40,7 +40,7 @@ public class CommandManager {
             args[i] = strip(args[i], "\"");
         }
 
-        for (Command c : commands) {
+        for (CommandOld c : commands) {
             if (c.getLabel().equalsIgnoreCase(label)) {
                 c.call(parts);
                 runAliases(c);
@@ -51,7 +51,7 @@ public class CommandManager {
             }
         }
 
-        sendChatMessage("&7Unknown command. try '&f" + Command.getCommandPrefix() + "cmds&7' for a list of commands.");
+        sendChatMessage("&7Unknown command. try '&f" + CommandOld.getCommandPrefix() + "cmds&7' for a list of commands.");
     }
 
     private static String[] removeElement(String[] input, int indexToDelete) {
@@ -69,7 +69,7 @@ public class CommandManager {
         return str;
     }
 
-    public ArrayList<Command> getCommands() {
+    public ArrayList<CommandOld> getCommands() {
         return commands;
     }
 

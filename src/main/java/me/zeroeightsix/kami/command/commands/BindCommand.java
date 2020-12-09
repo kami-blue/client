@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
@@ -16,7 +16,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 /**
  * Created by 086 on 12/11/2017.
  */
-public class BindCommand extends Command {
+public class BindCommand extends CommandOld {
 
     public static Setting<Boolean> modifiersEnabled = SettingBuilder.register(Settings.b("modifiersEnabled", false), "binds");
 

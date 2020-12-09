@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.module.modules.render.Search
@@ -14,7 +14,7 @@ import net.minecraft.block.Block
  * Modified for use with search module by wnuke on 20/04/2020
  * Updated by Xiaro on 23/07/20
  */
-class SearchCommand : Command("search", ChunkBuilder().append("command", true, EnumParser(arrayOf("+block", "-block", "=block", "list", "default", "clear", "help"))).build()) {
+class SearchCommand : CommandOld("search", ChunkBuilder().append("command", true, EnumParser(arrayOf("+block", "-block", "=block", "list", "default", "clear", "help"))).build()) {
     private val bannedBlocks = arrayOf("minecraft:air", "minecraft:netherrack", "minecraft:dirt", "minecraft:water", "minecraft:stone")
     private val warningBlocks = arrayOf("minecraft:grass", "minecraft:end_stone", "minecraft:lava", "minecraft:bedrock")
 

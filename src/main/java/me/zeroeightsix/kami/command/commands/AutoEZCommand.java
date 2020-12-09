@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.combat.AutoEZ;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 
-public class AutoEZCommand extends Command {
+public class AutoEZCommand extends CommandOld {
     public AutoEZCommand() {
         super("autoez", new ChunkBuilder().append("message").build());
         setDescription("Allows you to customize AutoEZ's custom setting");

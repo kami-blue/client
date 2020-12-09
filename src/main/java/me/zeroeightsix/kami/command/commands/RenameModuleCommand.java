@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.module.ModuleManager;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 
-public class RenameModuleCommand extends Command {
+public class RenameModuleCommand extends CommandOld {
 
     public RenameModuleCommand() {
         super("renamemodule", new ChunkBuilder().append("module", true, new ModuleParser()).append("name").build());

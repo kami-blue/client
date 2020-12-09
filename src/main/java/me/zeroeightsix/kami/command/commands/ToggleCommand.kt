@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
 import me.zeroeightsix.kami.module.ModuleManager.ModuleNotFoundException
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 /**
  * Created by 086 on 17/11/2017.
  */
-class ToggleCommand : Command("toggle", ChunkBuilder()
+class ToggleCommand : CommandOld("toggle", ChunkBuilder()
         .append("module", true, ModuleParser())
         .build(), "t") {
 

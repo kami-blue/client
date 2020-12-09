@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.module.modules.chat.AutoReply;
 
@@ -10,7 +10,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
  * @author l1ving
  * Created by l1ving on 17/02/20
  */
-public class AutoReplyCommand extends Command {
+public class AutoReplyCommand extends CommandOld {
     public AutoReplyCommand() {
         super("autoreply", new ChunkBuilder().append("message").build(), "reply");
         setDescription("Allows you to customize AutoReply's settings");

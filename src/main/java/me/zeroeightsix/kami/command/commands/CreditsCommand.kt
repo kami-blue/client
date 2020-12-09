@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import com.google.gson.Gson
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.commons.utils.ThreadUtils
@@ -11,7 +11,7 @@ import org.kamiblue.commons.utils.ThreadUtils
  * Revamped by d1gress/Qther on 13 April 2020
  * Updated by Xiaro on 21/08/20
  */
-class CreditsCommand : Command("credits", null) {
+class CreditsCommand : CommandOld("credits", null) {
 
     private val gson = Gson()
     private val thread = Thread { sendMessage() }

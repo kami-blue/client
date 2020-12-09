@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
@@ -95,8 +95,8 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
-            mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
+        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(CommandOld.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
+            mc.displayGuiScreen(GuiChat(CommandOld.getCommandPrefix()))
         } else {
             KamiEventBus.post(event)
             ModuleManager.onBind(Keyboard.getEventKey())
@@ -105,11 +105,12 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (!event.message.startsWith(Command.getCommandPrefix())) return
+        if (!event.message.startsWith(CommandOld.getCommandPrefix())) return
         event.isCanceled = true
         try {
             mc.ingameGUI.chatGUI.addToSentMessages(event.message)
-            if (event.message.length > 1) KamiMod.INSTANCE.commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
+            if (event.message.length > 1) KamiMod.INSTANCE.commandManager.callCommand(event.message.substring(
+                CommandOld.getCommandPrefix().length - 1))
             else MessageSendHelper.sendChatMessage("Please enter a command!")
         } catch (e: Exception) {
             e.printStackTrace()

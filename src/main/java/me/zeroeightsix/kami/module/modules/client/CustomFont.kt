@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -43,12 +43,12 @@ object CustomFont : Module() {
     override fun onToggle() {
         MessageSendHelper.sendChatMessage(
                 "Changed font! Run \n" +
-                        "&7${Command.commandPrefix.value}config save\n" +
-                        "&7${Command.commandPrefix.value}config reload\n" +
+                        "&7${CommandOld.commandPrefix.value}config save\n" +
+                        "&7${CommandOld.commandPrefix.value}config reload\n" +
                         "&f if it's not sizing correctly"
         )
         if (isDefaultFont) {
-            MessageSendHelper.sendChatMessage("You can run &7${Command.commandPrefix.value}set $originalName ${fontName.name} <Font Name> to change custom font")
+            MessageSendHelper.sendChatMessage("You can run &7${CommandOld.commandPrefix.value}set $originalName ${fontName.name} <Font Name> to change custom font")
         }
     }
 

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import io.netty.buffer.Unpooled;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.item.ItemStack;
@@ -25,7 +25,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
  * The characterGenerator is from here: https://github.com/ImpactDevelopment/ImpactIssues/issues/1123#issuecomment-482721273
  * Which was written by EarthComputer for both EvilSourcerer and 0x2E
  */
-public class DupeBookCommand extends Command {
+public class DupeBookCommand extends CommandOld {
 
     public DupeBookCommand() {
         super("dupebook", new ChunkBuilder().append("name").build(), "bookbot");

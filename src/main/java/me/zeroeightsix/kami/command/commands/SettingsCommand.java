@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import me.zeroeightsix.kami.module.Module;
@@ -16,7 +16,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMes
 /**
  * Created by 086 on 11/12/2017.
  */
-public class SettingsCommand extends Command {
+public class SettingsCommand extends CommandOld {
     public SettingsCommand() {
         super("settings", new ChunkBuilder()
                 .append("module", true, new ModuleParser())

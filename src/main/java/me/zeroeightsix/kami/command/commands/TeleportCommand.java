@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
  * Robeart is cool and made potentia
  * Updated by d1gress/Qther on 8/12/2019.
  */
-public class TeleportCommand extends Command {
+public class TeleportCommand extends CommandOld {
 
     private DecimalFormat df = new DecimalFormat("#.###");
     public static long lastTp;

@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands;
 
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder;
 import me.zeroeightsix.kami.command.syntax.parsers.EnumParser;
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser;
@@ -19,7 +19,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMes
  * Created by 086 on 18/11/2017.
  * Updated by l1ving on 24/02/20
  */
-public class SetCommand extends Command {
+public class SetCommand extends CommandOld {
 
     public SetCommand() {
         super("set", new ChunkBuilder()

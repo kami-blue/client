@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.module.modules.chat.ChatTimestamp
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 /**
  * @author l1ving
  */
-class FakeMessageCommand : Command("fakemsg", ChunkBuilder().append("message").build()) {
+class FakeMessageCommand : CommandOld("fakemsg", ChunkBuilder().append("message").build()) {
     override fun call(args: Array<out String?>) {
         when {
             args[1] != null -> {

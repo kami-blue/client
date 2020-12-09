@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -10,7 +10,7 @@ import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.TileEntityShulkerBox
 import java.util.*
 
-class PeekCommand : Command("peek", SyntaxChunk.EMPTY) {
+class PeekCommand : CommandOld("peek", SyntaxChunk.EMPTY) {
     override fun call(args: Array<String>) {
         Wrapper.world?.let { world ->
             Wrapper.player?.let { player ->

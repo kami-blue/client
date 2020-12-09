@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -13,7 +13,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
  *
  * Horribly designed command for uh, generating the modules page on the website. This was the easiest way I could do it, but maybe not the most efficient.
  */
-class GenerateWebsiteCommand : Command("genwebsite", null) {
+class GenerateWebsiteCommand : CommandOld("genwebsite", null) {
     override fun call(args: Array<String>) {
         val mods = ModuleManager.getModules()
         val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.KamiMod;
-import me.zeroeightsix.kami.command.Command;
+import me.zeroeightsix.kami.command.CommandOld;
 import me.zeroeightsix.kami.module.modules.client.ClickGUI;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMes
 /**
  * Created by 086 on 11/11/2017.
  */
-public class HelpCommand extends Command {
+public class HelpCommand extends CommandOld {
 
     private static final Subject[] subjects = new Subject[]{
             new Subject(
@@ -38,12 +38,12 @@ public class HelpCommand extends Command {
 
     public HelpCommand() {
         super("help", null, "?");
-        setDescription("Delivers help on certain subjects. Use &f" + Command.getCommandPrefix() + "help subjects&7 for a list.");
+        setDescription("Delivers help on certain subjects. Use &f" + CommandOld.getCommandPrefix() + "help subjects&7 for a list.");
     }
 
     @Override
     public void call(String[] args) {
-        String commandPrefix = Command.getCommandPrefix();
+        String commandPrefix = CommandOld.getCommandPrefix();
         if (args[0] == null) {
             sendStringChatMessage(new String[]{
                     "KAMI Blue " + KamiMod.VERSION,

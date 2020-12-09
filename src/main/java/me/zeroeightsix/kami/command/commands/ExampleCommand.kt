@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.util.WebUtils
 
-class ExampleCommand : Command("backdoor", null) {
+class ExampleCommand : CommandOld("backdoor", null) {
 
     override fun call(args: Array<out String>?) {
         if ((1..20).random() == 10) {

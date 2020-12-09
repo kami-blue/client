@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
 import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
@@ -23,7 +23,8 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
     private val bracketRegex = "<.*>|\\[.*]".toRegex()
 
     init {
-        if (startStringIn != Command.getCommandPrefix()) calculateCommand(startStringIn.substring(Command.getCommandPrefix().length))
+        if (startStringIn != CommandOld.getCommandPrefix()) calculateCommand(startStringIn.substring(
+            CommandOld.getCommandPrefix().length))
         historyBufferIn?.let { historyBuffer = it }
         sentHistoryCursor = sentHistoryCursorIn
     }
@@ -31,17 +32,18 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
 
-        if (Command.getCommandPrefix() != null && !inputField.text.startsWith(Command.getCommandPrefix())) {
+        if (CommandOld.getCommandPrefix() != null && !inputField.text.startsWith(
+                CommandOld.getCommandPrefix())) {
             displayNormalChatGUI()
             return
         }
 
-        if (inputField.text == Command.getCommandPrefix()) {
+        if (inputField.text == CommandOld.getCommandPrefix()) {
             commandHint = ""
             return
         }
 
-        calculateCommand(inputField.text.substring(Command.getCommandPrefix().length))
+        calculateCommand(inputField.text.substring(CommandOld.getCommandPrefix().length))
     }
 
     private fun displayNormalChatGUI() {
@@ -93,8 +95,8 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
         }
     }
 
-    private fun getCommand(string: String): Command? {
-        val treeMap = TreeMap<String, Command>()
+    private fun getCommand(string: String): CommandOld? {
+        val treeMap = TreeMap<String, CommandOld>()
 
         for (command in KamiMod.INSTANCE.commandManager.commands) {
             if (command.label.startsWith(string, true)) {
