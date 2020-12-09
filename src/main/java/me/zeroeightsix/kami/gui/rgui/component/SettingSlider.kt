@@ -62,7 +62,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         if (buttonId == 1) {
-            if(!listening) {
+            if (!listening) {
                 listening = true
                 value = 0.0
                 name.value = "0"

@@ -15,13 +15,13 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 open class ListWindow(
-        name: String,
-        posX: Float,
-        posY: Float,
-        width: Float,
-        height: Float,
-        saveToConfig: SettingGroup,
-        vararg childrenIn: Component
+    name: String,
+    posX: Float,
+    posY: Float,
+    width: Float,
+    height: Float,
+    saveToConfig: SettingGroup,
+    vararg childrenIn: Component
 ) : TitledWindow(name, posX, posY, width, height, saveToConfig) {
     val children = LinkedList<Component>()
 
@@ -93,7 +93,8 @@ open class ListWindow(
         super.onTick()
         if (children.isEmpty()) return
         val lastVisible = children.lastOrNull { it.visible.value }
-        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height.value + lineSpace - height.value, 0.01f) }?: draggableHeight
+        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height.value + lineSpace - height.value, 0.01f) }
+            ?: draggableHeight
 
         scrollProgress = (scrollProgress + scrollSpeed)
         scrollSpeed *= 0.5f
@@ -112,10 +113,10 @@ open class ListWindow(
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
         GlStateUtils.scissor(
-                ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor()).roundToInt(),
-                ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
-                ((renderWidth - lineSpace * 3.236) * ClickGUI.getScaleFactor()).roundToInt(),
-                ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor()).roundToInt()
+            ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor()).roundToInt(),
+            ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
+            ((renderWidth - lineSpace * 3.236) * ClickGUI.getScaleFactor()).roundToInt(),
+            ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor()).roundToInt()
         )
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
@@ -184,5 +185,5 @@ open class ListWindow(
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =
-            mousePos.subtract(posX, posY - renderScrollProgress).subtract(component.posX, component.posY)
+        mousePos.subtract(posX, posY - renderScrollProgress).subtract(component.posX, component.posY)
 }

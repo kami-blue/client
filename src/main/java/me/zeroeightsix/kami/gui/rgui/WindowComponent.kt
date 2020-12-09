@@ -9,17 +9,17 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class WindowComponent(
-        name: String,
-        posX: Float,
-        posY: Float,
-        width: Float,
-        height: Float,
-        settingGroup: SettingGroup
+    name: String,
+    posX: Float,
+    posY: Float,
+    width: Float,
+    height: Float,
+    settingGroup: SettingGroup
 ) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
 
     // Basic info
     val minimized = setting("Minimized", false,
-            { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
+        { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
     )
 
     // Interactive info
@@ -166,7 +166,7 @@ open class WindowComponent(
 
     fun isInWindow(mousePos: Vec2f): Boolean {
         return visible.value && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
-                && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
+            && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
     }
 
     init {

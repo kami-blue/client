@@ -14,9 +14,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 
 @Module.Info(
-        name = "AutoNametag",
-        description = "Automatically nametags entities",
-        category = Module.Category.MISC
+    name = "AutoNametag",
+    description = "Automatically nametags entities",
+    category = Module.Category.MISC
 )
 object AutoNametag : Module() {
     private val modeSetting = setting("Mode", Mode.ANY)
@@ -72,7 +72,7 @@ object AutoNametag : Module() {
     private fun findNameTags() {
         for (i in 0..8) {
             val stack = mc.player.inventory.getStackInSlot(i)
-            if (stack == ItemStack.EMPTY || stack.getItem() is ItemBlock) continue
+            if (stack == ItemStack.EMPTY || stack.item is ItemBlock) continue
 
             if (isNametag(i)) {
                 currentName = stack.displayName
@@ -84,7 +84,7 @@ object AutoNametag : Module() {
     /* In case they run out of nametags, check again */
     private fun isNametag(i: Int): Boolean {
         val stack = mc.player.inventory.getStackInSlot(i)
-        val tag = stack.getItem()
+        val tag = stack.item
         return tag is ItemNameTag && stack.displayName != "Name Tag"
     }
 }

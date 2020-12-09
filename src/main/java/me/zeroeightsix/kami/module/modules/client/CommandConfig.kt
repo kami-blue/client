@@ -14,14 +14,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.Display
 
 @Module.Info(
-        name = "CommandConfig",
-        category = Module.Category.CLIENT,
-        description = "Configures client chat related stuff",
-        showOnArray = false,
-        alwaysEnabled = true
+    name = "CommandConfig",
+    category = Module.Category.CLIENT,
+    description = "Configures client chat related stuff",
+    showOnArray = false,
+    alwaysEnabled = true
 )
-object CommandConfig : Module()
-{
+object CommandConfig : Module() {
     val aliasInfo = setting("AliasInfo", true)
     val prefixChat = setting("PrefixChat", true)
     val toggleMessages = setting("ToggleMessages", false)

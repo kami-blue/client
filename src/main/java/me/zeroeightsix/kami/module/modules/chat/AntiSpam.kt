@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
 @Module.Info(
-        name = "AntiSpam",
-        category = Module.Category.CHAT,
-        description = "Removes spam and advertising from the chat",
-        showOnArray = false
+    name = "AntiSpam",
+    category = Module.Category.CHAT,
+    description = "Removes spam and advertising from the chat",
+    showOnArray = false
 )
 object AntiSpam : Module() {
     private val mode = setting("Mode", Mode.REPLACE)
@@ -65,19 +65,19 @@ object AntiSpam : Module() {
 
     private val messageHistory = ConcurrentHashMap<String, Long>()
     private val settingMap = hashMapOf(
-            greenText to SpamFilters.greenText,
-            specialCharBegin to SpamFilters.specialBeginning,
-            specialCharEnding to SpamFilters.specialEnding,
-            automated to SpamFilters.ownsMeAndAll,
-            automated to SpamFilters.thanksTo,
-            discordLinks to SpamFilters.discordInvite,
-            ips to SpamFilters.ipAddress,
-            automated to SpamFilters.announcer,
-            automated to SpamFilters.spammer,
-            automated to SpamFilters.insulter,
-            automated to SpamFilters.greeter,
-            slurs to SpamFilters.slurs,
-            swears to SpamFilters.swears
+        greenText to SpamFilters.greenText,
+        specialCharBegin to SpamFilters.specialBeginning,
+        specialCharEnding to SpamFilters.specialEnding,
+        automated to SpamFilters.ownsMeAndAll,
+        automated to SpamFilters.thanksTo,
+        discordLinks to SpamFilters.discordInvite,
+        ips to SpamFilters.ipAddress,
+        automated to SpamFilters.announcer,
+        automated to SpamFilters.spammer,
+        automated to SpamFilters.insulter,
+        automated to SpamFilters.greeter,
+        slurs to SpamFilters.slurs,
+        swears to SpamFilters.swears
     )
 
     init {
@@ -122,9 +122,9 @@ object AntiSpam : Module() {
 
     private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
-                || MessageDetectionHelper.isDirect(!filterDMs.value, message)
-                || message.detect(!filterServer.value, Regexes.QUEUE)
-                || message.detect(!filterServer.value, Regexes.RESTART)) {
+            || MessageDetectionHelper.isDirect(!filterDMs.value, message)
+            || message.detect(!filterServer.value, Regexes.QUEUE)
+            || message.detect(!filterServer.value, Regexes.RESTART)) {
             null
         } else {
             detectSpam(removeUsername(message))

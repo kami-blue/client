@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos
 import org.kamiblue.commons.utils.MathUtils
 
 @Module.Info(
-        name = "TeleportLogger",
-        category = Module.Category.MISC,
-        description = "Logs when a player teleports somewhere"
+    name = "TeleportLogger",
+    category = Module.Category.MISC,
+    description = "Logs when a player teleports somewhere"
 )
 object TeleportLogger : Module() {
     private val saveToFile = setting("SaveToFile", true)

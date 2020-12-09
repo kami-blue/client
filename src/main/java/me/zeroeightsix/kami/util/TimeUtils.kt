@@ -20,10 +20,10 @@ object TimeUtils {
     fun getTime(timeFormat: TimeFormat, timeUnit: TimeUnit): String = LocalTime.now().format(timeFormat.getFormatter(timeUnit))
 
     private fun TimeFormat.getFormatter(timeUnit: TimeUnit) =
-            formatterMap.getOrPut(this to timeUnit) {
-                val pattern = if (timeUnit == TimeUnit.H24) pattern.replace('h', 'H') else "$pattern a"
-                DateTimeFormatter.ofPattern(pattern, Locale.US)
-            }
+        formatterMap.getOrPut(this to timeUnit) {
+            val pattern = if (timeUnit == TimeUnit.H24) pattern.replace('h', 'H') else "$pattern a"
+            DateTimeFormatter.ofPattern(pattern, Locale.US)
+        }
 
     @Suppress("UNUSED")
     enum class DateFormat(val formatter: DateTimeFormatter) {

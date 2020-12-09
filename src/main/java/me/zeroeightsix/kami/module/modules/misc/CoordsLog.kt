@@ -12,9 +12,9 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
-        name = "CoordsLog",
-        description = "Automatically logs your coords, based on actions",
-        category = Module.Category.MISC
+    name = "CoordsLog",
+    description = "Automatically logs your coords, based on actions",
+    category = Module.Category.MISC
 )
 object CoordsLog : Module() {
     private val saveOnDeath = setting("SaveOnDeath", true)

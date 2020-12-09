@@ -12,9 +12,9 @@ import java.util.*
 import java.util.regex.Pattern
 
 @Module.Info(
-        name = "ChatFilter",
-        description = "Filters custom words or phrases from the chat",
-        category = Module.Category.CHAT
+    name = "ChatFilter",
+    description = "Filters custom words or phrases from the chat",
+    category = Module.Category.CHAT
 )
 object ChatFilter : Module() {
     private val filterOwn = setting("FilterOwn", false)
@@ -80,8 +80,8 @@ object ChatFilter : Module() {
 
         if (!hasRunInfo.value) {
             sendChatMessage("$chatName Tip: this supports &lregex&r if you know how to use those. " +
-                    "This also uses &lword boundaries&r meaning it will match whole words, not part of a word. " +
-                    "Eg if your filter has 'hell' then 'hello' will not be filtered.")
+                "This also uses &lword boundaries&r meaning it will match whole words, not part of a word. " +
+                "Eg if your filter has 'hell' then 'hello' will not be filtered.")
             hasRunInfo.value = true
         }
     }

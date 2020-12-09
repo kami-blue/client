@@ -11,10 +11,10 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Mouse
 
 @Module.Info(
-        name = "MidClickFriends",
-        category = Module.Category.MISC,
-        description = "Middle click players to friend or unfriend them",
-        showOnArray = false
+    name = "MidClickFriends",
+    category = Module.Category.MISC,
+    description = "Middle click players to friend or unfriend them",
+    showOnArray = false
 )
 object MidClickFriends : Module() {
     private val timer = TimerUtils.TickTimer()

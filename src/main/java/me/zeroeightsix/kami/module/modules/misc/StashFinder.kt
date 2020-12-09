@@ -15,9 +15,9 @@ import net.minecraft.util.math.ChunkPos
 import kotlin.math.roundToInt
 
 @Module.Info(
-        name = "StashFinder",
-        category = Module.Category.MISC,
-        description = "Logs storage units in render distance."
+    name = "StashFinder",
+    category = Module.Category.MISC,
+    description = "Logs storage units in render distance."
 )
 object StashFinder : Module() {
     private val saveToFile = setting("SaveToFile", true)
@@ -28,7 +28,7 @@ object StashFinder : Module() {
     private val chestDensity = setting("MinChests", 5, 1..20, 1, { logChests.value })
 
     private val logShulkers = setting("Shulkers", true)
-    private val shulkerDensity = setting("MinShulkers", 1, 1..20,1, { logShulkers.value })
+    private val shulkerDensity = setting("MinShulkers", 1, 1..20, 1, { logShulkers.value })
 
     private val logDroppers = setting("Droppers", true)
     private val dropperDensity = setting("MinDroppers", 5, 1..20, 1, { logDroppers.value })
@@ -51,14 +51,14 @@ object StashFinder : Module() {
     init {
         listener<SafeTickEvent> {
             mc.world.loadedTileEntityList
-                    .filter {
-                        logChests.value && it is TileEntityChest
-                                || logShulkers.value && it is TileEntityShulkerBox
-                                || logDroppers.value && it is TileEntityDropper
-                                || logDispensers.value && it is TileEntityDispenser
-                                || logHoppers.value && it is TileEntityHopper
-                    }
-                    .forEach { logTileEntity(it) }
+                .filter {
+                    logChests.value && it is TileEntityChest
+                        || logShulkers.value && it is TileEntityShulkerBox
+                        || logDroppers.value && it is TileEntityDropper
+                        || logDispensers.value && it is TileEntityDispenser
+                        || logHoppers.value && it is TileEntityHopper
+                }
+                .forEach { logTileEntity(it) }
 
             chunkData.values.filter { it.hot }.forEach { chunkStats ->
                 chunkStats.hot = false
@@ -69,7 +69,7 @@ object StashFinder : Module() {
                 }
 
                 if (playSound.value) {
-                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 }
 
                 if (logToChat.value) {

@@ -18,12 +18,14 @@ public class MixinWorld {
             ci.setReturnValue(false);
         }
     }
+
     @Inject(method = "isRaining", at = @At("RETURN"), cancellable = true)
     private void isRaining(CallbackInfoReturnable<Boolean> cir) {
         if (AntiWeather.INSTANCE.isEnabled()) {
             cir.setReturnValue(false);
         }
     }
+
     @Inject(method = "isThundering", at = @At("RETURN"), cancellable = true)
     private void isThundering(CallbackInfoReturnable<Boolean> cir) {
         if (AntiWeather.INSTANCE.isEnabled()) {

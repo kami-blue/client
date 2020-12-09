@@ -20,9 +20,9 @@ import kotlin.math.abs
  * Updated by Xiaro on 22/08/20
  */
 @Module.Info(
-        name = "AutoFish",
-        category = Module.Category.MISC,
-        description = "Automatically catch fish"
+    name = "AutoFish",
+    category = Module.Category.MISC,
+    description = "Automatically catch fish"
 )
 object AutoFish : Module() {
     private val mode = setting("Mode", Mode.BOUNCE)
@@ -105,9 +105,9 @@ object AutoFish : Module() {
 
     private fun isAnySplash(soundName: String): Boolean {
         return soundName.contains("entity.generic.splash")
-                || soundName.contains("entity.generic.splash")
-                || soundName.contains("entity.hostile.splash")
-                || soundName.contains("entity.player.splash")
+            || soundName.contains("entity.generic.splash")
+            || soundName.contains("entity.hostile.splash")
+            || soundName.contains("entity.player.splash")
     }
 
     private fun isBouncing(): Boolean {

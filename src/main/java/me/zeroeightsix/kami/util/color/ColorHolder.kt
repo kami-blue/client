@@ -5,13 +5,13 @@ import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 
 data class ColorHolder(
-        var r: Int = 255,
-        var g: Int = 255,
-        var b: Int = 255,
-        var a: Int = 255
+    var r: Int = 255,
+    var g: Int = 255,
+    var b: Int = 255,
+    var a: Int = 255
 ) {
 
-    constructor(color: Color) : this (color.red, color.green, color.blue, color.alpha)
+    constructor(color: Color) : this(color.red, color.green, color.blue, color.alpha)
 
     val brightness get() = intArrayOf(r, g, b).maxOrNull()!!.toFloat() / 255f
 
@@ -27,10 +27,10 @@ data class ColorHolder(
 
     fun interpolate(prev: ColorHolder, deltaTime: Double, length: Double): ColorHolder {
         return ColorHolder(
-                AnimationUtils.exponent(deltaTime, length, prev.r.toDouble(), r.toDouble()).toInt().coerceIn(0, 255),
-                AnimationUtils.exponent(deltaTime, length, prev.g.toDouble(), g.toDouble()).toInt().coerceIn(0, 255),
-                AnimationUtils.exponent(deltaTime, length, prev.b.toDouble(), b.toDouble()).toInt().coerceIn(0, 255),
-                AnimationUtils.exponent(deltaTime, length, prev.a.toDouble(), a.toDouble()).toInt().coerceIn(0, 255)
+            AnimationUtils.exponent(deltaTime, length, prev.r.toDouble(), r.toDouble()).toInt().coerceIn(0, 255),
+            AnimationUtils.exponent(deltaTime, length, prev.g.toDouble(), g.toDouble()).toInt().coerceIn(0, 255),
+            AnimationUtils.exponent(deltaTime, length, prev.b.toDouble(), b.toDouble()).toInt().coerceIn(0, 255),
+            AnimationUtils.exponent(deltaTime, length, prev.a.toDouble(), a.toDouble()).toInt().coerceIn(0, 255)
         )
     }
 

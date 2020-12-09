@@ -10,12 +10,12 @@ import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2f
 
 open class Component(
-        name: String,
-        posXIn: Float,
-        posYIn: Float,
-        widthIn: Float,
-        heightIn: Float,
-        val settingGroup: SettingGroup
+    name: String,
+    posXIn: Float,
+    posYIn: Float,
+    widthIn: Float,
+    heightIn: Float,
+    val settingGroup: SettingGroup
 ) {
 
     // Basic info
@@ -24,9 +24,9 @@ open class Component(
     val visible = setting("Visible", true, { false }, { _, it -> it || !closeable })
 
     protected val relativePosX = setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, scaledWidth - width.value - 2.0f)) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, scaledWidth - width.value - 2.0f)) else it })
     protected val relativePosY = setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-            { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, scaledHeight - height.value - 2.0f)) else it })
+        { _, it -> if (this is WindowComponent && KamiMod.isInitialized()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, scaledHeight - height.value - 2.0f)) else it })
 
     val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, scaledWidth) })
     val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, scaledHeight) })

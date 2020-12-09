@@ -77,7 +77,7 @@ object AutoMine : Module() {
             }
         }
 
-        with( { run() }) {
+        with({ run() }) {
             iron.listeners.add(this)
             diamond.listeners.add(this)
             gold.listeners.add(this)

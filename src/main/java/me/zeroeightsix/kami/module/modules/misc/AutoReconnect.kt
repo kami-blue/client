@@ -14,10 +14,10 @@ import net.minecraft.client.multiplayer.ServerData
 import kotlin.math.max
 
 @Module.Info(
-        name = "AutoReconnect",
-        description = "Automatically reconnects after being disconnected",
-        category = Module.Category.MISC,
-        alwaysListening = true
+    name = "AutoReconnect",
+    description = "Automatically reconnects after being disconnected",
+    category = Module.Category.MISC,
+    alwaysListening = true
 )
 object AutoReconnect : Module() {
     private val delay = setting("Delay", 5.0f, 0.5f..100.0f, 0.5f)

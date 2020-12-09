@@ -8,11 +8,11 @@ import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
 @Module.Info(
-        name = "FancyChat",
-        category = Module.Category.CHAT,
-        description = "Makes messages you send fancy",
-        showOnArray = false,
-        modulePriority = 100
+    name = "FancyChat",
+    category = Module.Category.CHAT,
+    description = "Makes messages you send fancy",
+    showOnArray = false,
+    modulePriority = 100
 )
 object FancyChat : Module() {
     private val uwu = setting("uwu", true)
@@ -25,14 +25,14 @@ object FancyChat : Module() {
     private val spammer = setting("Spammer", false)
 
     private val modifier = newMessageModifier(
-            filter = {
-                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
-                        && (spammer.value || it.source !is Spammer)
-            },
-            modifier = {
-                val message = getText(it.packet.message)
-                message.substring(0, min(256, message.length))
-            }
+        filter = {
+            (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                && (spammer.value || it.source !is Spammer)
+        },
+        modifier = {
+            val message = getText(it.packet.message)
+            message.substring(0, min(256, message.length))
+        }
     )
 
     override fun onEnable() {

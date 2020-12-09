@@ -25,9 +25,9 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 @Module.Info(
-        name = "AutoSpawner",
-        category = Module.Category.MISC,
-        description = "Automatically spawns Withers, Iron Golems and Snowmen"
+    name = "AutoSpawner",
+    category = Module.Category.MISC,
+    description = "Automatically spawns Withers, Iron Golems and Snowmen"
 )
 object AutoSpawner : Module() {
     private val useMode = setting("UseMode", UseMode.SPAM)
@@ -185,8 +185,8 @@ object AutoSpawner : Module() {
 
             when (entityMode.value) {
                 EntityMode.SNOW -> {
-                    if (stack.getItem() is ItemBlock) {
-                        val block = (stack.getItem() as ItemBlock).block
+                    if (stack.item is ItemBlock) {
+                        val block = (stack.item as ItemBlock).block
                         if (block == Blocks.LIT_PUMPKIN || block == Blocks.PUMPKIN) {
                             if (checkItemStackSize(stack, 1)) headSlot = slotIndex
                         }
@@ -196,8 +196,8 @@ object AutoSpawner : Module() {
                     }
                 }
                 EntityMode.IRON -> {
-                    if (stack.getItem() is ItemBlock) {
-                        val block = (stack.getItem() as ItemBlock).block
+                    if (stack.item is ItemBlock) {
+                        val block = (stack.item as ItemBlock).block
                         if (block == Blocks.LIT_PUMPKIN || block == Blocks.PUMPKIN) {
                             if (checkItemStackSize(stack, 1)) headSlot = slotIndex
                         }
@@ -207,10 +207,10 @@ object AutoSpawner : Module() {
                     }
                 }
                 EntityMode.WITHER -> {
-                    if (stack.getItem() is ItemSkull && stack.getItemDamage() == 1) {
+                    if (stack.item is ItemSkull && stack.itemDamage == 1) {
                         if (checkItemStackSize(stack, 3)) headSlot = slotIndex
-                    } else if (stack.getItem() is ItemBlock) {
-                        val block = (stack.getItem() as ItemBlock).block
+                    } else if (stack.item is ItemBlock) {
+                        val block = (stack.item as ItemBlock).block
                         if (block is BlockSoulSand) {
                             if (checkItemStackSize(stack, 4)) bodySlot = slotIndex
                         }
@@ -269,28 +269,28 @@ object AutoSpawner : Module() {
 
     private object BodyParts {
         val bodyBase = arrayOf(
-                BlockPos(0, 1, 0),
-                BlockPos(0, 2, 0))
+            BlockPos(0, 1, 0),
+            BlockPos(0, 2, 0))
         val ArmsX = arrayOf(
-                BlockPos(-1, 2, 0),
-                BlockPos(1, 2, 0)
+            BlockPos(-1, 2, 0),
+            BlockPos(1, 2, 0)
         )
         val ArmsZ = arrayOf(
-                BlockPos(0, 2, -1),
-                BlockPos(0, 2, 1)
+            BlockPos(0, 2, -1),
+            BlockPos(0, 2, 1)
         )
         val headsX = arrayOf(
-                BlockPos(0, 3, 0),
-                BlockPos(-1, 3, 0),
-                BlockPos(1, 3, 0)
+            BlockPos(0, 3, 0),
+            BlockPos(-1, 3, 0),
+            BlockPos(1, 3, 0)
         )
         val headsZ = arrayOf(
-                BlockPos(0, 3, 0),
-                BlockPos(0, 3, -1),
-                BlockPos(0, 3, 1)
+            BlockPos(0, 3, 0),
+            BlockPos(0, 3, -1),
+            BlockPos(0, 3, 1)
         )
         val head = arrayOf(
-                BlockPos(0, 3, 0)
+            BlockPos(0, 3, 0)
         )
     }
 

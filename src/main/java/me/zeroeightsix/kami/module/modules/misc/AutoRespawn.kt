@@ -11,9 +11,9 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 
 @Module.Info(
-        name = "AutoRespawn",
-        description = "Automatically respawn after dying",
-        category = Module.Category.MISC
+    name = "AutoRespawn",
+    description = "Automatically respawn after dying",
+    category = Module.Category.MISC
 )
 object AutoRespawn : Module() {
     private val respawn = setting("Respawn", true)

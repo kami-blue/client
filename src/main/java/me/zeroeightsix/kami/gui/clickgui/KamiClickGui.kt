@@ -28,7 +28,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
 
     override fun onGuiClosed() {
         super.onGuiClosed()
-        setModuleVisibility{ true }
+        setModuleVisibility { true }
     }
 
     override fun newSettingWindow(element: Module, mousePos: Vec2f): ModuleSettingWindow {
@@ -61,7 +61,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
                     lastTypedTime = System.currentTimeMillis()
 
                     val string = typedString.replace(" ", "")
-                    setModuleVisibility{ moduleButton ->
+                    setModuleVisibility { moduleButton ->
                         moduleButton.module.alias.any { it.contains(string, true) }
                     }
                 }

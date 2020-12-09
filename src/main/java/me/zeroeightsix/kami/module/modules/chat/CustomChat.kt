@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
@@ -12,11 +11,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import kotlin.math.min
 
 @Module.Info(
-        name = "CustomChat",
-        category = Module.Category.CHAT,
-        description = "Add a custom ending to your message!",
-        showOnArray = false,
-        modulePriority = 200
+    name = "CustomChat",
+    category = Module.Category.CHAT,
+    description = "Add a custom ending to your message!",
+    showOnArray = false,
+    modulePriority = 200
 )
 object CustomChat : Module() {
     private val textMode = setting("Message", TextMode.JAPANESE)
@@ -35,14 +34,14 @@ object CustomChat : Module() {
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private val modifier = newMessageModifier(
-            filter = {
-                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
-                        && (spammer.value || it.source !is Spammer)
-            },
-            modifier = {
-                val message = it.packet.message + getFull()
-                message.substring(0, min(256, message.length))
-            }
+        filter = {
+            (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                && (spammer.value || it.source !is Spammer)
+        },
+        modifier = {
+            val message = it.packet.message + getFull()
+            message.substring(0, min(256, message.length))
+        }
     )
 
     override fun onEnable() {

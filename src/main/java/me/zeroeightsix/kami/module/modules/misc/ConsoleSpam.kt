@@ -9,9 +9,9 @@ import net.minecraft.network.play.client.CPacketUpdateSign
 import net.minecraft.tileentity.TileEntitySign
 
 @Module.Info(
-        name = "ConsoleSpam",
-        description = "Spams Spigot consoles by sending invalid UpdateSign packets",
-        category = Module.Category.MISC
+    name = "ConsoleSpam",
+    description = "Spams Spigot consoles by sending invalid UpdateSign packets",
+    category = Module.Category.MISC
 )
 object ConsoleSpam : Module() {
     override fun onEnable() {

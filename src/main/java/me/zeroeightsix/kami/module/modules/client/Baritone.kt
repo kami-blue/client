@@ -10,11 +10,11 @@ import me.zeroeightsix.kami.util.event.listener
  * Created by Dewy on the 21st of April, 2020
  */
 @Module.Info(
-        name = "Baritone",
-        category = Module.Category.CLIENT,
-        description = "Configures Baritone settings",
-        showOnArray = false,
-        alwaysEnabled = true
+    name = "Baritone",
+    category = Module.Category.CLIENT,
+    description = "Configures Baritone settings",
+    showOnArray = false,
+    alwaysEnabled = true
 )
 object Baritone : Module() {
     private val allowBreak = setting("AllowBreak", true)

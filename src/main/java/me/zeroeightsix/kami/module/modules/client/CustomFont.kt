@@ -8,18 +8,18 @@ import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
-        name = "CustomFont",
-        description = "Use the better font instead of the stupid Minecraft font",
-        showOnArray = false,
-        category = Module.Category.CLIENT,
-        enabledByDefault = true
+    name = "CustomFont",
+    description = "Use the better font instead of the stupid Minecraft font",
+    showOnArray = false,
+    category = Module.Category.CLIENT,
+    enabledByDefault = true
 )
 object CustomFont : Module() {
     private const val DEFAULT_FONT_NAME = "Source Sans Pro"
 
     val fontName = setting("FontName",
-            DEFAULT_FONT_NAME,
-            consumer = { prev: String, value: String -> getMatchingFontName(value)?: prev })
+        DEFAULT_FONT_NAME,
+        consumer = { prev: String, value: String -> getMatchingFontName(value) ?: prev })
 
     private val sizeSetting = setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val gapSetting = setting("Gap", 0.0f, -10f..10f, 0.5f)

@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.gui.rgui.component
 import me.zeroeightsix.kami.util.math.Vec2f
 
 class Button(
-        name: String,
-        private val action: (Button) -> Unit,
-        descriptionIn: String
+    name: String,
+    private val action: (Button) -> Unit,
+    descriptionIn: String
 ) : BooleanSlider(name, 0.0, descriptionIn) {
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)

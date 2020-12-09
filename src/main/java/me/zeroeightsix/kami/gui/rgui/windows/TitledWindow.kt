@@ -9,12 +9,12 @@ import me.zeroeightsix.kami.util.math.Vec2f
  * Window with rectangle and title rendering
  */
 open class TitledWindow(
-        name: String,
-        posX: Float,
-        posY: Float,
-        width: Float,
-        height: Float,
-        settingGroup: SettingGroup
+    name: String,
+    posX: Float,
+    posY: Float,
+    width: Float,
+    height: Float,
+    settingGroup: SettingGroup
 ) : BasicWindow(name, posX, posY, width, height, settingGroup) {
     override val draggableHeight: Float get() = FontRenderAdapter.getFontHeight() + 5.0f
 

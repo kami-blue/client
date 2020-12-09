@@ -15,11 +15,11 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 
 @Module.Info(
-        name = "InventoryViewer",
-        category = Module.Category.CLIENT,
-        description = "Configures Inventory Viewer's options",
-        showOnArray = false,
-        alwaysEnabled = true
+    name = "InventoryViewer",
+    category = Module.Category.CLIENT,
+    description = "Configures Inventory Viewer's options",
+    showOnArray = false,
+    alwaysEnabled = true
 )
 object InventoryViewer : Module() {
     private val mcTexture = setting("UseMinecraftTexture", false)

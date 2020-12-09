@@ -10,12 +10,12 @@ import me.zeroeightsix.kami.util.math.Vec2f
  * Window with rectangle rendering
  */
 open class BasicWindow(
-        name: String,
-        posX: Float,
-        posY: Float,
-        width: Float,
-        height: Float,
-        settingGroup: SettingGroup
+    name: String,
+    posX: Float,
+    posY: Float,
+    width: Float,
+    height: Float,
+    settingGroup: SettingGroup
 ) : CleanWindow(name, posX, posY, width, height, settingGroup) {
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {

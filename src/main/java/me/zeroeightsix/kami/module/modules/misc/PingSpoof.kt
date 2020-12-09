@@ -9,9 +9,9 @@ import net.minecraft.network.play.server.SPacketKeepAlive
 import java.util.*
 
 @Module.Info(
-        name = "PingSpoof",
-        category = Module.Category.MISC,
-        description = "Cancels or adds delay to your ping packets"
+    name = "PingSpoof",
+    category = Module.Category.MISC,
+    description = "Cancels or adds delay to your ping packets"
 )
 object PingSpoof : Module() {
     private val cancel = setting("Cancel", false) // most servers will kick/time you out for this

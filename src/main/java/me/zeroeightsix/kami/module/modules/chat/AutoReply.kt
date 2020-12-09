@@ -12,9 +12,9 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 
 @Module.Info(
-        name = "AutoReply",
-        description = "Automatically reply to direct messages",
-        category = Module.Category.CHAT
+    name = "AutoReply",
+    description = "Automatically reply to direct messages",
+    category = Module.Category.CHAT
 )
 object AutoReply : Module() {
     private val customMessage = setting("CustomMessage", false)
@@ -24,7 +24,7 @@ object AutoReply : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) return@listener
+            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) return@listener
             if (customMessage.value) {
                 sendServerMessage("/r " + customText.value)
             } else {

@@ -24,8 +24,13 @@ public abstract class MixinModelBiped extends ModelBase {
     @Shadow public ModelRenderer bipedLeftLeg;
     @Shadow public ModelBiped.ArmPose leftArmPose;
     @Shadow public ModelBiped.ArmPose rightArmPose;
-    @Shadow protected abstract EnumHandSide getMainHand(Entity entityIn);
-    @Shadow protected abstract ModelRenderer getArmForSide(EnumHandSide side);
+
+    @Shadow
+    protected abstract EnumHandSide getMainHand(Entity entityIn);
+
+    @Shadow
+    protected abstract ModelRenderer getArmForSide(EnumHandSide side);
+
     @Shadow public ModelRenderer bipedHeadwear;
 
     @Inject(method = "setRotationAngles", at = @At("HEAD"), cancellable = true)

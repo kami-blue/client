@@ -16,9 +16,9 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.opengl.GL11.*
 
 open class Slider(
-        name: String,
-        valueIn: Double,
-        private val descriptionIn: String = ""
+    name: String,
+    valueIn: Double,
+    private val descriptionIn: String = ""
 ) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {

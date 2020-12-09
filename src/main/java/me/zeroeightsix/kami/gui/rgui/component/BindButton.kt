@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
 class BindButton(
-        private val setting: BindSetting
+    private val setting: BindSetting
 ) : Slider(setting.name, 0.0, setting.description) {
 
     override val renderProgress: Double = 0.0

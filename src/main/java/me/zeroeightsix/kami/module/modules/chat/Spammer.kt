@@ -14,10 +14,10 @@ import java.io.File
 import kotlin.random.Random
 
 @Module.Info(
-        name = "Spammer",
-        description = "Spams text from a file on a set delay into the chat",
-        category = Module.Category.CHAT,
-        modulePriority = 100
+    name = "Spammer",
+    description = "Spams text from a file on a set delay into the chat",
+    category = Module.Category.CHAT,
+    modulePriority = 100
 )
 object Spammer : Module() {
     private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
@@ -44,7 +44,7 @@ object Spammer : Module() {
         } else {
             file.createNewFile()
             MessageSendHelper.sendErrorMessage("$chatName Spammer file is empty!" +
-                        ", please add them in the &7spammer.txt&f under the &7.minecraft/kamiblue&f directory.")
+                ", please add them in the &7spammer.txt&f under the &7.minecraft/kamiblue&f directory.")
         }
     }
 

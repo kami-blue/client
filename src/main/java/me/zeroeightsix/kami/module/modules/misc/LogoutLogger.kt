@@ -15,9 +15,9 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.BlockPos
 
 @Module.Info(
-        name = "LogoutLogger",
-        category = Module.Category.MISC,
-        description = "Logs when a player leaves the game"
+    name = "LogoutLogger",
+    category = Module.Category.MISC,
+    description = "Logs when a player leaves the game"
 )
 object LogoutLogger : Module() {
     private val saveToFile = setting("SaveToFile", true)

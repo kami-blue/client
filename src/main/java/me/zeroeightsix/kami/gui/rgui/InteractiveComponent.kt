@@ -3,12 +3,12 @@ package me.zeroeightsix.kami.gui.rgui
 import me.zeroeightsix.kami.util.math.Vec2f
 
 open class InteractiveComponent(
-        name: String,
-        posX: Float,
-        posY: Float,
-        width: Float,
-        height: Float,
-        settingGroup: SettingGroup
+    name: String,
+    posX: Float,
+    posY: Float,
+    width: Float,
+    height: Float,
+    settingGroup: SettingGroup
 ) : Component(name, posX, posY, width, height, settingGroup) {
 
     // Interactive info

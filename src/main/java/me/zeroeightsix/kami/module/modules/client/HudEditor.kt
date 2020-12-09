@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.module.Module
 
 @Module.Info(
-        name = "HudEditor",
-        description = "Edits the Hud",
-        category = Module.Category.CLIENT,
-        showOnArray = false,
-        alwaysListening = true
+    name = "HudEditor",
+    description = "Edits the Hud",
+    category = Module.Category.CLIENT,
+    showOnArray = false,
+    alwaysListening = true
 )
 object HudEditor : Module() {
 

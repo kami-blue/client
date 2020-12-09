@@ -7,9 +7,9 @@ import net.minecraft.entity.passive.AbstractChestHorse
 import net.minecraft.network.play.client.CPacketUseEntity
 
 @Module.Info(
-        name = "MountBypass",
-        category = Module.Category.MISC,
-        description = "Might allow you to mount chested animals on servers that block it"
+    name = "MountBypass",
+    category = Module.Category.MISC,
+    description = "Might allow you to mount chested animals on servers that block it"
 )
 object MountBypass : Module() {
     init {

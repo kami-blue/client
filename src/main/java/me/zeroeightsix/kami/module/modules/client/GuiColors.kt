@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
 @Module.Info(
-        name = "GuiColors",
-        description = "Opens the Click GUI",
-        showOnArray = false,
-        category = Module.Category.CLIENT,
-        alwaysEnabled = true
+    name = "GuiColors",
+    description = "Opens the Click GUI",
+    showOnArray = false,
+    category = Module.Category.CLIENT,
+    alwaysEnabled = true
 )
 object GuiColors : Module() {
     private val primarySetting = setting("PrimaryColor", ColorHolder(155, 144, 255, 240))

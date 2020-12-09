@@ -8,9 +8,9 @@ import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.CPacketCustomPayload
 
 @Module.Info(
-        name = "BeaconSelector",
-        category = Module.Category.MISC,
-        description = "Choose any of the 5 beacon effects regardless of beacon base height"
+    name = "BeaconSelector",
+    category = Module.Category.MISC,
+    description = "Choose any of the 5 beacon effects regardless of beacon base height"
 )
 object BeaconSelector : Module() {
     private var doCancelPacket = true

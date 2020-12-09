@@ -18,10 +18,10 @@ import org.kamiblue.capeapi.CapeType
 import org.kamiblue.commons.utils.MathUtils
 
 @Module.Info(
-        name = "DiscordRPC",
-        category = Module.Category.MISC,
-        description = "Discord Rich Presence",
-        enabledByDefault = true
+    name = "DiscordRPC",
+    category = Module.Category.MISC,
+    description = "Discord Rich Presence",
+    enabledByDefault = true
 )
 object DiscordRPC : Module() {
     private val line1Left = setting("Line1Left", LineInfo.VERSION) // details left
@@ -52,8 +52,8 @@ object DiscordRPC : Module() {
         listener<SafeTickEvent> {
             if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
                 MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
-                        "This will display your coords on the discord rpc. " +
-                        "Do NOT use this if you do not want your coords displayed")
+                    "This will display your coords on the discord rpc. " +
+                    "Do NOT use this if you do not want your coords displayed")
             }
         }
     }
@@ -82,9 +82,9 @@ object DiscordRPC : Module() {
 
     private fun showCoordsConfirm(): Boolean {
         return line1Left.value == LineInfo.COORDS
-                || line2Left.value == LineInfo.COORDS
-                || line1Right.value == LineInfo.COORDS
-                || line2Right.value == LineInfo.COORDS
+            || line2Left.value == LineInfo.COORDS
+            || line1Right.value == LineInfo.COORDS
+            || line2Right.value == LineInfo.COORDS
     }
 
     private fun setRpcWithDelay() {

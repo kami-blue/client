@@ -10,10 +10,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Module.Info(
-        name = "AutoQMain",
-        description = "Automatically does '/queue 2b2t-lobby'",
-        category = Module.Category.CHAT,
-        showOnArray = false
+    name = "AutoQMain",
+    description = "Automatically does '/queue 2b2t-lobby'",
+    category = Module.Category.CHAT,
+    showOnArray = false
 )
 object AutoQMain : Module() {
     private val showWarns = setting("ShowWarnings", true)
@@ -26,12 +26,12 @@ object AutoQMain : Module() {
         listener<SafeTickEvent> {
             if (!timer.tick(delay.value.toLong())) return@listener
 
-            if (mc.getCurrentServerData() == null) {
+            if (mc.currentServerData == null) {
                 sendMessage("&l&6Error: &r&6You are in singleplayer")
                 return@listener
             }
 
-            if (!mc.getCurrentServerData()!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
+            if (!mc.currentServerData!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
                 return@listener
             }
 

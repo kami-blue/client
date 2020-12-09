@@ -13,10 +13,10 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 
 @Module.Info(
-        name = "FriendHighlight",
-        description = "Highlights your friends names in chat",
-        category = Module.Category.CHAT,
-        showOnArray = false
+    name = "FriendHighlight",
+    description = "Highlights your friends names in chat",
+    category = Module.Category.CHAT,
+    showOnArray = false
 )
 object FriendHighlight : Module() {
     private val bold = setting("Bold", true)

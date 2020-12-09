@@ -15,11 +15,11 @@ import java.io.File
 import java.io.FileReader
 
 @Module.Info(
-        name = "LoginMessage",
-        description = "Sends a given message to public chat on login.",
-        category = Module.Category.CHAT,
-        showOnArray = false,
-        modulePriority = 150
+    name = "LoginMessage",
+    description = "Sends a given message to public chat on login.",
+    category = Module.Category.CHAT,
+    showOnArray = false,
+    modulePriority = 150
 )
 object LoginMessage : Module() {
     private val sendAfterMoving = setting("SendAfterMoving", false)
@@ -69,7 +69,7 @@ object LoginMessage : Module() {
         } else {
             file.createNewFile()
             MessageSendHelper.sendErrorMessage("$chatName Login Message file is empty!" +
-                    ", please add them in the &7loginmsg.txt&f under the &7.minecraft/kamiblue&f directory.")
+                ", please add them in the &7loginmsg.txt&f under the &7.minecraft/kamiblue&f directory.")
             disable()
         }
 

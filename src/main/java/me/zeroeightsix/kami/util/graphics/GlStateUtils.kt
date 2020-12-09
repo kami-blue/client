@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
-import java.util.*
 import org.lwjgl.opengl.GL12.*
+import java.util.*
 
 object GlStateUtils {
     private val mc = Wrapper.minecraft

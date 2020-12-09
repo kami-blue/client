@@ -14,9 +14,9 @@ import net.minecraft.util.EnumFacing
 import kotlin.math.round
 
 @Module.Info(
-        name = "AutoTunnel",
-        description = "Automatically tunnels forward, at a given size",
-        category = Module.Category.MISC
+    name = "AutoTunnel",
+    description = "Automatically tunnels forward, at a given size",
+    category = Module.Category.MISC
 )
 object AutoTunnel : Module() {
     private val backFill = setting("BackFill", false)
@@ -28,8 +28,8 @@ object AutoTunnel : Module() {
 
     override fun isActive(): Boolean {
         return isEnabled
-                && (BaritoneUtils.isPathing
-                || BaritoneUtils.primary?.builderProcess?.isActive == true)
+            && (BaritoneUtils.isPathing
+            || BaritoneUtils.primary?.builderProcess?.isActive == true)
     }
 
     override fun onDisable() {
@@ -42,7 +42,7 @@ object AutoTunnel : Module() {
         }
 
         listener<BaritoneCommandEvent> { event ->
-            if (event.command.names.any { it.contains("cancel")}) {
+            if (event.command.names.any { it.contains("cancel") }) {
                 disable()
             }
         }
@@ -70,7 +70,7 @@ object AutoTunnel : Module() {
     }
 
     init {
-        with( { if (mc.player != null && isEnabled) sendTunnel() }) {
+        with({ if (mc.player != null && isEnabled) sendTunnel() }) {
             height.listeners.add(this)
             width.listeners.add(this)
         }

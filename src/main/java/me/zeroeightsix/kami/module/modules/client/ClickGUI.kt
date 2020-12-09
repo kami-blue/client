@@ -11,11 +11,11 @@ import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
 @Module.Info(
-        name = "ClickGUI",
-        description = "Opens the Click GUI",
-        category = Module.Category.CLIENT,
-        showOnArray = false,
-        alwaysListening = true
+    name = "ClickGUI",
+    description = "Opens the Click GUI",
+    category = Module.Category.CLIENT,
+    showOnArray = false,
+    alwaysListening = true
 )
 object ClickGUI : Module() {
     private val scaleSetting = setting("Scale", 100, 50..400, 5)

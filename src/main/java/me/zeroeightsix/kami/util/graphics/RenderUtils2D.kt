@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.util.graphics
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
-import org.kamiblue.commons.utils.MathUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
 

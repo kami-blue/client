@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MixinGuiPlayerTabOverlay {
 
     private AtomicReference<List<?>> list1 = null;
-    private TimerUtils.TickTimer timer = new TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS);
+    private final TimerUtils.TickTimer timer = new TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS);
 
     @SuppressWarnings("unchecked")
     @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE", target = "Ljava/util/List;subList(II)Ljava/util/List;", remap = false))

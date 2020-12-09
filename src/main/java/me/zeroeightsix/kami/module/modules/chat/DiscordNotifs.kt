@@ -19,9 +19,9 @@ import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
 
 @Module.Info(
-        name = "DiscordNotifs",
-        category = Module.Category.CHAT,
-        description = "Sends your chat to a set Discord channel"
+    name = "DiscordNotifs",
+    category = Module.Category.CHAT,
+    description = "Sends your chat to a set Discord channel"
 )
 object DiscordNotifs : Module() {
     private val timeout = setting("Timeout", true)
@@ -45,7 +45,7 @@ object DiscordNotifs : Module() {
     init {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketChat) return@listener
-            val message = it.packet.getChatComponent().unformattedText
+            val message = it.packet.chatComponent.unformattedText
             if (timeout(message) && MessageDetectionHelper.shouldSend(all.value, restart.value, direct.value, queue.value, importantPings.value, message)) {
                 sendMessage(getPingID(message) + MessageDetectionHelper.getMessageType(direct.value, message, server) + getTime() + message, avatar.value)
             }
@@ -74,16 +74,16 @@ object DiscordNotifs : Module() {
     }
 
     private fun timeout(message: String) = !timeout.value
-            || (message.detect(restart.value, Regexes.RESTART)
-            || MessageDetectionHelper.isDirect(direct.value, message))
-            || timer.tick(timeoutTime.value.toLong())
+        || (message.detect(restart.value, Regexes.RESTART)
+        || MessageDetectionHelper.isDirect(direct.value, message))
+        || timer.tick(timeoutTime.value.toLong())
 
     /* Text formatting and misc methods */
     private fun getPingID(message: String) = if (message.detect(restart.value, Regexes.RESTART)
-            || MessageDetectionHelper.isDirect(direct.value, message)
-            || message.detect(importantPings.value, Regexes.QUEUE_IMPORTANT)
-            || message == "KamiBlueMessageType1"
-            || message == "KamiBlueMessageType2") formatPingID()
+        || MessageDetectionHelper.isDirect(direct.value, message)
+        || message.detect(importantPings.value, Regexes.QUEUE_IMPORTANT)
+        || message == "KamiBlueMessageType1"
+        || message == "KamiBlueMessageType2") formatPingID()
     else ""
 
     private fun formatPingID(): String {
@@ -91,8 +91,8 @@ object DiscordNotifs : Module() {
     }
 
     private fun getTime() =
-            if (!time.value) ""
-            else "[${TimeUtils.getTime()}] "
+        if (!time.value) ""
+        else "[${TimeUtils.getTime()}] "
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)

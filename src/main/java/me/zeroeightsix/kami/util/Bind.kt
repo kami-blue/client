@@ -36,19 +36,19 @@ class Bind(
     private fun isShiftDown(): Boolean {
         val eventKey = Keyboard.getEventKey()
         return eventKey != Keyboard.KEY_LSHIFT && eventKey != Keyboard.KEY_RSHIFT
-                && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
     }
 
     private fun isCtrlDown(): Boolean {
         val eventKey = Keyboard.getEventKey()
         return eventKey != Keyboard.KEY_LCONTROL && eventKey != Keyboard.KEY_RCONTROL
-                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
+            && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
     }
 
     private fun isAltDown(): Boolean {
         val eventKey = Keyboard.getEventKey()
         return eventKey != Keyboard.KEY_LMENU && eventKey != Keyboard.KEY_RMENU
-                && (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
+            && (Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU))
     }
 
     override fun toString(): String {

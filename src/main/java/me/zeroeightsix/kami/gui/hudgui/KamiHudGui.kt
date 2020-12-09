@@ -47,7 +47,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
     init {
         listener<RenderOverlayEvent>(0) {
             if (mc?.world == null || mc?.player == null
-                    || mc?.currentScreen == this || mc?.gameSettings?.showDebugInfo != false) return@listener
+                || mc?.currentScreen == this || mc?.gameSettings?.showDebugInfo != false) return@listener
 
             val vertexHelper = VertexHelper(GlStateUtils.useVbo())
             GlStateUtils.rescaleKami()

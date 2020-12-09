@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 
 class ModuleSettingWindow(
-        module: Module,
-        posX: Float,
-        posY: Float
+    module: Module,
+    posX: Float,
+    posY: Float
 ) : SettingWindow<Module>(module.name, module, posX, posY, SettingGroup.NONE) {
 
     override fun getSettingList(): List<Setting<*>> {

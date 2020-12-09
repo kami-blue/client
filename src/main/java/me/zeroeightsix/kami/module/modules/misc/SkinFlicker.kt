@@ -8,9 +8,9 @@ import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.player.EnumPlayerModelParts
 
 @Module.Info(
-        name = "SkinFlicker",
-        description = "Toggle your skin layers rapidly for a cool skin effect",
-        category = Module.Category.MISC
+    name = "SkinFlicker",
+    description = "Toggle your skin layers rapidly for a cool skin effect",
+    category = Module.Category.MISC
 )
 object SkinFlicker : Module() {
     private val mode = setting("Mode", FlickerMode.HORIZONTAL)
@@ -45,20 +45,20 @@ object SkinFlicker : Module() {
     }
 
     private val horizontalParts = arrayOf(
-            EnumPlayerModelParts.LEFT_SLEEVE,
-            EnumPlayerModelParts.LEFT_PANTS_LEG,
-            EnumPlayerModelParts.JACKET,
-            EnumPlayerModelParts.HAT,
-            EnumPlayerModelParts.CAPE,
-            EnumPlayerModelParts.RIGHT_PANTS_LEG,
-            EnumPlayerModelParts.RIGHT_SLEEVE)
+        EnumPlayerModelParts.LEFT_SLEEVE,
+        EnumPlayerModelParts.LEFT_PANTS_LEG,
+        EnumPlayerModelParts.JACKET,
+        EnumPlayerModelParts.HAT,
+        EnumPlayerModelParts.CAPE,
+        EnumPlayerModelParts.RIGHT_PANTS_LEG,
+        EnumPlayerModelParts.RIGHT_SLEEVE)
 
     private val verticalParts = arrayOf(
-            EnumPlayerModelParts.HAT,
-            EnumPlayerModelParts.JACKET,
-            EnumPlayerModelParts.CAPE,
-            EnumPlayerModelParts.LEFT_SLEEVE,
-            EnumPlayerModelParts.RIGHT_SLEEVE,
-            EnumPlayerModelParts.LEFT_PANTS_LEG,
-            EnumPlayerModelParts.RIGHT_PANTS_LEG)
+        EnumPlayerModelParts.HAT,
+        EnumPlayerModelParts.JACKET,
+        EnumPlayerModelParts.CAPE,
+        EnumPlayerModelParts.LEFT_SLEEVE,
+        EnumPlayerModelParts.RIGHT_SLEEVE,
+        EnumPlayerModelParts.LEFT_PANTS_LEG,
+        EnumPlayerModelParts.RIGHT_PANTS_LEG)
 }

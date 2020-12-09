@@ -7,9 +7,9 @@ import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.world.GameType
 
 @Module.Info(
-        name = "FakeGameMode",
-        description = "Fakes your current gamemode client side",
-        category = Module.Category.MISC
+    name = "FakeGameMode",
+    description = "Fakes your current gamemode client side",
+    category = Module.Category.MISC
 )
 object FakeGameMode : Module() {
     private val gamemode = setting("Mode", GameMode.CREATIVE)
@@ -32,7 +32,7 @@ object FakeGameMode : Module() {
 
     override fun onEnable() {
         if (mc.player == null) disable()
-        else prevGameMode = mc.playerController.getCurrentGameType()
+        else prevGameMode = mc.playerController.currentGameType
     }
 
     override fun onDisable() {

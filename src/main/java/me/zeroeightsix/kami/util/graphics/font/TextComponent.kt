@@ -115,7 +115,7 @@ class TextComponent(val separator: String = " ") {
     }.maxOrNull() ?: 0f
 
     fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = true, customFont: Boolean = FontRenderAdapter.useCustomFont) =
-            FontRenderAdapter.getFontHeight(customFont = customFont) * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)
+        FontRenderAdapter.getFontHeight(customFont = customFont) * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)
 
     fun getLines(skipEmptyLines: Boolean = true) = textLines.count { !skipEmptyLines || (it != null && !it.isEmpty()) }
 

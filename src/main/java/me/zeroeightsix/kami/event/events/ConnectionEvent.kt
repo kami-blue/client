@@ -8,6 +8,6 @@ import me.zeroeightsix.kami.event.KamiEvent
  * Created by Xiaro on 10/09/20
  */
 open class ConnectionEvent : KamiEvent() {
-    class Connect() : ConnectionEvent()
-    class Disconnect() : ConnectionEvent()
+    class Connect : ConnectionEvent()
+    class Disconnect : ConnectionEvent()
 }

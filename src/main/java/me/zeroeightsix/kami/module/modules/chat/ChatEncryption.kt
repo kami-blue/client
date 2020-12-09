@@ -21,14 +21,14 @@ import java.util.stream.Collectors
 import kotlin.math.sqrt
 
 @Module.Info(
-        name = "ChatEncryption",
-        description = "Encrypts and decrypts chat messages",
-        category = Module.Category.CHAT
+    name = "ChatEncryption",
+    description = "Encrypts and decrypts chat messages",
+    category = Module.Category.CHAT
 )
 object ChatEncryption : Module() {
     private val self = setting("DecryptOwn", true)
     private val mode = setting("Mode", EncryptionMode.SHUFFLE)
-    private val keyA = setting("KeyA", 3, 0..26,1)
+    private val keyA = setting("KeyA", 3, 0..26, 1)
     private val keyB = setting("KeyB", 10, 0..26, 1)
     private val delimiterSetting = setting("Delimiter", true)
     val delimiterValue = setting("delimiterV", "unchanged")

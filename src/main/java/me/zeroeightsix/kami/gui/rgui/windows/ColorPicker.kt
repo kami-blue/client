@@ -95,8 +95,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
         hoveredChild = components.firstOrNull {
             it.visible.value
-                    && preDragMousePos.x in it.posX..it.posX + it.width.value
-                    && preDragMousePos.y in it.posY..it.posY + it.height.value
+                && preDragMousePos.x in it.posX..it.posX + it.width.value
+                && preDragMousePos.y in it.posY..it.posY + it.height.value
         }?.also {
             it.onMouseInput(mousePos)
         }
@@ -153,7 +153,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     }
 
     private fun isInPair(mousePos: Vec2f, pair: Pair<Vec2f, Vec2f>) =
-            mousePos.x in pair.first.x..pair.second.x && mousePos.y in pair.first.y..pair.second.y
+        mousePos.x in pair.first.x..pair.second.x && mousePos.y in pair.first.y..pair.second.y
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
         super.onKeyInput(keyCode, keyState)
@@ -255,7 +255,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
         // Previous color
         val prevColor = setting?.value?.clone()?.apply { a = 255 }
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(prevColorPos.first), Vec2d(prevColorPos.second), prevColor?: ColorHolder())
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(prevColorPos.first), Vec2d(prevColorPos.second), prevColor
+            ?: ColorHolder())
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(prevColorPos.first), Vec2d(prevColorPos.second), 1.5f, GuiColors.outline)
 
         // Current color
@@ -336,24 +337,24 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         // Variables
         fieldHeight = height.value - 8.0f - draggableHeight
         fieldPos = Pair(
-                Vec2f(4.0f, 4.0f + draggableHeight),
-                Vec2f(4.0f + fieldHeight, 4.0f + fieldHeight + draggableHeight)
+            Vec2f(4.0f, 4.0f + draggableHeight),
+            Vec2f(4.0f + fieldHeight, 4.0f + fieldHeight + draggableHeight)
         )
         huePos = Pair(
-                Vec2f(4.0f + fieldHeight + 8.0f, 4.0f + draggableHeight),
-                Vec2f(4.0f + fieldHeight + 8.0f + 8.0f, 4.0f + fieldHeight + draggableHeight)
+            Vec2f(4.0f + fieldHeight + 8.0f, 4.0f + draggableHeight),
+            Vec2f(4.0f + fieldHeight + 8.0f + 8.0f, 4.0f + fieldHeight + draggableHeight)
         )
         hueLinePos = Pair(
-                Vec2f(4.0f + fieldHeight + 8.0f + 4.0f, 4.0f + draggableHeight),
-                Vec2f(4.0f + fieldHeight + 8.0f + 4.0f, 4.0f + fieldHeight + draggableHeight)
+            Vec2f(4.0f + fieldHeight + 8.0f + 4.0f, 4.0f + draggableHeight),
+            Vec2f(4.0f + fieldHeight + 8.0f + 4.0f, 4.0f + fieldHeight + draggableHeight)
         )
         prevColorPos = Pair(
-                Vec2f(sliderR.posX, buttonOkay.posY),
-                Vec2f(sliderR.posX + 35.0f, buttonCancel.posY - 4.0f)
+            Vec2f(sliderR.posX, buttonOkay.posY),
+            Vec2f(sliderR.posX + 35.0f, buttonCancel.posY - 4.0f)
         )
         currentColorPos = Pair(
-                Vec2f(sliderR.posX + 35.0f + 4.0f, buttonOkay.posY),
-                Vec2f(sliderR.posX + 35.0f + 4.0f + 35.0f, buttonCancel.posY - 4.0f)
+            Vec2f(sliderR.posX + 35.0f + 4.0f, buttonOkay.posY),
+            Vec2f(sliderR.posX + 35.0f + 4.0f + 35.0f, buttonCancel.posY - 4.0f)
         )
     }
 

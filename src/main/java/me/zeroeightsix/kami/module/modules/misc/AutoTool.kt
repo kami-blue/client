@@ -16,9 +16,9 @@ import org.lwjgl.input.Mouse
 import kotlin.math.pow
 
 @Module.Info(
-        name = "AutoTool",
-        description = "Automatically switch to the best tools when mining or attacking",
-        category = Module.Category.MISC
+    name = "AutoTool",
+    description = "Automatically switch to the best tools when mining or attacking",
+    category = Module.Category.MISC
 )
 object AutoTool : Module() {
     private val switchBack = setting("SwitchBack", true)

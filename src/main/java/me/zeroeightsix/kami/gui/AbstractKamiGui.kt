@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.HashMap
 
-abstract class AbstractKamiGui<S: SettingWindow<*>, E: Any> : GuiScreen() {
+abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     // Window
     val windowList = LinkedHashSet<WindowComponent>()
@@ -210,7 +210,7 @@ abstract class AbstractKamiGui<S: SettingWindow<*>, E: Any> : GuiScreen() {
         if (ClickGUI.blur.value > 0.0f) {
             glPushMatrix()
             blurShader.shader?.render(partialTicks)
-            mc.getFramebuffer().bindFramebuffer(true)
+            mc.framebuffer.bindFramebuffer(true)
             blurShader.getFrameBuffer("final")?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
             glPopMatrix()
         }

@@ -12,11 +12,11 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
 abstract class SettingWindow<T : Any>(
-        name: String,
-        val element: T,
-        posX: Float,
-        posY: Float,
-        settingGroup: SettingGroup
+    name: String,
+    val element: T,
+    posX: Float,
+    posY: Float,
+    settingGroup: SettingGroup
 ) : ListWindow(name, posX, posY, 100.0f, 200.0f, settingGroup) {
 
     override val minWidth: Float get() = 100.0f

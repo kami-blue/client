@@ -19,9 +19,9 @@ import java.util.stream.Collectors
 import java.util.stream.IntStream
 
 @Module.Info(
-        name = "BookCrash",
-        category = Module.Category.MISC,
-        description = "Crashes servers by sending large packets"
+    name = "BookCrash",
+    category = Module.Category.MISC,
+    description = "Crashes servers by sending large packets"
 )
 object BookCrash : Module() {
     private val mode = setting("Mode", Mode.RAION)
