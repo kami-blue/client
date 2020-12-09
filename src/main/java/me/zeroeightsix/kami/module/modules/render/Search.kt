@@ -63,7 +63,7 @@ object Search : Module() {
     }
 
     override fun onEnable() {
-        if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics()) {
+        if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
             MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${Command.getCommandPrefix()}search override&f command")
             disable()

@@ -13,7 +13,11 @@ object BaritoneUtils {
     val prefix get() = settings?.prefix?.value ?: "#"
 
     val isPathing get() = primary?.pathingBehavior?.isPathing ?: false
-    val isActive get() = primary?.customGoalProcess?.isActive ?: false
+    val isActive
+        get() = primary?.customGoalProcess?.isActive ?: false
+            || primary?.pathingControlManager?.mostRecentInControl()?.let {
+            it.isPresent && it.get().isActive
+        } ?: false
 
     fun pause() {
         if (!paused) {

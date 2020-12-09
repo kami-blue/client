@@ -1,12 +1,9 @@
-@file:Suppress("DEPRECATION")
-
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColorCode
+import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -23,7 +20,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 )
 object FriendHighlight : Module() {
     private val bold = setting("Bold", true)
-    private val colour = setting("Color", ColorCode.GRAY)
+    private val colour = setting("Color", EnumTextColor.GRAY)
     private val sound = setting("Sound", true)
 
     private val regex1 = "<(.*?)>".toRegex()
@@ -41,7 +38,7 @@ object FriendHighlight : Module() {
             if (playerName == null || !FriendManager.isFriend(playerName)) return@listener
             val modified = it.message.formattedText.replaceFirst(playerName, getReplacement(playerName))
             val textComponent = TextComponentString(modified)
-            if (sound.value) mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+            if (sound.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
 
             it.message = textComponent
         }
@@ -54,9 +51,7 @@ object FriendHighlight : Module() {
         }
     }
 
-    private fun getReplacement(name: String) = color() + bold() + name + TextFormatting.RESET.toString()
+    private fun getReplacement(name: String) = "${color.value.textFormatting}${bold()}$name${TextFormatting.RESET}"
 
     private fun bold() = if (!bold.value) "" else TextFormatting.BOLD.toString()
-
-    private fun color() = ColorTextFormatting.toTextMap[colour.value].toString()
 }

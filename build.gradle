@@ -1,57 +1,49 @@
 buildscript {
+
     repositories {
         jcenter()
+
         maven {
             name = 'forge'
             url = 'http://files.minecraftforge.net/maven'
         }
+
         maven {
             name = 'SpongePowered'
             url = 'http://repo.spongepowered.org/maven'
         }
     }
+
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "${kotlin_version}"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+
 }
 
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
 apply plugin: 'kotlin'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.modVersion
 group project.modGroup
 
-sourceSets {
-    main.java.srcDirs += 'src/main/cape-api'
-    main.java.srcDirs += 'src/main/commons'
+sourceSets.main.java {
+    srcDirs += 'src/main/cape-api'
+    srcDirs += 'src/main/commons'
 }
 
 compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
-}
-
-minecraft {
-    version = project.forgeVersion
-    runDir = 'run'
-    mappings = project.mcpVersion
-    coreMod = 'me.zeroeightsix.kami.mixin.MixinLoaderForge'
-    makeObfSourceJar = false
+    options.encoding = 'UTF-8'
 }
 
 repositories {
@@ -75,105 +67,129 @@ repositories {
     jcenter()
 }
 
+
+minecraft {
+    mappings channel: 'stable', version: '39-1.12'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'fml.coreMods.load', 'me.zeroeightsix.kami.mixin.MixinLoaderForge'
+            property 'mixin.env.disableRefMap', 'true' // Disable refmap so we don't get trolled by Baritone
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+
+configurations {
+    jarLibs
+}
+
 dependencies {
-    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") { // do NOT update this to 8.0 or above, it breaks compatibility with future client
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-        exclude module: 'gson'
+    // Forge
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+
+    jarLibs('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
         exclude module: 'commons-io'
+        exclude module: 'gson'
+        exclude module: 'guava'
+        exclude module: 'launchwrapper'
         exclude module: 'log4j-core' // we want to exclude this as well because 0.7.11 includes it too new for MC
     }
 
-    compile(group: 'org.reflections', name: 'reflections', version: '0.9.12') {
-        exclude group: 'com.google.guava', module: 'guava'
+    // Hacky way to get mixin work
+    annotationProcessor('org.spongepowered:mixin:0.8.2:processor') {
+        exclude module: 'gson'
     }
 
-    compile 'club.minnced:java-discord-rpc:2.0.2'
-    compile 'com.github.kevinsawicki:http-request:http-request-6.0'
-    compile 'com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT'
+    jarLibs('org.reflections:reflections:0.9.12') {
+        exclude module: 'gson'
+        exclude module: 'guava'
+    }
 
-    compile 'com.github.cabaletta:baritone:1.2.14'
-    compile 'cabaletta:baritone-api:1.2'
+    jarLibs('club.minnced:java-discord-rpc:2.0.2') {
+        exclude module: 'jna'
+    }
 
-    compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib", version: kotlin_version
-    compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk7", version: kotlin_version
-    compile group: "org.jetbrains.kotlin", name: "kotlin-stdlib-jdk8", version: kotlin_version
-    compile group: "org.jetbrains.kotlin", name: "kotlin-reflect", version: kotlin_version
+    jarLibs('com.github.MrPowerGamerBR:TemmieWebhook:-SNAPSHOT') {
+        exclude module: 'gson'
+    }
 
-    compile group: "org.jetbrains", name: "annotations", version: annotations_version
+    jarLibs 'com.github.kevinsawicki:http-request:6.0'
+
+
+    // Kotlin libs
+    // kotlin-stdlib-common and annotations aren't required at runtime
+    jarLibs("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
+    jarLibs("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
+    jarLibs("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
+    jarLibs("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
+    // Add them back to compileOnly (provided)
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
+    compileOnly 'org.jetbrains:annotations:13.0'
+
+    // This Baritone will NOT be included in the jar
+    implementation 'com.github.cabaletta:baritone:1.2.14'
+
+    // This Baritone WILL be included in the jar
+    jarLibs 'cabaletta:baritone-api:1.2'
+
+    // Add everything in jarLibs to implementation (compile)
+    implementation configurations.jarLibs
+}
+
+mixin {
+    defaultObfuscationEnv 'searge'
+    add sourceSets.main, 'mixins.kami.refmap.json'
 }
 
 processResources {
     inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
 
     exclude '**/rawimagefiles'
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-
-    rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
-shadowJar {
-    dependencies {
-        include(dependency('cabaletta:baritone-api'))
-        include(dependency('club.minnced:java-discord-rpc'))
-        include(dependency('com.github.kevinsawicki:http-request'))
-        include(dependency('com.github.MrPowerGamerBR:TemmieWebhook'))
-        include(dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}"))
-        include(dependency('org.javassist:javassist'))
-        include(dependency('org.reflections:reflections'))
-        include(dependency('org.spongepowered:mixin'))
-    }
-
-    exclude 'dummyThing' // can someone explain why this is here
-    classifier = 'release'
-}
-
-mixin {
-    defaultObfuscationEnv searge
-    add sourceSets.main, 'mixins.kami.refmap.json'
-}
-
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-        classpath = sourceSets.main.compileClasspath
+        expand 'version': project.version
     }
 }
 
 // Don't put baritone mixin here please c:
 jar {
-    manifest {
-        attributes(
-                'MixinConfigs': 'mixins.kami.json',
-                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-                'TweakOrder': 0,
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'me.zeroeightsix.kami.mixin.MixinLoaderForge',
-                'ForceLoadAsMod': 'true',
-                'FMLAT': 'kami_at.cfg'
-        )
+    manifest.attributes(
+            'Manifest-Version': 1.0,
+            'MixinConfigs': 'mixins.kami.json',
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'TweakOrder': 0,
+            'FMLCorePluginContainsFMLMod': 'true',
+            'FMLCorePlugin': 'me.zeroeightsix.kami.mixin.MixinLoaderForge',
+            'ForceLoadAsMod': 'true',
+            'Main-Class': 'me.zeroeightsix.installer.Installer'
+    )
+
+    // Copy needed libs to jar
+    from {
+        configurations.jarLibs.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'me.zeroeightsix.installer.Installer'
-        )
-    }
-}
-
-build.dependsOn(shadowJar)

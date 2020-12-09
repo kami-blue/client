@@ -15,19 +15,19 @@ object CoordinateConverter {
         return if (dimension == WaypointManager.genDimension()) {
             pos
         } else {
-            if (dimension == -1) {
-                toOverworld(pos)
-            } else {
-                toNether(pos)
+            when (dimension) {
+                -1 -> toOverworld(pos) // Nether to overworld
+                0 -> toNether(pos) // Overworld to nether
+                else -> pos // End or custom dimension by server
             }
         }
     }
 
     fun bothConverted(dimension: Int, pos: BlockPos): String {
-        return if (dimension == -1) {
-            "${toOverworld(pos).asString()} (${pos.asString()})"
-        } else {
-            "${pos.asString()} (${toNether(pos).asString()})"
+        return when (dimension) {
+            -1 -> "${toOverworld(pos).asString()} (${pos.asString()})"
+            0 -> "${pos.asString()} (${toNether(pos).asString()})"
+            else -> pos.asString()
         }
     }
 

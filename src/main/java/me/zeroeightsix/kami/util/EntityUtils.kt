@@ -89,7 +89,7 @@ object EntityUtils {
         return false
     }
 
-    fun isDrivenByPlayer(entity: Entity) = mc.player != null && entity == mc.player.getRidingEntity()
+    fun isDrivenByPlayer(entity: Entity) = mc.player != null && entity == mc.player.ridingEntity
 
     fun isAboveWater(entity: Entity?) = isAboveWater(entity, false)
 
@@ -157,11 +157,15 @@ object EntityUtils {
         for (currentEntity in mc.world.loadedEntityList) {
             if (currentEntity.getDistance(mc.player) > range) continue /* Entities within specified  blocks radius */
             if (currentEntity !is EntityItem) continue /* Entites that are dropped item */
-            if (Item.getIdFromItem(currentEntity.item.getItem()) != itemId) continue /* Dropped items that are has give item id */
+            if (Item.getIdFromItem(currentEntity.item.item) != itemId) continue /* Dropped items that are has give item id */
             entityList.add(currentEntity)
         }
         return entityList
     }
 
-    fun getDroppedItem(itemId: Int, range: Float) = getDroppedItems(itemId, range)?.minBy { mc.player.getDistance(it) }?.positionVector?.toBlockPos()
+    fun getDroppedItem(itemId: Int, range: Float) =
+        getDroppedItems(itemId, range)
+            ?.minByOrNull { mc.player.getDistance(it) }
+            ?.positionVector
+            ?.toBlockPos()
 }

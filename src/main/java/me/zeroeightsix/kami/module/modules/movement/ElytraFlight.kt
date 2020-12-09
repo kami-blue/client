@@ -32,7 +32,6 @@ import kotlin.math.*
 object ElytraFlight : Module() {
     private val mode = setting("Mode", ElytraFlightMode.CONTROL)
     private val page = setting("Page", Page.GENERIC_SETTINGS)
-    private val defaultSetting = setting("Defaults", false)
     private val durabilityWarning = setting("DurabilityWarning", true, { page.value == Page.GENERIC_SETTINGS })
     private val threshold = setting("Broken%", 5, 1..50, 1, { durabilityWarning.value && page.value == Page.GENERIC_SETTINGS })
     private val autoLanding = setting("AutoLanding", false, { page.value == Page.GENERIC_SETTINGS })
@@ -500,10 +499,6 @@ object ElytraFlight : Module() {
     }
 
     init {
-        defaultSetting.valueListeners.add { _, it ->
-            if (it) resetSettings()
-        }
-
         /* Reset isFlying states when switching mode */
         mode.listeners.add {
             reset(true)

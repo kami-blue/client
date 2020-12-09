@@ -45,7 +45,6 @@
     "optifine.MixinConfig",
     "player.MixinEntityPlayer",
     "player.MixinEntityPlayerSP",
-    "player.MixinMovementInputFromOptions",
     "player.MixinPlayerControllerMP",
     "render.MixinDebugRendererChunkBorder",
     "render.MixinEntityRenderer",

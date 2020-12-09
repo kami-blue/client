@@ -166,8 +166,8 @@ object CrystalAura : Module() {
 
             // Minecraft sends sounds packets a tick before removing the crystal lol
             if (it.packet is SPacketSoundEffect
-                    && it.packet.getCategory() == SoundCategory.BLOCKS
-                    && it.packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                    && it.packet.category == SoundCategory.BLOCKS
+                    && it.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
                 val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 6.0f)
 
                 for (crystal in crystalList) {
@@ -384,10 +384,10 @@ object CrystalAura : Module() {
 
     /* General */
     private fun getHand(): EnumHand? {
-        val serverSideItem = if (spoofHotbar.value) mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() else null
+        val serverSideItem = if (spoofHotbar.value) mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
         return when (Items.END_CRYSTAL) {
-            mc.player.heldItemOffhand.getItem() -> EnumHand.OFF_HAND
-            mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
+            mc.player.heldItemOffhand.item -> EnumHand.OFF_HAND
+            mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
             serverSideItem -> EnumHand.MAIN_HAND
             else -> null
         }
@@ -396,7 +396,7 @@ object CrystalAura : Module() {
     private fun noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(mc.player) - selfDamage > noSuicideThreshold.value
 
     private fun isHoldingTool(): Boolean {
-        val item = mc.player.heldItemMainhand.getItem()
+        val item = mc.player.heldItemMainhand.item
         return item is ItemTool || item is ItemSword
     }
 
@@ -407,14 +407,14 @@ object CrystalAura : Module() {
                     || forcePlaceArmorDura.value > 0.0f && getMinArmorDura() <= forcePlaceArmorDura.value)
 
     private fun getMinArmorDura() =
-            (CombatManager.target?.let { target ->
-                target.armorInventoryList
-                        .filter { !it.isEmpty() && it.isItemStackDamageable }
-                        .maxBy { it.itemDamage }
-                        ?.let {
-                            (it.maxDamage - it.itemDamage) * 100 / it.maxDamage
-                        }
-            }) ?: 100
+        (CombatManager.target?.let { target ->
+            target.armorInventoryList
+                .filter { !it.isEmpty && it.isItemStackDamageable }
+                .maxByOrNull { it.itemDamage }
+                ?.let {
+                    (it.maxDamage - it.itemDamage) * 100 / it.maxDamage
+                }
+        }) ?: 100
 
     private fun countValidCrystal(): Int {
         var count = 0

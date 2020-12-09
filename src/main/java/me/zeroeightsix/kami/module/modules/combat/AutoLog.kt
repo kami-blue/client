@@ -61,7 +61,7 @@ object AutoLog : Module() {
     }
 
     private fun checkCrystals(): Boolean {
-        val maxSelfDamage = CombatManager.crystalMap.values.maxBy { it.second }?.second ?: 0.0f
+        val maxSelfDamage = CombatManager.crystalMap.values.maxByOrNull { it.second }?.second ?: 0.0f
         return CombatUtils.getHealthSmart(mc.player) - maxSelfDamage < health.value
     }
 
@@ -92,7 +92,7 @@ object AutoLog : Module() {
         val reasonText = getReason(reason, additionalInfo)
         val screen = getScreen() // do this before disconnecting
 
-        mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         mc.connection?.networkManager?.closeChannel(TextComponentString(""))
         mc.loadWorld(null as WorldClient?)
 

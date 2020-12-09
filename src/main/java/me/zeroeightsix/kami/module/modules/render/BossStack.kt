@@ -81,7 +81,7 @@ object BossStack : Module() {
             it.health / it.maxHealth
         } ?: return null
 
-        return list.minBy {
+        return list.minByOrNull {
             abs(it.percent - closestBossHealth)
         }
     }

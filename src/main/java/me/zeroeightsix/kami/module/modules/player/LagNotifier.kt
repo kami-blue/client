@@ -34,7 +34,7 @@ object LagNotifier : Module() {
     private val pauseTakeoff = setting("PauseElytraTakeoff", true)
     private val pauseBaritone = setting("PauseBaritone", true)
     private val feedback = setting("PauseFeedback", true, { pauseBaritone.value })
-    private val timeout = setting("Timeout", 2.0f, 0.0f..10.0f, 0.5f)
+    private val timeout = setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private var lastPacketTimer = TimerUtils.TickTimer()

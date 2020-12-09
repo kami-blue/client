@@ -13,15 +13,16 @@ import net.minecraft.client.gui.GuiGameOver
 import java.util.*
 
 @Module.Info(
-        name = "FakePlayer",
-        description = "Spawns a client sided fake player",
-        category = Module.Category.MISC
+    name = "FakePlayer",
+    description = "Spawns a client sided fake player",
+    category = Module.Category.MISC
 )
 object FakePlayer : Module() {
     private val copyInventory = setting("CopyInventory", false)
     val playerName = setting("PlayerName", "Player", { false })
 
     private var fakePlayer: EntityOtherPlayerMP? = null
+    private const val ENTITY_ID = -7170400
 
     init {
         listener<ConnectionEvent.Disconnect> {
@@ -38,6 +39,7 @@ object FakePlayer : Module() {
             disable()
             return
         }
+
         if (playerName.value == "Player") {
             MessageSendHelper.sendChatMessage("You can use &7'${Command.commandPrefix.value}fp <name>'&r to set a custom name")
         }
@@ -47,12 +49,15 @@ object FakePlayer : Module() {
             rotationYawHead = mc.player.rotationYawHead
             if (copyInventory.value) inventory.copyInventory(mc.player.inventory)
         }.also {
-            mc.world.addEntityToWorld(-911, it)
+            mc.world.addEntityToWorld(ENTITY_ID, it)
         }
     }
 
     override fun onDisable() {
-        if (mc.world == null || mc.player == null) return
-        fakePlayer?.setDead()
+        mc.addScheduledTask {
+            if (mc.world == null || mc.player == null) return@addScheduledTask
+            fakePlayer?.setDead()
+            mc.world?.removeEntityFromWorld(-911)
+        }
     }
 }

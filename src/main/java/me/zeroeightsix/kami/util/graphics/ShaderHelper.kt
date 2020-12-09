@@ -12,7 +12,7 @@ import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.client.shader.ShaderLinkHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_VENDOR
 
 class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) {
     private val mc = Wrapper.minecraft
@@ -28,7 +28,7 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
                 null
             }
 
-            isIntegratedGraphics() -> {
+            isIntegratedGraphics -> {
                 KamiMod.LOG.warn("Running on Intel Integrated Graphics!")
                 null
             }
@@ -72,13 +72,8 @@ class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) 
     fun getFrameBuffer(name: String) = frameBufferMap[name]
 
     companion object {
-        private var cachedIsIntegratedGraphics: Boolean? = null
-
-        fun isIntegratedGraphics() = cachedIsIntegratedGraphics ?: run {
-            GlStateManager.glGetString(GL11.GL_VENDOR).contains("Intel").apply {
-                cachedIsIntegratedGraphics = this
-                return this
-            }
+        val isIntegratedGraphics by lazy {
+            GlStateManager.glGetString(GL_VENDOR).contains("Intel")
         }
     }
 }

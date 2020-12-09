@@ -42,7 +42,7 @@ CHANGELOG="$("$_d"/scripts/changelog.sh "$OLD_COMMIT")" || exit $?
 VERSION="$("$_d"/scripts/version.sh "$1")" || exit $?
 VERSION_MAJOR="$("$_d"/scripts/version.sh "major")" || exit $?
 "$_d"/scripts/bumpVersion.sh "$1" || exit $?
-JAR_NAME="$("$_d"/scripts/buildNamed.sh)" || exit $?
+JAR_NAME="$("$_d"/scripts/buildJarSafe.sh)" || exit $?
 
 "$_d"/scripts/uploadRelease.sh "$1" "$HEAD" "$VERSION" "$JAR_NAME" "$CHANGELOG" || exit $?
 "$_d"/scripts/bumpWebsite.sh "$JAR_NAME" "$VERSION" "$VERSION_MAJOR" || exit $?
@@ -50,5 +50,14 @@ JAR_NAME="$("$_d"/scripts/buildNamed.sh)" || exit $?
 REPO="$KAMI_REPO_NIGHTLY"
 [ "$1" == "major" ] && REPO="$KAMI_REPO_MAJOR"
 
+# Send ping
+if [ -n "$KAMI_UPDATES_ROLE_ID" ]; then
+  curl -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"username": "", "content": "<@&'"$KAMI_UPDATES_ROLE_ID"'>"}' \
+    "$KAMI_WEBHOOK"
+fi
+
+# Send changelog embed
 curl -H "Content-Type: application/json" -X POST \
   -d '{"embeds": [{"title": "Download v'"$VERSION"'","color": 10195199,"description": "[**DOWNLOAD**](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/releases/download/'"$VERSION"'/'"$JAR_NAME"')\n\n**Changelog:** \n'"$CHANGELOG"'\n\nDiff: ['"$OLD_COMMIT"'...'"$HEAD"'](https://github.com/'"$KAMI_OWNER"'/'"$REPO"'/compare/'"$OLD_COMMIT"'...'"$HEAD"') "}]}' "$KAMI_WEBHOOK"

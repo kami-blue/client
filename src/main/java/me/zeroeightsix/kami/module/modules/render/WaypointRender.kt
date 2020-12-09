@@ -22,11 +22,12 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 @Module.Info(
-        name = "WaypointRender",
-        description = "Render saved waypoints",
-        category = Module.Category.RENDER
+    name = "WaypointRender",
+    description = "Render saved waypoints",
+    category = Module.Category.RENDER
 )
 object WaypointRender : Module() {
+
     private val page = setting("Page", Page.INFO_BOX)
 
     /* Page one */
@@ -61,9 +62,9 @@ object WaypointRender : Module() {
     }
 
     // This has to be sorted so the further ones doesn't overlaps the closer ones
-    private val waypointMap = TreeMap<BlockPos, TextComponent>(compareByDescending {
-        it.distanceSq(mc.player?.position
-                ?: BlockPos(0, -69420, 0))
+    private val waypointMap = TreeMap<Waypoint, TextComponent>(compareByDescending {
+        it.pos.distanceSq(mc.player?.position
+            ?: BlockPos(0, -69420, 0))
     })
     private var currentServer: String? = null
     private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -80,11 +81,11 @@ object WaypointRender : Module() {
             renderer.aTracer = if (tracer.value) aTracer.value else 0
             renderer.thickness = thickness.value
             GlStateUtils.depth(false)
-            for (pos in waypointMap.keys) {
-                val distance = sqrt(mc.player.getDistanceSq(pos))
+            for (waypoint in waypointMap.keys) {
+                val distance = sqrt(mc.player.getDistanceSq(waypoint.pos))
                 if (espRangeLimit.value && distance > espRange.value) continue
-                renderer.add(AxisAlignedBB(pos), color) /* Adds pos to ESPRenderer list */
-                drawVerticalLines(pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
+                renderer.add(AxisAlignedBB(waypoint.pos), color) /* Adds pos to ESPRenderer list */
+                drawVerticalLines(waypoint.pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */
             }
             GlStateUtils.depth(true)
             renderer.render(true)
@@ -93,7 +94,7 @@ object WaypointRender : Module() {
 
     private fun drawVerticalLines(pos: BlockPos, color: ColorHolder, a: Int) {
         val box = AxisAlignedBB(pos.x.toDouble(), 0.0, pos.z.toDouble(),
-                pos.x + 1.0, 256.0, pos.z + 1.0)
+            pos.x + 1.0, 256.0, pos.z + 1.0)
         KamiTessellator.begin(GL_LINES)
         KamiTessellator.drawOutline(box, color, a, GeometryMasks.Quad.ALL, thickness.value)
         KamiTessellator.render()
@@ -103,10 +104,10 @@ object WaypointRender : Module() {
         listener<RenderOverlayEvent> {
             if (waypointMap.isEmpty() || !showCoords.value && !showName.value && !showDate.value && !showDist.value) return@listener
             GlStateUtils.rescaleActual()
-            for ((pos, textComponent) in waypointMap) {
-                val distance = sqrt(mc.player.getDistanceSqToCenter(pos))
+            for ((waypoint, textComponent) in waypointMap) {
+                val distance = sqrt(mc.player.getDistanceSqToCenter(waypoint.pos))
                 if (distance > infoBoxRange.value) continue
-                drawText(pos, textComponent, distance.roundToInt())
+                drawText(waypoint.pos, textComponent, distance.roundToInt())
             }
             GlStateUtils.rescaleMc()
         }
@@ -144,7 +145,6 @@ object WaypointRender : Module() {
     init {
         listener<SafeTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
-                if (WaypointManager.genDimension() != prevDimension) waypointMap.clear()
                 updateList()
             }
         }
@@ -153,12 +153,10 @@ object WaypointRender : Module() {
             // This could be called from another thread so we have to synchronize the map
             synchronized(lockObject) {
                 when (it.type) {
-                    WaypointUpdateEvent.Type.ADD -> it.waypoint?.let { updateTextComponent(it) }
-                    WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(it.waypoint?.pos)
+                    WaypointUpdateEvent.Type.ADD -> updateTextComponent(it.waypoint)
+                    WaypointUpdateEvent.Type.REMOVE -> waypointMap.remove(it.waypoint)
                     WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
-                    WaypointUpdateEvent.Type.RELOAD -> {
-                        waypointMap.clear(); updateList()
-                    }
+                    WaypointUpdateEvent.Type.RELOAD -> updateList()
                     else -> {
                     }
                 }
@@ -174,20 +172,23 @@ object WaypointRender : Module() {
         timer.reset()
         prevDimension = WaypointManager.genDimension()
         if (currentServer == null) {
-            waypointMap.clear()
             currentServer = WaypointManager.genServer()
         }
 
-        val cacheList = WaypointManager.waypoints.filter { (it.server == null || it.server == currentServer) && (dimension.value == Dimension.ANY || it.dimension == prevDimension) }
-
-        waypointMap.keys.removeIf { pos -> cacheList.firstOrNull { it.pos == pos } != null }
+        val cacheList = WaypointManager.waypoints.filter {
+            (it.server == null || it.server == currentServer)
+                && (dimension.value == Dimension.ANY || it.dimension == prevDimension)
+        }
+        waypointMap.clear()
 
         for (waypoint in cacheList) updateTextComponent(waypoint)
     }
 
-    private fun updateTextComponent(waypoint: Waypoint) {
+    private fun updateTextComponent(waypoint: Waypoint?) {
+        if (waypoint == null) return
+
         // Don't wanna update this continuously
-        waypointMap.computeIfAbsent(waypoint.pos) {
+        waypointMap.computeIfAbsent(waypoint) {
             TextComponent().apply {
                 if (showName.value) addLine(waypoint.name)
                 if (showDate.value) addLine(waypoint.date)
@@ -198,14 +199,13 @@ object WaypointRender : Module() {
 
     init {
         with(
-                { synchronized(lockObject) { waypointMap.clear(); updateList() } } // This could be called from another thread so we have to synchronize the map
+            { synchronized(lockObject) { updateList() } } // This could be called from another thread so we have to synchronize the map
         ) {
             showName.listeners.add(this)
             showDate.listeners.add(this)
             showCoords.listeners.add(this)
             showDist.listeners.add(this)
         }
-
 
         dimension.listeners.add {
             synchronized(lockObject) {

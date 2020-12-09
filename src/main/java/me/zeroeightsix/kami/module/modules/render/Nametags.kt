@@ -184,9 +184,9 @@ object Nametags : Module() {
             itemList.add(itemStack to getEnchantmentText(itemStack))
         }
 
-        if (itemList.isEmpty() || itemList.count { !it.first.isEmpty() } == 0) return
+        if (itemList.isEmpty() || itemList.count { !it.first.isEmpty } == 0) return
         val halfHeight = textComponent.getHeight(2, true, customFont.value) / 2.0 + margins.value + 2.0
-        val halfWidth = (itemList.count { !it.first.isEmpty() } * 28) / 2f
+        val halfWidth = (itemList.count { !it.first.isEmpty } * 28) / 2f
 
         glPushMatrix()
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f) // Translate to nametag pos
@@ -200,8 +200,11 @@ object Nametags : Module() {
         if (itemFrame.value) {
             glTranslatef(0f, -margins.value, 0f)
             val duraHeight = if (drawDura) FontRenderAdapter.getFontHeight(customFont = customFont.value) + 2f else 0f
-            val enchantmentHeight = if (enchantment.value) (itemList.map { it.second.getHeight(2, customFont = customFont.value) }.max()
-                    ?: 0f) + 4f else 0f
+            val enchantmentHeight = if (enchantment.value) {
+                (itemList.map { it.second.getHeight(2, customFont = customFont.value) }.maxOrNull() ?: 0f) + 4f
+            } else {
+                0f
+            }
             val height = 16 + duraHeight + enchantmentHeight * 0.6f
             val posBegin = Vec2d(-halfWidth - margins.value.toDouble(), -height - margins.value.toDouble())
             val posEnd = Vec2d(halfWidth + margins.value.toDouble(), margins.value.toDouble())
@@ -212,7 +215,7 @@ object Nametags : Module() {
         if (drawDura) glTranslatef(0f, -FontRenderAdapter.getFontHeight(customFont = customFont.value) - 2f, 0f)
 
         for ((itemStack, enchantmentText) in itemList) {
-            if (itemStack.isEmpty()) continue
+            if (itemStack.isEmpty) continue
             drawItem(itemStack, enchantmentText, drawDura)
         }
         glColor4f(1f, 1f, 1f, 1f)

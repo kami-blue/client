@@ -21,7 +21,6 @@ sed -i "s/modVersion=.*/modVersion=$VERSION_DEV/" gradle.properties
 sed -i "s/VERSION = \".*\";/VERSION = \"$VERSION_DEV\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
 sed -i "s/VERSION_SIMPLE = \".*\";/VERSION_SIMPLE = \"$VERSION_DEV\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
 sed -i "s/VERSION_MAJOR = \".*\";/VERSION_MAJOR = \"$VERSION\";/" src/main/java/me/zeroeightsix/kami/KamiMod.java
-sed -i "s/\"version\": \".*\",/\"version\": \"$VERSION_DEV\",/" src/main/resources/mcmod.info
 git commit -am "[bump] Release Major $VERSION"
 
 echo "[bumpMajor] Created commit for version '$VERSION', remember to push!"

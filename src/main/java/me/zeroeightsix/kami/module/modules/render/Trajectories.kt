@@ -147,7 +147,7 @@ object Trajectories : Module() {
                     rayTraceResult.entityHit = entity
                     resultList.add(rayTraceResult)
                 }
-                collision = resultList.minBy { it.hitVec.distanceTo(position) }
+                collision = resultList.minByOrNull { it.hitVec.distanceTo(position) }
             }
 
             collision?.let {
@@ -190,7 +190,7 @@ object Trajectories : Module() {
         }
     }
 
-    private fun getThrowingType(itemStack: ItemStack?): ThrowingType? = when (itemStack?.getItem()) {
+    private fun getThrowingType(itemStack: ItemStack?): ThrowingType? = when (itemStack?.item) {
         Items.BOW -> ThrowingType.BOW
         Items.EXPERIENCE_BOTTLE -> ThrowingType.EXPERIENCE
         Items.SPLASH_POTION, Items.LINGERING_POTION -> ThrowingType.POTION

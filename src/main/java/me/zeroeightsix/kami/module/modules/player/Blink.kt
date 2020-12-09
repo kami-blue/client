@@ -24,6 +24,7 @@ object Blink : Module() {
     private val autoReset = setting("AutoReset", true)
     private val resetThreshold = setting("ResetThreshold", 20, 1..100, 5, { autoReset.value })
 
+    private const val ENTITY_ID = -114514
     private val packets = ArrayDeque<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
@@ -45,8 +46,10 @@ object Blink : Module() {
         }
 
         listener<ConnectionEvent.Disconnect> {
-            packets.clear()
-            clonedPlayer = null
+            mc.addScheduledTask {
+                packets.clear()
+                clonedPlayer = null
+            }
         }
     }
 
@@ -66,22 +69,29 @@ object Blink : Module() {
             inventory.copyInventory(mc.player.inventory)
             noClip = true
         }.also {
-            mc.world.addEntityToWorld(-114514, it)
+            mc.world.addEntityToWorld(ENTITY_ID, it)
         }
     }
 
     private fun end() {
-        if (mc.player == null) return
-        if (cancelPacket.value || mc.connection == null) {
-            packets.peek()?.let { mc.player.setPosition(it.x, it.y, it.z) }
-            packets.clear()
-        } else {
-            sending = true
-            while (packets.isNotEmpty()) mc.connection!!.sendPacket(packets.poll())
-            sending = false
+        mc.addScheduledTask {
+            val player = mc.player
+            val connection = mc.connection
+            if (player == null || connection == null) return@addScheduledTask
+
+            if (cancelPacket.value || mc.connection == null) {
+                packets.peek()?.let { player.setPosition(it.x, it.y, it.z) }
+                packets.clear()
+            } else {
+                sending = true
+                while (packets.isNotEmpty()) connection.sendPacket(packets.poll())
+                sending = false
+            }
+
+            clonedPlayer?.setDead()
+            mc.world?.removeEntityFromWorld(ENTITY_ID)
+            clonedPlayer = null
         }
-        clonedPlayer?.setDead()
-        clonedPlayer = null
     }
 
     override fun getHudInfo(): String {

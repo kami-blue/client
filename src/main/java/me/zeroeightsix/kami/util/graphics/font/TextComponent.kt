@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
 import org.lwjgl.opengl.GL11.*
@@ -10,7 +9,6 @@ import kotlin.math.max
  * Renders multi line text easily
  */
 class TextComponent(val separator: String = " ") {
-    private val fontRenderer = Wrapper.minecraft.fontRenderer
     private val textLines = ArrayList<TextLine?>()
     var currentLine = 0
         set(value) {
@@ -31,7 +29,7 @@ class TextComponent(val separator: String = " ") {
     constructor(string: String, separator: String = " ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
         val lines = string.lines()
         for (line in lines) {
-            for (splitText in line.split(delimiters = *delimiters)) {
+            for (splitText in line.split(delimiters = delimiters)) {
                 add(splitText)
             }
             if (line != lines.last()) currentLine++
@@ -114,7 +112,7 @@ class TextComponent(val separator: String = " ") {
 
     fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont) = textLines.map {
         it?.getWidth(customFont) ?: 0f
-    }.max() ?: 0f
+    }.maxOrNull() ?: 0f
 
     fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = true, customFont: Boolean = FontRenderAdapter.useCustomFont) =
             FontRenderAdapter.getFontHeight(customFont = customFont) * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)

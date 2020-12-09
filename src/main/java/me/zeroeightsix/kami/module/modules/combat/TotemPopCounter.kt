@@ -9,8 +9,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColorCode
+import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -31,8 +30,8 @@ object TotemPopCounter : Module() {
     private val resetOnDeath = setting("ResetOnDeath", true)
     private val announceSetting = setting("Announce", Announce.CLIENT)
     private val thanksTo = setting("ThanksTo", false)
-    private val colorName = setting("ColorName", ColorCode.DARK_PURPLE)
-    private val colorNumber = setting("ColorNumber", ColorCode.LIGHT_PURPLE)
+    private val colorName = setting("ColorName", EnumTextColor.DARK_PURPLE)
+    private val colorNumber = setting("ColorNumber", EnumTextColor.LIGHT_PURPLE)
 
     private enum class Announce {
         CLIENT, EVERYONE
@@ -94,7 +93,7 @@ object TotemPopCounter : Module() {
             FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
             else -> player.name
         }
-        return setToText(colorName.value) + name + TextFormatting.RESET
+        return colorName.value.textFormatting.toString() + name + TextFormatting.RESET
     }
 
     private val isPublic: Boolean
@@ -106,7 +105,7 @@ object TotemPopCounter : Module() {
 
     private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
 
-    private fun formatNumber(message: Int) = setToText(colorNumber.value) + message + TextFormatting.RESET
+    private fun formatNumber(message: Int) = colorNumber.value.textFormatting.toString() + message + TextFormatting.RESET
 
     private fun sendMessage(message: String) {
         when (announceSetting.value) {
@@ -118,6 +117,4 @@ object TotemPopCounter : Module() {
             }
         }
     }
-
-    private fun setToText(colourCode: ColorCode) = ColorTextFormatting.toTextMap[colourCode]!!.toString()
 }

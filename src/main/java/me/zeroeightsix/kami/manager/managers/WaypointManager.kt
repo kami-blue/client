@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.CoordinateConverter
+import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.util.math.BlockPos
 import java.io.*
@@ -181,7 +182,7 @@ object WaypointManager : Manager {
 
         private fun genID(): Int = waypoints.lastOrNull()?.id?.plus(1) ?: 0
 
-        override fun toString() = currentPos().let { "${it.x}, ${it.y}, ${it.z}" }
+        override fun toString() = currentPos().asString()
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

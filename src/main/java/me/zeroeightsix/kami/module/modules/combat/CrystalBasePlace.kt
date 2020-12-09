@@ -107,7 +107,7 @@ object CrystalBasePlace : Module() {
 
     private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
-    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.getItem()) == Blocks.OBSIDIAN
+    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.item) == Blocks.OBSIDIAN
 
     private fun getObby(): Int? {
         val slots = InventoryUtils.getSlotsHotbar(49)
@@ -142,9 +142,9 @@ object CrystalBasePlace : Module() {
         val eyePos = mc.player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
-                .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
-                .map { it.value.first }
-                .max() ?: 0.0f
+            .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
+            .map { it.value.first }
+            .maxOrNull() ?: 0.0f
 
         for (pos in posList) {
             // Placeable check

@@ -74,7 +74,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
         // Loads the basic 256 characters on init
         fontHeight = loadGlyphChunk(0)?.let { chunk ->
             chunkMap[0] = chunk
-            chunk.charInfoArray.maxBy { it.height }?.height?.toFloat() ?: 64.0f
+            chunk.charInfoArray.maxByOrNull { it.height }?.height?.toFloat() ?: 64.0f
         } ?: 64.0f
     }
 
@@ -179,7 +179,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
     private fun createTexture(bufferedImage: BufferedImage): DynamicTexture? {
         return try {
             val dynamicTexture = DynamicTexture(bufferedImage)
-            dynamicTexture.loadTexture(Wrapper.minecraft.getResourceManager())
+            dynamicTexture.loadTexture(Wrapper.minecraft.resourceManager)
             val textureId = dynamicTexture.glTextureId
 
             // Tells Gl that our texture isn't a repeating texture (edges are not connecting to each others)

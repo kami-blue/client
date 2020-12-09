@@ -1,5 +1,5 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/kami-blue/client/badge)](https://www.codefactor.io/repository/github/kami-blue/client)
-[![Build Status features-master](https://img.shields.io/travis/com/kami-blue/client/master?logo=gradle&label=build)](https://travis-ci.com/kami-blue/client)
+[![build](https://github.com/kami-blue/client/workflows/gradle_build/badge.svg)](https://github.com/kami-blue/client/actions)
 [![Discord Mine](https://img.shields.io/discord/573954110454366214?label=chat&logo=discord&logoColor=white)](https://discord.gg/KfpqwZB)
 [![HitCount](http://hits.dwyl.com/kami-blue/client.svg)](http://hits.dwyl.com/kami-blue/client)
 
@@ -12,7 +12,7 @@ Please consider donating to help continue this project and get a unique cape in 
 
 ## Looking for maintainers. 
 
-Please check [l1ving's](https://github.com/l1ving) profile for contact methods. 
+Join the [Discord](https://kamiblue.org/discord) to contact a Council member. Check [l1ving's](https://github.com/l1ving) profile for alternate non-Discord contact methods. 
 
 Due to this project rapidly expanding we're in need of Kotlin maintainers who can review pull requests and preferably have experience working with either Minecraft / Forge or GL before.
 
@@ -26,7 +26,7 @@ Please go to [https://kamiblue.org](https://kamiblue.org) for documentation and 
 
 [zeroeightysix](https://github.com/zeroeightysix) for the original [KAMI](https://github.com/zeroeightysix/KAMI)
 
-[Raion Client](https://raionclient.com/) for `;teleport` and `;vanish` commands
+[Raion Client](https://raionclient.com/) for the `;teleport` and `;vanish` commands
 
 [ronmamo](https://github.com/ronmamo/) for [Reflections](https://github.com/ronmamo/reflections)
 

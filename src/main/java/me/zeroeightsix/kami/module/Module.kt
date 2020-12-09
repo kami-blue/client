@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 
@@ -50,11 +51,13 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    val fullSettingList get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.name).getSettings()
-    val settingList get() = fullSettingList.filter { it != bind && it != enabled && it != visible }
+    val fullSettingList: List<Setting<*>> get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.name).getSettings()
+    val settingList: List<Setting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
+
     val bind = setting("Bind", { !annotation.alwaysEnabled })
     private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
     private val visible = setting("Visible", annotation.showOnArray)
+    private val default = setting("Default", false, { settingList.isNotEmpty() })
     /* End of settings */
 
     /* Properties */
@@ -126,6 +129,16 @@ open class Module {
     protected open fun onEnable() {}
     protected open fun onDisable() {}
     protected open fun onToggle() {}
+
+    init {
+        default.valueListeners.add { _, it ->
+            if (it) {
+                settingList.forEach { it.resetValue() }
+                default.value = false
+                MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
+            }
+        }
+    }
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()

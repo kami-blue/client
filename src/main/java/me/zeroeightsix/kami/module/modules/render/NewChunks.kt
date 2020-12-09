@@ -39,17 +39,21 @@ object NewChunks : Module() {
     private val saveInRegionFolder = setting("InRegion", false, { saveNewChunks.value })
     private val alsoSaveNormalCoords = setting("SaveNormalCoords", false, { saveNewChunks.value })
     private val closeFile = setting("CloseFile", false, { saveNewChunks.value })
-    private val yOffset = setting("YOffset", 0, -256..256, 4)
-    private val customColor = setting("CustomColor", false)
-    private val red = setting("Red", 255, 0..255, 1, { customColor.value })
-    private val green = setting("Green", 255, 0..255, 1, { customColor.value })
-    private val blue = setting("Blue", 255, 0..255, 1, { customColor.value })
+    private val renderMode = setting("RenderMode", RenderMode.BOTH)
+    private val yOffset = setting("YOffset", 0, -256..256, 4, { isWorldMode })
+    private val customColor = setting("CustomColor", false, { isWorldMode })
+    private val red = setting("Red", 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val green = setting("Green", 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val blue = setting("Blue", 255, 0..255, 1, { customColor.value && isWorldMode })
     private val range = setting("RenderRange", 256, 64..1024, 64)
+    val radarScale = setting("RadarScale", 2.0,1.0..10.0, 0.1, { isRadarMode })
+    private val removeMode = setting("RemoveMode", RemoveMode.MAX_NUM)
+    private val maxNum = setting("MaxNum", 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
-    private val chunks = ArrayList<Chunk>()
+    val chunks = HashSet<Chunk>()
 
     override fun onDisable() {
         logWriterClose()
@@ -70,6 +74,7 @@ object NewChunks : Module() {
         }
 
         listener<RenderWorldEvent> {
+            if (renderMode.value == RenderMode.RADAR) return@listener
             val y = yOffset.value.toDouble() + if (relative.value) getInterpolatedPos(mc.player, KamiTessellator.pTicks()).y else 0.0
             glLineWidth(2.0f)
             GlStateUtils.depth(false)
@@ -91,10 +96,22 @@ object NewChunks : Module() {
             if (it.packet.isFullChunk) return@listener
             chunks.add(it.chunk)
             if (saveNewChunks.value) saveNewChunk(it.chunk)
+            if (removeMode.value == RemoveMode.MAX_NUM && chunks.size > maxNum.value) {
+                var removeChunk = chunks.first()
+                var maxDist = Double.MIN_VALUE
+                chunks.forEach { c ->
+                    if (c.pos.getDistanceSq(mc.player) > maxDist) {
+                        maxDist = c.pos.getDistanceSq(mc.player)
+                        removeChunk = c
+                    }
+                }
+                chunks.remove(removeChunk)
+            }
         }
 
         listener<net.minecraftforge.event.world.ChunkEvent.Unload> {
-            chunks.remove(it.chunk)
+            if (removeMode.value == RemoveMode.UNLOAD)
+                chunks.remove(it.chunk)
         }
     }
 
@@ -153,7 +170,7 @@ object NewChunks : Module() {
             // If there is an integrated server running (Aka Singleplayer) then do magic to find the world save file
             if (mc.isSingleplayer) {
                 try {
-                    file = Objects.requireNonNull(mc.getIntegratedServer())!!.getWorld(dimension).chunkSaveLocation
+                    file = mc.integratedServer?.getWorld(dimension)?.chunkSaveLocation
                 } catch (e: Exception) {
                     e.printStackTrace()
                     KamiMod.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
@@ -200,7 +217,7 @@ object NewChunks : Module() {
         var folderName: String
         when (saveOption.value) {
             SaveOption.LITE_LOADER_WDL -> {
-                folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverName
+                folderName = mc.currentServerData?.serverName ?: "Offline"
                 rV = File(rV, "saves")
                 rV = File(rV, folderName)
             }
@@ -217,7 +234,7 @@ object NewChunks : Module() {
                 }
             }
             else -> {
-                folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverName + "-" + mc.getCurrentServerData()!!.serverIP
+                folderName = mc.currentServerData?.serverName + "-" + mc.currentServerData?.serverIP
                 if (SystemUtils.IS_OS_WINDOWS) {
                     folderName = folderName.replace(":", "_")
                 }
@@ -231,7 +248,7 @@ object NewChunks : Module() {
     // if there is no port then we have to manually include the standard port..
     private val nHackInetName: String
         get() {
-            var folderName = Objects.requireNonNull(mc.getCurrentServerData())!!.serverIP
+            var folderName = mc.currentServerData?.serverIP ?: "Offline"
             if (SystemUtils.IS_OS_WINDOWS) {
                 folderName = folderName.replace(":", "_")
             }
@@ -259,6 +276,18 @@ object NewChunks : Module() {
         EXTRA_FOLDER, LITE_LOADER_WDL, NHACK_WDL
     }
 
+    @Suppress("unused")
+    private enum class RemoveMode {
+        UNLOAD, MAX_NUM, NEVER
+    }
+
+    enum class RenderMode {
+        WORLD, RADAR, BOTH
+    }
+
+    val isRadarMode get() = renderMode.value == RenderMode.BOTH || renderMode.value == RenderMode.RADAR
+    private val isWorldMode get() = renderMode.value == RenderMode.BOTH || renderMode.value == RenderMode.WORLD
+
     private class LastSetting {
         var lastSaveOption: SaveOption? = null
         var lastInRegion = false
@@ -280,7 +309,7 @@ object NewChunks : Module() {
                     || saveInRegionFolder.value != lastInRegion
                     || alsoSaveNormalCoords.value != lastSaveNormal
                     || dimension != mc.player.dimension
-                    || mc.getCurrentServerData()?.serverIP != ip
+                    || mc.currentServerData?.serverIP != ip
         }
 
         private fun update() {
@@ -288,7 +317,7 @@ object NewChunks : Module() {
             lastInRegion = saveInRegionFolder.value
             lastSaveNormal = alsoSaveNormalCoords.value
             dimension = mc.player.dimension
-            ip = Objects.requireNonNull(mc.getCurrentServerData())!!.serverIP
+            ip = mc.currentServerData?.serverIP
         }
     }
 
