@@ -72,8 +72,8 @@ object BookCrash : Module() {
             }
 
             val tag = NBTTagCompound().apply {
-                setString("author", "Bella")
-                setString("title", "\n Bella Nuzzles You \n")
+                setString("author", "KAMI Blue")
+                setString("title", "\n Minecraft pozzed \n")
                 setTag("pages", list)
             }
             val bookObj = ItemStack(Items.WRITABLE_BOOK).apply {
