@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.setting.GuiConfig
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
-import org.kamiblue.commons.utils.DisplayEnum
+import org.kamiblue.commons.interfaces.DisplayEnum
 
 open class HudElement(
     name: String,

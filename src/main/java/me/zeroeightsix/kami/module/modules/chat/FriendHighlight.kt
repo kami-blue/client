@@ -20,7 +20,7 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 )
 object FriendHighlight : Module() {
     private val bold = setting("Bold", true)
-    private val colour = setting("Color", EnumTextColor.GRAY)
+    private val color = setting("Color", EnumTextColor.GRAY)
     private val sound = setting("Sound", true)
 
     private val regex1 = "<(.*?)>".toRegex()
