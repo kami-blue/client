@@ -145,7 +145,7 @@ dependencies {
 
     // Add them back to compileOnly (provided)
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
-    compileOnly 'org.jetbrains:annotations:13.0'
+    compileOnly 'org.jetbrains:annotations:20.1.0'
 
     // This Baritone will NOT be included in the jar
     implementation 'com.github.cabaletta:baritone:1.2.14'
