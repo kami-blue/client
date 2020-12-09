@@ -144,6 +144,11 @@ dependencies {
         exclude module: 'annotations'
     }
 
+    jarLibs("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
     // Add them back to compileOnly (provided)
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
     compileOnly 'org.jetbrains:annotations:20.1.0'
