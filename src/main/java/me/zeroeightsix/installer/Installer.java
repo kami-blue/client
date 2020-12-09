@@ -18,6 +18,7 @@ import java.util.Random;
  * Created by humboldt123 on 14/07/20
  * Rewritten almost entirely by l1ving on 14/07/20
  * Added more background images by humboldt123 on 15/08/20
+ * Rewritte for NECRON by TopaisL
  */
 public class Installer extends JPanel {
     String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(NecronClient.DOWNLOADS_API).replace("\n", "").split("\"");

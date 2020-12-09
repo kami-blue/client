@@ -26,7 +26,7 @@ import java.util.concurrent.Future
         name = "Surround",
         category = Module.Category.COMBAT,
         description = "Surrounds you with obsidian to take less damage",
-        modulePriority = 79
+        modulePriority = 90
 )
 object Surround : Module() {
     private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
