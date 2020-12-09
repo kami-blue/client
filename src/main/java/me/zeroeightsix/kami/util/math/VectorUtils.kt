@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.math;
+package me.zeroeightsix.kami.util.math
 
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockAir
@@ -99,13 +99,13 @@ object VectorUtils {
      */
     fun getHighestTerrainPos(pos: BlockPos): BlockPos {
         for (i in pos.y downTo 0) {
-            val block = Wrapper.world!!.getBlockState(BlockPos(pos.getX(), i, pos.getZ())).block
-            val replaceable = Wrapper.world!!.getBlockState(BlockPos(pos.getX(), i, pos.getZ())).material.isReplaceable
+            val block = Wrapper.world!!.getBlockState(BlockPos(pos.x, i, pos.z)).block
+            val replaceable = Wrapper.world!!.getBlockState(BlockPos(pos.x, i, pos.z)).material.isReplaceable
             if (block !is BlockAir && !replaceable) {
-                return BlockPos(pos.getX(), i, pos.getZ())
+                return BlockPos(pos.x, i, pos.z)
             }
         }
-        return BlockPos(pos.getX(), 0, pos.getZ())
+        return BlockPos(pos.x, 0, pos.z)
     }
 
     private fun getBlockPos(minX: Int, maxX: Int, minY: Int, maxY: Int, minZ: Int, maxZ: Int): List<BlockPos> {

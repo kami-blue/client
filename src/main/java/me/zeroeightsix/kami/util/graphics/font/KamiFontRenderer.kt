@@ -79,11 +79,11 @@ object KamiFontRenderer {
 
     /** All for the KAMI Blue kanji */
     private val fallbackFonts = arrayOf(
-            "Noto Sans JP", "Noto Sans CJK JP", "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans CJK SC", "Noto Sans CJK TC", // Noto Sans
-            "Source Han Sans", "Source Han Sans HC", "Source Han Sans SC", "Source Han Sans TC", "Source Han Sans K", // Source Sans
-            "MS Gothic", "Meiryo", "Yu Gothic", // For Windows, Windows on top!
-            "Hiragino Sans GB W3", "Hiragino Kaku Gothic Pro W3", "Hiragino Kaku Gothic ProN W3", "Osaka", // For stupid Mac OSX
-            "TakaoPGothic", "IPAPGothic" // For cringy Linux
+        "Noto Sans JP", "Noto Sans CJK JP", "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans CJK SC", "Noto Sans CJK TC", // Noto Sans
+        "Source Han Sans", "Source Han Sans HC", "Source Han Sans SC", "Source Han Sans TC", "Source Han Sans K", // Source Sans
+        "MS Gothic", "Meiryo", "Yu Gothic", // For Windows, Windows on top!
+        "Hiragino Sans GB W3", "Hiragino Kaku Gothic Pro W3", "Hiragino Kaku Gothic ProN W3", "Osaka", // For stupid Mac OSX
+        "TakaoPGothic", "IPAPGothic" // For cringy Linux
     )
 
     init {

@@ -8,10 +8,10 @@ import org.lwjgl.input.Keyboard
  * Updated by Xiaro on 08/18/20
  */
 class Bind(
-        var isCtrl: Boolean,
-        var isAlt: Boolean,
-        var isShift: Boolean,
-        var key: Int
+    var isCtrl: Boolean,
+    var isAlt: Boolean,
+    var isShift: Boolean,
+    var key: Int
 ) {
     val isEmpty: Boolean get() = !isCtrl && !isShift && !isAlt && key < 0
 

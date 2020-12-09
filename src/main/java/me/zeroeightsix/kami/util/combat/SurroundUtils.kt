@@ -20,19 +20,19 @@ object SurroundUtils {
 
     @JvmStatic
     val surroundOffset = arrayOf(
-            BlockPos(0, -1, 0), // down
-            BlockPos(0, 0, -1), // north
-            BlockPos(1, 0, 0),  // east
-            BlockPos(0, 0, 1),  // south
-            BlockPos(-1, 0, 0)  // west
+        BlockPos(0, -1, 0), // down
+        BlockPos(0, 0, -1), // north
+        BlockPos(1, 0, 0),  // east
+        BlockPos(0, 0, 1),  // south
+        BlockPos(-1, 0, 0)  // west
     )
 
     @JvmStatic
     val surroundOffsetNoFloor = arrayOf(
-            BlockPos(0, 0, -1), // north
-            BlockPos(1, 0, 0),  // east
-            BlockPos(0, 0, 1),  // south
-            BlockPos(-1, 0, 0)  // west
+        BlockPos(0, 0, -1), // north
+        BlockPos(1, 0, 0),  // east
+        BlockPos(0, 0, 1),  // south
+        BlockPos(-1, 0, 0)  // west
     )
 
     @JvmStatic

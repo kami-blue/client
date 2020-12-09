@@ -15,7 +15,7 @@ class Vec2d(var x: Double = 0.0, var y: Double = 0.0) {
     constructor(vec2f: Vec2f) : this(vec2f.x, vec2f.y)
 
     fun toRadians(): Vec2d {
-        return Vec2d(this.x / 180.0 * Math.PI, this.y  / 180.0 * Math.PI)
+        return Vec2d(this.x / 180.0 * Math.PI, this.y / 180.0 * Math.PI)
     }
 
     fun length(): Double {

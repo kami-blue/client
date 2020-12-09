@@ -74,7 +74,7 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
 
         for ((index, chunk) in command.syntaxChunks.withIndex()) {
             if (index < args.size - 2) continue
-            val chunkValue =  if (index == args.size - 2) args[index + 1] else null
+            val chunkValue = if (index == args.size - 2) args[index + 1] else null
             val result = chunk.getChunk(command.syntaxChunks, chunk, args, chunkValue)
             val space = if (result.isEmpty()) "" else " "
 

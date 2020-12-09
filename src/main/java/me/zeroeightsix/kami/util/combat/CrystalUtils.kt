@@ -41,8 +41,8 @@ object CrystalUtils {
     fun canPlace(pos: BlockPos, entity: EntityLivingBase? = null): Boolean {
         val placeBB = getCrystalPlacingBB(pos.up())
         return canPlaceOn(pos)
-                && (entity == null || !placeBB.intersects(entity.entityBoundingBox))
-                && mc.world?.checkBlockCollision(placeBB) == false
+            && (entity == null || !placeBB.intersects(entity.entityBoundingBox))
+            && mc.world?.checkBlockCollision(placeBB) == false
     }
 
     /** Checks if the block is valid for placing crystal */
@@ -66,10 +66,10 @@ object CrystalUtils {
 
     /* Damage calculation */
     fun calcDamage(crystal: EntityEnderCrystal, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox) =
-            calcDamage(crystal.positionVector, entity, entityPos, entityBB)
+        calcDamage(crystal.positionVector, entity, entityPos, entityBB)
 
     fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox) =
-            calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
+        calcDamage(Vec3d(pos).add(0.5, 1.0, 0.5), entity, entityPos, entityBB)
 
     fun calcDamage(pos: Vec3d, entity: EntityLivingBase, entityPos: Vec3d? = entity.positionVector, entityBB: AxisAlignedBB? = entity.entityBoundingBox): Float {
         // Return 0 directly if entity is a player and in creative mode
@@ -90,15 +90,15 @@ object CrystalUtils {
 
     private fun calcRawDamage(pos: Vec3d, entityPos: Vec3d, entityBB: AxisAlignedBB): Float {
         val distance = pos.distanceTo(entityPos)
-        val v = (1.0 - (distance / 12.0)) * (mc.world?.getBlockDensity(pos, entityBB)?: return 0.0f)
+        val v = (1.0 - (distance / 12.0)) * (mc.world?.getBlockDensity(pos, entityBB) ?: return 0.0f)
         return ((v * v + v) / 2.0 * 84.0 + 1.0).toFloat()
     }
 
     private fun getDamageSource(damagePos: Vec3d) =
-            mc.world?.let { world ->
-                mc.player?.let {
-                    DamageSource.causeExplosionDamage(Explosion(world, it, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
-                }
+        mc.world?.let { world ->
+            mc.player?.let {
+                DamageSource.causeExplosionDamage(Explosion(world, it, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
             }
+        }
     /* End of damage calculation */
 }

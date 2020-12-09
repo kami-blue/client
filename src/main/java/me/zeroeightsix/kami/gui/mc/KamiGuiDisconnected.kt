@@ -21,7 +21,7 @@ class KamiGuiDisconnected(private val reason: Array<String>, private val screen:
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
         drawCenteredString(fontRenderer, "[AutoLog] Logged because:", width / 2, 80, 0x9B90FF)
-        for ((index , reason) in reason.withIndex()) {
+        for ((index, reason) in reason.withIndex()) {
             drawCenteredString(fontRenderer, reason, width / 2, 94 + (14 * index), 0xFFFFFF)
         }
 

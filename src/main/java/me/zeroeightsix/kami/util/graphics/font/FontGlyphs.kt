@@ -222,56 +222,56 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
     class CharInfoBuilder(val posX: Int, val posY: Int, val width: Int, val height: Int) {
         fun build(textureHeight: Double): CharInfo {
             return CharInfo(
-                    posX.toDouble(),
-                    posY.toDouble(),
-                    width.toDouble(),
-                    height.toDouble(),
-                    posX / TEXTURE_WIDTH_DOUBLE,
-                    posY / textureHeight,
-                    (posX + width) / TEXTURE_WIDTH_DOUBLE,
-                    (posY + height) / textureHeight
+                posX.toDouble(),
+                posY.toDouble(),
+                width.toDouble(),
+                height.toDouble(),
+                posX / TEXTURE_WIDTH_DOUBLE,
+                posY / textureHeight,
+                (posX + width) / TEXTURE_WIDTH_DOUBLE,
+                (posY + height) / textureHeight
             )
         }
     }
 
     data class CharInfo(
-            /** Character's stored x position  */
-            val posX1: Double,
+        /** Character's stored x position  */
+        val posX1: Double,
 
-            /** Character's stored y position  */
-            val posY1: Double,
+        /** Character's stored y position  */
+        val posY1: Double,
 
-            /** Character's width  */
-            val width: Double,
+        /** Character's width  */
+        val width: Double,
 
-            /** Character's height  */
-            val height: Double,
+        /** Character's height  */
+        val height: Double,
 
-            /** Upper left u */
-            val u1: Double,
+        /** Upper left u */
+        val u1: Double,
 
-            /** Upper left v */
-            val v1: Double,
+        /** Upper left v */
+        val v1: Double,
 
-            /** Lower right u */
-            val u2: Double,
+        /** Lower right u */
+        val u2: Double,
 
-            /** Lower right v */
-            val v2: Double
+        /** Lower right v */
+        val v2: Double
     )
 
     data class GlyphChunk(
-            /** Id of this chunk */
-            val chunk: Int,
+        /** Id of this chunk */
+        val chunk: Int,
 
-            /** Texture id of the chunk texture */
-            val textureId: Int,
+        /** Texture id of the chunk texture */
+        val textureId: Int,
 
-            /** Dynamic texture object */
-            val dynamicTexture: DynamicTexture,
+        /** Dynamic texture object */
+        val dynamicTexture: DynamicTexture,
 
-            /** Array for all characters' info in this chunk */
-            val charInfoArray: Array<CharInfo>
+        /** Array for all characters' info in this chunk */
+        val charInfoArray: Array<CharInfo>
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

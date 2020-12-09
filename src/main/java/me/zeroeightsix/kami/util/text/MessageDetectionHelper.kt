@@ -54,10 +54,10 @@ object MessageDetectionHelper {
 
     fun shouldSend(all: Boolean, restart: Boolean, direct: Boolean, queue: Boolean, importantPings: Boolean, message: String): Boolean {
         return all
-                || message.detect(restart, Regexes.RESTART)
-                || isDirect(direct, message)
-                || message.detect(queue, Regexes.QUEUE)
-                || message.detect(importantPings, Regexes.QUEUE_IMPORTANT)
+            || message.detect(restart, Regexes.RESTART)
+            || isDirect(direct, message)
+            || message.detect(queue, Regexes.QUEUE)
+            || message.detect(importantPings, Regexes.QUEUE_IMPORTANT)
 
     }
 
@@ -69,8 +69,8 @@ object MessageDetectionHelper {
 
     private val commandPrefixes: Array<String>
         get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
-                Command.getCommandPrefix(),
-                ChatEncryption.delimiterValue.value)
+            Command.getCommandPrefix(),
+            ChatEncryption.delimiterValue.value)
 }
 
 enum class Regexes(val regex: Regex) {

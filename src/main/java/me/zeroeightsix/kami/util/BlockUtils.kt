@@ -20,36 +20,36 @@ import kotlin.math.floor
  */
 object BlockUtils {
     val blackList = listOf(
-            Blocks.ENDER_CHEST,
-            Blocks.CHEST,
-            Blocks.TRAPPED_CHEST,
-            Blocks.CRAFTING_TABLE,
-            Blocks.ANVIL,
-            Blocks.BREWING_STAND,
-            Blocks.HOPPER,
-            Blocks.DROPPER,
-            Blocks.DISPENSER,
-            Blocks.TRAPDOOR,
-            Blocks.ENCHANTING_TABLE
+        Blocks.ENDER_CHEST,
+        Blocks.CHEST,
+        Blocks.TRAPPED_CHEST,
+        Blocks.CRAFTING_TABLE,
+        Blocks.ANVIL,
+        Blocks.BREWING_STAND,
+        Blocks.HOPPER,
+        Blocks.DROPPER,
+        Blocks.DISPENSER,
+        Blocks.TRAPDOOR,
+        Blocks.ENCHANTING_TABLE
     )
 
     val shulkerList = listOf(
-            Blocks.WHITE_SHULKER_BOX,
-            Blocks.ORANGE_SHULKER_BOX,
-            Blocks.MAGENTA_SHULKER_BOX,
-            Blocks.LIGHT_BLUE_SHULKER_BOX,
-            Blocks.YELLOW_SHULKER_BOX,
-            Blocks.LIME_SHULKER_BOX,
-            Blocks.PINK_SHULKER_BOX,
-            Blocks.GRAY_SHULKER_BOX,
-            Blocks.SILVER_SHULKER_BOX,
-            Blocks.CYAN_SHULKER_BOX,
-            Blocks.PURPLE_SHULKER_BOX,
-            Blocks.BLUE_SHULKER_BOX,
-            Blocks.BROWN_SHULKER_BOX,
-            Blocks.GREEN_SHULKER_BOX,
-            Blocks.RED_SHULKER_BOX,
-            Blocks.BLACK_SHULKER_BOX
+        Blocks.WHITE_SHULKER_BOX,
+        Blocks.ORANGE_SHULKER_BOX,
+        Blocks.MAGENTA_SHULKER_BOX,
+        Blocks.LIGHT_BLUE_SHULKER_BOX,
+        Blocks.YELLOW_SHULKER_BOX,
+        Blocks.LIME_SHULKER_BOX,
+        Blocks.PINK_SHULKER_BOX,
+        Blocks.GRAY_SHULKER_BOX,
+        Blocks.SILVER_SHULKER_BOX,
+        Blocks.CYAN_SHULKER_BOX,
+        Blocks.PURPLE_SHULKER_BOX,
+        Blocks.BLUE_SHULKER_BOX,
+        Blocks.BROWN_SHULKER_BOX,
+        Blocks.GREEN_SHULKER_BOX,
+        Blocks.RED_SHULKER_BOX,
+        Blocks.BLACK_SHULKER_BOX
     )
 
     private val mc = Minecraft.getMinecraft()
@@ -137,7 +137,7 @@ object BlockUtils {
      * @return true playing is not colliding with [pos] and there is block below it
      */
     fun isPlaceable(pos: BlockPos, ignoreSelfCollide: Boolean = false) = mc.world.getBlockState(pos).material.isReplaceable
-            && mc.world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) mc.player else null)
+        && mc.world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) mc.player else null)
 
     /**
      * Checks if given [pos] is able to chest (air above) block in it
@@ -153,7 +153,7 @@ object BlockUtils {
         val placed = HashSet<BlockPos>()
         var placeCount = 0
         while (getPlaceInfo(emptyHashSet) != null) {
-            val placingInfo = getPlaceInfo(placed) ?: getPlaceInfo(emptyHashSet)?: break
+            val placingInfo = getPlaceInfo(placed) ?: getPlaceInfo(emptyHashSet) ?: break
             placeCount++
             placed.add(placingInfo.second.offset(placingInfo.first))
             doPlace(placingInfo.second, placingInfo.first, placeSpeed)

@@ -82,7 +82,7 @@ object MessageSendHelper {
     fun sendServerMessage(message: String?) {
         if (message.isNullOrBlank()) return
         mc.player?.connection?.sendPacket(CPacketChatMessage(message))
-                ?: LogWrapper.warning("Could not send server message: \"$message\"")
+            ?: LogWrapper.warning("Could not send server message: \"$message\"")
     }
 
     @JvmStatic

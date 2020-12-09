@@ -19,9 +19,9 @@ class Listener<T : Any>(val event: Class<T>, val priority: Int, private val func
     }
 
     override fun equals(other: Any?) = this === other
-            || (other is Listener<*>
-            && other.event == this.event
-            && other.function == this.function)
+        || (other is Listener<*>
+        && other.event == this.event
+        && other.function == this.function)
 
     override fun hashCode(): Int {
         return 31 * event.hashCode() + function.hashCode()
