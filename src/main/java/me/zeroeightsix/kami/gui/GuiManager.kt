@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
+import java.lang.reflect.Modifier
 
 object GuiManager {
 
@@ -17,6 +18,7 @@ object GuiManager {
     fun preLoad() {
         preLoadingThread = Thread {
             hudElementsClassList = ClassUtils.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
+                .filter { Modifier.isFinal(it.modifiers) }
             KamiMod.LOG.info("${hudElementsClassList!!.size} hud elements found")
         }
         preLoadingThread!!.name = "Gui Pre-Loading"
@@ -28,7 +30,7 @@ object GuiManager {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in hudElementsClassList!!) {
-            hudElementsMap[clazz] = clazz.getDeclaredField("INSTANCE")[null] as HudElement
+            hudElementsMap[clazz] = ClassUtils.getInstance(clazz)
         }
         val time = stopTimer.stop()
         KamiMod.LOG.info("${hudElementsClassList!!.size} hud elements loaded, took ${time}ms")
