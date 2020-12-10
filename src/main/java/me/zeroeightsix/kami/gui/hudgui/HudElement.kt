@@ -1,13 +1,16 @@
 package me.zeroeightsix.kami.gui.hudgui
 
 import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.GuiConfig
+import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 
 open class HudElement(
@@ -22,6 +25,14 @@ open class HudElement(
     override val resizable = false
 
     val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
+
+    init {
+        listener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END || !visible.value) return@listener
+            width.value = maxWidth
+            height.value = maxHeight
+        }
+    }
 
     override fun onGuiInit() {
         super.onGuiInit()

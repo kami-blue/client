@@ -34,9 +34,6 @@ abstract class LabelHud(
             if (it.phase != TickEvent.Phase.END || !visible.value) return@listener
             displayText.clear()
             updateText()
-
-            width.value = maxWidth
-            height.value = maxHeight
         }
     }
 
