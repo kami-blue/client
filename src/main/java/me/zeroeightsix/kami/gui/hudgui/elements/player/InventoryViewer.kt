@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 
 object InventoryViewer : HudElement(
-    name = "Direction",
+    name = "InventoryViewer",
     category = Category.PLAYER,
     description = "Items in Inventory"
 ) {
