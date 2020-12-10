@@ -19,8 +19,6 @@ abstract class LabelHud(
     enabledByDefault: Boolean = false
 ) : HudElement(name, alias, category, description, alwaysListening, enabledByDefault) {
 
-    override val resizable get() = false
-
     override val minWidth: Float get() = FontRenderAdapter.getFontHeight()
     override val minHeight: Float get() = FontRenderAdapter.getFontHeight()
     override val maxWidth: Float get() = displayText.getWidth() + 2.0f

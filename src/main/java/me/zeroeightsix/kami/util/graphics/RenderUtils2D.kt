@@ -16,7 +16,7 @@ import kotlin.math.*
 object RenderUtils2D {
     val mc = Wrapper.minecraft
 
-    fun drawItem(itemStack: ItemStack, x: Int, y: Int, text: String = "") {
+    fun drawItem(itemStack: ItemStack, x: Int, y: Int, text: String? = null) {
         GlStateUtils.blend(true)
         GlStateUtils.depth(true)
         RenderHelper.enableGUIStandardItemLighting()

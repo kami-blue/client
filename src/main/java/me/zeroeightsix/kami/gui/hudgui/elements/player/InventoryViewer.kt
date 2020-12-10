@@ -1,41 +1,37 @@
-package me.zeroeightsix.kami.module.modules.client
+package me.zeroeightsix.kami.gui.hudgui.elements.player
 
-import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.gui.hudgui.HudElement
+import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 
-@Module.Info(
-    name = "InventoryViewer",
-    category = Module.Category.CLIENT,
-    description = "Configures Inventory Viewer's options",
-    showOnArray = false,
-    alwaysEnabled = true
-)
-object InventoryViewer : Module() {
-    private val mcTexture = setting("UseMinecraftTexture", false)
+object InventoryViewer : HudElement(
+    name = "Direction",
+    category = Category.PLAYER,
+    description = "Items in Inventory"
+) {
+    private val mcTexture = setting("MinecraftTexture", false)
     private val showIcon = setting("ShowIcon", false, { !mcTexture.value })
     private val iconScale = setting("IconScale", 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture.value && showIcon.value })
     private val coloredBackground = setting("ColoredBackground", true, { !mcTexture.value })
-    private val r = setting("Red", 155, 0..255, 1, { coloredBackground.value && !mcTexture.value })
-    private val g = setting("Green", 144, 0..255, 1, { coloredBackground.value && !mcTexture.value })
-    private val b = setting("Blue", 255, 0..255, 1, { coloredBackground.value && !mcTexture.value })
-    private val a = setting("Alpha", 32, 0..255, 1, { coloredBackground.value && !mcTexture.value })
+    private val color = setting("Background", ColorHolder(155, 144, 255, 64), true, { coloredBackground.value && !mcTexture.value })
 
     private val containerTexture = ResourceLocation("textures/gui/container/inventory.png")
     private val kamiIcon = ResourceLocation("kamiblue/kami_icon.png")
 
-    fun renderInventoryViewer() {
-        if (mc.player == null || mc.world == null) return
+    override val minWidth: Float = 162.0f
+    override val minHeight: Float = 54.0f
+
+    override fun renderHud(vertexHelper: VertexHelper) {
+        super.renderHud(vertexHelper)
         drawFrame()
         drawFrameTexture()
         drawItems()
@@ -43,10 +39,9 @@ object InventoryViewer : Module() {
     }
 
     private fun drawFrame() {
-        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
-
         if (!mcTexture.value && coloredBackground.value) {
-            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(162.0, 54.0), color = ColorHolder(r.value, g.value, b.value, a.value))
+            val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(162.0, 54.0), color = color.value)
         }
     }
 
@@ -86,19 +81,10 @@ object InventoryViewer : Module() {
         val items = mc.player.inventory.mainInventory.subList(9, 36)
 
         for ((index, itemStack) in items.withIndex()) {
+            if (itemStack.isEmpty) continue
             val slotX = index % 9 * 18 + 1
             val slotY = index / 9 * 18 + 1
-
-            GlStateUtils.blend(true)
-            GlStateUtils.depth(true)
-            RenderHelper.enableGUIStandardItemLighting()
-            mc.renderItem.zLevel = 0.0f
-            mc.renderItem.renderItemAndEffectIntoGUI(itemStack, slotX, slotY)
-            mc.renderItem.renderItemOverlays(mc.fontRenderer, itemStack, slotX, slotY)
-            mc.renderItem.zLevel = 0.0f
-            RenderHelper.disableStandardItemLighting()
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-            GlStateUtils.depth(false)
+            RenderUtils2D.drawItem(itemStack, slotX, slotY)
         }
     }
 

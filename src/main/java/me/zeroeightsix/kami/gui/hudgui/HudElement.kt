@@ -19,6 +19,8 @@ open class HudElement(
     val enabledByDefault: Boolean = false
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
+    override val resizable = false
+
     val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
 
     override fun onGuiInit() {
