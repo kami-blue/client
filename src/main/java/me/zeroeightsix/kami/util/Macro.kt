@@ -14,7 +14,7 @@ import java.util.*
  */
 object Macro {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private const val configName = "KAMIBlueMacros.json"
+    const val configName = "${NecronClient.DIRECTORY}NECRONMacros.json"
     val file = File(configName)
 
     fun writeMemoryToFile(): Boolean {

@@ -34,7 +34,7 @@ public class NecronClient {
 
     public static final String NAME = "NECRON";
     public static final String ID = "necron";
-    public static final String VERSION = "1.12-beta.0.13"; // Used for debugging. R.MM.DD-hash format.
+    public static final String VERSION = "1.12-beta.0.14"; // Used for debugging. R.MM.DD-hash format.
     public static final String VERSION_SIMPLE = VERSION; // Shown to the user. R.MM.DD[-beta] format.
     public static final String VERSION_MAJOR = VERSION; // Used for update checking. RR.MM-beta.X.XX format.
     public static final int BUILD_NUMBER = -1; // Do not remove, currently unused but will be used in the future.
@@ -46,7 +46,7 @@ public class NecronClient {
     public static final String GITHUB_LINK = "https://github.com/dvorakabc/client/";
     public static final String WEBSITE_LINK = "https://github.com/dvorakabc/client/";
 
-    public static final String DIRECTORY = "necron/";
+    public static final String DIRECTORY = "NECRON/";
     public static final Logger LOG = LogManager.getLogger("NECRON");
 
     @Mod.Instance

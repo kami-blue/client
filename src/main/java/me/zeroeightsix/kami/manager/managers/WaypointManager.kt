@@ -20,9 +20,7 @@ import kotlin.collections.LinkedHashSet
 
 object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
-    private const val configName = "KAMIBlueWaypoints.json"
-    private val oldFile = File(oldConfigName)
+    const val configName = "${NecronClient.DIRECTORY}NECRONWaypoints.json"
     val file = File(configName)
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
     private val mainThread = Thread.currentThread()
@@ -40,15 +38,14 @@ object WaypointManager : Manager {
         }
 
     /**
-     * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
+     * Reads waypoints from NECRONWaypoints.json into the waypoints ArrayList
      */
     fun loadWaypoints(): Boolean {
         /* backwards compatibility for older configs */
-        val localFile = if (legacyFormat()) oldFile else file
+        val localFile = file
         val success = try {
             waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<LinkedHashSet<Waypoint>?>() {}.type)
             NecronClient.LOG.info("Waypoint loaded")
-            if (legacyFormat()) oldFile.delete()
             true
         } catch (e: FileNotFoundException) {
             NecronClient.LOG.warn("Could not find file $configName, clearing the waypoints list")
@@ -64,7 +61,7 @@ object WaypointManager : Manager {
     }
 
     /**
-     * Saves waypoints from the waypoints ArrayList into KAMIBlueWaypoints.json
+     * Saves waypoints from the waypoints ArrayList into NECRONWaypoints.json
      */
     fun saveWaypoints(): Boolean {
         return try {
@@ -85,9 +82,6 @@ object WaypointManager : Manager {
      * file deletion does not work on OSX, issue #1044
      * because of this, we must also check if they've used the new format
      */
-    private fun legacyFormat(): Boolean {
-        return oldFile.exists() && !file.exists()
-    }
 
     fun get(id: String): Waypoint? {
         val waypoint = waypoints.firstOrNull { it.id.toString() == id }

@@ -22,7 +22,6 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
 object ConfigUtils {
-
     fun loadAll(): Boolean {
         var success = MacroManager.loadMacros()
 
@@ -40,6 +39,7 @@ object ConfigUtils {
     }
 
     fun saveAll(): Boolean {
+
         var success = MacroManager.saveMacros()
 
         success = WaypointManager.saveWaypoints() && success
@@ -86,8 +86,8 @@ object ConfigUtils {
     }
 
     fun getConfigName(): String {
-        val config = Paths.get("KAMIBlueLastConfig.txt")
-        var kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
+        val config = Paths.get("${NecronClient.DIRECTORY}NECRONLastConfig.txt")
+        var kamiConfigName = NECRON_CONFIG_NAME_DEFAULT
         try {
             Files.newBufferedReader(config).use { reader ->
                 val line = reader.readLine()
@@ -96,7 +96,7 @@ object ConfigUtils {
         } catch (e: NoSuchFileException) {
             try {
                 Files.newBufferedWriter(config).use { writer ->
-                    writer.write(KAMI_CONFIG_NAME_DEFAULT)
+                    writer.write(NECRON_CONFIG_NAME_DEFAULT)
                 }
             } catch (e1: IOException) {
                 e1.printStackTrace()
@@ -189,5 +189,5 @@ object ConfigUtils {
         }
     }
 
-    private const val KAMI_CONFIG_NAME_DEFAULT = "KAMIBlueConfig.json"
+    const val NECRON_CONFIG_NAME_DEFAULT = "${NecronClient.DIRECTORY}NECRONConfig.json"
 }

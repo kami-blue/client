@@ -15,7 +15,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashSet
 
 object FriendManager : Manager {
-    private const val configName = "KAMIBlueFriends.json"
+    const val configName = "${NecronClient.DIRECTORY}NECRONFriends.json"
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private val file = File(configName)
 
@@ -45,7 +45,7 @@ object FriendManager : Manager {
     }
 
     /**
-     * Reads friends from KAMIBlueFriends.json into the friends ArrayList
+     * Reads friends from NECRONFriends.json into the friends ArrayList
      */
     @JvmStatic
     fun loadFriends(): Boolean {
@@ -63,7 +63,7 @@ object FriendManager : Manager {
     }
 
     /**
-     * Saves friends from the friends ArrayList into KAMIBlueFriends.json
+     * Saves friends from the friends ArrayList into NECRONFriends.json
      */
     @JvmStatic
     fun saveFriends(): Boolean {

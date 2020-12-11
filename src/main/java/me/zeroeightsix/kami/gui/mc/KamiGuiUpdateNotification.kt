@@ -28,8 +28,8 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
 
     override fun initGui() {
         super.initGui()
-        buttonList.add(GuiButton(0, width / 2 - 100, 200, "Download Latest (Recommended)"))
-        buttonList.add(GuiButton(1, width / 2 - 100, 230, "${TextFormatting.RED}Use Current Version"))
+        buttonList.add(GuiButton(0, width / 2 - 100, 180, "Download Latest (Recommended)"))
+        buttonList.add(GuiButton(1, width / 2 - 100, 205, "${TextFormatting.RED}Use Current Version"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
