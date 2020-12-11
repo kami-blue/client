@@ -1,13 +1,26 @@
 package me.zeroeightsix.kami.gui.mc
 
 import com.google.gson.JsonParser
+import me.zeroeightsix.installer.Installer
 import me.zeroeightsix.kami.NecronClient
 import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
+import me.zeroeightsix.kami.util.filesystem.FolderHelper
+import me.zeroeightsix.kami.util.filesystem.FolderHelper.getModsFolder
+import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper
+import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper.getOS
 import net.minecraft.client.gui.*
 import net.minecraft.util.text.TextFormatting
+import net.minecraftforge.fml.common.FMLCommonHandler
+import org.codehaus.plexus.util.Os
 import org.kamiblue.commons.utils.ConnectionUtils
+import java.io.File
+import java.io.FileWriter
 import java.io.IOException
+import kotlin.system.exitProcess
+import java.lang.Compiler.command
+import java.util.ArrayList
+
 
 class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
 
@@ -26,9 +39,34 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
-
+    fun getNecronJars(): ArrayList<File>? {
+        val mods = File(getModsFolder(getOS()))
+        val files = mods.listFiles()
+        val foundFiles = ArrayList<File>()
+        var found = false
+        for (file in files) {
+            val match = file.name.matches(Regex(".*[Nn][Ee][Cc][Rr][Oo][Nn].*"))
+            if (match) {
+                foundFiles.add(file)
+                found = true
+            }
+        }
+        return if (found) foundFiles else null
+    }
     override fun actionPerformed(button: GuiButton) {
-        if (button.id == 0) WebUtils.openWebLink(NecronClient.WEBSITE_LINK + "/download")
+        if (button.id == 0) {
+            val modsFolder = getModsFolder(getOS())
+            val necronJars = getNecronJars()
+            val fileExtension = if (getOS().name == "WINDOWS") ".bat" else ".sh"
+
+            if (necronJars != null) {
+                val file = File("$modsFolder${File.separator}Necron-Updater$fileExtension")
+                file.writeText("java -jar ${necronJars[0]}")
+                NecronClient.LOG.info("Starting Updater with command: $modsFolder${File.separator}Necron-Updater$fileExtension")
+                ProcessBuilder("$modsFolder${File.separator}Necron-Updater$fileExtension").start()
+                FMLCommonHandler.instance().exitJava(1, true)
+            }
+        }
 
         val screen = if (buttonId == 1) GuiWorldSelection(GuiMainMenu()) // Single
         else GuiMultiplayer(GuiMainMenu()) // Multi

@@ -18,7 +18,7 @@ import java.util.Random;
  * Created by humboldt123 on 14/07/20
  * Rewritten almost entirely by l1ving on 14/07/20
  * Added more background images by humboldt123 on 15/08/20
- * Rewritte for NECRON by TopaisL
+ * Rewritten for NECRON by TopiasL
  */
 public class Installer extends JPanel {
     String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(NecronClient.DOWNLOADS_API).replace("\n", "").split("\"");
@@ -39,6 +39,7 @@ public class Installer extends JPanel {
 
         boolean hasForge = checkForForge();
         ArrayList<File> NecronJars = getNecronJars();
+
 
         if (!hasForge) {
             notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use NECRON Client. ");
@@ -128,21 +129,21 @@ public class Installer extends JPanel {
      */
     private static void deleteNecronJars(ArrayList<File> files) {
         for (File file : files) {
-            file.delete();
+            file.deleteOnExit();
         }
     }
 
     /**
      * @return null if there were no NECRON jars, otherwise returns a list of files to delete
      */
-    private static ArrayList<File> getNecronJars() {
+    public static ArrayList<File> getNecronJars() {
         File mods = new File(getModsFolder());
         File[] files = mods.listFiles();
         ArrayList<File> foundFiles = new ArrayList<>();
         boolean found = false;
 
         for (File file : files) {
-            boolean match = file.getName().matches(".*[Nn][En][Cc][Rr][Oo][Nn].*");
+            boolean match = file.getName().matches(".*[Nn][Ee][Cc][Rr][Oo][Nn].*");
             if (match) {
                 foundFiles.add(file);
                 found = true;
