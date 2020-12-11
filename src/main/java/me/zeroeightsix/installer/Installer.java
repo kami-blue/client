@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -22,6 +23,15 @@ import java.util.Random;
  */
 public class Installer extends JPanel {
     String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(NecronClient.DOWNLOADS_API).replace("\n", "").split("\"");
+    static String myPath;
+    static {
+        try {
+            myPath = new File(Installer.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         System.out.println("Ran the " + NecronClient.NAME + " " + NecronClient.VERSION + " installer!");
 
@@ -45,8 +55,8 @@ public class Installer extends JPanel {
             notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use NECRON Client. ");
         }
         if (NecronJars != null) {
-            notify("Attention! It looks like you had NECRON Client installed before. Closing this popup will delete the older versions, " +
-                    "so if you want to save those jars you should go and make a copy somewhere else");
+            //notify("Attention! It looks like you had NECRON Client installed before. Closing this popup will delete the older versions, " +
+            //        "so if you want to save those jars you should go and make a copy somewhere else");
             deleteNecronJars(NecronJars);
         }
     }
@@ -95,6 +105,13 @@ public class Installer extends JPanel {
             installButtonIcon.setOpaque(false);
             download();
             notify(installedStable);
+            notify("deleting Installer/old version jar file: " + myPath);
+            try {
+                if (OperatingSystemHelper.INSTANCE.getOS().name() == "WINDOWS") Runtime.getRuntime().exec("cmd /c ping localhost -n 5 > nul && del " + myPath);
+                else Runtime.getRuntime().exec("/bin/bash sleep 5 | rm " + myPath);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
             System.exit(0);
         });
     }
@@ -111,7 +128,6 @@ public class Installer extends JPanel {
 //            notify("NECRON Client is currently being downloaded, please wait")
         }).start();
 
-        /* please ignore the clusterfuck of code that this is */
         System.out.println(NecronClient.NAME + " download started!");
         try {
             WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
@@ -129,7 +145,14 @@ public class Installer extends JPanel {
      */
     private static void deleteNecronJars(ArrayList<File> files) {
         for (File file : files) {
-            file.deleteOnExit();
+            try {
+                file.delete();
+            }
+            catch (Exception e) {
+                if (file.getPath() != myPath){
+                    notify("Error deleting old file: " + file.getName() + "(" + e.getMessage() + "). Is minecraft running? \n(This error should never happen if you installed NECRON Client correcly)");
+                }
+            }
         }
     }
 
