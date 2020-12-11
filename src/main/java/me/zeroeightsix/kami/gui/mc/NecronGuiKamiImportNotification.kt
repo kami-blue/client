@@ -34,6 +34,7 @@ class NecronGuiKamiImportNotification : GuiScreen() {
     }
     override fun actionPerformed(button: GuiButton) {
         if (button.id == 0) {
+            ConfigUtils.allowSave = false
             try {
                 Files.copy(Paths.get("KAMIBlueConfig.json"), Paths.get(ConfigUtils.NECRON_CONFIG_NAME_DEFAULT), StandardCopyOption.REPLACE_EXISTING);
             } catch (e : Exception) { NecronClient.LOG.warn("Error when copying KAMI Blue config: " + e.cause) }
@@ -47,6 +48,7 @@ class NecronGuiKamiImportNotification : GuiScreen() {
                 Files.copy(Paths.get("KAMIBlueWaypoints.json"), Paths.get(WaypointManager.configName), StandardCopyOption.REPLACE_EXISTING);
             } catch (e : Exception) { NecronClient.LOG.warn("Error when copying KAMI Blue waypoints: " + e.cause) }
             ConfigUtils.loadAll()
+            ConfigUtils.allowSave = true
         }
         mc.displayGuiScreen(GuiMainMenu())
     }

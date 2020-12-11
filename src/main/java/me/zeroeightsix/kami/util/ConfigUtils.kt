@@ -22,6 +22,7 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
 object ConfigUtils {
+    var allowSave = true
     fun loadAll(): Boolean {
         var success = MacroManager.loadMacros()
 
@@ -39,16 +40,18 @@ object ConfigUtils {
     }
 
     fun saveAll(): Boolean {
+        if (allowSave) {
+            var success = MacroManager.saveMacros()
 
-        var success = MacroManager.saveMacros()
+            success = WaypointManager.saveWaypoints() && success
 
-        success = WaypointManager.saveWaypoints() && success
+            success = FriendManager.saveFriends() && success
 
-        success = FriendManager.saveFriends() && success
+            success = saveConfiguration() && success
 
-        success = saveConfiguration() && success
-
-        return success
+            return success
+        }
+        return false
     }
 
     /**
