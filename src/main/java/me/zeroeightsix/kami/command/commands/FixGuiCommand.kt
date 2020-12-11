@@ -1,24 +1,19 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.CommandOld
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.hidden.FixGui
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-/**
- * @author l1ving
- *
- * Created by l1ving on 24/03/20
- * Updated by Xiaro on 28/08/20
- */
-class FixGuiCommand : CommandOld("fixgui", ChunkBuilder().build()) {
 
-    override fun call(args: Array<String>) {
-        FixGui.enable()
-        sendChatMessage(chatLabel + "Ran")
-    }
-
+object FixGuiCommand : ClientCommand(
+    name = "fixgui",
+    alias = arrayOf("fixmygui"),
+    description = "Allows you to disable the automatic gui positioning!"
+) {
     init {
-        setDescription("Allows you to disable the automatic gui positioning")
+        execute {
+            FixGui.enable()
+            MessageSendHelper.sendChatMessage(chatLabel + "Ran")
+        }
     }
 }

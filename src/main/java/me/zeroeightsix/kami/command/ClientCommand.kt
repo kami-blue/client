@@ -9,4 +9,6 @@ abstract class ClientCommand(
     description: String = "No description",
 ) : CommandBuilder<ExecuteEvent>(name, alias, description) {
 
+    val chatLabel = "[$name]"
+
 }
