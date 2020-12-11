@@ -121,7 +121,7 @@ class TextComponent(val separator: String = " ") {
 
     override fun toString() = textLines.joinToString(separator = "\n")
 
-    private class TextLine(val separator: String) {
+    class TextLine(val separator: String) {
         private val textElementList = ArrayList<TextElement>()
 
         fun isEmpty() = textElementList.size == 0
@@ -152,6 +152,11 @@ class TextComponent(val separator: String = " ") {
             val string = textElementList.joinToString(separator = adjustedSeparator)
             return FontRenderAdapter.getStringWidth(string, customFont = customFont)
         }
+
+        fun reverse() {
+            textElementList.reverse()
+        }
+
     }
 
     class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: Style = Style.REGULAR) {

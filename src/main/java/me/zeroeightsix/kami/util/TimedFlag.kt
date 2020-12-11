@@ -6,6 +6,6 @@ class TimedFlag<T : Comparable<*>>(valueIn: T) {
             lastUpdateTime = System.currentTimeMillis()
             field = value
         }
-    var lastUpdateTime = System.currentTimeMillis()
+    var lastUpdateTime = 0L
         private set
 }
