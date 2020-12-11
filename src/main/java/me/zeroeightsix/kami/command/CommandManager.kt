@@ -54,16 +54,16 @@ object CommandManager : AbstractCommandManager<ExecuteEvent>() {
     }
 
     private fun handleCommandNotFoundException(command: String) {
-        MessageSendHelper.sendChatMessage("Unknown command: '${TextFormatting.GRAY}$prefix$command${TextFormatting.RESET}'." +
+        MessageSendHelper.sendChatMessage("Unknown command: '${TextFormatting.GRAY}$prefix$command${TextFormatting.RESET}' ." +
             "Run '${TextFormatting.GRAY}${prefix}help${TextFormatting.RESET}' for a list of commands.")
     }
 
     private suspend fun handleSubCommandNotFoundException(string: String, args: Array<String>, e: SubCommandNotFoundException) {
         val bestCommand = e.command.finalArgs.maxByOrNull { it.countArgs(args) }
 
-        var message = "Invalid syntax: '${TextFormatting.GRAY}$prefix$string${TextFormatting.RESET}'.\n"
+        var message = "Invalid syntax: '${TextFormatting.GRAY}$prefix$string${TextFormatting.RESET}' .\n"
 
-        if (bestCommand != null) message += "Did you mean '${TextFormatting.GRAY}$prefix${bestCommand.printArgHelp()}${TextFormatting.RESET}'?\n"
+        if (bestCommand != null) message += "Did you mean '${TextFormatting.GRAY}$prefix${bestCommand.printArgHelp()}${TextFormatting.RESET}' ?\n"
 
         message += "\nRun '${TextFormatting.GRAY}${prefix}help ${e.command.name}${TextFormatting.RESET}' for a list of available arguments."
 

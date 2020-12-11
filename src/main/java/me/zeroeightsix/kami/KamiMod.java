@@ -2,6 +2,7 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
+import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.command.CommandManagerOld;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
@@ -94,6 +95,7 @@ public class KamiMod {
         guiManager = new KamiGUI();
         guiManager.initializeGUI();
         commandManager = new CommandManagerOld();
+        CommandManager.INSTANCE.init();
 
         FileInstanceManager.fixEmptyFiles();
         ConfigUtils.INSTANCE.loadAll();
