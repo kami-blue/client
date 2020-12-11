@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.combat.Surround
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
@@ -15,12 +17,14 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.client.event.InputUpdateEvent
+import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import kotlin.math.round
 
 /**
  * @see MixinEntity.isSneaking
  *
  * TODO: Rewrite this
+ * Modified by TopiasL for NECRON Client
  */
 @Module.Info(
         name = "Scaffold",
@@ -29,15 +33,23 @@ import kotlin.math.round
 )
 object Scaffold : Module() {
     private val placeBlocks = register(Settings.b("PlaceBlocks", true))
+    val safeWalk = register(Settings.b("SafeWalk", true))
     private val tower = register(Settings.b("Tower", true))
+    private val jumpMotion = register(Settings.doubleBuilder("JumpMotion").withValue(0.42).withRange(0.34, 0.6).withStep(0.02).withVisibility { tower.value })
+    private val swapMode = register(Settings.e<SwapMode>("HotbarSwapMode", SwapMode.SPOOF))
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
     private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT })
     private val delayRange = register(Settings.integerBuilder("DelayRange").withValue(6).withRange(0, 10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value })
-    private val ticks = register(Settings.integerBuilder("Ticks").withValue(2).withRange(0, 60).withStep(2).withVisibility { modeSetting.value == Mode.NORMAL })
+    private val ticks = register(Settings.integerBuilder("Ticks").withValue(2).withRange(0, 30).withStep(1).withVisibility { modeSetting.value == Mode.NORMAL })
+    private val maxBlocksPerOperation = register(Settings.integerBuilder("MaxBlocksPerOperation").withValue(2).withRange(1, 3).withStep(1))
 
     private var shouldSlow = false
     private var towerStart = 0.0
     private var holding = false
+
+    private enum class SwapMode {
+        NO, SWAP, SPOOF
+    }
 
     private enum class Mode {
         NORMAL, LEGIT
@@ -85,21 +97,23 @@ object Scaffold : Module() {
             if (!mc.world.getBlockState(blockPos).material.isReplaceable) {
                 return@listener
             }
-
             val oldSlot = mc.player.inventory.currentItem
-            setSlotToBlocks(belowBlockPos)
+
+            if (swapMode.value == SwapMode.SWAP || swapMode.value == SwapMode.SPOOF ) {
+                if (!setSlotToBlocks(belowBlockPos)) return@listener
+            }
 
             /* check if we don't have a block adjacent to the blockPos */
-            val neighbor = BlockUtils.getNeighbour(blockPos, attempts = 1) ?: return@listener
+            val neighbor = BlockUtils.getNeighbour(blockPos, attempts = maxBlocksPerOperation.value) ?: return@listener
 
             /* place the block */
             if (placeBlocks.value) BlockUtils.placeBlock(neighbor.second, neighbor.first)
 
             /* Reset the slot */
-            if (!holding) mc.player.inventory.currentItem = oldSlot
+            if (!holding) { swapSlot(oldSlot); PlayerPacketManager.resetHotbar() }
 
             if (towering) {
-                val motion = 0.42 // jump motion
+                val motion = jumpMotion.value // jump motion
                 if (mc.player.onGround) {
                     towerStart = mc.player.posY
                     mc.player.motionY = motion
@@ -123,10 +137,10 @@ object Scaffold : Module() {
     private val randomInRange: Float
         get() = 0.11f + Math.random().toFloat() * (delayRange.value / 10.0f - 0.11f)
 
-    private fun setSlotToBlocks(belowBlockPos: BlockPos) {
+    private fun setSlotToBlocks(belowBlockPos: BlockPos) : Boolean {
         if (isBlock(mc.player.heldItemMainhand, belowBlockPos)) {
             holding = true
-            return
+            return true
         }
         holding = false
 
@@ -144,8 +158,11 @@ object Scaffold : Module() {
 
         /* check if any blocks were found, and if they were then set the slot */
         if (newSlot != -1) {
-            mc.player.inventory.currentItem = newSlot
+            if (swapMode.value == SwapMode.SWAP) swapSlot(newSlot)
+            else if (swapMode.value == SwapMode.SPOOF) PlayerPacketManager.spoofHotbar(newSlot)
         }
+        else return false
+        return true
     }
 
     private fun isBlock(stack: ItemStack, belowBlockPos: BlockPos): Boolean {

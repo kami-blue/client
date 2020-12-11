@@ -34,7 +34,7 @@ public class MixinEntity {
 
     @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z"))
     public boolean isSneaking(Entity entity) {
-        return SafeWalk.INSTANCE.shouldSafewalk() || Scaffold.INSTANCE.isEnabled() || entity.isSneaking();
+        return SafeWalk.INSTANCE.shouldSafewalk() || (Scaffold.INSTANCE.isEnabled() && Scaffold.INSTANCE.getSafeWalk().getValue()) || entity.isSneaking();
     }
 
     // Makes the camera guy instead of original player turn around when we move mouse
