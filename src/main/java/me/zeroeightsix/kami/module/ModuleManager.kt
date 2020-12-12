@@ -62,7 +62,7 @@ object ModuleManager {
     fun getModules() = moduleMap.values
 
     @JvmStatic
-    fun getModule(moduleName: String?): Module? {
+    fun getModule(moduleName: String?): Module {
         return moduleName?.replace(" ", "").let { name ->
             getModules().firstOrNull { module ->
                 module.name.value.replace(" ", "").equals(name, true)
@@ -70,6 +70,15 @@ object ModuleManager {
             }
         }
                 ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
+    }
+
+    fun getModuleOrNull(moduleName: String?): Module? {
+        return moduleName?.replace(" ", "").let { name ->
+            getModules().firstOrNull { module ->
+                module.name.value.replace(" ", "").equals(name, true)
+                    || module.alias.any { it.replace(" ", "").equals(name, true) }
+            }
+        }
     }
 
     class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
