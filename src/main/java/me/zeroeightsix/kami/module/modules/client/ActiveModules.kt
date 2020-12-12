@@ -20,7 +20,7 @@ object ActiveModules : Module() {
     private val forgeHax = register(Settings.b("ForgeHax", false))
     val potionMove = register(Settings.b("PotionsMove", true))
     val hidden = register(Settings.b("ShowHidden", false))
-    val mode = register(Settings.e<Mode>("Mode", Mode.RAINBOW))
+    val mode = register(Settings.e<Mode>("Mode", Mode.CATEGORY))
     private val rainbowSpeed = register(Settings.integerBuilder("SpeedR").withValue(30).withRange(0, 255).withVisibility { mode.value == Mode.RAINBOW })
     val saturationR = register(Settings.integerBuilder("SaturationR").withValue(117).withRange(0, 255).withVisibility { mode.value == Mode.RAINBOW })
     val brightnessR = register(Settings.integerBuilder("BrightnessR").withValue(255).withRange(0, 255).withVisibility { mode.value == Mode.RAINBOW })
@@ -32,13 +32,13 @@ object ActiveModules : Module() {
         RAINBOW, CUSTOM, CATEGORY, TRANS_RIGHTS
     }
 
-    private val chat = register(Settings.s("Chat", "162,136,227"))
-    private val combat = register(Settings.s("Combat", "229,68,109"))
-    private val client = register(Settings.s("Client", "56,2,59"))
-    private val misc = register(Settings.s("Misc", "165,102,139"))
-    private val movement = register(Settings.s("Movement", "111,60,145"))
-    private val player = register(Settings.s("Player", "255,137,102"))
-    private val render = register(Settings.s("Render", "105,48,109"))
+    private val chat = register(Settings.s("Chat", "24,141,237"))
+    private val combat = register(Settings.s("Combat", "242,46,79"))
+    private val client = register(Settings.s("Client", "242,105,0"))
+    private val misc = register(Settings.s("Misc", "102,102,102"))
+    private val movement = register(Settings.s("Movement", "22,184,89"))
+    private val player = register(Settings.s("Player", "168,219,37"))
+    private val render = register(Settings.s("Render", "143,29,219"))
 
     fun setColor(category: Category, color: IntArray) {
         val setting = getSettingForCategory(category) ?: return

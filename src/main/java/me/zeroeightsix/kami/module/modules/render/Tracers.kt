@@ -38,7 +38,7 @@ object Tracers : Module() {
     private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 256).withVisibility { page.value == Page.ENTITY_TYPE }.build())
 
     /* Color settings */
-    private val colorPlayer = register(Settings.enumBuilder(DyeColors::class.java, "PlayerColor").withValue(DyeColors.KAMI).withVisibility { page.value == Page.COLOR }.build())
+    private val colorPlayer = register(Settings.enumBuilder(DyeColors::class.java, "PlayerColor").withValue(DyeColors.NECRON).withVisibility { page.value == Page.COLOR }.build())
     private val colorFriend = register(Settings.enumBuilder(DyeColors::class.java, "FriendColor").withValue(DyeColors.RAINBOW).withVisibility { page.value == Page.COLOR }.build())
     private val colorPassive = register(Settings.enumBuilder(DyeColors::class.java, "PassiveMobColor").withValue(DyeColors.GREEN).withVisibility { page.value == Page.COLOR }.build())
     private val colorNeutral = register(Settings.enumBuilder(DyeColors::class.java, "NeutralMobColor").withValue(DyeColors.YELLOW).withVisibility { page.value == Page.COLOR }.build())

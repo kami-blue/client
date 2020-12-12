@@ -6,6 +6,7 @@ package me.zeroeightsix.kami.util.color
  * Colors based on Minecraft colors, modified for better visibility.
  *
  * Created by Xiaro on 08/08/20
+ * Modified by TopiasL for NECRON Client
  */
 enum class DyeColors(val color: ColorHolder) {
     BLACK(ColorHolder(0, 0, 0)),
@@ -24,6 +25,6 @@ enum class DyeColors(val color: ColorHolder) {
     MAGENTA(ColorHolder(220, 64, 220)),
     ORANGE(ColorHolder(255, 132, 32)),
     WHITE(ColorHolder(255, 255, 255)),
-    KAMI(ColorHolder(155, 144, 255)),
+    NECRON(ColorHolder(70, 255, 255)),
     RAINBOW(ColorHolder(Int.MIN_VALUE, Int.MIN_VALUE, Int.MIN_VALUE));
 }
