@@ -69,8 +69,6 @@ object ModuleList : HudElement(
                 if (timedFlag.progress <= 0.0f) continue
                 textLineMap[module] = module.newTextLine
             }
-
-            sortedModuleList.sortWith(sortingMode.value.comparator)
         }
     }
 
@@ -127,5 +125,11 @@ object ModuleList : HudElement(
         } else {
             AnimationUtils.exponentDec(AnimationUtils.toDeltaTimeFloat(lastUpdateTime), 200.0f)
         }
+
+    init {
+        sortingMode.valueListeners.add { _, it ->
+            sortedModuleList.sortWith(it.comparator)
+        }
+    }
 
 }
