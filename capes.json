@@ -29,4 +29,34 @@
     ],
     "is_premium": true
   },
+  {
+    "id": 3,
+    "capes": [
+      {
+        "cape_uuid": "00003",
+        "player_uuid": "dca363a8-cf58-4950-a9a3-e23522086470",
+        "type": "CONTRIBUTOR",
+        "color": {
+          "primary": "000000",
+          "border": "ff0000"
+        }
+      }
+    ],
+    "is_premium": true
+  },
+  {
+    "id": 4,
+    "capes": [
+      {
+        "cape_uuid": "00004",
+        "player_uuid": "03ab2435-c2ce-4eb3-b297-5932f2182659",
+        "type": "CONTRIBUTOR",
+        "color": {
+          "primary": "000000",
+          "border": "ff0000"
+        }
+      }
+    ],
+    "is_premium": true
+  },
 ]
