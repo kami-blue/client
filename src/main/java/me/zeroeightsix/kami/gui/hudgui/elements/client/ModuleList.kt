@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.TimedFlag
+import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.*
+import java.awt.Color
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -31,6 +33,9 @@ object ModuleList : HudElement(
 
     private val sortingMode = setting("SortingMode", SortingMode.LENGTH)
     private val showInvisible = setting("ShowInvisible", false)
+    private val rainbow = setting("Rainbow", true)
+    private val rainbowLength = setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
+    private val indexedHue = setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
     private val primary = setting("PrimaryColor", ColorHolder(155, 144, 255), false)
     private val secondary = setting("SecondaryColor", ColorHolder(255, 255, 255), false)
 
@@ -69,6 +74,8 @@ object ModuleList : HudElement(
                 if (timedFlag.progress <= 0.0f) continue
                 textLineMap[module] = module.newTextLine
             }
+
+            sortedModuleList.sortWith(sortingMode.value.comparator)
         }
     }
 
@@ -79,7 +86,17 @@ object ModuleList : HudElement(
         GlStateManager.translate(renderWidth * dockingH.value.multiplier, 0.0f, 0.0f)
         if (dockingV.value == VAlign.BOTTOM) GlStateManager.translate(0.0f, renderHeight, 0.0f)
 
-        for (module in sortedModuleList) {
+        drawModuleList()
+
+        GlStateManager.popMatrix()
+    }
+
+    private fun drawModuleList() {
+        val primaryHsb = Color.RGBtoHSB(primary.value.r, primary.value.g, primary.value.b, null)
+        val lengthMs = rainbowLength.value * 1000.0f
+        val timedHue = System.currentTimeMillis() % lengthMs.toLong() / lengthMs
+
+        for ((index, module) in sortedModuleList.withIndex()) {
             val timedFlag = toggleMap[module] ?: continue
             val progress = timedFlag.progress
 
@@ -93,15 +110,28 @@ object ModuleList : HudElement(
             val stringPosX = textWidth * dockingH.value.multiplier
 
             GlStateManager.translate(animationXOffset - stringPosX, 0.0f, 0.0f)
-            textLine.drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
+
+            if (rainbow.value) {
+                val hue = timedHue + indexedHue.value * 0.005f * index
+                val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
+
+                TextComponent.TextLine(" ").run {
+                    add(TextComponent.TextElement(module.name, color))
+                    module.getHudInfo().let {
+                        if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
+                    }
+                    if (dockingH.value == HAlign.RIGHT) reverse()
+                    drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
+                }
+            } else {
+                textLine.drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
+            }
 
             GlStateManager.popMatrix()
             var yOffset = timedFlag.displayHeight
             if (dockingV.value == VAlign.BOTTOM) yOffset *= -1.0f
             GlStateManager.translate(0.0f, yOffset, 0.0f)
         }
-
-        GlStateManager.popMatrix()
     }
 
     private val Module.textLine
@@ -112,7 +142,9 @@ object ModuleList : HudElement(
     private val Module.newTextLine
         get() = TextComponent.TextLine(" ").apply {
             add(TextComponent.TextElement(name, primary.value))
-            getHudInfo()?.let { add(TextComponent.TextElement("[$it]", secondary.value)) }
+            getHudInfo().let {
+                if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
+            }
             if (dockingH.value == HAlign.RIGHT) reverse()
         }
 
@@ -125,11 +157,5 @@ object ModuleList : HudElement(
         } else {
             AnimationUtils.exponentDec(AnimationUtils.toDeltaTimeFloat(lastUpdateTime), 200.0f)
         }
-
-    init {
-        sortingMode.valueListeners.add { _, it ->
-            sortedModuleList.sortWith(it.comparator)
-        }
-    }
 
 }
