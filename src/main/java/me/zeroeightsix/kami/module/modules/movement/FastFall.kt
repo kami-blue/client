@@ -51,9 +51,9 @@ object FastFall : Module() {
         }
     }
 
-    override fun getHudInfo(): String? {
+    override fun getHudInfo(): String {
         return if (timering || motioning) "ACTIVE"
-        else null
+        else ""
     }
 
     private fun reset() {

@@ -60,7 +60,7 @@ object AutoSpawner : Module() {
         PRE, BODY, HEAD, DELAY
     }
 
-    override fun getHudInfo(): String? {
+    override fun getHudInfo(): String {
         return if (party.value) {
             if (partyWithers.value) "PARTY WITHER"
             else "PARTY"

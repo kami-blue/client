@@ -45,8 +45,8 @@ object AntiAFK : Module() {
     private val actionTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
     private var nextActionDelay = 0
 
-    override fun getHudInfo(): String? {
-        return if (inputTimeout.value == 0) null
+    override fun getHudInfo(): String {
+        return if (inputTimeout.value == 0) ""
         else ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
     }
 

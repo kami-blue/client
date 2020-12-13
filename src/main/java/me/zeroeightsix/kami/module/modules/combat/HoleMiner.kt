@@ -36,7 +36,7 @@ object HoleMiner : Module() {
     private var miningPos: BlockPos? = null
     private var start = true
 
-    override fun getHudInfo() = "${CombatManager.target?.name}"
+    override fun getHudInfo() = CombatManager.target?.name ?: ""
 
     override fun onDisable() {
         miningPos = null

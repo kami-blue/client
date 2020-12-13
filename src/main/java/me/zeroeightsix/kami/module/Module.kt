@@ -122,8 +122,8 @@ open class Module {
         return isEnabled || alwaysListening
     }
 
-    open fun getHudInfo(): String? {
-        return null
+    open fun getHudInfo(): String {
+        return ""
     }
 
     protected open fun onEnable() {}

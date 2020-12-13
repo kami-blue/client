@@ -65,7 +65,7 @@ object AutoTunnel : Module() {
         }
     }
 
-    override fun getHudInfo(): String? {
+    override fun getHudInfo(): String {
         return lastDirection.name2.capitalize()
     }
 
