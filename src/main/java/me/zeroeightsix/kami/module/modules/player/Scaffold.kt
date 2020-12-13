@@ -23,7 +23,7 @@ import kotlin.math.round
 /**
  * @see MixinEntity.isSneaking
  *
- * TODO: Rewrite this
+ * TODO: Fix chest scaffold
  * Modified by TopiasL for NECRON Client
  */
 @Module.Info(
@@ -35,6 +35,8 @@ object Scaffold : Module() {
     private val placeBlocks = register(Settings.b("PlaceBlocks", true))
     val safeWalk = register(Settings.b("SafeWalk", true))
     private val tower = register(Settings.b("Tower", true))
+    private val onlyUseSolidBlocks = register(Settings.b("OnlyUseSolidBlocks", true))
+    private val useBlackList = register(Settings.b("UseBlackList", true))
     private val jumpMotion = register(Settings.doubleBuilder("JumpMotion").withValue(0.42).withRange(0.34, 0.6).withStep(0.02).withVisibility { tower.value })
     private val swapMode = register(Settings.e<SwapMode>("HotbarSwapMode", SwapMode.SPOOF))
     private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
@@ -170,10 +172,10 @@ object Scaffold : Module() {
         if (stack == ItemStack.EMPTY || stack.getItem() !is ItemBlock) return false
 
         val block = (stack.getItem() as ItemBlock).block
-        if (BlockUtils.blackList.contains(block) || block is BlockContainer) return false
+        if ((BlockUtils.blackList.contains(block) || block is BlockContainer) && useBlackList.value) return false
 
         /* filter out non-solid blocks */
-        if (!Block.getBlockFromItem(stack.getItem()).defaultState.isFullBlock) return false
+        if (!Block.getBlockFromItem(stack.getItem()).defaultState.isFullBlock && onlyUseSolidBlocks.value) return false
 
         /* don't use falling blocks if it'd fall */
         if ((stack.getItem() as ItemBlock).block is BlockFalling) {

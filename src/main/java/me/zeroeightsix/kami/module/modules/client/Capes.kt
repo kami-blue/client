@@ -116,7 +116,7 @@ object Capes : Module() {
         if (cape.type == CapeType.CONTRIBUTOR) {
             renderCapeLayer(playerRenderer, player, CapeTexture.TEXT_ICON, DyeColors.WHITE.color, partialTicks)
         } else {
-            renderCapeLayer(playerRenderer, player, CapeTexture.TEXT, DyeColors.WHITE.color, partialTicks)
+            renderCapeLayer(playerRenderer, player, CapeTexture.TEXT, borderColor, partialTicks)
         }
 
         return true
@@ -210,7 +210,7 @@ object Capes : Module() {
         if (cape.type == CapeType.CONTRIBUTOR) {
             renderElytraLayer(renderer, model, player, CapeTexture.TEXT_ICON, DyeColors.WHITE.color, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
         } else {
-            renderElytraLayer(renderer, model, player, CapeTexture.TEXT, DyeColors.WHITE.color, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
+            renderElytraLayer(renderer, model, player, CapeTexture.TEXT, borderColor, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, partialTicks)
         }
 
         return true
