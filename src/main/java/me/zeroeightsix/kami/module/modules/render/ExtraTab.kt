@@ -9,6 +9,5 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
         category = Module.Category.RENDER
 )
 object ExtraTab : Module() {
-    val offload = setting("ReduceLag", true)
     val tabSize = setting("MaxPlayers", 265, 80..400, 5)
 }

@@ -35,9 +35,7 @@ object Jesus : Module() {
                 }
             }
         }
-    }
 
-    init {
         listener<AddCollisionBoxToListEvent> {
             if (it.block !is BlockLiquid || it.entity !is EntityBoat || mc.player == null || mc.player.isSneaking || mc.player.fallDistance > 3) return@listener
             if ((EntityUtils.isDrivenByPlayer(it.entity)
