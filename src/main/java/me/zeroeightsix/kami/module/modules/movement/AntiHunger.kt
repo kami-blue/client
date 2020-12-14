@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
+import org.kamiblue.event.listener.listener
 
 /**
  * Movement taken from Seppuku

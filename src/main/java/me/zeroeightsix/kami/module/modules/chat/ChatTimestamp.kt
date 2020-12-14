@@ -6,10 +6,10 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.EnumTextColor
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.event.listener.listener
 
 
 @Module.Info(

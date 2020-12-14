@@ -6,11 +6,11 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.FileReader
 

@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -18,6 +17,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.apache.commons.lang3.SystemUtils
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_LOOP
 import org.lwjgl.opengl.GL11.glLineWidth
 import java.io.*

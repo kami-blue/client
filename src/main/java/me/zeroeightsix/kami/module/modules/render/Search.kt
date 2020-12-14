@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper

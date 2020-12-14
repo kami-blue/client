@@ -8,12 +8,12 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoArmor",

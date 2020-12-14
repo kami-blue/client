@@ -3,12 +3,12 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AntiOverlay",

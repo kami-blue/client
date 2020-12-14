@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiGameOver
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AntiDeathScreen",

@@ -9,9 +9,9 @@ import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashSet
 

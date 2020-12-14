@@ -7,13 +7,13 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule
 @Module.Info(

@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*

@@ -8,13 +8,13 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detectAndRemove
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "BaritoneRemote",

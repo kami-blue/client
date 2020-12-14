@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -22,6 +21,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.server.SPacketConfirmTransaction
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
 import kotlin.math.max

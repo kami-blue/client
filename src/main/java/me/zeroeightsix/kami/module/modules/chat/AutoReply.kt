@@ -4,10 +4,10 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoReply",

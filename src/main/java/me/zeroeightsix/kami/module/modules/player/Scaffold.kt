@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import net.minecraft.block.Block
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling

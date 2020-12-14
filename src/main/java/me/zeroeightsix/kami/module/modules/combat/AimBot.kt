@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import net.minecraft.init.Items
+import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule
 @Module.Info(

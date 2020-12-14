@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockDeadBush
@@ -23,6 +22,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoSpawner",

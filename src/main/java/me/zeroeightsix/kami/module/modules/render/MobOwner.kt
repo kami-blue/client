@@ -4,10 +4,10 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityTameable
 import org.kamiblue.commons.utils.MathUtils.round
+import org.kamiblue.event.listener.listener
 import kotlin.math.pow
 
 @Module.Info(

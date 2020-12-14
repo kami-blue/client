@@ -5,12 +5,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 import kotlin.math.*
 
 @Module.Info(

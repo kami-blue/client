@@ -3,13 +3,13 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "NoBreakAnimation",

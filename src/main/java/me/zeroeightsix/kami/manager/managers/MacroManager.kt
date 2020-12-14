@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Macro
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
 object MacroManager : Manager {

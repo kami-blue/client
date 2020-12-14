@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 
 /**
  * Created by Dewy on the 21st of April, 2020

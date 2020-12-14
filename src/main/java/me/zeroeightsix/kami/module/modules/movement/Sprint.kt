@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 
 /**
  * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP

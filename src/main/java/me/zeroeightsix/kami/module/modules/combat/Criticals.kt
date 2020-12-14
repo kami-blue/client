@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "Criticals",

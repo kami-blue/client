@@ -7,13 +7,13 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

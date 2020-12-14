@@ -9,13 +9,13 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.event.listener.listener
 import kotlin.random.Random
 
 /**

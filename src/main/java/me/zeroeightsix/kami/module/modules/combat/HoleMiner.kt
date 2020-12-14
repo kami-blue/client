@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -21,6 +20,7 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 import kotlin.math.pow
 
 @CombatManager.CombatModule

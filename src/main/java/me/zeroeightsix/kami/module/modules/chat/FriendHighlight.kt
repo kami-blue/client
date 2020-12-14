@@ -4,13 +4,13 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.EnumTextColor
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "FriendHighlight",

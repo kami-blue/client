@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import me.zeroeightsix.kami.util.color.HueCycler
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -17,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 
 @Module.Info(
