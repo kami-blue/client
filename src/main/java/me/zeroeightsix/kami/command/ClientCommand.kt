@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Wrapper
 import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.CommandBuilder
-import org.kamiblue.command.ExecuteEvent
 import org.kamiblue.command.utils.BuilderBlock
+import org.kamiblue.command.utils.ExecuteBlock
 
 abstract class ClientCommand(
     name: String,
@@ -25,6 +25,19 @@ abstract class ClientCommand(
         block: BuilderBlock<Module>
     ) {
         arg(ModuleArg(name), block)
+    }
+
+    @CommandBuilder
+    protected fun AbstractArg<*>.executeSafe(
+        description: String = "No description",
+        block: ExecuteBlock<SafeExecuteEvent>
+    ) {
+        val safeExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
+            if (world != null && player != null && playerController != null) {
+                block.invoke(SafeExecuteEvent(args, world, player, playerController))
+            }
+        }
+        this.execute(description, safeExecuteBlock)
     }
 
     protected fun CoroutineScope.onMainThread(block: () -> Unit) {
