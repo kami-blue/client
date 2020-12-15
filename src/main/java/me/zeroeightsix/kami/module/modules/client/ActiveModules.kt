@@ -41,12 +41,8 @@ object ActiveModules : Module() {
     private val player = register(Settings.s("Player", "255,137,102"))
     private val render = register(Settings.s("Render", "105,48,109"))
 
-    fun setColor(category: Category, color: Color) {
+    fun setColor(category: Category, r: Int, g: Int, b: Int) {
         val setting = getSettingForCategory(category) ?: return
-        val r = color.red
-        val g = color.green
-        val b = color.blue
-
         setting.value = "$r,$g,$b"
         sendChatMessage("Set ${setting.name} colour to $r, $g, $b")
     }

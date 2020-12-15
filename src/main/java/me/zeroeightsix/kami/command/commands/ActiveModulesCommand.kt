@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ActiveModules
-import java.awt.Color
 
 object ActiveModulesCommand : ClientCommand(
     name = "activemodules",
@@ -15,10 +14,7 @@ object ActiveModulesCommand : ClientCommand(
                 int("g") { g ->
                     int("b") { b ->
                         execute {
-                            ActiveModules.setColor(
-                                category.value,
-                                Color(r.value, b.value, b.value)
-                            )
+                            ActiveModules.setColor(category.value, r.value.coerceIn(0, 255), g.value.coerceIn(0, 255), b.value.coerceIn(0, 255))
                         }
                     }
                 }
