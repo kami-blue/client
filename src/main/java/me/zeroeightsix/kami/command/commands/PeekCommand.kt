@@ -11,8 +11,8 @@ import net.minecraft.tileentity.TileEntityShulkerBox
 import java.util.*
 
 object PeekCommand : ClientCommand(
-    name = "Peek",
-    alias = arrayOf("ShulkerPeek"),
+    name = "peek",
+    alias = arrayOf("shulkerpeek"),
     description = "Look inside the contents of a shulker box without opening it."
 ) {
     init {

@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 object BaritoneCommand : ClientCommand(
-    name = "Baritone",
+    name = "baritone",
     alias = arrayOf("b")
 ) {
     init {
