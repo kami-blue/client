@@ -1,5 +1,8 @@
 package me.zeroeightsix.kami.command
 
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Wrapper
 import org.kamiblue.command.AbstractArg
@@ -16,14 +19,16 @@ abstract class ClientCommand(
     protected val mc = Wrapper.minecraft
     val chatLabel = "[$name]"
 
-
-
     @CommandBuilder
     protected fun AbstractArg<*>.module(
         name: String,
         block: BuilderBlock<Module>
     ) {
         arg(ModuleArg(name), block)
+    }
+
+    protected companion object {
+        val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     }
 
 }
