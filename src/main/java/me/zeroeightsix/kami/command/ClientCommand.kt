@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Wrapper
 import org.kamiblue.command.AbstractArg
@@ -25,6 +26,19 @@ abstract class ClientCommand(
         block: BuilderBlock<Module>
     ) {
         arg(ModuleArg(name), block)
+    }
+
+    @CommandBuilder
+    protected fun AbstractArg<*>.executeAsync(
+        description: String = "No description",
+        block: ExecuteBlock<ClientExecuteEvent>
+    ) {
+        val asyncExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
+            commandScope.launch {
+                block()
+            }
+        }
+        this.execute(description, asyncExecuteBlock)
     }
 
     @CommandBuilder
