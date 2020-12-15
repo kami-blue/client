@@ -79,19 +79,6 @@ abstract class ClientCommand(
         this.execute(description, safeExecuteBlock)
     }
 
-    protected fun CoroutineScope.onMainThread(block: ClientEvent.() -> Unit) {
-        val event = ClientEvent()
-        mc.addScheduledTask{
-            event.block()
-        }
-    }
-
-    protected fun CoroutineScope.onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
-        mc.addScheduledTask {
-            ClientEvent().toSafe()?.block()
-        }
-    }
-
     protected companion object {
         val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     }
