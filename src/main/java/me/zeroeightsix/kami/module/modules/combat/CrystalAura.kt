@@ -65,6 +65,8 @@ object CrystalAura : Module() {
     private val fillHotbar = register(Settings.booleanBuilder("FillHotbarSlot").withValue(true).withVisibility { page.value == Page.GENERAL })
 
     val auraMode = register(Settings.enumBuilder(AuraMode::class.java, "Mode").withValue(AuraMode.NEW).withVisibility { page.value == Page.GENERAL })
+    private val operationsPerTick = register(Settings.integerBuilder("OperationsPerTick").withValue(2).withRange(1, 6).withVisibility { page.value == Page.GENERAL })
+
 
     enum class AuraMode{
         OLD, NEW
@@ -88,7 +90,7 @@ object CrystalAura : Module() {
     private val minDamageP = register(Settings.floatBuilder("MinDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO && auraMode.value == AuraMode.OLD })
     private val maxSelfDamageP = register(Settings.floatBuilder("MaxSelfDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO })
     private val placeOffset = register(Settings.floatBuilder("PlaceOffset").withValue(1.0f).withRange(0f, 1f).withStep(0.05f).withVisibility { page.value == Page.PLACE_TWO })
-    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
+    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(5).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
     private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(0).withRange(0, 10).withVisibility { page.value == Page.PLACE_TWO })
     private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
     private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
@@ -208,14 +210,15 @@ object CrystalAura : Module() {
             }
 
             if (CombatManager.isOnTopPriority(this) && !CombatSetting.pause && packetList.size == 0) {
-                updateMap()
-                if (canExplode()) explode()
-                else if (canPlace())
-                {
-                    place()
+                for (i in 1..operationsPerTick.value) {
+                    updateMap()
+                    if (canExplode()) explode()
+                    else if (canPlace()) {
+                        place()
 
-                    if (fillHotbar.value)
-                        fillHotbarSlot()
+                        if (fillHotbar.value)
+                            fillHotbarSlot()
+                    }
                 }
             }
 
