@@ -10,10 +10,6 @@ import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Paths
 
-/**
- * Created by 086 on 14/10/2018.
- * Updated by Xiaro on 21/08/20
- */
 object ConfigCommand : ClientCommand(
     name = "Config",
     alias = arrayOf("cfg"),

@@ -42,7 +42,7 @@ object ChatEncryption : Module() {
     private val delimiter: String?
         get() {
             if (delimiterValue.value.equals("unchanged", ignoreCase = true)) {
-                sendErrorMessage(chatName + " Please change the delimiter with &7" + CommandOld.getCommandPrefix() + "chatencryption&f, disabling")
+                sendErrorMessage(chatName + " Please change the delimiter with &7" + CommandOld.getCommandPrefix() + "set $name delimiterV <delimiter>&f, disabling")
                 disable()
                 return null
             }

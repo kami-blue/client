@@ -24,6 +24,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         val commandClasses = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
 
         for (clazz in commandClasses) {
+            println(clazz.simpleName)
             register(ClassUtils.getInstance(clazz))
         }
 

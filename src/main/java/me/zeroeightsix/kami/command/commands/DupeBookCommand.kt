@@ -16,7 +16,6 @@ import java.util.stream.Collectors
  * @author 0x2E | PretendingToCode
  * @author EarthComputer
  *
- *
  * The characterGenerator is from here: https://github.com/ImpactDevelopment/ImpactIssues/issues/1123#issuecomment-482721273
  * Which was written by EarthComputer for both EvilSourcerer and 0x2E
  */

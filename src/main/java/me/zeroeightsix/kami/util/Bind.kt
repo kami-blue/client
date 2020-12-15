@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.command.commands.BindCommand
+import me.zeroeightsix.kami.command.commands.BindCommandOld
 import org.lwjgl.input.Keyboard
 
 /**
@@ -20,7 +20,7 @@ class Bind(
     }
 
     fun isDown(eventKey: Int): Boolean {
-        return !isEmpty && (!BindCommand.modifiersEnabled.value || isShift == isShiftDown() && isCtrl == isCtrlDown() && isAlt == isAltDown()) && eventKey == key
+        return !isEmpty && (!BindCommandOld.modifiersEnabled.value || isShift == isShiftDown() && isCtrl == isCtrlDown() && isAlt == isAltDown()) && eventKey == key
     }
 
     fun capitalise(str: String): String {

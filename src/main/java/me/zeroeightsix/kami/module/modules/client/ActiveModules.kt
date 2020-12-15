@@ -8,13 +8,14 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
+import java.awt.Color
 
 @Module.Info(
-        name = "ActiveModules",
-        category = Module.Category.CLIENT,
-        description = "Configures ActiveModules colours and modes",
-        showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true
+    name = "ActiveModules",
+    category = Module.Category.CLIENT,
+    description = "Configures ActiveModules colours and modes",
+    showOnArray = Module.ShowOnArray.OFF,
+    alwaysEnabled = true
 )
 object ActiveModules : Module() {
     private val forgeHax = register(Settings.b("ForgeHax", false))
@@ -40,11 +41,12 @@ object ActiveModules : Module() {
     private val player = register(Settings.s("Player", "255,137,102"))
     private val render = register(Settings.s("Render", "105,48,109"))
 
-    fun setColor(category: Category, color: IntArray) {
+    fun setColor(category: Category, color: Color) {
         val setting = getSettingForCategory(category) ?: return
-        val r = color[0]
-        val g = color[1]
-        val b = color[2]
+        val r = color.red
+        val g = color.green
+        val b = color.blue
+
         setting.value = "$r,$g,$b"
         sendChatMessage("Set ${setting.name} colour to $r, $g, $b")
     }

@@ -16,15 +16,15 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.*;
 /**
  * Created by 086 on 12/11/2017.
  */
-public class BindCommand extends CommandOld {
+public class BindCommandOld extends CommandOld {
 
     public static Setting<Boolean> modifiersEnabled = SettingBuilder.register(Settings.b("modifiersEnabled", false), "binds");
 
-    public BindCommand() {
+    public BindCommandOld() {
         super("bind", new ChunkBuilder()
-                .append("[module]|modifiers|list", true, new ModuleParser())
-                .append("state", false, new EnumParser(new String[]{"key", "on", "off"}))
-                .build()
+            .append("[module]|modifiers|list", true, new ModuleParser())
+            .append("state", false, new EnumParser(new String[]{"key", "on", "off"}))
+            .build()
         );
         setDescription("Binds a module to a key, or allows you to change modifier options");
     }

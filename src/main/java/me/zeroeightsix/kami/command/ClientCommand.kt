@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami.command
 
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Wrapper
@@ -21,7 +18,8 @@ abstract class ClientCommand(
 ) : CommandBuilder<ClientExecuteEvent>(name, alias, description) {
 
     protected val mc = Wrapper.minecraft
-    val chatLabel = "[$name]"
+    val prefix: String get() = CommandManager.prefix.value
+    val label = "$prefix$name"
 
     @CommandBuilder
     protected fun AbstractArg<*>.module(
