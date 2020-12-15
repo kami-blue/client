@@ -36,6 +36,7 @@ sourceSets.main.java {
     srcDirs += 'src/main/cape-api'
     srcDirs += 'src/main/command'
     srcDirs += 'src/main/commons'
+    srcDirs += 'src/main/event'
 }
 
 compileKotlin {

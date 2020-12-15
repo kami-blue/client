@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager
@@ -29,6 +28,7 @@ import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
 import org.kamiblue.commons.utils.ConnectionUtils
 import org.kamiblue.commons.utils.ThreadUtils
+import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.cos

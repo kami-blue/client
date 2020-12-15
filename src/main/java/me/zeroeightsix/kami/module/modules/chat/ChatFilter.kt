@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.event.listener.listener
 import java.io.*
 import java.util.*
 import java.util.regex.Pattern

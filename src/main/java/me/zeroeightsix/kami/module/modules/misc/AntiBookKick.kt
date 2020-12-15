@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWrittenBook
 import net.minecraft.network.play.client.CPacketClickWindow
+import org.kamiblue.event.listener.listener
 
 /**
  * @author IronException

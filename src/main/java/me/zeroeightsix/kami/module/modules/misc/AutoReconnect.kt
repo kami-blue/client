@@ -7,10 +7,10 @@ import me.zeroeightsix.kami.mixin.extension.reason
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData
+import org.kamiblue.event.listener.listener
 import kotlin.math.max
 
 @Module.Info(

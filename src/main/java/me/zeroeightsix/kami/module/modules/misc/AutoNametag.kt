@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.monster.EntityMob
@@ -12,6 +11,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemNameTag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoNametag",

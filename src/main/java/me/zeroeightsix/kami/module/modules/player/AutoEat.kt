@@ -8,13 +8,13 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoEat",

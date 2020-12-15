@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.server.SPacketTimeUpdate
 import net.minecraft.util.math.MathHelper
 import java.util.*

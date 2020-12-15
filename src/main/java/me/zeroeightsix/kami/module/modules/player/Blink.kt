@@ -8,10 +8,10 @@ import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.mixin.extension.z
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 @Module.Info(

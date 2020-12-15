@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.mixin.extension.textComponent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
 import net.minecraft.network.play.client.CPacketChatMessage
@@ -14,6 +13,7 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.ChatAllowedCharacters
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
+import org.kamiblue.event.listener.listener
 import java.nio.CharBuffer
 import java.util.*
 import java.util.regex.Pattern

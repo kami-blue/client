@@ -8,10 +8,10 @@ import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.EnumFacing
+import org.kamiblue.event.listener.listener
 import kotlin.math.round
 
 @Module.Info(

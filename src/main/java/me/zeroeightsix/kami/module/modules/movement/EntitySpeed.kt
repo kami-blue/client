@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.AbstractHorse
@@ -17,6 +16,7 @@ import net.minecraft.network.play.client.CPacketVehicleMove
 import net.minecraft.network.play.server.SPacketMoveVehicle
 import net.minecraft.util.EnumHand
 import net.minecraft.world.chunk.EmptyChunk
+import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 

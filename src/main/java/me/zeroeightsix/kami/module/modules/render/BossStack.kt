@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.mixin.extension.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
 import net.minecraft.client.gui.ScaledResolution
@@ -13,6 +12,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs
 import kotlin.math.roundToInt

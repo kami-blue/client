@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.mixin.extension.packetMotionY
 import me.zeroeightsix.kami.mixin.extension.packetMotionZ
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 
