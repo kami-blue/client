@@ -18,8 +18,8 @@ abstract class ClientCommand(
 ) : CommandBuilder<ClientExecuteEvent>(name, alias, description) {
 
     protected val mc = Wrapper.minecraft
-    val prefix: String get() = CommandManager.prefix.value
-    val label = "$prefix$name"
+    protected val prefix: String get() = CommandManager.prefix.value
+    val nameWithPrefix get() = "$prefix$name"
 
     @CommandBuilder
     protected fun AbstractArg<*>.module(
