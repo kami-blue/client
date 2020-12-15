@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.PlayerControllerMP
+import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.world.World
 import org.kamiblue.command.ExecuteEvent
 
@@ -14,7 +15,7 @@ class ClientExecuteEvent(args: Array<String>) : ExecuteEvent(CommandManager, arg
 
 class SafeExecuteEvent(
     args: Array<String>,
-    val world: World,
+    val world: WorldClient,
     val player: EntityPlayerSP,
     val playerController: PlayerControllerMP
 ) : ExecuteEvent(CommandManager, args)

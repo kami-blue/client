@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.world.World
 import org.lwjgl.input.Keyboard
 
@@ -18,7 +19,7 @@ object Wrapper {
         get() = minecraft.player
 
     @JvmStatic
-    val world: World?
+    val world: WorldClient?
         get() = minecraft.world
 
     @JvmStatic
