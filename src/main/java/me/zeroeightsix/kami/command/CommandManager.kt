@@ -13,7 +13,7 @@ import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
 
-object CommandManager : AbstractCommandManager<ExecuteEvent>() {
+object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     val prefix: Setting<String> = Settings.s("commandPrefix", ";")
 
@@ -34,7 +34,7 @@ object CommandManager : AbstractCommandManager<ExecuteEvent>() {
 
         try {
             try {
-                invoke(ExecuteEvent(this, args))
+                invoke(ClientExecuteEvent(args))
             } catch (e: CommandNotFoundException) {
                 handleCommandNotFoundException(args.first())
             } catch (e: SubCommandNotFoundException) {

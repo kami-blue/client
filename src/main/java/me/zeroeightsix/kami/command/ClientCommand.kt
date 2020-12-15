@@ -14,7 +14,7 @@ abstract class ClientCommand(
     name: String,
     alias: Array<out String> = emptyArray(),
     description: String = "No description",
-) : CommandBuilder<ExecuteEvent>(name, alias, description) {
+) : CommandBuilder<ClientExecuteEvent>(name, alias, description) {
 
     protected val mc = Wrapper.minecraft
     val chatLabel = "[$name]"
