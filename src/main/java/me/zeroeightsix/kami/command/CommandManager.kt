@@ -1,10 +1,12 @@
 package me.zeroeightsix.kami.command
 
+import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.setting.SettingsRegister
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.command.AbstractCommandManager
@@ -14,6 +16,7 @@ import org.kamiblue.commons.utils.ClassUtils
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
+    val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: Setting<String> = Settings.s("commandPrefix", ";")
 
     fun init() {
@@ -28,20 +31,26 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         KamiMod.LOG.info("${getCommands().size} modules loaded, took ${time}ms")
     }
 
-    suspend fun runCommand(string: String) {
-        val args = tryParseArgument(string) ?: return
+    fun runCommand(string: String) {
+        commandScope.launch {
+            val args = tryParseArgument(string) ?: return@launch
 
-        try {
-            try {
-                invoke(ClientExecuteEvent(args))
-            } catch (e: CommandNotFoundException) {
-                handleCommandNotFoundException(args.first())
-            } catch (e: SubCommandNotFoundException) {
-                handleSubCommandNotFoundException(string, args, e)
+            onMainThread {
+                runBlocking {
+                    try {
+                        try {
+                            invoke(ClientExecuteEvent(args))
+                        } catch (e: CommandNotFoundException) {
+                            handleCommandNotFoundException(args.first())
+                        } catch (e: SubCommandNotFoundException) {
+                            handleSubCommandNotFoundException(string, args, e)
+                        }
+                    } catch (e: Exception) {
+                        MessageSendHelper.sendChatMessage("Error occurred while running command! (${e.message}), check the log for info!")
+                        KamiMod.LOG.warn("Error occurred while running command!", e)
+                    }
+                }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            MessageSendHelper.sendChatMessage("Error occurred while running command! (${e.message}), check the log for info!")
         }
     }
 

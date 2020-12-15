@@ -80,7 +80,7 @@ abstract class ClientCommand(
     }
 
     protected companion object {
-        val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
+        val commandScope = CommandManager.commandScope
     }
 
 }

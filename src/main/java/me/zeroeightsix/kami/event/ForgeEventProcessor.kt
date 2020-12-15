@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.event
 
-import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.command.CommandOld
@@ -106,10 +105,9 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (!event.message.startsWith(CommandOld.getCommandPrefix())) return
-        runBlocking {
-            event.isCanceled = true
+        if (event.message.startsWith(CommandOld.getCommandPrefix())) {
             CommandManager.runCommand(event.message.substring(1))
+            event.isCanceled = true
             event.message = ""
         }
     }

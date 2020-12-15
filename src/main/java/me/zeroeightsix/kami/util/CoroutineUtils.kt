@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.command.toSafe
 
 fun CoroutineScope.onMainThread(block: ClientEvent.() -> Unit) {
     val event = ClientEvent()
-    Wrapper.minecraft.addScheduledTask{
+    Wrapper.minecraft.addScheduledTask {
         event.block()
     }
 }
