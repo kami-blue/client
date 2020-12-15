@@ -29,12 +29,14 @@ object PeekCommand : ClientCommand(
                 entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
 
                 val scaledResolution = ScaledResolution(mc)
-                GuiShulkerBox(player.inventory, entityBox)
-                    .setWorldAndResolution(mc, scaledResolution.scaledWidth, scaledResolution.scaledHeight)
+                val gui = GuiShulkerBox(player.inventory, entityBox)
+                gui.setWorldAndResolution(mc, scaledResolution.scaledWidth, scaledResolution.scaledHeight)
 
                 commandScope.launch {
                     delay(50L)
-                    mc.displayGuiScreen(GuiShulkerBox(player.inventory, entityBox))
+                    onMainThread {
+                        mc.displayGuiScreen(gui)
+                    }
                 }
             } else {
                 MessageSendHelper.sendChatMessage("You aren't carrying a shulker box.")

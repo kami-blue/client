@@ -27,6 +27,10 @@ abstract class ClientCommand(
         arg(ModuleArg(name), block)
     }
 
+    protected fun CoroutineScope.onMainThread(block: () -> Unit) {
+        mc.addScheduledTask(block)
+    }
+
     protected companion object {
         val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     }
