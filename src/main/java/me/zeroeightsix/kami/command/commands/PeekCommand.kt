@@ -16,16 +16,14 @@ object PeekCommand : ClientCommand(
     description = "Look inside the contents of a shulker box without opening it."
 ) {
     init {
-        execute {
-            if (world == null || player == null) return@execute
-
+        executeSafe {
             val itemStack = player.inventory.getCurrentItem()
             val item = itemStack.item
             if (item is ItemShulkerBox) {
                 val entityBox = TileEntityShulkerBox().apply {
-                    this.world = this@execute.world
+                    this.world = this@executeSafe.world
                 }
-                val nbtTag = itemStack.tagCompound ?: return@execute
+                val nbtTag = itemStack.tagCompound ?: return@executeSafe
                 entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
 
                 val scaledResolution = ScaledResolution(mc)
