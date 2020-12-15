@@ -2,16 +2,9 @@ package me.zeroeightsix.kami.manager
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.manager.managers.FileInstanceManager
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 08/18/20
- * Updated by Xiaro on 06/09/20
- */
 object ManagerLoader {
 
     /** Thread for scanning managers during Forge pre-init */
@@ -24,7 +17,7 @@ object ManagerLoader {
     fun preLoad() {
         preLoadingThread = Thread {
             val stopTimer = TimerUtils.StopTimer()
-            managerClassList = ClassUtils.findClasses(FileInstanceManager::class.java.getPackage().name, Manager::class.java)
+            managerClassList = ClassUtils.findClasses("me.zeroeightsix.kami.manager.managers", Manager::class.java)
             val time = stopTimer.stop()
             KamiMod.LOG.info("${managerClassList!!.size} manager(s) found, took ${time}ms")
         }

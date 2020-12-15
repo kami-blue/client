@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.manager.ManagerLoader;
-import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
@@ -95,7 +94,6 @@ public class KamiMod {
         guiManager.initializeGUI();
         commandManager = new CommandManager();
 
-        FileInstanceManager.fixEmptyFiles();
         ConfigUtils.INSTANCE.loadAll();
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
