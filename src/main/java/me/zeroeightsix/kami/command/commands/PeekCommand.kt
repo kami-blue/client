@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.item.ItemShulkerBox
@@ -37,7 +37,7 @@ object PeekCommand : ClientCommand(
                     mc.displayGuiScreen(GuiShulkerBox(player.inventory, entityBox))
                 }
             } else {
-                sendChatMessage("You aren't carrying a shulker box.")
+                MessageSendHelper.sendChatMessage("You aren't carrying a shulker box.")
             }
         }
     }

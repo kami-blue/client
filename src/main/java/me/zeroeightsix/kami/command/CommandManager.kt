@@ -46,7 +46,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         }
     }
 
-    private fun tryParseArgument(string: String) = try {
+    fun tryParseArgument(string: String) = try {
         parseArguments(string)
     } catch (e: IllegalArgumentException) {
         MessageSendHelper.sendChatMessage(e.message ?: "Null")
