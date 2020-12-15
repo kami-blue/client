@@ -41,7 +41,7 @@ object FakePlayer : Module() {
         }
 
         if (playerName.value == "Player") {
-            MessageSendHelper.sendChatMessage("You can use &7'${CommandOld.commandPrefix.value}fp <name>'&r to set a custom name")
+            MessageSendHelper.sendChatMessage("You can use &7'${CommandOld.commandPrefix.value}set FakePlayer PlayerName <name>'&r to set a custom name")
         }
 
         fakePlayer = EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {

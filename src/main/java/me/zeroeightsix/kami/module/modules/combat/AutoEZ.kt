@@ -141,9 +141,9 @@ object AutoEZ : Module() {
 
     private fun sendHelpMessage() {
         if (messageMode.value == MessageMode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
-            MessageSendHelper.sendChatMessage("$chatName In order to use the custom " + name
-                    + ", please run the &7" + CommandOld.commandPrefix.value
-                    + "autoez&r command to change it, with '&7\$NAME&f' being the username of the killed player")
+            MessageSendHelper.sendChatMessage("$chatName In order to use the custom " + name +
+                ", please run the &7" + CommandOld.commandPrefix.value + "set AutoEz customText&r command to change it, " +
+                "with '&7\$NAME&f' being the username of the killed player")
         }
     }
 

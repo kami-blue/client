@@ -16,11 +16,11 @@ import net.minecraft.network.play.server.SPacketChat
 )
 object AutoReply : Module() {
     val customMessage = register(Settings.b("CustomMessage", false))
-    val message = register(Settings.stringBuilder("CustomText").withValue("Use &7" + CommandOld.getCommandPrefix() + "autoreply&r to modify this").withVisibility { customMessage.value })
+    val message = register(Settings.stringBuilder("CustomText").withValue("Use &7" + CommandOld.getCommandPrefix() + "set AutoReply message&r to modify this").withVisibility { customMessage.value })
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) return@listener
+            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) return@listener
             if (customMessage.value) {
                 sendServerMessage("/r " + message.value)
             } else {
