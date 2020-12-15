@@ -33,15 +33,22 @@ abstract class ClientCommand(
         block: ExecuteBlock<SafeExecuteEvent>
     ) {
         val safeExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
-            if (world != null && player != null && playerController != null) {
-                block.invoke(SafeExecuteEvent(args, world, player, playerController))
-            }
+            toSafe()?.block()
         }
         this.execute(description, safeExecuteBlock)
     }
 
-    protected fun CoroutineScope.onMainThread(block: () -> Unit) {
-        mc.addScheduledTask(block)
+    protected fun CoroutineScope.onMainThread(block: ClientEvent.() -> Unit) {
+        val event = ClientEvent()
+        mc.addScheduledTask{
+            event.block()
+        }
+    }
+
+    protected fun CoroutineScope.onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
+        mc.addScheduledTask {
+            ClientEvent().toSafe()?.block()
+        }
     }
 
     protected companion object {

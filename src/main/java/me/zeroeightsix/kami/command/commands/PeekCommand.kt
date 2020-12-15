@@ -34,7 +34,7 @@ object PeekCommand : ClientCommand(
 
                 commandScope.launch {
                     delay(50L)
-                    onMainThread {
+                    onMainThreadSafe {
                         mc.displayGuiScreen(gui)
                     }
                 }
