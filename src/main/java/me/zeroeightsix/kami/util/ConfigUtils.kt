@@ -15,10 +15,10 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
 object ConfigUtils {
@@ -86,30 +86,36 @@ object ConfigUtils {
     }
 
     fun getConfigName(): String {
-        val config = Paths.get("KAMIBlueLastConfig.txt")
-        var kamiConfigName = KAMI_CONFIG_NAME_DEFAULT
-        try {
-            Files.newBufferedReader(config).use { reader ->
-                val line = reader.readLine()
-                if (isFilenameValid(line)) kamiConfigName = line
-            }
-        } catch (e: NoSuchFileException) {
+        val file = File("KAMIBlueLastConfig.txt")
+
+        return if (!file.exists()) {
             try {
-                Files.newBufferedWriter(config).use { writer ->
-                    writer.write(KAMI_CONFIG_NAME_DEFAULT)
+                FileWriter(file, false).use {
+                    it.write(KAMI_CONFIG_NAME_DEFAULT)
                 }
-            } catch (e1: IOException) {
-                e1.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+            KAMI_CONFIG_NAME_DEFAULT
+        } else {
+            var configName = KAMI_CONFIG_NAME_DEFAULT
+
+            try {
+                FileReader(file).buffered().use {
+                    val line = it.readLine()
+                    if (isPathValid(line)) configName = line
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+            configName
         }
-        return kamiConfigName
     }
 
-    fun isFilenameValid(file: String?): Boolean {
+    fun isPathValid(path: String): Boolean {
         return try {
-            File(file!!).canonicalPath
+            File(path).canonicalPath
             true
         } catch (e: Throwable) {
             false

@@ -1,73 +1,76 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.CommandOld
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.command.syntax.parsers.DependantParser
-import me.zeroeightsix.kami.command.syntax.parsers.DependantParser.Dependency
-import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
+import kotlinx.coroutines.*
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import java.io.File
+import java.io.FileWriter
 import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
  * Created by 086 on 14/10/2018.
  * Updated by Xiaro on 21/08/20
  */
-class ConfigCommand : CommandOld("config", ChunkBuilder()
-        .append("mode", true, EnumParser(arrayOf("reload", "save", "path")))
-        .append("path", true, DependantParser(0, Dependency(arrayOf(arrayOf("path", "path")), "")))
-        .build(), "cfg") {
-    override fun call(args: Array<String?>) {
-        if (args[0] == null) {
-            MessageSendHelper.sendChatMessage("Missing argument &bmode&r: Choose from reload, save or path")
-            return
-        }
-
-        when (args[0]!!.toLowerCase()) {
-            "reload" -> {
-                Thread {
+object ConfigCommand : ClientCommand(
+    name = "Config",
+    alias = arrayOf("cfg"),
+    description = "Change config saving path or manually save and reload your config"
+) {
+    init {
+        literal("reload") {
+            execute {
+                commandScope.launch(Dispatchers.IO) {
                     val loaded = ConfigUtils.loadAll()
                     if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
-                }.start()
+                }
             }
+        }
 
-            "save" -> {
-                Thread {
+        literal("save") {
+            execute {
+                commandScope.launch(Dispatchers.IO) {
                     val saved = ConfigUtils.saveAll()
                     if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
-                }.start()
-            }
-
-
-            "path" -> if (args[1] == null) {
-                val file = Paths.get(ConfigUtils.getConfigName())
-                MessageSendHelper.sendChatMessage("Path to configuration: &b" + file.toAbsolutePath().toString())
-            } else {
-                val newPath = args[1]!!
-                if (!ConfigUtils.isFilenameValid(newPath)) {
-                    MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
-                }
-                try {
-                    Files.newBufferedWriter(Paths.get("KAMILastConfig.txt")).use { writer ->
-                        writer.write(newPath)
-                        ConfigUtils.loadAll()
-                        MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                 }
             }
-
-            else -> MessageSendHelper.sendChatMessage("Incorrect mode, please choose from: reload, save or path")
         }
-    }
 
-    init {
-        setDescription("Change where your config is saved or manually save and reload your config")
+        literal("path") {
+            string("path") { pathArg ->
+                execute {
+                    commandScope.launch(Dispatchers.IO) {
+                        val newPath = pathArg.value
+                        
+                        if (!ConfigUtils.isPathValid(newPath)) {
+                            MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
+                            return@launch
+                        }
+
+                        try {
+                            FileWriter(File("KAMILastConfig.txt"), false).use {
+                                it.write(newPath)
+                                ConfigUtils.loadAll()
+                                MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
+                            }
+                        } catch (e: IOException) {
+                            MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
+                            KamiMod.LOG.warn("Couldn't set path!", e)
+                        }
+                    }
+                }
+            }
+
+            execute {
+                commandScope.launch(Dispatchers.IO) {
+                    val path = Paths.get(ConfigUtils.getConfigName())
+                    MessageSendHelper.sendChatMessage("Path to configuration: &b" + path.toAbsolutePath().toString())
+                }
+            }
+        }
     }
 }
