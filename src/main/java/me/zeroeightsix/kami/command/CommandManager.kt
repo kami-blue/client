@@ -28,7 +28,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         }
 
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${getCommands().size} modules loaded, took ${time}ms")
+        KamiMod.LOG.info("${getCommands().size} commands loaded, took ${time}ms")
     }
 
     fun runCommand(string: String) {
