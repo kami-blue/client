@@ -36,21 +36,17 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         commandScope.launch {
             val args = tryParseArgument(string) ?: return@launch
 
-            onMainThread {
-                runBlocking {
-                    try {
-                        try {
-                            invoke(ClientExecuteEvent(args))
-                        } catch (e: CommandNotFoundException) {
-                            handleCommandNotFoundException(args.first())
-                        } catch (e: SubCommandNotFoundException) {
-                            handleSubCommandNotFoundException(string, args, e)
-                        }
-                    } catch (e: Exception) {
-                        MessageSendHelper.sendChatMessage("Error occurred while running command! (${e.message}), check the log for info!")
-                        KamiMod.LOG.warn("Error occurred while running command!", e)
-                    }
+            try {
+                try {
+                    invoke(ClientExecuteEvent(args))
+                } catch (e: CommandNotFoundException) {
+                    handleCommandNotFoundException(args.first())
+                } catch (e: SubCommandNotFoundException) {
+                    handleSubCommandNotFoundException(string, args, e)
                 }
+            } catch (e: Exception) {
+                MessageSendHelper.sendChatMessage("Error occurred while running command! (${e.message}), check the log for info!")
+                KamiMod.LOG.warn("Error occurred while running command!", e)
             }
         }
     }
@@ -60,6 +56,21 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     } catch (e: IllegalArgumentException) {
         MessageSendHelper.sendChatMessage(e.message ?: "Null")
         null
+    }
+
+    override suspend fun invoke(event: ClientExecuteEvent) {
+        val name = event.args.getOrNull(0) ?: throw IllegalArgumentException("Arguments can not be empty!")
+        val command = getCommand(name)
+        val finalArg = command.finalArgs.firstOrNull { it.checkArgs(event.args) }
+            ?: throw SubCommandNotFoundException(event.args, command)
+
+        coroutineScope {
+            onMainThread {
+                runBlocking {
+                    finalArg.invoke(event)
+                }
+            }
+        }
     }
 
     private fun handleCommandNotFoundException(command: String) {
