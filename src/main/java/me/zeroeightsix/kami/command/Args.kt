@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import net.minecraft.block.Block
 import net.minecraft.item.Item
+import net.minecraft.util.math.BlockPos
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.command.AbstractArg
 
@@ -14,6 +15,21 @@ class ModuleArg(
 
     override suspend fun convertToType(string: String?): Module? {
         return ModuleManager.getModuleOrNull(string)
+    }
+
+}
+
+class BlockPosArg(
+    override val name: String
+) : AbstractArg<BlockPos>() {
+
+    override suspend fun convertToType(string: String?): BlockPos? {
+        if (string == null) return null
+
+        val splitInts = string.split(',').mapNotNull { it.toIntOrNull() }
+        if (splitInts.size != 3) return null
+
+        return BlockPos(splitInts[0], splitInts[1], splitInts[2])
     }
 
 }
