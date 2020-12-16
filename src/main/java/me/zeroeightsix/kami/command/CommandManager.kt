@@ -64,11 +64,9 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         val finalArg = command.finalArgs.firstOrNull { it.checkArgs(event.args) }
             ?: throw SubCommandNotFoundException(event.args, command)
 
-        coroutineScope {
-            onMainThread {
-                runBlocking {
-                    finalArg.invoke(event)
-                }
+        onMainThread {
+            runBlocking {
+                finalArg.invoke(event)
             }
         }
     }

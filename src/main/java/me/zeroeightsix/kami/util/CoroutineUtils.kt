@@ -1,18 +1,16 @@
 package me.zeroeightsix.kami.util
 
-import kotlinx.coroutines.CoroutineScope
 import me.zeroeightsix.kami.command.ClientEvent
 import me.zeroeightsix.kami.command.SafeClientEvent
 import me.zeroeightsix.kami.command.toSafe
 
-fun CoroutineScope.onMainThread(block: ClientEvent.() -> Unit) {
-    val event = ClientEvent()
+fun onMainThread(block: ClientEvent.() -> Unit) {
     Wrapper.minecraft.addScheduledTask {
-        event.block()
+        ClientEvent().block()
     }
 }
 
-fun CoroutineScope.onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
+fun onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
     Wrapper.minecraft.addScheduledTask {
         ClientEvent().toSafe()?.block()
     }
