@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.CPacketCustomPayload
+import org.kamiblue.commons.extension.max
 
 object SignBookCommand : ClientCommand(
     name = "signbook",
