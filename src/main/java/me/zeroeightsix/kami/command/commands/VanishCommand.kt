@@ -13,17 +13,17 @@ object VanishCommand : ClientCommand(
     init {
         executeSafe {
             if (player.ridingEntity != null && vehicle == null) {
-                vehicle = mc.player.ridingEntity?.also {
+                vehicle = player.ridingEntity?.also {
                     player.dismountRidingEntity()
                     world.removeEntityFromWorld(it.entityId)
                     sendChatMessage("Vehicle " + it.name + " removed.")
                 }
             } else {
                 vehicle?.let {
-                    vehicle!!.isDead = false
-                    mc.world.addEntityToWorld(it.entityId, it)
-                    mc.player.startRiding(it, true)
-                    sendChatMessage("Vehicle " + vehicle!!.name + " created.")
+                    it.isDead = false
+                    world.addEntityToWorld(it.entityId, it)
+                    player.startRiding(it, true)
+                    sendChatMessage("Vehicle " + it.name + " created.")
                     vehicle = null
                 } ?: sendChatMessage("No Vehicle.")
             }

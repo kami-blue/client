@@ -14,11 +14,11 @@ object EntityStatsCommand : ClientCommand(
     description = "Display stats about the tamed, riding entity"
 ) {
     init {
-        execute {
-            mc.player?.ridingEntity?.let { entity ->
+        executeAsync {
+            player?.ridingEntity?.let { entity ->
                 if (entity !is EntityLivingBase) {
                     MessageSendHelper.sendErrorMessage("Not riding a compatible entity!")
-                    return@execute
+                    return@executeAsync
                 }
 
                 val speed = MathUtils.round(43.17 * entity.aiMoveSpeed, 2)
