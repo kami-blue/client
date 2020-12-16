@@ -12,11 +12,11 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.min
 
 @Module.Info(
-        name = "CustomChat",
-        category = Module.Category.CHAT,
-        description = "Add a custom ending to your message!",
-        showOnArray = Module.ShowOnArray.OFF,
-        modulePriority = 200
+    name = "CustomChat",
+    category = Module.Category.CHAT,
+    description = "Add a custom ending to your message!",
+    showOnArray = Module.ShowOnArray.OFF,
+    modulePriority = 200
 )
 object CustomChat : Module() {
     private val textMode = register(Settings.e<TextMode>("Message", TextMode.JAPANESE))
@@ -36,14 +36,14 @@ object CustomChat : Module() {
     val isCustomMode get() = textMode.value == TextMode.CUSTOM
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     private val modifier = newMessageModifier(
-            filter = {
-                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
-                        && (spammer.value || it.source !is Spammer)
-            },
-            modifier = {
-                val message = it.packet.message + getFull()
-                message.substring(0, min(256, message.length))
-            }
+        filter = {
+            (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                && (spammer.value || it.source !is Spammer)
+        },
+        modifier = {
+            val message = it.packet.message + getFull()
+            message.substring(0, min(256, message.length))
+        }
     )
 
     override fun onEnable() {
@@ -73,7 +73,8 @@ object CustomChat : Module() {
     init {
         listener<SafeTickEvent> {
             if (timer.tick(5L) && textMode.value == TextMode.CUSTOM && customText.value.equals("unchanged", ignoreCase = true)) {
-                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" + CommandOld.getCommandPrefix() + "customchat&r command to change it")
+                MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom " + name + ", please run the &7" +
+                    CommandOld.getCommandPrefix() + "set CustomChat CustomText \"text here\"&r command to change it")
             }
         }
     }
