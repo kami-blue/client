@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.setting.builder.SettingBuilder
 import me.zeroeightsix.kami.util.Bind
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
@@ -19,8 +20,8 @@ import java.util.*
 open class Module {
     /* Annotations */
     private val annotation =
-            javaClass.annotations.firstOrNull { it is Info } as? Info
-                    ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
+        javaClass.annotations.firstOrNull { it is Info } as? Info
+            ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
     val originalName = annotation.name
     val alias = arrayOf(originalName, *annotation.alias)
@@ -31,15 +32,15 @@ open class Module {
 
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Info(
-            val name: String,
-            val alias: Array<String> = [],
-            val description: String,
-            val category: Category,
-            val modulePriority: Int = -1,
-            val alwaysListening: Boolean = false,
-            val showOnArray: ShowOnArray = ShowOnArray.ON,
-            val alwaysEnabled: Boolean = false,
-            val enabledByDefault: Boolean = false
+        val name: String,
+        val alias: Array<String> = [],
+        val description: String,
+        val category: Category,
+        val modulePriority: Int = -1,
+        val alwaysListening: Boolean = false,
+        val showOnArray: ShowOnArray = ShowOnArray.ON,
+        val alwaysEnabled: Boolean = false,
+        val enabledByDefault: Boolean = false
     )
 
     enum class ShowOnArray {
@@ -65,9 +66,11 @@ open class Module {
 
     /* Settings */
     val fullSettingList = ArrayList<Setting<*>>()
-    val settingList: List<Setting<*>> by lazy { fullSettingList.filter {
-        it != name && it != bind && it != enabled && it != showOnArray && it != default
-    } }
+    val settingList: List<Setting<*>> by lazy {
+        fullSettingList.filter {
+            it != name && it != bind && it != enabled && it != showOnArray && it != default
+        }
+    }
 
     val name = register(Settings.s("Name", originalName))
     val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()))
@@ -79,7 +82,7 @@ open class Module {
     /* Properties */
     val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
-    val bindName: String get() = bind.value.toString()
+    val bindName: String get() = if (bind.value.key < 1) "NONE" else Wrapper.getKeyName(bind.value.key)
     val chatName: String get() = "[${name.value}]"
     val isOnArray: Boolean get() = showOnArray.value == ShowOnArray.ON
     val isProduction: Boolean get() = category != Category.HIDDEN
@@ -124,10 +127,10 @@ open class Module {
     }
 
 
-    /**
-     * Cleanup method in case this module wants to do something when the client closes down
-     */
-    open fun destroy() {}
+    open fun destroy() {
+        // Cleanup method in case this module wants to do something when the client closes down
+    }
+
     open fun isActive(): Boolean {
         return isEnabled || alwaysListening
     }
@@ -136,9 +139,17 @@ open class Module {
         return null
     }
 
-    protected open fun onEnable() {}
-    protected open fun onDisable() {}
-    protected open fun onToggle() {}
+    protected open fun onEnable() {
+        // override to run code when the module is enabled
+    }
+
+    protected open fun onDisable() {
+        // override to run code when the module is disabled
+    }
+
+    protected open fun onToggle() {
+        // override to run code when the module is enabled or disabled
+    }
 
     /* Setting registering */
     protected fun <T> register(setting: Setting<T>): Setting<T> {
@@ -181,6 +192,7 @@ open class Module {
             try {
                 key = Keyboard.getKeyIndex(s.toUpperCase())
             } catch (ignored: Exception) {
+                // this is fine, user manually edited or something
             }
             return if (key == 0) Bind.none() else Bind(ctrl, alt, shift, key)
         }

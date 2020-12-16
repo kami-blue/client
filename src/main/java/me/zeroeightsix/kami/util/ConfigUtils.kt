@@ -142,20 +142,24 @@ object ConfigUtils {
     private fun loadConfigurationUnsafe() {
         val kamiConfigName = getConfigName()
         val kamiConfig = Paths.get(kamiConfigName)
+
         if (!Files.exists(kamiConfig)) return
         Configuration.loadConfiguration(kamiConfig)
         val gui = KamiMod.INSTANCE.guiStateSetting.value
+
         for ((key, value) in gui.entrySet()) {
             val optional = KamiMod.INSTANCE.guiManager.children.stream()
                 .filter { component: Component? -> component is Frame }
                 .filter { component: Component -> (component as Frame).title == key }
                 .findFirst()
+
             if (optional.isPresent) {
                 val `object` = value.asJsonObject
                 val frame = optional.get() as Frame
                 frame.x = `object`["x"].asInt
                 frame.y = `object`["y"].asInt
                 val docking = Docking.values()[`object`["docking"].asInt]
+
                 if (docking.isLeft) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.LEFT) else if (docking.isRight) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.RIGHT) else if (docking.isCenterVertical) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.CENTER)
                 frame.docking = docking
                 frame.isMinimized = `object`["minimized"].asBoolean
@@ -164,6 +168,7 @@ object ConfigUtils {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }
         }
+
         for (component in KamiMod.INSTANCE.guiManager.children) {
             if (component !is Frame) continue
             if (!component.isPinnable || !component.isVisible) continue
@@ -188,8 +193,10 @@ object ConfigUtils {
             }
         KamiMod.INSTANCE.guiStateSetting.value = jsonObject
         val outputFile = Paths.get(getConfigName())
+
         if (!Files.exists(outputFile)) Files.createFile(outputFile)
         Configuration.saveConfiguration(outputFile)
+
         for (module in ModuleManager.getModules()) {
             module.destroy()
         }
