@@ -20,16 +20,16 @@ import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 /**
  * @author 0x2E | PretendingToCode
  */
-public class SignBookCommand extends CommandOld {
+public class SignBookCommandOld extends CommandOld {
 
-    public SignBookCommand() {
+    public SignBookCommandOld() {
         super("signbook", new ChunkBuilder().append("name").build(), "sign");
         setDescription("Colored book names. &f#n&7 for a new line and &f&&7 for colour codes");
     }
 
     @Override
     public void call(String[] args) {
-        ItemStack is = Wrapper.getPlayer().inventory.getCurrentItem();
+        ItemStack item = Wrapper.getPlayer().inventory.getCurrentItem();
         int c = 0x00A7;
 
         if (args.length == 1) {
@@ -37,7 +37,7 @@ public class SignBookCommand extends CommandOld {
             return;
         }
 
-        if (is.getItem() instanceof ItemWritableBook) {
+        if (item.getItem() instanceof ItemWritableBook) {
 
             ArrayList<String> toAdd = new ArrayList<>(Arrays.asList(args));
 
@@ -55,22 +55,22 @@ public class SignBookCommand extends CommandOld {
             String pageText = "";
             pages.appendTag(new NBTTagString(pageText));
 
-            NBTTagCompound bookData = is.getTagCompound();
+            NBTTagCompound bookData = item.getTagCompound();
 
-            if (is.hasTagCompound()) {
+            if (item.hasTagCompound()) {
                 if (bookData != null) {
-                    is.setTagCompound(bookData);
+                    item.setTagCompound(bookData);
                 }
-                is.getTagCompound().setTag("title", new NBTTagString(futureTitle));
-                is.getTagCompound().setTag("author", new NBTTagString(Wrapper.getPlayer().getName()));
+                item.getTagCompound().setTag("title", new NBTTagString(futureTitle));
+                item.getTagCompound().setTag("author", new NBTTagString(Wrapper.getPlayer().getName()));
             } else {
-                is.setTagInfo("pages", pages);
-                is.setTagInfo("title", new NBTTagString(futureTitle));
-                is.setTagInfo("author", new NBTTagString(Wrapper.getPlayer().getName()));
+                item.setTagInfo("pages", pages);
+                item.setTagInfo("title", new NBTTagString(futureTitle));
+                item.setTagInfo("author", new NBTTagString(Wrapper.getPlayer().getName()));
             }
 
             PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-            buf.writeItemStack(is);
+            buf.writeItemStack(item);
 
             Wrapper.getPlayer().connection.sendPacket(new CPacketCustomPayload("MC|BSign", buf));
             sendChatMessage("Signed book with title: " + futureTitle + "&r");
