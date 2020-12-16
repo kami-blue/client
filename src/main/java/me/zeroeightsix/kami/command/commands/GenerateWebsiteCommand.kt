@@ -1,23 +1,19 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.CommandOld
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-/**
- * @author l1ving
- * Updated by l1ving on 18/03/20
- * Updated by Xiaro on 18/08/20
- *
- * Horribly designed command for uh, generating the modules page on the website. This was the easiest way I could do it, but maybe not the most efficient.
- */
-class GenerateWebsiteCommand : CommandOld("genwebsite", null) {
-    override fun call(args: Array<String>) {
-        val mods = ModuleManager.getModules()
-        val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
-        KamiMod.LOG.info("\n"
+object GenerateWebsiteCommand : ClientCommand(
+    name = "generatewebsite",
+    description = "Generates the website modules to the log"
+) {
+    init {
+        execute {
+            val mods = ModuleManager.getModules()
+            val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
+            KamiMod.LOG.info("\n"
                 + "---\n"
                 + "layout: default\n"
                 + "title: Modules\n"
@@ -25,30 +21,24 @@ class GenerateWebsiteCommand : CommandOld("genwebsite", null) {
                 + "---"
                 + "\n## Modules (${mods.size})\n")
 
-        for (modCategory in modCategories) {
-            var totalMods = 0
-            var str = ""
-            for (module in mods) {
-                if (!module.isProduction) continue
-                if (!module.category.toString().equals(modCategory, ignoreCase = true)) continue
-                totalMods++
-                str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
+            for (modCategory in modCategories) {
+                var totalMods = 0
+                var str = ""
+                for (module in mods) {
+                    if (!module.isProduction) continue
+                    if (!module.category.toString().equals(modCategory, ignoreCase = true)) continue
+                    totalMods++
+                    str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
+                }
+                KamiMod.LOG.info("<details>")
+                KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
+                KamiMod.LOG.info("    <p><ul>")
+                KamiMod.LOG.info(str)
+                KamiMod.LOG.info("    </ul></p>")
+                KamiMod.LOG.info("</details>")
             }
-            KamiMod.LOG.info("<details>")
-            KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
-            KamiMod.LOG.info("    <p><ul>")
-            KamiMod.LOG.info(str)
-            KamiMod.LOG.info("    </ul></p>")
-            KamiMod.LOG.info("</details>")
+            MessageSendHelper.sendChatMessage("Generated website to log file!")
+
         }
-        sendChatMessage(getLabel().substring(0, 1).toUpperCase() + getLabel().substring(1) + ": Generated website to log file!")
-    }
-
-    private fun nameAndDescription(module: Module): String {
-        return "<li>" + module.name + "<p><i>" + module.description + "</i></p></li>"
-    }
-
-    init {
-        setDescription("Generates the module page for the website")
     }
 }
