@@ -2,10 +2,6 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.command.CommandOld
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import java.lang.StringBuilder
 
 object SayCommand : ClientCommand(
     name = "say",
@@ -13,7 +9,7 @@ object SayCommand : ClientCommand(
 ) {
     init {
         greedy("message") { messageArg ->
-            execute {
+            executeSafe {
                 sendServerMessage(messageArg.value.trim())
             }
         }

@@ -20,10 +20,12 @@ object PeekCommand : ClientCommand(
         executeSafe {
             val itemStack = player.inventory.getCurrentItem()
             val item = itemStack.item
+
             if (item is ItemShulkerBox) {
                 val entityBox = TileEntityShulkerBox().apply {
                     this.world = this@executeSafe.world
                 }
+
                 val nbtTag = itemStack.tagCompound ?: return@executeSafe
                 entityBox.readFromNBT(nbtTag.getCompoundTag("BlockEntityTag"))
 
@@ -38,7 +40,7 @@ object PeekCommand : ClientCommand(
                     }
                 }
             } else {
-                MessageSendHelper.sendChatMessage("You aren't carrying a shulker box.")
+                MessageSendHelper.sendErrorMessage("You aren't holding a shulker box.")
             }
         }
     }
