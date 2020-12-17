@@ -1,6 +1,7 @@
-package me.zeroeightsix.kami.command
+package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.renderer.GlStateManager
