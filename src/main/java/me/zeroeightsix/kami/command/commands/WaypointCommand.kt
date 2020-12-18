@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
@@ -26,7 +27,7 @@ object WaypointCommand : ClientCommand(
                 int("x") { xArg ->
                     int("y") { yArg ->
                         int("z") { zArg ->
-                            execute {
+                            execute("Add a custom waypoint") {
                                 add(nameArg.name, BlockPos(xArg.value, yArg.value, zArg.value))
                             }
                         }
@@ -34,24 +35,24 @@ object WaypointCommand : ClientCommand(
                 }
 
                 blockPos("pos") { posArg ->
-                    execute {
+                    execute("Add a custom waypoint") {
                         add(nameArg.name, posArg.value)
                     }
                 }
 
-                executeSafe {
+                executeSafe("Add a waypoint at your position") {
                     add(nameArg.value, player.position)
                 }
             }
 
-            executeSafe {
+            executeSafe("Add an unnamed waypoint at your position") {
                 add("Unnamed", player.position)
             }
         }
 
         literal("del", "remove", "delete", "-") {
             int("id") { idArg ->
-                executeAsync {
+                executeAsync("Delete a waypoint by ID") {
                     delete(idArg.value)
                 }
             }
@@ -59,34 +60,34 @@ object WaypointCommand : ClientCommand(
 
         literal("goto", "path") {
             int("id") { idArg ->
-                executeAsync {
+                executeAsync("Go to a waypoint with Baritone") {
                     goto(idArg.value)
                 }
             }
         }
 
         literal("list") {
-            execute {
+            execute("List saved waypoints") {
                 list()
             }
         }
 
         literal("stash", "stashes") {
-            executeAsync {
+            executeAsync("List stash waypoints") {
                 stash()
             }
         }
 
         literal("search") {
             string("name") { nameArg ->
-                executeAsync {
+                executeAsync("Search waypoints by name") {
                     search(nameArg.value)
                 }
             }
         }
 
         literal("clear") {
-            execute {
+            execute("Clear all waypoints") {
                 clear()
             }
         }
@@ -156,7 +157,8 @@ object WaypointCommand : ClientCommand(
     private fun clear() {
         if (System.currentTimeMillis() - confirmTime > 15000L) {
             confirmTime = System.currentTimeMillis()
-            MessageSendHelper.sendChatMessage("This will delete ALL your waypoints, run '&7${prefix}wp clear&f' again to confirm")
+            MessageSendHelper.sendWarningMessage("This will delete ALL your waypoints, run " +
+                "$prefixName clear".colorFormatValue + " again to confirm")
         } else {
             confirmTime = 0L
             WaypointManager.clear()

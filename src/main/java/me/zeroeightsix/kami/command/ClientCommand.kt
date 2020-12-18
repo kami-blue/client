@@ -20,7 +20,7 @@ abstract class ClientCommand(
 
     protected val mc = Wrapper.minecraft
     protected val prefix: String get() = CommandManager.prefix.value
-    val nameWithPrefix get() = "$prefix$name"
+    val prefixName get() = "$prefix$name"
 
     @CommandBuilder
     protected fun AbstractArg<*>.module(
