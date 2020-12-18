@@ -3,10 +3,11 @@ package me.zeroeightsix.kami.util.text
 import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandOld
+import me.zeroeightsix.kami.manager.managers.MessageManager
+import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.Wrapper
-import net.minecraft.launchwrapper.LogWrapper
-import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextComponentBase
 import net.minecraft.util.text.TextFormatting
@@ -64,10 +65,10 @@ object MessageSendHelper {
         mc.player?.sendMessage(ChatMessage(message))
     }
 
-    fun sendServerMessage(message: String?) {
-        if (message.isNullOrBlank()) return
-        mc.connection?.sendPacket(CPacketChatMessage(message))
-            ?: LogWrapper.warning("Could not send server message: \"$message\"")
+    fun Any.sendServerMessage(message: String?): TaskState {
+        if (message.isNullOrBlank()) return TaskState(true)
+        val priority = if (this is Module) modulePriority else 0
+        return MessageManager.addMessageToQueue(message, this, priority)
     }
 
     class ChatMessage internal constructor(text: String) : TextComponentBase() {
