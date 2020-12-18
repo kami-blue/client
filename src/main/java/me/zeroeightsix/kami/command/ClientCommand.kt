@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.Block
 import net.minecraft.item.Item
+import net.minecraft.util.math.BlockPos
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.CommandBuilder
@@ -51,6 +52,14 @@ abstract class ClientCommand(
         block: BuilderBlock<PlayerProfile>
     ) {
         arg(PlayerArg(name), block)
+    }
+
+    @CommandBuilder
+    protected fun AbstractArg<*>.blockPos(
+        name: String,
+        block: BuilderBlock<BlockPos>
+    ) {
+        arg(BlockPosArg(name), block)
     }
 
     @CommandBuilder
