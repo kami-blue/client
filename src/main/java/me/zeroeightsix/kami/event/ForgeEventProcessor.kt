@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
@@ -104,7 +105,7 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (event.message.startsWith(CommandManager.prefix.value)) {
+        if (MessageDetectionHelper.isKamiCommand(event.message)) {
             CommandManager.runCommand(event.message.substring(1))
             event.isCanceled = true
             event.message = ""

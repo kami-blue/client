@@ -21,6 +21,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     val String.colorFormatValue get() = "[${TextFormatting.GRAY}$this${TextFormatting.RESET}]"
     val Int.colorFormatValue get() = "(${TextFormatting.GRAY}$this${TextFormatting.RESET})"
 
+    @JvmStatic
     fun init() {
         val stopTimer = TimerUtils.StopTimer()
         val commandClasses = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)

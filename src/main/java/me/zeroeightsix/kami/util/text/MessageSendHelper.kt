@@ -31,16 +31,8 @@ object MessageSendHelper {
         sendRawChatMessage(coloredName('4') + message)
     }
 
-    fun sendKamiCommand(command: String, addToHistory: Boolean = false) {
-        try {
-            if (addToHistory) {
-                mc.ingameGUI.chatGUI.addToSentMessages(command)
-            }
-            if (command.length > 1) KamiMod.INSTANCE.commandManager.callCommand(command.substring(CommandManager.prefix.value.length - 1)) else sendChatMessage("Please enter a command!")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
-        }
+    fun sendKamiCommand(command: String) {
+        CommandManager.runCommand(command.substring(1))
     }
 
     fun sendBaritoneMessage(message: String) {
