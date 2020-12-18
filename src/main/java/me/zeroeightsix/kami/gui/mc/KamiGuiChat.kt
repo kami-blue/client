@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors.GuiC
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
@@ -23,8 +24,8 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
     private val bracketRegex = "<.*>|\\[.*]".toRegex()
 
     init {
-        if (startStringIn != CommandOld.getCommandPrefix()) calculateCommand(startStringIn.substring(
-            CommandOld.getCommandPrefix().length))
+        if (startStringIn != CommandManager.prefix.value) calculateCommand(startStringIn.substring(
+            CommandManager.prefix.value.length))
         historyBufferIn?.let { historyBuffer = it }
         sentHistoryCursor = sentHistoryCursorIn
     }
@@ -32,18 +33,18 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
 
-        if (CommandOld.getCommandPrefix() != null && !inputField.text.startsWith(
-                CommandOld.getCommandPrefix())) {
+        if (CommandManager.prefix.value != null && !inputField.text.startsWith(
+                CommandManager.prefix.value)) {
             displayNormalChatGUI()
             return
         }
 
-        if (inputField.text == CommandOld.getCommandPrefix()) {
+        if (inputField.text == CommandManager.prefix.value) {
             commandHint = ""
             return
         }
 
-        calculateCommand(inputField.text.substring(CommandOld.getCommandPrefix().length))
+        calculateCommand(inputField.text.substring(CommandManager.prefix.value.length))
     }
 
     private fun displayNormalChatGUI() {

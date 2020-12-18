@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.command.CommandOld
+import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -142,9 +143,9 @@ object AutoEZ : Module() {
 
     private fun sendHelpMessage() {
         if (messageMode.value == MessageMode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
-            MessageSendHelper.sendChatMessage("$chatName In order to use the custom " + name +
-                ", please run the &7" + CommandOld.commandPrefix.value + "set AutoEz customText&r command to change it, " +
-                "with '&7\$NAME&f' being the username of the killed player")
+            MessageSendHelper.sendChatMessage("$chatName In order to use the custom $name, please run the " +
+                "${CommandManager.prefix}set AutoEZ customText".colorFormatValue +
+                " command to change it, with " + "\$NAME".colorFormatValue + " being the username of the killed player")
         }
     }
 

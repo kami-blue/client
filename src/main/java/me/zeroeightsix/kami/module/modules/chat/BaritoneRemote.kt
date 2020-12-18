@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.CommandOld
+import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
@@ -18,9 +19,9 @@ import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
-        name = "BaritoneRemote",
-        description = "Remotely control Baritone with /msg",
-        category = Module.Category.CHAT
+    name = "BaritoneRemote",
+    description = "Remotely control Baritone with /msg",
+    category = Module.Category.CHAT
 )
 object BaritoneRemote : Module() {
     private val feedback = register(Settings.b("SendFeedback", true))
@@ -35,10 +36,9 @@ object BaritoneRemote : Module() {
         allow.settingListener = Setting.SettingListeners {
             mc.player?.let {
                 if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
-                    MessageSendHelper.sendChatMessage("$chatName Use the &7" + CommandOld.getCommandPrefix()
-                            + "set ${name.value} Custom names&f command to change the custom users list. Use , to separate players, for example &7"
-                            + CommandOld.getCommandPrefix()
-                            + "set ${name.value} Custom dominika,Dewy,086&f")
+                    MessageSendHelper.sendChatMessage("$chatName Use the " + "${CommandManager.prefix}set Custom".colorFormatValue
+                        + " command to change the custom users list. For example, "
+                        + "${CommandManager.prefix}set Custom dominika,Dewy,086".colorFormatValue)
                 }
             }
         }
@@ -51,16 +51,16 @@ object BaritoneRemote : Module() {
             if (MessageDetectionHelper.isDirect(true, message)) {
                 val username = MessageDetectionHelper.getDirectUsername(message) ?: return@listener
                 val command = message.detectAndRemove(Regexes.DIRECT)
-                        ?: message.detectAndRemove(Regexes.DIRECT_ALT_1)
-                        ?: message.detectAndRemove(Regexes.DIRECT_ALT_2) ?: return@listener
+                    ?: message.detectAndRemove(Regexes.DIRECT_ALT_1)
+                    ?: message.detectAndRemove(Regexes.DIRECT_ALT_2) ?: return@listener
 
                 val bPrefix = BaritoneUtils.prefix
-                val kbPrefix = "${CommandOld.getCommandPrefix()}b "
+                val kbPrefix = "${CommandManager.prefix}b "
                 if ((!command.startsWith(bPrefix) && !command.startsWith(kbPrefix)) || !isValidUser(username)) return@listener
 
                 val baritoneCommand =
-                        if (command.startsWith(bPrefix)) command.substring(bPrefix.length).split(" ")
-                        else command.substring(kbPrefix.length).split(" ")
+                    if (command.startsWith(bPrefix)) command.substring(bPrefix.length).split(" ")
+                    else command.substring(kbPrefix.length).split(" ")
 
                 MessageSendHelper.sendBaritoneCommand(*baritoneCommand.toTypedArray())
                 sendNextMsg = true

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.CommandOld
+import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.mixin.extension.textComponent
@@ -21,9 +22,9 @@ import java.util.stream.Collectors
 import kotlin.math.sqrt
 
 @Module.Info(
-        name = "ChatEncryption",
-        description = "Encrypts and decrypts chat messages",
-        category = Module.Category.CHAT
+    name = "ChatEncryption",
+    description = "Encrypts and decrypts chat messages",
+    category = Module.Category.CHAT
 )
 object ChatEncryption : Module() {
     private val self = register(Settings.b("DecryptOwn", true))
@@ -42,7 +43,10 @@ object ChatEncryption : Module() {
     private val delimiter: String?
         get() {
             if (delimiterValue.value.equals("unchanged", ignoreCase = true)) {
-                sendErrorMessage(chatName + " Please change the delimiter with &7" + CommandOld.getCommandPrefix() + "set $name delimiterV <delimiter>&f, disabling")
+                sendErrorMessage("$chatName Please change the delimiter with " +
+                    "${CommandManager.prefix}set $name delimiterV <delimiter>".colorFormatValue +
+                    ", disabling"
+                )
                 disable()
                 return null
             }

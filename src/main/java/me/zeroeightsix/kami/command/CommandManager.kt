@@ -26,7 +26,6 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         val commandClasses = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
 
         for (clazz in commandClasses) {
-            println(clazz.simpleName)
             register(ClassUtils.getInstance(clazz))
         }
 
@@ -75,17 +74,17 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     private fun handleCommandNotFoundException(command: String) {
         MessageSendHelper.sendChatMessage("Unknown command: '${TextFormatting.GRAY}$prefix$command${TextFormatting.RESET}' ." +
-            "Run '${TextFormatting.GRAY}${prefix}help${TextFormatting.RESET}' for a list of commands.")
+            "Run " + "${prefix}help".colorFormatValue + " for a list of commands.")
     }
 
     private suspend fun handleSubCommandNotFoundException(string: String, args: Array<String>, e: SubCommandNotFoundException) {
         val bestCommand = e.command.finalArgs.maxByOrNull { it.countArgs(args) }
 
-        var message = "Invalid syntax: '${TextFormatting.GRAY}$prefix$string${TextFormatting.RESET}' .\n"
+        var message = "Invalid syntax: " + "$prefix$string".colorFormatValue + "\n"
 
-        if (bestCommand != null) message += "Did you mean '${TextFormatting.GRAY}$prefix${bestCommand.printArgHelp()}${TextFormatting.RESET}' ?\n"
+        if (bestCommand != null) message += "Did you mean " + "$prefix${bestCommand.printArgHelp()}".colorFormatValue + "?\n"
 
-        message += "\nRun '${TextFormatting.GRAY}${prefix}help ${e.command.name}${TextFormatting.RESET}' for a list of available arguments."
+        message += "\nRun " + "${prefix}help ${e.command.name}".colorFormatValue + " for a list of available arguments."
 
         MessageSendHelper.sendChatMessage(message)
     }

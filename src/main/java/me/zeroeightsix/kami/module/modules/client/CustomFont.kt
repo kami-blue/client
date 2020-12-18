@@ -1,7 +1,8 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.CommandOld
+import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -9,19 +10,19 @@ import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
-        name = "CustomFont",
-        description = "Use the better font instead of the stupid Minecraft font",
-        showOnArray = Module.ShowOnArray.OFF,
-        category = Module.Category.CLIENT,
-        enabledByDefault = true
+    name = "CustomFont",
+    description = "Use the better font instead of the stupid Minecraft font",
+    showOnArray = Module.ShowOnArray.OFF,
+    category = Module.Category.CLIENT,
+    enabledByDefault = true
 )
 object CustomFont : Module() {
     private const val DEFAULT_FONT_NAME = "Source Sans Pro"
 
     val fontName = register(Settings.stringBuilder("FontName")
-            .withValue(DEFAULT_FONT_NAME)
-            .withRestriction { getMatchingFontName(it) != null }
-            .withConsumer { _: String, value: String -> getMatchingFontName(value) })
+        .withValue(DEFAULT_FONT_NAME)
+        .withRestriction { getMatchingFontName(it) != null }
+        .withConsumer { _: String, value: String -> getMatchingFontName(value) })
     private val sizeSetting = register(Settings.floatBuilder("Size").withValue(1.0f).withRange(0.5f, 2.0f).withStep(0.05f))
     private val gapSetting = register(Settings.floatBuilder("Gap").withValue(0.0f).withRange(-10f, 10f).withStep(0.5f))
     private val lineSpaceSetting = register(Settings.floatBuilder("LineSpace").withValue(0.0f).withRange(-10f, 10f).withStep(0.5f))
@@ -42,13 +43,14 @@ object CustomFont : Module() {
 
     override fun onToggle() {
         MessageSendHelper.sendChatMessage(
-                "Changed font! Run \n" +
-                        "&7${CommandOld.commandPrefix.value}config save\n" +
-                        "&7${CommandOld.commandPrefix.value}config reload\n" +
-                        "&f if it's not sizing correctly"
+            "Changed font! Run \n" +
+                "&7${CommandManager.prefix}config save\n" +
+                "&7${CommandManager.prefix}config reload\n" +
+                "&f if it's not sizing correctly"
         )
         if (isDefaultFont) {
-            MessageSendHelper.sendChatMessage("You can run &7${CommandOld.commandPrefix.value}set $originalName ${fontName.name} <Font Name> to change custom font")
+            MessageSendHelper.sendChatMessage("You can run " +
+                "${CommandManager.prefix}set $originalName ${fontName.name} <Font Name>".colorFormatValue + " to change custom font")
         }
     }
 

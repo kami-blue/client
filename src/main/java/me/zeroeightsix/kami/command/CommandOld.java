@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.command;
 
 import me.zeroeightsix.kami.command.syntax.SyntaxChunk;
-import me.zeroeightsix.kami.setting.Setting;
 import net.minecraft.client.Minecraft;
 
 import java.util.Arrays;
@@ -18,8 +17,6 @@ public abstract class CommandOld {
 
     protected SyntaxChunk[] syntaxChunks;
 
-    public static Setting<String> commandPrefix = CommandManager.INSTANCE.getPrefix();
-
     public CommandOld(String label, SyntaxChunk[] syntaxChunks, String... aliases) {
         this.label = label;
         this.syntaxChunks = syntaxChunks;
@@ -35,16 +32,8 @@ public abstract class CommandOld {
         return description;
     }
 
-    public static String getCommandPrefix() {
-        return commandPrefix.getValue();
-    }
-
     public String getLabel() {
         return label;
-    }
-
-    public String getChatLabel() {
-        return "[" + label + "] ";
     }
 
     public abstract void call(String[] args);

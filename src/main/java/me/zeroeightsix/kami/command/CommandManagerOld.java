@@ -51,7 +51,7 @@ public class CommandManagerOld {
             }
         }
 
-        sendChatMessage("&7Unknown command. try '&f" + CommandOld.getCommandPrefix() + "cmds&7' for a list of commands.");
+        sendChatMessage("Unknown command. try [&7" + CommandManager.INSTANCE.getPrefix().getValue() + "cmds&f] for a list of commands.");
     }
 
     private static String[] removeElement(String[] input, int indexToDelete) {

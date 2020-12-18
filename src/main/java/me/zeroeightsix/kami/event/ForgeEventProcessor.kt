@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandOld
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.UIRenderer
 import me.zeroeightsix.kami.gui.kami.KamiGUI
@@ -95,8 +94,8 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(CommandOld.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
-            mc.displayGuiScreen(GuiChat(CommandOld.getCommandPrefix()))
+        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(CommandManager.prefix.value, ignoreCase = true) && !mc.player.isSneaking) {
+            mc.displayGuiScreen(GuiChat(CommandManager.prefix.value))
         } else {
             KamiEventBus.post(event)
             ModuleManager.onBind(Keyboard.getEventKey())
@@ -105,7 +104,7 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (event.message.startsWith(CommandOld.getCommandPrefix())) {
+        if (event.message.startsWith(CommandManager.prefix.value)) {
             CommandManager.runCommand(event.message.substring(1))
             event.isCanceled = true
             event.message = ""
