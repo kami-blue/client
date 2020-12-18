@@ -22,11 +22,34 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
     private var predictString = ""
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        super.keyTyped(typedChar, keyCode)
+        if (guiChatKeyTyped(typedChar, keyCode)) return
 
         if (!inputField.text.startsWith(CommandManager.prefix.value)) {
             displayNormalChatGUI()
             return
+        }
+    }
+
+    private fun guiChatKeyTyped(typedChar: Char, keyCode: Int): Boolean {
+        return if (keyCode == 1) {
+            mc.displayGuiScreen(null)
+            true
+        } else if (keyCode != 28 && keyCode != 156) {
+            when (keyCode) {
+                200 -> getSentHistory(-1)
+                208 -> getSentHistory(1)
+                201 -> mc.ingameGUI.chatGUI.scroll(mc.ingameGUI.chatGUI.lineCount - 1)
+                209 -> mc.ingameGUI.chatGUI.scroll(-mc.ingameGUI.chatGUI.lineCount + 1)
+                else -> inputField.textboxKeyTyped(typedChar, keyCode)
+            }
+            false
+        } else {
+            val string = inputField.text.trim { it <= ' ' }
+            if (string.isNotEmpty()) {
+                sendChatMessage(string)
+            }
+            mc.displayGuiScreen(null)
+            true
         }
     }
 
