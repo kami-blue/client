@@ -17,7 +17,6 @@ object WaypointCommand : ClientCommand(
     alias = arrayOf("wp"),
     description = "Manages waypoint."
 ) {
-
     private val stashRegex = "(\\(.* chests, .* shulkers, .* droppers, .* dispensers\\))".toRegex()
     private var confirmTime = 0L
 

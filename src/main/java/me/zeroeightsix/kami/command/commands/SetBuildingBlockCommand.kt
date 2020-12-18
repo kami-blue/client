@@ -7,6 +7,7 @@ import net.minecraft.block.Block.getBlockFromItem
 import net.minecraft.block.BlockAir
 import net.minecraft.item.Item.getIdFromItem
 
+// TODO: Remove once GUI has Block settings
 object SetBuildingBlockCommand : ClientCommand(
     name = "setbuildingblock",
     description = "Set the default building block"
