@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.command.commands.TeleportCommand
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
@@ -9,8 +8,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import org.kamiblue.event.listener.listener
-import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -22,6 +19,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "NoFall",
@@ -46,7 +44,7 @@ object NoFall : Module() {
     }
 
     private enum class CatchMode {
-        BLOCK, TP, MOTION
+        BLOCK, MOTION
     }
 
     private var last: Long = 0
@@ -75,10 +73,11 @@ object NoFall : Module() {
         if (fallModeSetting.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
             val posVec = mc.player.positionVector
             val result = mc.world.rayTraceBlocks(posVec, posVec.add(0.0, -5.33, 0.0), true, true, false)
+
             if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK) {
                 var hand = EnumHand.MAIN_HAND
-                if (mc.player.heldItemOffhand.getItem() === Items.WATER_BUCKET) hand = EnumHand.OFF_HAND else if (mc.player.heldItemMainhand.getItem() !== Items.WATER_BUCKET) {
-                    for (i in 0..8) if (mc.player.inventory.getStackInSlot(i).getItem() === Items.WATER_BUCKET) {
+                if (mc.player.heldItemOffhand.item === Items.WATER_BUCKET) hand = EnumHand.OFF_HAND else if (mc.player.heldItemMainhand.item !== Items.WATER_BUCKET) {
+                    for (i in 0..8) if (mc.player.inventory.getStackInSlot(i).item === Items.WATER_BUCKET) {
                         mc.player.inventory.currentItem = i
                         mc.player.rotationPitch = 90f
                         last = System.currentTimeMillis()
@@ -89,12 +88,13 @@ object NoFall : Module() {
                 mc.player.rotationPitch = 90f
                 mc.playerController.processRightClick(mc.player, mc.world, hand)
             }
+
             if (pickup.value) {
                 Thread {
                     try { // this is just pozzed and should be properly calculating it based on velocity but I cba to do it
                         Thread.sleep(pickupDelay.value.toLong())
                     } catch (ignored: InterruptedException) {
-
+                        // this is fine
                     }
                     mc.player.rotationPitch = 90f
                     mc.rightClickMouse()
@@ -127,15 +127,12 @@ object NoFall : Module() {
                     placeBlock(); placeBlock(); placeBlock() // yes
                 }
             }
-            CatchMode.TP -> {
-                val pos = VectorUtils.getHighestTerrainPos(mc.player.position)
-                TeleportCommand.teleport(mc, Vec3d(pos), false)
-            }
             CatchMode.MOTION -> {
                 mc.player.motionY = 10.0
                 mc.player.motionY = -1.0
             }
             else -> {
+                // unsupported mode
             }
         }
     }
