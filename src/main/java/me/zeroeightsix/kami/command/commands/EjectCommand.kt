@@ -4,13 +4,13 @@ import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-// TODO: Remove once GUI has String support and is merged
+// TODO: Remove once GUI has List
 object EjectCommand : ClientCommand(
     name = "eject",
     description = "Modify AutoEject item list"
 ) {
     init {
-        literal("add") {
+        literal("add", "+") {
             item("item") { itemArg ->
                 execute("Add an item to the eject list") {
                     val itemName = itemArg.value.registryName!!.toString()
@@ -25,7 +25,7 @@ object EjectCommand : ClientCommand(
             }
         }
 
-        literal("remove") {
+        literal("del", "remove", "-") {
             item("item") { itemArg ->
                 execute("Remove an item from the eject list") {
                     val itemName = itemArg.value.registryName!!.toString()
