@@ -106,7 +106,7 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
         if (MessageDetectionHelper.isKamiCommand(event.message)) {
-            CommandManager.runCommand(event.message.substring(1))
+            CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix.value))
             event.isCanceled = true
             event.message = ""
         }
