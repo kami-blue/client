@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.event.listener.listener
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,12 +27,12 @@ object AutoQMain : Module() {
         listener<SafeTickEvent> {
             if (!timer.tick(delay.value.toLong())) return@listener
 
-            if (mc.getCurrentServerData() == null) {
+            if (mc.currentServerData == null) {
                 sendMessage("&l&6Error: &r&6You are in singleplayer")
                 return@listener
             }
 
-            if (!mc.getCurrentServerData()!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
+            if (!mc.currentServerData!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
                 return@listener
             }
 
@@ -49,7 +50,7 @@ object AutoQMain : Module() {
         val date = Date(System.currentTimeMillis())
 
         MessageSendHelper.sendChatMessage("&7Run &b/queue 2b2t-lobby&7 at " + formatter.format(date))
-        MessageSendHelper.sendServerMessage("/queue 2b2t-lobby")
+        sendServerMessage("/queue 2b2t-lobby")
     }
 
     private fun sendMessage(message: String) {

@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.KamiMod
@@ -10,12 +8,13 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.EnumTextColor
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -113,7 +112,7 @@ object TotemPopCounter : Module() {
                 MessageSendHelper.sendChatMessage("$chatName $message")
             }
             Announce.EVERYONE -> {
-                MessageSendHelper.sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
+                sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
             }
             else -> {
             }

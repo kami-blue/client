@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
@@ -150,7 +151,7 @@ object AutoEZ : Module() {
     private fun sendEzMessage(player: EntityPlayer) {
         val text = (if (messageMode.value == MessageMode.CUSTOM) customText.value else messageMode.value.text)
                 .replace("\$NAME", player.name).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
-        MessageSendHelper.sendServerMessage(text)
+        sendServerMessage(text)
         attackedPlayers.remove(player)
     }
 }

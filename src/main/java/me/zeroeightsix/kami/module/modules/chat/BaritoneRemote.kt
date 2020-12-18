@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detectAndRemove
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
@@ -45,7 +46,7 @@ object BaritoneRemote : Module() {
         /* convert incoming dms into valid baritone commands */
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketChat) return@listener
-            val message = it.packet.getChatComponent().unformattedText
+            val message = it.packet.chatComponent.unformattedText
 
             if (MessageDetectionHelper.isDirect(true, message)) {
                 val username = MessageDetectionHelper.getDirectUsername(message) ?: return@listener
@@ -71,7 +72,7 @@ object BaritoneRemote : Module() {
         listener<PrintChatMessageEvent> {
             lastController?.let { controller ->
                 if (feedback.value && it.chatComponent.unformattedText.detect(Regexes.BARITONE)) {
-                    MessageSendHelper.sendServerMessage("/msg $controller " + it.chatComponent.unformattedText)
+                    sendServerMessage("/msg $controller " + it.chatComponent.unformattedText)
                 }
             }
         }

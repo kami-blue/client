@@ -6,12 +6,13 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "VisualRange",
@@ -54,21 +55,21 @@ object VisualRange : Module() {
     private fun onEnter(player: EntityPlayer) {
         sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}joined!")
         if (logToFile.value) WaypointManager.add("${player.name} spotted!")
-        if (uwuAura.value) MessageSendHelper.sendServerMessage("/w ${player.name} hi uwu")
+        if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
         if (leaving.value) {
             sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}left!")
             if (logToFile.value) WaypointManager.add("${player.name} left!")
-            if (uwuAura.value) MessageSendHelper.sendServerMessage("/w ${player.name} bye uwu")
+            if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
         }
     }
 
     private fun getColor(player: EntityPlayer) = if (FriendManager.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
 
     private fun sendNotification(message: String) {
-        if (playSound.value) mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        if (playSound.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         MessageSendHelper.sendChatMessage(message)
     }
 }

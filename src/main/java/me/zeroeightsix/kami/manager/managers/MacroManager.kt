@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
@@ -75,7 +76,7 @@ object MacroManager : Manager {
             if (macro.startsWith(CommandManager.prefix.value)) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
                 MessageSendHelper.sendKamiCommand(macro) // ie, the false here
             } else {
-                MessageSendHelper.sendServerMessage(macro)
+                sendServerMessage(macro)
             }
         }
     }
