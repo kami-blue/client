@@ -70,10 +70,16 @@ object SearchCommand : ClientCommand(
             }
         }
 
+        literal("list") {
+            execute("Print search list") {
+                MessageSendHelper.sendChatMessage(Search.searchGetString())
+            }
+        }
+
         literal("clear") {
             execute("Set the search list to nothing") {
                 Search.searchClear()
-                MessageSendHelper.sendChatMessage("Cleared the ${Search.name.value} block list")
+                MessageSendHelper.sendChatMessage("Cleared the search block list")
             }
         }
 
@@ -86,7 +92,7 @@ object SearchCommand : ClientCommand(
     }
 
     private fun addBlock(blockName: String) {
-        return when {
+        when {
             blockName == "minecraft:air" -> {
                 MessageSendHelper.sendChatMessage("You can't add ${blockName.colorFormatValue} to the search block list")
             }
