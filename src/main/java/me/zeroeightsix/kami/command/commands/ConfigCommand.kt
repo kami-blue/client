@@ -17,7 +17,7 @@ object ConfigCommand : ClientCommand(
 ) {
     init {
         literal("reload") {
-            execute {
+            execute("Reload configs from storage") {
                 commandScope.launch(Dispatchers.IO) {
                     val loaded = ConfigUtils.loadAll()
                     if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
@@ -27,7 +27,7 @@ object ConfigCommand : ClientCommand(
         }
 
         literal("save") {
-            execute {
+            execute("Force save configs") {
                 commandScope.launch(Dispatchers.IO) {
                     val saved = ConfigUtils.saveAll()
                     if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
@@ -38,10 +38,10 @@ object ConfigCommand : ClientCommand(
 
         literal("path") {
             string("path") { pathArg ->
-                execute {
+                execute("Switch config files") {
                     commandScope.launch(Dispatchers.IO) {
                         val newPath = pathArg.value
-                        
+
                         if (!ConfigUtils.isPathValid(newPath)) {
                             MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                             return@launch
@@ -61,7 +61,7 @@ object ConfigCommand : ClientCommand(
                 }
             }
 
-            execute {
+            execute("Print current config files") {
                 commandScope.launch(Dispatchers.IO) {
                     val path = Paths.get(ConfigUtils.getConfigName())
                     MessageSendHelper.sendChatMessage("Path to configuration: &b" + path.toAbsolutePath().toString())

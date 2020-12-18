@@ -11,7 +11,7 @@ object FakeMessageCommand : ClientCommand(
 ) {
     init {
         greedy("message") { messageArg ->
-            execute {
+            execute("Use & for color formatting") {
                 MessageSendHelper.sendRawChatMessage(getTime() + messageArg.value.replace('&', '§'))
             }
         }

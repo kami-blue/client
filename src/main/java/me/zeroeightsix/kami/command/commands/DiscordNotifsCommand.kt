@@ -25,7 +25,7 @@ object DiscordNotifsCommand : ClientCommand(
 
         literal("avatar") {
             greedy("url") { urlArg ->
-                execute {
+                execute("Set the webhook icon") {
                     DiscordNotifs.avatar.value = urlArg.value
                     MessageSendHelper.sendChatMessage("Set Webhook Avatar to [&7${urlArg.value}&f]!")
                 }

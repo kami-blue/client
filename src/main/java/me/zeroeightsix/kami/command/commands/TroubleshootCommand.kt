@@ -15,7 +15,7 @@ object TroubleshootCommand : ClientCommand(
     description = "Prints troubleshooting information"
 ) {
     init {
-        execute {
+        execute("Print troubleshooting information") {
             MessageSendHelper.sendErrorMessage("&l&cSend a screenshot of all information below this line!")
             MessageSendHelper.sendChatMessage("Enabled Modules:\n" + ModuleManager.getModules().filter { it.isEnabled }.joinToString { it.originalName })
             MessageSendHelper.sendChatMessage("Forge ${ForgeVersion.getMajorVersion()}.${ForgeVersion.getMinorVersion()}.${ForgeVersion.getRevisionVersion()}.${ForgeVersion.getBuildVersion()}")
