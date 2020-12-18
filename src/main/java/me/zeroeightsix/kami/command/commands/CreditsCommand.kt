@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import org.kamiblue.commons.utils.ConnectionUtils
 
@@ -22,7 +23,7 @@ object CreditsCommand : ClientCommand(
                 return@executeAsync
             }
 
-            MessageSendHelper.sendChatMessage("Contributors to kami-blue/client: (&7${contributors.size}&f)")
+            MessageSendHelper.sendChatMessage("Contributors to kami-blue/client: ${contributors.size.colorFormatValue}")
             contributors.forEach {
                 var name = it.name
                 knownNames[it.id]?.let { knownName -> name += " ($knownName)" }

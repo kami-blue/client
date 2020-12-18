@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextFormatting
@@ -17,7 +18,7 @@ object DiscordNotifsCommand : ClientCommand(
             long("discord user id") { idArg ->
                 execute("Set the ID of the user to be pinged") {
                     DiscordNotifs.pingID.value = idArg.value.toString()
-                    MessageSendHelper.sendChatMessage("Set Discord User ID to [&7${idArg.value}&f]!")
+                    MessageSendHelper.sendChatMessage("Set Discord User ID to ${idArg.value.toString().colorFormatValue}!")
                 }
             }
 
@@ -27,7 +28,7 @@ object DiscordNotifsCommand : ClientCommand(
             greedy("url") { urlArg ->
                 execute("Set the webhook icon") {
                     DiscordNotifs.avatar.value = urlArg.value
-                    MessageSendHelper.sendChatMessage("Set Webhook Avatar to [&7${urlArg.value}&f]!")
+                    MessageSendHelper.sendChatMessage("Set Webhook Avatar to ${urlArg.value.colorFormatValue}!")
                 }
             }
         }
@@ -43,7 +44,7 @@ object DiscordNotifsCommand : ClientCommand(
                 }
 
                 DiscordNotifs.url.value = urlArg.value
-                MessageSendHelper.sendChatMessage("Set Webhook URL to [&7${urlArg.value}&f]!")
+                MessageSendHelper.sendChatMessage("Set Webhook URL to ${urlArg.value.colorFormatValue}!")
             }
         }
     }

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -23,9 +24,9 @@ object BindCommand : ClientCommand(
             execute("List used module binds") {
                 val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bindName }
 
-                MessageSendHelper.sendChatMessage("Used binds: (&7${modules.size}&f)")
+                MessageSendHelper.sendChatMessage("Used binds: ${modules.size.colorFormatValue}")
                 modules.forEach {
-                    MessageSendHelper.sendRawChatMessage("${it.bindName} - ${it.name}")
+                    MessageSendHelper.sendRawChatMessage("${it.bindName.colorFormatValue} ${it.name}")
                 }
             }
         }
@@ -66,16 +67,7 @@ object BindCommand : ClientCommand(
                     val key = Wrapper.getKey(bind)
 
                     if (key == 0) {
-                        MessageSendHelper.sendErrorMessage("Unknown key [" +
-                            TextFormatting.GRAY + bind + TextFormatting.RESET +
-                            "]! left alt is " +
-                            TextFormatting.GRAY + "lmenu" + TextFormatting.RESET +
-                            ", left Control is " +
-                            TextFormatting.GRAY + "lcontrol" + TextFormatting.RESET +
-                            " and ` is " +
-                            TextFormatting.GRAY + "grave" + TextFormatting.RESET +
-                            ". You cannot bind the &7meta&f key."
-                        )
+                        Wrapper.sendUnknownKeyError(bind)
                     } else {
                         module.bind.value.key = key
                         MessageSendHelper.sendChatMessage("Bind for ${module.name} set to [" +

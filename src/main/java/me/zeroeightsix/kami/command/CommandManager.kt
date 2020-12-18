@@ -18,6 +18,8 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: Setting<String> = Settings.s("commandPrefix", ";")
+    val String.colorFormatValue get() = "[${TextFormatting.GRAY}$this${TextFormatting.RESET}]"
+    val Int.colorFormatValue get() = "(${TextFormatting.GRAY}$this${TextFormatting.RESET})"
 
     fun init() {
         val stopTimer = TimerUtils.StopTimer()
