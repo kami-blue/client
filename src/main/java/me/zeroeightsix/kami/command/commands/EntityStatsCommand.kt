@@ -11,7 +11,7 @@ import kotlin.math.pow
 object EntityStatsCommand : ClientCommand(
     name = "entitystats",
     alias = arrayOf("estats"),
-    description = "Display stats about the tamed, riding entity"
+    description = "Display statistics about the tamed, riding entity"
 ) {
     init {
         executeAsync {

@@ -14,7 +14,7 @@ object SetCommand : ClientCommand(
         module("module") { moduleArg ->
             string("setting") { settingArg ->
                 greedy("value") { valueArg ->
-                    executeAsync {
+                    executeAsync("Set the value of a module's setting") {
                         val module = moduleArg.value
                         val settingName = settingArg.value
                         val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
@@ -42,7 +42,7 @@ object SetCommand : ClientCommand(
                     }
                 }
 
-                executeAsync {
+                executeAsync("Show the value of a setting") {
                     val module = moduleArg.value
                     val settingName = settingArg.value
                     val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
@@ -59,7 +59,7 @@ object SetCommand : ClientCommand(
                 }
             }
 
-            executeAsync {
+            executeAsync("List settings for a module") {
                 val module = moduleArg.value
                 val settingsString = module.fullSettingList.joinToString()
                 val string = "List of settings for ${TextFormatting.AQUA}${module.name.value}${TextFormatting.RESET}:\n" +

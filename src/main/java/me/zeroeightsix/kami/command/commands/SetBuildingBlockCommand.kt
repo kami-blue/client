@@ -8,7 +8,8 @@ import net.minecraft.block.BlockAir
 import net.minecraft.item.Item.getIdFromItem
 
 object SetBuildingBlockCommand : ClientCommand(
-    name = "setbuildingblock"
+    name = "setbuildingblock",
+    description = "Set the default building block"
 ) {
     init {
         executeSafe {
