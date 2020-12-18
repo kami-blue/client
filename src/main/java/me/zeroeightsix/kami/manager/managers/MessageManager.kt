@@ -30,7 +30,7 @@ object MessageManager : Manager {
 
     init {
         listener<PacketEvent.Send>(0) {
-            if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
+            if (it.packet !is CPacketChatMessage || packetSet.remove(it.packet)) return@listener
             it.cancel()
             if (it.packet.message != lastPlayerMessage) addMessageToQueue(it.packet, it)
             else addMessageToQueue(it.packet, mc.player?: it, Int.MAX_VALUE - 1)
@@ -48,7 +48,6 @@ object MessageManager : Manager {
                         messageQueue.pollFirst()?.let {
                             for (modifier in activeModifiers) modifier.apply(it)
                             if (it.packet.message.isNotBlank()) mc.connection?.sendPacket(it.packet)
-                            packetSet.remove(it.packet)
                             it.state.done = true
                         }
                     }
@@ -60,6 +59,12 @@ object MessageManager : Manager {
                 }
             }
         }
+    }
+
+    fun sendMessageDirect(message: String) {
+        val packet = CPacketChatMessage(message)
+        packetSet.add(packet)
+        mc.connection?.sendPacket(packet)
     }
 
     fun addMessageToQueue(message: String, source: Any, priority: Int = 0): TaskState {
