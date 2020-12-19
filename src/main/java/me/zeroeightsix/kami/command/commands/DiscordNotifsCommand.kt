@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.util.text.TextFormatting
 
 // TODO: Remove once GUI has proper String setting editing and is in master branch
 object DiscordNotifsCommand : ClientCommand(
@@ -36,9 +35,9 @@ object DiscordNotifsCommand : ClientCommand(
         greedy("url") { urlArg ->
             execute("Set the webhook url") {
                 if (!urlRegex.matches(urlArg.value)) {
-                    MessageSendHelper.sendErrorMessage("Error, the URL [" +
-                        TextFormatting.GRAY + urlArg.value + TextFormatting.RESET +
-                        "] does not match the valid webhook format!"
+                    MessageSendHelper.sendErrorMessage("Error, the URL " +
+                        urlArg.value.colorFormatValue +
+                        " does not match the valid webhook format!"
                     )
                     return@execute
                 }

@@ -70,15 +70,13 @@ object BindCommand : ClientCommand(
                         Wrapper.sendUnknownKeyError(bind)
                     } else {
                         module.bind.value.key = key
-                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to [" +
-                            TextFormatting.GRAY + module.bindName + TextFormatting.RESET + "]!")
+                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${module.bindName.colorFormatValue}!")
                     }
                 }
             }
 
             execute("Get the bind of a module") {
-                MessageSendHelper.sendChatMessage("${moduleArg.value.name} is bound to [" +
-                    (TextFormatting.GRAY.toString() + moduleArg.value.bindName + TextFormatting.RESET) + "]")
+                MessageSendHelper.sendChatMessage("${moduleArg.value.name} is bound to ${moduleArg.value.bindName.colorFormatValue}")
             }
         }
     }

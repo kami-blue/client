@@ -74,7 +74,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     }
 
     private fun handleCommandNotFoundException(command: String) {
-        MessageSendHelper.sendChatMessage("Unknown command: '${TextFormatting.GRAY}$prefix$command${TextFormatting.RESET}' ." +
+        MessageSendHelper.sendChatMessage("Unknown command: " + "$prefix$command".colorFormatValue + "." +
             "Run " + "${prefix}help".colorFormatValue + " for a list of commands.")
     }
 
