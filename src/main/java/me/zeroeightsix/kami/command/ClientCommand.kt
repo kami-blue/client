@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.Block
 import net.minecraft.item.Item
@@ -18,8 +19,6 @@ abstract class ClientCommand(
     description: String = "No description",
 ) : CommandBuilder<ClientExecuteEvent>(name, alias, description) {
 
-    protected val mc = Wrapper.minecraft
-    protected val prefix: String get() = CommandManager.prefix.value
     val prefixName get() = "$prefix$name"
 
     @CommandBuilder
@@ -87,6 +86,8 @@ abstract class ClientCommand(
     }
 
     protected companion object {
+        val mc = Wrapper.minecraft
+        val prefix: String get() = CommandConfig.prefix.value
         val commandScope = CommandManager.commandScope
     }
 

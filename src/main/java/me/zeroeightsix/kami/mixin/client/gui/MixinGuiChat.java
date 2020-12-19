@@ -23,7 +23,7 @@ public abstract class MixinGuiChat extends GuiScreen {
     public void returnKeyTyped(char typedChar, int keyCode, CallbackInfo info) {
         GuiScreen currentScreen = Wrapper.getMinecraft().currentScreen;
         if (currentScreen instanceof GuiChat && !(currentScreen instanceof KamiGuiChat)
-            && inputField.getText().startsWith(CommandManager.INSTANCE.getPrefix().getValue())) {
+            && inputField.getText().startsWith(CommandManager.INSTANCE.getPrefix())) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiChat(inputField.getText(), historyBuffer, sentHistoryCursor));
         }
     }

@@ -72,7 +72,7 @@ object MacroManager : Manager {
     private fun sendMacro(keyCode: Int) {
         val macros = getMacros(keyCode) ?: return
         for (macro in macros) {
-            if (macro.startsWith(CommandManager.prefix.value)) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
+            if (macro.startsWith(CommandManager.prefix)) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
                 MessageSendHelper.sendKamiCommand(macro) // ie, the false here
             } else {
                 MessageManager.sendMessageDirect(macro)

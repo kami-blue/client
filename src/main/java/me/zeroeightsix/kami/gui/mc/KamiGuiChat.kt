@@ -33,7 +33,7 @@ class KamiGuiChat(
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (guiChatKeyTyped(typedChar, keyCode)) return
 
-        if (!inputField.text.startsWith(CommandManager.prefix.value)) {
+        if (!inputField.text.startsWith(CommandManager.prefix)) {
             displayNormalChatGUI()
             return
         }
@@ -81,7 +81,7 @@ class KamiGuiChat(
 
     private fun calcCommandPredict() {
         predictString = ""
-        val string = inputField.text.removePrefix(CommandManager.prefix.value)
+        val string = inputField.text.removePrefix(CommandManager.prefix)
         val args = kotlin.runCatching { CommandManager.parseArguments(string) }.getOrNull() ?: return
         var argCount = args.size
         val inputName = args[0]

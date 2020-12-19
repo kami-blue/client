@@ -95,10 +95,10 @@ object ForgeEventProcessor {
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
         if (!mc.player.isSneaking) {
-            val prefix = CommandManager.prefix.value
+            val prefix = CommandManager.prefix
             val typedChar = Keyboard.getEventCharacter().toString()
-            if (prefix.length == 1 && typedChar.equals(CommandManager.prefix.value, true)) {
-                mc.displayGuiScreen(KamiGuiChat(CommandManager.prefix.value))
+            if (prefix.length == 1 && typedChar.equals(CommandManager.prefix, true)) {
+                mc.displayGuiScreen(KamiGuiChat(CommandManager.prefix))
             }
         }
 
@@ -109,7 +109,7 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
         if (MessageDetectionHelper.isKamiCommand(event.message)) {
-            CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix.value))
+            CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix))
             event.isCanceled = true
         }
     }

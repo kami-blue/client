@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
@@ -20,6 +21,7 @@ import org.lwjgl.opengl.Display
     alwaysEnabled = true
 )
 object CommandConfig : Module() {
+    val prefix: Setting<String> = Settings.s("commandPrefix", ";")
     val toggleMessages = register(Settings.b("ToggleMessages", false))
     private val customTitle = register(Settings.b("WindowTitle", true))
     private val autoSaving = register(Settings.b("AutoSavingSettings", true))

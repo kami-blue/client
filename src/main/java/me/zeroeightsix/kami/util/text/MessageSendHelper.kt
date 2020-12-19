@@ -32,7 +32,7 @@ object MessageSendHelper {
     }
 
     fun sendKamiCommand(command: String) {
-        CommandManager.runCommand(command.removePrefix(CommandManager.prefix.value))
+        CommandManager.runCommand(command.removePrefix(CommandManager.prefix))
     }
 
     fun sendBaritoneMessage(message: String) {

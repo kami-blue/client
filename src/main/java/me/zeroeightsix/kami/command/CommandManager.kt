@@ -2,9 +2,7 @@ package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.setting.SettingsRegister
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -17,7 +15,8 @@ import org.kamiblue.commons.utils.ClassUtils
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
-    val prefix: Setting<String> = Settings.s("commandPrefix", ";")
+    val prefix: String get() = CommandConfig.prefix.value
+
     val String.colorFormatValue get() = "[${TextFormatting.GRAY}$this${TextFormatting.RESET}]"
     val Int.colorFormatValue get() = "(${TextFormatting.GRAY}$this${TextFormatting.RESET})"
 
@@ -88,10 +87,6 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
         message += "\nRun " + "${prefix}help ${e.command.name}".colorFormatValue + " for a list of available arguments."
 
         MessageSendHelper.sendChatMessage(message)
-    }
-
-    init {
-        SettingsRegister.register("commandPrefix", prefix)
     }
 
 }
