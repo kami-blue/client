@@ -20,10 +20,8 @@ import org.lwjgl.opengl.Display
     alwaysEnabled = true
 )
 object CommandConfig : Module() {
-    val aliasInfo = register(Settings.b("AliasInfo", true))
-    val prefixChat = register(Settings.b("PrefixChat", true))
     val toggleMessages = register(Settings.b("ToggleMessages", false))
-    val customTitle = register(Settings.b("WindowTitle", true))
+    private val customTitle = register(Settings.b("WindowTitle", true))
     private val autoSaving = register(Settings.b("AutoSavingSettings", true))
     private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value })
     private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value })

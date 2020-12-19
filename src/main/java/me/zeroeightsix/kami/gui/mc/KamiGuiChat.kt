@@ -16,11 +16,15 @@ import org.lwjgl.input.Keyboard
 import java.util.*
 import kotlin.math.min
 
-open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHistoryCursorIn: Int) : GuiChat(startStringIn) {
+class KamiGuiChat(
+    startStringIn: String,
+    historyBufferIn: String? = null,
+    sentHistoryCursorIn: Int? = null
+) : GuiChat(startStringIn) {
 
     init {
-        historyBuffer = historyBufferIn
-        sentHistoryCursor = sentHistoryCursorIn
+        historyBufferIn?.let { historyBuffer = it }
+        sentHistoryCursorIn?.let { sentHistoryCursor = it }
     }
 
     private var predictString = ""
@@ -99,7 +103,8 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        super.drawScreen(mouseX, mouseY, partialTicks)
+        // Draw rect background
+        drawRect(2, height - 14, width - 2, height - 2, Integer.MIN_VALUE)
 
         // Draw predict string
         if (predictString.isNotBlank()) {
@@ -107,6 +112,9 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
             val posY = inputField.y
             fontRenderer.drawStringWithShadow(predictString, posX.toFloat(), posY.toFloat(), 0x666666)
         }
+
+        // Draw normal string
+        inputField.drawTextBox()
 
         // Draw outline around input field
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
