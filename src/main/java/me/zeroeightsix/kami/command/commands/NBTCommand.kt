@@ -63,7 +63,6 @@ object NBTCommand : ClientCommand(
 
         if (nbtTag == null) {
             MessageSendHelper.sendChatMessage("Item ${itemStack.displayName.colorFormatValue} doesn't have NBT tag!")
-            return null
         }
 
         return nbtTag
