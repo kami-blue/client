@@ -38,7 +38,7 @@ object NBTCommand : ClientCommand(
         literal("paste") {
             executeSafe {
                 val itemStack = getHelpItemStack() ?: return@executeSafe
-                val nbtTag = copiedNbtTag?: run {
+                val nbtTag = copiedNbtTag ?: run {
                     MessageSendHelper.sendChatMessage("No copied NBT tags!")
                     return@executeSafe
                 }

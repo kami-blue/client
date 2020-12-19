@@ -38,7 +38,6 @@ object BindCommand : ClientCommand(
                     MessageSendHelper.sendChatMessage("Reset bind for ${moduleArg.name}!")
                 }
             }
-
         }
 
         literal("modifiers") {
