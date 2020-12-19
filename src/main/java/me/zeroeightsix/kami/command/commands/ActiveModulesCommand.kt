@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ActiveModules
 
+// TODO: Remove when new GUI is merged (use proper color settings)
 object ActiveModulesCommand : ClientCommand(
     name = "activemodules",
     description = "Change activemodules category colors"
