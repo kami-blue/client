@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL12.*
 
 object GlStateUtils {
 
@@ -99,13 +100,13 @@ object GlStateUtils {
     @JvmStatic
     fun resetTexParam() {
         GlStateManager.bindTexture(0)
-        glTexParameteri(3553, 10240, 9729)
-        glTexParameteri(3553, 10241, 9986)
-        glTexParameteri(3553, 10242, 10497)
-        glTexParameteri(3553, 10243, 10497)
-        glTexParameteri(3553, 33085, 1000)
-        glTexParameteri(3553, 33083, 1000)
-        glTexParameteri(3553, 33082, -1000)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 1000)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 1000)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1000)
     }
 
     @JvmStatic
