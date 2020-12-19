@@ -10,7 +10,11 @@ import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.gui.GuiChat
+import org.kamiblue.command.AbstractArg
+import org.kamiblue.commons.extension.stream
+import org.lwjgl.input.Keyboard
 import java.util.*
+import kotlin.math.min
 
 open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHistoryCursorIn: Int) : GuiChat(startStringIn) {
 
@@ -20,6 +24,7 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
     }
 
     private var predictString = ""
+    private var currentArg: AbstractArg<*>? = null
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (guiChatKeyTyped(typedChar, keyCode)) return
@@ -28,18 +33,26 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
             displayNormalChatGUI()
             return
         }
+
+        if (keyCode == Keyboard.KEY_TAB && predictString.isNotBlank()) {
+            inputField.text += "$predictString "
+            predictString = ""
+        } else {
+            calcCommandPredict()
+        }
     }
 
     private fun guiChatKeyTyped(typedChar: Char, keyCode: Int): Boolean {
         return if (keyCode == 1) {
             mc.displayGuiScreen(null)
             true
-        } else if (keyCode != 28 && keyCode != 156) {
+        } else if (keyCode != Keyboard.KEY_RETURN && keyCode != Keyboard.KEY_NUMPADENTER) {
+            val chatGUI = mc.ingameGUI.chatGUI
             when (keyCode) {
-                200 -> getSentHistory(-1)
-                208 -> getSentHistory(1)
-                201 -> mc.ingameGUI.chatGUI.scroll(mc.ingameGUI.chatGUI.lineCount - 1)
-                209 -> mc.ingameGUI.chatGUI.scroll(-mc.ingameGUI.chatGUI.lineCount + 1)
+                Keyboard.KEY_UP -> getSentHistory(-1)
+                Keyboard.KEY_DOWN -> getSentHistory(1)
+                Keyboard.KEY_PRIOR -> chatGUI.scroll(chatGUI.lineCount - 1)
+                Keyboard.KEY_NEXT -> chatGUI.scroll(-chatGUI.lineCount + 1)
                 else -> inputField.textboxKeyTyped(typedChar, keyCode)
             }
             false
@@ -59,6 +72,29 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String, sentHisto
             sentHistoryCursor = this@KamiGuiChat.sentHistoryCursor
         }.also {
             mc.displayGuiScreen(it)
+        }
+    }
+
+    private fun calcCommandPredict() {
+        predictString = ""
+        val string = inputField.text.removePrefix(CommandManager.prefix.value)
+        val args = kotlin.runCatching { CommandManager.parseArguments(string) }.getOrNull() ?: return
+        var argCount = args.size
+        val inputName = args[0]
+
+        if (argCount == 1) {
+            CommandManager.getCommands()
+                .stream()
+                .flatMap { it.allNames.stream() }
+                .filter { it.length >= inputName.length && it.startsWith(inputName) }
+                .sorted()
+                .findFirst()
+                .orElse(null)
+                ?.let { predictString = it.substring(min(inputName.length, it.length)) }
+
+            return
+        } else if (string.endsWith(' ') && string[min(string.length - 2, 0)] != ' ') {
+            argCount += 1
         }
     }
 

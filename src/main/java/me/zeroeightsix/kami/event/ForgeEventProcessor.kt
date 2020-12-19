@@ -108,7 +108,6 @@ object ForgeEventProcessor {
         if (MessageDetectionHelper.isKamiCommand(event.message)) {
             CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix.value))
             event.isCanceled = true
-            event.message = ""
         }
     }
 
