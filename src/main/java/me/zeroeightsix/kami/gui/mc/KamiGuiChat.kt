@@ -47,7 +47,7 @@ class KamiGuiChat(
     }
 
     private fun guiChatKeyTyped(typedChar: Char, keyCode: Int): Boolean {
-        return if (keyCode == 1) {
+        return if (keyCode == Keyboard.KEY_ESCAPE) {
             mc.displayGuiScreen(null)
             true
         } else if (keyCode != Keyboard.KEY_RETURN && keyCode != Keyboard.KEY_NUMPADENTER) {
@@ -61,10 +61,9 @@ class KamiGuiChat(
             }
             false
         } else {
-            val string = inputField.text.trim { it <= ' ' }
-            if (string.isNotEmpty()) {
-                sendChatMessage(string)
-            }
+            val message = inputField.text.trim()
+            if (message.isNotEmpty()) sendChatMessage(message)
+            mc.ingameGUI.chatGUI.addToSentMessages(message)
             mc.displayGuiScreen(null)
             true
         }
