@@ -20,10 +20,11 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer {
-    private lateinit var campos: Vec3d
-    val icamera: ICamera = Frustum()
+    private lateinit var camPos: Vec3d
+    private val frustumCamera: ICamera = Frustum()
     private val mc = Minecraft.getMinecraft()
     private val toRender = HashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
+
     var aFilled = 0
     var aOutline = 0
     var aTracer = 0
@@ -81,33 +82,40 @@ class ESPRenderer {
 
     private fun drawList(type: Type) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
-        campos = KamiTessellator.camPos.add(0.0, (-mc.player.eyeHeight).toDouble(), 0.0)//why this is necessary is beyond me
-        icamera.setPosition(campos.x, campos.y, campos.z)
+        camPos = KamiTessellator.camPos.add(0.0, (-mc.player.eyeHeight).toDouble(), 0.0) // realign camPos to player eye pos
+        frustumCamera.setPosition(camPos.x, camPos.y, camPos.z)
+
         for ((box, pair) in toRender) when (type) {
             Type.FILLED -> drawFilled(box, pair)
             Type.OUTLINE -> drawOutline(box, pair)
             Type.TRACER -> drawTracer(box, pair)
         }
+
         KamiTessellator.render()
     }
 
     private fun drawFilled(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aFilled * (pair.first.a / 255f)).toInt()
-        if (!StorageESP.cull.value || icamera.isBoundingBoxInFrustum(box))
+
+        if (!StorageESP.cull.value || frustumCamera.isBoundingBoxInFrustum(box)) {
             KamiTessellator.drawBox(box, pair.first, a, pair.second)
+        }
     }
 
     private fun drawOutline(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aOutline * (pair.first.a / 255f)).toInt()
         val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
-        if (!StorageESP.cull.value || icamera.isBoundingBoxInFrustum(box))
+
+        if (!StorageESP.cull.value || frustumCamera.isBoundingBoxInFrustum(box)) {
             KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
+        }
     }
 
     private fun drawTracer(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aTracer * (pair.first.a / 255f)).toInt()
         val offset = (tracerOffset - 50) / 100.0 * (box.maxY - box.minY)
         val offsetBox = box.center.add(0.0, offset, 0.0)
+
         KamiTessellator.drawLineTo(offsetBox, pair.first, a, thickness)
     }
 
