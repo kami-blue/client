@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.module.modules.render.StorageESP
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft
@@ -66,47 +65,47 @@ class ESPRenderer {
         toRender.clear()
     }
 
-    fun render(clear: Boolean) {
+    fun render(clear: Boolean, cull: Boolean = false) {
         if (toRender.isEmpty() && (aFilled == 0 && aOutline == 0 && aTracer == 0)) return
         if (through) GlStateManager.disableDepth()
 
-        if (aFilled != 0) drawList(Type.FILLED)
+        if (aFilled != 0) drawList(Type.FILLED, cull)
 
-        if (aOutline != 0) drawList(Type.OUTLINE)
+        if (aOutline != 0) drawList(Type.OUTLINE, cull)
 
-        if (aTracer != 0) drawList(Type.TRACER)
+        if (aTracer != 0) drawList(Type.TRACER, cull)
 
         if (clear) clear()
         GlStateManager.enableDepth()
     }
 
-    private fun drawList(type: Type) {
+    private fun drawList(type: Type, cull: Boolean = false) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
         camPos = KamiTessellator.camPos.add(0.0, (-mc.player.eyeHeight).toDouble(), 0.0) // realign camPos to player eye pos
         frustumCamera.setPosition(camPos.x, camPos.y, camPos.z)
 
         for ((box, pair) in toRender) when (type) {
-            Type.FILLED -> drawFilled(box, pair)
-            Type.OUTLINE -> drawOutline(box, pair)
+            Type.FILLED -> drawFilled(cull, box, pair)
+            Type.OUTLINE -> drawOutline(cull, box, pair)
             Type.TRACER -> drawTracer(box, pair)
         }
 
         KamiTessellator.render()
     }
 
-    private fun drawFilled(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
+    private fun drawFilled(cull: Boolean, box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aFilled * (pair.first.a / 255f)).toInt()
 
-        if (!StorageESP.cull.value || frustumCamera.isBoundingBoxInFrustum(box)) {
+        if (!cull || frustumCamera.isBoundingBoxInFrustum(box)) {
             KamiTessellator.drawBox(box, pair.first, a, pair.second)
         }
     }
 
-    private fun drawOutline(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
+    private fun drawOutline(cull: Boolean, box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
         val a = (aOutline * (pair.first.a / 255f)).toInt()
         val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
 
-        if (!StorageESP.cull.value || frustumCamera.isBoundingBoxInFrustum(box)) {
+        if (!cull || frustumCamera.isBoundingBoxInFrustum(box)) {
             KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
         }
     }
