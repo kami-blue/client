@@ -8,21 +8,21 @@ import java.util.ArrayList;
  * Created by 086 on 25/06/2017.
  */
 public interface Container extends Component {
-    public ArrayList<Component> getChildren();
+    ArrayList<Component> getChildren();
 
-    public Component getComponentAt(int x, int y);
+    Component getComponentAt(int x, int y);
 
-    public Container addChild(Component... component);
+    Container addChild(Component... component);
 
-    public Container removeChild(Component component);
+    Container removeChild(Component component);
 
-    public boolean hasChild(Component component);
+    boolean hasChild(Component component);
 
-    public void renderChildren();
+    void renderChildren();
 
-    public int getOriginOffsetX();
+    int getOriginOffsetX();
 
-    public int getOriginOffsetY();
+    int getOriginOffsetY();
 
-    public boolean penetrateTest(int x, int y);
+    boolean penetrateTest(int x, int y);
 }

@@ -3,13 +3,15 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.x
+import me.zeroeightsix.kami.mixin.extension.y
+import me.zeroeightsix.kami.mixin.extension.z
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 @Module.Info(
@@ -22,6 +24,7 @@ object Blink : Module() {
     private val autoReset = register(Settings.b("AutoReset", true))
     private val resetThreshold = register(Settings.integerBuilder("ResetThreshold").withValue(20).withRange(1, 100).withVisibility { autoReset.value })
 
+    private const val ENTITY_ID = -114514
     private val packets = LinkedList<CPacketPlayer>()
     private var clonedPlayer: EntityOtherPlayerMP? = null
     private var sending = false
@@ -43,8 +46,10 @@ object Blink : Module() {
         }
 
         listener<ConnectionEvent.Disconnect> {
-            packets.clear()
-            clonedPlayer = null
+            mc.addScheduledTask {
+                packets.clear()
+                clonedPlayer = null
+            }
         }
     }
 
@@ -63,22 +68,30 @@ object Blink : Module() {
             rotationYawHead = mc.player.rotationYawHead
             inventory.copyInventory(mc.player.inventory)
             noClip = true
+        }.also {
+            mc.world.addEntityToWorld(ENTITY_ID, it)
         }
-        mc.world.addEntityToWorld(-114514, clonedPlayer as Entity)
     }
 
     private fun end() {
-        if (mc.player == null) return
-        if (cancelPacket.value || mc.connection == null) {
-            packets.peek()?.let { mc.player.setPosition(it.x, it.y, it.z) }
-            packets.clear()
-        } else {
-            sending = true
-            while (packets.isNotEmpty()) mc.connection!!.sendPacket(packets.poll())
-            sending = false
+        mc.addScheduledTask {
+            val player = mc.player
+            val connection = mc.connection
+            if (player == null || connection == null) return@addScheduledTask
+
+            if (cancelPacket.value || mc.connection == null) {
+                packets.peek()?.let { player.setPosition(it.x, it.y, it.z) }
+                packets.clear()
+            } else {
+                sending = true
+                while (packets.isNotEmpty()) connection.sendPacket(packets.poll())
+                sending = false
+            }
+
+            clonedPlayer?.setDead()
+            mc.world?.removeEntityFromWorld(ENTITY_ID)
+            clonedPlayer = null
         }
-        mc.world?.removeEntityFromWorld(-114514)
-        clonedPlayer = null
     }
 
     override fun getHudInfo(): String {

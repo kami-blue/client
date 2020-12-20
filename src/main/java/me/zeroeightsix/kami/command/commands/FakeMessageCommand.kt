@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.module.modules.chat.ChatTimestamp
@@ -17,7 +16,7 @@ class FakeMessageCommand : Command("fakemsg", ChunkBuilder().append("message").b
                 return
             }
         }
-        MessageSendHelper.sendRawChatMessage(getTime() + args[0]?.replace('&', KamiMod.color))
+        MessageSendHelper.sendRawChatMessage(getTime() + args[0]?.replace('&', '§'))
     }
 
     private fun getTime(): String {

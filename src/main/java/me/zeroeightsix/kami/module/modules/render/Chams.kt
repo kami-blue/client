@@ -1,18 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import me.zeroeightsix.kami.util.color.HueCycler
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityXPOrb
@@ -20,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 
 @Module.Info(
@@ -54,13 +51,13 @@ object Chams : Module() {
     private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && customColor.value && !rainbow.value })
     private val g = register(Settings.integerBuilder("Green").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && customColor.value && !rainbow.value })
     private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withVisibility { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val a = register(Settings.integerBuilder("Alpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDERING && customColor.value })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING
     }
 
     private var cycler = HueCycler(600)
-    private val frameBuffer = Framebuffer(mc.displayWidth, mc.displayHeight, true)
 
     init {
         listener<RenderEntityEvent.Pre>(2000) {
@@ -68,12 +65,14 @@ object Chams : Module() {
             if (!texture.value) glDisable(GL_TEXTURE_2D)
             if (!lightning.value) glDisable(GL_LIGHTING)
             if (customColor.value) {
-                if (rainbow.value) cycler.setCurrent()
-                else glColor3f(r.value / 255f, g.value / 255f, b.value / 255f)
+                if (rainbow.value) cycler.currentRgba(a.value).setGLColor()
+                else glColor4f(r.value / 255.0f, g.value / 255.0f, b.value / 255.0f, a.value / 255.0f)
+                GlStateUtils.colorLock(true)
+                GlStateUtils.blend(true)
+                GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
             }
             if (throughWall.value) {
-                glPushMatrix()
-                frameBuffer.bindFramebuffer(false)
+                glDepthRange(0.0, 0.01)
             }
         }
 
@@ -82,31 +81,17 @@ object Chams : Module() {
             if (!texture.value) glEnable(GL_TEXTURE_2D)
             if (!lightning.value) glEnable(GL_LIGHTING)
             if (customColor.value) {
+                GlStateUtils.blend(false)
+                GlStateUtils.colorLock(false)
                 glColor4f(1f, 1f, 1f, 1f)
             }
             if (throughWall.value) {
-                mc.framebuffer.bindFramebuffer(false)
-                glPopMatrix()
+                glDepthRange(0.0, 1.0)
             }
-        }
-
-        listener<RenderWorldEvent> {
-            if (!throughWall.value) return@listener
-            GlStateUtils.depth(false)
-            glPushMatrix()
-            frameBuffer.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
-            frameBuffer.framebufferClear()
-            mc.framebuffer.bindFramebuffer(false)
-            glPopMatrix()
-            GlStateUtils.depth(true)
         }
 
         listener<SafeTickEvent> {
             if (it.phase == TickEvent.Phase.START) cycler++
-        }
-
-        listener<ResolutionUpdateEvent> {
-            frameBuffer.createFramebuffer(mc.displayWidth, mc.displayHeight)
         }
     }
 

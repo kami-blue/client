@@ -2,20 +2,20 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.tickLength
+import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.InfoCalculator.chunkSize
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimeUtils
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
-import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils.round
+import me.zeroeightsix.kami.util.color.EnumTextColor
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils.round
+import org.kamiblue.event.listener.listener
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 
 @Module.Info(
@@ -36,7 +36,6 @@ object InfoOverlay : Module() {
     private val fps = register(Settings.booleanBuilder("FPS").withValue(true).withVisibility { page.value == Page.ONE })
     private val ping = register(Settings.booleanBuilder("Ping").withValue(false).withVisibility { page.value == Page.ONE })
     private val server = register(Settings.booleanBuilder("ServerType").withValue(true).withVisibility { page.value == Page.ONE })
-    private val chunkSize = register(Settings.booleanBuilder("ChunkSize").withValue(true).withVisibility { page.value == Page.ONE })
     private val durability = register(Settings.booleanBuilder("ItemDamage").withValue(false).withVisibility { page.value == Page.ONE })
     private val biome = register(Settings.booleanBuilder("Biome").withValue(false).withVisibility { page.value == Page.ONE })
 
@@ -57,8 +56,8 @@ object InfoOverlay : Module() {
     val doLocale = register(Settings.booleanBuilder("TimeShowAM/PM").withValue(true).withVisibility { page.value == Page.THREE && time.value && timeUnitSetting.value == TimeUtils.TimeUnit.H12 })
     private val memory = register(Settings.booleanBuilder("RAMUsed").withValue(false).withVisibility { page.value == Page.THREE })
     private val timerSpeed = register(Settings.booleanBuilder("TimerSpeed").withValue(false).withVisibility { page.value == Page.THREE })
-    private val firstColor = register(Settings.enumBuilder(ColourCode::class.java, "FirstColour").withValue(ColourCode.WHITE).withVisibility { page.value == Page.THREE })
-    private val secondColor = register(Settings.enumBuilder(ColourCode::class.java, "SecondColour").withValue(ColourCode.BLUE).withVisibility { page.value == Page.THREE })
+    private val firstColor = register(Settings.enumBuilder(EnumTextColor::class.java, "FirstColor").withValue(EnumTextColor.WHITE).withVisibility { page.value == Page.THREE })
+    private val secondColor = register(Settings.enumBuilder(EnumTextColor::class.java, "SecondColor").withValue(EnumTextColor.BLUE).withVisibility { page.value == Page.THREE })
 
     private enum class Page {
         ONE, TWO, THREE
@@ -72,66 +71,50 @@ object InfoOverlay : Module() {
     }
 
     private val speedList = LinkedList<Double>()
-    private var currentChunkSize = 0
 
     init {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
             updateSpeedList()
-            if (chunkSize.value) updateChunkSize()
         }
     }
 
-    fun infoContents(): ArrayList<String> {
-        val infoContents = ArrayList<String>()
-        for (setting in settingList) {
-            if (setting.value != true) continue // make sure it is a Boolean setting and enabled
+    fun infoContents(): String {
+        val contents = ArrayList<String>()
 
-            setting.infoMap()?.let {
-                infoContents.add(first().toString() + it)
-            }
+        contents.apply {
+            if (version.value) addContent(KamiMod.KAMI_KATAKANA, KamiMod.VERSION_SIMPLE)
+            if (username.value) addContent("Welcome", "${mc.session.username}!")
+            if (time.value) add(TimeUtils.getFinalTime(secondColor.value.textFormatting, firstColor.value.textFormatting, timeUnitSetting.value, timeTypeSetting.value, doLocale.value))
+            if (tps.value) addContent("${InfoCalculator.tps(decimalPlaces.value)}", "tps")
+            if (fps.value) addContent("${Minecraft.getDebugFPS()}", "fps")
+            if (speed.value) addContent("${calcSpeed(decimalPlaces.value)}", speedUnit.value.displayName)
+            if (timerSpeed.value) addContent("${round(50f / mc.timer.tickLength, decimalPlaces.value)}", "x")
+            if (ping.value) addContent("${InfoCalculator.ping()}", "ms")
+            if (server.value) addContent(mc.player.serverBrand ?: "Unknown Server")
+            if (durability.value) addContent("${InfoCalculator.heldItemDurability()}", "dura")
+            if (biome.value) addContent(mc.world.getBiome(mc.player.position).biomeName, "biome")
+            if (memory.value) addContent("${InfoCalculator.memory()}", "MB")
+            if (totems.value) addContent("${InventoryUtils.countItemAll(449)}", "totems")
+            if (endCrystals.value) addContent("${InventoryUtils.countItemAll(426)}", "crystals")
+            if (expBottles.value) addContent("${InventoryUtils.countItemAll(384)}", "exp")
+            if (godApples.value) addContent("${InventoryUtils.countItemAll(322)}", "gaps")
         }
-        return infoContents
+
+        return contents.joinToString(separator = System.lineSeparator())
     }
 
-    private fun Setting<*>.infoMap() = when (this) {
-        version -> "${KamiMod.KAMI_KANJI} ${second()}${KamiMod.VER_SMALL}"
-        username -> "Welcome ${second()}${mc.session.username}!"
-        time -> TimeUtils.getFinalTime(setToText(secondColor.value), setToText(firstColor.value), timeUnitSetting.value, timeTypeSetting.value, doLocale.value)
-        tps -> "${InfoCalculator.tps(decimalPlaces.value)} ${second()}tps"
-        fps -> "${Minecraft.debugFPS} ${second()}fps"
-        speed -> "${calcSpeed(decimalPlaces.value)} ${second()}${speedUnit.value.displayName}"
-        timerSpeed -> "${round(50f / mc.timer.tickLength, decimalPlaces.value)} ${second()}x"
-        ping -> "${InfoCalculator.ping()} ${second()}ms"
-        server -> mc.player.serverBrand
-        durability -> "${InfoCalculator.heldItemDurability()} ${second()}dura"
-        biome -> "${mc.world.getBiome(mc.player.position).biomeName} ${second()}biome"
-        memory -> "${InfoCalculator.memory()} ${second()}MB"
-        totems -> "${InventoryUtils.countItemAll(449)} ${second()}totems"
-        endCrystals -> "${InventoryUtils.countItemAll(426)} ${second()}crystals"
-        expBottles -> "${InventoryUtils.countItemAll(384)} ${second()}exp"
-        godApples -> "${InventoryUtils.countItemAll(322)} ${second()}gaps"
-        chunkSize -> "${round(currentChunkSize / 1000.0, decimalPlaces.value)} KB ${second()}(chunk)"
-        else -> null
+    private fun ArrayList<String>.addContent(first: String, second: String? = null) {
+        var string = "${firstColor.value.textFormatting}$first"
+        if (second != null) string += "${secondColor.value.textFormatting}$second"
+        add(string)
     }
-
-    fun first() = setToText(firstColor.value)
-
-    fun second() = setToText(secondColor.value)
-
-    private fun setToText(colourCode: ColourCode) = ColorTextFormatting.toTextMap[colourCode]!!
 
     fun calcSpeedWithUnit(place: Int) = "${calcSpeed(place)} ${speedUnit.value.displayName}"
 
     private fun calcSpeed(place: Int): Double {
         val averageSpeed = if (speedList.isEmpty()) 0.0 else (speedList.sum() / speedList.size.toDouble())
         return round(averageSpeed, place)
-    }
-
-    private fun updateChunkSize() {
-        if (mc.player.ticksExisted % 4 == 0) {
-            currentChunkSize = chunkSize()
-        }
     }
 
     private fun updateSpeedList() {

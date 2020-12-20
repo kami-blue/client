@@ -3,12 +3,13 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -56,7 +57,7 @@ object Step : Module() {
     }
 
     override fun onToggle() {
-        BaritoneUtils.settings()?.assumeStep?.value = isEnabled
+        BaritoneUtils.settings?.assumeStep?.value = isEnabled
     }
 
     init {
@@ -94,7 +95,7 @@ object Step : Module() {
 
     private fun downStep() {
         // Down step doesn't work for edge lower than 1 blocks anyways
-        val belowBB = mc.player.boundingBox.expand(0.0, -1.05, 0.0)
+        val belowBB = mc.player.entityBoundingBox.expand(0.0, -1.05, 0.0)
         if (mc.world.collidesWithAnyBlock(belowBB)) mc.player.motionY -= downSpeed.value
     }
 
@@ -106,7 +107,11 @@ object Step : Module() {
 
             val prevPos = PlayerPacketManager.prevServerSidePosition
             if (mc.player.ticksExisted - lastCollidedTick <= 5) getStepArray(event.packet.y - prevPos.y)?.let {
-                for (posY in it) mc.connection?.sendPacket(CPacketPlayer.Position(prevPos.x, prevPos.y + posY, prevPos.z, true))
+                for (posY in it) {
+                    val packet = CPacketPlayer.Position(prevPos.x, prevPos.y + posY, prevPos.z, true)
+                    ignoredPackets.add(packet)
+                    mc.connection?.sendPacket(packet)
+                }
             }
         }
     }

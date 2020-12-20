@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.mixin.extension.renderPartialTicksPaused
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.Minecraft
@@ -97,7 +98,7 @@ object KamiTessellator : Tessellator(0x200000) {
 
     val camPos: Vec3d
         get() = EntityUtils.getInterpolatedPos(mc.renderViewEntity
-                ?: mc.player, pTicks()).add(ActiveRenderInfo.getCameraPosition())
+            ?: mc.player, pTicks()).add(ActiveRenderInfo.getCameraPosition())
 
     /**
      * @author Xiaro
@@ -199,10 +200,10 @@ object KamiTessellator : Tessellator(0x200000) {
         fun toLines(): Array<Pair<Vec3d, Vec3d>> {
             val quad = this.toQuad()
             return arrayOf(
-                    Pair(quad[0], quad[1]),
-                    Pair(quad[1], quad[2]),
-                    Pair(quad[2], quad[3]),
-                    Pair(quad[3], quad[0])
+                Pair(quad[0], quad[1]),
+                Pair(quad[1], quad[2]),
+                Pair(quad[2], quad[3]),
+                Pair(quad[3], quad[0])
             )
         }
 
@@ -222,10 +223,10 @@ object KamiTessellator : Tessellator(0x200000) {
 
         fun to2DQuad(): Array<Vec3d> {
             return arrayOf(
-                    Vec3d(this.minX, this.y, this.minZ),
-                    Vec3d(this.minX, this.y, this.maxZ),
-                    Vec3d(this.maxX, this.y, this.maxZ),
-                    Vec3d(this.maxX, this.y, this.minZ)
+                Vec3d(this.minX, this.y, this.minZ),
+                Vec3d(this.minX, this.y, this.maxZ),
+                Vec3d(this.maxX, this.y, this.maxZ),
+                Vec3d(this.maxX, this.y, this.minZ)
             )
         }
     }

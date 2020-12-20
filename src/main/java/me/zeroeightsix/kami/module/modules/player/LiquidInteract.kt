@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
 import me.zeroeightsix.kami.module.Module
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinBlockLiquid
+ * @see MixinBlockLiquid
  */
 @Module.Info(
         name = "LiquidInteract",

@@ -32,13 +32,13 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
     public void renderComponent(CheckButton component) {
         String text = component.getName(); // on toggle, toggled, hovered enabled
         ColorHolder color = new ColorHolder(
-                component.isHovered() ? GuiC.buttonHoveredN.color :
-                        component.isPressed() ? GuiC.buttonPressed.color :
-                                component.isToggled() ? GuiC.buttonIdleT.color :
-                                        GuiC.buttonHoveredT.color);
+            component.isHovered() ? GuiC.buttonHoveredN.color :
+                component.isPressed() ? GuiC.buttonPressed.color :
+                    component.isToggled() ? GuiC.buttonIdleT.color :
+                        GuiC.buttonHoveredT.color);
         if (component.isHovered()) {
             if (component.hasDescription() && !isSettingsOpen() && Tooltips.INSTANCE.isEnabled()) {
-                Component componentAt = KamiMod.getInstance().getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
+                Component componentAt = KamiMod.INSTANCE.getGuiManager().getComponentAt(DisplayGuiScreen.mouseX, DisplayGuiScreen.mouseY);
                 if (componentAt.getHeight() != 11)
                     return; // PREVENT DRAWING WHEN OUTSIDE THE CONTAINER // 11 is height of the regular module
 
@@ -63,7 +63,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
                 RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(GuiC.windowFilled.color));
                 RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(GuiC.windowOutline.color));
-                FontRenderAdapter.INSTANCE.drawString(component.getDescription(), component.getWidth() + tooltipX + 4f, 0f, false);
+                FontRenderAdapter.INSTANCE.drawString(component.getDescription(), component.getWidth() + tooltipX + 4f, -1.0f, false);
 
                 glTranslatef(0, 0, -69);
                 glEnable(GL_SCISSOR_TEST); // stop drawing outside of the container
@@ -81,7 +81,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
     /* in all honesty this is probably resource inefficient but there isn't any other way of getting panels :/ */
     private boolean isSettingsOpen() {
-        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.getInstance().getGuiManager());
+        List<SettingsPanel> panels = ContainerHelper.getAllChildren(SettingsPanel.class, KamiMod.INSTANCE.getGuiManager());
         for (SettingsPanel settingsPanel : panels) {
             if (settingsPanel.isVisible()) {
                 return true;

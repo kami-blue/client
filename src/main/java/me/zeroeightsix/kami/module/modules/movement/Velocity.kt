@@ -2,18 +2,22 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
+import me.zeroeightsix.kami.mixin.extension.packetMotionX
+import me.zeroeightsix.kami.mixin.extension.packetMotionY
+import me.zeroeightsix.kami.mixin.extension.packetMotionZ
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinBlockLiquid
+ * @see MixinBlockLiquid.modifyAcceleration
  */
 @Module.Info(
         name = "Velocity",
-        description = "Modify knockback impact",
+        description = "Modify knock back impact",
         category = Module.Category.MOVEMENT
 )
 object Velocity : Module() {
@@ -23,16 +27,16 @@ object Velocity : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketEntityVelocity && it.packet !is SPacketExplosion) return@listener
+            if (mc.player == null) return@listener
             if (it.packet is SPacketEntityVelocity) {
                 with(it.packet) {
                     if (entityID != mc.player.entityId) return@listener
                     if (isZero) {
                         it.cancel()
                     } else {
-                        motionX = (motionX * horizontal.value).toInt()
-                        motionY = (motionY * vertical.value).toInt()
-                        motionZ = (motionZ * horizontal.value).toInt()
+                        packetMotionX = (packetMotionX * horizontal.value).toInt()
+                        packetMotionY = (packetMotionY * vertical.value).toInt()
+                        packetMotionZ = (packetMotionZ * horizontal.value).toInt()
                     }
                 }
             } else if (it.packet is SPacketExplosion) {
@@ -40,9 +44,9 @@ object Velocity : Module() {
                     if (isZero) {
                         it.cancel()
                     } else {
-                        motionX *= horizontal.value
-                        motionY *= vertical.value
-                        motionZ *= horizontal.value
+                        packetMotionX *= horizontal.value
+                        packetMotionY *= vertical.value
+                        packetMotionZ *= horizontal.value
                     }
                 }
             }

@@ -3,24 +3,26 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashSet
 
-object MessageManager : Manager() {
+object MessageManager : Manager {
     private val mc = Wrapper.minecraft
     private val lockObject = Any()
 
     private val messageQueue = TreeSet<QueuedMessage>(Comparator.reverseOrder())
     private val packetSet = HashSet<CPacketChatMessage>()
     private val timer = TimerUtils.TickTimer()
+    var lastPlayerMessage = ""
     private var currentId = 0
 
     private val activeModifiers = TreeSet<MessageModifier>(Comparator.reverseOrder())
@@ -30,7 +32,8 @@ object MessageManager : Manager() {
         listener<PacketEvent.Send>(0) {
             if (it.packet !is CPacketChatMessage || packetSet.contains(it.packet)) return@listener
             it.cancel()
-            addMessageToQueue(it.packet, it)
+            if (it.packet.message != lastPlayerMessage) addMessageToQueue(it.packet, it)
+            else addMessageToQueue(it.packet, mc.player?: it, Int.MAX_VALUE - 1)
         }
 
         listener<SafeTickEvent>(-69420) { event ->
@@ -119,7 +122,7 @@ object MessageManager : Manager() {
          * @return true if [queuedMessage] have been modified
          */
         fun apply(queuedMessage: QueuedMessage) = filter(queuedMessage).also {
-            if (it) queuedMessage.packet.message = modifier(queuedMessage)
+            if (it) queuedMessage.packet.packetMessage = modifier(queuedMessage)
         }
 
         override fun compareTo(other: MessageModifier): Int {

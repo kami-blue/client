@@ -5,10 +5,10 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketUpdateHealth
+import org.kamiblue.event.listener.listener
 import java.io.File
 
 @Module.Info(
@@ -35,7 +35,20 @@ object AutoExcuse : Module() {
             "Wow, so many try hards",
             "Lagggg",
             "I wasn't trying",
-            "I'm not using $CLIENT_NAME client"
+            "I'm not using $CLIENT_NAME client",
+            "Thers to much lag",
+            "My dog ate my pc",
+            "Sorry, $CLIENT_NAME Client is really bad",
+            "I was lagging",
+            "He was cheating!",
+            "Your hacking!",
+            "Lol imagine actully trying",
+            "I didn't move my mouse",
+            "I was playing on easy mode(;",
+            "My wifi went down",
+            "I'm playing vanila",
+            "My optifine didn't work",
+            "The CPU cheated!"
     )
 
     private val file = File(KamiMod.DIRECTORY + "excuses.txt")
@@ -64,10 +77,10 @@ object AutoExcuse : Module() {
             if (file.exists()) {
                 val cacheList = ArrayList<String>()
                 try {
-                    file.forEachLine { if (it.isNotEmpty()) cacheList.add(it.removeWhiteSpace()) }
+                    file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
                     MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
                 } catch (e: Exception) {
-                    KamiMod.log.error("Failed loading excuses", e)
+                    KamiMod.LOG.error("Failed loading excuses", e)
                 }
                 cacheList.toTypedArray()
             } else {
@@ -82,6 +95,4 @@ object AutoExcuse : Module() {
     }
 
     private fun getExcuse() = loadedExcuses.random().replace(CLIENT_NAME, clients.random())
-
-    private fun String.removeWhiteSpace() = this.replace("^( )+".toRegex(), "").replace("( )+$".toRegex(), "")
 }

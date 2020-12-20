@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -31,6 +30,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.*
 
@@ -108,7 +108,7 @@ object CrystalBasePlace : Module() {
 
     private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
-    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.getItem()) == Blocks.OBSIDIAN
+    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.item) == Blocks.OBSIDIAN
 
     private fun getObby(): Int? {
         val slots = InventoryUtils.getSlotsHotbar(49)
@@ -142,10 +142,10 @@ object CrystalBasePlace : Module() {
         val prediction = CombatSetting.getPrediction(entity)
         val eyePos = mc.player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
-        val maxCurrentDamage = CombatManager.crystalPlaceList
-                .filter { eyePos.distanceTo(it.first.toVec3d()) < range.value }
-                .map { it.second }
-                .max() ?: 0.0f
+        val maxCurrentDamage = CombatManager.placeMap.entries
+            .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
+            .map { it.value.first }
+            .maxOrNull() ?: 0.0f
 
         for (pos in posList) {
             // Placeable check

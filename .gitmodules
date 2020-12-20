@@ -1,0 +1,10 @@
+[submodule "src/main/cape-api"]
+	path = src/main/cape-api
+	url = https://github.com/kami-blue/cape-api.git
+
+[submodule "src/main/commons"]
+	path = src/main/commons
+	url = https://github.com/kami-blue/commons.git
+[submodule "src/main/event"]
+	path = src/main/event
+	url = https://github.com/kami-blue/event.git

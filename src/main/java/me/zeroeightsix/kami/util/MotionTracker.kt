@@ -2,13 +2,13 @@ package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 /**
@@ -111,9 +111,9 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
                 val averageMotion = prevMotion.add(motion.subtract(prevMotion).scale(partialTicks.toDouble()))
                 var movedVec = Vec3d(0.0, 0.0, 0.0)
                 for (ticks in 0..ticksAhead) {
-                    movedVec = if (canMove(world, it.boundingBox, movedVec.add(averageMotion))) { // Attempt to move with full motion
+                    movedVec = if (canMove(world, it.entityBoundingBox, movedVec.add(averageMotion))) { // Attempt to move with full motion
                         movedVec.add(averageMotion)
-                    } else if (canMove(world, it.boundingBox, movedVec.add(averageMotion.x, 0.0, averageMotion.z))) { // Attempt to move horizontally
+                    } else if (canMove(world, it.entityBoundingBox, movedVec.add(averageMotion.x, 0.0, averageMotion.z))) { // Attempt to move horizontally
                         movedVec.add(averageMotion.x, 0.0, averageMotion.z)
                     } else break
                 }

@@ -1,12 +1,11 @@
 package me.zeroeightsix.kami.command.commands;
 
 import me.zeroeightsix.kami.command.Command;
-import me.zeroeightsix.kami.util.EntityUtils;
-import me.zeroeightsix.kami.util.math.MathUtils;
+import me.zeroeightsix.kami.manager.managers.UUIDManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.AbstractHorse;
-
-import java.util.Objects;
+import org.kamiblue.capeapi.PlayerProfile;
+import org.kamiblue.commons.utils.MathUtils;
 
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage;
 import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage;
@@ -29,18 +28,22 @@ public class EntityStatsCommand extends Command {
         if (mc.player.getRidingEntity() != null && mc.player.getRidingEntity() instanceof AbstractHorse) {
             AbstractHorse horse = (AbstractHorse) mc.player.getRidingEntity();
             float maxHealth = horse.getMaxHealth();
-            double speed = MathUtils.round(43.17 * horse.getAIMoveSpeed(), 2);
-            double jump = MathUtils.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 4);
+            double speed = MathUtils.INSTANCE.round(43.17 * horse.getAIMoveSpeed(), 2);
+            double jump = MathUtils.INSTANCE.round(-0.1817584952 * Math.pow(horse.getHorseJumpStrength(), 3) + 3.689713992 * Math.pow(horse.getHorseJumpStrength(), 2) + 2.128599134 * horse.getHorseJumpStrength() - 0.343930367, 4);
             String ownerId = horse.getOwnerUniqueId() == null ? "Not tamed." : horse.getOwnerUniqueId().toString();
+
+            PlayerProfile ownerProfile = UUIDManager.INSTANCE.getByString(ownerId);
+            String ownerName = "";
+            if (ownerProfile != null) ownerName = ownerProfile.getName();
 
             String builder = "&6Entity Statistics:" + "\n&cMax Health: " + maxHealth +
                     "\n&cSpeed: " + speed +
                     "\n&cJump: " + jump +
-                    "\n&cOwner: " + Objects.requireNonNull(EntityUtils.getNameFromUUID(ownerId)).replace("\"", "");
+                    "\n&cOwner: " + ownerName;
             sendChatMessage(builder);
         } else if (mc.player.getRidingEntity() instanceof EntityLivingBase) {
             EntityLivingBase entity = (EntityLivingBase) mc.player.getRidingEntity();
-            sendChatMessage("&6Entity Stats:\n&cMax Health: &b" + entity.getMaxHealth() + " &2HP" + "\n&cSpeed: &b" + MathUtils.round(43.17 * entity.getAIMoveSpeed(), 2) + " &2m/s");
+            sendChatMessage("&6Entity Stats:\n&cMax Health: &b" + entity.getMaxHealth() + " &2HP" + "\n&cSpeed: &b" + MathUtils.INSTANCE.round(43.17 * entity.getAIMoveSpeed(), 2) + " &2m/s");
         } else {
             sendErrorMessage("&4&lError: &cNot riding a compatible entity.");
         }

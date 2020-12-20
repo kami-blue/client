@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import baritone.api.BaritoneAPI
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox
@@ -23,6 +23,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
@@ -122,9 +123,10 @@ object AutoObsidian : Module() {
     }
 
     override fun onDisable() {
-        val baritoneProcess = BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.mostRecentInControl()
-        if (baritoneProcess.isPresent && baritoneProcess.get() == AutoObsidianProcess) {
-            baritoneProcess.get().onLostControl()
+        BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl()?.let {
+            if (it.isPresent && it.get() == AutoObsidianProcess) {
+                it.get().onLostControl()
+            }
         }
         reset()
     }
@@ -138,7 +140,7 @@ object AutoObsidian : Module() {
 
         if (!active && state != State.DONE) {
             active = true
-            BaritoneAPI.getProvider().primaryBaritone.pathingControlManager.registerProcess(AutoObsidianProcess)
+            BaritoneUtils.primary?.pathingControlManager?.registerProcess(AutoObsidianProcess)
         }
 
         /* Tell baritone to get you back to position */

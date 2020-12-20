@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import net.minecraft.client.Minecraft
@@ -15,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
 
@@ -95,7 +95,7 @@ object EyeFinder : Module() {
             for (otherEntity in mc.world.loadedEntityList) {
                 if (otherEntity.getDistance(entity) > 10.0) continue /* Some entity has bigger bounding box */
                 if (otherEntity == entity || otherEntity == mc.player) continue
-                val box = otherEntity.boundingBox
+                val box = otherEntity.entityBoundingBox
                 result = box.calculateIntercept(eyePos, entityLookEnd) ?: continue
                 result.typeOfHit = RayTraceResult.Type.ENTITY
                 result.entityHit = otherEntity

@@ -3,8 +3,9 @@ package me.zeroeightsix.kami.gui.mc
 import me.zeroeightsix.kami.module.modules.combat.AutoLog
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
+import java.time.LocalTime
 
-class KamiGuiDisconnected(private val reason: Array<String>, private val screen: GuiScreen, private val disable: Boolean) : GuiScreen() {
+class KamiGuiDisconnected(private val reason: Array<String>, private val screen: GuiScreen, private val disable: Boolean, private val logoutTime: LocalTime) : GuiScreen() {
 
     override fun initGui() {
         super.initGui()
@@ -20,9 +21,11 @@ class KamiGuiDisconnected(private val reason: Array<String>, private val screen:
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
         drawCenteredString(fontRenderer, "[AutoLog] Logged because:", width / 2, 80, 0x9B90FF)
-        for ((index , reason) in reason.withIndex()) {
+        for ((index, reason) in reason.withIndex()) {
             drawCenteredString(fontRenderer, reason, width / 2, 94 + (14 * index), 0xFFFFFF)
         }
+
+        drawCenteredString(fontRenderer, "Logged out at: $logoutTime", width / 2, 140, 0xFFFFFFF)
 
         if (!disable) drawCenteredString(fontRenderer, "Disabled AutoLog", width / 2, 224, 0xDE413C)
         super.drawScreen(mouseX, mouseY, partialTicks)

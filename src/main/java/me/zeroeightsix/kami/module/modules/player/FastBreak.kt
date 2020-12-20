@@ -2,10 +2,11 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.blockHitDelay
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.client.CPacketPlayerDigging
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "FastBreak",

@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.util.text
 
-import baritone.api.BaritoneAPI
 import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.Command
@@ -35,12 +34,12 @@ object MessageSendHelper {
     }
 
     @JvmStatic
-    fun sendKamiCommand(command: String, addToHistory: Boolean) {
+    fun sendKamiCommand(command: String, addToHistory: Boolean = false) {
         try {
             if (addToHistory) {
                 mc.ingameGUI.chatGUI.addToSentMessages(command)
             }
-            if (command.length > 1) KamiMod.getInstance().commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
+            if (command.length > 1) KamiMod.INSTANCE.commandManager.callCommand(command.substring(Command.getCommandPrefix().length - 1)) else sendChatMessage("Please enter a command!")
         } catch (e: Exception) {
             e.printStackTrace()
             sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
@@ -54,13 +53,13 @@ object MessageSendHelper {
 
     @JvmStatic
     fun sendBaritoneCommand(vararg args: String?) {
-        val chatControl = BaritoneUtils.settings()?.chatControl
+        val chatControl = BaritoneUtils.settings?.chatControl
         val prevValue = chatControl?.value
         chatControl?.value = true
 
         // ty leijuwuv <--- quit it :monkey:
-        val event = ChatEvent(java.lang.String.join(" ", *args))
-        BaritoneAPI.getProvider().primaryBaritone.gameEventHandler.onSendChatMessage(event)
+        val event = ChatEvent(args.joinToString(separator = " "))
+        BaritoneUtils.primary?.gameEventHandler?.onSendChatMessage(event)
         if (!event.isCancelled && args[0] != "damn") { // don't remove the 'damn', it's critical code that will break everything if you remove it
             sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md")
         }
@@ -83,7 +82,7 @@ object MessageSendHelper {
     fun sendServerMessage(message: String?) {
         if (message.isNullOrBlank()) return
         mc.player?.connection?.sendPacket(CPacketChatMessage(message))
-                ?: LogWrapper.warning("Could not send server message: \"$message\"")
+            ?: LogWrapper.warning("Could not send server message: \"$message\"")
     }
 
     @JvmStatic
@@ -122,5 +121,5 @@ object MessageSendHelper {
         }
     }
 
-    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KANJI + "&7] &r"
+    private fun coloredName(colorCode: Char) = "&7[&$colorCode" + KamiMod.KAMI_KATAKANA + "&7] &r"
 }

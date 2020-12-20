@@ -8,14 +8,13 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
-import org.lwjgl.opengl.GL11.GL_VENDOR
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -101,7 +100,7 @@ object Search : Module() {
     }
 
     override fun onEnable() {
-        if (!overrideWarning.value && GlStateManager.glGetString(GL_VENDOR).contains("Intel")) {
+        if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
             MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the &7 ${Command.getCommandPrefix()}search override&f command")
             disable()
@@ -210,7 +209,7 @@ object Search : Module() {
     }
 
     private fun updateRenderList() {
-        Thread(Runnable {
+        Thread {
             val cacheDistMap = TreeMap<Double, BlockPos>(Comparator.naturalOrder())
             /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
             for (posList in mainList.values) {
@@ -246,16 +245,17 @@ object Search : Module() {
             } else {
                 dirty++
             }
-        }).start()
+        }.start()
     }
 
     private fun getPosColor(pos: BlockPos): ColorHolder {
-        val block = mc.world.getBlockState(pos).block
+        val blockState = mc.world.getBlockState(pos)
+        val block = blockState.block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
                 ColorHolder(82, 49, 153)
             } else {
-                val colorInt = block.blockMapColor.colorValue
+                val colorInt = blockState.getMapColor(mc.world, pos).colorValue
                 ColorHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
         } else {

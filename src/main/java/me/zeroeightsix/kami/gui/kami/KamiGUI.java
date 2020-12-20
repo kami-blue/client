@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.gui.kami;
 
-import baritone.api.BaritoneAPI;
 import baritone.api.process.IBaritoneProcess;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import kotlin.Pair;
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.gui.kami.component.*;
 import me.zeroeightsix.kami.gui.kami.theme.kami.KamiTheme;
 import me.zeroeightsix.kami.gui.rgui.GUI;
@@ -23,11 +21,11 @@ import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
+import me.zeroeightsix.kami.util.BaritoneUtils;
 import me.zeroeightsix.kami.util.Wrapper;
-import me.zeroeightsix.kami.util.math.MathUtils;
+import me.zeroeightsix.kami.util.math.Direction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
@@ -35,6 +33,7 @@ import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.init.MobEffects;
 import net.minecraft.util.text.TextFormatting;
+import org.kamiblue.capeapi.PlayerProfile;
 
 import javax.annotation.Nonnull;
 import java.math.RoundingMode;
@@ -83,7 +82,7 @@ public class KamiGUI extends GUI {
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list =
-                new LinkedList<>(map.entrySet());
+            new LinkedList<>(map.entrySet());
         list.sort(Map.Entry.comparingByValue());
 
         Map<K, V> result = new LinkedHashMap<>();
@@ -119,8 +118,8 @@ public class KamiGUI extends GUI {
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
         for (Module module : ModuleManager.getModules()) {
-            if (module.category.isHidden()) continue;
-            Module.Category moduleCategory = module.category;
+            if (module.getCategory().isHidden()) continue;
+            Module.Category moduleCategory = module.getCategory();
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
                 Stretcherlayout stretcherlayout = new Stretcherlayout(1);
                 stretcherlayout.setComponentOffsetWidth(0);
@@ -131,14 +130,14 @@ public class KamiGUI extends GUI {
 
             Pair<Scrollpane, SettingsPanel> pair = categoryScrollpaneHashMap.get(moduleCategory);
             Scrollpane scrollpane = pair.getFirst();
-            CheckButton checkButton = new CheckButton(module.name.getValue(), module.description);
+            CheckButton checkButton = new CheckButton(module.getName().getValue(), module.getDescription());
             checkButton.setToggled(module.isEnabled());
 
             /* descriptions aren't changed ever, so you don't need a tick listener */
-            checkButton.setDescription(module.description);
+            checkButton.setDescription(module.getDescription());
             checkButton.addTickListener(() -> { // dear god
                 checkButton.setToggled(module.isEnabled());
-                checkButton.setName(module.name.getValue());
+                checkButton.setName(module.getName().getValue());
             });
 
             checkButton.addMouseListener(new MouseListener() {
@@ -273,10 +272,8 @@ public class KamiGUI extends GUI {
         infoOverlay.setPinnable(true);
         Label information = new Label("");
         information.setShadow(true);
-        information.addTickListener(() -> {
-            information.setText("");
-            InfoOverlay.INSTANCE.infoContents().forEach(information::addLine);
-        });
+        information.setMultiline(true);
+        information.addTickListener(() -> information.setText(InfoOverlay.INSTANCE.infoContents()));
         infoOverlay.addChild(information);
         frames.add(infoOverlay);
 
@@ -310,13 +307,13 @@ public class KamiGUI extends GUI {
             friends.setText("");
             if (!friendList.isMinimized()) {
                 if (FriendManager.INSTANCE.getEnabled()) {
-                    for (FriendManager.Friend friend : FriendManager.INSTANCE.getFriends().values()) {
-                        final String name = friend.getUsername();
+                    for (PlayerProfile friend : FriendManager.INSTANCE.getFriends().values()) {
+                        final String name = friend.getName();
                         if (name.isEmpty()) continue;
                         friends.addLine(name);
                     }
                 } else {
-                    friends.addLine(KamiMod.color + "cDisabled");
+                    friends.addLine(TextFormatting.RED + "Disabled");
                 }
             }
         });
@@ -334,10 +331,11 @@ public class KamiGUI extends GUI {
         processes.setShadow(true);
         processes.addTickListener(() -> {
             processes.setText("");
-            Optional<IBaritoneProcess> process = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl();
+            if (!BaritoneUtils.INSTANCE.getInitialized()) return;
+            Optional<IBaritoneProcess> process = Objects.requireNonNull(BaritoneUtils.INSTANCE.getPrimary()).getPathingControlManager().mostRecentInControl();
             if (!baritone.isMinimized() && process.isPresent()) {
-                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE && AutoWalk.INSTANCE.getDirection() != null) {
-                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection() + ")");
+                if (process.get() != TemporaryPauseProcess.INSTANCE && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE) {
+                    processes.addLine("Process: AutoWalk (" + AutoWalk.INSTANCE.getDirection().getDisplayName() + ")");
                 } else {
                     processes.addLine("Process: " + process.get().displayName());
                 }
@@ -361,40 +359,40 @@ public class KamiGUI extends GUI {
             Minecraft mc = Wrapper.getMinecraft();
 
             if (mc.player == null) return;
-            List<EntityPlayer> entityList = mc.world.playerEntities;
 
             Map<String, Integer> players = new HashMap<>();
-            for (Entity e : entityList) {
-                if (e.getName().equals(mc.player.getName())) continue;
+            for (EntityPlayer entity : mc.world.playerEntities) {
+                if (entity.isDead) continue;
+                if (entity.getName().equals(mc.player.getName())) continue;
 
-                String posString = (e.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (e.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
+                String posString = (entity.posY > mc.player.posY ? ChatFormatting.DARK_GREEN + "+" : (entity.posY == mc.player.posY ? " " : ChatFormatting.DARK_RED + "-"));
                 String weaknessFactor;
                 String strengthFactor;
                 String extraPaddingForFactors;
-                EntityPlayer ePlayer = (EntityPlayer) e;
 
-                if (ePlayer.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
+                if (entity.isPotionActive(MobEffects.WEAKNESS)) weaknessFactor = "W";
                 else weaknessFactor = "";
-                if (ePlayer.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
+
+                if (entity.isPotionActive(MobEffects.STRENGTH)) strengthFactor = "S";
                 else strengthFactor = "";
+
                 if (weaknessFactor.equals("") && strengthFactor.equals("")) extraPaddingForFactors = "";
                 else extraPaddingForFactors = " ";
 
-                float hpRaw = ((EntityLivingBase) e).getHealth() + ((EntityLivingBase) e).getAbsorptionAmount();
+                float hpRaw = entity.getHealth() + entity.getAbsorptionAmount();
                 String hp = dfHealth.format(hpRaw);
-                healthSB.append(KamiMod.color);
                 if (hpRaw >= 20) {
-                    healthSB.append("a");
+                    healthSB.append(TextFormatting.GREEN);
                 } else if (hpRaw >= 10) {
-                    healthSB.append("e");
+                    healthSB.append(TextFormatting.YELLOW);
                 } else if (hpRaw >= 5) {
-                    healthSB.append("6");
+                    healthSB.append(TextFormatting.GOLD);
                 } else {
-                    healthSB.append("c");
+                    healthSB.append(TextFormatting.RED);
                 }
                 healthSB.append(hp);
 
-                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.DARK_GRAY + weaknessFactor + ChatFormatting.DARK_PURPLE + strengthFactor + ChatFormatting.GRAY + extraPaddingForFactors + e.getName(), (int) mc.player.getDistance(e));
+                players.put(ChatFormatting.GRAY + posString + " " + healthSB.toString() + " " + ChatFormatting.DARK_GRAY + weaknessFactor + ChatFormatting.DARK_PURPLE + strengthFactor + ChatFormatting.GRAY + extraPaddingForFactors + entity.getName(), (int) mc.player.getDistance(entity));
                 healthSB.setLength(0);
             }
 
@@ -406,7 +404,7 @@ public class KamiGUI extends GUI {
             players = sortByValue(players);
 
             for (Map.Entry<String, Integer> player : players.entrySet()) {
-                list.addLine(KamiMod.color + "7" + player.getKey() + " " + KamiMod.color + "8" + player.getValue());
+                list.addLine(TextFormatting.GRAY + player.getKey() + " " + TextFormatting.DARK_GRAY + player.getValue());
             }
         });
         textRadar.setCloseable(false);
@@ -437,21 +435,21 @@ public class KamiGUI extends GUI {
                         return;
                     }
                     final Map<String, Integer> entityCounts = entityList.stream()
-                            .filter(Objects::nonNull)
-                            .filter(e -> !(e instanceof EntityPlayer))
-                            .collect(Collectors.groupingBy(KamiGUI::getEntityName,
-                                    Collectors.reducing(0, ent -> {
-                                        if (ent instanceof EntityItem)
-                                            return ((EntityItem) ent).getItem().getCount();
-                                        return 1;
-                                    }, Integer::sum)
-                            ));
+                        .filter(Objects::nonNull)
+                        .filter(e -> !(e instanceof EntityPlayer))
+                        .collect(Collectors.groupingBy(KamiGUI::getEntityName,
+                            Collectors.reducing(0, ent -> {
+                                if (ent instanceof EntityItem)
+                                    return ((EntityItem) ent).getItem().getCount();
+                                return 1;
+                            }, Integer::sum)
+                        ));
 
                     entityLabel.setText("");
                     entityCounts.entrySet().stream()
-                            .sorted(Map.Entry.comparingByValue())
-                            .map(entry -> TextFormatting.GRAY + entry.getKey() + " " + TextFormatting.DARK_GRAY + "x" + entry.getValue())
-                            .forEach(entityLabel::addLine);
+                        .sorted(Map.Entry.comparingByValue())
+                        .map(entry -> TextFormatting.GRAY + entry.getKey() + " " + TextFormatting.DARK_GRAY + "x" + entry.getValue())
+                        .forEach(entityLabel::addLine);
 
                     //entityLabel.getParent().setHeight(entityLabel.getLines().length * (entityLabel.getTheme().getFontRenderer().getFontHeight()+1) + 3);
                 }
@@ -465,7 +463,7 @@ public class KamiGUI extends GUI {
         /*
          * Coordinates
          */
-        Frame coords  = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
+        Frame coords = new Frame(getTheme(), new Stretcherlayout(1), "Coordinates");
         coords.setCloseable(false);
         coords.setPinnable(true);
         Label coordsLabel = new Label("");
@@ -489,32 +487,32 @@ public class KamiGUI extends GUI {
             int hposZ = (int) (player.posZ * f);
 
             /* The 7 and f in the string formatter is the color */
-            String colouredSeparator = KamiMod.color + "7 " + KamiMod.separator + KamiMod.color + "r";
-            String ow = String.format("%sf%,d%s7, %sf%,d%s7, %sf%,d %s7",
-                    KamiMod.color,
-                    posX,
-                    KamiMod.color,
-                    KamiMod.color,
-                    posY,
-                    KamiMod.color,
-                    KamiMod.color,
-                    posZ,
-                    KamiMod.color
+            String colouredSeparator = TextFormatting.GRAY + " |" + TextFormatting.RESET;
+            String ow = String.format(" (%s%,d%s, %s%,d%s, %s%,d%s)",
+                TextFormatting.WHITE,
+                posX,
+                TextFormatting.GRAY,
+                TextFormatting.WHITE,
+                posY,
+                TextFormatting.GRAY,
+                TextFormatting.WHITE,
+                posZ,
+                TextFormatting.GRAY
             );
-            String nether = String.format(" (%sf%,d%s7, %sf%,d%s7, %sf%,d%s7)",
-                    KamiMod.color,
-                    hposX,
-                    KamiMod.color,
-                    KamiMod.color,
-                    posY,
-                    KamiMod.color,
-                    KamiMod.color,
-                    hposZ,
-                    KamiMod.color
+            String nether = String.format(" (%s%,d%s, %s%,d%s, %s%,d%s)",
+                TextFormatting.WHITE,
+                hposX,
+                TextFormatting.GRAY,
+                TextFormatting.WHITE,
+                posY,
+                TextFormatting.GRAY,
+                TextFormatting.WHITE,
+                hposZ,
+                TextFormatting.GRAY
             );
             coordsLabel.setText("");
             coordsLabel.addLine(ow);
-            coordsLabel.addLine(MathUtils.getPlayerCardinal(player).cardinalName + colouredSeparator + nether);
+            coordsLabel.addLine(Direction.fromEntity(player).getDisplayNameXY() + colouredSeparator + nether);
         });
         coords.addChild(coordsLabel);
         coordsLabel.setShadow(true);

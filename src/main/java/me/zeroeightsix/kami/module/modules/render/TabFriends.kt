@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
+import net.minecraft.util.text.TextFormatting
 
 @Module.Info(
         name = "TabFriends",
@@ -14,8 +14,9 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 )
 object TabFriends : Module() {
     @JvmStatic
-    fun getPlayerName(networkPlayerInfoIn: NetworkPlayerInfo): String {
-        val name = if (networkPlayerInfoIn.displayName != null) networkPlayerInfoIn.displayName!!.formattedText else ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.playerTeam, networkPlayerInfoIn.gameProfile.name)
-        return if (FriendManager.isFriend(name)) String.format("%sa%s", KamiMod.color, name) else name
+    fun getPlayerName(info: NetworkPlayerInfo): String {
+        val name = info.displayName?.formattedText
+            ?: ScorePlayerTeam.formatPlayerName(info.playerTeam, info.gameProfile.name)
+        return if (FriendManager.isFriend(name)) "${TextFormatting.GREEN}$name" else name
     }
 }

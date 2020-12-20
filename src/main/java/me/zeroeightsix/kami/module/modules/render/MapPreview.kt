@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.mixin.client.gui.MixinGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import net.minecraft.item.ItemMap
@@ -7,9 +8,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.world.World
 import net.minecraft.world.storage.MapData
 
-
 /**
- * @see me.zeroeightsix.kami.mixin.client.MixinGuiScreen
+ * @see MixinGuiScreen.renderToolTip
  */
 @Module.Info(
         name = "MapPreview",

@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.entity.player.EntityPlayer
+import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 
 @Module.Info(

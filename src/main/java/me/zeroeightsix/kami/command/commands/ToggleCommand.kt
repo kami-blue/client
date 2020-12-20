@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.command.syntax.ChunkBuilder
 import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
 import me.zeroeightsix.kami.module.ModuleManager.ModuleNotFoundException
 import me.zeroeightsix.kami.module.ModuleManager.getModule
-import me.zeroeightsix.kami.module.modules.ClickGUI
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 

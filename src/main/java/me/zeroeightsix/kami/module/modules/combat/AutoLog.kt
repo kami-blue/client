@@ -10,8 +10,6 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.event.listener
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
@@ -21,6 +19,10 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.utils.MathUtils
+import org.kamiblue.event.listener.listener
+import java.time.LocalTime
+
 
 @Module.Info(
         name = "AutoLog",
@@ -61,7 +63,7 @@ object AutoLog : Module() {
     }
 
     private fun checkCrystals(): Boolean {
-        val maxSelfDamage = CombatManager.crystalMap.values.maxBy { it.second }?.second ?: 0.0f
+        val maxSelfDamage = CombatManager.crystalMap.values.maxByOrNull { it.second }?.second ?: 0.0f
         return CombatUtils.getHealthSmart(mc.player) - maxSelfDamage < health.value
     }
 
@@ -92,11 +94,11 @@ object AutoLog : Module() {
         val reasonText = getReason(reason, additionalInfo)
         val screen = getScreen() // do this before disconnecting
 
-        mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         mc.connection?.networkManager?.closeChannel(TextComponentString(""))
         mc.loadWorld(null as WorldClient?)
 
-        mc.displayGuiScreen(KamiGuiDisconnected(reasonText, screen, disable.value == DisableMode.ALWAYS || (disable.value == DisableMode.NOT_PLAYER && reason != PLAYER)))
+        mc.displayGuiScreen(KamiGuiDisconnected(reasonText, screen, disable.value == DisableMode.ALWAYS || (disable.value == DisableMode.NOT_PLAYER && reason != PLAYER), LocalTime.now()))
     }
 
     private fun getScreen() = if (mc.isIntegratedServerRunning) {

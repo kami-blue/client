@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.gui.rgui.poof.PoofInfo;
  */
 public abstract class FramePoof<T extends Component, S extends PoofInfo> extends Poof<T, S> {
     public static class FramePoofInfo extends PoofInfo {
-        private Action action;
+        private final Action action;
 
         public FramePoofInfo(Action action) {
             this.action = action;

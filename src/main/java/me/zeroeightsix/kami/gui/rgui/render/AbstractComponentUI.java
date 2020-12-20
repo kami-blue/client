@@ -14,7 +14,7 @@ public abstract class AbstractComponentUI<T extends Component> implements Compon
 
     public AbstractComponentUI() {
         this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments()[0];
+            .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @Override

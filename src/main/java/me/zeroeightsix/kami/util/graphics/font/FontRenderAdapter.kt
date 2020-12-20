@@ -21,7 +21,7 @@ object FontRenderAdapter {
             glPushMatrix()
             glTranslatef(round(posXIn), round(posYIn), 0f)
             glScalef(scale, scale, 1f)
-            dumbMcFontRenderer.drawString(text, 0f, 0f, color.toHex(), drawShadow)
+            dumbMcFontRenderer.drawString(text, 0f, 2.0f, color.toHex(), drawShadow)
             glPopMatrix()
         }
     }

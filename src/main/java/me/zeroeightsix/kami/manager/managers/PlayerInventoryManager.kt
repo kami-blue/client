@@ -5,12 +5,12 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
 import java.util.*
 
-object PlayerInventoryManager : Manager() {
+object PlayerInventoryManager : Manager {
     private val mc = Wrapper.minecraft
     private val timer = TimerUtils.TickTimer()
     private val lockObject = Any()
@@ -31,6 +31,7 @@ object PlayerInventoryManager : Manager() {
 
             getTaskOrNext()?.nextInfo()?.let {
                 InventoryUtils.inventoryClick(it.windowId, it.slot, it.mouseButton, it.type)
+                mc.playerController?.updateController()
             }
 
             if (actionQueue.isEmpty()) currentId = 0

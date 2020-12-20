@@ -29,4 +29,4 @@ public class ActiveModules extends Label {
             }
         });
     }
-};
+}

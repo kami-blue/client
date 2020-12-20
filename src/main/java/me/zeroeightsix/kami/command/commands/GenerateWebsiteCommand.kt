@@ -17,7 +17,7 @@ class GenerateWebsiteCommand : Command("genwebsite", null) {
     override fun call(args: Array<String>) {
         val mods = ModuleManager.getModules()
         val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
-        KamiMod.log.info("\n"
+        KamiMod.LOG.info("\n"
                 + "---\n"
                 + "layout: default\n"
                 + "title: Modules\n"
@@ -34,12 +34,12 @@ class GenerateWebsiteCommand : Command("genwebsite", null) {
                 totalMods++
                 str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
             }
-            KamiMod.log.info("<details>")
-            KamiMod.log.info("    <summary>$modCategory ($totalMods)</summary>")
-            KamiMod.log.info("    <p><ul>")
-            KamiMod.log.info(str)
-            KamiMod.log.info("    </ul></p>")
-            KamiMod.log.info("</details>")
+            KamiMod.LOG.info("<details>")
+            KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
+            KamiMod.LOG.info("    <p><ul>")
+            KamiMod.LOG.info(str)
+            KamiMod.LOG.info("    </ul></p>")
+            KamiMod.LOG.info("</details>")
         }
         sendChatMessage(getLabel().substring(0, 1).toUpperCase() + getLabel().substring(1) + ": Generated website to log file!")
     }

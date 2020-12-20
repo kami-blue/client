@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.KamiMod
@@ -7,9 +9,8 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.color.ColorTextFormatting
-import me.zeroeightsix.kami.util.color.ColorTextFormatting.ColourCode
-import me.zeroeightsix.kami.util.event.listener
+import me.zeroeightsix.kami.util.color.EnumTextColor
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
@@ -29,8 +30,8 @@ object TotemPopCounter : Module() {
     private val resetOnDeath = register(Settings.b("ResetOnDeath", true))
     private val announceSetting = register(Settings.e<Announce>("Announce", Announce.CLIENT))
     private val thanksTo = register(Settings.b("ThanksTo", false))
-    private val colorName = register(Settings.e<ColourCode>("ColorName", ColourCode.DARK_PURPLE))
-    private val colorNumber = register(Settings.e<ColourCode>("ColorNumber", ColourCode.LIGHT_PURPLE))
+    private val colorName = register(Settings.e<EnumTextColor>("ColorName", EnumTextColor.DARK_PURPLE))
+    private val colorNumber = register(Settings.e<EnumTextColor>("ColorNumber", EnumTextColor.LIGHT_PURPLE))
 
     private enum class Announce {
         CLIENT, EVERYONE
@@ -92,7 +93,7 @@ object TotemPopCounter : Module() {
             FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
             else -> player.name
         }
-        return setToText(colorName.value) + name + TextFormatting.RESET
+        return colorName.value.textFormatting.toString() + name + TextFormatting.RESET
     }
 
     private val isPublic: Boolean
@@ -102,9 +103,9 @@ object TotemPopCounter : Module() {
 
     private fun grammar(player: EntityPlayer) = if (player == mc.player) "my" else "their"
 
-    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.MODNAME} !" else "!"
+    private fun ending(): String = if (thanksTo.value) " thanks to ${KamiMod.NAME} !" else "!"
 
-    private fun formatNumber(message: Int) = setToText(colorNumber.value) + message + TextFormatting.RESET
+    private fun formatNumber(message: Int) = colorNumber.value.textFormatting.toString() + message + TextFormatting.RESET
 
     private fun sendMessage(message: String) {
         when (announceSetting.value) {
@@ -118,6 +119,4 @@ object TotemPopCounter : Module() {
             }
         }
     }
-
-    private fun setToText(colourCode: ColourCode) = ColorTextFormatting.toTextMap[colourCode]!!.toString()
 }

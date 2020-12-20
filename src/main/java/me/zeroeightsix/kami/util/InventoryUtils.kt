@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.Item
@@ -36,7 +37,7 @@ object InventoryUtils {
         mc.player?.inventory?.mainInventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].getItem()) != itemID) continue
+                if (Item.getIdFromItem(clonedList[i].item) != itemID) continue
                 slots.add(i)
             }
         }
@@ -61,7 +62,7 @@ object InventoryUtils {
         mc.player?.openContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].getItem()) != itemId) continue
+                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
                 slots.add(i)
             }
         }
@@ -99,7 +100,7 @@ object InventoryUtils {
         mc.player?.inventoryContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].getItem()) != itemId) continue
+                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
                 slots.add(i)
             }
         }
@@ -147,7 +148,7 @@ object InventoryUtils {
                 val clonedList = ArrayList(it)
                 for (i in min..max) {
                     val itemStack = clonedList.getOrNull(i) ?: continue
-                    if (Item.getIdFromItem(itemStack.getItem()) != itemId) continue
+                    if (Item.getIdFromItem(itemStack.item) != itemId) continue
                     currentCount += if (itemId == 0) 1 else itemStack.count
                 }
             }
@@ -183,7 +184,7 @@ object InventoryUtils {
             val clonedList = ArrayList(it)
             for (i in 36..44) { /* Finds slot contains no exception item first */
                 val itemStack = clonedList[i]
-                if (Item.getIdFromItem(itemStack.getItem()) != exceptionID) {
+                if (Item.getIdFromItem(itemStack.item) != exceptionID) {
                     slot2 = i
                     break
                 }
@@ -206,9 +207,9 @@ object InventoryUtils {
      */
     fun moveToSlot(windowId: Int, slotFrom: Int, slotTo: Int): ShortArray {
         return shortArrayOf(
-                inventoryClick(windowId, slotFrom, type = ClickType.PICKUP),
-                inventoryClick(windowId, slotTo, type = ClickType.PICKUP),
-                inventoryClick(windowId, slotFrom, type = ClickType.PICKUP)
+            inventoryClick(windowId, slotFrom, type = ClickType.PICKUP),
+            inventoryClick(windowId, slotTo, type = ClickType.PICKUP),
+            inventoryClick(windowId, slotFrom, type = ClickType.PICKUP)
         )
     }
 
@@ -255,10 +256,10 @@ object InventoryUtils {
      * Put the item currently holding by mouse to somewhere or throw it
      */
     fun removeHoldingItem() {
-        if (mc.player?.inventory?.getItemStack()?.isEmpty() != false) return
+        if (mc.player?.inventory?.itemStack?.isEmpty != false) return
         val slot = (getSlotsFullInv(9, 45, 0) // Get empty slots in inventory and offhand
-                ?: getSlotsFullInv(1, 4, 0))?.get(0) // Get empty slots in crafting slot
-                ?: -999 // Throw on the ground
+            ?: getSlotsFullInv(1, 4, 0))?.get(0) // Get empty slots in crafting slot
+            ?: -999 // Throw on the ground
         inventoryClick(slot = slot, type = ClickType.PICKUP)
     }
 

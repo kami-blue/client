@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.util.graphics.font
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.math.MathUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureUtil
+import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
 import org.lwjgl.opengl.GL14.*
@@ -62,7 +62,7 @@ import kotlin.math.min
  *
  * @new version edited by David Aaron Muhar (bobjob)
  */
-class FontGlyphs(val style: TextProperties.Style, private val font: Font, private val fallbackFont: Font) {
+class FontGlyphs(val style: Style, private val font: Font, private val fallbackFont: Font) {
 
     /** HashMap for storing all the glyph chunks, each chunk contains 256 glyphs mapping to characters */
     private val chunkMap = HashMap<Int, GlyphChunk>()
@@ -74,8 +74,8 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
         // Loads the basic 256 characters on init
         fontHeight = loadGlyphChunk(0)?.let { chunk ->
             chunkMap[0] = chunk
-            chunk.charInfoArray.maxBy { it.height }?.height?.toFloat() ?: 32.0f
-        } ?: 32.0f
+            chunk.charInfoArray.maxByOrNull { it.height }?.height?.toFloat() ?: 64.0f
+        } ?: 64.0f
     }
 
     /** @return CharInfo of [char] */
@@ -142,7 +142,7 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
             val charInfoArray = builderArray.map { it.build(textureHeight.toDouble()) }.toTypedArray()
             GlyphChunk(chunk, dynamicTexture.glTextureId, dynamicTexture, charInfoArray)
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to load glyph chunk $chunk.")
+            KamiMod.LOG.error("Failed to load glyph chunk $chunk.")
             e.printStackTrace()
             null
         }
@@ -179,7 +179,7 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
     private fun createTexture(bufferedImage: BufferedImage): DynamicTexture? {
         return try {
             val dynamicTexture = DynamicTexture(bufferedImage)
-            dynamicTexture.loadTexture(Wrapper.minecraft.getResourceManager())
+            dynamicTexture.loadTexture(Wrapper.minecraft.resourceManager)
             val textureId = dynamicTexture.glTextureId
 
             // Tells Gl that our texture isn't a repeating texture (edges are not connecting to each others)
@@ -193,15 +193,15 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
 
             // Setup mipmap parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 3)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 4)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4)
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0f)
             GlStateManager.bindTexture(textureId)
 
-            // We only need 3 levels of mipmaps for 32 sized font
-            // 0: 32 x 32, 1: 16 x 16, 2: 8 x 8, 3: 4 x 4
-            for (mipmapLevel in 0..3) {
+            // We only need 4 levels of mipmaps for 64 sized font
+            // 0: 64 x 64, 1: 32 x 32, 2: 16 x 16, 3: 8 x 8, 4: 4 x 4
+            for (mipmapLevel in 0..4) {
                 // GL_ALPHA means that the texture is a grayscale texture (black & white and alpha only)
                 glTexImage2D(GL_TEXTURE_2D, mipmapLevel, GL_ALPHA, bufferedImage.width shr mipmapLevel, bufferedImage.height shr mipmapLevel, 0, GL_ALPHA, GL_UNSIGNED_BYTE, null as ByteBuffer?)
             }
@@ -213,7 +213,7 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
 
             dynamicTexture
         } catch (e: Exception) {
-            KamiMod.log.error("Failed to create font texture.")
+            KamiMod.LOG.error("Failed to create font texture.")
             e.printStackTrace()
             null
         }
@@ -222,56 +222,56 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
     class CharInfoBuilder(val posX: Int, val posY: Int, val width: Int, val height: Int) {
         fun build(textureHeight: Double): CharInfo {
             return CharInfo(
-                    posX.toDouble(),
-                    posY.toDouble(),
-                    width.toDouble(),
-                    height.toDouble(),
-                    posX / TEXTURE_WIDTH_DOUBLE,
-                    posY / textureHeight,
-                    (posX + width) / TEXTURE_WIDTH_DOUBLE,
-                    (posY + height) / textureHeight
+                posX.toDouble(),
+                posY.toDouble(),
+                width.toDouble(),
+                height.toDouble(),
+                posX / TEXTURE_WIDTH_DOUBLE,
+                posY / textureHeight,
+                (posX + width) / TEXTURE_WIDTH_DOUBLE,
+                (posY + height) / textureHeight
             )
         }
     }
 
     data class CharInfo(
-            /** Character's stored x position  */
-            val posX1: Double,
+        /** Character's stored x position  */
+        val posX1: Double,
 
-            /** Character's stored y position  */
-            val posY1: Double,
+        /** Character's stored y position  */
+        val posY1: Double,
 
-            /** Character's width  */
-            val width: Double,
+        /** Character's width  */
+        val width: Double,
 
-            /** Character's height  */
-            val height: Double,
+        /** Character's height  */
+        val height: Double,
 
-            /** Upper left u */
-            val u1: Double,
+        /** Upper left u */
+        val u1: Double,
 
-            /** Upper left v */
-            val v1: Double,
+        /** Upper left v */
+        val v1: Double,
 
-            /** Lower right u */
-            val u2: Double,
+        /** Lower right u */
+        val u2: Double,
 
-            /** Lower right v */
-            val v2: Double
+        /** Lower right v */
+        val v2: Double
     )
 
     data class GlyphChunk(
-            /** Id of this chunk */
-            val chunk: Int,
+        /** Id of this chunk */
+        val chunk: Int,
 
-            /** Texture id of the chunk texture */
-            val textureId: Int,
+        /** Texture id of the chunk texture */
+        val textureId: Int,
 
-            /** Dynamic texture object */
-            val dynamicTexture: DynamicTexture,
+        /** Dynamic texture object */
+        val dynamicTexture: DynamicTexture,
 
-            /** Array for all characters' info in this chunk */
-            val charInfoArray: Array<CharInfo>
+        /** Array for all characters' info in this chunk */
+        val charInfoArray: Array<CharInfo>
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -300,6 +300,6 @@ class FontGlyphs(val style: TextProperties.Style, private val font: Font, privat
         const val TEXTURE_WIDTH_DOUBLE = 1024.0
 
         /** Max font texture height */
-        const val MAX_TEXTURE_HEIGHT = 1024
+        const val MAX_TEXTURE_HEIGHT = 4096
     }
 }

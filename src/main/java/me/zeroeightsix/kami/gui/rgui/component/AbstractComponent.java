@@ -29,7 +29,7 @@ public abstract class AbstractComponent implements Component {
     int maxHeight = Integer.MAX_VALUE;
 
     protected int priority = 0;
-    private Setting<Boolean> visible = Settings.b("Visible", true);
+    private final Setting<Boolean> visible = Settings.b("Visible", true);
     float opacity = 1f;
     private boolean focus = false;
     ComponentUI ui;
@@ -306,7 +306,7 @@ public abstract class AbstractComponent implements Component {
 
                 boolean liesin = false;
                 if (component instanceof Container)
-                    liesin = liesIn((Container) component);
+                    liesin = liesIn(component);
                 if (liesin) return true;
             }
             return false;

@@ -371,8 +371,8 @@ public abstract class GUI extends AbstractContainer {
         }
 
         return new int[]{
-                realX,
-                realY
+            realX,
+            realY
         };
     }
 }

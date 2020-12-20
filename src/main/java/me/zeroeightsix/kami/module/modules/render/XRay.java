@@ -30,14 +30,14 @@ import java.util.Set;
         name = "XRay",
         category = Module.Category.RENDER,
         description = "See through common blocks!")
-@EventBusSubscriber(modid = KamiMod.MODID
+@EventBusSubscriber(modid = KamiMod.ID
 )
 public class XRay extends Module {
     // A default reasonable configuration for the XRay. Most people will want to use it like this.
     private static final String DEFAULT_XRAY_CONFIG = "minecraft:grass,minecraft:dirt,minecraft:netherrack,minecraft:gravel,minecraft:sand,minecraft:stone";
     // A static mirror of the state.
     private static final Set<Block> hiddenBlocks = Collections.synchronizedSet(new HashSet<>());
-    public static XRay INSTANCE;
+    public static final XRay INSTANCE = new XRay();
     // This is used as part of a mechanism to make the Minecraft renderer play along with the XRay.
     // Essentially, the XRay primitive is just a block state transformer.
     // Then this implements a custom block that the block state transformer can use for hidden blocks.
@@ -66,7 +66,6 @@ public class XRay extends Module {
         }).build());
         outlinesStatic = outlines.getValue();
         refreshHiddenBlocksSet(hiddenBlockNames.getValue());
-        INSTANCE = this;
     }
 
     @SubscribeEvent

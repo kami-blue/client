@@ -21,9 +21,9 @@ public class RootButtonUI<T extends Button> extends AbstractComponentUI<Button> 
     @Override
     public void renderComponent(Button component) {
         ColorHolder color = new ColorHolder(
-                component.isHovered() ? KamiGuiColors.GuiC.buttonHoveredN.color :
-                        component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
-                                KamiGuiColors.GuiC.buttonHoveredT.color);
+            component.isHovered() ? KamiGuiColors.GuiC.buttonHoveredN.color :
+                component.isPressed() ? KamiGuiColors.GuiC.buttonPressed.color :
+                    KamiGuiColors.GuiC.buttonHoveredT.color);
 
         VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
 

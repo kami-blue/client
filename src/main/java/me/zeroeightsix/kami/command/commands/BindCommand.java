@@ -40,12 +40,10 @@ public class BindCommand extends Command {
         String rkey = args[1];
 
         if (module.equalsIgnoreCase("list")) {
-            Module[] modules = ModuleManager.getModules();
-
             sendChatMessage("You have the following binds: ");
-            for (Module module1 : modules) {
-                if (module1.bind.getValue().toString().equals("None")) continue;
-                sendRawChatMessage(module1.bind.getValue().toString() + ": " + module1.name.getValue());
+            for (Module module1 : ModuleManager.getModules()) {
+                if (module1.getBind().getValue().toString().equals("None")) continue;
+                sendRawChatMessage(module1.getBind().getValue().toString() + ": " + module1.getName().getValue());
             }
             return;
         } else if (module.equalsIgnoreCase("modifiers")) {
@@ -69,7 +67,7 @@ public class BindCommand extends Command {
         try {
             Module m = ModuleManager.getModule(module);
             if (rkey == null) {
-                sendChatMessage(m.bind.getValue().toString() + " is bound to &b" + m.getBindName());
+                sendChatMessage(m.getBind().getValue().toString() + " is bound to &b" + m.getBindName());
                 return;
             }
             int key = Wrapper.getKey(rkey);
@@ -80,8 +78,8 @@ public class BindCommand extends Command {
                 sendErrorMessage("Unknown key '&7" + rkey + "&f'! Left alt is &7lmenu&f, left Control is &7lcontrol&f and ` is &7grave&f. You cannot bind the &7meta&f key.");
                 return;
             }
-            m.bind.getValue().setKey(key);
-            sendChatMessage("Bind for &b" + m.name.getValue() + "&r set to &b" + rkey.toUpperCase());
+            m.getBind().getValue().setKey(key);
+            sendChatMessage("Bind for &b" + m.getName().getValue() + "&r set to &b" + rkey.toUpperCase());
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + module + "'!");
         }

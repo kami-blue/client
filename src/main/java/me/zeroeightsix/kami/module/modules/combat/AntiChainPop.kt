@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.play.server.SPacketEntityStatus
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AntiChainPop",
@@ -16,40 +16,32 @@ import net.minecraft.network.play.server.SPacketEntityStatus
 object AntiChainPop : Module() {
     private val mode = register(Settings.e<Mode>("Mode", Mode.PACKET))
 
+    private enum class Mode {
+        ITEMS, PACKET
+    }
+
     private var totems = 0
 
     init {
-        listener<PacketEvent.Receive> {
-            if (mode.value != Mode.PACKET || it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35) return@listener
-            mc.world?.let { world ->
-                if (it.packet.getEntity(world) == mc.player) packetMode()
+        listener<PacketEvent.Receive> { event ->
+            if (mode.value != Mode.PACKET || event.packet !is SPacketEntityStatus || event.packet.opCode.toInt() != 35) return@listener
+            mc.world?.let {
+                if (event.packet.getEntity(it) == mc.player) {
+                    Surround.enable()
+                }
             }
         }
 
         listener<SafeTickEvent> {
-            if (mode.value == Mode.ITEMS) {
-                itemMode()
-            }
+            if (mode.value == Mode.ITEMS) return@listener
+            val old = totems
+            val new = InventoryUtils.countItemAll(449)
+            if (new < old) Surround.enable()
+            totems = new
         }
     }
 
-    private fun itemMode() {
-        val old = totems
-        if (InventoryUtils.countItemAll(449) < old) {
-            Surround.enable()
-        }
-        totems = InventoryUtils.countItemAll(449)
-    }
-
-    private fun packetMode() {
-        Surround.enable()
-    }
-
-    public override fun onToggle() {
+    override fun onToggle() {
         totems = 0
-    }
-
-    private enum class Mode {
-        ITEMS, PACKET
     }
 }

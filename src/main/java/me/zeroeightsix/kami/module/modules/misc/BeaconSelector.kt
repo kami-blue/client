@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.misc
 import io.netty.buffer.Unpooled
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.CPacketCustomPayload
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "BeaconSelector",

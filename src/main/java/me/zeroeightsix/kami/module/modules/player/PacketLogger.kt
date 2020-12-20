@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import java.io.*
 import java.nio.charset.StandardCharsets
@@ -24,7 +24,7 @@ object PacketLogger : Module() {
 
     private const val filename = "KAMIBluePackets.txt"
     private val lines = ArrayList<String>()
-    private val FORMAT = SimpleDateFormat("HH:mm:ss.SSS")
+    private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
     override fun onEnable() {
         if (mc.player == null) disable() else if (append.value) readToList()
@@ -41,13 +41,7 @@ object PacketLogger : Module() {
                 return@listener
             }
 
-            /* see https://kotlinlang.org/docs/reference/basic-types.html#string-templates for usage of $*/
-            lines.add("""
-                ${FORMAT.format(Date())}
-                ${it.packet.javaClass.simpleName}
-                ${it.packet.javaClass}
-                ${it.packet}
-                """)
+            lines.add("${sdf.format(Date())}\n${it.packet.javaClass.simpleName}\n${it.packet.javaClass}\n${it.packet}\n\n")
         }
 
         listener<SafeTickEvent> {
@@ -62,7 +56,7 @@ object PacketLogger : Module() {
                 it.close()
             }
         } catch (e: IOException) {
-            KamiMod.log.error("$chatName Error saving!")
+            KamiMod.LOG.error("$chatName Error saving!")
             e.printStackTrace()
         }
         lines.clear()
@@ -79,7 +73,10 @@ object PacketLogger : Module() {
                 lines.add(line)
             }
             bufferedReader.close()
-        } catch (ignored: IOException) {
+        } catch (ignored: Exception) {
+            // this is fine, just don't load a file
+            KamiMod.LOG.error("$chatName Error loading!")
+            lines.clear()
         }
     }
 

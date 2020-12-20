@@ -9,11 +9,11 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.Executors
 import java.util.concurrent.Future

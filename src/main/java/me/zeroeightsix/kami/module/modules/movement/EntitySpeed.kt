@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.AbstractHorse
@@ -17,6 +16,7 @@ import net.minecraft.network.play.client.CPacketVehicleMove
 import net.minecraft.network.play.server.SPacketMoveVehicle
 import net.minecraft.util.EnumHand
 import net.minecraft.world.chunk.EmptyChunk
+import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,7 +26,7 @@ import kotlin.math.sin
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
 object EntitySpeed : Module() {
-    private val speed = register(Settings.floatBuilder("Speed").withValue(1.0f).withRange(0.1f, 10.0f).withStep(0.1f))
+    private val speed = register(Settings.floatBuilder("Speed").withValue(1.0f).withRange(0.1f, 25.0f).withStep(0.1f))
     private val antiStuck = register(Settings.b("AntiStuck", true))
     private val flight = register(Settings.b("Flight", false))
     private val glideSpeed = register(Settings.floatBuilder("GlideSpeed").withValue(0.1f).withRange(0.0f, 1.0f).withStep(0.01f).withVisibility { flight.value })
@@ -37,13 +37,15 @@ object EntitySpeed : Module() {
 
     init {
         listener<PacketEvent.Send> {
-            if (!forceInteract.value || mc.player?.ridingEntity !is EntityBoat) return@listener
+            val ridingEntity = mc.player?.ridingEntity
+
+            if (!forceInteract.value || ridingEntity !is EntityBoat) return@listener
             if (it.packet is CPacketPlayer.Rotation || it.packet is CPacketInput) {
                 it.cancel()
             }
             if (it.packet is CPacketVehicleMove) {
-                if (mc.player?.ridingEntity is EntityBoat && mc.player.ticksExisted % interactTickDelay.value == 0) {
-                    mc.playerController.interactWithEntity(mc.player, mc.player.ridingEntity, EnumHand.MAIN_HAND)
+                if (mc.player.ticksExisted % interactTickDelay.value == 0) {
+                    mc.playerController.interactWithEntity(mc.player, ridingEntity, EnumHand.MAIN_HAND)
                 }
             }
         }

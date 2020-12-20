@@ -79,16 +79,16 @@ object KamiFontRenderer {
 
     /** All for the KAMI Blue kanji */
     private val fallbackFonts = arrayOf(
-            "Noto Sans JP", "Noto Sans CJK JP", "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans CJK SC", "Noto Sans CJK TC", // Noto Sans
-            "Source Han Sans", "Source Han Sans HC", "Source Han Sans SC", "Source Han Sans TC", "Source Han Sans K", // Source Sans
-            "MS Gothic", "Meiryo", "Yu Gothic", // For Windows, Windows on top!
-            "Hiragino Sans GB W3", "Hiragino Kaku Gothic Pro W3", "Hiragino Kaku Gothic ProN W3", "Osaka", // For stupid Mac OSX
-            "TakaoPGothic", "IPAPGothic" // For cringy Linux
+        "Noto Sans JP", "Noto Sans CJK JP", "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans CJK SC", "Noto Sans CJK TC", // Noto Sans
+        "Source Han Sans", "Source Han Sans HC", "Source Han Sans SC", "Source Han Sans TC", "Source Han Sans K", // Source Sans
+        "MS Gothic", "Meiryo", "Yu Gothic", // For Windows, Windows on top!
+        "Hiragino Sans GB W3", "Hiragino Kaku Gothic Pro W3", "Hiragino Kaku Gothic ProN W3", "Osaka", // For stupid Mac OSX
+        "TakaoPGothic", "IPAPGothic" // For cringy Linux
     )
 
     init {
         // Prints Slick2D's license to log as required
-        KamiMod.log.info("""
+        KamiMod.LOG.info("""
             Slick2D's TrueTypeFont renderer code was used in this mod
             
             License
@@ -137,28 +137,28 @@ object KamiFontRenderer {
     }
 
     private fun loadFont(index: Int): FontGlyphs {
-        val style = TextProperties.Style.values()[index]
+        val style = Style.values()[index]
 
         // Load main font
         val font = try {
             if (CustomFont.isDefaultFont) {
                 val inputStream = this.javaClass.getResourceAsStream(style.fontPath)
-                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(32f)
+                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(64.0f)
             } else {
-                Font(CustomFont.fontName.value, style.styleConst, 32)
+                Font(CustomFont.fontName.value, style.styleConst, 64)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.log.error("Failed loading main font. Using Sans Serif font.")
+            KamiMod.LOG.error("Failed loading main font. Using Sans Serif font.")
             getSansSerifFont(style.styleConst)
         }
 
         // Load fallback font
         val fallbackFont = try {
-            Font(getFallbackFont(), style.styleConst, 32)
+            Font(getFallbackFont(), style.styleConst, 64)
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.log.error("Failed loading fallback font. Using Sans Serif font")
+            KamiMod.LOG.error("Failed loading fallback font. Using Sans Serif font")
             getSansSerifFont(style.styleConst)
         }
         return FontGlyphs(style, font, fallbackFont)
@@ -166,7 +166,7 @@ object KamiFontRenderer {
 
     private fun getFallbackFont() = fallbackFonts.firstOrNull { availableFonts.contains(it) }
 
-    private fun getSansSerifFont(style: Int) = Font("SansSerif", style, 32)
+    private fun getSansSerifFont(style: Int) = Font("SansSerif", style, 64)
 
     fun drawString(text: String, posXIn: Float = 0f, posYIn: Float = 0f, drawShadow: Boolean = true, colorIn: ColorHolder = ColorHolder(255, 255, 255), scale: Float = 1f) {
         var posX = 0.0
@@ -179,7 +179,7 @@ object KamiFontRenderer {
         glPushMatrix()
         glTranslatef(posXIn, posYIn, 0.0f)
         glScalef(CustomFont.size * scale, CustomFont.size * scale, 1.0f)
-        glTranslatef(0f, -4f, 0f)
+        glTranslatef(0f, CustomFont.baselineOffset, 0f)
 
         resetStyle()
 
@@ -202,7 +202,7 @@ object KamiFontRenderer {
             } else {
                 if (drawShadow) {
                     getShadowColor(color).setGLColor()
-                    drawQuad(posX + 2.2, posY + 2.2, charInfo)
+                    drawQuad(posX + 4.5, posY + 4.5, charInfo)
                 }
 
                 color.setGLColor()
@@ -256,9 +256,9 @@ object KamiFontRenderer {
 
         if (text.getOrNull(index) == '§') {
             when (text.getOrNull(index + 1)) {
-                TextProperties.Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
-                TextProperties.Style.BOLD.codeChar -> currentVariant = glyphArray[1]
-                TextProperties.Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
+                Style.REGULAR.codeChar -> currentVariant = glyphArray[0]
+                Style.BOLD.codeChar -> currentVariant = glyphArray[1]
+                Style.ITALIC.codeChar -> currentVariant = glyphArray[2]
             }
             currentColor = when (text.getOrNull(index + 1)) {
                 TextFormatting.BLACK.toString()[1] -> ColorHolder(0, 0, 0)

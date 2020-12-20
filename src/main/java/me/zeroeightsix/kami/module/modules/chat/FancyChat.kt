@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.math.MathUtils
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
 @Module.Info(

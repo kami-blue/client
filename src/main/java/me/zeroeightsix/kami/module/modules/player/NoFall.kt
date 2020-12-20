@@ -3,11 +3,13 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.command.commands.TeleportCommand
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.onGround
+import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
@@ -58,7 +60,7 @@ object NoFall : Module() {
         }
 
         listener<SafeTickEvent> {
-            if (mc.player.isCreative || mc.player.isSpectator || fallDistCheck()) return@listener
+            if (mc.player.isCreative || mc.player.isSpectator || !fallDistCheck()) return@listener
             if (mode.value == Mode.FALL) {
                 fallMode()
             } else if (mode.value == Mode.CATCH) {
@@ -107,7 +109,7 @@ object NoFall : Module() {
                 var slot = -1
                 for (i in 0..8) {
                     val stack = mc.player.inventory.getStackInSlot(i)
-                    if (stack != ItemStack.EMPTY && stack.getItem() is ItemBlock) {
+                    if (stack != ItemStack.EMPTY && stack.item is ItemBlock) {
                         slot = i
                     }
                 }

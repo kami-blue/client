@@ -121,10 +121,7 @@ public class Frame extends OrganisedContainer {
         public void onMouseDown(MouseButtonEvent event) {
             dx = event.getX() + getOriginOffsetX();
             dy = event.getY() + getOriginOffsetY();
-            if (dy <= getOriginOffsetY() && event.getButton() == 0 && dy > 0)
-                doDrag = true;
-            else
-                doDrag = false;
+            doDrag = dy <= getOriginOffsetY() && event.getButton() == 0 && dy > 0;
 
             if (isMinimized && event.getY() > getOriginOffsetY())
                 event.cancel();

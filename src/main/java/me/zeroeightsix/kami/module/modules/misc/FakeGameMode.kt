@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.world.GameType
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "FakeGameMode",
@@ -19,7 +19,7 @@ object FakeGameMode : Module() {
         SURVIVAL(GameType.SURVIVAL),
         CREATIVE(GameType.CREATIVE),
         ADVENTURE(GameType.ADVENTURE),
-        SPECTATOR(GameType.ADVENTURE)
+        SPECTATOR(GameType.SPECTATOR)
     }
 
     private var prevGameMode: GameType? = null

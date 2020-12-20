@@ -17,7 +17,7 @@ object GuiFrameUtil {
     // This is bad, but without a rearchitecture, it's probably staying... - 20kdc and l1ving
     @JvmStatic
     fun getFrameByName(name: String?): Frame? {
-        val kamiGUI = KamiMod.getInstance().guiManager ?: return null
+        val kamiGUI = KamiMod.INSTANCE.guiManager ?: return null
         val frames = ContainerHelper.getAllChildren(Frame::class.java, kamiGUI)
         for (frame in frames) if (frame.title.equals(name, ignoreCase = true)) return frame
         return null
@@ -34,7 +34,7 @@ object GuiFrameUtil {
 
     @JvmStatic
     fun fixFrames(mc: Minecraft) {
-        val kamiGUI = KamiMod.getInstance().guiManager
+        val kamiGUI = KamiMod.INSTANCE.guiManager
         if (kamiGUI == null || mc.player == null) return
         val frames = ContainerHelper.getAllChildren(Frame::class.java, kamiGUI)
         for (frame in frames) {

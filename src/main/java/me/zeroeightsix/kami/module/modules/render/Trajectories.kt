@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.module.modules.player.FastUse
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -147,7 +147,7 @@ object Trajectories : Module() {
                     rayTraceResult.entityHit = entity
                     resultList.add(rayTraceResult)
                 }
-                collision = resultList.minBy { it.hitVec.distanceTo(position) }
+                collision = resultList.minByOrNull { it.hitVec.distanceTo(position) }
             }
 
             collision?.let {
@@ -190,7 +190,7 @@ object Trajectories : Module() {
         }
     }
 
-    private fun getThrowingType(itemStack: ItemStack?): ThrowingType? = when (itemStack?.getItem()) {
+    private fun getThrowingType(itemStack: ItemStack?): ThrowingType? = when (itemStack?.item) {
         Items.BOW -> ThrowingType.BOW
         Items.EXPERIENCE_BOTTLE -> ThrowingType.EXPERIENCE
         Items.SPLASH_POTION, Items.LINGERING_POTION -> ThrowingType.POTION

@@ -4,10 +4,10 @@ import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoReply",
@@ -20,7 +20,7 @@ object AutoReply : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirect(true, it.packet.getChatComponent().unformattedText)) return@listener
+            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.getChatComponent().unformattedText)) return@listener
             if (customMessage.value) {
                 sendServerMessage("/r " + message.value)
             } else {

@@ -3,9 +3,10 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.init.Blocks
+import org.kamiblue.event.listener.listener
 
+@Suppress("DEPRECATION")
 @Module.Info(
         name = "IceSpeed",
         description = "Changes how slippery ice is",

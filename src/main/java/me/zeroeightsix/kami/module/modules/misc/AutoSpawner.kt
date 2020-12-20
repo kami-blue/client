@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockDeadBush
@@ -23,6 +22,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "AutoSpawner",
@@ -222,7 +222,7 @@ object AutoSpawner : Module() {
     }
 
     private fun checkItemStackSize(stack: ItemStack, target: Int): Boolean {
-        return mc.player.isCreative && stack.stackSize >= 1 || stack.stackSize >= target
+        return mc.player.isCreative && stack.count >= 1 || stack.count >= target
     }
 
     private fun testStructure(): Boolean {

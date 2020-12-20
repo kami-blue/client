@@ -10,6 +10,10 @@ import org.lwjgl.opengl.GL12.*
 object GlStateUtils {
 
     @JvmStatic
+    var colorLock = false
+        private set
+
+    @JvmStatic
     fun useVbo(): Boolean {
         return Wrapper.minecraft.gameSettings.useVbo
     }
@@ -86,6 +90,11 @@ object GlStateUtils {
         } else {
             GlStateManager.disableLighting()
         }
+    }
+
+    @JvmStatic
+    fun colorLock(state: Boolean) {
+        colorLock = state
     }
 
     @JvmStatic

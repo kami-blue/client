@@ -6,17 +6,17 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
  * Created by 086 on 26/06/2017.
  */
 public interface MouseListener {
-    public void onMouseDown(MouseButtonEvent event);
+    void onMouseDown(MouseButtonEvent event);
 
-    public void onMouseRelease(MouseButtonEvent event);
+    void onMouseRelease(MouseButtonEvent event);
 
-    public void onMouseDrag(MouseButtonEvent event);
+    void onMouseDrag(MouseButtonEvent event);
 
-    public void onMouseMove(MouseMoveEvent event);
+    void onMouseMove(MouseMoveEvent event);
 
-    public void onScroll(MouseScrollEvent event);
+    void onScroll(MouseScrollEvent event);
 
-    public static class MouseMoveEvent {
+    class MouseMoveEvent {
         boolean cancelled = false;
         int x;
         int y;
@@ -65,7 +65,7 @@ public interface MouseListener {
         }
     }
 
-    public static class MouseButtonEvent {
+    class MouseButtonEvent {
         int x;
         int y;
         int button;
@@ -117,7 +117,7 @@ public interface MouseListener {
         }
     }
 
-    public static class MouseScrollEvent {
+    class MouseScrollEvent {
         int x;
         int y;
         boolean up;

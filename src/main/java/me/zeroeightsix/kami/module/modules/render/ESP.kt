@@ -4,12 +4,14 @@ import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
+import me.zeroeightsix.kami.mixin.extension.listShaders
+import me.zeroeightsix.kami.mixin.extension.renderOutlines
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
@@ -21,6 +23,7 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "ESP",
@@ -99,7 +102,6 @@ object ESP : Module() {
 
             mc.framebuffer.bindFramebuffer(false)
             GlStateManager.disableOutlineMode()
-            GlStateManager.popMatrix()
             drawingOutline = false
             drawNametag = false
         }
@@ -127,7 +129,6 @@ object ESP : Module() {
 
     private fun prepareFrameBuffer() {
         drawingOutline = true
-        GlStateManager.pushMatrix()
         GlStateManager.enableOutlineMode(0xFFFFFF)
         frameBuffer?.bindFramebuffer(false)
     }

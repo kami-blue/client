@@ -7,9 +7,8 @@ import me.zeroeightsix.kami.util.MotionTracker
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.util.math.BlockPos
-import kotlin.reflect.full.findAnnotation
 
-object CombatManager : Manager() {
+object CombatManager : Manager {
     private val combatModules: List<Module>
 
     var targetList = emptyList<EntityLivingBase>()
@@ -18,7 +17,7 @@ object CombatManager : Manager() {
             motionTracker.target = value
             field = value
         }
-    var crystalPlaceList = emptyList<Triple<BlockPos, Float, Float>>() // <BlockPos, Target Damage, Self Damage>, immutable list = thread safe
+    var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, <Target Damage, Self Damage, Distance>>
     var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage, Distance>>
     val motionTracker = MotionTracker(null)
 
@@ -47,9 +46,10 @@ object CombatManager : Manager() {
 
     init {
         val cacheList = ArrayList<Module>()
+        val annotationClass = CombatModule::class.java
         for (module in ModuleManager.getModules()) {
             if (module.category != Module.Category.COMBAT) continue
-            if (module::class.findAnnotation<CombatModule>() == null) continue
+            if (!module.javaClass.isAnnotationPresent(annotationClass)) continue
             cacheList.add(module)
         }
         combatModules = cacheList

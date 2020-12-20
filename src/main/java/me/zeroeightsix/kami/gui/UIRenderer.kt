@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11.*
 object UIRenderer {
     fun renderAndUpdateFrames() {
         if (Wrapper.minecraft.currentScreen is DisplayGuiScreen || Wrapper.minecraft.gameSettings.showDebugInfo) return
-        val gui = KamiMod.getInstance().guiManager
+        val gui = KamiMod.INSTANCE.guiManager
         GlStateUtils.rescaleKami()
 
         for (child in gui.children) {

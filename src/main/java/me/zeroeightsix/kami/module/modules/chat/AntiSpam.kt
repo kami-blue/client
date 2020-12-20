@@ -3,12 +3,14 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.Regexes
 import me.zeroeightsix.kami.util.text.SpamFilters
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
@@ -121,9 +123,8 @@ object AntiSpam : Module() {
     private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
                 || MessageDetectionHelper.isDirect(!filterDMs.value, message)
-                || MessageDetectionHelper.isDirectOther(!filterDMs.value, message)
-                || MessageDetectionHelper.isQueue(!filterServer.value, message)
-                || MessageDetectionHelper.isRestart(!filterServer.value, message)) {
+                || message.detect(!filterServer.value, Regexes.QUEUE)
+                || message.detect(!filterServer.value, Regexes.RESTART)) {
             null
         } else {
             detectSpam(removeUsername(message))
@@ -191,6 +192,6 @@ object AntiSpam : Module() {
 
     private fun sendResult(name: String, message: String) {
         if (showBlocked.value == ShowBlocked.CHAT || showBlocked.value == ShowBlocked.BOTH) MessageSendHelper.sendChatMessage("$chatName $name: $message")
-        if (showBlocked.value == ShowBlocked.LOG_FILE || showBlocked.value == ShowBlocked.BOTH) KamiMod.log.info("$chatName $name: $message")
+        if (showBlocked.value == ShowBlocked.LOG_FILE || showBlocked.value == ShowBlocked.BOTH) KamiMod.LOG.info("$chatName $name: $message")
     }
 }

@@ -24,15 +24,15 @@ public class RenameModuleCommand extends Command {
 
         try {
             Module module = ModuleManager.getModule(args[0]);
-            String name = args.length == 1 ? module.originalName : args[1];
+            String name = args.length == 1 ? module.getOriginalName() : args[1];
 
             if (!(name.matches("[a-zA-Z]+"))) {
                 sendChatMessage("Name must be alphabetic!");
                 return;
             }
 
-            sendChatMessage("&b" + module.name.getValue() + "&r renamed to &b" + name);
-            module.name.setValue(name);
+            sendChatMessage("&b" + module.getName().getValue() + "&r renamed to &b" + name);
+            module.getName().setValue(name);
         } catch (ModuleManager.ModuleNotFoundException x) {
             sendChatMessage("Unknown module '" + args[0] + "'!");
         }

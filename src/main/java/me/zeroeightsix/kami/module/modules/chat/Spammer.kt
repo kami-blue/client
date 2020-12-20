@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
@@ -36,7 +36,7 @@ object Spammer : Module() {
         spammer.clear()
         if (file.exists()) {
             try {
-                file.forEachLine { if (it.isNotEmpty()) spammer.add(it) }
+                file.forEachLine { if (it.isNotBlank()) spammer.add(it.trim()) }
                 MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
             } catch (e: Exception) {
                 MessageSendHelper.sendErrorMessage("$chatName Failed loading spammer, $e")

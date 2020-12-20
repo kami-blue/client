@@ -1,7 +1,5 @@
 package me.zeroeightsix.kami.util
 
-import com.google.gson.JsonParser
-import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
@@ -20,9 +18,6 @@ import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import org.apache.commons.io.IOUtils
-import java.io.IOException
-import java.net.URL
 
 object EntityUtils {
     private val mc = Minecraft.getMinecraft()
@@ -94,7 +89,7 @@ object EntityUtils {
         return false
     }
 
-    fun isDrivenByPlayer(entity: Entity) = mc.player != null && entity == mc.player.getRidingEntity()
+    fun isDrivenByPlayer(entity: Entity) = mc.player != null && entity == mc.player.ridingEntity
 
     fun isAboveWater(entity: Entity?) = isAboveWater(entity, false)
 
@@ -106,26 +101,6 @@ object EntityUtils {
             if (mc.world.getBlockState(pos).block is BlockLiquid) return true
         }
         return false
-    }
-
-    /**
-     * Gets the MC username tied to a given UUID.
-     *
-     * @param uuid UUID to get name from.
-     * @return The name tied to the UUID.
-     */
-    @JvmStatic
-    fun getNameFromUUID(uuid: String): String? {
-        return try {
-            KamiMod.log.info("Attempting to get name from UUID: $uuid")
-            val jsonUrl = IOUtils.toString(URL("https://api.mojang.com/user/profiles/" + uuid.replace("-", "") + "/names"))
-            val parser = JsonParser()
-            parser.parse(jsonUrl).asJsonArray[parser.parse(jsonUrl).asJsonArray.size() - 1].asJsonObject["name"].toString()
-        } catch (ex: IOException) {
-            KamiMod.log.error(ex.stackTrace)
-            KamiMod.log.error("Failed to get username from UUID due to an exception. Maybe your internet is being the big gay? Somehow?")
-            null
-        }
     }
 
     fun getTargetList(player: Array<Boolean>, mobs: Array<Boolean>, invisible: Boolean, range: Float, ignoreSelf: Boolean = true): ArrayList<EntityLivingBase> {
@@ -161,7 +136,7 @@ object EntityUtils {
      */
     fun canEntityHitboxBeSeen(entity: Entity): Vec3d? {
         val playerPos = mc.player.positionVector.add(0.0, mc.player.eyeHeight.toDouble(), 0.0)
-        val box = entity.boundingBox
+        val box = entity.entityBoundingBox
         val xArray = arrayOf(box.minX + 0.1, box.maxX - 0.1)
         val yArray = arrayOf(box.minY + 0.1, box.maxY - 0.1)
         val zArray = arrayOf(box.minZ + 0.1, box.maxZ - 0.1)
@@ -182,11 +157,15 @@ object EntityUtils {
         for (currentEntity in mc.world.loadedEntityList) {
             if (currentEntity.getDistance(mc.player) > range) continue /* Entities within specified  blocks radius */
             if (currentEntity !is EntityItem) continue /* Entites that are dropped item */
-            if (Item.getIdFromItem(currentEntity.item.getItem()) != itemId) continue /* Dropped items that are has give item id */
+            if (Item.getIdFromItem(currentEntity.item.item) != itemId) continue /* Dropped items that are has give item id */
             entityList.add(currentEntity)
         }
         return entityList
     }
 
-    fun getDroppedItem(itemId: Int, range: Float) = getDroppedItems(itemId, range)?.minBy { mc.player.getDistance(it) }?.positionVector?.toBlockPos()
+    fun getDroppedItem(itemId: Int, range: Float) =
+        getDroppedItems(itemId, range)
+            ?.minByOrNull { mc.player.getDistance(it) }
+            ?.positionVector
+            ?.toBlockPos()
 }

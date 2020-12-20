@@ -27,9 +27,9 @@ public class KamiEnumButtonUI extends AbstractComponentUI<EnumButton> {
         }
 
         ColorHolder color = new ColorHolder(
-                component.isHovered() ? GuiC.buttonHoveredN.color :
-                        component.isPressed() ? GuiC.buttonPressed.color :
-                                GuiC.buttonHoveredT.color);
+            component.isHovered() ? GuiC.buttonHoveredN.color :
+                component.isPressed() ? GuiC.buttonPressed.color :
+                    GuiC.buttonHoveredT.color);
 
         int parts = component.getModes().length;
         double step = component.getWidth() / (double) parts;

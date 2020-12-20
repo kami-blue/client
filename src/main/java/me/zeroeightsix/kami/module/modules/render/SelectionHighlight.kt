@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -44,7 +44,7 @@ object SelectionHighlight : Module() {
             if (entity.value && hitObject.typeOfHit == Type.ENTITY) {
                 val lookVec = viewEntity.lookVec
                 val sightEnd = eyePos.add(lookVec.scale(6.0))
-                val hitSide = hitObject.entityHit?.boundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
+                val hitSide = hitObject.entityHit?.entityBoundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
                 val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide] else GeometryMasks.Quad.ALL)?: return@listener
                 renderer.add(hitObject.entityHit, color, side)
             }

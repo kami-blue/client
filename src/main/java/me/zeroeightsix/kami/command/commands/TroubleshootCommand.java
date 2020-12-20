@@ -30,19 +30,18 @@ public class TroubleshootCommand extends Command {
     @Override
     public void call(String[] args) {
         AtomicReference<String> enabled = new AtomicReference<>("");
-        Module[] mods = ModuleManager.getModules();
 
         String f = "";
         if (args[0] != null) f = "(filter: " + args[0] + ")";
 
-        for (Module module : mods) {
+        for (Module module : ModuleManager.getModules()) {
             if (args[0] == null) {
                 if (module.isEnabled()) {
-                    enabled.set(enabled + module.name.getValue() + ", ");
+                    enabled.set(enabled + module.getName().getValue() + ", ");
                 }
             } else {
-                if (module.isEnabled() && Pattern.compile(args[0], Pattern.CASE_INSENSITIVE).matcher(module.name.getValue()).find()) {
-                    enabled.set(enabled + module.name.getValue() + ", ");
+                if (module.isEnabled() && Pattern.compile(args[0], Pattern.CASE_INSENSITIVE).matcher(module.getName().getValue()).find()) {
+                    enabled.set(enabled + module.getName().getValue() + ", ");
                 }
             }
         }
@@ -51,7 +50,7 @@ public class TroubleshootCommand extends Command {
         sendChatMessage("Enabled modules: " + f + "\n" + TextFormatting.GRAY + enabled);
         if (args.length >= 2) return;
         sendChatMessage(ForgeVersion.getMajorVersion() + "." + ForgeVersion.getMinorVersion() + "." + ForgeVersion.getRevisionVersion() + "." + ForgeVersion.getBuildVersion());
-        sendChatMessage(KamiMod.MODNAME + " " + KamiMod.KAMI_KANJI + " " + KamiMod.VER_FULL_BETA);
+        sendChatMessage(KamiMod.NAME + " " + KamiMod.KAMI_KATAKANA + " " + KamiMod.VERSION);
         sendChatMessage("CPU: " + OpenGlHelper.getCpu() + " GPU: " + GlStateManager.glGetString(GL11.GL_VENDOR));
         sendChatMessage("Please send a screenshot of the full output to the developer or moderator who's helping you!");
     }

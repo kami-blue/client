@@ -19,7 +19,7 @@ import java.net.URL
 import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 
-object KamiMojiManager : Manager() {
+object KamiMojiManager : Manager {
     private const val FOLDER = "emojis"
     private const val VERSION_URL = "https://raw.githubusercontent.com/2b2t-Utilities/emojis/master/version.json"
     private val LOCAL_VERSION = File(FOLDER + File.separator + "version.json")
@@ -90,7 +90,7 @@ object KamiMojiManager : Manager() {
 
     init {
         thread = Thread({
-            KamiMod.log.info("Initialising KamiMoji...")
+            KamiMod.LOG.info("Initialising KamiMoji...")
             val dir = File(FOLDER)
             val kamiMojiDir = File("kamimoji")
 
@@ -147,7 +147,7 @@ object KamiMojiManager : Manager() {
 
             jsonObject = gson.fromJson(json, JsonObject::class.java)
         } catch (e: IOException) {
-            KamiMod.log.error(e)
+            KamiMod.LOG.error(e)
         }
 
         return jsonObject

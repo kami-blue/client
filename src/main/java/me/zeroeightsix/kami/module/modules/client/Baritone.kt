@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.event.listener
+import org.kamiblue.event.listener.listener
 
 /**
  * Created by Dewy on the 21st of April, 2020
@@ -32,11 +32,11 @@ object Baritone : Module() {
     private val renderGoal = register(Settings.b("RenderGoals", true))
     private val failureTimeout = register(Settings.integerBuilder("FailTimeout").withRange(1, 20).withValue(2))
     private val blockReachDistance = register(Settings.floatBuilder("ReachDistance").withRange(1.0f, 10.0f).withValue(4.5f))
-    private var hasRun = false
 
     init {
+        val listener = SettingListeners { sync() }
         settingList.forEach {
-            it.settingListener = SettingListeners { sync() }
+            it.settingListener = listener
         }
 
         listener<BaritoneSettingsInitEvent> {
@@ -45,7 +45,7 @@ object Baritone : Module() {
     }
 
     private fun sync() {
-        BaritoneUtils.settings()?.let {
+        BaritoneUtils.settings?.let {
             it.chatControl.value = false // enable chatControlAnyway if you want to use it
             it.allowBreak.value = allowBreak.value
             it.allowSprint.value = allowSprint.value

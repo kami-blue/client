@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 @Module.Info(

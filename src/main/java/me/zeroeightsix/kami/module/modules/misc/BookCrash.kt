@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
@@ -14,6 +13,7 @@ import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.play.client.CPacketClickWindow
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
+import org.kamiblue.event.listener.listener
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
@@ -42,7 +42,7 @@ object BookCrash : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (mc.currentServerData == null || mc.currentServerData.serverIP.isEmpty() || mc.connection == null) {
+            if (mc.currentServerData == null || mc.currentServerData?.serverIP.isNullOrBlank() || mc.connection == null) {
                 sendChatMessage("Not connected to a server")
                 disable()
                 return@listener
@@ -72,8 +72,8 @@ object BookCrash : Module() {
             }
 
             val tag = NBTTagCompound().apply {
-                setString("author", "Bella")
-                setString("title", "\n Bella Nuzzles You \n")
+                setString("author", "KAMI Blue")
+                setString("title", "\n Minecraft pozzed \n")
                 setTag("pages", list)
             }
             val bookObj = ItemStack(Items.WRITABLE_BOOK).apply {
