@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
@@ -15,6 +14,7 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detectAndRemove
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.text.Regexes
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -36,9 +36,9 @@ object BaritoneRemote : Module() {
         allow.settingListener = Setting.SettingListeners {
             mc.player?.let {
                 if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
-                    MessageSendHelper.sendChatMessage("$chatName Use the " + "${CommandManager.prefix}set Custom".colorFormatValue
+                    MessageSendHelper.sendChatMessage("$chatName Use the ${formatValue("${CommandManager.prefix}set Custom")}"
                         + " command to change the custom users list. For example, "
-                        + "${CommandManager.prefix}set Custom dominika,Dewy,086".colorFormatValue)
+                        + formatValue("${CommandManager.prefix}set Custom dominika,Dewy,086"))
                 }
             }
         }

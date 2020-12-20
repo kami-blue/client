@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.render
 
 import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
@@ -103,8 +103,7 @@ object Search : Module() {
     override fun onEnable() {
         if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
             MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
-            MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the "
-                + "${CommandManager.prefix}search override".colorFormatValue + " command")
+            MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the ${formatValue("${CommandManager.prefix}search override")} command")
             disable()
             return
         }

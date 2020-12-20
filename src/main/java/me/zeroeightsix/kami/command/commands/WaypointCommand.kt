@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
@@ -10,6 +9,7 @@ import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(
@@ -156,8 +156,9 @@ object WaypointCommand : ClientCommand(
     private fun clear() {
         if (System.currentTimeMillis() - confirmTime > 15000L) {
             confirmTime = System.currentTimeMillis()
-            MessageSendHelper.sendWarningMessage("This will delete ALL your waypoints, run " +
-                "$prefixName clear".colorFormatValue + " again to confirm")
+            MessageSendHelper.sendWarningMessage("This will delete ALL your waypoints, " +
+                "run ${formatValue("$prefixName clear")} again to confirm"
+            )
         } else {
             confirmTime = 0L
             WaypointManager.clear()

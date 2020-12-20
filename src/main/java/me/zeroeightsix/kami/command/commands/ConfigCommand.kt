@@ -11,7 +11,7 @@ import java.io.IOException
 import java.nio.file.Paths
 
 object ConfigCommand : ClientCommand(
-    name = "Config",
+    name = "config",
     alias = arrayOf("cfg"),
     description = "Change config saving path or manually save and reload your config"
 ) {

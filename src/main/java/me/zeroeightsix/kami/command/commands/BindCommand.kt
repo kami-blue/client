@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -9,6 +8,7 @@ import me.zeroeightsix.kami.setting.SettingsRegister
 import me.zeroeightsix.kami.setting.builder.SettingBuilder
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.util.text.TextFormatting
 
 object BindCommand : ClientCommand(
@@ -24,9 +24,9 @@ object BindCommand : ClientCommand(
             execute("List used module binds") {
                 val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bindName }
 
-                MessageSendHelper.sendChatMessage("Used binds: ${modules.size.colorFormatValue}")
+                MessageSendHelper.sendChatMessage("Used binds: ${formatValue(modules.size)}")
                 modules.forEach {
-                    MessageSendHelper.sendRawChatMessage("${it.bindName.colorFormatValue} ${it.name}")
+                    MessageSendHelper.sendRawChatMessage("${formatValue(it.bindName)} ${it.name}")
                 }
             }
         }
@@ -69,13 +69,13 @@ object BindCommand : ClientCommand(
                         Wrapper.sendUnknownKeyError(bind)
                     } else {
                         module.bind.value.key = key
-                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${module.bindName.colorFormatValue}!")
+                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${formatValue(module.bindName)}!")
                     }
                 }
             }
 
             execute("Get the bind of a module") {
-                MessageSendHelper.sendChatMessage("${moduleArg.value.name} is bound to ${moduleArg.value.bindName.colorFormatValue}")
+                MessageSendHelper.sendChatMessage("${moduleArg.value.name} is bound to ${formatValue(moduleArg.value.bindName)}")
             }
         }
     }

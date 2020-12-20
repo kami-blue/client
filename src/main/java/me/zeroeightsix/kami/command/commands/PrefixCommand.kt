@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
 object PrefixCommand : ClientCommand(
     name = "prefix",
@@ -26,7 +26,7 @@ object PrefixCommand : ClientCommand(
                 }
 
                 CommandConfig.prefix.value = prefixArg.value
-                MessageSendHelper.sendChatMessage("Set prefix to ${prefixArg.value.colorFormatValue}!")
+                MessageSendHelper.sendChatMessage("Set prefix to ${formatValue(prefixArg.value)}!")
             }
         }
     }

@@ -4,7 +4,6 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -17,6 +16,7 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.Regexes
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -47,7 +47,7 @@ object DiscordNotifs : Module() {
     init {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketChat) return@listener
-            val message = it.packet.getChatComponent().unformattedText
+            val message = it.packet.chatComponent.unformattedText
             if (timeout(message) && MessageDetectionHelper.shouldSend(all.value, restart.value, direct.value, queue.value, importantPings.value, message)) {
                 sendMessage(getPingID(message) + MessageDetectionHelper.getMessageType(direct.value, message, server) + getTime() + message, avatar.value)
             }
@@ -67,12 +67,12 @@ object DiscordNotifs : Module() {
         listener<SafeTickEvent> {
             if (url.value == "unchanged") {
                 MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the " +
-                    "${CommandManager.prefix}discordnotifs".colorFormatValue +
+                    formatValue("${CommandManager.prefix}discordnotifs") +
                     " command")
                 disable()
             } else if (pingID.value == "unchanged" && importantPings.value) {
                 MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the " +
-                    "${CommandManager.prefix}discordnotifs".colorFormatValue +
+                    formatValue("${CommandManager.prefix}discordnotifs") +
                     " command")
                 disable()
             }

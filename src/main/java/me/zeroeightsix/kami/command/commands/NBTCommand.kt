@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.command.SafeExecuteEvent
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 
@@ -20,7 +20,7 @@ object NBTCommand : ClientCommand(
                 val itemStack = getHelpItemStack() ?: return@executeSafe
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
-                MessageSendHelper.sendChatMessage("NBT tags on item ${itemStack.displayName.colorFormatValue}")
+                MessageSendHelper.sendChatMessage("NBT tags on item ${formatValue(itemStack.displayName)}")
                 MessageSendHelper.sendRawChatMessage(nbtTag.toString())
             }
         }
@@ -31,7 +31,7 @@ object NBTCommand : ClientCommand(
                 val nbtTag = getNbtTag(itemStack) ?: return@executeSafe
 
                 copiedNbtTag = nbtTag
-                MessageSendHelper.sendChatMessage("Copied NBT tags from item ${itemStack.displayName.colorFormatValue}")
+                MessageSendHelper.sendChatMessage("Copied NBT tags from item ${formatValue(itemStack.displayName)}")
             }
         }
 
@@ -44,7 +44,7 @@ object NBTCommand : ClientCommand(
                 }
 
                 itemStack.tagCompound = nbtTag
-                MessageSendHelper.sendChatMessage("Pasted NBT tags to item ${itemStack.displayName.colorFormatValue}")
+                MessageSendHelper.sendChatMessage("Pasted NBT tags to item ${formatValue(itemStack.displayName)}")
             }
         }
 
@@ -62,7 +62,7 @@ object NBTCommand : ClientCommand(
         val nbtTag = itemStack.tagCompound
 
         if (nbtTag == null) {
-            MessageSendHelper.sendChatMessage("Item ${itemStack.displayName.colorFormatValue} doesn't have NBT tag!")
+            MessageSendHelper.sendChatMessage("Item ${formatValue(itemStack.displayName)} doesn't have NBT tag!")
         }
 
         return nbtTag

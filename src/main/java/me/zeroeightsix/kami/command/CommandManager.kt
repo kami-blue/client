@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.util.text.TextFormatting
+import me.zeroeightsix.kami.util.text.formatValue
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
@@ -16,9 +16,6 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: String get() = CommandConfig.prefix.value
-
-    val String.colorFormatValue get() = "[${TextFormatting.GRAY}$this${TextFormatting.RESET}]"
-    val Int.colorFormatValue get() = "(${TextFormatting.GRAY}$this${TextFormatting.RESET})"
 
     @JvmStatic
     fun init() {
@@ -73,18 +70,18 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     }
 
     private fun handleCommandNotFoundException(command: String) {
-        MessageSendHelper.sendChatMessage("Unknown command: " + "$prefix$command".colorFormatValue + "." +
-            "Run " + "${prefix}help".colorFormatValue + " for a list of commands.")
+        MessageSendHelper.sendChatMessage("Unknown command: ${formatValue("$prefix$command")}." +
+            "Run ${formatValue("${prefix}help")} for a list of commands.")
     }
 
     private suspend fun handleSubCommandNotFoundException(string: String, args: Array<String>, e: SubCommandNotFoundException) {
         val bestCommand = e.command.finalArgs.maxByOrNull { it.countArgs(args) }
 
-        var message = "Invalid syntax: " + "$prefix$string".colorFormatValue + "\n"
+        var message = "Invalid syntax: ${formatValue("$prefix$string")}\n"
 
-        if (bestCommand != null) message += "Did you mean " + "$prefix${bestCommand.printArgHelp()}".colorFormatValue + "?\n"
+        if (bestCommand != null) message += "Did you mean ${formatValue("$prefix${bestCommand.printArgHelp()}")}?\n"
 
-        message += "\nRun " + "${prefix}help ${e.command.name}".colorFormatValue + " for a list of available arguments."
+        message += "\nRun ${formatValue("${prefix}help ${e.command.name}")} for a list of available arguments."
 
         MessageSendHelper.sendChatMessage(message)
     }

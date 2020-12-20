@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.modules.render.Search
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
 // TODO: Remove once GUI has List
 object SearchCommand : ClientCommand(
@@ -27,9 +27,10 @@ object SearchCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     if (warningBlocks.contains(blockName)) {
-                        MessageSendHelper.sendWarningMessage("Your world contains lots of ${blockName.colorFormatValue}" +
-                            ", it might cause extreme lag to add it." +
-                            " If you are sure you want to add it run " + "$prefixName add force $blockName".colorFormatValue)
+                        MessageSendHelper.sendWarningMessage("Your world contains lots of ${formatValue(blockName)}, " +
+                            "it might cause extreme lag to add it. " +
+                            "If you are sure you want to add it run ${formatValue("$prefixName add force $blockName")}"
+                        )
                     } else {
                         addBlock(blockName)
                     }
@@ -43,10 +44,10 @@ object SearchCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     if (!Search.searchArrayList.contains(blockName)) {
-                        MessageSendHelper.sendErrorMessage("You do not have ${blockName.colorFormatValue} added to search block list")
+                        MessageSendHelper.sendErrorMessage("You do not have ${formatValue(blockName)} added to search block list")
                     } else {
                         Search.searchRemove(blockName)
-                        MessageSendHelper.sendChatMessage("Removed ${blockName.colorFormatValue} from search block list")
+                        MessageSendHelper.sendChatMessage("Removed ${formatValue(blockName)} from search block list")
                     }
                 }
             }
@@ -58,7 +59,7 @@ object SearchCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     Search.searchSet(blockName)
-                    MessageSendHelper.sendChatMessage("Set the search block list to ${blockName.colorFormatValue}")
+                    MessageSendHelper.sendChatMessage("Set the search block list to ${formatValue(blockName)}")
                 }
             }
         }
@@ -94,16 +95,16 @@ object SearchCommand : ClientCommand(
     private fun addBlock(blockName: String) {
         when {
             blockName == "minecraft:air" -> {
-                MessageSendHelper.sendChatMessage("You can't add ${blockName.colorFormatValue} to the search block list")
+                MessageSendHelper.sendChatMessage("You can't add ${formatValue(blockName)} to the search block list")
             }
 
             Search.searchArrayList.contains(blockName) -> {
-                MessageSendHelper.sendErrorMessage("${blockName.colorFormatValue} is already added to the search block list")
+                MessageSendHelper.sendErrorMessage("${formatValue(blockName)} is already added to the search block list")
             }
 
             else -> {
                 Search.searchAdd(blockName)
-                MessageSendHelper.sendChatMessage("${blockName.colorFormatValue} has been added to the search block list")
+                MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the search block list")
             }
         }
     }

@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.command.commands
 
 import io.netty.buffer.Unpooled
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.item.ItemWritableBook
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
@@ -47,7 +47,7 @@ object SignBookCommand : ClientCommand(
                     buf.writeItemStack(item)
 
                     player.connection.sendPacket(CPacketCustomPayload("MC|BSign", buf))
-                    sendChatMessage("Signed book with title: ${title.colorFormatValue}")
+                    sendChatMessage("Signed book with title: ${formatValue(title)}")
                 } else {
                     MessageSendHelper.sendErrorMessage("You're not holding a writable book!")
                 }

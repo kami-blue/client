@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.modules.render.XRay
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
 // TODO: Remove once GUI has List
 object XRayCommand : ClientCommand(
@@ -17,7 +17,7 @@ object XRayCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     XRay.INSTANCE.extAdd(blockName)
-                    MessageSendHelper.sendChatMessage("${blockName.colorFormatValue} has been added to the xray block list")
+                    MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the xray block list")
                 }
             }
         }
@@ -28,7 +28,7 @@ object XRayCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     XRay.INSTANCE.extRemove(blockName)
-                    MessageSendHelper.sendChatMessage("Removed ${blockName.colorFormatValue} from xray block list")
+                    MessageSendHelper.sendChatMessage("Removed ${formatValue(blockName)} from xray block list")
                 }
             }
         }
@@ -39,7 +39,7 @@ object XRayCommand : ClientCommand(
                     val blockName = blockArg.value.registryName.toString()
 
                     XRay.INSTANCE.extSet(blockName)
-                    MessageSendHelper.sendChatMessage("Set the xray block list to ${blockName.colorFormatValue}")
+                    MessageSendHelper.sendChatMessage("Set the xray block list to ${formatValue(blockName)}")
                 }
             }
         }

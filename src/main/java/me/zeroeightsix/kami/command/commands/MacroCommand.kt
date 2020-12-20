@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
 object MacroCommand : ClientCommand(
     name = "macro",
@@ -23,7 +23,7 @@ object MacroCommand : ClientCommand(
                     }
 
                     val macros = MacroManager.macros.filter { it.key == key }
-                    val formattedName = Wrapper.getKeyName(key).colorFormatValue
+                    val formattedName = formatValue(Wrapper.getKeyName(key))
 
                     if (macros.isEmpty()) {
                         MessageSendHelper.sendChatMessage("&cYou have no macros for the key $formattedName")
@@ -42,7 +42,7 @@ object MacroCommand : ClientCommand(
                 } else {
                     MessageSendHelper.sendChatMessage("You have the following macros: ")
                     for ((key, value) in MacroManager.macros.entries.sortedBy { it.key }) {
-                        MessageSendHelper.sendRawChatMessage("${Wrapper.getKeyName(key).colorFormatValue} $value")
+                        MessageSendHelper.sendRawChatMessage("${formatValue(Wrapper.getKeyName(key))} $value")
                     }
                 }
 
@@ -62,7 +62,7 @@ object MacroCommand : ClientCommand(
                     MacroManager.removeMacro(key)
                     MacroManager.saveMacros()
                     MacroManager.loadMacros()
-                    MessageSendHelper.sendChatMessage("Cleared macros for ${Wrapper.getKeyName(key).colorFormatValue}")
+                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(Wrapper.getKeyName(key))}")
                 }
             }
         }
@@ -79,8 +79,7 @@ object MacroCommand : ClientCommand(
 
                     MacroManager.addMacroToKey(key, greedyArg.value)
                     MacroManager.saveMacros()
-                    MessageSendHelper.sendChatMessage("Added macro ${greedyArg.value.colorFormatValue} for key " +
-                        Wrapper.getKeyName(key).colorFormatValue)
+                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key ${formatValue(Wrapper.getKeyName(key))}")
                 }
             }
         }

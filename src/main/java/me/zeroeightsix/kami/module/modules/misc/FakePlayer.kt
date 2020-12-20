@@ -2,12 +2,12 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
@@ -43,7 +43,7 @@ object FakePlayer : Module() {
 
         if (playerName.value == "Player") {
             MessageSendHelper.sendChatMessage("You can use " +
-                "${CommandManager.prefix}set FakePlayer PlayerName <name>".colorFormatValue +
+                formatValue("${CommandManager.prefix}set FakePlayer PlayerName <name>") +
                 " to set a custom name")
         }
 

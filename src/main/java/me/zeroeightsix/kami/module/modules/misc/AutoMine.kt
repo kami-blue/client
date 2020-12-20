@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -11,6 +10,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -54,8 +54,8 @@ object AutoMine : Module() {
         }
 
         if (blocks.isEmpty()) {
-            MessageSendHelper.sendBaritoneMessage("Error: you have to choose at least one thing to mine. To mine custom blocks run the " +
-                "${CommandManager.prefix}b mine block".colorFormatValue + " command")
+            MessageSendHelper.sendBaritoneMessage("Error: you have to choose at least one thing to mine. " +
+                "To mine custom blocks run the ${formatValue("${CommandManager.prefix}b mine block")} command")
             BaritoneUtils.cancelEverything()
             return
         }

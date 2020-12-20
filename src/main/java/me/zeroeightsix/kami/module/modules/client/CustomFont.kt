@@ -2,12 +2,12 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
 @Module.Info(
     name = "CustomFont",
@@ -50,7 +50,9 @@ object CustomFont : Module() {
         )
         if (isDefaultFont) {
             MessageSendHelper.sendChatMessage("You can run " +
-                "${CommandManager.prefix}set $originalName ${fontName.name} <Font Name>".colorFormatValue + " to change custom font")
+                "${formatValue("${CommandManager.prefix}set $originalName ${fontName.name} <Font Name>")} " +
+                "to change custom font"
+            )
         }
     }
 

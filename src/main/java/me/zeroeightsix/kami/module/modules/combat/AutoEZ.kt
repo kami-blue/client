@@ -1,15 +1,14 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.command.CommandManager.colorFormatValue
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
@@ -21,8 +20,8 @@ import org.kamiblue.event.listener.listener
 )
 object AutoEZ : Module() {
     private val detectMode = register(Settings.e<DetectMode>("DetectMode", DetectMode.HEALTH))
-    val messageMode: Setting<MessageMode> = register(Settings.e("MessageMode", MessageMode.ONTOP))
-    val customText: Setting<String> = register(Settings.stringBuilder("CustomText").withValue("unchanged"))
+    private val messageMode = register(Settings.e<MessageMode>("MessageMode", MessageMode.ONTOP))
+    private val customText = register(Settings.stringBuilder("CustomText").withValue("unchanged"))
 
     private enum class DetectMode {
         BROADCAST, HEALTH
@@ -144,8 +143,8 @@ object AutoEZ : Module() {
     private fun sendHelpMessage() {
         if (messageMode.value == MessageMode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
             MessageSendHelper.sendChatMessage("$chatName In order to use the custom $name, please run the " +
-                "${CommandManager.prefix}set AutoEZ customText".colorFormatValue +
-                " command to change it, with " + "\$NAME".colorFormatValue + " being the username of the killed player")
+                formatValue("${CommandManager.prefix}set AutoEZ customText") +
+                " command to change it, with ${formatValue("\$NAME")} being the username of the killed player")
         }
     }
 
