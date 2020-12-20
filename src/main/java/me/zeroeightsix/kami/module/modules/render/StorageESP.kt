@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.entity.Entity
@@ -15,6 +14,7 @@ import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
+import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 
 @Module.Info(
@@ -50,6 +50,7 @@ object StorageESP : Module() {
     private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val tracer = register(Settings.booleanBuilder("Tracer").withValue(false).withVisibility { page.value == Page.RENDER }.build())
+    private val cull = register(Settings.booleanBuilder("Culling").withValue(true).withVisibility { page.value == Page.RENDER }.build())
     private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withVisibility { page.value == Page.RENDER && filled.value }.build())
     private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withVisibility { page.value == Page.RENDER && outline.value }.build())
     private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.RENDER && tracer.value }.build())
@@ -72,7 +73,7 @@ object StorageESP : Module() {
             for ((box, pair) in renderList) {
                 renderer.add(box, pair.first, pair.second)
             }
-            renderer.render(true)
+            renderer.render(true, cull.value)
         }
 
         listener<SafeTickEvent> {

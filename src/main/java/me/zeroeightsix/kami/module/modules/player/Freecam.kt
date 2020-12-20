@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import baritone.api.pathing.goals.GoalTwoBlocks
 import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -8,8 +9,10 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.MoverType
@@ -25,6 +28,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.min
@@ -42,6 +46,7 @@ object Freecam : Module() {
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
+    private val leftClickCome = register(Settings.b("LeftClickCome", true))
 
     private enum class FlightMode(override val displayName: String) : DisplayEnum {
         CREATIVE("Creative"),
@@ -49,6 +54,7 @@ object Freecam : Module() {
     }
 
     private var prevThirdPersonViewSetting = -1
+    private val clickTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
     var cameraGuy: EntityPlayer? = null; private set
 
     private const val ENTITY_ID = -6969420
@@ -103,6 +109,19 @@ object Freecam : Module() {
             resetMovementInput(it.movementInput)
             if (autoRotate.value) updatePlayerRotation()
             if (arrowKeyMove.value) updatePlayerMovement()
+        }
+
+        listener<InputEvent.MouseInputEvent> {
+            if (leftClickCome.value && Mouse.getEventButton() == 0 && clickTimer.tick(1L)) {
+                val result = mc.objectMouseOver ?: return@listener
+
+                if (result.typeOfHit != RayTraceResult.Type.BLOCK) {
+                    return@listener
+                }
+
+                BaritoneUtils.cancelEverything()
+                BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.hitVec.toBlockPos()))
+            }
         }
     }
 
