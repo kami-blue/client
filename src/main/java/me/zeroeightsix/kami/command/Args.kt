@@ -9,6 +9,9 @@ import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.command.AbstractArg
+import org.kamiblue.command.AutoComplete
+import org.kamiblue.command.DynamicPrefixMatch
+import org.kamiblue.command.StaticPrefixMatch
 import java.util.*
 import kotlin.streams.toList
 
@@ -31,7 +34,7 @@ class ModuleArg(
 
 class BlockPosArg(
     override val name: String
-) : AbstractArg<BlockPos>(), AutoComplete {
+) : AbstractArg<BlockPos>(), AutoComplete by DynamicPrefixMatch({ playerPosString?.let { listOf(it) } }) {
 
     override suspend fun convertToType(string: String?): BlockPos? {
         if (string == null) return null
@@ -42,10 +45,9 @@ class BlockPosArg(
         return BlockPos(splitInts[0], splitInts[1], splitInts[2])
     }
 
-    override fun completeForInput(string: String): String? {
-        return Wrapper.player?.position?.let {
-            "${it.x},${it.y},${it.z}"
-        }
+    private companion object {
+        val playerPosString: String?
+            get() = Wrapper.player?.position?.let { "${it.x},${it.y},${it.z}" }
     }
 
 }
