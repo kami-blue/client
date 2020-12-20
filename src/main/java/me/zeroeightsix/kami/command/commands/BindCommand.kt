@@ -34,8 +34,9 @@ object BindCommand : ClientCommand(
         literal("reset", "unbind") {
             module("module") { moduleArg ->
                 execute("Reset the bind of a module to nothing") {
-                    moduleArg.value.bind.resetValue()
-                    MessageSendHelper.sendChatMessage("Reset bind for ${moduleArg.name}!")
+                    val module = moduleArg.value
+                    module.bind.resetValue()
+                    MessageSendHelper.sendChatMessage("Reset bind for ${module.name}!")
                 }
             }
         }

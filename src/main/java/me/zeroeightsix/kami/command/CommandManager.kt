@@ -33,6 +33,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     fun runCommand(string: String) {
         commandScope.launch {
             val args = tryParseArgument(string) ?: return@launch
+            KamiMod.LOG.debug("Running command with args: [${args.joinToString()}]")
 
             try {
                 try {

@@ -27,7 +27,7 @@ object WaypointCommand : ClientCommand(
                     int("y") { yArg ->
                         int("z") { zArg ->
                             execute("Add a custom waypoint") {
-                                add(nameArg.name, BlockPos(xArg.value, yArg.value, zArg.value))
+                                add(nameArg.value, BlockPos(xArg.value, yArg.value, zArg.value))
                             }
                         }
                     }
@@ -35,7 +35,7 @@ object WaypointCommand : ClientCommand(
 
                 blockPos("pos") { posArg ->
                     execute("Add a custom waypoint") {
-                        add(nameArg.name, posArg.value)
+                        add(nameArg.value, posArg.value)
                     }
                 }
 

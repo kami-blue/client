@@ -31,16 +31,16 @@ class ClientExecuteEvent(
 ) : ClientEvent(), IExecuteEvent by ExecuteEvent(CommandManager, args)
 
 class SafeExecuteEvent(
-    args: Array<String>,
     world: WorldClient,
     player: EntityPlayerSP,
-    playerController: PlayerControllerMP
-) : SafeClientEvent(world, player, playerController), IExecuteEvent by ExecuteEvent(CommandManager, args)
+    playerController: PlayerControllerMP,
+    event: ClientExecuteEvent
+) : SafeClientEvent(world, player, playerController), IExecuteEvent by event
 
 fun ClientEvent.toSafe() =
     if (world != null && player != null && playerController != null) SafeClientEvent(world, player, playerController)
     else null
 
 fun ClientExecuteEvent.toSafe() =
-    if (world != null && player != null && playerController != null) SafeExecuteEvent(args, world, player, playerController)
+    if (world != null && player != null && playerController != null) SafeExecuteEvent(world, player, playerController, this)
     else null
