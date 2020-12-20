@@ -11,10 +11,10 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 

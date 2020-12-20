@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
@@ -23,6 +22,7 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "ESP",

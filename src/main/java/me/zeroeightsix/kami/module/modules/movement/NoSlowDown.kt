@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.mixin.client.world.MixinBlockSoulSand
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockWeb
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
@@ -15,6 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerDigging.Action
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.event.listener.listener
 
 /**
  * @see MixinBlockSoulSand

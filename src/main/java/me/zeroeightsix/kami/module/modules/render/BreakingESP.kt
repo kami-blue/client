@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -17,6 +16,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "BreakingESP",

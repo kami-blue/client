@@ -5,13 +5,13 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.GuiConfig
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.event.listener.listener
 
 open class HudElement(
     name: String,

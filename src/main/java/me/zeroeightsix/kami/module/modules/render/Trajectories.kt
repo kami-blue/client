@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.module.modules.player.FastUse
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -22,6 +21,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import org.lwjgl.opengl.GL11.glLineWidth
 import kotlin.math.cos

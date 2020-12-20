@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.GuiManager;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.manager.ManagerLoader;
-import me.zeroeightsix.kami.manager.managers.FileInstanceManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
@@ -78,8 +77,6 @@ public class KamiMod {
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
         commandManager = new CommandManager();
-
-        FileInstanceManager.fixEmptyFiles();
 
         ConfigUtils.INSTANCE.loadAll();
 

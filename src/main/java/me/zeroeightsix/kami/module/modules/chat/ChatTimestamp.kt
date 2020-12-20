@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimeUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
     name = "ChatTimestamp",

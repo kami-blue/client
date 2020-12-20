@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.settings.KeyBinding
+import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 

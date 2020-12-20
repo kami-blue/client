@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -12,6 +11,7 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
+import org.kamiblue.event.listener.listener
 import kotlin.math.roundToInt
 
 @Module.Info(

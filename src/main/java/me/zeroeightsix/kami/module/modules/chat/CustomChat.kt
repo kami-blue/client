@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import org.kamiblue.event.listener.listener
 import kotlin.math.min
 
 @Module.Info(

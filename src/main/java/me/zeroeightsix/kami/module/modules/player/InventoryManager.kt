@@ -9,11 +9,11 @@ import me.zeroeightsix.kami.setting.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import kotlin.math.ceil
 
 @Module.Info(

@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import net.minecraft.entity.Entity
@@ -15,6 +14,7 @@ import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
+import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 
 @Module.Info(
@@ -50,6 +50,7 @@ object StorageESP : Module() {
     private val filled = setting("Filled", true, { page.value == Page.RENDER })
     private val outline = setting("Outline", true, { page.value == Page.RENDER })
     private val tracer = setting("Tracer", false, { page.value == Page.RENDER })
+    private val cull = setting("Culling", true, { page.value == Page.RENDER })
     private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { page.value == Page.RENDER && filled.value })
     private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { page.value == Page.RENDER && outline.value })
     private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.RENDER && tracer.value })
@@ -72,7 +73,7 @@ object StorageESP : Module() {
             for ((box, pair) in renderList) {
                 renderer.add(box, pair.first, pair.second)
             }
-            renderer.render(true)
+            renderer.render(true, cull.value)
         }
 
         listener<SafeTickEvent> {

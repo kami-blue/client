@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -19,6 +18,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*

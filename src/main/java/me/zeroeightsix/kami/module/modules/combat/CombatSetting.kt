@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
@@ -27,6 +26,7 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import java.util.concurrent.Executors

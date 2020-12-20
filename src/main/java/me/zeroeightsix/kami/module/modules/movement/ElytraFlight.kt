@@ -12,7 +12,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -21,6 +20,7 @@ import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
+import org.kamiblue.event.listener.listener
 import kotlin.math.*
 
 @Module.Info(

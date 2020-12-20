@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.Block
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling
@@ -15,6 +14,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.event.listener.listener
 import kotlin.math.round
 
 /**

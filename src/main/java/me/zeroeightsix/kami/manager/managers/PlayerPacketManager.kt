@@ -13,12 +13,12 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 object PlayerPacketManager : Manager {

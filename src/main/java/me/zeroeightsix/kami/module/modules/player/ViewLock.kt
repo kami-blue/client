@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt

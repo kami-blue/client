@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -13,6 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.glColor4f
 import kotlin.math.ceil
 import kotlin.math.cos

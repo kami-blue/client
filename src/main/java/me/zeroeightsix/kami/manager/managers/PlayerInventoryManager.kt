@@ -5,9 +5,9 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 object PlayerInventoryManager : Manager {

@@ -6,12 +6,12 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "ChestStealer",

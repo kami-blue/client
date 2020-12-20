@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -15,6 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "Jesus",

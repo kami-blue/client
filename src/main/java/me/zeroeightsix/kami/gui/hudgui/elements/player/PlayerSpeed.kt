@@ -4,9 +4,9 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 object PlayerSpeed : LabelHud(

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.event
 
-import me.zeroeightsix.kami.util.event.EventBus
+import org.kamiblue.event.eventbus.ConcurrentEventBus
 
-object KamiEventBus : EventBus.ConcurrentEventBus()
+
+object KamiEventBus : ConcurrentEventBus()

@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
@@ -16,6 +15,7 @@ import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.math.roundToInt

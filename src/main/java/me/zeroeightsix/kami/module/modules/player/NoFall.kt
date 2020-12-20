@@ -9,7 +9,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.event.listener
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
@@ -22,6 +21,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "NoFall",

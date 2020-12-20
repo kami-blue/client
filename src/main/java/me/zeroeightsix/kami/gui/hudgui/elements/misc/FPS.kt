@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

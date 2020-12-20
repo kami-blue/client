@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.entity.player.EnumPlayerModelParts
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
     name = "SkinFlicker",

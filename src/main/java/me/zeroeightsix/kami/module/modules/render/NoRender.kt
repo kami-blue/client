@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.*
@@ -18,6 +17,7 @@ import net.minecraft.tileentity.*
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
     name = "NoRender",

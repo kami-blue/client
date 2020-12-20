@@ -4,11 +4,11 @@ import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.mixin.extension.editLine
 import me.zeroeightsix.kami.mixin.extension.tileSign
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.event.listener
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.tileentity.TileEntitySign
 import net.minecraft.util.text.TextComponentString
+import org.kamiblue.event.listener.listener
 import java.io.IOException
 
 @Module.Info(
