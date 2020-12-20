@@ -28,7 +28,7 @@ object GenerateWebsiteCommand : ClientCommand(
                     if (!module.isProduction) continue
                     if (!module.category.toString().equals(modCategory, ignoreCase = true)) continue
                     totalMods++
-                    str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>"
+                    str += "        <li>" + module.name.value + "<p><i>" + module.description + "</i></p></li>\n"
                 }
                 KamiMod.LOG.info("<details>")
                 KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")

@@ -42,7 +42,7 @@ object HelpCommand : ClientCommand(
 
         execute("Print FAQ") {
             MessageSendHelper.sendChatMessage("General FAQ:\n" +
-                "How do I see all commands? - ${formatValue("$prefix${name}commands")}\n" +
+                "How do I see all commands? - ${formatValue("$prefix${name} commands")}\n" +
                 "How do I use Baritone? - ${formatValue("${prefix}b")}\n" +
                 "How do I change ${TextFormatting.GRAY};${TextFormatting.RESET} to something else? - ${formatValue("${prefix}prefix")}\n" +
                 "How do I get a Cape? - Donate, or contribute to one of our projects.\n" +
