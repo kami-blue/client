@@ -84,8 +84,14 @@ object BlockUtils {
         return rayTraceTo(blockPos)?.sideHit ?: EnumFacing.UP
     }
 
+    fun getHitVec(pos: BlockPos, facing: EnumFacing): Vec3d {
+        val vec = facing.directionVec
+        return Vec3d(vec.x * 0.5 + 0.5 + pos.x, vec.y * 0.5 + 0.5 + pos.y, vec.z * 0.5 + 0.5 + pos.z)
+    }
+
     fun getHitVecOffset(facing: EnumFacing): Vec3d {
-        return Vec3d(facing.directionVec).scale(0.5).add(0.5, 0.5, 0.5)
+        val vec = facing.directionVec
+        return Vec3d(vec.x * 0.5 + 0.5, vec.y * 0.5 + 0.5, vec.z * 0.5 + 0.5)
     }
 
     /**
@@ -178,8 +184,14 @@ object BlockUtils {
         return null
     }
 
-    fun getNeighbour(blockPos: BlockPos, attempts: Int = 3, range: Float = 4.25f, toIgnore: HashSet<BlockPos> = HashSet()): Pair<EnumFacing, BlockPos>? {
-        for (side in EnumFacing.values()) {
+    fun getNeighbour(
+        blockPos: BlockPos,
+        attempts: Int = 3,
+        range: Float = 4.25f,
+        sides: Array<EnumFacing> = EnumFacing.values(),
+        toIgnore: HashSet<BlockPos> = HashSet()
+    ): Pair<EnumFacing, BlockPos>? {
+        for (side in sides) {
             val pos = blockPos.offset(side)
             if (!toIgnore.add(pos)) continue
             if (mc.world.getBlockState(pos).material.isReplaceable) continue
@@ -188,10 +200,10 @@ object BlockUtils {
         }
         if (attempts > 1) {
             toIgnore.add(blockPos)
-            for (side in EnumFacing.values()) {
+            for (side in sides) {
                 val pos = blockPos.offset(side)
                 if (!isPlaceable(pos)) continue
-                return getNeighbour(pos, attempts - 1, range, toIgnore) ?: continue
+                return getNeighbour(pos, attempts - 1, range, sides, toIgnore) ?: continue
             }
         }
         return null
