@@ -34,6 +34,7 @@ import kotlin.math.roundToInt
 object Scaffold : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
+    private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
@@ -79,7 +80,7 @@ object Scaffold : Module() {
         return checkPos(blockPos)
             ?: run {
                 val realMotion = posVec.subtract(mc.player.prevPosVector)
-                val nextPos = blockPos.add(roundToOne(realMotion.x), 0, roundToOne(realMotion.z))
+                val nextPos = blockPos.add(roundToRange(realMotion.x), 0, roundToRange(realMotion.z))
                 checkPos(nextPos)
             }
     }
@@ -96,7 +97,7 @@ object Scaffold : Module() {
         return blockPos.down().takeIf { rayTraceResult?.typeOfHit != RayTraceResult.Type.BLOCK }
     }
 
-    private fun roundToOne(value: Double) = (value * 2.5).roundToInt().coerceAtMost(1)
+    private fun roundToRange(value: Double) = (value * 2.5 * maxRange.value).roundToInt().coerceAtMost(maxRange.value)
 
     private fun swapAndPlace(pos: BlockPos, side: EnumFacing) {
         getBlockSlot()?.let {
