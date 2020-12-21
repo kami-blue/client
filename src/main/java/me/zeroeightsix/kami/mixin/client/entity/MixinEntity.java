@@ -32,7 +32,7 @@ public class MixinEntity {
         entity.isAirBorne = true;
     }
 
-    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z"))
+    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z", ordinal = 0))
     public boolean isSneaking(Entity entity) {
         return SafeWalk.INSTANCE.shouldSafewalk() || Scaffold.INSTANCE.isEnabled() || entity.isSneaking();
     }
