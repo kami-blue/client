@@ -33,6 +33,7 @@ import kotlin.math.roundToInt
 )
 object Scaffold : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
+    private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
@@ -60,27 +61,17 @@ object Scaffold : Module() {
             placeInfo?.let {
                 val hitVec = BlockUtils.getHitVec(it.second, it.first)
                 lastRotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
-                inactiveTicks = 0
-                if (placeTimer.tick(delay.value.toLong())) {
-                    moduleScope.launch {
-                        delay(40)
-                        onMainThreadSafe {
-                            swapToBlock()
-                            placeBlock(it.second, it.first)
-                        }
-                    }
-                }
+                swapAndPlace(it.second, it.first)
             }
 
-            if (inactiveTicks <= 5 && getHoldingBlock() != null) {
+            if (inactiveTicks <= 5 && PlayerPacketManager.getHoldingItemStack().item is ItemBlock) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)
                 PlayerPacketManager.addPacket(this, packet)
+            } else {
+                PlayerPacketManager.resetHotbar()
             }
         }
     }
-
-    private fun getHoldingBlock() =
-        mc.player.inventory.mainInventory[PlayerPacketManager.serverSideHotbar].item as? ItemBlock?
 
     private fun calcNextPos(): BlockPos? {
         val posVec = mc.player.positionVector
@@ -107,13 +98,30 @@ object Scaffold : Module() {
 
     private fun roundToOne(value: Double) = (value * 2.5).roundToInt().coerceAtMost(1)
 
-    private fun swapToBlock() {
+    private fun swapAndPlace(pos: BlockPos, side: EnumFacing) {
+        getBlockSlot()?.let {
+            if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(it)
+            else InventoryUtils.swapSlot(it)
+            inactiveTicks = 0
+
+            if (placeTimer.tick(delay.value.toLong())) {
+                moduleScope.launch {
+                    delay(40)
+                    onMainThreadSafe {
+                        placeBlock(pos, side)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBlockSlot(): Int? {
         for (i in 0..8) {
             val itemStack = mc.player.inventory.mainInventory[i]
             if (itemStack.isEmpty || itemStack.item !is ItemBlock) continue
-            InventoryUtils.swapSlot(i)
-            break
+            return i
         }
+        return null
     }
 
 }
