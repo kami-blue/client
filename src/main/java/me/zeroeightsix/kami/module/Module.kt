@@ -4,9 +4,7 @@ import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
-import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import me.zeroeightsix.kami.event.events.ModuleToggleEvent
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.setting.builder.SettingBuilder
@@ -98,32 +96,27 @@ open class Module {
     }
 
     fun enable() {
-        if (!enabled.value) sendToggleMessage()
-
+        val prevState = enabled.value
         enabled.value = true
+
         onEnable()
         onToggle()
-        if (!alwaysListening) {
-            KamiEventBus.subscribe(this)
-        }
+
+        if (!alwaysListening) KamiEventBus.subscribe(this)
+        KamiEventBus.post(ModuleToggleEvent(this, prevState))
     }
 
     fun disable() {
         if (annotation.alwaysEnabled) return
-        if (enabled.value) sendToggleMessage()
 
+        val prevState = enabled.value
         enabled.value = false
+
         onDisable()
         onToggle()
-        if (!alwaysListening) {
-            KamiEventBus.unsubscribe(this)
-        }
-    }
 
-    private fun sendToggleMessage() {
-        if (mc.currentScreen !is DisplayGuiScreen && this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name.value.toString() + if (enabled.value) " &cdisabled" else " &aenabled")
-        }
+        if (!alwaysListening) KamiEventBus.unsubscribe(this)
+        KamiEventBus.post(ModuleToggleEvent(this, prevState))
     }
 
 
