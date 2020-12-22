@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.plugin.PluginManager
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import org.apache.commons.lang3.StringUtils
 import java.io.File
 
 object PluginCommand : ClientCommand(
@@ -126,7 +127,10 @@ object PluginCommand : ClientCommand(
                         MessageSendHelper.sendRawChatMessage("${formatValue(index)}. " +
                             "Name: ${formatValue(plugin.name)}, " +
                             "Version: ${formatValue(plugin.version)}, " +
-                            "Author: ${formatValue(plugin.author)}"
+                            "Description: ${formatValue(plugin.description)}, " +
+                            "Min KAMI Blue Version: ${formatValue(plugin.minKamiVersion)}, " +
+                            "Authors: ${StringUtils.join(plugin.authors, ",")}, " +
+                            "Dependencies: ${StringUtils.join(plugin.dependencies, ",")}"
                         )
                     }
                 }

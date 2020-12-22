@@ -5,14 +5,21 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.mainScope
+import org.apache.commons.lang3.StringUtils
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
+@Suppress("duplicates")
 internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
-    val pluginPath = "${KamiMod.DIRECTORY}plugins/"
+
+    const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
     private val lockObject = Any()
     private lateinit var deferred: Deferred<List<PluginLoader>>
@@ -57,8 +64,27 @@ internal object PluginManager {
 
     fun loadAll(plugins: List<PluginLoader>) {
         synchronized(lockObject) {
-            plugins.forEach {
+            plugins.forEach loop@{
                 val plugin = it.load()
+
+                if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
+                    KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR})")
+
+                    return@loop
+                }
+
+                val loadedPluginNames = mutableListOf<String>()
+
+                for (p in loadedPlugins) {
+                    loadedPluginNames.add(p.name)
+                }
+
+                if (Collections.disjoint(loadedPluginNames, plugin.dependencies)) {
+                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${StringUtils.join(plugin.dependencies, ",")}")
+
+                    return@loop
+                }
+
                 plugin.onLoad()
                 plugin.register()
                 loadedPlugins.add(plugin)

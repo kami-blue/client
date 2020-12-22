@@ -12,8 +12,12 @@ import org.kamiblue.event.ListenerManager
 
 abstract class Plugin(
     override val name: String,
-    val author: String,
-    val version: String
+    val version: String,
+    val minKamiVersion: String,
+    val description: String = "Descriptionless",
+    val authors: List<String> = emptyList(),
+    val dependencies: List<String> = emptyList(),
+    val url: String = "https://github.com/kami-blue/client"
 ) : Nameable {
     val managers = CloseableList<Manager>()
     val commands = CloseableList<ClientCommand>()
