@@ -51,6 +51,14 @@ object ModuleManager {
         moduleClassList = null
     }
 
+    fun register(module: Module) {
+        moduleMap[module.javaClass] = module
+    }
+
+    fun unregister(module: Module) {
+        moduleMap.remove(module.javaClass)
+    }
+
     fun onBind(eventKey: Int) {
         if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
         for (module in getModules()) {

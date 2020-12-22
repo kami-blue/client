@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
+import me.zeroeightsix.kami.plugin.PluginManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.ConfigUtils;
@@ -68,6 +69,7 @@ public class KamiMod {
         KamiGuiUpdateNotification.updateCheck();
         ModuleManager.preLoad();
         ManagerLoader.preLoad();
+        PluginManager.preInit();
     }
 
     @Mod.EventHandler
@@ -77,6 +79,7 @@ public class KamiMod {
         ModuleManager.load();
         ManagerLoader.load();
         CommandManager.init();
+        PluginManager.init();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 

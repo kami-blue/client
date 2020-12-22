@@ -2,12 +2,15 @@ package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import org.kamiblue.command.AbstractCommandManager
+import org.kamiblue.command.Command
+import org.kamiblue.command.CommandBuilder
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
@@ -28,6 +31,20 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
         val time = stopTimer.stop()
         KamiMod.LOG.info("${getCommands().size} commands loaded, took ${time}ms")
+    }
+
+    override fun register(builder: CommandBuilder<ClientExecuteEvent>): Command<ClientExecuteEvent> {
+        synchronized(lockObject) {
+            KamiEventBus.subscribe(builder)
+            return super.register(builder)
+        }
+    }
+
+    override fun unregister(builder: CommandBuilder<ClientExecuteEvent>): Command<ClientExecuteEvent>? {
+        synchronized(lockObject) {
+            KamiEventBus.unsubscribe(builder)
+            return super.unregister(builder)
+        }
     }
 
     fun runCommand(string: String) {
