@@ -72,14 +72,8 @@ internal object PluginManager {
                     return@loop
                 }
 
-                val loadedPluginNames = mutableListOf<String>()
-
-                for (p in loadedPlugins) {
-                    loadedPluginNames.add(p.name)
-                }
-
-                if (Collections.disjoint(loadedPluginNames, plugin.dependencies)) {
-                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString { ", " }}")
+                if (!loadedPlugins.containsNames(plugin.dependencies)) {
+                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
 
                     return@loop
                 }
