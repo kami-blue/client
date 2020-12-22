@@ -5,7 +5,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.mainScope
-import org.apache.commons.lang3.StringUtils
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
@@ -80,7 +79,7 @@ internal object PluginManager {
                 }
 
                 if (Collections.disjoint(loadedPluginNames, plugin.dependencies)) {
-                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${StringUtils.join(plugin.dependencies, ",")}")
+                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString { ", " }}")
 
                     return@loop
                 }

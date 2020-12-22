@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.plugin.PluginManager
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
-import org.apache.commons.lang3.StringUtils
 import java.io.File
 
 object PluginCommand : ClientCommand(
@@ -129,8 +128,8 @@ object PluginCommand : ClientCommand(
                             "Version: ${formatValue(plugin.version)}, " +
                             "Description: ${formatValue(plugin.description)}, " +
                             "Min KAMI Blue Version: ${formatValue(plugin.minKamiVersion)}, " +
-                            "Authors: ${StringUtils.join(plugin.authors, ",")}, " +
-                            "Dependencies: ${StringUtils.join(plugin.dependencies, ",")}"
+                            "Authors: ${plugin.authors.joinToString { ", " }}, " +
+                            "Dependencies: ${plugin.authors.joinToString { ", " }}"
                         )
                     }
                 }
