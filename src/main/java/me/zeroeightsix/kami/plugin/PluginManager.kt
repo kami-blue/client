@@ -8,9 +8,6 @@ import me.zeroeightsix.kami.util.mainScope
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 @Suppress("duplicates")
 internal object PluginManager {
@@ -63,25 +60,8 @@ internal object PluginManager {
 
     fun loadAll(plugins: List<PluginLoader>) {
         synchronized(lockObject) {
-            plugins.forEach loop@{
-                val plugin = it.load()
-
-                if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
-                    KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR})")
-
-                    return@loop
-                }
-
-                if (!loadedPlugins.containsNames(plugin.dependencies)) {
-                    KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
-
-                    return@loop
-                }
-
-                plugin.onLoad()
-                plugin.register()
-                loadedPlugins.add(plugin)
-                pluginLoaderMap[plugin] = it
+            plugins.forEach {
+                load(it)
             }
         }
         KamiMod.LOG.info("Loaded ${loadedPlugins.size} plugins!")
@@ -90,6 +70,16 @@ internal object PluginManager {
     fun load(loader: PluginLoader) {
         val plugin = synchronized(lockObject) {
             val plugin = loader.load()
+
+            if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
+                KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR})")
+                return
+            }
+            if (!loadedPlugins.containsNames(plugin.dependencies)) {
+                KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
+                return
+            }
+
             plugin.onLoad()
             plugin.register()
             loadedPlugins.add(plugin)
@@ -119,6 +109,7 @@ internal object PluginManager {
                 pluginLoaderMap[plugin]?.close()
             }
         }
+        KamiMod.LOG.info("Unloaded plugin ${plugin.name}")
     }
 
 }
