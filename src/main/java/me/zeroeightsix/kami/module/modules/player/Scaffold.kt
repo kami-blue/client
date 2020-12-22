@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
@@ -20,6 +21,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
@@ -32,8 +34,9 @@ import kotlin.math.roundToInt
     modulePriority = 500
 )
 object Scaffold : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
+    private val tower = register(Settings.b("Tower", true))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
+    private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
     private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
 
     private var lastRotation = Vec2f.ZERO
@@ -51,6 +54,14 @@ object Scaffold : Module() {
     }
 
     init {
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown) return@listener
+            val flooredY = floor(mc.player.posY)
+            if (!mc.player.onGround && mc.player.posY - flooredY <= 0.002) {
+                mc.player.motionY = 0.41955
+            }
+        }
+
         listener<OnUpdateWalkingPlayerEvent> { event ->
             if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
             inactiveTicks++
@@ -117,6 +128,7 @@ object Scaffold : Module() {
     }
 
     private fun getBlockSlot(): Int? {
+        mc.playerController.updateController()
         for (i in 0..8) {
             val itemStack = mc.player.inventory.mainInventory[i]
             if (itemStack.isEmpty || itemStack.item !is ItemBlock) continue
