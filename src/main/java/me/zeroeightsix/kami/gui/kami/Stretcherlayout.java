@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.gui.rgui.component.Component;
 import me.zeroeightsix.kami.gui.rgui.component.container.Container;
 import me.zeroeightsix.kami.gui.rgui.layout.Layout;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by 086 on 27/06/2017.
@@ -34,7 +34,7 @@ public class Stretcherlayout implements Layout {
         int i = 0;
         int w = 0;
         int h = 0;
-        ArrayList<Component> children = container.getChildren();
+        CopyOnWriteArrayList<Component> children = container.getChildren();
         for (Component c : children) {
             if (!c.doAffectLayout()) continue;
 

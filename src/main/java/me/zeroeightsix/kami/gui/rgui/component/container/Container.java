@@ -2,13 +2,13 @@ package me.zeroeightsix.kami.gui.rgui.component.container;
 
 import me.zeroeightsix.kami.gui.rgui.component.Component;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by 086 on 25/06/2017.
  */
 public interface Container extends Component {
-    ArrayList<Component> getChildren();
+    CopyOnWriteArrayList<Component> getChildren();
 
     Component getComponentAt(int x, int y);
 

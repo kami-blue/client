@@ -149,21 +149,21 @@ object ConfigUtils {
 
         for ((key, value) in gui.entrySet()) {
             val optional = KamiMod.INSTANCE.guiManager.children.stream()
-                .filter { component: Component? -> component is Frame }
-                .filter { component: Component -> (component as Frame).title == key }
+                .filter { it is Frame }
+                .filter { (it as Frame).title == key }
                 .findFirst()
 
             if (optional.isPresent) {
-                val `object` = value.asJsonObject
+                val jsonObject = value.asJsonObject
                 val frame = optional.get() as Frame
-                frame.x = `object`["x"].asInt
-                frame.y = `object`["y"].asInt
-                val docking = Docking.values()[`object`["docking"].asInt]
+                frame.x = jsonObject["x"].asInt
+                frame.y = jsonObject["y"].asInt
+                val docking = Docking.values()[jsonObject["docking"].asInt]
 
                 if (docking.isLeft) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.LEFT) else if (docking.isRight) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.RIGHT) else if (docking.isCenterVertical) ContainerHelper.setAlignment(frame, AlignedComponent.Alignment.CENTER)
                 frame.docking = docking
-                frame.isMinimized = `object`["minimized"].asBoolean
-                frame.isPinned = `object`["pinned"].asBoolean
+                frame.isMinimized = jsonObject["minimized"].asBoolean
+                frame.isPinned = jsonObject["pinned"].asBoolean
             } else {
                 System.err.println("Found GUI config entry for $key, but found no frame with that name")
             }

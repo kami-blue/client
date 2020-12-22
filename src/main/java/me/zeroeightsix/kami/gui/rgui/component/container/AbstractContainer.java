@@ -7,16 +7,16 @@ import me.zeroeightsix.kami.gui.rgui.poof.use.AdditionPoof;
 import me.zeroeightsix.kami.gui.rgui.render.theme.Theme;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by 086 on 25/06/2017.
  */
 public abstract class AbstractContainer extends AbstractComponent implements Container {
 
-    protected ArrayList<Component> children = new ArrayList<>();
+    protected CopyOnWriteArrayList<Component> children = new CopyOnWriteArrayList<>();
 
     int originoffsetX = 0;
     int originoffsetY = 0;
@@ -26,7 +26,7 @@ public abstract class AbstractContainer extends AbstractComponent implements Con
     }
 
     @Override
-    public ArrayList<Component> getChildren() {
+    public CopyOnWriteArrayList<Component> getChildren() {
         return children;
     }
 

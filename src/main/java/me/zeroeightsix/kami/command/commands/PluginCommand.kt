@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.plugin.PluginLoader
 import me.zeroeightsix.kami.plugin.PluginManager
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import java.io.File
@@ -24,6 +25,7 @@ object PluginCommand : ClientCommand(
                     val time = System.currentTimeMillis()
                     MessageSendHelper.sendChatMessage("Loading plugin $name...")
 
+                    ConfigUtils.saveAll()
                     val loader = PluginLoader(file)
                     val plugin = loader.load()
                     if (PluginManager.loadedPlugins.contains(plugin)) {
@@ -31,6 +33,7 @@ object PluginCommand : ClientCommand(
                         return@execute
                     }
                     PluginManager.load(loader)
+                    ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
                     MessageSendHelper.sendChatMessage("Loaded plugin $name, took $stopTime ms!")
@@ -52,9 +55,11 @@ object PluginCommand : ClientCommand(
                     val time = System.currentTimeMillis()
                     MessageSendHelper.sendChatMessage("Reloading plugins $name...")
 
+                    ConfigUtils.saveAll()
                     val file = PluginManager.pluginLoaderMap[plugin]!!.file
                     PluginManager.unload(plugin)
                     PluginManager.load(PluginLoader(file))
+                    ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
                     MessageSendHelper.sendChatMessage("Reloaded plugin $name, took $stopTime ms!")
@@ -65,8 +70,10 @@ object PluginCommand : ClientCommand(
                 val time = System.currentTimeMillis()
                 MessageSendHelper.sendChatMessage("Reloading plugins...")
 
+                ConfigUtils.saveAll()
                 PluginManager.unloadAll()
                 PluginManager.loadAll(PluginManager.preLoad())
+                ConfigUtils.loadAll()
 
                 val stopTime = System.currentTimeMillis() - time
                 MessageSendHelper.sendChatMessage("Reloaded plugins, took $stopTime ms!")
@@ -87,7 +94,9 @@ object PluginCommand : ClientCommand(
                     val time = System.currentTimeMillis()
                     MessageSendHelper.sendChatMessage("Unloading plugin $name...")
 
+                    ConfigUtils.saveAll()
                     PluginManager.unload(plugin)
+                    ConfigUtils.loadAll()
 
                     val stopTime = System.currentTimeMillis() - time
                     MessageSendHelper.sendChatMessage("Unloaded plugin $name, took $stopTime ms!")
@@ -98,7 +107,9 @@ object PluginCommand : ClientCommand(
                 val time = System.currentTimeMillis()
                 MessageSendHelper.sendChatMessage("Unloading plugins...")
 
+                ConfigUtils.saveAll()
                 PluginManager.unloadAll()
+                ConfigUtils.loadAll()
 
                 val stopTime = System.currentTimeMillis() - time
                 MessageSendHelper.sendChatMessage("Unloaded plugins, took $stopTime ms!")
