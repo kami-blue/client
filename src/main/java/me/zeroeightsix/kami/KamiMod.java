@@ -4,7 +4,6 @@ import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
-import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.manager.ManagerLoader;
@@ -101,7 +100,6 @@ public class KamiMod {
 
         // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
         for (Module module : ModuleManager.getModules()) {
-            if (module.getAlwaysListening()) KamiEventBus.INSTANCE.subscribe(module);
             if (module.isEnabled()) module.enable();
         }
 

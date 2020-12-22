@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
@@ -37,7 +38,7 @@ object ModuleManager {
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
             try {
-                moduleMap[clazz] = ClassUtils.getInstance(clazz)
+                register(ClassUtils.getInstance(clazz))
             } catch (exception: Throwable) {
                 System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
                 exception.printStackTrace()
@@ -53,10 +54,12 @@ object ModuleManager {
 
     fun register(module: Module) {
         moduleMap[module.javaClass] = module
+        if (module.alwaysListening) KamiEventBus.subscribe(module)
     }
 
     fun unregister(module: Module) {
         moduleMap.remove(module.javaClass)
+        KamiEventBus.unsubscribe(module)
     }
 
     fun onBind(eventKey: Int) {

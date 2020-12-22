@@ -33,6 +33,12 @@ abstract class Plugin(
         modules.forEach {
             ModuleManager.register(it)
         }
+
+        // TODO: Loads config here (After GUI PR)
+
+        modules.forEach {
+            if (it.isEnabled) it.enable()
+        }
     }
 
     internal fun unregister() {
