@@ -28,9 +28,9 @@ object BaritoneUtils {
 
     fun unpause() {
         if (paused) {
+            paused = false
             primary?.pathingControlManager?.mostRecentInControl()?.let {
                 if (it.isPresent && it.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
-                    paused = false
                     it.get().onLostControl()
                 }
             }
