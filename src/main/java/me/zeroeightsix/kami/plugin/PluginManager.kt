@@ -51,7 +51,7 @@ internal object PluginManager {
             } catch (e: ClassNotFoundException) {
                 KamiMod.LOG.info("${it.name} is not a valid plugin. Skipping...")
             } catch (e: Exception) {
-                KamiMod.LOG.error("Failed to load plugin ${it.name}", e)
+                KamiMod.LOG.error("Failed to pre load plugin ${it.name}", e)
             }
         }
 
