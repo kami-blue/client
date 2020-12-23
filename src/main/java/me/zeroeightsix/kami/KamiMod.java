@@ -66,7 +66,7 @@ public class KamiMod {
 
         MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
-        ModuleManager.preLoad();
+        ModuleManager.load$client();
         ManagerLoader.preLoad();
         PluginManager.preInit();
     }
@@ -75,7 +75,7 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        ModuleManager.load();
+        ModuleManager.load$client();
         ManagerLoader.load();
         CommandManager.init();
         PluginManager.init();
