@@ -10,11 +10,10 @@ import java.io.File
 class KamiGuiPluginError(
     private val prevScreen: GuiScreen?
 ) : GuiScreen() {
-    private var missingPluginNames = mutableListOf<String>()
+    private val missingPluginNames = HashSet<String>()
     private val unsupportedKamiPluginsMap = hashMapOf<String, String>()
     private val unloadedPluginNames = mutableListOf<String>()
 
-    private var offset = (45 - PluginManager.unloadablePluginMap.size * 10).coerceAtLeast(10)
     private val message = "The following plugins could not be loaded: ${unloadedPluginNames.joinToString()}"
 
     override fun initGui() {
@@ -23,7 +22,7 @@ class KamiGuiPluginError(
         buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
         buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Continue"))
 
-        PluginManager.unloadablePluginMap.filter { it.value.compareTo(PluginManager.PluginErrorReason.REQUIRED_PLUGIN) == 0 }.forEach { entry ->
+        PluginManager.unloadablePluginMap.filter { it.value == PluginManager.PluginErrorReason.REQUIRED_PLUGIN }.forEach { entry ->
             entry.key.requiredPlugins.forEach {
                 if (!PluginManager.loadedPlugins.containsName(it)) {
                     missingPluginNames.add(it)
@@ -31,7 +30,7 @@ class KamiGuiPluginError(
             }
         }
 
-        PluginManager.unloadablePluginMap.filter { it.value.compareTo(PluginManager.PluginErrorReason.UNSUPPORTED_KAMI) == 0 }.forEach {
+        PluginManager.unloadablePluginMap.filter { it.value == PluginManager.PluginErrorReason.UNSUPPORTED_KAMI }.forEach {
             unsupportedKamiPluginsMap[it.key.name] = it.key.minKamiVersion
         }
 
@@ -43,6 +42,8 @@ class KamiGuiPluginError(
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
 
+        var offset = (45 - PluginManager.unloadablePluginMap.size * (fontRenderer.FONT_HEIGHT + 1)).coerceAtLeast(10)
+
         drawCenteredString(fontRenderer, message, width / 2, offset, ColorConverter.rgbToHex(155, 144, 255))
 
         offset += 50
@@ -50,10 +51,10 @@ class KamiGuiPluginError(
         if (unsupportedKamiPluginsMap.isNotEmpty()) {
             drawCenteredString(fontRenderer, "These plugins require newer versions of KAMI Blue:", width / 2, offset, 0xFFFFFF)
 
-            offset += 10
+            offset += fontRenderer.FONT_HEIGHT + 1
 
             for (plugin in unsupportedKamiPluginsMap) {
-                offset += 15
+                offset += fontRenderer.FONT_HEIGHT + 6
 
                 drawCenteredString(fontRenderer, "- ${plugin.key} (Requires KAMI Blue version ${plugin.value})", width / 2, offset, 0xFF5555)
             }
@@ -62,20 +63,16 @@ class KamiGuiPluginError(
         }
 
         if (missingPluginNames.isNotEmpty()) {
-            missingPluginNames = missingPluginNames.distinct().toMutableList()
-
             drawCenteredString(fontRenderer, "These required plugins were not loaded:", width / 2, offset, 0xFFFFFF)
 
-            offset += 10
+            offset += fontRenderer.FONT_HEIGHT + 1
 
             for (missingPlugin in missingPluginNames) {
-                offset += 15
+                offset += fontRenderer.FONT_HEIGHT + 6
 
                 drawCenteredString(fontRenderer, "- $missingPlugin", width / 2, offset, 0xFF5555)
             }
         }
-
-        offset = (45 - PluginManager.unloadablePluginMap.size * 10).coerceAtLeast(10)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
