@@ -44,8 +44,8 @@ class KamiGuiPluginError(
 
     override fun initGui() {
         super.initGui()
-        buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
-        buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Continue"))
+        buttonList.add(GuiButton(0, width / 2 - 210, height - 40, "Open Plugins Folder"))
+        buttonList.add(GuiButton(1, width / 2 + 10, height - 40,  "Continue"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
