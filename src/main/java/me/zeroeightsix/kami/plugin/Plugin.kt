@@ -41,12 +41,12 @@ open class Plugin(
     /**
      * A list of the names of the plugin's authors.
      */
-    val authors: List<String> = emptyList(),
+    val authors: Array<String> = emptyArray(),
 
     /**
      * Other plugins that must be installed in order for this plugin to work correctly.
      */
-    val requiredPlugins: List<String> = emptyList(),
+    val requiredPlugins: Array<String> = emptyArray(),
 
     /**
      * A link to the plugin's website.
