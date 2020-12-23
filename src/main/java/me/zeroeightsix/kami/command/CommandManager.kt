@@ -20,7 +20,6 @@ internal object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: String get() = CommandConfig.prefix.value
 
-    @JvmStatic
     fun init() {
         val stopTimer = TimerUtils.StopTimer()
         val commandClasses = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)

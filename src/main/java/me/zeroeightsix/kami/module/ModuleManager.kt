@@ -17,7 +17,6 @@ object ModuleManager {
     /** HashMap for the registered Modules */
     private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
 
-    @JvmStatic
     internal fun preLoad() {
         preLoadingThread = Thread {
             val stopTimer = TimerUtils.StopTimer()
@@ -32,7 +31,6 @@ object ModuleManager {
     /**
      * Registers modules
      */
-    @JvmStatic
     internal fun load() {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()

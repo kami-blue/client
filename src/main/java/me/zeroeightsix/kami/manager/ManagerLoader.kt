@@ -13,7 +13,6 @@ internal object ManagerLoader {
     /** List for manager classes found during pre-loading */
     private var managerClassList: List<Class<out Manager>>? = null
 
-    @JvmStatic
     fun preLoad() {
         preLoadingThread = Thread {
             val stopTimer = TimerUtils.StopTimer()
@@ -25,7 +24,6 @@ internal object ManagerLoader {
         preLoadingThread!!.start()
     }
 
-    @JvmStatic
     fun load() {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()

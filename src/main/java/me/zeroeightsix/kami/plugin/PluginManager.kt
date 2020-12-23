@@ -19,14 +19,12 @@ internal object PluginManager {
     private val lockObject = Any()
     private lateinit var deferred: Deferred<List<PluginLoader>>
 
-    @JvmStatic
     fun preInit() {
         deferred = mainScope.async {
             preLoad()
         }
     }
 
-    @JvmStatic
     fun init() {
         runBlocking {
             loadAll(deferred.await())
