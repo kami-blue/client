@@ -18,7 +18,7 @@ object ModuleManager {
     private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
 
     @JvmStatic
-    fun preLoad() {
+    internal fun preLoad() {
         preLoadingThread = Thread {
             val stopTimer = TimerUtils.StopTimer()
             moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
@@ -33,7 +33,7 @@ object ModuleManager {
      * Registers modules
      */
     @JvmStatic
-    fun load() {
+    internal fun load() {
         preLoadingThread!!.join()
         val stopTimer = TimerUtils.StopTimer()
         for (clazz in moduleClassList!!) {
@@ -52,17 +52,17 @@ object ModuleManager {
         moduleClassList = null
     }
 
-    fun register(module: Module) {
+    internal fun register(module: Module) {
         moduleMap[module.javaClass] = module
         if (module.alwaysListening) KamiEventBus.subscribe(module)
     }
 
-    fun unregister(module: Module) {
+    internal fun unregister(module: Module) {
         moduleMap.remove(module.javaClass)
         KamiEventBus.unsubscribe(module)
     }
 
-    fun onBind(eventKey: Int) {
+    internal fun onBind(eventKey: Int) {
         if (eventKey == 0 || Keyboard.isKeyDown(Keyboard.KEY_F3)) return  // if key is the 'none' key (stuff like mod key in i3 might return 0)
         for (module in getModules()) {
             if (module.bind.value.isDown(eventKey)) module.toggle()
@@ -92,5 +92,5 @@ object ModuleManager {
         }
     }
 
-    class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
+    internal class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
 }

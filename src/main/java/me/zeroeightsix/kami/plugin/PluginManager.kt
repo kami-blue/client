@@ -9,7 +9,6 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
 
-@Suppress("duplicates")
 internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()

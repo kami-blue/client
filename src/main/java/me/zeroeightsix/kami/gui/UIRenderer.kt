@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import org.lwjgl.opengl.GL11.*
 
-object UIRenderer {
+internal object UIRenderer {
     fun renderAndUpdateFrames() {
         if (Wrapper.minecraft.currentScreen is DisplayGuiScreen || Wrapper.minecraft.gameSettings.showDebugInfo) return
         val gui = KamiMod.INSTANCE.guiManager

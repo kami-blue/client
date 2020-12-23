@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
 
-object ForgeEventProcessor {
+internal object ForgeEventProcessor {
     private val mc = Wrapper.minecraft
     private var prevWidth = mc.displayWidth
     private var prevHeight = mc.displayHeight

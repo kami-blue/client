@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 
-object ManagerLoader {
+internal object ManagerLoader {
 
     /** Thread for scanning managers during Forge pre-init */
     private var preLoadingThread: Thread? = null

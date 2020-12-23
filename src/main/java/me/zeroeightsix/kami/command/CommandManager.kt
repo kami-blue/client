@@ -15,7 +15,7 @@ import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
 
-object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
+internal object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
     val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: String get() = CommandConfig.prefix.value
