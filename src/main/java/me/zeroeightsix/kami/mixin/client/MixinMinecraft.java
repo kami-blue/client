@@ -41,8 +41,7 @@ public abstract class MixinMinecraft {
     @Shadow public PlayerControllerMP playerController;
     @Shadow public EntityRenderer entityRenderer;
 
-    @Shadow
-    public abstract void displayGuiScreen(@Nullable GuiScreen guiScreenIn);
+    @Shadow public abstract void displayGuiScreen(@Nullable GuiScreen guiScreenIn);
 
     @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     public void processRightClickBlock(CallbackInfo ci) {
@@ -81,7 +80,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo info) {
         if (!PluginManager.INSTANCE.getUnloadablePluginMap().isEmpty()) {
-            displayGuiScreen(new KamiGuiPluginError());
+            displayGuiScreen(new KamiGuiPluginError(currentScreen));
         }
     }
 

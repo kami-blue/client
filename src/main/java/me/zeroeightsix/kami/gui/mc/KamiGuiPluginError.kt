@@ -6,9 +6,10 @@ import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Desktop
 import java.io.File
-import java.nio.file.Paths
 
-class KamiGuiPluginError : GuiScreen() {
+class KamiGuiPluginError(
+    private val prevScreen: GuiScreen?
+) : GuiScreen() {
     private var missingPluginNames = mutableListOf<String>()
     private val unsupportedKamiPluginsMap = hashMapOf<String, String>()
     private val unloadedPluginNames = mutableListOf<String>()
@@ -20,7 +21,7 @@ class KamiGuiPluginError : GuiScreen() {
         super.initGui()
 
         buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
-        buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Close Game"))
+        buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Continue"))
 
         PluginManager.unloadablePluginMap.filter { it.value.compareTo(PluginManager.PluginErrorReason.REQUIRED_PLUGIN) == 0 }.forEach { entry ->
             entry.key.requiredPlugins.forEach {
@@ -81,6 +82,6 @@ class KamiGuiPluginError : GuiScreen() {
 
     override fun actionPerformed(button: GuiButton) {
         if (button.id == 0) Desktop.getDesktop().open(File(PluginManager.pluginPath))
-        if (button.id == 1) mc.shutdown()
+        if (button.id == 1) mc.displayGuiScreen(prevScreen)
     }
 }
