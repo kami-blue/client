@@ -3,8 +3,10 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
+import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
+import me.zeroeightsix.kami.plugin.PluginManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -17,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Created by 086 on 17/11/2017.
  */
 @Mixin(Minecraft.class)
-public class MixinMinecraft {
+public abstract class MixinMinecraft {
 
     @Shadow public WorldClient world;
     @Shadow public EntityPlayerSP player;
@@ -37,6 +40,9 @@ public class MixinMinecraft {
     @Shadow public RayTraceResult objectMouseOver;
     @Shadow public PlayerControllerMP playerController;
     @Shadow public EntityRenderer entityRenderer;
+
+    @Shadow
+    public abstract void displayGuiScreen(@Nullable GuiScreen guiScreenIn);
 
     @Inject(method = "rightClickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;getHeldItem(Lnet/minecraft/util/EnumHand;)Lnet/minecraft/item/ItemStack;"), cancellable = true)
     public void processRightClickBlock(CallbackInfo ci) {
@@ -70,6 +76,13 @@ public class MixinMinecraft {
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
         save();
+    }
+
+    @Inject(method = "init", at = @At("TAIL"))
+    public void init(CallbackInfo info) {
+        if (!PluginManager.INSTANCE.getUnloadablePluginMap().isEmpty()) {
+            displayGuiScreen(new KamiGuiPluginError());
+        }
     }
 
     private void save() {
