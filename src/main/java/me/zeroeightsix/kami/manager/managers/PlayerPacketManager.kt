@@ -50,16 +50,16 @@ object PlayerPacketManager : Manager {
             }
         }
 
-        listener<PacketEvent.Send> {
-                if (it.packet is CPacketHeldItemChange) {
-                    if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
-                        if (hotbarResetTimer.tick(2L)) {
-                            spoofingHotbar = false
-                        } else {
-                            it.cancel()
-                        }
+        listener<PacketEvent.Send>(-69420) {
+            if (it.packet is CPacketHeldItemChange) {
+                if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
+                    if (hotbarResetTimer.tick(2L)) {
+                        spoofingHotbar = false
+                    } else {
+                        it.cancel()
                     }
                 }
+            }
         }
 
         listener<PacketEvent.PostSend>(-6969) {
@@ -120,8 +120,8 @@ object PlayerPacketManager : Manager {
     fun spoofHotbar(slot: Int) {
         Wrapper.minecraft.connection?.let {
             if (serverSideHotbar != slot) {
-                it.sendPacket(CPacketHeldItemChange(slot))
                 serverSideHotbar = slot
+                it.sendPacket(CPacketHeldItemChange(slot))
                 spoofingHotbar = true
             }
             hotbarResetTimer.reset()

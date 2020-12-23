@@ -76,11 +76,11 @@ object Scaffold : Module() {
                 swapAndPlace(it.second, it.first)
             }
 
-            if (inactiveTicks <= 5 && PlayerPacketManager.getHoldingItemStack().item is ItemBlock) {
+            if (inactiveTicks > 5) {
+                PlayerPacketManager.resetHotbar()
+            } else if (PlayerPacketManager.getHoldingItemStack().item is ItemBlock) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)
                 PlayerPacketManager.addPacket(this, packet)
-            } else {
-                PlayerPacketManager.resetHotbar()
             }
         }
     }
@@ -108,12 +108,14 @@ object Scaffold : Module() {
         return blockPos.down().takeIf { rayTraceResult?.typeOfHit != RayTraceResult.Type.BLOCK }
     }
 
-    private fun roundToRange(value: Double) = (value * 2.5 * maxRange.value).roundToInt().coerceAtMost(maxRange.value)
+    private fun roundToRange(value: Double) =
+        (value * 2.5 * maxRange.value).roundToInt().coerceAtMost(maxRange.value)
 
     private fun swapAndPlace(pos: BlockPos, side: EnumFacing) {
-        getBlockSlot()?.let {
-            if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(it)
-            else InventoryUtils.swapSlot(it)
+        getBlockSlot()?.let { slot ->
+            if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(slot)
+            else InventoryUtils.swapSlot(slot)
+
             inactiveTicks = 0
 
             if (placeTimer.tick(delay.value.toLong())) {
