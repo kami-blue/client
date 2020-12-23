@@ -129,7 +129,7 @@ object PluginCommand : ClientCommand(
                             "Description: ${formatValue(plugin.description)}, " +
                             "Min KAMI Blue Version: ${formatValue(plugin.minKamiVersion)}, " +
                             "Authors: ${plugin.authors.joinToString(",")}, " +
-                            "Dependencies: ${plugin.dependencies.joinToString(",")}"
+                            "Dependencies: ${plugin.requiredPlugins.joinToString(",")}"
                         )
                     }
                 }

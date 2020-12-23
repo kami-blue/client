@@ -75,7 +75,7 @@ internal object PluginManager {
                 KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR})")
                 return
             }
-            if (!loadedPlugins.containsNames(plugin.dependencies)) {
+            if (!loadedPlugins.containsNames(plugin.requiredPlugins)) {
                 KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
                 return
             }

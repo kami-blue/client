@@ -14,9 +14,9 @@ abstract class Plugin(
     override val name: String,
     val version: String,
     val minKamiVersion: String,
-    val description: String = "Descriptionless",
+    val description: String = "No Description",
     val authors: List<String> = emptyList(),
-    val dependencies: List<String> = emptyList(),
+    val requiredPlugins: List<String> = emptyList(),
     val url: String = "https://github.com/kami-blue/client"
 ) : Nameable {
     val managers = CloseableList<Manager>()
