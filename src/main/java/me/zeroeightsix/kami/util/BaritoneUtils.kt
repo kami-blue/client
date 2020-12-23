@@ -27,14 +27,7 @@ object BaritoneUtils {
     }
 
     fun unpause() {
-        if (paused) {
-            paused = false
-            primary?.pathingControlManager?.mostRecentInControl()?.let {
-                if (it.isPresent && it.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
-                    it.get().onLostControl()
-                }
-            }
-        }
+        paused = false
     }
 
     fun cancelEverything() = primary?.pathingBehavior?.cancelEverything()
