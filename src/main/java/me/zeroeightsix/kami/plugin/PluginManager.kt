@@ -35,7 +35,6 @@ internal object PluginManager {
     }
 
     fun preLoad(): List<PluginLoader> {
-        // Create directory if not exist
         val dir = File(pluginPath)
         if (!dir.exists()) dir.mkdir()
 
@@ -46,12 +45,13 @@ internal object PluginManager {
         jarFiles.forEach {
             try {
                 val loader = PluginLoader(it)
+
                 loader.verify()
                 plugins.add(loader)
             } catch (e: ClassNotFoundException) {
-                KamiMod.LOG.info("${it.name} is not a valid plugin, skipping")
+                KamiMod.LOG.info("${it.name} is not a valid plugin. Skipping...")
             } catch (e: Exception) {
-                KamiMod.LOG.error("Failed to prepare plugin ${it.name}", e)
+                KamiMod.LOG.error("Failed to load plugin ${it.name}", e)
             }
         }
 
@@ -64,6 +64,7 @@ internal object PluginManager {
                 load(it)
             }
         }
+
         KamiMod.LOG.info("Loaded ${loadedPlugins.size} plugins!")
     }
 
@@ -72,11 +73,11 @@ internal object PluginManager {
             val plugin = loader.load()
 
             if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
-                KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR})")
+                KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR}). This plugin will not be loaded.")
                 return
             }
             if (!loadedPlugins.containsNames(plugin.requiredPlugins)) {
-                KamiMod.LOG.error("The plugin ${plugin.name} is missing a required dependency! Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
+                KamiMod.LOG.error("The plugin ${plugin.name} is missing a required plugin dependency! This plugin will not be loaded. Make sure that these plugins are installed: ${plugin.authors.joinToString()}")
                 return
             }
 
@@ -86,6 +87,7 @@ internal object PluginManager {
             pluginLoaderMap[plugin] = loader
             plugin
         }
+
         KamiMod.LOG.info("Loaded plugin ${plugin.name}")
     }
 
@@ -98,6 +100,7 @@ internal object PluginManager {
             }
             loadedPlugins.clear()
         }
+
         KamiMod.LOG.info("Unloaded all plugins!")
     }
 
@@ -109,6 +112,7 @@ internal object PluginManager {
                 pluginLoaderMap[plugin]?.close()
             }
         }
+
         KamiMod.LOG.info("Unloaded plugin ${plugin.name}")
     }
 
