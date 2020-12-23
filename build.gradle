@@ -184,12 +184,14 @@ task sourceJar(type: Jar) { // Generate sources
     group 'build'
     from sourceSets.main.allSource
     archiveClassifier.set('source')
+    description 'Assemble api library source archive'
 }
 
 task apiJar(type: Jar) {
     group 'build'
     from sourceSets.main.output
     archiveClassifier.set('api')
+    description 'Assemble api library archive'
 }
 
 // Don't put baritone mixin here please c:
@@ -213,8 +215,9 @@ jar {
     }
 }
 
-artifacts {
-    archives sourceJar
-    archives apiJar
-    archives jar
+task buildApi {
+    group 'build'
+    dependsOn sourceJar
+    dependsOn apiJar
+    description 'Assemble api librarie archives'
 }
