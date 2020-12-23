@@ -4,6 +4,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.mainScope
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
@@ -13,7 +15,7 @@ internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
-    var latestErrors: ArrayList<Pair<Plugin, PluginError>>? = null
+    private var latestErrors: ArrayList<Pair<Plugin, PluginError>>? = null
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -116,4 +118,12 @@ internal object PluginManager {
 
         KamiMod.LOG.info("Unloaded plugin ${plugin.name}")
     }
+
+    fun displayErrors() {
+        latestErrors?.takeIf { it.isNotEmpty() }?.let {
+            Wrapper.minecraft.displayGuiScreen(KamiGuiPluginError(Wrapper.minecraft.currentScreen, it))
+        }
+        latestErrors = null
+    }
+
 }

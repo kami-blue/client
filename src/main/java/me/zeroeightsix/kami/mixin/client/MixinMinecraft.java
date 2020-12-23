@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
-import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.plugin.PluginManager;
@@ -79,9 +78,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo info) {
-        if (!PluginManager.INSTANCE.getUnloadablePluginMap().isEmpty()) {
-            displayGuiScreen(new KamiGuiPluginError(currentScreen));
-        }
+        PluginManager.INSTANCE.displayErrors();
     }
 
     private void save() {
