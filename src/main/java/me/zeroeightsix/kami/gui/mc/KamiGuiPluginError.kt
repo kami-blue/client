@@ -5,20 +5,22 @@ import me.zeroeightsix.kami.util.color.ColorConverter
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Desktop
+import java.io.File
 import java.nio.file.Paths
 
 class KamiGuiPluginError : GuiScreen() {
+    private var missingPluginNames = mutableListOf<String>()
+    private val unsupportedKamiPluginsMap = hashMapOf<String, String>()
+    private val unloadedPluginNames = mutableListOf<String>()
+
+    private var offset = (45 - PluginManager.unloadablePluginMap.size * 10).coerceAtLeast(10)
+    private val message = "The following plugins could not be loaded: ${unloadedPluginNames.joinToString()}"
+
     override fun initGui() {
         super.initGui()
 
         buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
         buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Close Game"))
-    }
-
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        var missingPluginNames = mutableListOf<String>()
-        val unsupportedKamiPluginsMap = hashMapOf<String, String>()
-        val unloadedPluginNames = mutableListOf<String>()
 
         PluginManager.unloadablePluginMap.filter { it.value.compareTo(PluginManager.PluginErrorReason.REQUIRED_PLUGIN) == 0 }.forEach { entry ->
             entry.key.requiredPlugins.forEach {
@@ -35,11 +37,10 @@ class KamiGuiPluginError : GuiScreen() {
         PluginManager.unloadablePluginMap.forEach {
             unloadedPluginNames.add(it.key.name)
         }
+    }
 
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-
-        var offset = (45 - PluginManager.unloadablePluginMap.size * 10).coerceAtLeast(10)
-        val message = "The following plugins could not be loaded: ${unloadedPluginNames.joinToString()}"
 
         drawCenteredString(fontRenderer, message, width / 2, offset, ColorConverter.rgbToHex(155, 144, 255))
 
@@ -73,11 +74,13 @@ class KamiGuiPluginError : GuiScreen() {
             }
         }
 
+        offset = (45 - PluginManager.unloadablePluginMap.size * 10).coerceAtLeast(10)
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun actionPerformed(button: GuiButton) {
-        if (button.id == 0) Desktop.getDesktop().open(Paths.get(PluginManager.pluginPath).toFile())
+        if (button.id == 0) Desktop.getDesktop().open(File(PluginManager.pluginPath))
         if (button.id == 1) mc.shutdown()
     }
 }
