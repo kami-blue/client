@@ -1,84 +1,92 @@
 package me.zeroeightsix.kami.gui.mc
 
+import me.zeroeightsix.kami.plugin.Plugin
+import me.zeroeightsix.kami.plugin.PluginError
 import me.zeroeightsix.kami.plugin.PluginManager
-import me.zeroeightsix.kami.util.color.ColorConverter
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import java.awt.Desktop
 import java.io.File
+import java.util.*
 
 class KamiGuiPluginError(
-    private val prevScreen: GuiScreen?
+    private val prevScreen: GuiScreen?,
+    pluginErrors: List<Pair<Plugin, PluginError>>
 ) : GuiScreen() {
-    private val missingPluginNames = HashSet<String>()
-    private val unsupportedKamiPluginsMap = hashMapOf<String, String>()
-    private val unloadedPluginNames = mutableListOf<String>()
 
-    private val message = "The following plugins could not be loaded: ${unloadedPluginNames.joinToString()}"
+    private val errorPlugins: String
+    private val unsupportedPlugins: Set<String>
+    private val missingPlugins: Set<String>
 
-    override fun initGui() {
-        super.initGui()
+    init {
+        val builder = StringBuilder()
+        val unsupported = TreeSet<String>()
+        val missing = TreeSet<String>()
 
-        buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
-        buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Continue"))
+        for ((index, pair) in pluginErrors.withIndex()) {
+            builder.append(pair.first.name)
+            if (index != pluginErrors.size - 1) builder.append(", ")
 
-        PluginManager.unloadablePluginMap.filter { it.value == PluginManager.PluginErrorReason.REQUIRED_PLUGIN }.forEach { entry ->
-            entry.key.requiredPlugins.forEach {
-                if (!PluginManager.loadedPlugins.containsName(it)) {
-                    missingPluginNames.add(it)
-                }
+            if (pair.second == PluginError.UNSUPPORTED_KAMI) {
+                unsupported.add("${pair.first.name} (${pair.first.minKamiVersion})")
+            } else {
+                missing.addAll(pair.first.requiredPlugins.filter { !PluginManager.loadedPlugins.containsName(it) })
             }
         }
 
-        PluginManager.unloadablePluginMap.filter { it.value == PluginManager.PluginErrorReason.UNSUPPORTED_KAMI }.forEach {
-            unsupportedKamiPluginsMap[it.key.name] = it.key.minKamiVersion
-        }
+        errorPlugins = builder.toString()
+        unsupportedPlugins = unsupported
+        missingPlugins = missing
+    }
 
-        PluginManager.unloadablePluginMap.forEach {
-            unloadedPluginNames.add(it.key.name)
-        }
+    override fun initGui() {
+        super.initGui()
+        buttonList.add(GuiButton(0, 50, height - 38, width / 2 - 55, 20, "Open Plugins Folder"))
+        buttonList.add(GuiButton(1, width / 2 + 5, height - 38, width / 2 - 55, 20, "Continue"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-
-        var offset = (45 - PluginManager.unloadablePluginMap.size * (fontRenderer.FONT_HEIGHT + 1)).coerceAtLeast(10)
-
-        drawCenteredString(fontRenderer, message, width / 2, offset, ColorConverter.rgbToHex(155, 144, 255))
-
-        offset += 50
-
-        if (unsupportedKamiPluginsMap.isNotEmpty()) {
-            drawCenteredString(fontRenderer, "These plugins require newer versions of KAMI Blue:", width / 2, offset, 0xFFFFFF)
-
-            offset += fontRenderer.FONT_HEIGHT + 1
-
-            for (plugin in unsupportedKamiPluginsMap) {
-                offset += fontRenderer.FONT_HEIGHT + 6
-
-                drawCenteredString(fontRenderer, "- ${plugin.key} (Requires KAMI Blue version ${plugin.value})", width / 2, offset, 0xFF5555)
-            }
-
-            offset += 35
-        }
-
-        if (missingPluginNames.isNotEmpty()) {
-            drawCenteredString(fontRenderer, "These required plugins were not loaded:", width / 2, offset, 0xFFFFFF)
-
-            offset += fontRenderer.FONT_HEIGHT + 1
-
-            for (missingPlugin in missingPluginNames) {
-                offset += fontRenderer.FONT_HEIGHT + 6
-
-                drawCenteredString(fontRenderer, "- $missingPlugin", width / 2, offset, 0xFF5555)
-            }
-        }
-
         super.drawScreen(mouseX, mouseY, partialTicks)
+
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(width / 2.0f, 100.0f, 0.0f)
+
+        drawCenteredString(fontRenderer, title, 0, 0, 0x909BFF) // 155, 144, 255
+        GlStateManager.translate(0.0f, fontRenderer.FONT_HEIGHT + 5.0f, 0.0f)
+
+        drawCenteredString(fontRenderer, errorPlugins, 0, 0, 0xFF5555) // 255, 85, 85
+        GlStateManager.translate(0.0f, 50.0f, 0.0f)
+
+
+        drawList("These plugins require newer versions of KAMI Blue:", unsupportedPlugins)
+        drawList("These required plugins were not loaded:", unsupportedPlugins)
+
+        GlStateManager.popMatrix()
+    }
+
+    private fun drawList(title: String, list: Set<String>) {
+        if (title.isNotEmpty()) {
+            drawCenteredString(fontRenderer, title, 0, 0, 0xFFFFFF) // 255, 255, 255
+            GlStateManager.translate(0.0f, fontRenderer.FONT_HEIGHT + 5.0f, 0.0f)
+
+            list.forEach {
+                drawCenteredString(fontRenderer, it, 0, 0, 0xFF5555) // 255, 85, 85
+                GlStateManager.translate(0.0f, fontRenderer.FONT_HEIGHT + 2.0f, 0.0f)
+            }
+
+            GlStateManager.translate(0.0f, 50.0f, 0.0f)
+        }
     }
 
     override fun actionPerformed(button: GuiButton) {
         if (button.id == 0) Desktop.getDesktop().open(File(PluginManager.pluginPath))
         if (button.id == 1) mc.displayGuiScreen(prevScreen)
     }
+
+    private companion object {
+        val title = "The following plugins could not be loaded:"
+    }
+
 }

@@ -12,8 +12,8 @@ import java.io.File
 internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
-    val unloadablePluginMap = HashMap<Plugin, PluginErrorReason>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
+    var latestErrors: ArrayList<Pair<Plugin, PluginError>>? = null
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -69,17 +69,16 @@ internal object PluginManager {
     fun load(loader: PluginLoader) {
         val plugin = synchronized(lockObject) {
             val plugin = loader.load()
+            val list = latestErrors ?: ArrayList<Pair<Plugin, PluginError>>().also { latestErrors = it }
 
             if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
                 KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR}). This plugin will not be loaded.")
-                unloadablePluginMap[plugin] = PluginErrorReason.UNSUPPORTED_KAMI
-
+                list.add(plugin to PluginError.UNSUPPORTED_KAMI)
                 return
             }
             if (!loadedPlugins.containsNames(plugin.requiredPlugins.toList())) {
                 KamiMod.LOG.error("The plugin ${plugin.name} is missing a required plugin dependency! This plugin will not be loaded. Make sure that these plugins are installed: ${plugin.requiredPlugins.joinToString()}")
-                unloadablePluginMap[plugin] = PluginErrorReason.REQUIRED_PLUGIN
-
+                list.add(plugin to PluginError.REQUIRED_PLUGIN)
                 return
             }
 
@@ -116,10 +115,5 @@ internal object PluginManager {
         }
 
         KamiMod.LOG.info("Unloaded plugin ${plugin.name}")
-    }
-
-    enum class PluginErrorReason {
-        UNSUPPORTED_KAMI,
-        REQUIRED_PLUGIN
     }
 }
