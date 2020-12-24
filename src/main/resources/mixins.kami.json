@@ -50,6 +50,7 @@
     "render.MixinDebugRendererChunkBorder",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
+    "render.MixinFrustum",
     "render.MixinGlStateManager",
     "render.MixinItemRenderer",
     "render.MixinLayerArmorBase",

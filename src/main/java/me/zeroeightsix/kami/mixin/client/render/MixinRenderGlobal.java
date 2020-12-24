@@ -68,7 +68,7 @@ public abstract class MixinRenderGlobal {
     }
 
     // updateChunkPositions is called from loadrenderers too
-    // but as long as you cont change your renderdistance while in freecam load renders wont be called
+    // but as long as you dont change your renderdistance while in freecam loadrenderers wont be called
     // one could add the same redirect for loadrenderers if needed
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ViewFrustum;updateChunkPositions(DD)V"))
     public void updateSetupTerrain(ViewFrustum viewFrustum, double viewEntityX, double viewEntityZ) {
@@ -79,19 +79,5 @@ public abstract class MixinRenderGlobal {
         viewFrustum.updateChunkPositions(viewEntityX, viewEntityZ);
     }
 
-    //more specific than just making all Frustums return allways true when Freecam is on.
-    //i dont think the Frustum tha im using in stroage esp is affected for some reason so it can still work normaly and not return allways true.
-    @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/culling/ICamera;isBoundingBoxInFrustum(Lnet/minecraft/util/math/AxisAlignedBB;)Z"))
-    public boolean isInFrustumEntities(ICamera iCamera, AxisAlignedBB box) { return isInFrustum(iCamera, box); }
-
-    @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/culling/ICamera;isBoundingBoxInFrustum(Lnet/minecraft/util/math/AxisAlignedBB;)Z"))
-    public boolean isInFrustumTerrain(ICamera iCamera, AxisAlignedBB box) { return isInFrustum(iCamera, box); }
-
-    @Redirect(method = "isOutlineActive", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/culling/ICamera;isBoundingBoxInFrustum(Lnet/minecraft/util/math/AxisAlignedBB;)Z"))
-    public boolean isInFrustumOutline(ICamera iCamera, AxisAlignedBB box) { return isInFrustum(iCamera, box); }
-
-    private boolean isInFrustum(ICamera iCamera, AxisAlignedBB box) {
-        return Freecam.INSTANCE.isEnabled() || iCamera.isBoundingBoxInFrustum(box);
-    }
 
 }
