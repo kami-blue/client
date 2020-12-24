@@ -72,7 +72,7 @@ class KamiGuiPluginError(
     }
 
     private fun drawList(title: String, list: Set<String>) {
-        if (title.isNotEmpty()) {
+        if (list.isNotEmpty()) {
             drawCenteredString(fontRenderer, title, 0, 0, 0xFFFFFF) // 255, 255, 255
             GlStateManager.translate(0.0f, 3.0f, 0.0f)
 
