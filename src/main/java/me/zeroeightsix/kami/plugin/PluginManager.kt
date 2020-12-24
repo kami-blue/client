@@ -20,6 +20,7 @@ internal object PluginManager {
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
     private val lockObject = Any()
+    private val kamiVersion = DefaultArtifactVersion(KamiMod.VERSION_MAJOR)
     private lateinit var deferred: Deferred<List<PluginLoader>>
 
     fun preInit() {
@@ -45,7 +46,6 @@ internal object PluginManager {
         jarFiles.forEach {
             try {
                 val loader = PluginLoader(it)
-
                 loader.verify()
                 plugins.add(loader)
             } catch (e: ClassNotFoundException) {
@@ -73,16 +73,19 @@ internal object PluginManager {
             val plugin = loader.load()
             val list = latestErrors ?: ArrayList<Pair<Plugin, PluginError>>().also { latestErrors = it }
 
-            if (DefaultArtifactVersion(plugin.minKamiVersion) > DefaultArtifactVersion(KamiMod.VERSION_MAJOR)) {
-                KamiMod.LOG.error("The plugin ${plugin.name} is unsupported by this version of KAMI Blue (minimum version: ${plugin.minKamiVersion} current version: ${KamiMod.VERSION_MAJOR}). This plugin will not be loaded.")
+            val unsupported = DefaultArtifactVersion(plugin.minKamiVersion) > kamiVersion
+            val missing = !loadedPlugins.containsNames(plugin.requiredPlugins.toList())
+
+            if (unsupported) {
+                KamiMod.LOG.error("Unsupported plugin ${plugin.name}. Required version: ${plugin.minKamiVersion}")
                 list.add(plugin to PluginError.UNSUPPORTED_KAMI)
-                return
             }
-            if (!loadedPlugins.containsNames(plugin.requiredPlugins.toList())) {
-                KamiMod.LOG.error("The plugin ${plugin.name} is missing a required plugin dependency! This plugin will not be loaded. Make sure that these plugins are installed: ${plugin.requiredPlugins.joinToString()}")
+            if (missing) {
+                KamiMod.LOG.error("Missing required plugin for ${plugin.name}. Required plugins: ${plugin.requiredPlugins.joinToString()}")
                 list.add(plugin to PluginError.REQUIRED_PLUGIN)
-                return
             }
+
+            if (unsupported || missing) return
 
             plugin.onLoad()
             plugin.register()
