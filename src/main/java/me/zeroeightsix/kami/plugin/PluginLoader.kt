@@ -18,6 +18,12 @@ internal class PluginLoader(
         PluginInfo.fromStream(it)
     } ?: throw FileNotFoundException("plugin_info.json not found in jar ${file.name}!")
 
+    init {
+        // This will trigger the null checks in PluginInfo
+        // In order to make sure all required infos are present
+        KamiMod.LOG.debug(info.toString())
+    }
+
     fun verify(): Boolean {
         val bytes = file.inputStream().use {
             it.readBytes()

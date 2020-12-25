@@ -72,6 +72,13 @@ class PluginInfo private constructor(
 
     override fun hashCode() = name.hashCode()
 
+    override fun toString() = "Name: ${name}, " +
+        "Version: ${version}, " +
+        "Description: ${description}, " +
+        "KAMI Blue Version: ${kamiVersion}, " +
+        "Authors: ${authors.joinToString(",")}, " +
+        "Required Plugins: ${requiredPlugins.joinToString(",")}"
+
     companion object {
         private const val versionNull: String = "0.0.0"
         private val authorsNull: Array<String> = arrayOf("No authors")
