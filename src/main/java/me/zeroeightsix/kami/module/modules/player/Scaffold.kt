@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.item.ItemBlock
+import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -39,6 +40,7 @@ object Scaffold : Module() {
     private val tower = register(Settings.b("Tower", true))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
     val safeWalk = register(Settings.b("SafeWalk", true))
+    private val sneak = register(Settings.b("Sneak", true))
     private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
     private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
 
@@ -65,7 +67,7 @@ object Scaffold : Module() {
         }
 
         listener<PlayerTravelEvent> {
-            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown || !isHoldingBlock) return@listener
+            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown || inactiveTicks > 5 || !isHoldingBlock) return@listener
             if (rubberBandTimer.tick(10, false)) {
                 if (shouldTower) mc.player.motionY = 0.41999998688697815
             } else if (mc.player.fallDistance <= 2.0f) {
@@ -80,7 +82,6 @@ object Scaffold : Module() {
     private val shouldTower: Boolean
         get() = !mc.player.onGround
             && mc.player.posY - floor(mc.player.posY) <= 0.1
-
     init {
         listener<OnUpdateWalkingPlayerEvent> { event ->
             if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
@@ -139,10 +140,19 @@ object Scaffold : Module() {
             inactiveTicks = 0
 
             if (placeTimer.tick(delay.value.toLong())) {
+                val shouldSneak = sneak.value && !mc.player.isSneaking
                 moduleScope.launch {
+                    if (shouldSneak) {
+                        mc.player?.let {
+                            it.connection.sendPacket(CPacketEntityAction(it, CPacketEntityAction.Action.START_SNEAKING))
+                        }
+                    }
                     delay(5)
                     onMainThreadSafe {
                         placeBlock(pos, side)
+                        if (shouldSneak) {
+                            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        }
                     }
                 }
             }
