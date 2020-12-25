@@ -73,11 +73,11 @@ internal object PluginManager {
             val plugin = loader.load()
             val list = latestErrors ?: ArrayList<Pair<Plugin, PluginError>>().also { latestErrors = it }
 
-            val unsupported = DefaultArtifactVersion(plugin.minKamiVersion) > kamiVersion
+            val unsupported = DefaultArtifactVersion(plugin.kamiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(plugin.requiredPlugins.toList())
 
             if (unsupported) {
-                KamiMod.LOG.error("Unsupported plugin ${plugin.name}. Required version: ${plugin.minKamiVersion}")
+                KamiMod.LOG.error("Unsupported plugin ${plugin.name}. Required version: ${plugin.kamiVersion}")
                 list.add(plugin to PluginError.UNSUPPORTED_KAMI)
             }
             if (missing) {

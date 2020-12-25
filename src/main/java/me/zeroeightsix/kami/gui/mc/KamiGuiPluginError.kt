@@ -31,7 +31,7 @@ class KamiGuiPluginError(
             if (index != pluginErrors.size - 1) builder.append(", ")
 
             if (pair.second == PluginError.UNSUPPORTED_KAMI) {
-                unsupported.add("${pair.first.name} (${pair.first.minKamiVersion})")
+                unsupported.add("${pair.first.name} (${pair.first.kamiVersion})")
             } else {
                 missing.addAll(pair.first.requiredPlugins.filter { !PluginManager.loadedPlugins.containsName(it) })
             }

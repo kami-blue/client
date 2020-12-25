@@ -3,57 +3,20 @@ package me.zeroeightsix.kami.plugin
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.lang.reflect.Type
 import java.net.URLClassLoader
 import java.security.MessageDigest
-import java.util.jar.JarInputStream
 
 internal class PluginLoader(
     val file: File
 ) {
     private val url = file.toURI().toURL()
     private val loader = URLClassLoader(arrayOf(url), this.javaClass.classLoader)
-    private val mainClassPath: String
-
-    init {
-        mainClassPath = readClassPath()
-            ?:scanForPath()
-                ?: throw ClassNotFoundException("Plugin main class not found in jar ${file.name}!")
-    }
-
-    private fun readClassPath(): String? {
-        return loader.getResourceAsStream("plugin.info")?.use { stream ->
-            ByteArrayOutputStream().use { result ->
-                stream.copyTo(result)
-                result.toString("UTF-8")
-            }
-        }
-    }
-
-    private fun scanForPath(): String? {
-        KamiMod.LOG.warn("plugin.info not found under jar ${file.name}. Scanning for main class...")
-
-        file.inputStream().use { stream ->
-            JarInputStream(stream).use {
-                var entry = it.nextJarEntry
-
-                while (entry != null) {
-                    if (!entry.isDirectory && entry.name.endsWith(".class")) {
-                        val pack = entry.name.removeSuffix(".class")
-                            .replace('/', '.')
-                        val clazz = Class.forName(pack, false, loader)
-                        if (pluginClass.isAssignableFrom(clazz)) return pack
-                    }
-
-                    entry = it.nextJarEntry
-                }
-            }
-        }
-
-        return null
-    }
+    val info: PluginInfo = loader.getResourceAsStream("plugin_info.json")?.let {
+        PluginInfo.fromStream(it)
+    } ?: throw FileNotFoundException("plugin_info.json not found in jar ${file.name}!")
 
     fun verify(): Boolean {
         val bytes = file.inputStream().use {
@@ -74,9 +37,10 @@ internal class PluginLoader(
     }
 
     fun load(): Plugin {
-        val clazz = Class.forName(mainClassPath, true, loader)
-
-        return clazz.newInstance() as Plugin
+        val clazz = Class.forName(info.mainClass, true, loader)
+        val plugin = clazz.newInstance() as Plugin
+        plugin.setInfo(info)
+        return plugin
     }
 
     fun close() {
@@ -84,7 +48,6 @@ internal class PluginLoader(
     }
 
     private companion object {
-        val pluginClass = Plugin::class.java
         val sha256: MessageDigest = MessageDigest.getInstance("SHA-256")
         val type: Type = object : TypeToken<HashSet<String>>() {}.type
         val checksumSets = runCatching<HashSet<String>> {

@@ -17,42 +17,16 @@ import org.kamiblue.event.ListenerManager
  * plugin in order to do stuff when the plugin is loaded and
  * unloaded, respectively.
  */
-open class Plugin(
-    /**
-     * The name of the plugin; will be used as both an identifier and a display name.
-     */
-    override val name: String,
+open class Plugin : Nameable {
 
-    /**
-     * The plugin's version.
-     */
-    val version: String,
-
-    /**
-     * The minimum version of KAMI Blue required for the plugin to run.
-     */
-    val minKamiVersion: String,
-
-    /**
-     * A short description of the plugin.
-     */
-    val description: String = "No Description",
-
-    /**
-     * A list of the names of the plugin's authors.
-     */
-    val authors: Array<String> = emptyArray(),
-
-    /**
-     * Other plugins that must be installed in order for this plugin to work correctly.
-     */
-    val requiredPlugins: Array<String> = emptyArray(),
-
-    /**
-     * A link to the plugin's website.
-     */
-    val url: String = "https://github.com/kami-blue/client"
-) : Nameable {
+    private lateinit var info: PluginInfo
+    override val name: String get() = info.name
+    val version: String get() = info.version
+    val kamiVersion: String get() = info.kamiVersion
+    val description: String get() = info.description
+    val authors: Array<String> get() = info.authors
+    val requiredPlugins: Array<String> get() = info.requiredPlugins
+    val url: String get() = info.url
 
     /**
      * The list of managers the plugin will add.
@@ -74,6 +48,10 @@ open class Plugin(
      * @sample me.zeroeightsix.kami.module.modules.combat.KillAura
      */
     val modules = CloseableList<Module>()
+
+    internal fun setInfo(infoIn: PluginInfo) {
+        info = infoIn
+    }
 
     internal fun register() {
         managers.close()
