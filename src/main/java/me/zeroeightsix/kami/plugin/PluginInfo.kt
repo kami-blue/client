@@ -100,6 +100,6 @@ class PluginInfo private constructor(
         }
     }
 
-    class PluginInfoMissingException(val name: String, message: String) : Exception(message)
-
 }
+
+class PluginInfoMissingException(val infoName: String, message: String) : Exception(message)

@@ -44,13 +44,18 @@ internal class PluginLoader(
 
     fun load(): Plugin {
         val clazz = Class.forName(info.mainClass, true, loader)
-        val plugin = clazz.newInstance() as Plugin
+        val plugin = (clazz.newInstance() as? Plugin?)
+            ?: throw IllegalAccessException("The specific main class ${info.mainClass} is not a valid plugin main class")
         plugin.setInfo(info)
         return plugin
     }
 
     fun close() {
         loader.close()
+    }
+
+    override fun toString(): String {
+        return "${runCatching { info.name }.getOrDefault("Unknown Plugin")}(${file.name})"
     }
 
     private companion object {

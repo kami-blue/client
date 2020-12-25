@@ -27,8 +27,7 @@ object PluginCommand : ClientCommand(
 
                     ConfigUtils.saveAll()
                     val loader = PluginLoader(file)
-                    val plugin = loader.load()
-                    if (PluginManager.loadedPlugins.contains(plugin)) {
+                    if (PluginManager.loadedPlugins.containsName(loader.info.name)) {
                         MessageSendHelper.sendWarningMessage("Plugin $name already loaded!")
                         return@execute
                     }

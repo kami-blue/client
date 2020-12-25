@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.util.mainScope
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
+import java.io.FileNotFoundException
 
 internal object PluginManager {
 
@@ -48,8 +49,10 @@ internal object PluginManager {
                 val loader = PluginLoader(it)
                 loader.verify()
                 plugins.add(loader)
-            } catch (e: ClassNotFoundException) {
+            } catch (e: FileNotFoundException) {
                 KamiMod.LOG.info("${it.name} is not a valid plugin. Skipping...")
+            } catch (e: PluginInfoMissingException) {
+                KamiMod.LOG.warn("${it.name} is missing a required info ${e.infoName}. Skipping...", e)
             } catch (e: Exception) {
                 KamiMod.LOG.error("Failed to pre load plugin ${it.name}", e)
             }
@@ -109,7 +112,18 @@ internal object PluginManager {
 
     private fun loadWithoutCheck(loader: PluginLoader) {
         val plugin = synchronized(lockObject) {
-            val plugin = loader.load()
+            val plugin = runCatching(loader::load).getOrElse {
+                when (it) {
+                    is ClassNotFoundException, is IllegalAccessException -> {
+                        KamiMod.LOG.warn("Main class not found in plugin $loader", it)
+                    }
+                    else -> {
+                        KamiMod.LOG.error("Failed to load plugin $loader")
+                    }
+                }
+                return
+            }
+
             plugin.onLoad()
             plugin.register()
             loadedPlugins.add(plugin)
