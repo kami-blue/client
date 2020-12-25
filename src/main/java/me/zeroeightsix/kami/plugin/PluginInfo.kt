@@ -57,14 +57,22 @@ class PluginInfo private constructor(
 
 ) : Nameable {
 
-    override val name: String get() = name0 ?: throw NullPointerException("Name cannot be null!")
-    val version: String get() = version0 ?: versionNull
+    override val name: String get() = name0.nonBlank("name")
+    val version: String get() = version0.nonBlank("version")
     val authors: Array<String> get() = authors0 ?: authorsNull
     val description: String get() = description0 ?: descriptionNull
     val url get() = url0 ?: urlNull
-    val kamiVersion: String get() = kamiVersion0 ?: throw NullPointerException("KAMI version cannot be null!")
+    val kamiVersion: String get() = version0.nonBlank("kami_version")
     val requiredPlugins: Array<String> get() = requiredPlugins0 ?: requiredPluginsNull
-    val mainClass: String get() = mainClass0 ?: throw ClassNotFoundException("Main class not found!")
+    val mainClass: String get() = mainClass0.nonBlank("main_class")
+
+    private fun String?.nonBlank(name: String = "String") =
+        when {
+            this == null -> throw PluginInfoMissingException(name, "$name cannot be null!")
+            isEmpty() -> throw PluginInfoMissingException(name, "$name cannot be empty!")
+            isBlank() -> throw PluginInfoMissingException(name, "$name cannot be blank!")
+            else -> this
+        }
 
     override fun equals(other: Any?) = this === other
         || (other is Plugin
@@ -80,7 +88,6 @@ class PluginInfo private constructor(
         "Required Plugins: ${requiredPlugins.joinToString(",")}"
 
     companion object {
-        private const val versionNull: String = "0.0.0"
         private val authorsNull: Array<String> = arrayOf("No authors")
         private const val descriptionNull: String = "No Description"
         private const val urlNull: String = "No Url"
@@ -92,5 +99,7 @@ class PluginInfo private constructor(
             gson.fromJson(it, PluginInfo::class.java)!!
         }
     }
+
+    class PluginInfoMissingException(val name: String, message: String) : Exception(message)
 
 }
