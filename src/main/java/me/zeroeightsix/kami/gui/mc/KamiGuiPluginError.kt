@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
-import me.zeroeightsix.kami.plugin.Plugin
 import me.zeroeightsix.kami.plugin.PluginError
+import me.zeroeightsix.kami.plugin.PluginInfo
 import me.zeroeightsix.kami.plugin.PluginManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -14,7 +14,7 @@ import java.util.*
 
 class KamiGuiPluginError(
     private val prevScreen: GuiScreen?,
-    pluginErrors: List<Pair<Plugin, PluginError>>
+    pluginErrors: List<Pair<PluginInfo, PluginError>>
 ) : GuiScreen() {
 
     private val errorPlugins: String

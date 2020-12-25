@@ -15,7 +15,7 @@ internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
-    private var latestErrors: ArrayList<Pair<Plugin, PluginError>>? = null
+    private var latestErrors: ArrayList<Pair<PluginInfo, PluginError>>? = null
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -70,23 +70,23 @@ internal object PluginManager {
 
     fun load(loader: PluginLoader) {
         val plugin = synchronized(lockObject) {
-            val plugin = loader.load()
-            val list = latestErrors ?: ArrayList<Pair<Plugin, PluginError>>().also { latestErrors = it }
+            val list = latestErrors ?: ArrayList<Pair<PluginInfo, PluginError>>().also { latestErrors = it }
 
-            val unsupported = DefaultArtifactVersion(plugin.kamiVersion) > kamiVersion
-            val missing = !loadedPlugins.containsNames(plugin.requiredPlugins.toList())
+            val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
+            val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins.toList())
 
             if (unsupported) {
-                KamiMod.LOG.error("Unsupported plugin ${plugin.name}. Required version: ${plugin.kamiVersion}")
-                list.add(plugin to PluginError.UNSUPPORTED_KAMI)
+                KamiMod.LOG.error("Unsupported plugin ${loader.info.name}. Required version: ${loader.info.kamiVersion}")
+                list.add(loader.info to PluginError.UNSUPPORTED_KAMI)
             }
             if (missing) {
-                KamiMod.LOG.error("Missing required plugin for ${plugin.name}. Required plugins: ${plugin.requiredPlugins.joinToString()}")
-                list.add(plugin to PluginError.REQUIRED_PLUGIN)
+                KamiMod.LOG.error("Missing required plugin for ${loader.info.name}. Required plugins: ${loader.info.requiredPlugins.joinToString()}")
+                list.add(loader.info to PluginError.REQUIRED_PLUGIN)
             }
 
             if (unsupported || missing) return
 
+            val plugin = loader.load()
             plugin.onLoad()
             plugin.register()
             loadedPlugins.add(plugin)
