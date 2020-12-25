@@ -10,47 +10,61 @@ class PluginInfo private constructor(
     /**
      * The name of the plugin; will be used as both an identifier and a display name.
      */
-    override val name: String,
+    @SerializedName("name")
+    private val name0: String?,
 
     /**
      * A list of the names of the plugin's authors.
      */
-    val authors: Array<String>,
+    @SerializedName("authors")
+    private val authors0: Array<String>?,
 
     /**
      * The plugin's version.
      */
-    val version: String,
+    @SerializedName("version")
+    private val version0: String?,
 
     /**
      * A short description of the plugin.
      */
-    val description: String = "No Description",
+    @SerializedName("description")
+    private val description0: String?,
 
     /**
      * A link to the plugin's website.
      */
-    val url: String = "https://github.com/kami-blue/client",
+    @SerializedName("url")
+    private val url0: String?,
 
     /**
      * The minimum version of KAMI Blue required for the plugin to run.
      */
     @SerializedName("kami_version")
-    val kamiVersion: String,
+    private val kamiVersion0: String?,
 
     /**
      * Other plugins that must be installed in order for this plugin to work correctly.
      */
     @SerializedName("required_plugins")
-    val requiredPlugins: Array<String>,
+    private val requiredPlugins0: Array<String>?,
 
     /**
      * Reference to the plugin main class
      */
     @SerializedName("main_class")
-    val mainClass: String
+    private val mainClass0: String?
 
 ) : Nameable {
+
+    override val name: String get() = name0 ?: throw NullPointerException("Name cannot be null!")
+    val version: String get() = version0 ?: versionNull
+    val authors: Array<String> get() = authors0 ?: authorsNull
+    val description: String get() = description0 ?: descriptionNull
+    val url get() = url0 ?: urlNull
+    val kamiVersion: String get() = kamiVersion0 ?: throw NullPointerException("KAMI version cannot be null!")
+    val requiredPlugins: Array<String> get() = requiredPlugins0 ?: requiredPluginsNull
+    val mainClass: String get() = mainClass0 ?: throw ClassNotFoundException("Main class not found!")
 
     override fun equals(other: Any?) = this === other
         || (other is Plugin
@@ -59,6 +73,12 @@ class PluginInfo private constructor(
     override fun hashCode() = name.hashCode()
 
     companion object {
+        private const val versionNull: String = "0.0.0"
+        private val authorsNull: Array<String> = arrayOf("No authors")
+        private const val descriptionNull: String = "No Description"
+        private const val urlNull: String = "No Url"
+        private val requiredPluginsNull: Array<String> = emptyArray()
+
         private val gson = Gson()
 
         fun fromStream(stream: InputStream) = stream.reader().use {
