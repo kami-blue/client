@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.KamiEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
@@ -16,6 +17,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.item.ItemBlock
+import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
@@ -36,13 +38,16 @@ import kotlin.math.roundToInt
 object Scaffold : Module() {
     private val tower = register(Settings.b("Tower", true))
     private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
+    val safeWalk = register(Settings.b("SafeWalk", true))
     private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
     private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
-    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
     private var inactiveTicks = 69
+
+    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val rubberBandTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5
@@ -54,14 +59,29 @@ object Scaffold : Module() {
     }
 
     init {
-        listener<PlayerTravelEvent> {
-            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown) return@listener
-            val flooredY = floor(mc.player.posY)
-            if (!mc.player.onGround && mc.player.posY - flooredY <= 0.002) {
-                mc.player.motionY = 0.41955
-            }
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketPlayerPosLook) return@listener
+            rubberBandTimer.reset()
         }
 
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown || !isHoldingBlock) return@listener
+            if (rubberBandTimer.tick(10, false)) {
+                if (shouldTower) mc.player.motionY = 0.41999998688697815
+            } else if (mc.player.fallDistance <= 2.0f) {
+                mc.player.motionY = -0.169
+            }
+        }
+    }
+
+    private val isHoldingBlock: Boolean
+        get() = PlayerPacketManager.getHoldingItemStack().item is ItemBlock
+
+    private val shouldTower: Boolean
+        get() = !mc.player.onGround
+            && mc.player.posY - floor(mc.player.posY) <= 0.1
+
+    init {
         listener<OnUpdateWalkingPlayerEvent> { event ->
             if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
             inactiveTicks++
@@ -78,7 +98,7 @@ object Scaffold : Module() {
 
             if (inactiveTicks > 5) {
                 PlayerPacketManager.resetHotbar()
-            } else if (PlayerPacketManager.getHoldingItemStack().item is ItemBlock) {
+            } else if (isHoldingBlock) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)
                 PlayerPacketManager.addPacket(this, packet)
             }
@@ -120,7 +140,7 @@ object Scaffold : Module() {
 
             if (placeTimer.tick(delay.value.toLong())) {
                 moduleScope.launch {
-                    delay(40)
+                    delay(5)
                     onMainThreadSafe {
                         placeBlock(pos, side)
                     }
