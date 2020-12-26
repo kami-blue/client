@@ -27,6 +27,7 @@ open class Plugin : Nameable {
     val authors: Array<String> get() = info.authors
     val requiredPlugins: Array<String> get() = info.requiredPlugins
     val url: String get() = info.url
+    val hotReload: Boolean get() = info.hotReload
 
     /**
      * The list of managers the plugin will add.
@@ -58,15 +59,9 @@ open class Plugin : Nameable {
         commands.close()
         modules.close()
 
-        managers.forEach {
-            KamiEventBus.subscribe(it)
-        }
-        commands.forEach {
-            CommandManager.register(it)
-        }
-        modules.forEach {
-            ModuleManager.register(it)
-        }
+        managers.forEach(KamiEventBus::subscribe)
+        commands.forEach(CommandManager::register)
+        modules.forEach(ModuleManager::register)
 
         // TODO: Loads config here (After GUI PR)
 
@@ -86,6 +81,7 @@ open class Plugin : Nameable {
         }
         modules.forEach {
             ModuleManager.unregister(it)
+            ListenerManager.unregister(it)
         }
     }
 
@@ -101,8 +97,7 @@ open class Plugin : Nameable {
      */
     open fun onUnload() {}
 
-    override fun equals(other: Any?) =
-        this === other
+    override fun equals(other: Any?) = this === other
         || (other is Plugin
         && name == other.name)
 

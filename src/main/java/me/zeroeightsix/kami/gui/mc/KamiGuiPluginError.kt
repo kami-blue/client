@@ -18,21 +18,21 @@ internal class KamiGuiPluginError(
 ) : GuiScreen() {
 
     private val errorPlugins: String
-    private val duplicatePlugins: Set<String>
-    private val unsupportedPlugins: Set<String>
-    private val missingPlugins: Set<String>
+    private val hotReload = TreeSet<String>()
+    private val duplicate = TreeSet<String>()
+    private val unsupported = TreeSet<String>()
+    private val missing = TreeSet<String>()
 
     init {
         val builder = StringBuilder()
-        val duplicate = TreeSet<String>()
-        val unsupported = TreeSet<String>()
-        val missing = TreeSet<String>()
-
         for ((index, pair) in pluginErrors.withIndex()) {
             builder.append(pair.first.toString())
             if (index != pluginErrors.size - 1) builder.append(", ")
 
             when (pair.second) {
+                PluginError.HOT_RELOAD -> {
+                    hotReload.add(pair.first.toString())
+                }
                 PluginError.DUPLICATE -> {
                     duplicate.add(pair.first.toString())
                 }
@@ -46,9 +46,6 @@ internal class KamiGuiPluginError(
         }
 
         errorPlugins = builder.toString()
-        duplicatePlugins = duplicate
-        unsupportedPlugins = unsupported
-        missingPlugins = missing
     }
 
     override fun initGui() {
@@ -74,9 +71,10 @@ internal class KamiGuiPluginError(
         drawCenteredString(fontRenderer, errorPlugins, 0, 0, 0xFF5555) // 255, 85, 85
         GlStateManager.translate(0.0f, 30.0f, 0.0f)
 
-        drawList(duplicate, duplicatePlugins)
-        drawList(unsupported, unsupportedPlugins)
-        drawList(missing, missingPlugins)
+        drawList(hotReloadMessage, hotReload)
+        drawList(duplicateMessage, duplicate)
+        drawList(unsupportedMessage, unsupported)
+        drawList(missingMessage, missing)
 
         GlStateManager.popMatrix()
     }
@@ -102,9 +100,10 @@ internal class KamiGuiPluginError(
 
     private companion object {
         const val warning = "The following plugins could not be loaded:"
-        const val duplicate = "These plugins were duplicate:"
-        const val unsupported = "These plugins require newer versions of KAMI Blue:"
-        const val missing = "These required plugins were not loaded:"
+        const val hotReloadMessage = "These plugins could not be hot reloaded:"
+        const val duplicateMessage = "These plugins were duplicate:"
+        const val unsupportedMessage = "These plugins require newer versions of KAMI Blue:"
+        const val missingMessage = "These required plugins were not loaded:"
     }
 
 }

@@ -76,6 +76,11 @@ internal object PluginManager {
         val invalids = HashSet<PluginLoader>()
 
         for (loader in loaders) {
+            // Hot reload check, the error shouldn't be show when reload in game
+            if (KamiMod.isReady() && !loader.info.hotReload) {
+                invalids.add(loader)
+            }
+
             // Unsupported check
             if (DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion) {
                 handleError(loader, PluginError.UNSUPPORTED)
@@ -107,14 +112,17 @@ internal object PluginManager {
 
     fun load(loader: PluginLoader) {
         synchronized(lockObject) {
+            val hotReload = KamiMod.isReady() && !loader.info.hotReload
             val duplicate = loadedPlugins.containsName(loader.name)
             val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)
 
+            if (hotReload) handleError(loader, PluginError.HOT_RELOAD)
             if (duplicate) handleError(loader, PluginError.DUPLICATE)
             if (unsupported) handleError(loader, PluginError.UNSUPPORTED)
             if (missing) handleError(loader, PluginError.REQUIRED_PLUGIN)
-            if (duplicate || unsupported || missing) return
+
+            if (hotReload || duplicate || unsupported || missing) return
 
             loadWithoutCheck(loader)
         }
@@ -124,6 +132,9 @@ internal object PluginManager {
         val list = latestErrors ?: ArrayList<Pair<PluginLoader, PluginError>>().also { latestErrors = it }
 
         when (error) {
+            PluginError.HOT_RELOAD -> {
+                KamiMod.LOG.error("Plugin $loader cannot be hot reloaded.")
+            }
             PluginError.DUPLICATE -> {
                 KamiMod.LOG.error("Duplicate plugin ${loader}.")
             }
@@ -142,11 +153,14 @@ internal object PluginManager {
         val plugin = synchronized(lockObject) {
             val plugin = runCatching(loader::load).getOrElse {
                 when (it) {
-                    is ClassNotFoundException, is IllegalAccessException -> {
+                    is ClassNotFoundException -> {
                         KamiMod.LOG.warn("Main class not found in plugin $loader", it)
                     }
+                    is IllegalAccessException -> {
+                        KamiMod.LOG.warn(it.message, it)
+                    }
                     else -> {
-                        KamiMod.LOG.error("Failed to load plugin $loader")
+                        KamiMod.LOG.error("Failed to load plugin $loader", it)
                     }
                 }
                 return
@@ -163,19 +177,18 @@ internal object PluginManager {
     }
 
     fun unloadAll() {
-        synchronized(lockObject) {
-            loadedPlugins.forEach {
-                it.unregister()
-                it.onUnload()
-                pluginLoaderMap[it]?.close()
-            }
-            loadedPlugins.clear()
-        }
+        loadedPlugins.filter { it.hotReload }.forEach(::unload)
 
         KamiMod.LOG.info("Unloaded all plugins!")
     }
 
     fun unload(plugin: Plugin) {
+        if (!plugin.hotReload) throw IllegalAccessException("Plugin $plugin cannot be hot reloaded!")
+
+        unloadWithoutCheck(plugin)
+    }
+
+    private fun unloadWithoutCheck(plugin: Plugin) {
         synchronized(lockObject) {
             if (loadedPlugins.remove(plugin)) {
                 plugin.unregister()
@@ -188,10 +201,12 @@ internal object PluginManager {
     }
 
     fun displayErrors() {
-        latestErrors?.takeIf { it.isNotEmpty() }?.let {
-            Wrapper.minecraft.displayGuiScreen(KamiGuiPluginError(Wrapper.minecraft.currentScreen, it))
-        }
+        val errors = latestErrors
         latestErrors = null
+
+        if (!errors.isNullOrEmpty()) {
+            Wrapper.minecraft.displayGuiScreen(KamiGuiPluginError(Wrapper.minecraft.currentScreen, errors))
+        }
     }
 
 }

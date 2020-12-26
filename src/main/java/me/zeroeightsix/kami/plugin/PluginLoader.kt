@@ -47,9 +47,14 @@ internal class PluginLoader(
     }
 
     fun load(): Plugin {
+        if (KamiMod.isReady() && !info.hotReload) {
+            throw IllegalAccessException("Plugin $this cannot be hot reloaded!")
+        }
+
         val clazz = Class.forName(info.mainClass, true, loader)
         val plugin = (clazz.newInstance() as? Plugin?)
             ?: throw IllegalAccessException("The specific main class ${info.mainClass} is not a valid plugin main class")
+
         plugin.setInfo(info)
         return plugin
     }
