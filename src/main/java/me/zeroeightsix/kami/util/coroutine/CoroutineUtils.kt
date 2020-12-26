@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.coroutine
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.newSingleThreadContext
 import me.zeroeightsix.kami.command.ClientEvent
 import me.zeroeightsix.kami.command.SafeClientEvent
@@ -10,6 +11,11 @@ import java.util.concurrent.Callable
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 val mainScope = CoroutineScope(newSingleThreadContext("KAMI Blue Main"))
+
+/**
+ * Return true if the job is active, or false is not active or null
+ */
+val Job?.isActiveOrFalse get() = this?.isActive ?: false
 
 fun onMainThread(block: ClientEvent.() -> Unit) {
     Wrapper.minecraft.addScheduledTask(Callable {
