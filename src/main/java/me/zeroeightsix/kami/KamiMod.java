@@ -24,9 +24,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 @Mod(
-        modid = KamiMod.ID,
-        name = KamiMod.NAME,
-        version = KamiMod.VERSION
+    modid = KamiMod.ID,
+    name = KamiMod.NAME,
+    version = KamiMod.VERSION
 )
 public class KamiMod {
 
@@ -50,8 +50,7 @@ public class KamiMod {
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     @Mod.Instance
-    public static KamiMod INSTANCE;
-    public static Thread MAIN_THREAD;
+    public static final KamiMod INSTANCE = new KamiMod();
 
     private static boolean ready = false;
     private KamiGUI guiManager;
@@ -63,7 +62,6 @@ public class KamiMod {
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
 
-        MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
         LoaderWrapper.preLoadAll();
     }
