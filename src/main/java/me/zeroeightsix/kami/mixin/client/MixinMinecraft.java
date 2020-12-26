@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
-import me.zeroeightsix.kami.plugin.PluginManager;
+import me.zeroeightsix.kami.plugin.PluginError;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -78,7 +78,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void init(CallbackInfo info) {
-        PluginManager.INSTANCE.displayErrors();
+        PluginError.Companion.displayErrors();
     }
 
     private void save() {

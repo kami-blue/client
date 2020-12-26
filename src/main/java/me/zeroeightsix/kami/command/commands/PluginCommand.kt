@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.plugin.PluginError
 import me.zeroeightsix.kami.plugin.PluginLoader
 import me.zeroeightsix.kami.plugin.PluginManager
 import me.zeroeightsix.kami.util.ConfigUtils
@@ -37,7 +38,7 @@ object PluginCommand : ClientCommand(
                     val stopTime = System.currentTimeMillis() - time
                     MessageSendHelper.sendChatMessage("Loaded plugin $name, took $stopTime ms!")
 
-                    PluginManager.displayErrors()
+                    PluginError.displayErrors()
                 }
             }
         }
@@ -65,7 +66,7 @@ object PluginCommand : ClientCommand(
                     val stopTime = System.currentTimeMillis() - time
                     MessageSendHelper.sendChatMessage("Reloaded plugin $name, took $stopTime ms!")
 
-                    PluginManager.displayErrors()
+                    PluginError.displayErrors()
                 }
             }
 
@@ -81,7 +82,7 @@ object PluginCommand : ClientCommand(
                 val stopTime = System.currentTimeMillis() - time
                 MessageSendHelper.sendChatMessage("Reloaded plugins, took $stopTime ms!")
 
-                PluginManager.displayErrors()
+                PluginError.displayErrors()
             }
         }
 

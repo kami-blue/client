@@ -4,8 +4,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.mc.KamiGuiPluginError
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.mainScope
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
@@ -16,7 +14,6 @@ internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
-    private var latestErrors: ArrayList<Pair<PluginLoader, PluginError>>? = null
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -83,15 +80,15 @@ internal object PluginManager {
 
             // Unsupported check
             if (DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion) {
-                handleError(loader, PluginError.UNSUPPORTED)
+                PluginError.UNSUPPORTED.handleError(loader)
                 invalids.add(loader)
             }
 
             // Duplicate check
             loaderSet[loader.name]?.let {
-                handleError(loader, PluginError.DUPLICATE)
+                PluginError.DUPLICATE.handleError(loader)
                 invalids.add(loader)
-                handleError(it, PluginError.DUPLICATE)
+                PluginError.DUPLICATE.handleError(it)
                 invalids.add(it)
             } ?: run {
                 loaderSet.add(loader)
@@ -102,7 +99,7 @@ internal object PluginManager {
             // Required plugin check
             if (!loadedPlugins.containsNames(loader.info.requiredPlugins)
                 && !loaderSet.containsNames(loader.info.requiredPlugins)) {
-                handleError(loader, PluginError.REQUIRED_PLUGIN)
+                PluginError.REQUIRED_PLUGIN.handleError(loader)
                 invalids.add(loader)
             }
         }
@@ -117,36 +114,15 @@ internal object PluginManager {
             val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)
 
-            if (hotReload) handleError(loader, PluginError.HOT_RELOAD)
-            if (duplicate) handleError(loader, PluginError.DUPLICATE)
-            if (unsupported) handleError(loader, PluginError.UNSUPPORTED)
-            if (missing) handleError(loader, PluginError.REQUIRED_PLUGIN)
+            if (hotReload) PluginError.HOT_RELOAD.handleError(loader)
+            if (duplicate) PluginError.DUPLICATE.handleError(loader)
+            if (unsupported) PluginError.UNSUPPORTED.handleError(loader)
+            if (missing) PluginError.REQUIRED_PLUGIN.handleError(loader)
 
             if (hotReload || duplicate || unsupported || missing) return
 
             loadWithoutCheck(loader)
         }
-    }
-
-    private fun handleError(loader: PluginLoader, error: PluginError) {
-        val list = latestErrors ?: ArrayList<Pair<PluginLoader, PluginError>>().also { latestErrors = it }
-
-        when (error) {
-            PluginError.HOT_RELOAD -> {
-                KamiMod.LOG.error("Plugin $loader cannot be hot reloaded.")
-            }
-            PluginError.DUPLICATE -> {
-                KamiMod.LOG.error("Duplicate plugin ${loader}.")
-            }
-            PluginError.UNSUPPORTED -> {
-                KamiMod.LOG.error("Unsupported plugin ${loader}. Required version: ${loader.info.kamiVersion}")
-            }
-            PluginError.REQUIRED_PLUGIN -> {
-                KamiMod.LOG.error("Missing required plugin for ${loader}. Required plugins: ${loader.info.requiredPlugins.joinToString()}")
-            }
-        }
-
-        list.add(loader to error)
     }
 
     private fun loadWithoutCheck(loader: PluginLoader) {
@@ -198,15 +174,6 @@ internal object PluginManager {
         }
 
         KamiMod.LOG.info("Unloaded plugin ${plugin.name}")
-    }
-
-    fun displayErrors() {
-        val errors = latestErrors
-        latestErrors = null
-
-        if (!errors.isNullOrEmpty()) {
-            Wrapper.minecraft.displayGuiScreen(KamiGuiPluginError(Wrapper.minecraft.currentScreen, errors))
-        }
     }
 
 }
