@@ -37,7 +37,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
         }
 
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${getCommands().size} commands loaded, took ${time}ms")
+        KamiMod.LOG.info("${input.size} commands loaded, took ${time}ms")
     }
 
     fun runCommand(string: String) {

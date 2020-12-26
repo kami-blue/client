@@ -18,9 +18,8 @@ internal object LoaderWrapper {
     }
 
     @JvmStatic
-    @Suppress("DeferredResultUnused")
     fun preLoadAll() {
-        loaderList.forEach { it.preLoadAsync() }
+        loaderList.forEach { it.preLoad() }
     }
 
     @JvmStatic
@@ -34,8 +33,12 @@ internal object LoaderWrapper {
 interface AsyncLoader<T> {
     var deferred: Deferred<T>?
 
-    fun preLoadAsync(): Deferred<T> {
-        return mainScope.async { preLoad0() }.also { deferred = it }
+    fun preLoad() {
+        deferred = preLoadAsync()
+    }
+
+    private fun preLoadAsync(): Deferred<T> {
+        return mainScope.async { preLoad0() }
     }
 
     suspend fun load() {
