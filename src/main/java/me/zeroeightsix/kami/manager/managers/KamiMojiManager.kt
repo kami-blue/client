@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.coroutine.ioScope
-import me.zeroeightsix.kami.util.coroutine.onMainThread
+import me.zeroeightsix.kami.util.threads.ioScope
+import me.zeroeightsix.kami.util.threads.onMainThread
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.io.File

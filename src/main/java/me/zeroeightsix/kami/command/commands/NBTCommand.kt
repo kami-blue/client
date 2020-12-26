@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.command.SafeExecuteEvent
+import me.zeroeightsix.kami.event.SafeExecuteEvent
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.item.ItemStack

@@ -1,12 +1,11 @@
-package me.zeroeightsix.kami.util.coroutine
+package me.zeroeightsix.kami.util.threads
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.newSingleThreadContext
-import me.zeroeightsix.kami.command.ClientEvent
-import me.zeroeightsix.kami.command.SafeClientEvent
-import me.zeroeightsix.kami.command.toSafe
+import me.zeroeightsix.kami.event.ClientEvent
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.util.Wrapper
 import java.util.concurrent.Callable
 

@@ -4,7 +4,7 @@ import io.netty.util.internal.ConcurrentSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import me.zeroeightsix.kami.util.coroutine.defaultScope
+import me.zeroeightsix.kami.util.threads.defaultScope
 import org.kamiblue.event.eventbus.AbstractAsyncEventBus
 import org.kamiblue.event.listener.AsyncListener
 import org.kamiblue.event.listener.Listener

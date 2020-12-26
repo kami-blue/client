@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.util
 
 import kotlinx.coroutines.delay
-import me.zeroeightsix.kami.command.ClientEvent
-import me.zeroeightsix.kami.command.SafeClientEvent
-import me.zeroeightsix.kami.command.toSafe
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.threads.runSafeSuspend
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -159,8 +158,9 @@ object BlockUtils {
             val placingInfo = getPlaceInfo(placed) ?: getPlaceInfo(emptyHashSet) ?: break
             placeCount++
             placed.add(placingInfo.second.offset(placingInfo.first))
-            ClientEvent().toSafe()?.doPlace(placingInfo.second, placingInfo.first, placeSpeed)
-
+            runSafeSuspend {
+                doPlace(placingInfo.second, placingInfo.first, placeSpeed)
+            }
             if (placeCount >= 4) {
                 delay(100L)
                 placeCount = 0

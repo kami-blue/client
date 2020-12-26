@@ -4,8 +4,8 @@ import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException

@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util.coroutine
+package me.zeroeightsix.kami.util.threads
 
 import kotlinx.coroutines.CoroutineScope
 

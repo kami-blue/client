@@ -7,8 +7,8 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.coroutine.BackgroundScope
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display

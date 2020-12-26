@@ -5,11 +5,11 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(

@@ -14,10 +14,10 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import me.zeroeightsix.kami.util.coroutine.defaultScope
-import me.zeroeightsix.kami.util.coroutine.isActiveOrFalse
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.event.listener.listener
 

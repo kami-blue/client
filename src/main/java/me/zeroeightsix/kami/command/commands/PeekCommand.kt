@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.util.coroutine.defaultScope
-import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiShulkerBox
 import net.minecraft.item.ItemShulkerBox

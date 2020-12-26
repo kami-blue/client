@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
-import me.zeroeightsix.kami.util.coroutine.mainScope
+import me.zeroeightsix.kami.util.threads.mainScope
 import net.minecraft.client.gui.*
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.ConnectionUtils

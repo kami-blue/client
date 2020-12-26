@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
-import me.zeroeightsix.kami.util.coroutine.BackgroundScope
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager

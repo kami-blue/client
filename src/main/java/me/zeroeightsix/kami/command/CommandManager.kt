@@ -3,12 +3,13 @@ package me.zeroeightsix.kami.command
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.coroutine.defaultScope
-import me.zeroeightsix.kami.util.coroutine.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThread
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException

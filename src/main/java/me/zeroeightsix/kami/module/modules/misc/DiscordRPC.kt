@@ -9,11 +9,11 @@ import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.coroutine.BackgroundJob
-import me.zeroeightsix.kami.util.coroutine.BackgroundScope
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.BackgroundJob
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraft.client.Minecraft
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.event.listener.listener

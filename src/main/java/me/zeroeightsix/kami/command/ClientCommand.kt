@@ -1,10 +1,13 @@
 package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.event.ClientExecuteEvent
+import me.zeroeightsix.kami.event.SafeExecuteEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.coroutine.defaultScope
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.toSafe
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos

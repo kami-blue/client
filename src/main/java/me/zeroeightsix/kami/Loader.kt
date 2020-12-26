@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.util.coroutine.mainScope
+import me.zeroeightsix.kami.util.threads.mainScope
 
 internal object LoaderWrapper {
     private val loaderList = ArrayList<AsyncLoader<*>>()
