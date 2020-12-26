@@ -6,65 +6,43 @@ import org.kamiblue.commons.interfaces.Nameable
 import java.io.InputStream
 
 class PluginInfo private constructor(
-
-    /**
-     * The name of the plugin; will be used as both an identifier and a display name.
-     */
-    @SerializedName("name")
-    private val name0: String?,
-
-    /**
-     * A list of the names of the plugin's authors.
-     */
-    @SerializedName("authors")
-    private val authors0: Array<String>?,
-
-    /**
-     * The plugin's version.
-     */
-    @SerializedName("version")
-    private val version0: String?,
-
-    /**
-     * A short description of the plugin.
-     */
-    @SerializedName("description")
-    private val description0: String?,
-
-    /**
-     * A link to the plugin's website.
-     */
-    @SerializedName("url")
-    private val url0: String?,
-
-    /**
-     * The minimum version of KAMI Blue required for the plugin to run.
-     */
-    @SerializedName("kami_version")
-    private val kamiVersion0: String?,
-
-    /**
-     * Other plugins that must be installed in order for this plugin to work correctly.
-     */
-    @SerializedName("required_plugins")
-    private val requiredPlugins0: Array<String>?,
-
-    /**
-     * Reference to the plugin main class
-     */
-    @SerializedName("main_class")
-    private val mainClass0: String?
-
+    @SerializedName("name") private val name0: String?,
+    @SerializedName("version") private val version0: String?,
+    @SerializedName("authors") private val authors0: Array<String>?,
+    @SerializedName("description") private val description0: String?,
+    @SerializedName("url") private val url0: String?,
+    @SerializedName("kami_version") private val kamiVersion0: String?,
+    @SerializedName("required_plugins") private val requiredPlugins0: Array<String>?,
+    @SerializedName("main_class") private val mainClass0: String?,
+    @SerializedName("hot_reload") private val hotReload0: Boolean?
 ) : Nameable {
 
+    /** The name of the plugin, will be used as both an identifier and a display name */
     override val name: String get() = name0.nonBlank("name")
+
+    /** The plugin's version */
     val version: String get() = version0.nonBlank("version")
+
+    /** A list of the names of the plugin's authors */
     val authors: Array<String> get() = authors0 ?: authorsNull
+
+    /** A short description of the plugin */
     val description: String get() = description0 ?: descriptionNull
+
+    /** A link to the plugin's website */
     val url get() = url0 ?: urlNull
-    val kamiVersion: String get() = version0.nonBlank("kami_version")
+
+    /** The minimum version of KAMI Blue required for the plugin to run. */
+    val kamiVersion: String get() = kamiVersion0.nonBlank("kami_version")
+
+    /** Other plugins that must be loaded in order for this plugin to work correctly.*/
     val requiredPlugins: Array<String> get() = requiredPlugins0 ?: requiredPluginsNull
+
+    /** Reference to the plugin main class */
     val mainClass: String get() = mainClass0.nonBlank("main_class")
+
+    /** Whether this plugin can be hot reloaded or not, this should be false if the plugin uses mixin */
+    val hotReload: Boolean get() = hotReload0 ?: true
 
     private fun String?.nonBlank(name: String = "String") =
         when {
