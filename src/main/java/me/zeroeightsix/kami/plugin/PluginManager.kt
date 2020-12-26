@@ -16,7 +16,7 @@ internal object PluginManager {
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
-    private var latestErrors: ArrayList<Pair<PluginInfo, PluginError>>? = null
+    private var latestErrors: ArrayList<Pair<PluginLoader, PluginError>>? = null
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -62,52 +62,80 @@ internal object PluginManager {
     }
 
     fun loadAll(loaders: List<PluginLoader>) {
-        val pluginNames = HashSet<String>()
-        for (loader in loaders) {
-            if (DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion) continue
-            pluginNames.add(loader.info.name.toLowerCase())
-        }
+        val validLoaders = checkPluginLoaders(loaders)
 
         synchronized(lockObject) {
-            for (loader in loaders) {
-                val unsupported = !pluginNames.contains(loader.info.name.toLowerCase())
-                val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)
-                    && !loader.info.requiredPlugins.all { pluginNames.contains(it.toLowerCase()) }
-
-                if (unsupported) handleError(loader.info, PluginError.UNSUPPORTED_KAMI)
-                if (missing) handleError(loader.info, PluginError.REQUIRED_PLUGIN)
-                if (unsupported || missing) continue
-
-                loadWithoutCheck(loader)
-            }
+            validLoaders.forEach(::loadWithoutCheck)
         }
 
         KamiMod.LOG.info("Loaded ${loadedPlugins.size} plugins!")
     }
 
+    private fun checkPluginLoaders(loaders: List<PluginLoader>): List<PluginLoader> {
+        val loaderSet = NameableSet<PluginLoader>()
+        val invalids = HashSet<PluginLoader>()
+
+        for (loader in loaders) {
+            // Unsupported check
+            if (DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion) {
+                handleError(loader, PluginError.UNSUPPORTED)
+                invalids.add(loader)
+            }
+
+            // Duplicate check
+            loaderSet[loader.name]?.let {
+                handleError(loader, PluginError.DUPLICATE)
+                invalids.add(loader)
+                handleError(it, PluginError.DUPLICATE)
+                invalids.add(it)
+            } ?: run {
+                loaderSet.add(loader)
+            }
+        }
+
+        for (loader in loaders) {
+            // Required plugin check
+            if (!loadedPlugins.containsNames(loader.info.requiredPlugins)
+                && !loaderSet.containsNames(loader.info.requiredPlugins)) {
+                handleError(loader, PluginError.REQUIRED_PLUGIN)
+                invalids.add(loader)
+            }
+        }
+
+        return loaders.filter { !invalids.contains(it) }
+    }
+
     fun load(loader: PluginLoader) {
         synchronized(lockObject) {
+            val duplicate = loadedPlugins.containsName(loader.name)
             val unsupported = DefaultArtifactVersion(loader.info.kamiVersion) > kamiVersion
             val missing = !loadedPlugins.containsNames(loader.info.requiredPlugins)
 
-            if (unsupported) handleError(loader.info, PluginError.UNSUPPORTED_KAMI)
-            if (missing) handleError(loader.info, PluginError.REQUIRED_PLUGIN)
-            if (unsupported || missing) return
+            if (duplicate) handleError(loader, PluginError.DUPLICATE)
+            if (unsupported) handleError(loader, PluginError.UNSUPPORTED)
+            if (missing) handleError(loader, PluginError.REQUIRED_PLUGIN)
+            if (duplicate || unsupported || missing) return
 
             loadWithoutCheck(loader)
         }
     }
 
-    private fun handleError(info: PluginInfo, error: PluginError) {
-        val list = latestErrors ?: ArrayList<Pair<PluginInfo, PluginError>>().also { latestErrors = it }
+    private fun handleError(loader: PluginLoader, error: PluginError) {
+        val list = latestErrors ?: ArrayList<Pair<PluginLoader, PluginError>>().also { latestErrors = it }
 
-        if (error == PluginError.UNSUPPORTED_KAMI) {
-            KamiMod.LOG.error("Unsupported plugin ${info.name}. Required version: ${info.kamiVersion}")
-            list.add(info to PluginError.UNSUPPORTED_KAMI)
-        } else {
-            KamiMod.LOG.error("Missing required plugin for ${info.name}. Required plugins: ${info.requiredPlugins.joinToString()}")
-            list.add(info to PluginError.REQUIRED_PLUGIN)
+        when (error) {
+            PluginError.DUPLICATE -> {
+                KamiMod.LOG.error("Duplicate plugin ${loader}.")
+            }
+            PluginError.UNSUPPORTED -> {
+                KamiMod.LOG.error("Unsupported plugin ${loader}. Required version: ${loader.info.kamiVersion}")
+            }
+            PluginError.REQUIRED_PLUGIN -> {
+                KamiMod.LOG.error("Missing required plugin for ${loader}. Required plugins: ${loader.info.requiredPlugins.joinToString()}")
+            }
         }
+
+        list.add(loader to error)
     }
 
     private fun loadWithoutCheck(loader: PluginLoader) {

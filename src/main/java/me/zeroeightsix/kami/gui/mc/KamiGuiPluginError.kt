@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.plugin.PluginError
-import me.zeroeightsix.kami.plugin.PluginInfo
+import me.zeroeightsix.kami.plugin.PluginLoader
 import me.zeroeightsix.kami.plugin.PluginManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -12,32 +12,41 @@ import java.awt.Desktop
 import java.io.File
 import java.util.*
 
-class KamiGuiPluginError(
+internal class KamiGuiPluginError(
     private val prevScreen: GuiScreen?,
-    pluginErrors: List<Pair<PluginInfo, PluginError>>
+    pluginErrors: List<Pair<PluginLoader, PluginError>>
 ) : GuiScreen() {
 
     private val errorPlugins: String
+    private val duplicatePlugins: Set<String>
     private val unsupportedPlugins: Set<String>
     private val missingPlugins: Set<String>
 
     init {
         val builder = StringBuilder()
+        val duplicate = TreeSet<String>()
         val unsupported = TreeSet<String>()
         val missing = TreeSet<String>()
 
         for ((index, pair) in pluginErrors.withIndex()) {
-            builder.append(pair.first.name)
+            builder.append(pair.first.toString())
             if (index != pluginErrors.size - 1) builder.append(", ")
 
-            if (pair.second == PluginError.UNSUPPORTED_KAMI) {
-                unsupported.add("${pair.first.name} (${pair.first.kamiVersion})")
-            } else {
-                missing.addAll(pair.first.requiredPlugins.filter { !PluginManager.loadedPlugins.containsName(it) })
+            when (pair.second) {
+                PluginError.DUPLICATE -> {
+                    duplicate.add(pair.first.toString())
+                }
+                PluginError.UNSUPPORTED -> {
+                    unsupported.add("${pair.first} (${pair.first.info.kamiVersion})")
+                }
+                PluginError.REQUIRED_PLUGIN -> {
+                    missing.addAll(pair.first.info.requiredPlugins.filter { !PluginManager.loadedPlugins.containsName(it) })
+                }
             }
         }
 
         errorPlugins = builder.toString()
+        duplicatePlugins = duplicate
         unsupportedPlugins = unsupported
         missingPlugins = missing
     }
@@ -65,6 +74,7 @@ class KamiGuiPluginError(
         drawCenteredString(fontRenderer, errorPlugins, 0, 0, 0xFF5555) // 255, 85, 85
         GlStateManager.translate(0.0f, 30.0f, 0.0f)
 
+        drawList(duplicate, duplicatePlugins)
         drawList(unsupported, unsupportedPlugins)
         drawList(missing, missingPlugins)
 
@@ -92,6 +102,7 @@ class KamiGuiPluginError(
 
     private companion object {
         const val warning = "The following plugins could not be loaded:"
+        const val duplicate = "These plugins were duplicate:"
         const val unsupported = "These plugins require newer versions of KAMI Blue:"
         const val missing = "These required plugins were not loaded:"
     }

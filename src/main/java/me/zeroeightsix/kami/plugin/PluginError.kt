@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.plugin
 
 enum class PluginError {
-    UNSUPPORTED_KAMI,
+    DUPLICATE,
+    UNSUPPORTED,
     REQUIRED_PLUGIN
 }

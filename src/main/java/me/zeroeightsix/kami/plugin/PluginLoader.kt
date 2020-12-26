@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.plugin
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
+import org.kamiblue.commons.interfaces.Nameable
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Type
@@ -11,7 +12,10 @@ import java.security.MessageDigest
 
 internal class PluginLoader(
     val file: File
-) {
+) : Nameable {
+
+    override val name: String get() = info.name
+
     private val url = file.toURI().toURL()
     private val loader = URLClassLoader(arrayOf(url), this.javaClass.classLoader)
     val info: PluginInfo = loader.getResourceAsStream("plugin_info.json")?.let {
