@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
 import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
@@ -47,7 +48,7 @@ class KamiGuiChat(
         }
 
         // Async offloading
-        CommandManager.commandScope.launch {
+        defaultScope.launch {
             cachePredict = ""
             canAutoComplete = false
             autoComplete()
