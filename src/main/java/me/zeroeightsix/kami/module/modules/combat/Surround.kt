@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.isActiveOrFalse
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -160,7 +161,7 @@ object Surround : Module() {
         }
     }
 
-    private fun runSurround() = moduleScope.launch {
+    private fun runSurround() = defaultScope.launch {
         spoofHotbar()
         BlockUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {

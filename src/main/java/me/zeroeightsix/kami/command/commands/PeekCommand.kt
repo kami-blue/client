@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.ScaledResolution
@@ -33,7 +34,7 @@ object PeekCommand : ClientCommand(
                 val gui = GuiShulkerBox(player.inventory, entityBox)
                 gui.setWorldAndResolution(mc, scaledResolution.scaledWidth, scaledResolution.scaledHeight)
 
-                commandScope.launch {
+                defaultScope.launch {
                     delay(50L)
                     onMainThreadSafe {
                         mc.displayGuiScreen(gui)

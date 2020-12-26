@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
@@ -14,7 +15,6 @@ import org.kamiblue.commons.utils.ClassUtils
 
 object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
 
-    val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
     val prefix: String get() = CommandConfig.prefix.value
 
     @JvmStatic
@@ -31,7 +31,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
     }
 
     fun runCommand(string: String) {
-        commandScope.launch {
+        defaultScope.launch {
             val args = tryParseArgument(string) ?: return@launch
             KamiMod.LOG.debug("Running command with args: [${args.joinToString()}]")
 

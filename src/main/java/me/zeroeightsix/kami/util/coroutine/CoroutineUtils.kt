@@ -17,6 +17,11 @@ import java.util.concurrent.Callable
 val mainScope = CoroutineScope(newSingleThreadContext("KAMI Blue Main"))
 
 /**
+ * Common scope with [Dispatchers.Default]
+ */
+val defaultScope = CoroutineScope(Dispatchers.Default)
+
+/**
  * IO scope to use for IO blocking operations
  */
 val ioScope = CoroutineScope(Dispatchers.IO)

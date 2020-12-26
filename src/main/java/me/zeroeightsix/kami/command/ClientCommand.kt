@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
@@ -67,9 +68,7 @@ abstract class ClientCommand(
         block: ExecuteBlock<ClientExecuteEvent>
     ) {
         val asyncExecuteBlock: ExecuteBlock<ClientExecuteEvent> = {
-            commandScope.launch {
-                block()
-            }
+            defaultScope.launch { block() }
         }
         this.execute(description, asyncExecuteBlock)
     }
@@ -88,7 +87,6 @@ abstract class ClientCommand(
     protected companion object {
         val mc = Wrapper.minecraft
         val prefix: String get() = CommandConfig.prefix.value
-        val commandScope = CommandManager.commandScope
     }
 
 }

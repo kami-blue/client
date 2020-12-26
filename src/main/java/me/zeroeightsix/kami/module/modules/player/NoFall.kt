@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.init.Items
@@ -93,7 +94,7 @@ object NoFall : Module() {
             }
 
             if (pickup.value) {
-                moduleScope.launch {
+                defaultScope.launch {
                     delay(pickupDelay.value.toLong())
                     onMainThreadSafe {
                         player.rotationPitch = 90f

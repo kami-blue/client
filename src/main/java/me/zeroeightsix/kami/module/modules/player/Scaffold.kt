@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BlockUtils.placeBlock
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -142,7 +143,7 @@ object Scaffold : Module() {
 
             if (placeTimer.tick(delay.value.toLong())) {
                 val shouldSneak = sneak.value && !mc.player.isSneaking
-                moduleScope.launch {
+                defaultScope.launch {
                     if (shouldSneak) {
                         mc.player?.let {
                             it.connection.sendPacket(CPacketEntityAction(it, CPacketEntityAction.Action.START_SNEAKING))

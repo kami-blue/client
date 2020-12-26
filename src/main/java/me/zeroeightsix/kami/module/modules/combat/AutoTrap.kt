@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.coroutine.defaultScope
 import me.zeroeightsix.kami.util.coroutine.isActiveOrFalse
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -86,7 +87,7 @@ object AutoTrap : Module() {
         return slots[0]
     }
 
-    private fun runAutoTrap() = moduleScope.launch {
+    private fun runAutoTrap() = defaultScope.launch {
         BlockUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@AutoTrap)) {
                 val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
