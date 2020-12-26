@@ -32,38 +32,26 @@ val ioScope = CoroutineScope(Dispatchers.IO)
 val Job?.isActiveOrFalse get() = this?.isActive ?: false
 
 /**
- * Run [block] on Minecraft main thread (Client Main) while blocking the current thread.
+ * Run [block] on Minecraft main thread (Client thread) and wait for its result while blocking the current thread.
+ *
+ * @throws Exception if an exception thrown during [block] execution
  *
  * @see [onMainThreadSafe]
  */
-fun onMainThread(block: ClientEvent.() -> Unit) {
+fun <R> onMainThread(block: ClientEvent.() -> R) =
     Wrapper.minecraft.addScheduledTask(Callable {
-        try {
-            ClientEvent().block()
-            null
-        } catch (e: Exception) {
-            e
-        }
-    }).get()?.let {
-        throw it
-    }
-}
+        runCatching { ClientEvent().block() }
+    }).get().getOrThrow()
 
 /**
- * Run [block] on Minecraft main thread (Client Main) while blocking the current thread.
+ * Run [block] on Minecraft main thread (Client thread) and wait for its result while blocking the current thread.
  * The [block] will the called with a [SafeClientEvent] to ensure null safety
+ *
+ * @throws Exception if an exception thrown during [block] execution
  *
  * @see [onMainThread]
  */
-fun onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
+fun <R> onMainThreadSafe(block: SafeClientEvent.() -> R) =
     Wrapper.minecraft.addScheduledTask(Callable {
-        try {
-            ClientEvent().toSafe()?.block()
-            null
-        } catch (e: Exception) {
-            e
-        }
-    }).get()?.let {
-        throw it
-    }
-}
+        runCatching { ClientEvent().toSafe()?.block() }
+    }).get().getOrThrow()
