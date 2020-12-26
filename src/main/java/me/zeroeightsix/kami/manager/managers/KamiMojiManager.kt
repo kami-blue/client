@@ -7,11 +7,12 @@ package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.threads.ioScope
+import me.zeroeightsix.kami.util.threads.mainScope
 import me.zeroeightsix.kami.util.threads.onMainThread
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
@@ -32,8 +33,7 @@ object KamiMojiManager : Manager {
     private val parser = JsonParser()
     private val emojiMap = HashMap<String, ResourceLocation?>()
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private val job = ioScope.launch {
+    private val job = mainScope.launch(Dispatchers.IO) {
         val directory = File(directory)
 
         if (!directory.exists()) {
@@ -107,7 +107,7 @@ object KamiMojiManager : Manager {
 
         // Loads emoji on demand
         if (!emojiMap.containsKey(name)) {
-            ioScope.launch {
+            mainScope.launch(Dispatchers.IO) {
                 loadEmoji(name)
             }
         }
