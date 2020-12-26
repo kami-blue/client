@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TimerUtils
@@ -11,10 +12,10 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 @Module.Info(
-        name = "MidClickFriends",
-        category = Module.Category.MISC,
-        description = "Middle click players to friend or unfriend them",
-        showOnArray = Module.ShowOnArray.OFF
+    name = "MidClickFriends",
+    category = Module.Category.MISC,
+    description = "Middle click players to friend or unfriend them",
+    showOnArray = Module.ShowOnArray.OFF
 )
 object MidClickFriends : Module() {
     private val timer = TimerUtils.TickTimer()
@@ -40,9 +41,9 @@ object MidClickFriends : Module() {
     }
 
     private fun add(name: String) {
-        Thread {
+        moduleScope.launch {
             if (FriendManager.addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
             else MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
-        }.start()
+        }
     }
 }

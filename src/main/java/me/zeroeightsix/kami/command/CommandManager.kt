@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.onMainThread
+import me.zeroeightsix.kami.util.coroutine.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import org.kamiblue.command.AbstractCommandManager

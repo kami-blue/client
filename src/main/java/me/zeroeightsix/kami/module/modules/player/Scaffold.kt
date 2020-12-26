@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BlockUtils.placeBlock
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.coroutine.onMainThreadSafe
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
