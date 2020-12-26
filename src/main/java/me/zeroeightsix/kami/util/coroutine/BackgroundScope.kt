@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThreadPoolContext(2, "Bot-kt Background")) {
+internal object BackgroundScope : CoroutineScope by CoroutineScope(newFixedThreadPoolContext(2, "KAMI Blue Background")) {
 
     private val jobs = LinkedHashMap<BackgroundJob, Job?>()
     private var started = false
