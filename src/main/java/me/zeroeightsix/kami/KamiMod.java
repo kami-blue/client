@@ -2,12 +2,10 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
-import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
@@ -67,17 +65,14 @@ public class KamiMod {
 
         MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
-        ModuleManager.preLoad();
-        ManagerLoader.preLoad();
+        LoaderWrapper.preLoadAll();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        ModuleManager.load();
-        ManagerLoader.load();
-        CommandManager.init();
+        LoaderWrapper.loadALL();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
