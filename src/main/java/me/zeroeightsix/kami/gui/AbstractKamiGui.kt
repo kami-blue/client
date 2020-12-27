@@ -103,8 +103,8 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
     override fun initGui() {
         super.initGui()
         val scaledResolution = ScaledResolution(mc)
-        width = scaledResolution.scaledWidth
-        height = scaledResolution.scaledHeight
+        width = scaledResolution.scaledWidth + 16
+        height = scaledResolution.scaledHeight + 16
         for (window in windowList) window.onGuiInit()
     }
 
@@ -259,7 +259,10 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
         fun getRealMousePos(): Vec2f {
             val scaleFactor = ClickGUI.getScaleFactorFloat()
-            return Vec2f((Mouse.getX() / scaleFactor), (Wrapper.minecraft.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1.0f))
+            return Vec2f(
+                Mouse.getX() / scaleFactor - 1.0f,
+                (Wrapper.minecraft.displayHeight - 1 - Mouse.getY()) / scaleFactor
+            )
         }
 
     }

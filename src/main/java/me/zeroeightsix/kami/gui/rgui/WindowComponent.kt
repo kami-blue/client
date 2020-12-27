@@ -79,6 +79,7 @@ open class WindowComponent(
         super.onRelease(mousePos, buttonId)
         lastActiveTime = System.currentTimeMillis()
         if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized.value = !minimized.value
+        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.subtract(posX, posY))
     }
 
     private fun updatePreDrag(mousePos: Vec2f?) {
