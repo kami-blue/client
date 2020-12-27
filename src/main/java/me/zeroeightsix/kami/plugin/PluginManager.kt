@@ -153,18 +153,24 @@ internal object PluginManager {
     }
 
     fun unloadAll() {
-        loadedPlugins.filter { it.hotReload }.forEach(::unload)
+        loadedPlugins.filter { it.hotReload }.forEach(::unloadWithoutCheck)
 
         KamiMod.LOG.info("Unloaded all plugins!")
     }
 
     fun unload(plugin: Plugin) {
-        if (!plugin.hotReload) throw IllegalAccessException("Plugin $plugin cannot be hot reloaded!")
+        if (loadedPlugins.any { it.requiredPlugins.contains(plugin.name) }) {
+            throw IllegalArgumentException("Plugin $plugin is required by another plugin!")
+        }
 
         unloadWithoutCheck(plugin)
     }
 
     private fun unloadWithoutCheck(plugin: Plugin) {
+        if (!plugin.hotReload) {
+            throw IllegalArgumentException("Plugin $plugin cannot be hot reloaded!")
+        }
+
         synchronized(lockObject) {
             if (loadedPlugins.remove(plugin)) {
                 plugin.unregister()
