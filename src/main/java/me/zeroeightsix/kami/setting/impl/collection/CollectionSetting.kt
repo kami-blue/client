@@ -8,7 +8,7 @@ open class CollectionSetting<E : Any, T : MutableCollection<E>>(
         value: T,
         visibility: () -> Boolean = { true },
         description: String = ""
-) : Setting<T>(name, value, visibility, { _, input -> input }, description) {
+) : Setting<T>(name, value, visibility, { _, input -> input }, description), MutableCollection<E> by value {
 
     init {
         defaultValue.toCollection(value)

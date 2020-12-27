@@ -2,10 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.setting.SettingsRegister
-import me.zeroeightsix.kami.setting.builder.SettingBuilder
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
@@ -15,11 +12,7 @@ object BindCommand : ClientCommand(
     name = "bind",
     description = "Bind and unbind modules"
 ) {
-    val modifiersEnabled: Setting<Boolean> = SettingBuilder.register(Settings.b("modifiersEnabled", false), "binds")
-
     init {
-        SettingsRegister.register("modifiersEnabled", modifiersEnabled)
-
         literal("list") {
             execute("List used module binds") {
                 val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bindName }
@@ -44,7 +37,7 @@ object BindCommand : ClientCommand(
         literal("modifiers") {
             boolean("enabled") { modifiersArg ->
                 execute("Disallow binds while holding a modifier") {
-                    modifiersEnabled.value = modifiersArg.value
+                    CommandConfig.modifierEnabled.value = modifiersArg.value
                     MessageSendHelper.sendChatMessage(
                         "Modifiers ${if (modifiersArg.value) " ${TextFormatting.GREEN}enabled" else " ${TextFormatting.RED}disabled"}"
                     )

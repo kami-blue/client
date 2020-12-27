@@ -3,10 +3,11 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.setting.GenericConfig
+import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import java.io.File
-import java.io.FileWriter
+import me.zeroeightsix.kami.util.text.formatValue
 import java.io.IOException
 import java.nio.file.Paths
 
@@ -46,16 +47,19 @@ object ConfigCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                             return@launch
                         }
+                        val prevPath = ModuleConfig.currentPath.value
 
                         try {
-                            FileWriter(File("KAMILastConfig.txt"), false).use {
-                                it.write(newPath)
-                                ConfigUtils.loadAll()
-                                MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
-                            }
+                            ConfigUtils.saveConfig(ModuleConfig)
+                            ModuleConfig.currentPath.value = newPath
+                            ConfigUtils.saveConfig(GenericConfig)
+                            ConfigUtils.loadAll()
+                            MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
                         } catch (e: IOException) {
                             MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                             KamiMod.LOG.warn("Couldn't set path!", e)
+                            ModuleConfig.currentPath.value = prevPath
+                            ConfigUtils.saveConfig(ModuleConfig)
                         }
                     }
                 }
@@ -63,8 +67,8 @@ object ConfigCommand : ClientCommand(
 
             execute("Print current config files") {
                 commandScope.launch(Dispatchers.IO) {
-                    val path = Paths.get(ConfigUtils.getConfigName())
-                    MessageSendHelper.sendChatMessage("Path to configuration: &b" + path.toAbsolutePath().toString())
+                    val path = Paths.get(ModuleConfig.currentPath.value).toAbsolutePath()
+                    MessageSendHelper.sendChatMessage("Path to configuration: ${formatValue(path)}")
                 }
             }
         }

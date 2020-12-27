@@ -71,7 +71,7 @@ object ConfigUtils {
         }
     }
 
-    fun isFilenameValid(path: String): Boolean {
+    fun isPathValid(path: String): Boolean {
         return try {
             File(path).canonicalPath
             true

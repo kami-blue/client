@@ -1,5 +1,8 @@
 package me.zeroeightsix.kami.module
 
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
@@ -8,6 +11,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
+import org.kamiblue.commons.interfaces.DisplayEnum
 
 open class Module {
     /* Annotations */
@@ -52,7 +56,7 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    val fullSettingList: List<Setting<*>> get() = ModuleConfig.getGroupOrPut(this.category.categoryName).getGroupOrPut(this.name).getSettings()
+    val fullSettingList: List<Setting<*>> get() = ModuleConfig.getGroupOrPut(this.category.displayName).getGroupOrPut(this.name).getSettings()
     val settingList: List<Setting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
     val bind = setting("Bind", { !annotation.alwaysEnabled })

@@ -10,13 +10,13 @@ import java.io.File
 object ModuleConfig : AbstractMultiConfig<Module>(
         "Modules",
         KamiMod.DIRECTORY,
-        *Module.Category.values().map { it.categoryName }.toTypedArray()
+        *Module.Category.values().map { it.displayName }.toTypedArray()
 ) {
     val currentPath = setting("CurrentPath", "default")
     override val file: File get() = File("$directoryPath$name/$currentPath")
 
     override fun <S : Setting<*>> Module.setting(setting: S): S {
-        getGroupOrPut(category.categoryName).getGroupOrPut(name).addSetting(setting)
+        getGroupOrPut(category.displayName).getGroupOrPut(name).addSetting(setting)
         return setting
     }
 

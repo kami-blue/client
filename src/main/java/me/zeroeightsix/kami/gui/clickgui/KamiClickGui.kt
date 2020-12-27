@@ -21,7 +21,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
         for (category in Module.Category.values()) {
             val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
             if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.categoryName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.CLICK_GUI, *buttons))
+            windowList.add(ListWindow(category.displayName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.CLICK_GUI, *buttons))
             posX += 110.0f
         }
     }

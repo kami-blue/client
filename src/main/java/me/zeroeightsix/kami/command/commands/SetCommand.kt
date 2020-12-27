@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextFormatting
 
@@ -20,17 +21,15 @@ object SetCommand : ClientCommand(
                         val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
                         if (setting == null) {
-                            sendUnknownSettingMessage(module.name.value, settingName)
+                            sendUnknownSettingMessage(module.name, settingName)
                             return@executeAsync
                         }
 
                         try {
                             var value = valueArg.value
-                            if (setting.javaClass.simpleName == "EnumSetting") {
-                                value = value.toUpperCase()
-                            }
+                            if (setting is EnumSetting) value = value.toUpperCase()
 
-                            setting.setValueFromString(value, setting.valueClass.simpleName == "Boolean")
+                            setting.setValue(value)
 
                             MessageSendHelper.sendChatMessage("Set ${TextFormatting.AQUA}${setting.name}${TextFormatting.RESET}" +
                                 " to ${TextFormatting.DARK_AQUA}${value}${TextFormatting.RESET}.")
@@ -48,7 +47,7 @@ object SetCommand : ClientCommand(
                     val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
                     if (setting == null) {
-                        sendUnknownSettingMessage(module.name.value, settingName)
+                        sendUnknownSettingMessage(module.name, settingName)
                         return@executeAsync
                     }
 
@@ -62,7 +61,7 @@ object SetCommand : ClientCommand(
             executeAsync("List settings for a module") {
                 val module = moduleArg.value
                 val settingsString = module.fullSettingList.joinToString()
-                val string = "List of settings for ${TextFormatting.AQUA}${module.name.value}${TextFormatting.RESET}:\n" +
+                val string = "List of settings for ${TextFormatting.AQUA}${module.name}${TextFormatting.RESET}:\n" +
                     settingsString
                 MessageSendHelper.sendChatMessage(string)
             }

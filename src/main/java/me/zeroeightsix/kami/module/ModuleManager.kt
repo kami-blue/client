@@ -64,7 +64,7 @@ object ModuleManager {
     fun getModuleOrNull(moduleName: String?): Module? {
         return moduleName?.replace(" ", "").let { name ->
             getModules().firstOrNull { module ->
-                module.name.value.replace(" ", "").equals(name, true)
+                module.name.replace(" ", "").equals(name, true)
                     || module.alias.any { it.replace(" ", "").equals(name, true) }
             }
         }
