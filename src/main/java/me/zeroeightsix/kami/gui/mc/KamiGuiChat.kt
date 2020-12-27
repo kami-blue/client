@@ -93,15 +93,15 @@ class KamiGuiChat(
         var argCount = parsedArgs.size
         val inputName = parsedArgs[0]
 
+        // If the string ends with only one space (typing the next arg), adds 1 to the arg count
+        if (string.endsWith(' ') && !string.endsWith("  ")) {
+            argCount += 1
+        }
+
         // Run commandAutoComplete() and return if there are only one arg
         if (argCount == 1) {
             commandAutoComplete(inputName)
             return
-        }
-
-        // If the string ends with only one space (typing the next arg), adds 1 to the arg count
-        if (string.endsWith(' ') && !string.endsWith("  ")) {
-            argCount += 1
         }
 
         // Get available arg types for current arg index
@@ -110,7 +110,7 @@ class KamiGuiChat(
         // Get the current input string
         val inputString = parsedArgs.getOrNull(argCount - 1)
 
-        if (inputString == null) {
+        if (inputString.isNullOrEmpty()) {
             // If we haven't input anything yet, prints list of available arg types
             if (args.isNotEmpty()) cachePredict = args.toSet().joinToString("/")
             return

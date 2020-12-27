@@ -28,31 +28,11 @@ object AutoEat : Module() {
     private val eatBadFood = register(Settings.b("EatBadFood", false))
 
     private var lastSlot = -1
-    var eating = false
+    var eating = false; private set
 
-    private fun isValid(stack: ItemStack, food: Int): Boolean {
-        return passItemCheck(stack) && stack.getItem() is ItemFood && foodLevel.value - food >= (stack.getItem() as ItemFood).getHealAmount(stack) ||
-                passItemCheck(stack) && stack.getItem() is ItemFood && healthLevel.value - (mc.player.health + mc.player.absorptionAmount) > 0f
-    }
-
-    private fun passItemCheck(stack: ItemStack): Boolean {
-        val item: Item = stack.getItem()
-
-        // Excluded Chorus Fruit since it is mainly used to teleport the player
-        if (item == Items.CHORUS_FRUIT) {
-            return false
-        }
-
-        // The player will not auto eat the food below if the EatBadFood setting is disabled
-        if (!eatBadFood.value && (item == Items.ROTTEN_FLESH
-                        || item == Items.SPIDER_EYE
-                        || item == Items.POISONOUS_POTATO
-                        || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Puffer fish, Clown fish
-                        || item == Items.CHORUS_FRUIT)) {
-            return false
-        }
-        // If EatBadFood is enabled, just allow them to eat it
-        return true
+    override fun onDisable() {
+        unpause()
+        eating = false
     }
 
     init {
@@ -75,7 +55,7 @@ object AutoEat : Module() {
 
             if (eating) return@listener
 
-            val stats = mc.player.getFoodStats()
+            val stats = mc.player.foodStats
 
             if (isValid(mc.player.heldItemOffhand, stats.foodLevel)) {
                 mc.player.activeHand = EnumHand.OFF_HAND
@@ -109,7 +89,28 @@ object AutoEat : Module() {
         }
     }
 
-    override fun onDisable() {
-        unpause()
+    private fun isValid(stack: ItemStack, food: Int): Boolean {
+        return passItemCheck(stack) && stack.item is ItemFood && foodLevel.value - food >= (stack.item as ItemFood).getHealAmount(stack) ||
+            passItemCheck(stack) && stack.item is ItemFood && healthLevel.value - (mc.player.health + mc.player.absorptionAmount) > 0f
+    }
+
+    private fun passItemCheck(stack: ItemStack): Boolean {
+        val item: Item = stack.item
+
+        // Excluded Chorus Fruit since it is mainly used to teleport the player
+        if (item == Items.CHORUS_FRUIT) {
+            return false
+        }
+
+        // The player will not auto eat the food below if the EatBadFood setting is disabled
+        if (!eatBadFood.value && (item == Items.ROTTEN_FLESH
+                || item == Items.SPIDER_EYE
+                || item == Items.POISONOUS_POTATO
+                || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Puffer fish, Clown fish
+                || item == Items.CHORUS_FRUIT)) {
+            return false
+        }
+        // If EatBadFood is enabled, just allow them to eat it
+        return true
     }
 }

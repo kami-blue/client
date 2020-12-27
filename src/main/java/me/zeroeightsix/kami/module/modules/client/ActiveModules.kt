@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.module.Module
@@ -8,7 +6,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorConverter.rgbToHex
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
-import java.awt.Color
 
 @Module.Info(
     name = "ActiveModules",
@@ -42,17 +39,16 @@ object ActiveModules : Module() {
     private val render = register(Settings.s("Render", "105,48,109"))
 
     fun setColor(category: Category, r: Int, g: Int, b: Int) {
-        val setting = getSettingForCategory(category) ?: return
+        val setting = getSettingForCategory(category)
         setting.value = "$r,$g,$b"
         sendChatMessage("Set ${setting.name} colour to $r, $g, $b")
     }
 
-    private fun getSettingForCategory(category: Category): Setting<String>? {
+    private fun getSettingForCategory(category: Category): Setting<String> {
         return when (category) {
             Category.CHAT -> chat
             Category.COMBAT -> combat
             Category.CLIENT -> client
-            Category.HIDDEN -> null // This should never be reached
             Category.MISC -> misc
             Category.MOVEMENT -> movement
             Category.PLAYER -> player
@@ -69,7 +65,6 @@ object ActiveModules : Module() {
             Category.PLAYER -> rgbToHex(getRgb(player.value, 0), getRgb(player.value, 1), getRgb(player.value, 2))
             Category.MOVEMENT -> rgbToHex(getRgb(movement.value, 0), getRgb(movement.value, 1), getRgb(movement.value, 2))
             Category.MISC -> rgbToHex(getRgb(misc.value, 0), getRgb(misc.value, 1), getRgb(misc.value, 2))
-            else -> rgbToHex(1, 1, 1)
         }
     }
 

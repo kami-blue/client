@@ -68,18 +68,7 @@ object ModuleManager {
     }
 
     @JvmStatic
-    fun getModules() = moduleMap.values
-
-    @JvmStatic
-    fun getModule(moduleName: String?): Module {
-        return moduleName?.replace(" ", "").let { name ->
-            getModules().firstOrNull { module ->
-                module.name.value.replace(" ", "").equals(name, true)
-                        || module.alias.any { it.replace(" ", "").equals(name, true) }
-            }
-        }
-                ?: throw ModuleNotFoundException("Error: Module not found. Check the spelling of the module. (getModuleByName(String) failed)")
-    }
+    fun getModules() = moduleMap.values.toList()
 
     fun getModuleOrNull(moduleName: String?): Module? {
         return moduleName?.replace(" ", "").let { name ->
@@ -90,5 +79,4 @@ object ModuleManager {
         }
     }
 
-    internal class ModuleNotFoundException(s: String?) : IllegalArgumentException(s)
 }
