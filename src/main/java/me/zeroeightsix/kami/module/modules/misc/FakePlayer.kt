@@ -1,12 +1,13 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.GuiScreenEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
@@ -41,7 +42,9 @@ object FakePlayer : Module() {
         }
 
         if (playerName.value == "Player") {
-            MessageSendHelper.sendChatMessage("You can use &7'${Command.commandPrefix.value}fp <name>'&r to set a custom name")
+            MessageSendHelper.sendChatMessage("You can use " +
+                formatValue("${CommandManager.prefix}set FakePlayer PlayerName <name>") +
+                " to set a custom name")
         }
 
         fakePlayer = EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {

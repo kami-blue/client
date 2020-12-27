@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.mixin.client;
 
+import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiScreenEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
@@ -7,9 +8,7 @@ import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -36,9 +35,6 @@ public class MixinMinecraft {
     @Shadow public EntityPlayerSP player;
     @Shadow public GuiScreen currentScreen;
     @Shadow public GameSettings gameSettings;
-    @Shadow public GuiIngame ingameGUI;
-    @Shadow public boolean skipRenderWorld;
-    @Shadow public SoundHandler soundHandler;
     @Shadow public RayTraceResult objectMouseOver;
     @Shadow public PlayerControllerMP playerController;
     @Shadow public EntityRenderer entityRenderer;
@@ -73,21 +69,21 @@ public class MixinMinecraft {
     }
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
-    public void displayCrashReport(CallbackInfo _info) {
+    public void displayCrashReport(CallbackInfo info) {
         save();
-        DiscordRPC.INSTANCE.end();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
         save();
-        DiscordRPC.INSTANCE.end();
     }
 
     private void save() {
+        if (!KamiMod.isReady()) return;
         System.out.println("Shutting down: saving KAMI configuration");
         ConfigUtils.INSTANCE.saveAll();
         System.out.println("Configuration saved.");
+        DiscordRPC.INSTANCE.end();
     }
 
 }

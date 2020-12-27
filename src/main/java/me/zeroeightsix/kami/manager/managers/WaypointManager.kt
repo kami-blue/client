@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.manager.managers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.WaypointUpdateEvent
@@ -16,28 +15,17 @@ import net.minecraft.util.math.BlockPos
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.LinkedHashSet
+import java.util.concurrent.ConcurrentSkipListSet
 
 object WaypointManager : Manager {
     private val gson = GsonBuilder().setPrettyPrinting().create()
     private const val oldConfigName = "KAMIBlueCoords.json" /* maintain backwards compat with old format */
     private const val configName = "KAMIBlueWaypoints.json"
     private val oldFile = File(oldConfigName)
-    val file = File(configName)
+    private val file = File(configName)
     private val sdf = SimpleDateFormat("HH:mm:ss dd/MM/yyyy")
-    private val mainThread = Thread.currentThread()
 
-    /**
-     * LinkedHashSet for all waypoints
-     * Since LinkedHashSet isn't thread safe, getting this from another thread will
-     * returns a read only copy
-     */
-    var waypoints = LinkedHashSet<Waypoint>()
-        get() {
-            return if (Thread.currentThread() != mainThread) {
-                synchronized(field) { LinkedHashSet(field) }
-            } else field
-        }
+    val waypoints = ConcurrentSkipListSet<Waypoint>(compareBy { it.id })
 
     /**
      * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
@@ -46,7 +34,9 @@ object WaypointManager : Manager {
         /* backwards compatibility for older configs */
         val localFile = if (legacyFormat()) oldFile else file
         val success = try {
-            waypoints = gson.fromJson(FileReader(localFile), object : TypeToken<LinkedHashSet<Waypoint>?>() {}.type)
+            val cacheArray = gson.fromJson(FileReader(localFile), Array<Waypoint>::class.java)
+            waypoints.clear()
+            waypoints.addAll(cacheArray)
             KamiMod.LOG.info("Waypoint loaded")
             if (legacyFormat()) oldFile.delete()
             true
@@ -89,8 +79,8 @@ object WaypointManager : Manager {
         return oldFile.exists() && !file.exists()
     }
 
-    fun get(id: String): Waypoint? {
-        val waypoint = waypoints.firstOrNull { it.id.toString() == id }
+    fun get(id: Int): Waypoint? {
+        val waypoint = waypoints.firstOrNull { it.id == id }
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.GET, waypoint))
         return waypoint
     }
@@ -127,7 +117,7 @@ object WaypointManager : Manager {
         return removed
     }
 
-    fun remove(id: String): Boolean {
+    fun remove(id: Int): Boolean {
         val waypoint = get(id) ?: return false
         val removed = waypoints.remove(waypoint)
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.REMOVE, waypoint))

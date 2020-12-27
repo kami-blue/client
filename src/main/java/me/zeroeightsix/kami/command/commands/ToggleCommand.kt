@@ -1,40 +1,28 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
-import me.zeroeightsix.kami.module.ModuleManager.ModuleNotFoundException
-import me.zeroeightsix.kami.module.ModuleManager.getModule
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import net.minecraft.util.text.TextFormatting
 
-/**
- * Created by 086 on 17/11/2017.
- */
-class ToggleCommand : Command("toggle", ChunkBuilder()
-        .append("module", true, ModuleParser())
-        .build(), "t") {
-
-    override fun call(args: Array<String>) {
-        if (args.isEmpty()) {
-            sendChatMessage("Please specify a module!")
-            return
-        }
-
-        try {
-            getModule(args[0])?.let {
-                it.toggle()
-                if (it !is ClickGUI && !CommandConfig.toggleMessages.value) {
-                    sendChatMessage(it.name + if (it.isEnabled) " &aenabled" else " &cdisabled")
+object ToggleCommand : ClientCommand(
+    name = "toggle",
+    alias = arrayOf("switch"),
+    description = "Toggle a module on and off!"
+) {
+    init {
+        module("module") { moduleArg ->
+            execute {
+                val module = moduleArg.value
+                module.toggle()
+                if (module !is ClickGUI && !CommandConfig.toggleMessages.value) {
+                    sendChatMessage(module.name.value +
+                        if (module.isEnabled) " ${TextFormatting.GREEN}enabled"
+                        else " ${TextFormatting.RED}disabled"
+                    )
                 }
             }
-        } catch (x: ModuleNotFoundException) {
-            sendChatMessage("Unknown module '" + args[0] + "'")
         }
-    }
-
-    init {
-        setDescription("Quickly toggle a module on and off")
     }
 }

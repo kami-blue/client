@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -15,6 +15,7 @@ import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.Regexes
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -64,10 +65,14 @@ object DiscordNotifs : Module() {
         /* Always on status code */
         listener<SafeTickEvent> {
             if (url.value == "unchanged") {
-                MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the " +
+                    formatValue("${CommandManager.prefix}discordnotifs") +
+                    " command")
                 disable()
             } else if (pingID.value == "unchanged" && importantPings.value) {
-                MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the '&7" + Command.getCommandPrefix() + "discordnotifs&r' command")
+                MessageSendHelper.sendErrorMessage(chatName + " For Pings to work, you must set a Discord ID with the " +
+                    formatValue("${CommandManager.prefix}discordnotifs") +
+                    " command")
                 disable()
             }
         }

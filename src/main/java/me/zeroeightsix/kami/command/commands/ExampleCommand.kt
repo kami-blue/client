@@ -1,15 +1,20 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.WebUtils
 
-class ExampleCommand : Command("backdoor", null) {
-
-    override fun call(args: Array<out String>?) {
-        if ((1..20).random() == 10) {
-            WebUtils.openWebLink("https://youtu.be/yPYZpwSpKmA") // 5% chance playing Together Forever
-        } else {
-            WebUtils.openWebLink("https://kamiblue.org/backdoored")
+object ExampleCommand : ClientCommand(
+    name = "backdoor",
+    alias = arrayOf("bd", "example", "ex"),
+    description = "Becomes a cool hacker like popbob!"
+) {
+    init {
+        execute("Shows example command usage") {
+            if ((1..20).random() == 10) {
+                WebUtils.openWebLink("https://youtu.be/yPYZpwSpKmA") // 5% chance playing Together Forever
+            } else {
+                WebUtils.openWebLink("https://kamiblue.org/backdoored")
+            }
         }
     }
 }

@@ -53,7 +53,7 @@ object Spammer : Module() {
             if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@listener
             val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()
             if (MessageDetectionHelper.isKamiCommand(message)) {
-                MessageSendHelper.sendKamiCommand(message, false)
+                MessageSendHelper.sendKamiCommand(message)
             } else {
                 sendServerMessage(message)
             }

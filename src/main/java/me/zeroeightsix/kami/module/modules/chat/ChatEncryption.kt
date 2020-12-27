@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.mixin.extension.textComponent
@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.ChatAllowedCharacters
@@ -41,8 +42,8 @@ object ChatEncryption : Module() {
     private val originChar = charArrayOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '_', '/', ';', '=', '?', '+', '\u00B5', '\u00A3', '*', '^', '\u00F9', '$', '!', '{', '}', '\'', '"', '|', '&')
     private val delimiter: String?
         get() {
-            if (delimiterValue.value.equals("unchanged", ignoreCase = true)) {
-                sendErrorMessage(chatName + " Please change the delimiter with &7" + Command.getCommandPrefix() + "chatencryption&f, disabling")
+            if (delimiterValue.value == "unchanged") {
+                sendErrorMessage("$chatName Please change the delimiter with ${formatValue("${CommandManager.prefix}set $name delimiterV <delimiter>")}")
                 disable()
                 return null
             }

@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
@@ -30,12 +30,12 @@ object AutoTPA : Module() {
             val name = it.packet.chatComponent.unformattedText.split(" ").toTypedArray()[0]
 
             when (mode.value) {
-                Mode.ACCEPT -> MessageSendHelper.sendServerMessage("/tpaccept $name")
+                Mode.ACCEPT -> sendServerMessage("/tpaccept $name")
                 Mode.DENY -> {
                     if (friends.value && FriendManager.isFriend(name)) {
-                        MessageSendHelper.sendServerMessage("/tpaccept $name")
+                        sendServerMessage("/tpaccept $name")
                     } else {
-                        MessageSendHelper.sendServerMessage("/tpdeny $name")
+                        sendServerMessage("/tpdeny $name")
                     }
                 }
             }

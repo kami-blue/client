@@ -1,46 +1,80 @@
 package me.zeroeightsix.kami.gui.mc
 
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.mixin.extension.historyBuffer
 import me.zeroeightsix.kami.mixin.extension.sentHistoryCursor
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.util.graphics.GlStateUtils.useVbo
-import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawRectOutline
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraft.client.gui.GuiChat
+import org.kamiblue.command.AbstractArg
+import org.kamiblue.command.AutoComplete
+import org.kamiblue.commons.extension.stream
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 import java.util.*
+import kotlin.math.min
 
-open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHistoryCursorIn: Int) : GuiChat(startStringIn) {
-
-    private var commandHint = ""
-
-    private val regex = " (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex()
-    private val bracketRegex = "<.*>|\\[.*]".toRegex()
+class KamiGuiChat(
+    startStringIn: String,
+    historyBufferIn: String? = null,
+    sentHistoryCursorIn: Int? = null
+) : GuiChat(startStringIn) {
 
     init {
-        if (startStringIn != Command.getCommandPrefix()) calculateCommand(startStringIn.substring(Command.getCommandPrefix().length))
         historyBufferIn?.let { historyBuffer = it }
-        sentHistoryCursor = sentHistoryCursorIn
+        sentHistoryCursorIn?.let { sentHistoryCursor = it }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
-        super.keyTyped(typedChar, keyCode)
+    private var predictString = ""
+    private var cachePredict = ""
+    private var canAutoComplete = false
 
-        if (Command.getCommandPrefix() != null && !inputField.text.startsWith(Command.getCommandPrefix())) {
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (guiChatKeyTyped(typedChar, keyCode)) return
+
+        if (!inputField.text.startsWith(CommandManager.prefix)) {
             displayNormalChatGUI()
             return
         }
 
-        if (inputField.text == Command.getCommandPrefix()) {
-            commandHint = ""
-            return
+        if (canAutoComplete && keyCode == Keyboard.KEY_TAB && predictString.isNotBlank()) {
+            inputField.text += "$predictString "
+            predictString = ""
         }
 
-        calculateCommand(inputField.text.substring(Command.getCommandPrefix().length))
+        // Async offloading
+        CommandManager.commandScope.launch {
+            cachePredict = ""
+            canAutoComplete = false
+            autoComplete()
+            predictString = cachePredict
+        }
+    }
+
+    private fun guiChatKeyTyped(typedChar: Char, keyCode: Int): Boolean {
+        return if (keyCode == Keyboard.KEY_ESCAPE) {
+            mc.displayGuiScreen(null)
+            true
+        } else if (keyCode != Keyboard.KEY_RETURN && keyCode != Keyboard.KEY_NUMPADENTER) {
+            val chatGUI = mc.ingameGUI.chatGUI
+            when (keyCode) {
+                Keyboard.KEY_UP -> getSentHistory(-1)
+                Keyboard.KEY_DOWN -> getSentHistory(1)
+                Keyboard.KEY_PRIOR -> chatGUI.scroll(chatGUI.lineCount - 1)
+                Keyboard.KEY_NEXT -> chatGUI.scroll(-chatGUI.lineCount + 1)
+                else -> inputField.textboxKeyTyped(typedChar, keyCode)
+            }
+            false
+        } else {
+            val message = inputField.text.trim()
+            if (message.isNotEmpty()) sendChatMessage(message)
+            mc.ingameGUI.chatGUI.addToSentMessages(message)
+            mc.displayGuiScreen(null)
+            true
+        }
     }
 
     private fun displayNormalChatGUI() {
@@ -52,87 +86,95 @@ open class KamiGuiChat(startStringIn: String, historyBufferIn: String?, sentHist
         }
     }
 
+    private suspend fun autoComplete() {
+        val string = inputField.text.removePrefix(CommandManager.prefix)
+        val parsedArgs = runCatching { CommandManager.parseArguments(string) }.getOrNull() ?: return
+        var argCount = parsedArgs.size
+        val inputName = parsedArgs[0]
 
-    private fun calculateCommand(line: String) {
-        val args = line.split(regex).toTypedArray()
-        if (args.isEmpty()) return
+        // If the string ends with only one space (typing the next arg), adds 1 to the arg count
+        if (string.endsWith(' ') && !string.endsWith("  ")) {
+            argCount += 1
+        }
 
-        val command = getCommand(args[0]) ?: run {
-            commandHint = ""
+        // Run commandAutoComplete() and return if there are only one arg
+        if (argCount == 1) {
+            commandAutoComplete(inputName)
             return
         }
 
-        if (command.syntaxChunks == null || command.syntaxChunks.isEmpty()) return
+        // Get available arg types for current arg index
+        val args = getArgTypeForAtIndex(parsedArgs, argCount - 1) ?: return
 
-        val firstAlias = command.aliases.find { it.startsWith(args[0], true) } ?: command.label
+        // Get the current input string
+        val inputString = parsedArgs.getOrNull(argCount - 1)
 
-        commandHint = firstAlias.substring(args[0].length)
-
-        if (!line.endsWith(" ")) commandHint += " "
-
-        var cutSpace = false
-
-        for ((index, chunk) in command.syntaxChunks.withIndex()) {
-            if (index < args.size - 2) continue
-            val chunkValue = if (index == args.size - 2) args[index + 1] else null
-            val result = chunk.getChunk(command.syntaxChunks, chunk, args, chunkValue)
-            val space = if (result.isEmpty()) "" else " "
-
-            cutSpace = cutSpace || result.isNotEmpty() && !result.matches(bracketRegex)
-            commandHint += result + space
+        if (inputString.isNullOrEmpty()) {
+            // If we haven't input anything yet, prints list of available arg types
+            if (args.isNotEmpty()) cachePredict = args.toSet().joinToString("/")
+            return
         }
 
-        if (cutSpace) commandHint = commandHint.substring(1)
-
-        val autoComplete = getAutoComplete()
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && !autoComplete.contains("<") && !autoComplete.contains("[")) {
-            inputField.text += getAutoComplete()
-            commandHint = ""
-        }
-    }
-
-    private fun getCommand(string: String): Command? {
-        val treeMap = TreeMap<String, Command>()
-
-        for (command in KamiMod.INSTANCE.commandManager.commands) {
-            if (command.label.startsWith(string, true)) {
-                treeMap[command.label] = command
-            } else {
-                command.aliases?.let {
-                    for (alias in it) {
-                        if (!alias.startsWith(string)) continue
-                        if (alias == string) continue
-                        treeMap[alias] = command
-                    }
-                }
+        // Set cache predict to the first arg that impls AutoComplete
+        // And the auto complete result isn't null
+        for (arg in args) {
+            if (arg !is AutoComplete) continue
+            val result = arg.completeForInput(inputString)
+            if (result != null) {
+                cachePredict = result.substring(min(inputString.length, result.length))
+                canAutoComplete = true
+                break // Stop the iteration here because we get the non null result already
             }
         }
-
-        return treeMap.firstEntry()?.value
     }
 
-    private fun getAutoComplete(): String {
-        return commandHint.split(" <").first().split(" [").first()
+    private fun commandAutoComplete(inputName: String) {
+        // Since we are doing multiple operation in a chain
+        // It would worth the payoff of using Stream
+        CommandManager.getCommands().stream()
+            .flatMap { it.allNames.stream() }
+            .filter { it.length >= inputName.length && it.startsWith(inputName) }
+            .sorted()
+            .findFirst()
+            .orElse(null)
+            ?.let {
+                cachePredict = it.substring(min(inputName.length, it.length))
+                canAutoComplete = true
+            }
+    }
+
+    private suspend fun getArgTypeForAtIndex(parsedArgs: Array<String>, argIndex: Int): List<AbstractArg<*>>? {
+        // Get the command for input name, map the arg trees to the count of match args
+        val command = CommandManager.getCommandOrNull(parsedArgs[0]) ?: return null
+        val treeMatchedCounts = command.finalArgs.map { it.countArgs(parsedArgs) to it }
+
+        // Get the max matched number of args, filter all trees that has less matched args
+        // And map to the current arg in the tree if exists
+        val maxMatches = treeMatchedCounts.maxOfOrNull { it.first } ?: return null
+        return treeMatchedCounts
+            .filter { it.first == maxMatches }
+            .mapNotNull { it.second.getArgTree().getOrNull(argIndex) }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawRect(2, height - 14, width - 2, height - 2, Int.MIN_VALUE)
+        // Draw rect background
+        drawRect(2, height - 14, width - 2, height - 2, Integer.MIN_VALUE)
 
-        val x = mc.fontRenderer.getStringWidth(inputField.text + "") + 4
-        val y = if (inputField.enableBackgroundDrawing) inputField.y + (inputField.height - 8) / 2 else inputField.y
-        mc.fontRenderer.drawStringWithShadow(commandHint, x.toFloat(), y.toFloat(), 0x666666)
-        inputField.drawTextBox()
-
-
-        val chatComponent = mc.ingameGUI.chatGUI.getChatComponent(Mouse.getX(), Mouse.getY())
-        if (chatComponent != null && chatComponent.style.hoverEvent != null) {
-            handleComponentHover(chatComponent, mouseX, mouseY)
+        // Draw predict string
+        if (predictString.isNotBlank()) {
+            val posX = fontRenderer.getStringWidth(inputField.text) + inputField.x
+            val posY = inputField.y
+            fontRenderer.drawStringWithShadow(predictString, posX.toFloat(), posY.toFloat(), 0x666666)
         }
 
-        val vertexHelper = VertexHelper(useVbo())
+        // Draw normal string
+        inputField.drawTextBox()
+
+        // Draw outline around input field
+        val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         val pos1 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
         val pos2 = pos1.add(inputField.width.toDouble(), inputField.height.toDouble())
-        drawRectOutline(vertexHelper, pos1, pos2, 1.5f, GuiColors.primary)
+        RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, GuiColors.primary)
     }
+
 }

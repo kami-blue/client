@@ -1,11 +1,9 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 @Module.Info(
     name = "CustomFont",
@@ -37,12 +35,6 @@ object CustomFont : Module() {
     private fun getMatchingFontName(name: String): String? {
         return if (name.equals(DEFAULT_FONT_NAME, true)) DEFAULT_FONT_NAME
         else KamiFontRenderer.availableFonts.firstOrNull { it.equals(name, true) }
-    }
-
-    override fun onToggle() {
-        if (isDefaultFont) {
-            MessageSendHelper.sendChatMessage("You can run &7${Command.commandPrefix.value}set $name ${fontName.name} <Font Name> to change custom font")
-        }
     }
 
     init {

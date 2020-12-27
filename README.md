@@ -15,8 +15,6 @@ Please go to [kamiblue.org/contributing](https://kamiblue.org/contributing) for 
 
 [zeroeightysix](https://github.com/zeroeightysix) for the original [KAMI](https://github.com/zeroeightysix/KAMI)
 
-[Raion Client](https://raionclient.com/) for the `;teleport` and `;vanish` commands
-
 [ronmamo](https://github.com/ronmamo/) for [Reflections](https://github.com/ronmamo/reflections)
 
 The [Minecraft Forge team](https://github.com/MinecraftForge) for [forge](https://files.minecraftforge.net/)

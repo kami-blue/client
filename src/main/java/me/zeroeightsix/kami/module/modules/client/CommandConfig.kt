@@ -21,14 +21,12 @@ import org.lwjgl.opengl.Display
     alwaysEnabled = true
 )
 object CommandConfig : Module() {
-    val aliasInfo = setting("AliasInfo", true)
-    val prefixChat = setting("PrefixChat", true)
+    val prefix = setting("Prefix", ";", { false })
     val toggleMessages = setting("ToggleMessages", false)
     val customTitle = setting("WindowTitle", true)
     private val autoSaving = setting("AutoSavingSettings", true)
     private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
     private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
-    val commandPrefix = setting("CommandPrefix", ";", { false })
     val modifierEnabled = setting("ModifierEnabled", false, { false })
 
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)

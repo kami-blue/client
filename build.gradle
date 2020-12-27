@@ -34,6 +34,7 @@ group project.modGroup
 
 sourceSets.main.java {
     srcDirs += 'src/main/cape-api'
+    srcDirs += 'src/main/command'
     srcDirs += 'src/main/commons'
     srcDirs += 'src/main/event'
 }
@@ -140,6 +141,11 @@ dependencies {
     }
 
     jarLibs("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version") {
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'annotations'
+    }
+
+    jarLibs("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines_version") {
         exclude module: 'kotlin-stdlib-common'
         exclude module: 'annotations'
     }

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.MacroManager
+import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.GuiConfig
@@ -19,6 +20,7 @@ object ConfigUtils {
         success = MacroManager.loadMacros() && success // Macro
         success = WaypointManager.loadWaypoints() && success // Waypoint
         success = FriendManager.loadFriends() && success // Friends
+        success = UUIDManager.load() && success // UUID Cache
         success = loadConfig(ModuleConfig) && success // Modules
         success = loadConfig(GuiConfig) && success // GUI
 
@@ -26,12 +28,11 @@ object ConfigUtils {
     }
 
     fun saveAll(): Boolean {
-        if (!KamiMod.isInitialized()) return false
-
         var success = saveConfig(GenericConfig) // Generic
         success = MacroManager.saveMacros() && success // Macro
         success = WaypointManager.saveWaypoints() && success // Waypoint
         success = FriendManager.saveFriends() && success // Friends
+        success = UUIDManager.load() && success // UUID Cache
         success = saveConfig(ModuleConfig) && success // Modules
         success = saveConfig(GuiConfig) && success // GUI
 
@@ -48,7 +49,7 @@ object ConfigUtils {
             config.load()
             KamiMod.LOG.info("${config.name} config loaded")
             true
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             KamiMod.LOG.error("Failed to load ${config.name} config", e)
             false
         }
@@ -70,9 +71,9 @@ object ConfigUtils {
         }
     }
 
-    fun isFilenameValid(file: String): Boolean {
+    fun isFilenameValid(path: String): Boolean {
         return try {
-            File(file).canonicalPath
+            File(path).canonicalPath
             true
         } catch (e: Throwable) {
             false

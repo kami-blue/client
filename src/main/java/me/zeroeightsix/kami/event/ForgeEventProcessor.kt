@@ -1,15 +1,13 @@
 package me.zeroeightsix.kami.event
 
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.*
+import me.zeroeightsix.kami.gui.mc.KamiGuiChat
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.client.gui.GuiChat
+import me.zeroeightsix.kami.util.text.MessageDetectionHelper
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
@@ -84,27 +82,24 @@ object ForgeEventProcessor {
     @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     fun onKeyInput(event: InputEvent.KeyInputEvent) {
         if (!Keyboard.getEventKeyState()) return
-        if (CommandConfig.prefixChat.value && Keyboard.getEventCharacter().toString().equals(Command.getCommandPrefix(), ignoreCase = true) && !mc.player.isSneaking) {
-            mc.displayGuiScreen(GuiChat(Command.getCommandPrefix()))
-        } else {
-            KamiEventBus.post(event)
-            ModuleManager.onBind(Keyboard.getEventKey())
+        if (!mc.player.isSneaking) {
+            val prefix = CommandManager.prefix
+            val typedChar = Keyboard.getEventCharacter().toString()
+            if (prefix.length == 1 && typedChar.equals(CommandManager.prefix, true)) {
+                mc.displayGuiScreen(KamiGuiChat(CommandManager.prefix))
+            }
         }
+
+        KamiEventBus.post(event)
+        ModuleManager.onBind(Keyboard.getEventKey())
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (!event.message.startsWith(Command.getCommandPrefix())) return
-        event.isCanceled = true
-        try {
-            mc.ingameGUI.chatGUI.addToSentMessages(event.message)
-            if (event.message.length > 1) KamiMod.INSTANCE.commandManager.callCommand(event.message.substring(Command.getCommandPrefix().length - 1))
-            else MessageSendHelper.sendChatMessage("Please enter a command!")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            MessageSendHelper.sendChatMessage("Error occurred while running command! (" + e.message + "), check the log for info!")
+        if (MessageDetectionHelper.isKamiCommand(event.message)) {
+            CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix))
+            event.isCanceled = true
         }
-        event.message = ""
     }
 
     @SubscribeEvent

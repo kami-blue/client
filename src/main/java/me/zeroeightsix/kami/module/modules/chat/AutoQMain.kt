@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import org.kamiblue.event.listener.listener
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,7 +50,7 @@ object AutoQMain : Module() {
         val date = Date(System.currentTimeMillis())
 
         MessageSendHelper.sendChatMessage("&7Run &b/queue 2b2t-lobby&7 at " + formatter.format(date))
-        MessageSendHelper.sendServerMessage("/queue 2b2t-lobby")
+        sendServerMessage("/queue 2b2t-lobby")
     }
 
     private fun sendMessage(message: String) {

@@ -49,9 +49,7 @@ public class KamiMod {
     public static KamiMod INSTANCE;
     public static Thread MAIN_THREAD;
 
-    private static boolean initialized = false;
-
-    private CommandManager commandManager;
+    private static boolean ready = false;
 
     @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
@@ -73,10 +71,9 @@ public class KamiMod {
         ModuleManager.load();
         ManagerLoader.load();
         GuiManager.load();
+        CommandManager.init();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
-
-        commandManager = new CommandManager();
 
         ConfigUtils.INSTANCE.loadAll();
 
@@ -91,15 +88,11 @@ public class KamiMod {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        initialized = true;
+        ready = true;
     }
 
-    public static boolean isInitialized() {
-        return initialized;
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
+    public static boolean isReady() {
+        return ready;
     }
 
 }

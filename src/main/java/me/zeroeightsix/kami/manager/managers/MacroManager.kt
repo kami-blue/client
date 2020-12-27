@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -72,10 +72,10 @@ object MacroManager : Manager {
     private fun sendMacro(keyCode: Int) {
         val macros = getMacros(keyCode) ?: return
         for (macro in macros) {
-            if (macro.startsWith(Command.getCommandPrefix())) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
+            if (macro.startsWith(CommandManager.prefix)) { // this is done instead of just sending a chat packet so it doesn't add to the chat history
                 MessageSendHelper.sendKamiCommand(macro) // ie, the false here
             } else {
-                MessageSendHelper.sendServerMessage(macro)
+                MessageManager.sendMessageDirect(macro)
             }
         }
     }

@@ -1,65 +1,77 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
-import me.zeroeightsix.kami.command.syntax.parsers.ModuleParser
-import me.zeroeightsix.kami.module.ModuleManager.getModule
-import me.zeroeightsix.kami.setting.ModuleConfig
-import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendStringChatMessage
+import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import net.minecraft.util.text.TextFormatting
 
-class SetCommand : Command("set", ChunkBuilder()
-        .append("module", true, ModuleParser())
-        .append("setting", true)
-        .append("set", true, EnumParser(arrayOf("value", "toggle")))
-        .build()) {
-    override fun call(args: Array<String?>) {
-        if (args[0] == null) {
-            sendChatMessage("Please specify a module!")
-            return
-        }
+object SetCommand : ClientCommand(
+    name = "set",
+    alias = arrayOf("settings"),
+    description = "Change the setting of a certain module."
+) {
+    init {
+        module("module") { moduleArg ->
+            string("setting") { settingArg ->
+                greedy("value") { valueArg ->
+                    executeAsync("Set the value of a module's setting") {
+                        val module = moduleArg.value
+                        val settingName = settingArg.value
+                        val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
-        val module = getModule(args[0])
+                        if (setting == null) {
+                            sendUnknownSettingMessage(module.name.value, settingName)
+                            return@executeAsync
+                        }
 
-        if (module == null) {
-            sendChatMessage("Unknown module &b" + args[0] + "&r!")
-            return
-        }
+                        try {
+                            var value = valueArg.value
+                            if (setting.javaClass.simpleName == "EnumSetting") {
+                                value = value.toUpperCase()
+                            }
 
-        if (args[1] == null) {
-            val settings = module.fullSettingList.joinToString { it.name }
-            if (settings.isEmpty()) sendChatMessage("Module &b" + module.name + "&r has no settings.") else {
-                sendStringChatMessage(arrayOf(
-                        "Please specify a setting! Choose one of the following:", settings
-                ))
+                            setting.setValueFromString(value, setting.valueClass.simpleName == "Boolean")
+
+                            MessageSendHelper.sendChatMessage("Set ${TextFormatting.AQUA}${setting.name}${TextFormatting.RESET}" +
+                                " to ${TextFormatting.DARK_AQUA}${value}${TextFormatting.RESET}.")
+
+                        } catch (e: Exception) {
+                            MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.GOLD}${e.message}")
+                            KamiMod.LOG.info("Unable to set value!", e)
+                        }
+                    }
+                }
+
+                executeAsync("Show the value of a setting") {
+                    val module = moduleArg.value
+                    val settingName = settingArg.value
+                    val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+
+                    if (setting == null) {
+                        sendUnknownSettingMessage(module.name.value, settingName)
+                        return@executeAsync
+                    }
+
+                    val string = "${TextFormatting.AQUA}$settingName${TextFormatting.RESET} " +
+                        "is a ${TextFormatting.DARK_AQUA}${setting.valueClass.simpleName}${TextFormatting.RESET}. " +
+                        "Its current value is ${TextFormatting.DARK_AQUA}$setting"
+                    MessageSendHelper.sendChatMessage(string)
+                }
             }
-            return
-        }
 
-        val setting = ModuleConfig.getGroup(module.category.categoryName)?.getGroup(module.name)?.getSetting(args[1]!!)
-        if (setting == null) {
-            sendChatMessage("Unknown setting &b" + args[1] + "&r in &b" + module.name + "&r!")
-            return
-        }
-
-        var arg2 = args[2]
-        if (arg2 == null) {
-            sendChatMessage("&b" + setting.name + "&r is a &3" + setting.valueClass.simpleName + "&r. Its current value is &3" + setting.toString())
-            return
-        }
-
-        try {
-            if (setting is EnumSetting) arg2 = arg2.toUpperCase()
-            setting.setValue(arg2)
-            sendChatMessage("Set &b" + setting.name + "&r to &3" + setting.toString() + "&r.")
-        } catch (e: Exception) {
-            sendChatMessage("Unable to set value! &6" + e.message)
+            executeAsync("List settings for a module") {
+                val module = moduleArg.value
+                val settingsString = module.fullSettingList.joinToString()
+                val string = "List of settings for ${TextFormatting.AQUA}${module.name.value}${TextFormatting.RESET}:\n" +
+                    settingsString
+                MessageSendHelper.sendChatMessage(string)
+            }
         }
     }
 
-    init {
-        setDescription("Change the setting of a certain module")
+    private fun sendUnknownSettingMessage(moduleName: String, settingName: String) {
+        val string = "Unknown setting ${TextFormatting.AQUA}$settingName${TextFormatting.RESET} " +
+            "in ${TextFormatting.AQUA}$moduleName${TextFormatting.RESET}!"
+        MessageSendHelper.sendChatMessage(string)
     }
 }

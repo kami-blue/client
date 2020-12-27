@@ -64,6 +64,7 @@ object CustomChat : Module() {
         DecoMode.NONE -> " " + getText()
         DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
         DecoMode.SEPARATOR -> " | " + getText()
+        else -> ""
     }
 
     init {

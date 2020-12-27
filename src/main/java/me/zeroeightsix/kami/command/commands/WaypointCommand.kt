@@ -1,167 +1,173 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
-import me.zeroeightsix.kami.command.syntax.parsers.EnumParser
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
+import me.zeroeightsix.kami.util.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.util.math.BlockPos
 
-class WaypointCommand : Command("waypoint", ChunkBuilder().append("command", true, EnumParser(arrayOf("add", "remove", "goto", "list", "clear", "stashes", "del", "help"))).build(), "wp", "pos") {
+object WaypointCommand : ClientCommand(
+    name = "waypoint",
+    alias = arrayOf("wp"),
+    description = "Manages waypoint."
+) {
+    private val stashRegex = "\\(\\d+ chests, \\d+ shulkers, \\d+ droppers, \\d+ dispensers, \\d+ hoppers\\)".toRegex()
     private var confirmTime = 0L
 
-    override fun call(args: Array<out String?>?) {
-        if (args != null && args[0] != null) {
-            when (args[0]!!.toLowerCase()) {
-                "add" -> {
-                    if (args[1] != null) {
-                        if (args[2] != null) {
-                            if (!args[2]!!.matches(Regex("[0-9-]+,[0-9-]+,[0-9-]+"))) {
-                                MessageSendHelper.sendErrorMessage("You have to enter custom coordinates in the format of '&7x,y,z&f', for example '&7${getCommandPrefix()}waypoint add \"My Waypoint\" 400,60,-100&f', but you can also leave it blank to use the current coordinates")
-                                return
+    init {
+        literal("add", "new", "create", "+") {
+            string("name") { nameArg ->
+                blockPos("pos") { posArg ->
+                    execute("Add a custom waypoint") {
+                        add(nameArg.value, posArg.value)
+                    }
+                }
+
+                int("x") { xArg ->
+                    int("y") { yArg ->
+                        int("z") { zArg ->
+                            execute("Add a custom waypoint") {
+                                add(nameArg.value, BlockPos(xArg.value, yArg.value, zArg.value))
                             }
-                            val split = args[2]!!.split(",").toTypedArray()
-                            val coordinate = BlockPos(split[0].toInt(), split[1].toInt(), split[2].toInt())
-                            confirm(args[1]!!, WaypointManager.add(coordinate, args[1]!!).pos)
-                        } else {
-                            confirm(args[1]!!, WaypointManager.add(args[1]!!).pos)
                         }
-                    } else {
-                        confirm("Unnamed", WaypointManager.add("Unnamed").pos)
                     }
                 }
-                "remove" -> delete(args)
-                "del" -> delete(args)
-                "goto" -> {
-                    if (args[1] != null) {
-                        val waypoint = WaypointManager.get(args[1]!!)
-                        if (waypoint != null) {
-                            if (AutoWalk.isEnabled) AutoWalk.disable()
-                            val pos = waypoint.currentPos()
-                            MessageSendHelper.sendBaritoneCommand("goto", pos.x.toString(), pos.y.toString(), pos.z.toString())
-                        } else {
-                            MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID " + args[1])
-                        }
-                    } else {
-                        MessageSendHelper.sendChatMessage("Please provide the ID of a waypoint to go to. Use '&7${getCommandPrefix()}wp list&f' to list saved waypoints and their IDs")
-                    }
+
+                executeSafe("Add a waypoint at your position") {
+                    add(nameArg.value, player.position)
                 }
-                "list" -> {
-                    if (args[1] != null) {
-                        searchWaypoints(args[1]!!)
-                    } else {
-                        listWaypoints(false)
-                    }
+            }
+
+            executeSafe("Add an unnamed waypoint at your position") {
+                add("Unnamed", player.position)
+            }
+        }
+
+        literal("del", "remove", "delete", "-") {
+            int("id") { idArg ->
+                executeAsync("Delete a waypoint by ID") {
+                    delete(idArg.value)
                 }
-                "clear" -> {
-                    if (System.currentTimeMillis() - confirmTime > 15000L) {
-                        confirmTime = System.currentTimeMillis()
-                        MessageSendHelper.sendChatMessage("This will delete ALL your waypoints, run '&7${commandPrefix.value}wp clear&f' again to confirm")
-                    } else {
-                        confirmTime = 0L
-                        WaypointManager.clear()
-                        MessageSendHelper.sendChatMessage("Waypoints have been &ccleared")
-                    }
+            }
+        }
+
+        literal("goto", "path") {
+            int("id") { idArg ->
+                executeAsync("Go to a waypoint with Baritone") {
+                    goto(idArg.value)
                 }
-                "stash" -> listWaypoints(true)
-                "stashes" -> listWaypoints(true)
-                "help" -> {
-                    val p = getCommandPrefix()
-                    MessageSendHelper.sendChatMessage("Waypoint command help\n\n" +
-                            "    &7add&f <name> <coord>\n" +
-                            "        &7${p}wp add\n" +
-                            "        &7${p}wp add Test 420,120,-1024\n\n" +
-                            "    &7remove&f <id>\n" +
-                            "        &7${p}wp remove 23\n\n" +
-                            "    &7goto&f <id>\n" +
-                            "        &7${p}wp goto 22\n\n" +
-                            "    &7list&f <filter>\n" +
-                            "        &7${p}wp list\n" +
-                            "        &7${p}wp list Logout\n\n" +
-                            "    &7stashes&f\n" +
-                            "        &7${p}wp stashes")
+            }
+        }
+
+        literal("list") {
+            execute("List saved waypoints") {
+                list()
+            }
+        }
+
+        literal("stash", "stashes") {
+            executeAsync("List stash waypoints") {
+                stash()
+            }
+        }
+
+        literal("search") {
+            string("name") { nameArg ->
+                executeAsync("Search waypoints by name") {
+                    search(nameArg.value)
                 }
-                else -> MessageSendHelper.sendErrorMessage("Please enter a valid argument!")
+            }
+        }
+
+        literal("clear") {
+            execute("Clear all waypoints") {
+                clear()
             }
         }
     }
 
-    private fun listWaypoints(stashes: Boolean) {
-        val waypoints = WaypointManager.waypoints
-        if (waypoints.isEmpty()) {
-            if (!stashes) {
-                MessageSendHelper.sendChatMessage("No waypoints have been saved.")
-            } else {
-                MessageSendHelper.sendChatMessage("No stashes have been logged.")
-            }
-        } else {
-            if (!stashes) {
-                MessageSendHelper.sendChatMessage("List of waypoints:")
-            } else {
-                MessageSendHelper.sendChatMessage("List of logged stashes:")
-            }
-            val stashRegex = Regex("(\\(.* chests, .* shulkers, .* droppers, .* dispensers\\))")
-            for (waypoint in WaypointManager.waypoints) {
-                if (stashes) {
-                    if (waypoint.name.matches(stashRegex)) {
-                        MessageSendHelper.sendRawChatMessage(format(waypoint, ""))
-                    }
-                } else {
-                    if (!waypoint.name.matches(stashRegex)) {
-                        MessageSendHelper.sendRawChatMessage(format(waypoint, ""))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun searchWaypoints(search: String) {
-        var found = false
-        var first = true
-
-        for (waypoint in WaypointManager.waypoints) {
-            if (waypoint.name.contains(search)) {
-                if (first) {
-                    MessageSendHelper.sendChatMessage("Result of search for &7$search&f: ")
-                    first = false
-                }
-                MessageSendHelper.sendRawChatMessage(format(waypoint, search))
-                found = true
-            }
-        }
-        if (!found) {
-            MessageSendHelper.sendChatMessage("No results for &7$search&f")
-        }
-    }
-
-    private fun delete(args: Array<out String?>) {
-        if (args[1] != null) {
-            if (WaypointManager.remove(args[1]!!)) {
-                MessageSendHelper.sendChatMessage("Removed waypoint with ID " + args[1])
-            } else {
-                MessageSendHelper.sendChatMessage("No waypoint with ID " + args[1])
-            }
-        } else {
-            MessageSendHelper.sendErrorMessage("You must provide a waypoint ID delete a waypoint. Use '&7${commandPrefix.value}wp list&f' to list saved waypoints and their IDs")
-        }
-    }
-
-    private fun format(waypoint: Waypoint, search: String): String {
-        val message = "${formattedID(waypoint.id)} [${waypoint.server}] ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
-        return message.replace(search.toRegex(), "&7$search&f")
-    }
-
-    private fun formattedID(id: Int): String { // massive meme to format the spaces for the width of id lmao
-        return " ".repeat((5 - id.toString().length).coerceAtLeast(0)) + "[$id]"
-    }
-
-    private fun confirm(name: String, pos: BlockPos) {
+    private fun add(name: String, pos: BlockPos) {
+        WaypointManager.add(pos, name)
         MessageSendHelper.sendChatMessage("Added waypoint at ${pos.asString()} in the ${InfoCalculator.dimension()} with name '&7$name&f'.")
+    }
+
+    private fun delete(id: Int) {
+        if (WaypointManager.remove(id)) {
+            MessageSendHelper.sendChatMessage("Removed waypoint with ID $id")
+        } else {
+            MessageSendHelper.sendChatMessage("No waypoint with ID $id")
+        }
+    }
+
+    private fun goto(id: Int) {
+        val waypoint = WaypointManager.get(id)
+        onMainThreadSafe {
+            if (waypoint != null) {
+                if (AutoWalk.isEnabled) AutoWalk.disable()
+                val pos = waypoint.currentPos()
+                MessageSendHelper.sendBaritoneCommand("goto", pos.x.toString(), pos.y.toString(), pos.z.toString())
+            } else {
+                MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
+            }
+        }
+    }
+
+    private fun list() {
+        if (WaypointManager.waypoints.isEmpty()) {
+            MessageSendHelper.sendChatMessage("No waypoints have been saved.")
+        } else {
+            MessageSendHelper.sendChatMessage("List of waypoints:")
+            WaypointManager.waypoints.forEach {
+                MessageSendHelper.sendRawChatMessage(format(it))
+            }
+        }
+    }
+
+    private fun stash() {
+        val filtered = WaypointManager.waypoints.filter { it.name.matches(stashRegex) }
+        if (filtered.isEmpty()) {
+            MessageSendHelper.sendChatMessage("No stashes have been logged.")
+        } else {
+            MessageSendHelper.sendChatMessage("List of logged stashes:")
+            filtered.forEach {
+                MessageSendHelper.sendRawChatMessage(format(it))
+            }
+        }
+    }
+
+    private fun search(name: String) {
+        val filtered = WaypointManager.waypoints.filter { it.name.equals(name, true) }
+        if (filtered.isEmpty()) {
+            MessageSendHelper.sendChatMessage("No results for &7$name&f")
+        } else {
+            MessageSendHelper.sendChatMessage("Result of search for &7$name&f:")
+            filtered.forEach {
+                MessageSendHelper.sendRawChatMessage(format(it))
+            }
+        }
+    }
+
+    private fun clear() {
+        if (System.currentTimeMillis() - confirmTime > 15000L) {
+            confirmTime = System.currentTimeMillis()
+            MessageSendHelper.sendWarningMessage("This will delete ALL your waypoints, " +
+                "run ${formatValue("$prefixName clear")} again to confirm"
+            )
+        } else {
+            confirmTime = 0L
+            WaypointManager.clear()
+            MessageSendHelper.sendChatMessage("Waypoints have been &ccleared")
+        }
+    }
+
+    private fun format(waypoint: Waypoint): String {
+        return "${waypoint.id} [${waypoint.server}] ${waypoint.name} (${bothConverted(waypoint.dimension, waypoint.pos)})"
     }
 
 }

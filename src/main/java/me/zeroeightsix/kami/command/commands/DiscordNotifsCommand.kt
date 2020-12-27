@@ -1,36 +1,50 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.chat.DiscordNotifs
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
-/**
- * @author l1ving
- * Created by l1ving on 26/03/20
- */
-class DiscordNotifsCommand : Command("discordnotifs", ChunkBuilder().append("webhook url").append("discord id").append("avatar url").build(), "webhook") {
-    override fun call(args: Array<String?>) {
-        if (args[0] != null && args[0] != "") {
-            DiscordNotifs.url.setValue(args[0]!!)
-            sendChatMessage(DiscordNotifs.chatName + " Set URL to \"" + args[0] + "\"!")
-        } else if (args[0] == null) {
-            sendErrorMessage(DiscordNotifs.chatName + " Error: you must specify a URL or \"\" for the first parameter when running the command")
+// TODO: Remove once GUI has proper String setting editing and is in master branch
+object DiscordNotifsCommand : ClientCommand(
+    name = "discordnotifs",
+    alias = arrayOf("webhook")
+) {
+    private val urlRegex = Regex("^https://.*discord\\.com/api/webhooks/([0-9])+/.{68}$2")
+
+    init {
+        literal("id") {
+            long("discord user id") { idArg ->
+                execute("Set the ID of the user to be pinged") {
+                    DiscordNotifs.pingID.value = idArg.value.toString()
+                    MessageSendHelper.sendChatMessage("Set Discord User ID to ${formatValue(idArg.value.toString())}!")
+                }
+            }
+
         }
-        if (args[1] == null) return
-        if (args[1] != "") {
-            DiscordNotifs.pingID.setValue(args[1]!!)
-            sendChatMessage(DiscordNotifs.chatName + " Set Discord ID to \"" + DiscordNotifs.pingID.value + "\"!")
+
+        literal("avatar") {
+            greedy("url") { urlArg ->
+                execute("Set the webhook icon") {
+                    DiscordNotifs.avatar.value = urlArg.value
+                    MessageSendHelper.sendChatMessage("Set Webhook Avatar to ${formatValue(urlArg.value)}!")
+                }
+            }
         }
-        if (args[2] == null) return
-        if (args[2] != "") {
-            DiscordNotifs.avatar.setValue(args[2]!!)
-            sendChatMessage(DiscordNotifs.chatName + " Set Avatar to \"" + args[2] + "\"!")
-        } else {
-            DiscordNotifs.avatar.setValue(KamiMod.GITHUB_LINK + "raw/assets/assets/icons/kami.png")
-            sendChatMessage(DiscordNotifs.chatName + " Reset Avatar!")
+
+        greedy("url") { urlArg ->
+            execute("Set the webhook url") {
+                if (!urlRegex.matches(urlArg.value)) {
+                    MessageSendHelper.sendErrorMessage("Error, the URL " +
+                        formatValue(urlArg.value) +
+                        " does not match the valid webhook format!"
+                    )
+                    return@execute
+                }
+
+                DiscordNotifs.url.value = urlArg.value
+                MessageSendHelper.sendChatMessage("Set Webhook URL to ${formatValue(urlArg.value)}!")
+            }
         }
     }
 }

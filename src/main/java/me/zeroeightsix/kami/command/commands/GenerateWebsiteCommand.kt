@@ -1,54 +1,55 @@
 package me.zeroeightsix.kami.command.commands
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.Command
+import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import java.io.File
+import java.util.*
 
-/**
- * @author l1ving
- * Updated by l1ving on 18/03/20
- * Updated by Xiaro on 18/08/20
- *
- * Horribly designed command for uh, generating the modules page on the website. This was the easiest way I could do it, but maybe not the most efficient.
- */
-class GenerateWebsiteCommand : Command("genwebsite", null) {
-    override fun call(args: Array<String>) {
-        val mods = ModuleManager.getModules()
-        val modCategories = arrayOf("Chat", "Combat", "Client", "Misc", "Movement", "Player", "Render")
-        KamiMod.LOG.info("\n"
-                + "---\n"
-                + "layout: default\n"
-                + "title: Modules\n"
-                + "description: A list of modules and commands this mod has\n"
-                + "---"
-                + "\n## Modules (${mods.size})\n")
-
-        for (modCategory in modCategories) {
-            var totalMods = 0
-            var str = ""
-            for (module in mods) {
-                if (!module.isProduction) continue
-                if (!module.category.toString().equals(modCategory, ignoreCase = true)) continue
-                totalMods++
-                str += "        <li>" + module.name + "<p><i>" + module.description + "</i></p></li>"
-            }
-            KamiMod.LOG.info("<details>")
-            KamiMod.LOG.info("    <summary>$modCategory ($totalMods)</summary>")
-            KamiMod.LOG.info("    <p><ul>")
-            KamiMod.LOG.info(str)
-            KamiMod.LOG.info("    </ul></p>")
-            KamiMod.LOG.info("</details>")
-        }
-        sendChatMessage(getLabel().substring(0, 1).toUpperCase() + getLabel().substring(1) + ": Generated website to log file!")
-    }
-
-    private fun nameAndDescription(module: Module): String {
-        return "<li>" + module.name + "<p><i>" + module.description + "</i></p></li>"
-    }
+object GenerateWebsiteCommand : ClientCommand(
+    name = "generatewebsite",
+    description = "Generates the website modules to the file"
+) {
+    private const val path = "${KamiMod.DIRECTORY}modules.md"
 
     init {
-        setDescription("Generates the module page for the website")
+        execute {
+            commandScope.launch {
+                val modulesList = ModuleManager.getModules()
+                val moduleMap = TreeMap<Module.Category, MutableList<Module>>()
+                modulesList.groupByTo(moduleMap) { it.category }
+
+                launch(Dispatchers.IO) {
+                    val file = File(path)
+                    if (!file.exists()) file.createNewFile()
+                    file.bufferedWriter().use {
+                        it.appendLine("---")
+                        it.appendLine("layout: default")
+                        it.appendLine("title: Modules")
+                        it.appendLine("description: A list of modules and commands this mod has")
+                        it.appendLine("---")
+                        it.appendLine("## Modules (${modulesList.size})")
+                        it.newLine()
+
+                        for ((category, modules) in moduleMap) {
+                            it.appendLine("<details>")
+                            it.appendLine("    <summary>$category (${modules.size})</summary>")
+                            it.appendLine("    <p><ul>")
+                            for (module in modules) {
+                                it.appendLine("        <li>${module.name.value}<p><i>${module.description}</i></p></li>")
+                            }
+                            it.appendLine("    </ul></p>")
+                            it.appendLine("</details>")
+                        }
+                    }
+                }
+
+                MessageSendHelper.sendChatMessage("Generated website to .minecraft/$path!")
+            }
+        }
     }
 }

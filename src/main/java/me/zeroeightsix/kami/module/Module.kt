@@ -12,8 +12,8 @@ import net.minecraft.client.Minecraft
 open class Module {
     /* Annotations */
     private val annotation =
-            javaClass.annotations.firstOrNull { it is Info } as? Info
-                    ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
+        javaClass.annotations.firstOrNull { it is Info } as? Info
+            ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
     val name = annotation.name
     val alias = arrayOf(name, *annotation.alias)
@@ -38,15 +38,16 @@ open class Module {
     /**
      * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
      */
-    enum class Category(val categoryName: String, val isHidden: Boolean) {
-        CHAT("Chat", false),
-        COMBAT("Combat", false),
-        CLIENT("Client", false),
-        HIDDEN("Hidden", true),
-        MISC("Misc", false),
-        MOVEMENT("Movement", false),
-        PLAYER("Player", false),
-        RENDER("Render", false);
+    enum class Category(override val displayName: String): DisplayEnum {
+        CHAT("Chat"),
+        CLIENT("Client"),
+        COMBAT("Combat"),
+        MISC("Misc"),
+        MOVEMENT("Movement"),
+        PLAYER("Player"),
+        RENDER("Render");
+
+        override fun toString() = displayName
     }
     /* End of annotations */
 
@@ -66,7 +67,6 @@ open class Module {
     val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
-    val isProduction: Boolean get() = category != Category.HIDDEN
     /* End of properties */
 
 
@@ -114,10 +114,10 @@ open class Module {
     }
 
 
-    /**
-     * Cleanup method in case this module wants to do something when the client closes down
-     */
-    open fun destroy() {}
+    open fun destroy() {
+        // Cleanup method in case this module wants to do something when the client closes down
+    }
+
     open fun isActive(): Boolean {
         return isEnabled || alwaysListening
     }
@@ -126,9 +126,17 @@ open class Module {
         return ""
     }
 
-    protected open fun onEnable() {}
-    protected open fun onDisable() {}
-    protected open fun onToggle() {}
+    protected open fun onEnable() {
+        // override to run code when the module is enabled
+    }
+
+    protected open fun onDisable() {
+        // override to run code when the module is disabled
+    }
+
+    protected open fun onToggle() {
+        // override to run code when the module is enabled or disabled
+    }
 
     init {
         default.valueListeners.add { _, it ->
@@ -142,5 +150,6 @@ open class Module {
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()
+        val moduleScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Module"))
     }
 }

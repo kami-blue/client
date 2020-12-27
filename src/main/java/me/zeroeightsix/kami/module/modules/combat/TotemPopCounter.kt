@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.KamiMod
@@ -11,6 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
@@ -113,7 +112,7 @@ object TotemPopCounter : Module() {
                 MessageSendHelper.sendChatMessage("$chatName $message")
             }
             Announce.EVERYONE -> {
-                MessageSendHelper.sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
+                sendServerMessage(TextFormatting.getTextWithoutFormattingCodes(message))
             }
         }
     }

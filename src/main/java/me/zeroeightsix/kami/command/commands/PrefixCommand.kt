@@ -1,34 +1,33 @@
 package me.zeroeightsix.kami.command.commands
 
-import me.zeroeightsix.kami.command.Command
-import me.zeroeightsix.kami.command.syntax.ChunkBuilder
+import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 
-/**
- * Created by 086 on 10/10/2018.
- */
-class PrefixCommand : Command("prefix", ChunkBuilder().append("character").build()) {
-    override fun call(args: Array<String?>) {
-        if (args.isEmpty()) {
-            MessageSendHelper.sendChatMessage("Please specify a new prefix!")
-            return
-        }
-        when {
-            args[0] == "\\" -> {
-                MessageSendHelper.sendChatMessage("Error: \"\\\" is not a supported prefix")
-            }
-            args[0] != null -> {
-                commandPrefix.setValue(args[0]!!)
-                MessageSendHelper.sendChatMessage("Prefix set to &b" + commandPrefix.value)
-            }
-            else -> {
-                MessageSendHelper.sendChatMessage("Please specify a new prefix!")
-            }
-        }
-
-    }
-
+object PrefixCommand : ClientCommand(
+    name = "prefix",
+    description = "Change command prefix"
+) {
     init {
-        setDescription("Changes the prefix to your new key")
+        literal("reset") {
+            execute("Reset the prefix to ;") {
+                CommandConfig.prefix.value = ";"
+                MessageSendHelper.sendChatMessage("Reset prefix to [&7;&f]!")
+            }
+        }
+
+        string("new prefix") { prefixArg ->
+            execute("Set a new prefix") {
+                if (prefixArg.value.isEmpty() || prefixArg.value == "\\") {
+                    CommandConfig.prefix.value = ";"
+                    MessageSendHelper.sendChatMessage("Reset prefix to [&7;&f]!")
+                    return@execute
+                }
+
+                CommandConfig.prefix.value = prefixArg.value
+                MessageSendHelper.sendChatMessage("Set prefix to ${formatValue(prefixArg.value)}!")
+            }
+        }
     }
 }

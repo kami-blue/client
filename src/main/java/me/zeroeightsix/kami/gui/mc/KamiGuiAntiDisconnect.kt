@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.gui.mc
 
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect
 import me.zeroeightsix.kami.util.color.ColorConverter
+import me.zeroeightsix.kami.util.text.format
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
@@ -12,11 +13,12 @@ import net.minecraft.util.text.TextFormatting
 class KamiGuiAntiDisconnect : GuiScreen() {
 
     private var disconnectCount = AntiDisconnect.presses.value
-    private val button = GuiButton(1, width / 2 - 100, 230, buttonText)
-    private val buttonText get() = TextFormatting.RED.toString() + "Press me $disconnectCount time(s) to disconnect."
+    private var button = GuiButton(1, width / 2 - 100, 230, buttonText)
+    private val buttonText get() = TextFormatting.RED format "Press me $disconnectCount time(s) to disconnect."
 
     override fun initGui() {
         super.initGui()
+        button = GuiButton(1, width / 2 - 100, 230, buttonText)
         buttonList.add(GuiButton(0, width / 2 - 100, 200, "Back to Game"))
         buttonList.add(button)
     }
