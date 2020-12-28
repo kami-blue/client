@@ -47,13 +47,11 @@ object BaritoneRemote : Module() {
             val command = MessageDetection.Direct.RECEIVE.removedOrNull(message) ?: return@listener
             val username = MessageDetection.Direct.RECEIVE.playerName(message) ?: return@listener
 
-            if (MessageDetection.Command.BARITONE detectNot command || !isValidUser(username)) return@listener
+            if (!isValidUser(username)) return@listener
 
-            val baritoneCommand =
-                if (command.startsWith(bPrefix)) command.substring(bPrefix.length).split(" ")
-                else command.substring(kbPrefix.length).split(" ")
+            val baritoneCommand = MessageDetection.Command.BARITONE.removedOrNull(command) ?: return@listener
 
-            MessageSendHelper.sendBaritoneCommand(*baritoneCommand.toTypedArray())
+            MessageSendHelper.sendBaritoneCommand(*baritoneCommand.split(' ').toTypedArray())
             sendNextMsg = true
             lastController = username
         }

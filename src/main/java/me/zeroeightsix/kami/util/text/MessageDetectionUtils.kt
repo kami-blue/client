@@ -6,12 +6,28 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Wrapper
 
 object MessageDetection {
-    enum class Command(override val filter: (CharSequence) -> Boolean) : LambdaDetector {
-        KAMI_BLUE({ it.startsWith(CommandManager.prefix) }),
-        BARITONE({ it.startsWith(BaritoneUtils.prefix) || it.startsWith("${CommandManager.prefix}b") || it.startsWith(".b") }),
-        ANY({ input -> commandPrefixes.any { input.startsWith(it) } });
+    enum class Command(override val filter: (CharSequence) -> Boolean) : LambdaDetector, RemovableDetector {
+        KAMI_BLUE({ it.startsWith(CommandManager.prefix) }) {
+            override fun removedOrNull(input: CharSequence): CharSequence? {
+                return if (!filter(input)) null
+                else input.removePrefix(CommandManager.prefix)
+            }
+        },
+        BARITONE({ input -> baritonePrefixes.any { input.startsWith(it, true) } }) {
+            override fun removedOrNull(input: CharSequence) = baritonePrefixes.firstOrNull(input::startsWith)?.let {
+                input.removePrefix(it)
+            }
+        },
+        ANY({ input -> commandPrefixes.any { input.startsWith(it, true) } }) {
+            override fun removedOrNull(input: CharSequence) = commandPrefixes.firstOrNull(input::startsWith)?.let {
+                input.removePrefix(it)
+            }
+        };
 
         private companion object {
+            private val baritonePrefixes: Array<String>
+                get() = arrayOf(BaritoneUtils.prefix, "${CommandManager.prefix}b", ".b")
+
             private val commandPrefixes: Array<String>
                 get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
                     CommandManager.prefix,
