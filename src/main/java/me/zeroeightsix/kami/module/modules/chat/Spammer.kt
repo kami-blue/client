@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -52,7 +52,7 @@ object Spammer : Module() {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@listener
             val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()
-            if (MessageDetectionHelper.isKamiCommand(message)) {
+            if (MessageDetection.Command.KAMI_BLUE detect message) {
                 MessageSendHelper.sendKamiCommand(message)
             } else {
                 sendServerMessage(message)
