@@ -6,32 +6,21 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Wrapper
 
 object MessageDetection {
-    enum class Command(override val filter: (CharSequence) -> Boolean) : LambdaDetector, RemovableDetector {
-        KAMI_BLUE({ it.startsWith(CommandManager.prefix) }) {
-            override fun removedOrNull(input: CharSequence): CharSequence? {
-                return if (!filter(input)) null
-                else input.removePrefix(CommandManager.prefix)
-            }
+    enum class Command : PrefixDetector {
+        KAMI_BLUE {
+            override val prefixes: Array<out CharSequence>
+                get() = arrayOf(CommandManager.prefix)
         },
-        BARITONE({ input -> baritonePrefixes.any { input.startsWith(it, true) } }) {
-            override fun removedOrNull(input: CharSequence) = baritonePrefixes.firstOrNull(input::startsWith)?.let {
-                input.removePrefix(it)
-            }
-        },
-        ANY({ input -> commandPrefixes.any { input.startsWith(it, true) } }) {
-            override fun removedOrNull(input: CharSequence) = commandPrefixes.firstOrNull(input::startsWith)?.let {
-                input.removePrefix(it)
-            }
-        };
-
-        private companion object {
-            private val baritonePrefixes: Array<String>
+        BARITONE {
+            override val prefixes: Array<out CharSequence>
                 get() = arrayOf(BaritoneUtils.prefix, "${CommandManager.prefix}b", ".b")
-
-            private val commandPrefixes: Array<String>
+        },
+        ANY {
+            override val prefixes: Array<out CharSequence>
                 get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
                     CommandManager.prefix,
-                    ChatEncryption.delimiterValue.value)
+                    ChatEncryption.delimiterValue.value
+                )
         }
     }
 
@@ -88,6 +77,6 @@ object MessageDetection {
 
     enum class Other(override vararg val regexes: Regex) : RegexDetector {
         BARITONE("^\\[B(aritone)?]".toRegex()),
-        TPA_REQUEST("^\\w+? (has requested|wants) to teleport to you\\.".toRegex());
+        TPA_REQUEST("^\\w+? (has requested|wants) to teleport to you\\.".toRegex())
     }
 }

@@ -10,10 +10,18 @@ interface RemovableDetector: Detector {
     fun removedOrNull(input: CharSequence): CharSequence?
 }
 
-interface LambdaDetector : Detector {
-    val filter: (CharSequence) -> Boolean
+interface PlayerDetector: Detector {
+    fun playerName(input: CharSequence): String?
+}
 
-    override fun detect(input: CharSequence) = filter(input)
+interface PrefixDetector : Detector , RemovableDetector{
+    val prefixes: Array<out CharSequence>
+
+    override fun detect(input: CharSequence) = prefixes.any { input.startsWith(it) }
+
+    override fun removedOrNull(input: CharSequence) = prefixes.firstOrNull(input::startsWith)?.let {
+        input.removePrefix(it)
+    }
 }
 
 interface RegexDetector : Detector, RemovableDetector {
@@ -26,8 +34,4 @@ interface RegexDetector : Detector, RemovableDetector {
     override fun removedOrNull(input: CharSequence): CharSequence? = matchedRegex(input)?.let { regex ->
         input.replace(regex, "").takeIf { it.isNotBlank() }
     }
-}
-
-interface PlayerDetector: Detector {
-    fun playerName(input: CharSequence): String?
 }
