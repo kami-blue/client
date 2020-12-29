@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 @Module.Info(
     name = "Notebot",
     category = Module.Category.MISC,
-    description = "Plays music with note blocks; put songs as .mid files in .minecraft/songs"
+    description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
 )
 object NoteBot : Module() {
 
