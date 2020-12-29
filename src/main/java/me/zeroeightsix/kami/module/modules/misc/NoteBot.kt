@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 @Module.Info(
     name = "Notebot",
     category = Module.Category.MISC,
-    description = "Plays music with noteblocks; put songs as .mid files in .minecraft/songs"
+    description = "Plays music with note blocks; put songs as .mid files in .minecraft/songs"
 )
 object NoteBot : Module() {
 
@@ -68,6 +68,7 @@ object NoteBot : Module() {
             field = value
         }
 
+    private val noteBlockMap = EnumMap<NoteBlockEvent.Instrument, Array<BlockPos?>>(NoteBlockEvent.Instrument::class.java)
     private val noteBlocks = ArrayList<BlockPos>()
     private val clickedBlocks = HashSet<BlockPos>()
     private val soundTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
@@ -114,7 +115,33 @@ object NoteBot : Module() {
         } catch (e: InvalidMidiDataException) {
             MessageSendHelper.sendChatMessage("Invalid MIDI Data: $path, ${e.message}")
             disable()
+        } catch (e: Exception) {
+            MessageSendHelper.sendChatMessage("Unknown error: $path, ${e.message}")
+            disable()
         }
+    }
+
+    private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
+        val sequence = MidiSystem.getSequence(File(filename))
+        val noteSequence = TreeMap<Long, ArrayList<Note>>()
+        val resolution = sequence.resolution.toDouble()
+
+        for (track in sequence.tracks) {
+            for (i in 0 until track.size()) {
+                val event = track[i]
+                val shortMessage = (event.message as? ShortMessage) ?: continue
+                if (shortMessage.command != ShortMessage.NOTE_ON) continue
+
+                val tick = event.tick
+                val time = (tick * (500000.0 / resolution) / 1000.0 + 0.5).toLong()
+                val note = shortMessage.data1 % 36
+                val channel = shortMessage.channel
+
+                noteSequence.getOrPut(time, ::ArrayList).add(Note(note, channel.coerceIn(0, 15)))
+            }
+        }
+
+        return noteSequence
     }
 
     private fun scanNoteBlocks() {
@@ -122,7 +149,7 @@ object NoteBot : Module() {
         val player = mc.player ?: return
 
         for (x in -5..5) {
-            for (y in -2..6) {
+            for (y in -3..6) {
                 for (z in -5..5) {
                     val pos = player.position.add(x, y, z)
                     if (!world.isAirBlock(pos.up())) continue
@@ -161,8 +188,9 @@ object NoteBot : Module() {
             if (!clickedBlocks.remove(pos)) return@listener
             val pitch = (log2(it.packet.pitch.toDouble()) * 12.0).roundToInt() + 12
 
-            println("Pos: $pos, Instrument: $instrument, Pitch: $pitch")
-            InstrumentMap[instrument][pitch.coerceIn(0, 24)] = pos
+            val array = noteBlockMap.getOrPut(instrument) { arrayOfNulls(25) }
+            array[pitch.coerceIn(0, 24)] = pos
+
             soundTimer.reset()
         }
     }
@@ -213,22 +241,22 @@ object NoteBot : Module() {
     private fun playNotes(notes: List<Note>, player: EntityPlayerSP, world: WorldClient) {
         for (note in notes) {
             if (note.track == 9) {
-                val instrument = getPercussion(note.note)?: continue
-                InstrumentMap.getPercussion(instrument)?.let {
+                val instrument = getPercussionInstrument(note.note) ?: continue
+                noteBlockMap[instrument]?.firstOrNull()?.let {
                     clickBlock(it, player, world)
                 }
             } else {
                 val instrument = channelSettings[note.track].value
                 val pitch = note.noteBlockNote
 
-                InstrumentMap[instrument][pitch]?.let {
+                noteBlockMap[instrument]?.get(pitch)?.let {
                     clickBlock(it, player, world)
                 }
             }
         }
     }
 
-    private fun getPercussion(note: Int) : NoteBlockEvent.Instrument? {
+    private fun getPercussionInstrument(note: Int): NoteBlockEvent.Instrument? {
         return when (note) {
             0 -> NoteBlockEvent.Instrument.BASSDRUM
             2, 4 -> NoteBlockEvent.Instrument.SNARE
@@ -253,41 +281,6 @@ object NoteBot : Module() {
             .filter { world.isAirBlock(pos.offset(it)) }
             .minByOrNull { BlockUtils.getHitVec(pos, it).distanceTo(playerPos) }
             ?: EnumFacing.UP
-    }
-
-    private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
-        val sequence = MidiSystem.getSequence(File(filename))
-        val noteSequence = TreeMap<Long, java.util.ArrayList<Note>>()
-        val resolution = sequence.resolution.toDouble()
-
-        for (track in sequence.tracks) {
-            for (i in 0 until track.size()) {
-                val event = track[i]
-                val shortMessage = (event.message as? ShortMessage) ?: continue
-                if (shortMessage.command != ShortMessage.NOTE_ON) continue
-
-                val note = shortMessage.data1 % 36
-                val tick = event.tick
-                val channel = shortMessage.channel
-                val time = (tick * (500000.0 / resolution) / 1000.0 + 0.5).toLong()
-
-                noteSequence.getOrPut(time, ::ArrayList).add(Note(note, channel.coerceIn(0, 15)))
-            }
-        }
-
-        return noteSequence
-    }
-
-    private object InstrumentMap {
-        private val instruments = EnumMap<NoteBlockEvent.Instrument, Array<BlockPos?>>(NoteBlockEvent.Instrument::class.java)
-
-        operator fun get(instrument: NoteBlockEvent.Instrument): Array<BlockPos?> {
-            return instruments.getOrPut(instrument) { arrayOfNulls(25) }
-        }
-
-        fun getPercussion(instrument: NoteBlockEvent.Instrument): BlockPos? {
-            return instruments[instrument]?.firstOrNull()
-        }
     }
 
     private class Note(val note: Int, val track: Int) {
