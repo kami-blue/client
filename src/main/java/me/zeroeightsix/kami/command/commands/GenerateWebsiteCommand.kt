@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
@@ -17,12 +18,12 @@ object GenerateWebsiteCommand : ClientCommand(
     private const val path = "${KamiMod.DIRECTORY}modules.md"
 
     init {
-        execute {
-            commandScope.launch {
-                val modulesList = ModuleManager.getModules()
-                val moduleMap = TreeMap<Module.Category, MutableList<Module>>()
-                modulesList.groupByTo(moduleMap) { it.category }
+        executeAsync {
+            val modulesList = ModuleManager.getModules()
+            val moduleMap = TreeMap<Module.Category, MutableList<Module>>()
+            modulesList.groupByTo(moduleMap) { it.category }
 
+            coroutineScope {
                 launch(Dispatchers.IO) {
                     val file = File(path)
                     if (!file.exists()) file.createNewFile()
@@ -47,9 +48,9 @@ object GenerateWebsiteCommand : ClientCommand(
                         }
                     }
                 }
-
-                MessageSendHelper.sendChatMessage("Generated website to .minecraft/$path!")
             }
+
+            MessageSendHelper.sendChatMessage("Generated website to .minecraft/$path!")
         }
     }
 }
