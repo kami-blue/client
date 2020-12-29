@@ -17,7 +17,7 @@ import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import java.io.*
+import java.io.File
 
 abstract class AbstractConfig<T>(
         name: String,
@@ -131,14 +131,8 @@ abstract class AbstractConfig<T>(
         ConfigUtils.fixEmptyJson(backup)
         if (file.exists()) file.copyTo(backup, true)
 
-        val fileWriter = BufferedWriter(FileWriter(file, false))
-        try {
-            gson.toJson(group.write(), fileWriter)
-            fileWriter.flush()
-            fileWriter.close()
-        } catch (e: Exception) {
-            fileWriter.flush()
-            fileWriter.close()
+        file.bufferedWriter().use {
+            gson.toJson(group.write(), it)
         }
     }
 
@@ -150,15 +144,11 @@ abstract class AbstractConfig<T>(
      */
     protected fun loadFromFile(group: SettingGroup, file: File) {
         ConfigUtils.fixEmptyJson(file)
-        val fileReader = BufferedReader(FileReader(file))
-        try {
-            val jsonObject = parser.parse(fileReader).asJsonObject
-            group.read(jsonObject)
-            fileReader.close()
-        } catch (e: Exception) {
-            fileReader.close()
-            throw e
+
+        val jsonObject = file.bufferedReader().use {
+            parser.parse(it).asJsonObject
         }
+        group.read(jsonObject)
     }
 
     /**
