@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -20,10 +21,8 @@ import net.minecraft.util.SoundCategory
 import net.minecraft.util.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.event.world.NoteBlockEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
-import org.lwjgl.input.Keyboard
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -40,8 +39,8 @@ import kotlin.math.roundToInt
 )
 object NoteBot : Module() {
 
-    private val bindToggle = register(Settings.custom("BindToggle", Bind.none(), BindConverter()))
-    private val bindReload = register(Settings.custom("BindReload", Bind.none(), BindConverter()))
+    private val togglePlay = register(Settings.b("TogglePlay", false))
+    private val reloadSong = register(Settings.b("ReloadSong", false))
     private val channel1 = register(Settings.e<NoteBlockEvent.Instrument>("Channel1", NoteBlockEvent.Instrument.PIANO))
     private val channel2 = register(Settings.e<NoteBlockEvent.Instrument>("Channel2", NoteBlockEvent.Instrument.PIANO))
     private val channel3 = register(Settings.e<NoteBlockEvent.Instrument>("Channel3", NoteBlockEvent.Instrument.PIANO))
@@ -80,18 +79,18 @@ object NoteBot : Module() {
         channel13, channel14, channel15, channel16
     )
 
-    init {
-        listener<InputEvent.KeyInputEvent> {
-            if (bindToggle.value.isDown(Keyboard.getEventKey())) playingSong = !playingSong
-            if (bindReload.value.isDown(Keyboard.getEventKey())) loadSong()
-        }
-    }
-
     override fun onEnable() {
-        if (mc.world == null || mc.player == null || mc.player.isCreative) {
-            MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
+        if (mc.world == null || mc.player == null) {
+            disable()
             return
         }
+
+        if (mc.player.isCreative) {
+            MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
+            disable()
+            return
+        }
+
         loadSong()
         scanNoteBlocks()
     }
@@ -303,5 +302,22 @@ object NoteBot : Module() {
                 val key = (note - 6) % 24
                 return if (key < 0) 24 + key else key
             }
+    }
+
+    init {
+        togglePlay.settingListener = Setting.SettingListeners {
+            if (isEnabled && togglePlay.value) {
+                playingSong = !playingSong
+                togglePlay.value = false
+                if (playingSong) MessageSendHelper.sendChatMessage("Start playing!")
+                else MessageSendHelper.sendChatMessage("Pause playing!")
+            }
+        }
+
+        reloadSong.settingListener = Setting.SettingListeners {
+            if (isEnabled && togglePlay.value) {
+                loadSong()
+            }
+        }
     }
 }
