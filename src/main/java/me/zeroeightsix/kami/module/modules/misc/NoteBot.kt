@@ -121,7 +121,7 @@ object NoteBot : Module() {
         val player = mc.player ?: return
 
         for (x in -5..5) {
-            for (y in -5..5) {
+            for (y in -4..6) {
                 for (z in -5..5) {
                     val pos = player.position.add(x, y, z)
                     if (!world.isAirBlock(pos.up())) continue
@@ -161,7 +161,7 @@ object NoteBot : Module() {
             val pitch = (log2(it.packet.pitch.toDouble()) * 12.0).roundToInt() + 12
 
             println("Pos: $pos, Instrument: $instrument, Pitch: $pitch")
-            InstrumentMap.add(instrument, pitch.coerceIn(0..24), pos)
+            InstrumentMap[instrument][pitch.coerceIn(0, 24)] = pos
             soundTimer.reset()
         }
     }
@@ -210,13 +210,29 @@ object NoteBot : Module() {
     }
 
     private fun playNotes(notes: List<Note>, player: EntityPlayerSP, world: WorldClient) {
-        notes.forEach { note ->
-            val instrument = channelSettings.getOrNull(note.track)?.value ?: return@forEach
-            val pitch = note.notebotNote
+        for (note in notes) {
+            if (note.track == 9) {
+                val instrument = getPercussion(note.note)?: continue
+                InstrumentMap[instrument][0]?.let {
+                    clickBlock(it, player, world)
+                }
+            } else {
+                val instrument = channelSettings[note.track].value
+                val pitch = note.noteBlockNote
 
-            InstrumentMap[instrument][pitch]?.let {
-                clickBlock(it, player, world)
+                InstrumentMap[instrument][pitch]?.let {
+                    clickBlock(it, player, world)
+                }
             }
+        }
+    }
+
+    private fun getPercussion(note: Int) : NoteBlockEvent.Instrument? {
+        return when (note) {
+            36 -> NoteBlockEvent.Instrument.BASSDRUM
+            38, 40 -> NoteBlockEvent.Instrument.SNARE
+            37, 42, 44, 46 -> NoteBlockEvent.Instrument.CLICKS
+            else -> null
         }
     }
 
@@ -238,7 +254,7 @@ object NoteBot : Module() {
             ?: EnumFacing.UP
     }
 
-    fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
+    private fun parse(filename: String): TreeMap<Long, java.util.ArrayList<Note>> {
         val sequence = MidiSystem.getSequence(File(filename))
         val noteSequence = TreeMap<Long, java.util.ArrayList<Note>>()
         val resolution = sequence.resolution.toDouble()
@@ -254,34 +270,24 @@ object NoteBot : Module() {
                 val channel = shortMessage.channel
                 val time = (tick * (500000.0 / resolution) / 1000.0 + 0.5).toLong()
 
-                noteSequence.getOrPut(time, ::ArrayList).add(Note(note, channel))
+                noteSequence.getOrPut(time, ::ArrayList).add(Note(note, channel.coerceIn(0, 15)))
             }
         }
 
         return noteSequence
     }
 
-    object InstrumentMap {
+    private object InstrumentMap {
         private val instruments = EnumMap<NoteBlockEvent.Instrument, Array<BlockPos?>>(NoteBlockEvent.Instrument::class.java)
 
         operator fun get(instrument: NoteBlockEvent.Instrument): Array<BlockPos?> {
             return instruments.getOrPut(instrument) { arrayOfNulls(25) }
         }
-
-        fun add(instrument: NoteBlockEvent.Instrument, note: Int, pos: BlockPos?) {
-            this[instrument][note] = pos
-
-        }
     }
 
-    class Note(val note: Int, val track: Int) {
-
-        val notebotNote: Int
+    private class Note(val note: Int, val track: Int) {
+        val noteBlockNote: Int
             get() = getNotebotKey(note)
-
-        override fun toString(): String {
-            return getKey(note) + "[" + track + "]"
-        }
 
         private companion object {
             val keys = arrayOf(
@@ -301,8 +307,8 @@ object NoteBot : Module() {
                  * "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
                  * "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"
                  */
-                val k = (note - 6) % 24
-                return if (k < 0) 24 + k else k
+                val key = (note - 6) % 24
+                return if (key < 0) 24 + key else key
             }
         }
     }
