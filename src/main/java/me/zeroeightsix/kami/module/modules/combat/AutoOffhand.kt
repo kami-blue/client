@@ -5,8 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -14,11 +13,10 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.Item
-import net.minecraft.item.ItemAxe
-import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemSword
+import net.minecraft.init.MobEffects
+import net.minecraft.item.*
 import net.minecraft.network.play.server.SPacketConfirmTransaction
+import net.minecraft.potion.PotionUtils
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
@@ -26,9 +24,9 @@ import kotlin.math.ceil
 import kotlin.math.max
 
 @Module.Info(
-        name = "AutoOffhand",
-        description = "Manages item in your offhand",
-        category = Module.Category.COMBAT
+    name = "AutoOffhand",
+    description = "Manages item in your offhand",
+    category = Module.Category.COMBAT
 )
 object AutoOffhand : Module() {
     private val type = setting("Type", Type.TOTEM)
@@ -45,23 +43,30 @@ object AutoOffhand : Module() {
     // Gapple
     private val offhandGapple = setting("OffhandGapple", false, { type.value == Type.GAPPLE })
     private val bindGapple = setting("BindGapple", { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkAura = setting("CheckAura", true, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkWeapon = setting("CheckWeapon", false, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkCAGapple = setting("CheckCrystalAura", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
+    private val checkAuraG = setting("CheckAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkWeaponG = setting("CheckWeaponG", false, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkCAGapple = setting("CheckCrystalAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
+
+    // Strength
+    private val offhandStrength = setting("OffhandStrength", false, { type.value == Type.STRENGTH })
+    private val bindStrength = setting("BindStrength", { type.value == Type.STRENGTH && offhandStrength.value })
+    private val checkAuraS = setting("CheckAuraS", true, { type.value == Type.STRENGTH && offhandStrength.value })
+    private val checkWeaponS = setting("CheckWeaponS", false, { type.value == Type.STRENGTH && offhandStrength.value })
 
     // Crystal
     private val offhandCrystal = setting("OffhandCrystal", false, { type.value == Type.CRYSTAL })
     private val bindCrystal = setting("BindCrystal", { type.value == Type.CRYSTAL && offhandCrystal.value })
-    private val checkCACrystal = setting("CheckCrystalAura", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val checkCACrystal = setting("CheckCrystalAuraC", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
 
     // General
     private val priority = setting("Priority", Priority.HOTBAR)
     private val switchMessage = setting("SwitchMessage", true)
 
-    private enum class Type(val itemId: Int) {
-        TOTEM(449),
-        GAPPLE(322),
-        CRYSTAL(426)
+    private enum class Type(val filter: (ItemStack) -> Boolean) {
+        TOTEM({ it.item.id == 449 }),
+        GAPPLE({ it.item is ItemAppleGold }),
+        STRENGTH({ it -> it.item is ItemPotion && PotionUtils.getEffectsFromStack(it).any { it.potion == MobEffects.STRENGTH } }),
+        CRYSTAL({ it.item is ItemEndCrystal }),
     }
 
     @Suppress("UNUSED")
@@ -75,10 +80,12 @@ object AutoOffhand : Module() {
 
     init {
         listener<InputEvent.KeyInputEvent> {
+            val key = Keyboard.getEventKey()
             when {
-                bindTotem.value.isDown(Keyboard.getEventKey()) -> switchToType(Type.TOTEM)
-                bindGapple.value.isDown(Keyboard.getEventKey()) -> switchToType(Type.GAPPLE)
-                bindCrystal.value.isDown(Keyboard.getEventKey()) -> switchToType(Type.CRYSTAL)
+                bindTotem.value.isDown(key) -> switchToType(Type.TOTEM)
+                bindGapple.value.isDown(key) -> switchToType(Type.GAPPLE)
+                bindStrength.value.isDown(key) -> switchToType(Type.STRENGTH)
+                bindCrystal.value.isDown(key) -> switchToType(Type.CRYSTAL)
             }
         }
 
@@ -90,7 +97,7 @@ object AutoOffhand : Module() {
 
         listener<SafeTickEvent>(1100) {
             if (mc.player.isDead || !movingTimer.tick(200L, false)) return@listener // Delays 4 ticks by default
-            if (!mc.player.inventory.getItemStack().isEmpty()) { // If player is holding an in inventory
+            if (!mc.player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
                     movingTimer.reset() // delay for 5 ticks
                 } else { // If inventory is not open (ex. inventory desync)
@@ -105,9 +112,10 @@ object AutoOffhand : Module() {
 
     private fun getType() = when {
         checkTotem() -> Type.TOTEM
+        checkStrength() -> Type.STRENGTH
         checkGapple() -> Type.GAPPLE
         checkCrystal() -> Type.CRYSTAL
-        mc.player.heldItemOffhand.isEmpty() -> Type.TOTEM
+        mc.player.heldItemOffhand.isEmpty -> Type.TOTEM
         else -> null
     }
 
@@ -125,34 +133,37 @@ object AutoOffhand : Module() {
     }
 
     private fun checkTotem() = CombatUtils.getHealthSmart(mc.player) < hpThreshold.value
-            || (checkDamage.value && CombatUtils.getHealthSmart(mc.player) - maxDamage < hpThreshold.value)
+        || (checkDamage.value && CombatUtils.getHealthSmart(mc.player) - maxDamage < hpThreshold.value)
 
-    private fun checkGapple(): Boolean {
-        val item = mc.player.heldItemMainhand.getItem()
-        return offhandGapple.value
-                && (checkAura.value && CombatManager.isActiveAndTopPriority(KillAura)
-                || checkWeapon.value && (item is ItemSword || item is ItemAxe)
-                || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isOnTopPriority(CrystalAura))
-    }
+    private fun checkGapple() = offhandGapple.value
+        && (checkAuraS.value && CombatManager.isActiveAndTopPriority(KillAura)
+        || checkWeaponG.value && mc.player.heldItemMainhand.item.isWeapon
+        || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isOnTopPriority(CrystalAura))
 
-    private fun checkCrystal() = offhandCrystal.value && checkCACrystal.value && CrystalAura.isEnabled && CombatManager.isOnTopPriority(CrystalAura)
+    private fun checkCrystal() = offhandCrystal.value
+        && checkCACrystal.value && CrystalAura.isEnabled && CombatManager.isOnTopPriority(CrystalAura)
 
-    private fun checkOffhandItem(type: Type) = Item.getIdFromItem(mc.player.heldItemOffhand.getItem()) == type.itemId
+    private fun checkStrength() = offhandStrength.value
+        && !mc.player.isPotionActive(MobEffects.STRENGTH)
+        && (checkAuraG.value && CombatManager.isActiveAndTopPriority(KillAura)
+        || checkWeaponS.value && mc.player.heldItemMainhand.item.isWeapon)
 
-    private fun getItemSlot(type: Type, loopTime: Int = 1): Pair<Int, Type>? = getSlot(type.itemId)?.to(type)
-            ?: if (loopTime <= 3) getItemSlot(getNextType(type), loopTime + 1)
-            else null
+    private fun checkOffhandItem(type: Type) = type.filter(mc.player.heldItemOffhand)
 
-    private fun getSlot(itemId: Int): Int? {
+    private fun getItemSlot(type: Type, loopTime: Int = 1): Pair<Int, Type>? = getSlot(type)?.to(type)
+        ?: if (loopTime <= 3) getItemSlot(getNextType(type), loopTime + 1)
+        else null
+
+    private fun getSlot(type: Type): Int? {
         val sublist = mc.player.inventoryContainer.inventory.subList(9, 46)
-        val filter = getFilter(itemId)
+
         // 9 - 35 are main inventory, 36 - 44 are hotbar. So finding last one will result in prioritize hotbar
-        val slot = if (priority.value == Priority.HOTBAR) sublist.indexOfLast(filter) else sublist.indexOfFirst(filter)
+        val slot = if (priority.value == Priority.HOTBAR) sublist.indexOfLast(type.filter)
+        else sublist.indexOfFirst(type.filter)
+
         // Add 9 to it because it is the sub list's index
         return if (slot != -1) slot + 9 else null
     }
-
-    private fun getFilter(itemId: Int): (ItemStack) -> Boolean = { Item.getIdFromItem(it.getItem()) == itemId }
 
     private fun getNextType(type: Type) = with(Type.values()) { this[(type.ordinal + 1) % this.size] }
 

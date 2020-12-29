@@ -5,12 +5,12 @@ import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.FileWriter
 
@@ -34,15 +34,14 @@ object MacroManager : Manager {
      * Reads macros from KAMIBlueMacros.json into the macros Map
      */
     fun loadMacros(): Boolean {
+        ConfigUtils.fixEmptyJson(file)
+
         return try {
             FileReader(file).buffered().use {
                 macroMap = gson.fromJson(it, type)
-                KamiMod.LOG.info("Macro loaded")
             }
+            KamiMod.LOG.info("Macro loaded")
             true
-        } catch (e: FileNotFoundException) {
-            KamiMod.LOG.warn("Could not find file $configName")
-            false
         } catch (e: Exception) {
             KamiMod.LOG.warn("Failed loading macro", e)
             false
@@ -56,8 +55,8 @@ object MacroManager : Manager {
         return try {
             FileWriter(file, false).buffered().use {
                 gson.toJson(macroMap, it)
-                KamiMod.LOG.info("Macro saved")
             }
+            KamiMod.LOG.info("Macro saved")
             true
         } catch (e: Exception) {
             KamiMod.LOG.warn("Failed saving macro", e)

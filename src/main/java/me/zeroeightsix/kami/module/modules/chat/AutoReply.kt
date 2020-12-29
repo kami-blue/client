@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
@@ -24,7 +24,7 @@ object AutoReply : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) return@listener
+            if (it.packet !is SPacketChat || MessageDetection.Direct.RECEIVE detect it.packet.chatComponent.unformattedText) return@listener
             if (customMessage.value) {
                 sendServerMessage("/r " + customText.value)
             } else {

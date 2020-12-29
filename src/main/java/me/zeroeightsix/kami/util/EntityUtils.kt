@@ -152,8 +152,8 @@ object EntityUtils {
         return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), entityIn.positionVector, false, true, false) == null
     }
 
-    fun getDroppedItems(itemId: Int, range: Float): ArrayList<Entity>? {
-        val entityList = ArrayList<Entity>()
+    fun getDroppedItems(itemId: Int, range: Float): ArrayList<EntityItem> {
+        val entityList = ArrayList<EntityItem>()
         for (currentEntity in mc.world.loadedEntityList) {
             if (currentEntity.getDistance(mc.player) > range) continue /* Entities within specified  blocks radius */
             if (currentEntity !is EntityItem) continue /* Entites that are dropped item */
@@ -165,7 +165,7 @@ object EntityUtils {
 
     fun getDroppedItem(itemId: Int, range: Float) =
         getDroppedItems(itemId, range)
-            ?.minByOrNull { mc.player.getDistance(it) }
+            .minByOrNull { mc.player.getDistance(it) }
             ?.positionVector
             ?.toBlockPos()
 }
