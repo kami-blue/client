@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.setting
+package me.zeroeightsix.kami.setting.settings
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

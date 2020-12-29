@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
-import me.zeroeightsix.kami.setting.impl.primitive.StringSetting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 import kotlin.math.max

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.setting.impl.primitive.EnumSetting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.text.TextFormatting
 

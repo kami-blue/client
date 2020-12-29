@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.setting.groups
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 open class SettingGroup(
         val name: String

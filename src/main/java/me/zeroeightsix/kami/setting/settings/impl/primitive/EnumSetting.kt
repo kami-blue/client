@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.setting.impl.primitive
+package me.zeroeightsix.kami.setting.settings.impl.primitive
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 class EnumSetting<T : Enum<T>>(
         name: String,

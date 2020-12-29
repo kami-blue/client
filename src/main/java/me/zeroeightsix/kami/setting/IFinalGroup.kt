@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.setting
 
+import me.zeroeightsix.kami.setting.settings.Setting
 import java.io.File
 
 /**

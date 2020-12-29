@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.gui.rgui.component.SettingSlider
 import me.zeroeightsix.kami.gui.rgui.component.Slider
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.setting.impl.other.ColorSetting
+import me.zeroeightsix.kami.setting.settings.impl.other.ColorSetting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper

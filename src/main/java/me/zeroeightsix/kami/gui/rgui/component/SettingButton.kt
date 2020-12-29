@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 import me.zeroeightsix.kami.util.math.Vec2f
 
 class SettingButton(val setting: Setting<Boolean>) : BooleanSlider(setting.name, 0.0, setting.description) {

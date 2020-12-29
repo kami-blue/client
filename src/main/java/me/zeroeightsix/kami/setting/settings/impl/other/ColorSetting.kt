@@ -1,6 +1,6 @@
-package me.zeroeightsix.kami.setting.impl.other
+package me.zeroeightsix.kami.setting.settings.impl.other
 
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
 class ColorSetting(

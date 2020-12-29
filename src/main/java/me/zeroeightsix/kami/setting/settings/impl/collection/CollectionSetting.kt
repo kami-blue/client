@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.setting.impl.collection
+package me.zeroeightsix.kami.setting.settings.impl.collection
 
 import com.google.gson.JsonElement
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 open class CollectionSetting<E : Any, T : MutableCollection<E>>(
         name: String,

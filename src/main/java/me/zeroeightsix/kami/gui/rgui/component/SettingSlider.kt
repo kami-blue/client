@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.module.modules.client.GuiColors
-import me.zeroeightsix.kami.setting.impl.number.FloatSetting
-import me.zeroeightsix.kami.setting.impl.number.IntegerSetting
-import me.zeroeightsix.kami.setting.impl.number.NumberSetting
+import me.zeroeightsix.kami.setting.settings.impl.number.FloatSetting
+import me.zeroeightsix.kami.setting.settings.impl.number.IntegerSetting
+import me.zeroeightsix.kami.setting.settings.impl.number.NumberSetting
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f

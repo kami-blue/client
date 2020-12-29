@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GenericConfig.setting
 import me.zeroeightsix.kami.setting.config.AbstractMultiConfig
+import me.zeroeightsix.kami.setting.settings.Setting
 import java.io.File
 
 object ModuleConfig : AbstractMultiConfig<Module>(

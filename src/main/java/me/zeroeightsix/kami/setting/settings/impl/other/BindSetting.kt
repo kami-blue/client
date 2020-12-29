@@ -1,8 +1,8 @@
-package me.zeroeightsix.kami.setting.impl.other
+package me.zeroeightsix.kami.setting.settings.impl.other
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 import me.zeroeightsix.kami.util.Bind
 import org.lwjgl.input.Keyboard
 

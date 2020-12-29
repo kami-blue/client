@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.window
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 class HudSettingWindow(
     hudElement: HudElement,

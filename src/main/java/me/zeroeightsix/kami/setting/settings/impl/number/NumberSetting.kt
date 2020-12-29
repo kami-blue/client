@@ -1,7 +1,7 @@
-package me.zeroeightsix.kami.setting.impl.number
+package me.zeroeightsix.kami.setting.settings.impl.number
 
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 abstract class NumberSetting<T : Number>(
         name: String,

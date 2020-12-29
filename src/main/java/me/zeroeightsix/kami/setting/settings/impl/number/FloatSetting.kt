@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.setting.impl.number
+package me.zeroeightsix.kami.setting.settings.impl.number
 
 import com.google.gson.JsonElement
 

@@ -1,18 +1,18 @@
-package me.zeroeightsix.kami.setting.impl.primitive
+package me.zeroeightsix.kami.setting.settings.impl.primitive
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.IMultiSetting
-import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.settings.IMultiSetting
+import me.zeroeightsix.kami.setting.settings.Setting
 
 class BooleanMultiSetting(
-        name: String,
-        value: Boolean,
-        override val subSettings: Array<out Setting<*>>,
-        visibility: () -> Boolean = { true },
-        consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
-        description: String = ""
+    name: String,
+    value: Boolean,
+    override val subSettings: Array<out Setting<*>>,
+    visibility: () -> Boolean = { true },
+    consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
+    description: String = ""
 ) : BooleanSetting(name, value, visibility, consumer, description), IMultiSetting {
 
     override var expanded = false
