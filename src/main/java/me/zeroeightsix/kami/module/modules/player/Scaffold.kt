@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.GenericConfig.setting
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BlockUtils.placeBlock
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
