@@ -41,6 +41,7 @@ import kotlin.math.roundToInt
 object NoteBot : Module() {
 
     private val bindToggle = register(Settings.custom("BindToggle", Bind.none(), BindConverter()))
+    private val bindReload = register(Settings.custom("BindReload", Bind.none(), BindConverter()))
     private val channel1 = register(Settings.e<NoteBlockEvent.Instrument>("Channel1", NoteBlockEvent.Instrument.PIANO))
     private val channel2 = register(Settings.e<NoteBlockEvent.Instrument>("Channel2", NoteBlockEvent.Instrument.PIANO))
     private val channel3 = register(Settings.e<NoteBlockEvent.Instrument>("Channel3", NoteBlockEvent.Instrument.PIANO))
@@ -59,12 +60,12 @@ object NoteBot : Module() {
     private val songName = register(Settings.stringBuilder("SongName").withValue("Unchanged"))
 
     private var noteSequence = TreeMap<Long, ArrayList<Note>>()
-    private var firstNote = 0L
+    private var startTime = 0L
     private var elapsed = 0L
     private var duration = 0L
     private var playingSong = false
         set(value) {
-            firstNote = System.currentTimeMillis() - elapsed
+            startTime = System.currentTimeMillis() - elapsed
             field = value
         }
 
@@ -82,6 +83,7 @@ object NoteBot : Module() {
     init {
         listener<InputEvent.KeyInputEvent> {
             if (bindToggle.value.isDown(Keyboard.getEventKey())) playingSong = !playingSong
+            if (bindReload.value.isDown(Keyboard.getEventKey())) loadSong()
         }
     }
 
@@ -121,7 +123,7 @@ object NoteBot : Module() {
         val player = mc.player ?: return
 
         for (x in -5..5) {
-            for (y in -4..6) {
+            for (y in -2..6) {
                 for (z in -5..5) {
                     val pos = player.position.add(x, y, z)
                     if (!world.isAirBlock(pos.up())) continue
@@ -199,7 +201,7 @@ object NoteBot : Module() {
                         playingSong = false
                     }
 
-                    elapsed = System.currentTimeMillis() - firstNote
+                    elapsed = System.currentTimeMillis() - startTime
                 } else {
                     // Pause song
                     playingSong = false
@@ -213,7 +215,7 @@ object NoteBot : Module() {
         for (note in notes) {
             if (note.track == 9) {
                 val instrument = getPercussion(note.note)?: continue
-                InstrumentMap[instrument][0]?.let {
+                InstrumentMap.getPercussion(instrument)?.let {
                     clickBlock(it, player, world)
                 }
             } else {
@@ -229,9 +231,9 @@ object NoteBot : Module() {
 
     private fun getPercussion(note: Int) : NoteBlockEvent.Instrument? {
         return when (note) {
-            36 -> NoteBlockEvent.Instrument.BASSDRUM
-            38, 40 -> NoteBlockEvent.Instrument.SNARE
-            37, 42, 44, 46 -> NoteBlockEvent.Instrument.CLICKS
+            0 -> NoteBlockEvent.Instrument.BASSDRUM
+            2, 4 -> NoteBlockEvent.Instrument.SNARE
+            1, 6, 8, 10 -> NoteBlockEvent.Instrument.CLICKS
             else -> null
         }
     }
@@ -263,7 +265,7 @@ object NoteBot : Module() {
             for (i in 0 until track.size()) {
                 val event = track[i]
                 val shortMessage = (event.message as? ShortMessage) ?: continue
-                if (shortMessage.status !in 0xC0..0xCF) continue
+                if (shortMessage.command != ShortMessage.NOTE_ON) continue
 
                 val note = shortMessage.data1 % 36
                 val tick = event.tick
@@ -283,24 +285,15 @@ object NoteBot : Module() {
         operator fun get(instrument: NoteBlockEvent.Instrument): Array<BlockPos?> {
             return instruments.getOrPut(instrument) { arrayOfNulls(25) }
         }
+
+        fun getPercussion(instrument: NoteBlockEvent.Instrument): BlockPos? {
+            return instruments[instrument]?.firstOrNull()
+        }
     }
 
     private class Note(val note: Int, val track: Int) {
         val noteBlockNote: Int
-            get() = getNotebotKey(note)
-
-        private companion object {
-            val keys = arrayOf(
-                "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F",
-                "F#2", "G2", "G#2", "A2", "A#2", "B2", "C2", "C#2", "D2", "D#2", "E2", "F2",
-                "F#3"
-            )
-
-            fun getKey(note: Int): String {
-                return keys[getNotebotKey(note)]
-            }
-
-            fun getNotebotKey(note: Int): Int {
+            get() {
                 /**
                  * "MIDI NOTES"
                  * "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
@@ -310,6 +303,5 @@ object NoteBot : Module() {
                 val key = (note - 6) % 24
                 return if (key < 0) 24 + key else key
             }
-        }
     }
 }
