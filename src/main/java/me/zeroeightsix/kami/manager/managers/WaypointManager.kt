@@ -31,24 +31,28 @@ object WaypointManager : Manager {
      * Reads waypoints from KAMIBlueWaypoints.json into the waypoints ArrayList
      */
     fun loadWaypoints(): Boolean {
+        ConfigUtils.fixEmptyJson(file, true)
+
         /* backwards compatibility for older configs */
-        val localFile = if (legacyFormat()) oldFile else file
         val success = try {
-            val cacheArray = gson.fromJson(FileReader(localFile), Array<Waypoint>::class.java)
+            val legacy = legacyFormat()
+            val localFile = if (legacy) oldFile else file
+
+            val cacheArray = FileReader(localFile).buffered().use {
+                gson.fromJson(it, Array<Waypoint>::class.java)
+            }
+
             waypoints.clear()
             waypoints.addAll(cacheArray)
+            if (legacy) oldFile.delete()
+
             KamiMod.LOG.info("Waypoint loaded")
-            if (legacyFormat()) oldFile.delete()
             true
-        } catch (e: FileNotFoundException) {
-            KamiMod.LOG.warn("Could not find file $configName, clearing the waypoints list")
-            waypoints.clear()
-            false
-        } catch (e: IllegalStateException) {
-            KamiMod.LOG.warn("$configName is empty!")
-            waypoints.clear()
+        } catch (e: Exception) {
+            KamiMod.LOG.warn("Failed loading waypoints", e)
             false
         }
+
         KamiEventBus.post(WaypointUpdateEvent(WaypointUpdateEvent.Type.CLEAR, null))
         return success
     }
@@ -58,15 +62,13 @@ object WaypointManager : Manager {
      */
     fun saveWaypoints(): Boolean {
         return try {
-            val fileWriter = FileWriter(file, false)
-            gson.toJson(waypoints, fileWriter)
-            fileWriter.flush()
-            fileWriter.close()
+            FileWriter(file, false).buffered().use {
+                gson.toJson(waypoints, it)
+            }
             KamiMod.LOG.info("Waypoint saved")
             true
-        } catch (e: IOException) {
-            KamiMod.LOG.info("Failed saving waypoint")
-            e.printStackTrace()
+        } catch (e: Exception) {
+            KamiMod.LOG.warn("Failed saving waypoint", e)
             false
         }
     }
@@ -144,28 +146,16 @@ object WaypointManager : Manager {
         return Waypoint(pos, locationName, date)
     }
 
-    init {
-        ConfigUtils.fixEmptyJson(file, true)
-    }
-
     class Waypoint(
             @SerializedName("position")
             val pos: BlockPos,
-
-            @SerializedName("name")
             val name: String,
 
-            @SerializedName("time") // NEEDS to stay "time" to maintain backwards compat
+            @SerializedName(value = "date", alternate = ["time"])
             val date: String
     ) {
-
-        @SerializedName("id")
         val id: Int = genID()
-
-        @SerializedName("server")
         val server: String? = genServer() /* can be null from old configs */
-
-        @SerializedName("dimension")
         val dimension: Int = genDimension()
 
         fun currentPos() = CoordinateConverter.toCurrent(dimension, pos)

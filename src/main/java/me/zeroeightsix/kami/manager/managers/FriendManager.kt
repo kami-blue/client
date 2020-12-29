@@ -50,6 +50,7 @@ object FriendManager : Manager {
     @JvmStatic
     fun loadFriends(): Boolean {
         ConfigUtils.fixEmptyJson(file)
+
         return try {
             friendFile = gson.fromJson(FileReader(file), object : TypeToken<FriendFile>() {}.type)
             friends.clear()
@@ -57,7 +58,7 @@ object FriendManager : Manager {
             KamiMod.LOG.info("Friend loaded")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed loading friends", e)
+            KamiMod.LOG.warn("Failed loading friends", e)
             false
         }
     }
@@ -68,15 +69,13 @@ object FriendManager : Manager {
     @JvmStatic
     fun saveFriends(): Boolean {
         return try {
-            val fileWriter = FileWriter(file, false)
-            gson.toJson(friendFile, fileWriter)
-            fileWriter.flush()
-            fileWriter.close()
-            KamiMod.LOG.info("Friends config saved")
+            FileWriter(file, false).buffered().use {
+                gson.toJson(friendFile, it)
+            }
+            KamiMod.LOG.info("Friends saved")
             true
         } catch (e: Exception) {
-            KamiMod.LOG.error("Failed saving friends config", e)
-            e.printStackTrace()
+            KamiMod.LOG.warn("Failed saving friends", e)
             false
         }
     }

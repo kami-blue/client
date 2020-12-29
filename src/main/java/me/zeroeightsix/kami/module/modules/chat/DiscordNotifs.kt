@@ -12,11 +12,7 @@ import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.Regexes
-import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.text.*
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -32,9 +28,9 @@ object DiscordNotifs : Module() {
     private val importantPings = register(Settings.b("ImportantPings", false))
     private val disconnect = register(Settings.b("DisconnectMsgs", true))
     private val all = register(Settings.b("AllMessages", false))
+    private val direct = register(Settings.booleanBuilder("DMs").withValue(true).withVisibility { !all.value })
     private val queue = register(Settings.booleanBuilder("QueuePosition").withValue(true).withVisibility { !all.value })
     private val restart = register(Settings.booleanBuilder("RestartMsgs").withValue(true).withVisibility { !all.value })
-    private val direct = register(Settings.booleanBuilder("DMs").withValue(true).withVisibility { !all.value })
 
     val url = register(Settings.s("URL", "unchanged"))
     val pingID = register(Settings.s("PingID", "unchanged"))
@@ -48,19 +44,19 @@ object DiscordNotifs : Module() {
         listener<PacketEvent.Receive> {
             if (mc.player == null || it.packet !is SPacketChat) return@listener
             val message = it.packet.chatComponent.unformattedText
-            if (timeout(message) && MessageDetectionHelper.shouldSend(all.value, restart.value, direct.value, queue.value, importantPings.value, message)) {
-                sendMessage(getPingID(message) + MessageDetectionHelper.getMessageType(direct.value, message, server) + getTime() + message, avatar.value)
+            if (timeout(message) && shouldSend(message)) {
+                sendMessage(getPingID(message) + getMessageType(message, server) + getTime() + message, avatar.value)
             }
         }
 
         listener<ConnectionEvent.Connect> {
             if (!disconnect.value) return@listener
-            sendMessage(getPingID("KamiBlueMessageType1") + getTime() + MessageDetectionHelper.getMessageType(direct.value, "KamiBlueMessageType1", server), avatar.value)
+            sendMessage(getPingID("KamiBlueMessageType1") + getTime() + getMessageType("KamiBlueMessageType1", server), avatar.value)
         }
 
         listener<ConnectionEvent.Disconnect> {
             if (!disconnect.value) return@listener
-            sendMessage(getPingID("KamiBlueMessageType2") + getTime() + MessageDetectionHelper.getMessageType(direct.value, "KamiBlueMessageType2", server), avatar.value)
+            sendMessage(getPingID("KamiBlueMessageType2") + getTime() + getMessageType("KamiBlueMessageType2", server), avatar.value)
         }
 
         /* Always on status code */
@@ -79,17 +75,32 @@ object DiscordNotifs : Module() {
         }
     }
 
+    private fun shouldSend(message: String): Boolean {
+        return all.value
+            || direct.value && MessageDetection.Direct.ANY detect message
+            || restart.value && MessageDetection.Server.RESTART detect message
+            || queue.value && MessageDetection.Server.QUEUE detect message
+            || importantPings.value && MessageDetection.Server.QUEUE detect message
+    }
+
+    private fun getMessageType(message: String, server: String): String {
+        if (direct.value && MessageDetection.Direct.RECEIVE detect message) return "You got a direct message!\n"
+        if (direct.value && MessageDetection.Direct.SENT detect message) return "You sent a direct message!\n"
+        if (message == "KamiBlueMessageType1") return "Connected to $server"
+        return if (message == "KamiBlueMessageType2") "Disconnected from $server" else ""
+    }
+
     private fun timeout(message: String) = !timeout.value
-            || (message.detect(restart.value, Regexes.RESTART)
-            || MessageDetectionHelper.isDirect(direct.value, message))
+            || restart.value && MessageDetection.Server.RESTART detect message
+            || direct.value && MessageDetection.Direct.ANY detect message
             || timer.tick(timeoutTime.value.toLong())
 
     /* Text formatting and misc methods */
-    private fun getPingID(message: String) = if (message.detect(restart.value, Regexes.RESTART)
-            || MessageDetectionHelper.isDirect(direct.value, message)
-            || message.detect(importantPings.value, Regexes.QUEUE_IMPORTANT)
-            || message == "KamiBlueMessageType1"
-            || message == "KamiBlueMessageType2") formatPingID()
+    private fun getPingID(message: String) = if (message == "KamiBlueMessageType1"
+        || message == "KamiBlueMessageType2"
+        || direct.value && MessageDetection.Direct.ANY detect message
+        || restart.value && MessageDetection.Server.RESTART detect message
+        || importantPings.value && MessageDetection.Server.QUEUE_IMPORTANT detect message) formatPingID()
     else ""
 
     private fun formatPingID(): String {

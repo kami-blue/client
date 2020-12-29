@@ -2,15 +2,13 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.isDirect
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageDetection
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 import java.io.*
 import java.util.*
-import java.util.regex.Pattern
-
 
 @Module.Info(
         name = "ChatFilter",
@@ -22,7 +20,7 @@ object ChatFilter : Module() {
     private val filterDMs = register(Settings.b("FilterDMs", false))
     private val hasRunInfo = register(Settings.booleanBuilder("Info").withValue(false).withVisibility { false })
 
-    private val chatFilter = ArrayList<Pattern>()
+    private val chatFilter = ArrayList<Regex>()
 
     init {
         listener<ClientChatReceivedEvent> {
@@ -31,56 +29,41 @@ object ChatFilter : Module() {
     }
 
     private fun isDetected(message: String): Boolean {
-        val ownMsg = "^<" + mc.player.name + "> "
-        return if (!filterOwn.value && customMatch(ownMsg, message) || isDirect(filterDMs.value, message)) {
+        return if (!filterOwn.value && MessageDetection.Message.SELF detect message
+            || !filterDMs.value && MessageDetection.Direct.ANY detect message) {
             false
         } else {
-            isMatched(message)
+            chatFilter.all { it.containsMatchIn(message) }
         }
-    }
-
-    private fun isMatched(message: String): Boolean {
-        for (pattern in chatFilter) {
-            if (pattern.matcher(message).find()) {
-                return true
-            }
-        }
-        return false
-    }
-
-    private fun customMatch(filter: String, message: String): Boolean {
-        return Pattern.compile(filter, Pattern.CASE_INSENSITIVE).matcher(message).find()
     }
 
     override fun onEnable() {
-        val bufferedReader: BufferedReader
         try {
-            sendChatMessage("$chatName Trying to find '&7chat_filter.txt&f'")
-            bufferedReader = BufferedReader(InputStreamReader(FileInputStream("chat_filter.txt"), "UTF-8"))
-            var line = bufferedReader.readLine()
+            MessageSendHelper.sendChatMessage("$chatName Trying to find '&7chat_filter.txt&f'")
             chatFilter.clear()
-            while (line != null) {
-                while (customMatch("[ ]$", line)) { /* remove trailing spaces */
-                    line = line.substring(0, line.length - 1)
-                }
-                while (customMatch("^[ ]", line)) {
-                    line = line.substring(1) /* remove beginning spaces */
-                }
-                if (line.isEmpty()) return
-                chatFilter.add(Pattern.compile("\\b$line\\b", Pattern.CASE_INSENSITIVE))
-                line = bufferedReader.readLine()
-            }
-            bufferedReader.close()
-            sendChatMessage("$chatName Found '&7chat_filter.txt&f'!")
+
+           File("chat_filter.txt").bufferedReader().forEachLine {
+               val string = it.trim()
+               if (string.isEmpty()) return@forEachLine
+
+               try {
+                   val regex = "\\b$string\\b".toRegex(RegexOption.IGNORE_CASE)
+                   chatFilter.add(regex)
+               } catch (e: Exception) {
+                   MessageSendHelper.sendErrorMessage("$chatName Failed to compile line ${formatValue(it)}, ${e.message}")
+               }
+           }
+
+            MessageSendHelper.sendChatMessage("$chatName Loaded '&7chat_filter.txt&f'!")
         } catch (exception: FileNotFoundException) {
-            sendErrorMessage("$chatName Couldn't find a file called '&7chat_filter.txt&f' inside your '&7.minecraft&f' folder, disabling")
+            MessageSendHelper.sendErrorMessage("$chatName Couldn't find a file called '&7chat_filter.txt&f' inside your '&7.minecraft&f' folder, disabling")
             disable()
-        } catch (exception: IOException) {
-            sendErrorMessage(exception.toString())
+        } catch (exception: Exception) {
+            MessageSendHelper.sendErrorMessage(exception.toString())
         }
 
         if (!hasRunInfo.value) {
-            sendChatMessage("$chatName Tip: this supports &lregex&r if you know how to use those. " +
+            MessageSendHelper.sendChatMessage("$chatName Tip: this supports &lregex&r if you know how to use those. " +
                     "This also uses &lword boundaries&r meaning it will match whole words, not part of a word. " +
                     "Eg if your filter has 'hell' then 'hello' will not be filtered.")
             hasRunInfo.value = true

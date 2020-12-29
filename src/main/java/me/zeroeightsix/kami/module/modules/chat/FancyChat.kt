@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
@@ -26,7 +26,7 @@ object FancyChat : Module() {
 
     private val modifier = newMessageModifier(
             filter = {
-                (commands.value || !MessageDetectionHelper.isCommand(it.packet.message))
+                (commands.value || MessageDetection.Command.ANY detectNot it.packet.message)
                         && (spammer.value || it.source !is Spammer)
             },
             modifier = {
