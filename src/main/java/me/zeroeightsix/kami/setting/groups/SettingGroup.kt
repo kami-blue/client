@@ -40,9 +40,9 @@ open class SettingGroup(
      * @return [JsonObject] contains all the setting values
      */
     open fun write(): JsonObject = JsonObject().apply {
-        add("Name", JsonPrimitive(name))
+        add("name", JsonPrimitive(name))
 
-        if (subSetting.isNotEmpty()) add("Settings", JsonObject().apply {
+        if (subSetting.isNotEmpty()) add("settings", JsonObject().apply {
             for (setting in subSetting.values) {
                 add(setting.name, setting.write())
             }
@@ -55,7 +55,7 @@ open class SettingGroup(
      * @param jsonObject [JsonObject] to read from
      */
     open fun read(jsonObject: JsonObject?) {
-        if (subSetting.isNotEmpty()) (jsonObject?.get("Settings") as? JsonObject)?.also {
+        if (subSetting.isNotEmpty()) (jsonObject?.get("settings") as? JsonObject)?.also {
             for (setting in subSetting.values) {
                 try {
                     setting.read(it.get(setting.name))

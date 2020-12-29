@@ -58,7 +58,7 @@ open class SettingMultiGroup(
 
 
     override fun write(): JsonObject = super.write().apply {
-        if (subGroup.isNotEmpty()) add("Groups", JsonArray().apply {
+        if (subGroup.isNotEmpty()) add("groups", JsonArray().apply {
             for (group in subGroup.values) {
                 add(group.write())
             }
@@ -69,11 +69,11 @@ open class SettingMultiGroup(
     override fun read(jsonObject: JsonObject?) {
         super.read(jsonObject)
 
-        if (subGroup.isNotEmpty()) (jsonObject?.get("Groups") as? JsonArray)?.also { jsonArray ->
+        if (subGroup.isNotEmpty()) (jsonObject?.get("groups") as? JsonArray)?.also { jsonArray ->
             val map = HashMap<String, JsonObject>()
             for (element in jsonArray) {
                 (element as? JsonObject)?.let {
-                    val name = (it.get("Name") as? JsonPrimitive)?.asString?: return@let
+                    val name = (it.get("name") as? JsonPrimitive)?.asString?: return@let
                     map[name] = it
                 }
             }
