@@ -17,7 +17,7 @@ object WaypointCommand : ClientCommand(
     alias = arrayOf("wp"),
     description = "Manages waypoint."
 ) {
-    private val stashRegex = "(\\(.* chests, .* shulkers, .* droppers, .* dispensers\\))".toRegex()
+    private val stashRegex = "\\(\\d+ chests, \\d+ shulkers, \\d+ droppers, \\d+ dispensers, \\d+ hoppers\\)".toRegex()
     private var confirmTime = 0L
 
     init {
@@ -61,6 +61,23 @@ object WaypointCommand : ClientCommand(
             int("id") { idArg ->
                 executeAsync("Go to a waypoint with Baritone") {
                     goto(idArg.value)
+                }
+            }
+
+            blockPos("pos") { posArg ->
+                executeAsync("Go to a coordinate with Baritone") {
+                    val pos = posArg.value
+                    goto(pos.x, pos.y, pos.z)
+                }
+            }
+
+            int("x") { xArg ->
+                int("y") { yArg ->
+                    int("z") { zArg ->
+                        executeAsync("Go to a coordinate with Baritone") {
+                            goto(xArg.value, yArg.value, zArg.value)
+                        }
+                    }
                 }
             }
         }
@@ -115,6 +132,13 @@ object WaypointCommand : ClientCommand(
             } else {
                 MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
             }
+        }
+    }
+
+    private fun goto(x: Int, y: Int, z: Int) {
+        onMainThreadSafe {
+            if (AutoWalk.isEnabled) AutoWalk.disable()
+            MessageSendHelper.sendBaritoneCommand("goto", x.toString(), y.toString(), z.toString())
         }
     }
 

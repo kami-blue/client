@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetection
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
@@ -108,7 +108,7 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
-        if (MessageDetectionHelper.isKamiCommand(event.message)) {
+        if (MessageDetection.Command.KAMI_BLUE detect event.message) {
             CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix))
             event.isCanceled = true
         }

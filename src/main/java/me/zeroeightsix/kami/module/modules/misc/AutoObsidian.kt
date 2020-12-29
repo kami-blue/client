@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.process.AutoObsidianProcess
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
@@ -58,8 +59,6 @@ object AutoObsidian : Module() {
     private var playerPos = BlockPos(0, -1, 0)
     private var placingPos = BlockPos(0, -1, 0)
     private var shulkerBoxId = 0
-    private var enderChestCount = -1
-    private var obsidianCount = -1
     private var tickCount = 0
     private var openTime = 0L
 
@@ -154,12 +153,6 @@ object AutoObsidian : Module() {
             }
         }
 
-        /* Updates ender chest and obsidian counts before placing and mining ender chest */
-        if (state == State.SEARCHING) {
-            enderChestCount = InventoryUtils.countItem(0, 35, 130)
-            obsidianCount = countObsidian()
-        }
-
         /* Updates main state */
         updateMainState()
 
@@ -172,16 +165,16 @@ object AutoObsidian : Module() {
     }
 
     private fun updateMainState() {
-        val placedEnderChest = enderChestCount - InventoryUtils.countItem(0, 35, 130)
-        val targetEnderChest = (targetStacks.value * 64 - obsidianCount) / 8
+        val obbyCount = countObby()
+
         state = when {
-            state == State.DONE && autoRefill.value && InventoryUtils.countItem(0, 35, 49) <= threshold.value -> {
+            state == State.DONE && autoRefill.value && InventoryUtils.countItemAll(49) <= threshold.value -> {
                 State.SEARCHING
             }
-            state == State.COLLECTING && getDroppedItem(49, 16.0f) == null -> {
+            state == State.COLLECTING && getDroppedItem(49, 8.0f) == null -> {
                 State.DONE
             }
-            state != State.DONE && mc.world.isAirBlock(placingPos) && placedEnderChest >= targetEnderChest -> {
+            state != State.DONE && mc.world.isAirBlock(placingPos) && obbyCount >= targetStacks.value -> {
                 State.COLLECTING
             }
             state == State.MINING && mc.world.isAirBlock(placingPos) -> {
@@ -190,7 +183,7 @@ object AutoObsidian : Module() {
             state == State.PLACING && !mc.world.isAirBlock(placingPos) -> {
                 State.PRE_MINING
             }
-            state == State.SEARCHING && searchingState == SearchingState.DONE && placedEnderChest < targetEnderChest -> {
+            state == State.SEARCHING && searchingState == SearchingState.DONE && obbyCount < targetStacks.value -> {
                 State.PLACING
             }
             else -> state
@@ -199,20 +192,20 @@ object AutoObsidian : Module() {
 
     private fun updateSearchingState() {
         searchingState = when {
-            searchingState == SearchingState.PLACING && InventoryUtils.countItem(0, 35, 130) > 0 -> {
+            searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(130) > 0 -> {
                 SearchingState.DONE
             }
-            searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
+            searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 8.0f) == null -> {
                 SearchingState.DONE
             }
             searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
-                if (InventoryUtils.countItem(0, 35, 130) > 0) {
+                if (InventoryUtils.countItemAll(130) > 0) {
                     SearchingState.COLLECTING
                 } else { /* In case if the shulker wasn't placed due to server lag */
                     SearchingState.PLACING
                 }
             }
-            searchingState == SearchingState.OPENING && (InventoryUtils.countItem(0, 35, 130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
+            searchingState == SearchingState.OPENING && (InventoryUtils.countItemAll(130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
                 SearchingState.PRE_MINING
             }
             searchingState == SearchingState.PLACING && !mc.world.isAirBlock(placingPos) -> {
@@ -226,19 +219,21 @@ object AutoObsidian : Module() {
         }
     }
 
+    private fun countObby(): Int {
+        val inventory = InventoryUtils.countItemAll(49)
+        val dropped = EntityUtils.getDroppedItems(49, 8.0f).sumBy { it.item.count }
+        return ceil((inventory + dropped) / 8.0f).toInt() / 8
+    }
+
     private fun setPlacingPos() {
         if (getPlacingPos().y != -1) {
             placingPos = getPlacingPos()
         } else {
             sendChatMessage("$chatName No valid position for placing shulker box / ender chest nearby, disabling.")
-            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+            mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             this.disable()
             return
         }
-    }
-
-    private fun countObsidian(): Int {
-        return ceil(InventoryUtils.countItem(0, 35, 49).toDouble() / 8.0).toInt() * 8
     }
 
     private fun getPlacingPos(): BlockPos {
@@ -271,7 +266,7 @@ object AutoObsidian : Module() {
             if (InventoryUtils.getSlotsHotbar(i) == null) {
                 if (i != 234) continue else {
                     sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
-                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     this.disable()
                     return
                 }
@@ -299,7 +294,7 @@ object AutoObsidian : Module() {
                 state = State.SEARCHING
             } else {
                 sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
-                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 this.disable()
                 return
             }
@@ -328,7 +323,7 @@ object AutoObsidian : Module() {
                 val currentContainer = mc.player.openContainer
                 var enderChestSlot = -1
                 for (i in 0..26) {
-                    if (getIdFromItem(currentContainer.inventory[i].getItem()) == 130) {
+                    if (getIdFromItem(currentContainer.inventory[i].item) == 130) {
                         enderChestSlot = i
                     }
                 }
@@ -336,7 +331,7 @@ object AutoObsidian : Module() {
                     mc.playerController.windowClick(currentContainer.windowId, enderChestSlot, 0, ClickType.QUICK_MOVE, mc.player)
                 } else {
                     sendChatMessage("$chatName No ender chest was found in shulker, disabling.")
-                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     this.disable()
                 }
             }, delayTicks.value * 50L, TimeUnit.MILLISECONDS)
@@ -349,7 +344,7 @@ object AutoObsidian : Module() {
             return
         } else if (InventoryUtils.getSlots(0, 35, 278) == null) {
             sendChatMessage("$chatName No pickaxe was found in inventory, disabling.")
-            mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+            mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             this.disable()
             return
         }
@@ -379,8 +374,6 @@ object AutoObsidian : Module() {
         searchingState = SearchingState.PLACING
         playerPos = BlockPos(0, -1, 0)
         placingPos = BlockPos(0, -1, 0)
-        enderChestCount = -1
-        obsidianCount = -1
         tickCount = 0
     }
     /* End of tasks */

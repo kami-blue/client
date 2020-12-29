@@ -119,18 +119,26 @@ object ConfigUtils {
     }
 
     fun fixEmptyJson(file: File, isArray: Boolean = false) {
-        if (!file.exists()) file.createNewFile()
-        var notEmpty = false
-        file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() || it == "[]" || it == "{}" }
+        var empty = false
 
-        if (!notEmpty) {
-            val fileWriter = FileWriter(file)
-            try {
-                fileWriter.write(if (isArray) "[]" else "{}")
-            } catch (exception: IOException) {
-                exception.printStackTrace()
+        if (!file.exists()) {
+            file.createNewFile()
+            empty = true
+        } else if (file.length() <= 8) {
+            val string = file.readText()
+            empty = string.isBlank() || string.all {
+                it == '[' || it == ']' || it == '{' || it == '}' || it == ' ' || it == '\n' || it == '\r'
             }
-            fileWriter.close()
+        }
+
+        if (empty) {
+            try {
+                FileWriter(file, false).use {
+                    it.write(if (isArray) "[]" else "{}")
+                }
+            } catch (exception: IOException) {
+                KamiMod.LOG.warn("Failed fixing empty json", exception)
+            }
         }
     }
 

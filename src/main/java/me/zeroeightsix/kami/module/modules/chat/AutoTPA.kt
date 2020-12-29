@@ -4,9 +4,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
+import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.util.text.Regexes
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -25,9 +24,10 @@ object AutoTPA : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat || !it.packet.chatComponent.unformattedText.detect(true, Regexes.TPA_REQUEST)) return@listener
+            if (it.packet !is SPacketChat || MessageDetection.Other.TPA_REQUEST detectNot it.packet.chatComponent.unformattedText) return@listener
+
             /* I tested that getting the first word is compatible with chat timestamp, and it as, as this is Receive and chat timestamp is after Receive */
-            val name = it.packet.chatComponent.unformattedText.split(" ").toTypedArray()[0]
+            val name = it.packet.chatComponent.unformattedText.split(" ")[0]
 
             when (mode.value) {
                 Mode.ACCEPT -> sendServerMessage("/tpaccept $name")
