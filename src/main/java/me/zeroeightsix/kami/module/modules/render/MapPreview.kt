@@ -1,10 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.gui.kami.theme.kami.KamiGuiColors
 import me.zeroeightsix.kami.mixin.client.gui.MixinGuiScreen
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.module.modules.client.GuiColors
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.useVbo
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawRectFilled
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D.drawRectOutline
@@ -31,9 +30,9 @@ import java.awt.Color
 object MapPreview : Module() {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
-    private val showName = register(Settings.b("ShowName", false))
-    val frame = register(Settings.b("ShowFrame", true))
-    val scale = register(Settings.doubleBuilder("Size").withRange(0.0, 10.0).withValue(5.0).build())
+    private val showName = setting("ShowName", false)
+    private val frame = setting("ShowFrame", false)
+    val scale = setting("Scale", 5.0, 0.0..10.0, 0.1)
 
     @JvmStatic
     fun getMapData(itemStack: ItemStack): MapData? {
@@ -74,8 +73,8 @@ object MapPreview : Module() {
         )
 
         // Draw the background
-        drawRectFilled(vertexHelper, backgroundX, backgroundY, ColorHolder(KamiGuiColors.GuiC.windowFilled.color))
-        drawRectOutline(vertexHelper, backgroundX, backgroundY, 1.5f, ColorHolder(KamiGuiColors.GuiC.windowOutline.color))
+        drawRectFilled(vertexHelper, backgroundX, backgroundY, GuiColors.backGround)
+        drawRectOutline(vertexHelper, backgroundX, backgroundY, 1.5f, GuiColors.outline)
 
         // Draw the name
         mc.fontRenderer.drawStringWithShadow(stack.displayName, 2f, -15f, Color.WHITE.rgb)

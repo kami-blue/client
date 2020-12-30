@@ -87,10 +87,10 @@ open class Slider(
 
         // Slider hover overlay
         val overlayColor = getStateColor(mouseState).interpolate(getStateColor(prevState), AnimationUtils.toDeltaTimeDouble(lastStateUpdateTime), 200.0)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), overlayColor)
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth.toDouble(), renderHeight.toDouble()), overlayColor)
 
         // Slider frame
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2d(renderWidth, renderHeight), 1.5f, GuiColors.outline)
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), 1.5f, GuiColors.outline)
 
         // Slider name
         GlStateUtils.pushScissor()
@@ -126,22 +126,22 @@ open class Slider(
 
             val alpha = (if (mouseState == MouseState.HOVER) AnimationUtils.exponentInc(deltaTime, 250.0f, 0.0f, 1.0f)
             else AnimationUtils.exponentDec(deltaTime, 250.0f, 0.0f, 1.0f))
-            val textWidth = description.getWidth()
-            val textHeight = description.getHeight(2)
+            val textWidth = description.getWidth().toDouble()
+            val textHeight = description.getHeight(2).toDouble()
 
-            val relativeCorner = Vec2f(mc.displayWidth.toFloat(), mc.displayHeight.toFloat()).divide(ClickGUI.getScaleFactorFloat()).subtract(absolutePos)
+            val relativeCorner = Vec2f(mc.displayWidth.toFloat(), mc.displayHeight.toFloat()).div(ClickGUI.getScaleFactorFloat()).minus(absolutePos)
 
-            val posX = descriptionPosX.coerceIn(-absolutePos.x, relativeCorner.x - textWidth - 10.0f)
-            val posY = (renderHeight + 4.0f).coerceIn(-absolutePos.y, relativeCorner.y - textHeight - 10.0f)
+            val posX = descriptionPosX.coerceIn(-absolutePos.x, (relativeCorner.x - textWidth - 10.0f).toFloat())
+            val posY = (renderHeight + 4.0f).coerceIn(-absolutePos.y, (relativeCorner.y - textHeight - 10.0f).toFloat())
 
             glDisable(GL_SCISSOR_TEST)
             glPushMatrix()
             glTranslatef(posX, posY, 696.0f)
 
-            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(textWidth, textHeight).add(4.0), color = GuiColors.backGround.apply { a = (a * alpha).toInt() })
-            RenderUtils2D.drawRectOutline(vertexHelper, posEnd = Vec2d(textWidth, textHeight).add(4.0), lineWidth = 2.0f, color = GuiColors.primary.apply { a = (a * alpha).toInt() })
+            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(textWidth, textHeight).plus(4.0), color = GuiColors.backGround.apply { a = (a * alpha).toInt() })
+            RenderUtils2D.drawRectOutline(vertexHelper, posEnd = Vec2d(textWidth, textHeight).plus(4.0), lineWidth = 2.0f, color = GuiColors.primary.apply { a = (a * alpha).toInt() })
 
-            description.draw(Vec2d(2.0f, 2.0f), 2, alpha)
+            description.draw(Vec2d(2.0, 2.0), 2, alpha)
 
             glEnable(GL_SCISSOR_TEST)
             glPopMatrix()

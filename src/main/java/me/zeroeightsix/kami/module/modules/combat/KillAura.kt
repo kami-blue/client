@@ -30,8 +30,9 @@ object KillAura : Module() {
     private val waitTick = setting("SpamDelay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
     val range = setting("Range", 5f, 0f..8f, 0.25f)
     private val tpsSync = setting("TPSSync", false)
-    private val autoTool = setting("AutoWeapon", true)
-    private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoTool.value })
+    private val autoWeapon = setting("AutoWeapon", true)
+    private val weaponOnly = setting("WeaponOnly", true)
+    private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
     private val disableOnDeath = setting("DisableOnDeath", false)
 
     private var inactiveTicks = 0
@@ -61,7 +62,7 @@ object KillAura : Module() {
             if (mc.player.getDistance(target) > range.value) return@listener
 
             if (autoWeapon.value) {
-                CombatUtils.equipBestWeapon(prefer.value as CombatUtils.PreferWeapon)
+                CombatUtils.equipBestWeapon(prefer.value)
             }
 
             if (weaponOnly.value && !mc.player.heldItemMainhand.item.isWeapon) {
@@ -88,7 +89,7 @@ object KillAura : Module() {
             val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
             mc.player.getCooledAttackStrength(adjustTicks) >= 1f
         } else {
-            if (tickCount < spamDelay.value) {
+            if (tickCount < waitTick.value) {
                 tickCount++
                 false
             } else {

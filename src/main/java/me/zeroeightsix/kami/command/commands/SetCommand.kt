@@ -63,8 +63,7 @@ object SetCommand : ClientCommand(
             executeAsync("List settings for a module") {
                 val module = moduleArg.value
                 val settingsString = module.fullSettingList.joinToString()
-                val string = "List of settings for ${TextFormatting.AQUA}${module.name}${TextFormatting.RESET}:\n" +
-                    settingsString
+                val string = "List of settings for ${formatValue(module.name)}:\n$settingsString"
                 MessageSendHelper.sendChatMessage(string)
             }
         }

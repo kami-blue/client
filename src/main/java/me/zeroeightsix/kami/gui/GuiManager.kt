@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 import java.lang.reflect.Modifier
 
@@ -15,7 +15,7 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
     val hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
 
     override fun preLoad0(): List<Class<out HudElement>> {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         val list = ClassUtils.findClasses("me.zeroeightsix.kami.gui.hudgui.elements", HudElement::class.java)
             .filter { Modifier.isFinal(it.modifiers) }
@@ -26,7 +26,7 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
     }
 
     override fun load0(input: List<Class<out HudElement>>) {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         for (clazz in input) {
             hudElementsMap[clazz] = ClassUtils.getInstance(clazz)

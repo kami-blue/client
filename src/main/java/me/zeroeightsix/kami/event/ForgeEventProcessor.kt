@@ -2,17 +2,13 @@ package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.*
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
-import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.mc.KamiGuiChat
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.text.MessageDetection
+import net.minecraft.entity.passive.AbstractHorse
 import net.minecraftforge.client.event.*
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent

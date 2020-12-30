@@ -7,13 +7,9 @@ import kotlin.math.pow
 
 data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
-    constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
-
     constructor(vec3d: Vec3d) : this(vec3d.x, vec3d.y)
 
     constructor(vec2d: Vec2d) : this(vec2d.x, vec2d.y)
-
-    constructor(vec2f: Vec2f) : this(vec2f.x, vec2f.y)
 
     fun toRadians() = Vec2d(x.toRadian(), y.toRadian())
 
@@ -49,6 +45,8 @@ data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
     operator fun plus(add: Double) = plus(add, add)
 
     fun plus(x: Double, y: Double) = Vec2d(this.x + x, this.y + y)
+
+    fun toVec2f() = Vec2f(x.toFloat(), y.toFloat())
 
     override fun toString(): String {
         return "Vec2d[${this.x}, ${this.y}]"
