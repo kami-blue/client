@@ -4,14 +4,14 @@ import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 
 internal object ManagerLoader : AsyncLoader<List<Class<out Manager>>> {
     override var deferred: Deferred<List<Class<out Manager>>>? = null
 
     override fun preLoad0(): List<Class<out Manager>> {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         val list = ClassUtils.findClasses("me.zeroeightsix.kami.manager.managers", Manager::class.java)
         val time = stopTimer.stop()
@@ -21,7 +21,7 @@ internal object ManagerLoader : AsyncLoader<List<Class<out Manager>>> {
     }
 
     override fun load0(input: List<Class<out Manager>>) {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         for (clazz in input) {
             ClassUtils.getInstance(clazz).also { KamiEventBus.subscribe(it) }

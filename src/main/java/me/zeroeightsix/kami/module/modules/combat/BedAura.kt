@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
@@ -48,7 +46,7 @@ object BedAura : Module() {
 
     private val placeMap = TreeMap<Pair<Float, Float>, BlockPos>(compareByDescending { it.first }) // <<TargetDamage, SelfDamage>, BlockPos>
     private val bedMap = TreeMap<Float, BlockPos>(compareBy { it }) // <SquaredDistance, BlockPos>
-    private val refillTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val refillTimer = TickTimer(TimeUnit.TICKS)
     private var state = State.NONE
     private var clickPos = BlockPos(0, -6969, 0)
     private var lastRotation = Vec2d(0.0, 0.0)

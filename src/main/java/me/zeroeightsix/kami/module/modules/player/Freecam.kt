@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -54,7 +52,7 @@ object Freecam : Module() {
     }
 
     private var prevThirdPersonViewSetting = -1
-    private val clickTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val clickTimer = TickTimer(TimeUnit.SECONDS)
     var cameraGuy: EntityPlayer? = null; private set
 
     private const val ENTITY_ID = -6969420

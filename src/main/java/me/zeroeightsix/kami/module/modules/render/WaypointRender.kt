@@ -6,7 +6,8 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.HAlign
@@ -68,7 +69,7 @@ object WaypointRender : Module() {
         mc.player?.distanceTo(it.pos) ?: it.pos.getDistance(0, -69420, 0)
     })
     private var currentServer: String? = null
-    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var timer = TickTimer(TimeUnit.SECONDS)
     private var prevDimension = -2
     private val lockObject = Any()
 

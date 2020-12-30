@@ -5,7 +5,8 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.text.formatValue
@@ -85,7 +86,7 @@ object AutoEZ : Module() {
             "Can you paint with all the colors of the wind"
     ) // Got these from the forums, kinda based -humboldt123 
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
     private val attackedPlayers = LinkedHashMap<EntityPlayer, Int>() // <Player, Last Attack Time>
     private val lockObject = Any()
 

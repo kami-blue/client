@@ -4,7 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
@@ -25,7 +26,7 @@ object Spammer : Module() {
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = ArrayList<String>()
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
     private var currentLine = 0
 
     private enum class Mode {

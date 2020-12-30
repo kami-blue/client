@@ -6,9 +6,7 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.WebUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -36,9 +34,9 @@ object LagNotifier : Module() {
     private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value })
     private val timeout = register(Settings.floatBuilder("Timeout").withValue(3.5f).withRange(0.0f, 10.0f))
 
-    private val pingTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private var lastPacketTimer = TimerUtils.TickTimer()
-    private var lastRubberBandTimer = TimerUtils.TickTimer()
+    private val pingTimer = TickTimer(TimeUnit.SECONDS)
+    private var lastPacketTimer = TickTimer()
+    private var lastRubberBandTimer = TickTimer()
     private var text = ""
     var paused = false
 

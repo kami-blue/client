@@ -8,7 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -38,7 +39,7 @@ object DiscordRPC : Module() {
     private val presence = DiscordRichPresence()
     private val rpc = club.minnced.discord.rpc.DiscordRPC.INSTANCE
     private var connected = false
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
     private val job = BackgroundJob("Discord RPC", 5000L) { updateRPC() }
 
     override fun onEnable() {

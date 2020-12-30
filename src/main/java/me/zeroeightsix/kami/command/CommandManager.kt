@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
@@ -20,7 +20,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
     val prefix: String get() = CommandConfig.prefix.value
 
     override fun preLoad0(): List<Class<out ClientCommand>> {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         val list = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
         val time = stopTimer.stop()
@@ -30,7 +30,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
     }
 
     override fun load0(input: List<Class<out ClientCommand>>) {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         for (clazz in input) {
             register(ClassUtils.getInstance(clazz))

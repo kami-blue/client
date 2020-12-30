@@ -5,9 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
@@ -78,7 +76,7 @@ object InventoryManager : Module() {
 
     private var currentState = State.IDLE
     private var paused = false
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val timer = TickTimer(TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE

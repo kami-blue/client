@@ -8,7 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -53,7 +54,7 @@ object NewChunks : Module() {
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TickTimer(TimeUnit.MINUTES)
     val chunks = HashSet<Chunk>()
 
     override fun onDisable() {

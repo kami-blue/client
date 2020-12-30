@@ -9,10 +9,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.speed
-import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -48,7 +46,7 @@ object Surround : Module() {
     }
 
     private var holePos: BlockPos? = null
-    private var toggleTimer = TimerUtils.StopTimer(TimerUtils.TimeUnit.TICKS)
+    private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
     override fun onEnable() {

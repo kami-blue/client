@@ -50,8 +50,8 @@ object Scaffold : Module() {
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
     private var inactiveTicks = 69
 
-    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
-    private val rubberBandTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val placeTimer = TickTimer(TimeUnit.TICKS)
+    private val rubberBandTimer = TickTimer(TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5

@@ -10,8 +10,9 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
-import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.*
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
@@ -37,7 +38,7 @@ object DiscordNotifs : Module() {
     val avatar = register(Settings.s("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png"))
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     /* Listeners to send the messages */
     init {

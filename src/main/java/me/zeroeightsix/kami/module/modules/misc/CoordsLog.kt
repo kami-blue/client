@@ -5,7 +5,8 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -23,7 +24,7 @@ object CoordsLog : Module() {
 
     private var previousCoord: String? = null
     private var savedDeath = false
-    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<SafeTickEvent> {

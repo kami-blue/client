@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.isWater
-import me.zeroeightsix.kami.util.TimerUtils.TickTimer
+import me.zeroeightsix.kami.util.TickTimer
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import org.kamiblue.event.listener.listener

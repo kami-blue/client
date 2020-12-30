@@ -8,7 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.Direction
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.MovementInputFromOptions
@@ -30,7 +31,7 @@ object AutoWalk : Module() {
     }
 
     private const val border = 30000000
-    private val messageTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val messageTimer = TickTimer(TimeUnit.SECONDS)
     var direction = Direction.NORTH; private set
 
     override fun isActive(): Boolean {

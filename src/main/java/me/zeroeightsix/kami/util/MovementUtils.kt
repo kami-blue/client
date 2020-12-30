@@ -19,7 +19,7 @@ object MovementUtils {
     fun calcMoveYaw(yawIn: Float = mc.player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
         var strafe = 90 * moveString
         strafe *= if (moveForward != 0F) moveForward * 0.5F else 1F
-        
+
         var yaw = yawIn - strafe
         yaw -= if (moveForward < 0F) 180 else 0
 

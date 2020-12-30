@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.mixin.extension.parentScreen
 import me.zeroeightsix.kami.mixin.extension.reason
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData
@@ -38,7 +38,7 @@ object AutoReconnect : Module() {
     }
 
     private class KamiGuiDisconnected(disconnected: GuiDisconnected) : GuiDisconnected(disconnected.parentScreen, disconnected.reason, disconnected.message) {
-        private val timer = TimerUtils.StopTimer()
+        private val timer = StopTimer()
 
         override fun updateScreen() {
             if (timer.stop() >= (delay.value * 1000.0f)) {
