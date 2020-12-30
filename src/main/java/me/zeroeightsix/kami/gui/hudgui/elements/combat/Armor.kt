@@ -9,12 +9,15 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
+import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
+import kotlin.math.max
 
 object Armor : HudElement(
     name = "Armor",
@@ -29,7 +32,7 @@ object Armor : HudElement(
         get() = if (classic.value) {
             80.0f
         } else {
-            40.0f
+            stringWidth
         }
 
     override val maxHeight: Float
@@ -38,6 +41,8 @@ object Armor : HudElement(
         } else {
             80.0f
         }
+
+    private var stringWidth = 120.0f
 
     private val armorItems = arrayOf(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS)
     private val armorCounts = IntArray(4)
@@ -71,8 +76,7 @@ object Armor : HudElement(
             val duraY = if (dockingV.value != VAlign.TOP) 2.0f else 22.0f
 
             for ((index, armor) in player.armorInventoryList.reversed().withIndex()) {
-                val count = if (armorCount.value) armorCounts[index].toString() else null
-                RenderUtils2D.drawItem(armor, 2, itemY, count)
+                drawItem(armor, index, 2, itemY)
 
                 if (armor.isItemStackDamageable) {
                     val duraPercent = MathUtils.round((armor.maxDamage - armor.itemDamage) / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
@@ -85,10 +89,41 @@ object Armor : HudElement(
 
                 GlStateManager.translate(20.0f, 0.0f, 0.0f)
             }
+        } else {
+            val itemX = if (dockingH.value != HAlign.RIGHT) 2 else (stringWidth - 18).toInt()
+            val duraY = 10.0f - FontRenderAdapter.getFontHeight() * 0.5f
+            var maxWidth = 0.0f
+
+            for ((index, armor) in player.armorInventoryList.reversed().withIndex()) {
+                drawItem(armor, index, itemX, 2)
+
+                if (armor.isItemStackDamageable) {
+                    val dura = armor.maxDamage - armor.itemDamage
+                    val duraPercent = MathUtils.round(dura / armor.maxDamage.toFloat() * 100.0f, 1).toFloat()
+
+                    val string = "$dura/${armor.maxDamage}  ($duraPercent%)"
+                    val duraWidth = FontRenderAdapter.getStringWidth(string)
+                    val duraX = if (dockingH.value != HAlign.RIGHT) 22.0f else stringWidth - 22.0f - duraWidth
+                    val color = duraColorGradient.get(duraPercent)
+                    maxWidth = max(duraWidth, maxWidth)
+
+                    FontRenderAdapter.drawString(string, duraX, duraY, color = color)
+                }
+
+                GlStateManager.translate(0.0f, 20.0f, 0.0f)
+            }
+
+            stringWidth = maxWidth + 24.0f
         }
 
         GlStateManager.popMatrix()
-
     }
+
+    private fun drawItem(itemStack: ItemStack, index: Int, x: Int, y: Int) {
+        val count = if (armorCount.value) armorCounts[index].toString() else null
+        RenderUtils2D.drawItem(itemStack, x, y, count)
+    }
+
+
 
 }
