@@ -129,15 +129,40 @@ object PluginCommand : ClientCommand(
                     MessageSendHelper.sendRawChatMessage("No plugin loaded")
                 } else {
                     for ((index, plugin) in PluginManager.loadedPlugins.withIndex()) {
-                        MessageSendHelper.sendRawChatMessage("${formatValue(index)}. " +
-                            "Name: ${formatValue(plugin.name)}, " +
-                            "Version: ${formatValue(plugin.version)}, " +
-                            "Description: ${formatValue(plugin.description)}, " +
-                            "Min KAMI Blue Version: ${formatValue(plugin.kamiVersion)}, " +
-                            "Authors: ${plugin.authors.joinToString(",")}, " +
-                            "Dependencies: ${plugin.requiredPlugins.joinToString(",")}"
-                        )
+                        MessageSendHelper.sendRawChatMessage("${formatValue(index)}. ${formatValue(plugin.name)}")
                     }
+                }
+            }
+        }
+
+        literal("info") {
+            int("index") { indexArg ->
+                execute {
+                    val index = indexArg.value
+                    val plugin = PluginManager.loadedPlugins.toList().getOrNull(index)
+                        ?: run {
+                            MessageSendHelper.sendChatMessage("No plugin found for index: ${formatValue(index)}")
+                            return@execute
+                        }
+                    val loader = PluginManager.pluginLoaderMap[plugin]!!
+
+                    MessageSendHelper.sendChatMessage("Info for plugin: $loader")
+                    MessageSendHelper.sendRawChatMessage(plugin.toString())
+                }
+            }
+
+            string( "plugin name") { nameArg ->
+                execute {
+                    val name = nameArg.value
+                    val plugin = PluginManager.loadedPlugins[name]
+                        ?: run {
+                            MessageSendHelper.sendChatMessage("No plugin found for name: ${formatValue(name)}")
+                            return@execute
+                        }
+                    val loader = PluginManager.pluginLoaderMap[plugin]!!
+
+                    MessageSendHelper.sendChatMessage("Info for plugin: $loader")
+                    MessageSendHelper.sendRawChatMessage(plugin.toString())
                 }
             }
         }

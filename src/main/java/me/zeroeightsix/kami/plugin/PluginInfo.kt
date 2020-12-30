@@ -60,9 +60,9 @@ class PluginInfo private constructor(
 
     override fun toString() = "Name: ${name}, " +
         "Version: ${version}, " +
+        "Authors: ${authors.joinToString(",")}, " +
         "Description: ${description}, " +
         "KAMI Blue Version: ${kamiVersion}, " +
-        "Authors: ${authors.joinToString(",")}, " +
         "Required Plugins: ${requiredPlugins.joinToString(",")}"
 
     companion object {

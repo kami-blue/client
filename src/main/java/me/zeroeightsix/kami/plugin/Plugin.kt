@@ -114,4 +114,7 @@ open class Plugin : Nameable {
         && name == other.name)
 
     override fun hashCode() = name.hashCode()
+
+    override fun toString() = info.toString()
+
 }
