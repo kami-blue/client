@@ -37,11 +37,11 @@ public class Installer extends JPanel {
 
         if (!hasForge) {
             notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use KAMI Blue. " +
-                    "Head to https://kamiblue.org/faq to get instructions for installing Forge");
+                "Head to https://kamiblue.org/faq to get instructions for installing Forge");
         }
         if (kamiJars != null) {
             notify("Attention! It looks like you had KAMI Blue installed before. Closing this popup will delete the older versions, " +
-                    "so if you want to save those jars you should go and make a copy somewhere else");
+                "so if you want to save those jars you should go and make a copy somewhere else");
             deleteKamiJars(kamiJars);
         }
     }
