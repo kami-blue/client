@@ -127,7 +127,7 @@ object InventoryManager : Module() {
     }
 
     private fun ejectCheck(): Boolean {
-        if (!autoEject.value || ejectList.value.isEmpty()) return false
+        if (!autoEject.value || ejectList.isEmpty()) return false
 
         return getEjectSlot() != null && ((InventoryUtils.getSlots(0, 35, 0) == null && fullOnly.value) || !fullOnly.value)
     }
@@ -237,7 +237,7 @@ object InventoryManager : Module() {
             if (currentStack.isEmpty) continue
             if (!currentStack.isStackable || currentStack.count > stackTarget) continue
             if (getIdFromItem(currentStack.getItem()) == buildingBlockID.value && buildingMode.value) continue
-            if (ejectList.value.contains(currentStack.getItem().registryName.toString()) && autoEject.value) continue
+            if (ejectList.contains(currentStack.getItem().registryName.toString()) && autoEject.value) continue
             if (getCompatibleStack(currentStack) == null) continue
             return i
         }
@@ -260,7 +260,7 @@ object InventoryManager : Module() {
         for (slot in 9..44) {
             val currentStack = mc.player.inventoryContainer.inventory[slot]
             if (((getIdFromItem(currentStack.getItem()) != buildingBlockID.value && buildingMode.value) || !buildingMode.value) && /* Don't throw the building block */
-                    ejectList.value.contains(currentStack.getItem().registryName.toString())) {
+                    ejectList.contains(currentStack.getItem().registryName.toString())) {
                 return slot
             }
         }

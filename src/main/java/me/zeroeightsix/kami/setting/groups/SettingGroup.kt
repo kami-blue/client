@@ -3,14 +3,14 @@ package me.zeroeightsix.kami.setting.groups
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.AbstractSetting
 
 open class SettingGroup(
         val name: String
 ) {
 
     /** Settings in this group */
-    protected val subSetting = LinkedHashMap<String, Setting<*>>()
+    protected val subSetting = LinkedHashMap<String, AbstractSetting<*>>()
 
 
     /**
@@ -24,11 +24,11 @@ open class SettingGroup(
      * Adds a setting to this group
      *
      * @param S type of the setting
-     * @param setting Setting to add
+     * @param setting MutableSetting to add
      *
      * @return [setting]
      */
-    open fun <S: Setting<*>> addSetting(setting: S): S {
+    open fun <S: AbstractSetting<*>> addSetting(setting: S): S {
         subSetting[setting.name.toLowerCase()] = setting
         return setting
     }

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.setting.settings.impl.other
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.MutableSetting
 import me.zeroeightsix.kami.util.Bind
 import org.lwjgl.input.Keyboard
 
@@ -10,7 +10,7 @@ class BindSetting(
         name: String,
         visibility: () -> Boolean = { true },
         description: String = ""
-) : Setting<Bind>(name, Bind.none(), visibility, { _, input -> input }, description) {
+) : MutableSetting<Bind>(name, Bind.none(), visibility, { _, input -> input }, description) {
 
     override fun write() = JsonPrimitive(value.toString())
 

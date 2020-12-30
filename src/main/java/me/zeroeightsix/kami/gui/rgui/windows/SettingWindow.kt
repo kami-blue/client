@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.rgui.windows
 
 import me.zeroeightsix.kami.gui.rgui.component.*
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import me.zeroeightsix.kami.setting.settings.impl.number.NumberSetting
 import me.zeroeightsix.kami.setting.settings.impl.other.BindSetting
 import me.zeroeightsix.kami.setting.settings.impl.other.ColorSetting
@@ -27,7 +27,7 @@ abstract class SettingWindow<T : Any>(
     var listeningChild: Slider? = null; private set
     private var initialized = false
 
-    protected abstract fun getSettingList(): List<Setting<*>>
+    protected abstract fun getSettingList(): List<AbstractSetting<*>>
 
     override fun onGuiInit() {
         super.onGuiInit()

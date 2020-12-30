@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.setting.settings.impl.number
 
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.MutableSetting
 
 abstract class NumberSetting<T : Number>(
         name: String,
@@ -12,7 +12,7 @@ abstract class NumberSetting<T : Number>(
         visibility: () -> Boolean,
         consumer: (prev: T, input: T) -> T,
         description: String = ""
-) : Setting<T>(name, value, visibility, consumer, description) {
+) : MutableSetting<T>(name, value, visibility, consumer, description) {
 
     override fun write() = JsonPrimitive(value)
 

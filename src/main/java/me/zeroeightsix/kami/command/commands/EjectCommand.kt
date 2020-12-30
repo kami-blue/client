@@ -15,10 +15,10 @@ object EjectCommand : ClientCommand(
                 execute("Add an item to the eject list") {
                     val itemName = itemArg.value.registryName!!.toString()
 
-                    if (InventoryManager.ejectList.value.contains(itemName)) {
+                    if (InventoryManager.ejectList.contains(itemName)) {
                         MessageSendHelper.sendErrorMessage("&c$itemName is already added to eject list")
                     } else {
-                        InventoryManager.ejectList.value.add(itemName)
+                        InventoryManager.ejectList.add(itemName)
                         MessageSendHelper.sendChatMessage("$itemName has been added to the eject list")
                     }
                 }
@@ -30,10 +30,10 @@ object EjectCommand : ClientCommand(
                 execute("Remove an item from the eject list") {
                     val itemName = itemArg.value.registryName!!.toString()
 
-                    if (!InventoryManager.ejectList.value.contains(itemName)) {
+                    if (!InventoryManager.ejectList.contains(itemName)) {
                         MessageSendHelper.sendErrorMessage("&c$itemName is not in the eject list")
                     } else {
-                        InventoryManager.ejectList.value.remove(itemName)
+                        InventoryManager.ejectList.remove(itemName)
                         MessageSendHelper.sendChatMessage("$itemName has been removed from the eject list")
                     }
                 }
@@ -42,7 +42,7 @@ object EjectCommand : ClientCommand(
 
         literal("list") {
             execute("List items in the eject list") {
-                var list = InventoryManager.ejectList.value.joinToString()
+                var list = InventoryManager.ejectList.joinToString()
                 if (list.isEmpty()) list = "&cNo items!"
                 MessageSendHelper.sendChatMessage("AutoEject item list:\n$list")
             }
@@ -57,7 +57,7 @@ object EjectCommand : ClientCommand(
 
         literal("clear") {
             execute("Set the eject list to nothing") {
-                InventoryManager.ejectList.value.clear()
+                InventoryManager.ejectList.clear()
                 MessageSendHelper.sendChatMessage("Reset eject list was cleared")
             }
         }

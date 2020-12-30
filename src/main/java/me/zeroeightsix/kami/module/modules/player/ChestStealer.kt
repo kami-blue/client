@@ -82,11 +82,10 @@ object ChestStealer : Module() {
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = InventoryManager.ejectList.value
         for (slot in 0 until getContainerSlotSize()) {
-            val item = container[slot].getItem()
+            val item = container[slot].item
             if (item == Items.AIR) continue
-            if (ignoreEjectItem.value && ejectList.contains(item.registryName.toString())) continue
+            if (ignoreEjectItem.value && InventoryManager.ejectList.contains(item.registryName.toString())) continue
             return slot
         }
         return null

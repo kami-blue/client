@@ -43,7 +43,7 @@ object SearchCommand : ClientCommand(
                 execute("Remove a block from search list") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    if (!Search.searchList.value.remove(blockName)) {
+                    if (!Search.searchList.remove(blockName)) {
                         MessageSendHelper.sendErrorMessage("You do not have ${formatValue(blockName)} added to search block list")
                     } else {
                         MessageSendHelper.sendChatMessage("Removed ${formatValue(blockName)} from search block list")
@@ -57,8 +57,8 @@ object SearchCommand : ClientCommand(
                 execute("Set the search list to one block") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    Search.searchList.value.clear()
-                    Search.searchList.value.add(blockName)
+                    Search.searchList.clear()
+                    Search.searchList.add(blockName)
                     MessageSendHelper.sendChatMessage("Set the search block list to ${formatValue(blockName)}")
                 }
             }

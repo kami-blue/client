@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.setting.settings.impl.primitive
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.MutableSetting
 
 class StringSetting(
         name: String,
@@ -10,7 +10,7 @@ class StringSetting(
         visibility: () -> Boolean = { true },
         consumer: (prev: String, input: String) -> String = { _, input -> input },
         description: String = ""
-) : Setting<String>(name, value, visibility, consumer, description) {
+) : MutableSetting<String>(name, value, visibility, consumer, description) {
 
     override fun setValue(valueIn: String) {
         value = valueIn

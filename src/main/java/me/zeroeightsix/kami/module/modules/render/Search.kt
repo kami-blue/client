@@ -133,7 +133,7 @@ object Search : Module() {
         Thread {
             for (chunkPos in loadedChunks) {
                 val thread = Thread {
-                    findBlocksInChunk(chunkPos, searchList.value.toHashSet())
+                    findBlocksInChunk(chunkPos, searchList.toHashSet())
                 }
                 thread.priority = 1
                 chunkThreads.putIfAbsent(chunkPos, thread)

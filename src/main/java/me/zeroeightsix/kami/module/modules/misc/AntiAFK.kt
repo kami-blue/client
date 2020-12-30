@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageDetection
@@ -158,7 +158,7 @@ object AntiAFK : Module() {
         BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
     }
 
-    private enum class Action(val setting: Setting<Boolean>) {
+    private enum class Action(val setting: BooleanSetting) {
         SWING(swing),
         JUMP(jump),
         TURN(turn)

@@ -17,7 +17,7 @@ open class SettingMultiGroup(
      *
      * @param settingName Name of the setting
      *
-     * @return Setting that matches [settingName] or null if none
+     * @return MutableSetting that matches [settingName] or null if none
      */
     fun getSetting(settingName: String) = subSetting[settingName.toLowerCase()]
     /* End of settings */

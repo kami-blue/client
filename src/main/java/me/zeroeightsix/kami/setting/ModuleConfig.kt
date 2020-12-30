@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GenericConfig.setting
 import me.zeroeightsix.kami.setting.config.AbstractMultiConfig
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
 object ModuleConfig : AbstractMultiConfig<Module>(
@@ -16,7 +16,7 @@ object ModuleConfig : AbstractMultiConfig<Module>(
     val currentPath = setting("CurrentPath", "default")
     override val file: File get() = File("$directoryPath$name/$currentPath")
 
-    override fun <S : Setting<*>> Module.setting(setting: S): S {
+    override fun <S : AbstractSetting<*>> Module.setting(setting: S): S {
         getGroupOrPut(category.displayName).getGroupOrPut(name).addSetting(setting)
         return setting
     }

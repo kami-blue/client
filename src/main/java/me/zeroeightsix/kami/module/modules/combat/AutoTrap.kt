@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -64,7 +64,7 @@ object AutoTrap : Module() {
         }
     }
 
-    private fun Setting<Boolean>.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
+    private fun BooleanSetting.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
 
     private fun isPlaceable(): Boolean {
         (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {

@@ -24,8 +24,8 @@ abstract class AbstractConfig<T>(
         private val filePath: String
 ) : SettingMultiGroup(name), IFinalGroup<T> {
 
-    /* Setting registering */
-    /** Integer Setting */
+    /* MutableSetting registering */
+    /** Integer MutableSetting */
     fun T.setting(
             name: String,
             value: Int,
@@ -36,7 +36,7 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
 
-    /** Double Setting */
+    /** Double MutableSetting */
     fun T.setting(
             name: String,
             value: Double,
@@ -47,7 +47,7 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
 
-    /** Float Setting */
+    /** Float MutableSetting */
     fun T.setting(
             name: String,
             value: Float,
@@ -58,14 +58,14 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
 
-    /** Bind Setting */
+    /** Bind MutableSetting */
     fun T.setting(
             name: String,
             visibility: () -> Boolean = { true },
             description: String = ""
     ) = setting(BindSetting(name, visibility, description))
 
-    /** Color Setting */
+    /** Color MutableSetting */
     fun T.setting(
             name: String,
             value: ColorHolder,
@@ -74,7 +74,7 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
 
-    /** Boolean Setting */
+    /** Boolean MutableSetting */
     fun T.setting(
             name: String,
             value: Boolean,
@@ -83,7 +83,7 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(BooleanSetting(name, value, visibility, consumer, description))
 
-    /** Enum Setting */
+    /** Enum MutableSetting */
     fun <E : Enum<E>> T.setting(
             name: String,
             value: E,
@@ -92,7 +92,7 @@ abstract class AbstractConfig<T>(
             description: String = ""
     ) = setting(EnumSetting(name, value, visibility, consumer, description))
 
-    /** Boolean Setting */
+    /** Boolean MutableSetting */
     fun T.setting(
             name: String,
             value: String,

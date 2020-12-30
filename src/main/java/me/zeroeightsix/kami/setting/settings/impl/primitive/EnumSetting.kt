@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.setting.settings.impl.primitive
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.MutableSetting
 
 class EnumSetting<T : Enum<T>>(
         name: String,
@@ -10,7 +10,7 @@ class EnumSetting<T : Enum<T>>(
         visibility: () -> Boolean = { true },
         consumer: (prev: T, input: T) -> T = { _, input -> input },
         description: String = ""
-) : Setting<T>(name, value, visibility, consumer, description) {
+) : MutableSetting<T>(name, value, visibility, consumer, description) {
 
     val enumClass: Class<T> = value.declaringClass
     val enumValues: Array<out T> = enumClass.enumConstants

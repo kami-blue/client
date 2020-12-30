@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.setting
 
-import me.zeroeightsix.kami.setting.settings.Setting
+import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
 /**
- * Setting group that can be saved to a .json file
+ * MutableSetting group that can be saved to a .json file
  *
  * @param T Type to have extension function for registering setting
  */
@@ -20,11 +20,11 @@ interface IFinalGroup<T> {
      * Register a setting to this group
      *
      * @param S Type of the setting
-     * @param setting Setting to register
+     * @param setting MutableSetting to register
      *
      * @return [setting]
      */
-    fun <S : Setting<*>> T.setting(setting: S): S
+    fun <S : AbstractSetting<*>> T.setting(setting: S): S
 
     /**
      * Save this group to its .json file
