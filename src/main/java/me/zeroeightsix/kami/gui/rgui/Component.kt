@@ -35,24 +35,22 @@ open class Component(
     val dockingH = setting("DockingH", HAlign.LEFT)
     val dockingV = setting("DockingV", VAlign.TOP)
 
-    var posX: Float = 0.0f
+    var posX: Float
         get() {
             return relativeToAbsX(relativePosX.value)
         }
         set(value) {
             if (!KamiMod.isReady()) return
-            field = absToRelativeX(value)
-            relativePosX.value = field
+            relativePosX.value = absToRelativeX(value)
         }
 
-    var posY: Float = 0.0f
+    var posY: Float
         get() {
             return relativeToAbsY(relativePosY.value)
         }
         set(value) {
             if (!KamiMod.isReady()) return
-            field = absToRelativeY(value)
-            relativePosY.value = field
+            relativePosY.value = absToRelativeY(value)
         }
 
     init {
