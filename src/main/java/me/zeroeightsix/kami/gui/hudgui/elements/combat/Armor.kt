@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -120,10 +121,15 @@ object Armor : HudElement(
     }
 
     private fun drawItem(itemStack: ItemStack, index: Int, x: Int, y: Int) {
-        val count = if (armorCount.value) armorCounts[index].toString() else null
-        RenderUtils2D.drawItem(itemStack, x, y, count)
+        RenderUtils2D.drawItem(itemStack, x, y, drawOverlay = false)
+        if (armorCount.value) {
+            val string = armorCounts[index].toString()
+            val width = FontRenderAdapter.getStringWidth(string)
+            val height = FontRenderAdapter.getFontHeight()
+
+            GlStateUtils.depth(false)
+            FontRenderAdapter.drawString(string, x + 16.0f -width, y + 16.0f - height)
+            GlStateUtils.depth(true)
+        }
     }
-
-
-
 }
