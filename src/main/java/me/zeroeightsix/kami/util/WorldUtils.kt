@@ -221,7 +221,7 @@ object WorldUtils {
         placeSpeed: Float
     ) {
         val hitVecOffset = getHitVecOffset(facing)
-        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
+        val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset))
         val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
         val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
 

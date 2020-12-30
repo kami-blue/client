@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.WorldUtils.isPlaceableForChest
-import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
+import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -255,9 +255,9 @@ object AutoObsidian : Module() {
 
     private fun lookAtBlock(pos: BlockPos) {
         val vec3d = Vec3d(pos).add(0.5, 0.0, 0.5)
-        val lookAt = getRotationTo(vec3d, true)
-        mc.player.rotationYaw = lookAt.x.toFloat()
-        mc.player.rotationPitch = lookAt.y.toFloat()
+        val lookAt = RotationUtils.getRotationTo(vec3d)
+        mc.player.rotationYaw = lookAt.x
+        mc.player.rotationPitch = lookAt.y
     }
 
     /* Tasks */

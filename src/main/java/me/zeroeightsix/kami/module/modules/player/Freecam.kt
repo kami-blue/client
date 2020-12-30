@@ -9,7 +9,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.entity.EntityPlayerSP
@@ -23,6 +22,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
@@ -159,7 +159,7 @@ object Freecam : Module() {
         mc.objectMouseOver?.let {
             val hitVec = it.hitVec
             if (it.typeOfHit == RayTraceResult.Type.MISS || hitVec == null) return
-            val rotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+            val rotation = RotationUtils.getRotationTo(hitVec)
             mc.player?.apply {
                 rotationYaw = rotation.x
                 rotationPitch = rotation.y
@@ -230,7 +230,7 @@ object Freecam : Module() {
             // Update sprinting
             isSprinting = mc.gameSettings.keyBindSprint.isKeyDown
 
-            val yawRad = Math.toRadians(rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x)
+            val yawRad = (rotationYaw - RotationUtils.getRotationFromVec(Vec3d(moveStrafing.toDouble(), 0.0, moveForward.toDouble())).x).toDouble().toRadian()
             val speed = (horizontalSpeed.value / 20f) * min(abs(moveForward) + abs(moveStrafing), 1f)
 
             if (directionMode.value == FlightMode.THREE_DEE) {

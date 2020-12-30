@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.math
 
 import net.minecraft.entity.Entity
+import org.kamiblue.commons.extension.toRadian
 import kotlin.math.hypot
 import kotlin.math.pow
 
@@ -11,10 +12,12 @@ data class Vec2f(val x: Float, val y: Float) {
      */
     constructor(entity: Entity) : this(entity.rotationYaw, entity.rotationPitch)
 
+    constructor(x: Double, y: Double) : this(x.toFloat(), y.toFloat())
+
     constructor(vec2d: Vec2d) : this(vec2d.x.toFloat(), vec2d.y.toFloat())
 
     fun toRadians(): Vec2f {
-        return Vec2f(this.x / 180.0f * PI, this.y / 180.0f * PI)
+        return Vec2f(x.toRadian(), y.toRadian())
     }
 
 
@@ -51,8 +54,7 @@ data class Vec2f(val x: Float, val y: Float) {
     fun plus(x: Float, y: Float) = Vec2f(this.x + x, this.y + y)
 
     companion object {
-        val ZERO get() = Vec2f(0f, 0f)
-
-        private const val PI = 3.14159265358979323846f
+        @JvmField
+        val ZERO = Vec2f(0f, 0f)
     }
 }

@@ -10,7 +10,6 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
@@ -49,7 +48,7 @@ object BedAura : Module() {
     private val refillTimer = TickTimer(TimeUnit.TICKS)
     private var state = State.NONE
     private var clickPos = BlockPos(0, -6969, 0)
-    private var lastRotation = Vec2d(0.0, 0.0)
+    private var lastRotation = Vec2f.ZERO
     private var hitTickCount = 0
     private var inactiveTicks = 0
 
@@ -122,8 +121,8 @@ object BedAura : Module() {
                 val dist = mc.player.distanceTo(pos)
                 if (WorldUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
                 val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
-                val rotation = RotationUtils.getRotationTo(topSideVec, true)
-                val facing = EnumFacing.fromAngle(rotation.x)
+                val rotation = RotationUtils.getRotationTo(topSideVec)
+                val facing = EnumFacing.fromAngle(rotation.x.toDouble())
                 if (!canPlaceBed(pos)) continue
                 val targetDamage = CrystalUtils.calcDamage(pos.offset(facing), it)
                 val selfDamage = CrystalUtils.calcDamage(pos.offset(facing), mc.player)
@@ -188,29 +187,29 @@ object BedAura : Module() {
     private fun preClick(pos: BlockPos, hitOffset: Vec3d) {
         inactiveTicks = 0
         clickPos = pos
-        lastRotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitOffset), true)
+        lastRotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitOffset))
     }
 
     private fun getSecondBedPos(pos: BlockPos): BlockPos {
         val vec3d = Vec3d(pos).add(0.5, 0.0, 0.5)
-        val rotation = RotationUtils.getRotationTo(vec3d, true)
-        val facing = EnumFacing.fromAngle(rotation.x)
+        val rotation = RotationUtils.getRotationTo(vec3d)
+        val facing = EnumFacing.fromAngle(rotation.x.toDouble())
         return pos.offset(facing)
     }
 
     private fun getBedHand(): EnumHand? {
         return when (Items.BED) {
-            mc.player.heldItemMainhand.getItem() -> EnumHand.MAIN_HAND
-            mc.player.heldItemMainhand.getItem() -> EnumHand.OFF_HAND
+            mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
+            mc.player.heldItemMainhand.item -> EnumHand.OFF_HAND
             else -> null
         }
     }
 
     private fun sendRotation() {
-        PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(lastRotation)))
+        PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation))
     }
 
     private fun resetRotation() {
-        lastRotation = Vec2d(RotationUtils.normalizeAngle(mc.player.rotationYaw.toDouble()), mc.player.rotationPitch.toDouble())
+        lastRotation = Vec2f(RotationUtils.normalizeAngle(mc.player.rotationYaw), mc.player.rotationPitch)
     }
 }

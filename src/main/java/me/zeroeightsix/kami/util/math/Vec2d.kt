@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util.math
 
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.toRadian
 import kotlin.math.hypot
 import kotlin.math.pow
 
@@ -10,7 +11,7 @@ data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
     constructor(vec2d: Vec2d) : this(vec2d.x, vec2d.y)
 
-    fun toRadians() = Vec2d(this.x / 180.0 * Math.PI, this.y / 180.0 * Math.PI)
+    fun toRadians() = Vec2d(x.toRadian(), y.toRadian())
 
 
     fun length() = hypot(x, y)
@@ -47,5 +48,10 @@ data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
     override fun toString(): String {
         return "Vec2d[${this.x}, ${this.y}]"
+    }
+
+    companion object {
+        @JvmField
+        val ZERO = Vec2d(0.0, 0.0)
     }
 }

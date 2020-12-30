@@ -95,7 +95,7 @@ object Scaffold : Module() {
 
             placeInfo?.let {
                 val hitVec = WorldUtils.getHitVec(it.second, it.first)
-                lastRotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+                lastRotation = RotationUtils.getRotationTo(hitVec)
                 swapAndPlace(it.second, it.first)
             }
 

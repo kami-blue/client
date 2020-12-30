@@ -9,8 +9,6 @@ import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.isWeapon
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
-import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumHand
@@ -79,9 +77,9 @@ object KillAura : Module() {
 
     private fun rotate(target: EntityLivingBase) {
         if (lockView.value) {
-            faceEntityClosest(target)
+            RotationUtils.faceEntityClosest(target)
         } else if (spoofRotation.value) {
-            val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
+            val rotation = RotationUtils.getRotationToEntityClosest(target)
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
         }
     }

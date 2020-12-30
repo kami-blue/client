@@ -11,7 +11,6 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -93,8 +92,8 @@ object CrystalBasePlace : Module() {
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    val rotation = RotationUtils.getRotationTo(hitVec, true)
-                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation)))
+                    val rotation = RotationUtils.getRotationTo(hitVec)
+                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 }
             } else {
                 rotationTo = null

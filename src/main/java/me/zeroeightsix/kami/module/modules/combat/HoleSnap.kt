@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.commons.extension.ceilToInt
+import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.event.listener.listener
 import kotlin.math.*
 
@@ -37,7 +38,7 @@ object HoleSnap : Module() {
             findHole()?.toVec3d()?.let {
                 if (disableStrafe.value) Strafe.disable()
                 if (mc.player.onGround) {
-                    val yawRad = Math.toRadians(RotationUtils.getRotationTo(mc.player.positionVector, it).x)
+                    val yawRad = RotationUtils.getRotationTo(mc.player.positionVector, it).x.toDouble().toRadian()
                     val speed = min(0.25, mc.player.positionVector.distanceTo(it) / 4.0)
                     mc.player.motionX = -sin(yawRad) * speed
                     mc.player.motionZ = cos(yawRad) * speed
