@@ -45,7 +45,7 @@ public class KamiMod {
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     @Mod.Instance
-    public static final KamiMod INSTANCE = new KamiMod();
+    public static KamiMod INSTANCE;
 
     private static boolean ready = false;
 
