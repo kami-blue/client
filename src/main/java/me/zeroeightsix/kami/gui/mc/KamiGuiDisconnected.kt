@@ -1,6 +1,9 @@
 package me.zeroeightsix.kami.gui.mc
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.module.modules.combat.AutoLog
+import me.zeroeightsix.kami.util.threads.mainScope
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.time.LocalTime
@@ -42,10 +45,10 @@ class KamiGuiDisconnected(private val reason: Array<String>, private val screen:
     }
 
     private fun disable() {
-        Thread {
-            Thread.sleep(250)
+        mainScope.launch {
+            delay(250L)
             AutoLog.disable()
-        }.start()
+        }
     }
 
 }

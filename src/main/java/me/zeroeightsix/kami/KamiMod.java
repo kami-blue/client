@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -23,9 +24,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 @Mod(
-        modid = KamiMod.ID,
-        name = KamiMod.NAME,
-        version = KamiMod.VERSION
+    modid = KamiMod.ID,
+    name = KamiMod.NAME,
+    version = KamiMod.VERSION
 )
 public class KamiMod {
 
@@ -49,29 +50,26 @@ public class KamiMod {
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     @Mod.Instance
-    public static KamiMod INSTANCE;
-    public static Thread MAIN_THREAD;
+    public static final KamiMod INSTANCE = new KamiMod();
 
     private static boolean ready = false;
     private KamiGUI guiManager;
     private Setting<JsonObject> guiStateSetting;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
 
-        MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
-        LoadingAdapterKt.preInit();
+        LoaderWrapper.preLoadAll();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        LoadingAdapterKt.init();
+        LoaderWrapper.loadAll();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
@@ -98,6 +96,7 @@ public class KamiMod {
 
         // Need to reload the font after the settings were loaded
         KamiFontRenderer.INSTANCE.reloadFonts();
+        BackgroundScope.INSTANCE.start();
 
         LOG.info(NAME + " Mod initialized!");
     }

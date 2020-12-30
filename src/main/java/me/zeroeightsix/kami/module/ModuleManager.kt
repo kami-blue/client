@@ -1,53 +1,36 @@
 package me.zeroeightsix.kami.module
 
+import kotlinx.coroutines.Deferred
+import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
 
-object ModuleManager {
-
-    /** Thread for scanning module during Forge pre-init */
-    private var preLoadingThread: Thread? = null
-
-    /** List for module classes found during pre-loading */
-    private var moduleClassList: List<Class<out Module>>? = null
-
-    /** HashMap for the registered Modules */
+object ModuleManager : AsyncLoader<List<Class<out Module>>> {
+    override var deferred: Deferred<List<Class<out Module>>>? = null
     private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
 
-    internal fun preLoad() {
-        preLoadingThread = Thread {
-            val stopTimer = TimerUtils.StopTimer()
-            moduleClassList = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
-            val time = stopTimer.stop()
-            KamiMod.LOG.info("${moduleClassList!!.size} module(s) found, took ${time}ms")
-        }
-        preLoadingThread!!.name = "Modules Pre-Loading"
-        preLoadingThread!!.start()
+    override fun preLoad0(): List<Class<out Module>> {
+        val stopTimer = TimerUtils.StopTimer()
+
+        val list = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
+        val time = stopTimer.stop()
+
+        KamiMod.LOG.info("${list.size} modules found, took ${time}ms")
+        return list
     }
 
-    /**
-     * Registers modules
-     */
-    internal fun load() {
-        preLoadingThread!!.join()
+    override fun load0(input: List<Class<out Module>>) {
         val stopTimer = TimerUtils.StopTimer()
-        for (clazz in moduleClassList!!) {
-            try {
-                register(ClassUtils.getInstance(clazz))
-            } catch (exception: Throwable) {
-                System.err.println("Couldn't initiate module " + clazz.simpleName + "! Err: " + exception.javaClass.simpleName + ", message: " + exception.message)
-                exception.printStackTrace()
-            }
-        }
-        val time = stopTimer.stop()
-        KamiMod.LOG.info("${moduleMap.size} modules loaded, took ${time}ms")
 
-        /* Clean up variables used during pre-loading and registering */
-        preLoadingThread = null
-        moduleClassList = null
+        for (clazz in input) {
+            moduleMap[clazz] = ClassUtils.getInstance(clazz)
+        }
+
+        val time = stopTimer.stop()
+        KamiMod.LOG.info("${input.size} modules loaded, took ${time}ms")
     }
 
     internal fun register(module: Module) {
@@ -78,5 +61,4 @@ object ModuleManager {
             }
         }
     }
-
 }

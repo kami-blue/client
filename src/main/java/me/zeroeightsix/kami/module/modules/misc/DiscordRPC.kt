@@ -6,30 +6,30 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
-import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.BackgroundJob
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraft.client.Minecraft
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
-        name = "DiscordRPC",
-        category = Module.Category.MISC,
-        description = "Discord Rich Presence",
-        enabledByDefault = true
+    name = "DiscordRPC",
+    category = Module.Category.MISC,
+    description = "Discord Rich Presence",
+    enabledByDefault = true
 )
 object DiscordRPC : Module() {
-    private val line1Left: Setting<LineInfo> = register(Settings.e("Line1Left", LineInfo.VERSION)) // details left
-    private val line1Right: Setting<LineInfo> = register(Settings.e("Line1Right", LineInfo.USERNAME)) // details right
-    private val line2Left: Setting<LineInfo> = register(Settings.e("Line2Left", LineInfo.SERVER_IP)) // state left
-    private val line2Right: Setting<LineInfo> = register(Settings.e("Line2Right", LineInfo.HEALTH)) // state right
+    private val line1Left = register(Settings.e<LineInfo>("Line1Left", LineInfo.VERSION)) // details left
+    private val line1Right = register(Settings.e<LineInfo>("Line1Right", LineInfo.USERNAME)) // details right
+    private val line2Left = register(Settings.e<LineInfo>("Line2Left", LineInfo.SERVER_IP)) // state left
+    private val line2Right = register(Settings.e<LineInfo>("Line2Right", LineInfo.HEALTH)) // state right
     private val coordsConfirm = register(Settings.booleanBuilder("CoordsConfirm").withValue(false).withVisibility { showCoordsConfirm() })
-    private val updateDelay = register(Settings.floatBuilder("UpdateDelay").withValue(4f).withRange(1f, 10f))
 
     private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE
@@ -39,6 +39,7 @@ object DiscordRPC : Module() {
     private val rpc = club.minnced.discord.rpc.DiscordRPC.INSTANCE
     private var connected = false
     private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val job = BackgroundJob("Discord RPC", 5000L) { updateRPC() }
 
     override fun onEnable() {
         start()
@@ -52,8 +53,8 @@ object DiscordRPC : Module() {
         listener<SafeTickEvent> {
             if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
                 MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
-                        "This will display your coords on the discord rpc. " +
-                        "Do NOT use this if you do not want your coords displayed")
+                    "This will display your coords on the discord rpc. " +
+                    "Do NOT use this if you do not want your coords displayed")
             }
         }
     }
@@ -66,8 +67,7 @@ object DiscordRPC : Module() {
         rpc.Discord_Initialize(KamiMod.APP_ID, DiscordEventHandlers(), true, "")
         presence.startTimestamp = System.currentTimeMillis() / 1000L
 
-        /* update rpc while thread isn't interrupted  */
-        Thread({ setRpcWithDelay() }, "Discord-RPC-Callback-Handler").start()
+        BackgroundScope.launchLooping(job)
 
         KamiMod.LOG.info("Discord RPC initialised successfully")
     }
@@ -76,32 +76,22 @@ object DiscordRPC : Module() {
         if (!connected) return
 
         KamiMod.LOG.info("Shutting down Discord RPC...")
+        BackgroundScope.cancel(job)
         connected = false
         rpc.Discord_Shutdown()
     }
 
     private fun showCoordsConfirm(): Boolean {
         return line1Left.value == LineInfo.COORDS
-                || line2Left.value == LineInfo.COORDS
-                || line1Right.value == LineInfo.COORDS
-                || line2Right.value == LineInfo.COORDS
+            || line2Left.value == LineInfo.COORDS
+            || line1Right.value == LineInfo.COORDS
+            || line2Right.value == LineInfo.COORDS
     }
 
-    private fun setRpcWithDelay() {
-        while (!Thread.currentThread().isInterrupted && connected) {
-            try {
-                presence.details = getLine(line1Left.value) + getSeparator(0) + getLine(line1Right.value)
-                presence.state = getLine(line2Left.value) + getSeparator(1) + getLine(line2Right.value)
-                rpc.Discord_UpdatePresence(presence)
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-            }
-            try {
-                Thread.sleep((updateDelay.value * 1000f).toLong())
-            } catch (interruptedException: InterruptedException) {
-                interruptedException.printStackTrace()
-            }
-        }
+    private fun updateRPC() {
+        presence.details = getLine(line1Left.value) + getSeparator(0) + getLine(line1Right.value)
+        presence.state = getLine(line2Left.value) + getSeparator(1) + getLine(line2Right.value)
+        rpc.Discord_UpdatePresence(presence)
     }
 
     private fun getLine(line: LineInfo): String {

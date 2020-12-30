@@ -3,9 +3,6 @@ package me.zeroeightsix.kami.module
 import com.google.common.base.Converter
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ModuleToggleEvent
 import me.zeroeightsix.kami.setting.Setting
@@ -208,6 +205,5 @@ open class Module {
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()
-        val moduleScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Module"))
     }
 }

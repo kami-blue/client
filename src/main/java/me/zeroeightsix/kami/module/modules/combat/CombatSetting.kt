@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
@@ -16,6 +18,8 @@ import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -29,19 +33,17 @@ import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 import kotlin.math.ceil
 
 @Module.Info(
-        name = "CombatSetting",
-        description = "Settings for combat module targeting",
-        category = Module.Category.COMBAT,
-        showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true
+    name = "CombatSetting",
+    description = "Settings for combat module targeting",
+    category = Module.Category.COMBAT,
+    showOnArray = Module.ShowOnArray.OFF,
+    alwaysEnabled = true
 )
 object CombatSetting : Module() {
     private val page = register(Settings.e<Page>("Page", Page.TARGETING))
@@ -91,17 +93,16 @@ object CombatSetting : Module() {
     private var overrideRange = range.value
     private var paused = false
     private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private val threadMap = hashMapOf<Thread, Future<*>?>(
-            Thread { updateTarget() } to null,
-            Thread { updatePlacingList() } to null,
-            Thread { updateCrystalList() } to null
+    private val jobMap = hashMapOf<() -> Unit, Job?>(
+        { updateTarget() } to null,
+        { updatePlacingList() } to null,
+        { updateCrystalList() } to null
     )
-    private val threadPool = Executors.newCachedThreadPool()
 
     val pause
         get() = mc.player.ticksExisted < 10
-                || pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
-                || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.getItem() is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
+            || pauseForDigging.value && mc.player.heldItemMainhand.item is ItemPickaxe && mc.playerController.isHittingBlock
+            || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.item is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
 
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
@@ -126,9 +127,9 @@ object CombatSetting : Module() {
         }
 
         listener<SafeTickEvent>(5000) {
-            for ((thread, future) in threadMap) {
-                if (future?.isDone == false) continue // Skip if the previous thread isn't done
-                threadMap[thread] = threadPool.submit(thread)
+            for ((function, future) in jobMap) {
+                if (future.isActiveOrFalse) continue // Skip if the previous thread isn't done
+                jobMap[function] = defaultScope.launch { function.invoke() }
             }
 
             if (pauseBaritone.value && !paused && isActive()) {
@@ -210,19 +211,19 @@ object CombatSetting : Module() {
         val targetList = LinkedList<EntityLivingBase>()
         for (entity in getCacheList()) {
             if (AntiBot.isEnabled
-                    && AntiBot.botSet.contains((entity))) continue
+                && AntiBot.botSet.contains((entity))) continue
 
             if (!tamed.value
-                    && (entity is EntityTameable && entity.isTamed
+                && (entity is EntityTameable && entity.isTamed
                     || entity is AbstractHorse && entity.isTame)) continue
 
             if (!teammates.value
-                    && mc.player.isOnSameTeam(entity)) continue
+                && mc.player.isOnSameTeam(entity)) continue
 
             if (!shouldIgnoreWall()
-                    && mc.player.canEntityBeSeen(entity)
-                    && !EntityUtils.canEntityFeetBeSeen(entity)
-                    && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
+                && mc.player.canEntityBeSeen(entity)
+                && !EntityUtils.canEntityFeetBeSeen(entity)
+                && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
 
             targetList.add(entity)
         }

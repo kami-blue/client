@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
@@ -11,12 +13,12 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -32,12 +34,10 @@ object AutoTrap : Module() {
     private val autoDisable = register(Settings.b("AutoDisable", true))
     private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
 
-    private val placeThread = Thread { runAutoTrap() }.apply { name = "AutoTrap" }
-    private val threadPool = Executors.newSingleThreadExecutor()
-    private var future: Future<*>? = null
+    private var job: Job? = null
 
     override fun isActive(): Boolean {
-        return isEnabled && future?.isDone == false
+        return isEnabled && job.isActiveOrFalse
     }
 
     override fun onDisable() {
@@ -46,9 +46,9 @@ object AutoTrap : Module() {
 
     init {
         listener<SafeTickEvent> {
-            if (future?.isDone != false && isPlaceable()) future = threadPool.submit(placeThread)
+            if (!job.isActiveOrFalse && isPlaceable()) job = runAutoTrap()
 
-            if (future?.isDone == false && future?.isCancelled == false) {
+            if (job.isActiveOrFalse) {
                 val slot = getObby()
                 if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
                 PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
@@ -87,9 +87,9 @@ object AutoTrap : Module() {
         return slots[0]
     }
 
-    private fun runAutoTrap() {
+    private fun runAutoTrap() = defaultScope.launch {
         BlockUtils.buildStructure(placeSpeed.value) {
-            if (isEnabled && CombatManager.isOnTopPriority(this)) {
+            if (isEnabled && CombatManager.isOnTopPriority(this@AutoTrap)) {
                 val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
                 BlockUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
             } else {

@@ -54,13 +54,12 @@ public abstract class MixinFontRenderer {
 
             for (String possible : text.split(":")) {
                 if (KamiMojiManager.INSTANCE.isEmoji(possible)) {
-                    KamiMojiManager.Emoji emoji = new KamiMojiManager.Emoji(possible);
                     String emojiText = ":" + possible + ":";
                     if (!shadow) {
                         int index = text.indexOf(emojiText);
                         if (index == -1) continue;
                         int x = getStringWidth(text.substring(0, index)) + FONT_HEIGHT / 4;
-                        drawEmoji(KamiMojiManager.INSTANCE.getEmoji(emoji), posX + x, posY, size, alpha);
+                        drawEmoji(KamiMojiManager.INSTANCE.getEmoji(possible), posX + x, posY, size, alpha);
                     }
                     text = text.replaceFirst(emojiText, getReplacement());
                 }

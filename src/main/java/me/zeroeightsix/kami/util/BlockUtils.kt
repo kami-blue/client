@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.util
 
-import me.zeroeightsix.kami.command.SafeClientEvent
+import kotlinx.coroutines.delay
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.threads.runSafeSuspend
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -148,7 +150,7 @@ object BlockUtils {
         return isPlaceable(pos) && !mc.world.getBlockState(pos.down()).material.isReplaceable && mc.world.isAirBlock(pos.up())
     }
 
-    fun buildStructure(placeSpeed: Float, getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?) {
+    suspend fun buildStructure(placeSpeed: Float, getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?) {
         val emptyHashSet = HashSet<BlockPos>()
         val placed = HashSet<BlockPos>()
         var placeCount = 0
@@ -156,9 +158,11 @@ object BlockUtils {
             val placingInfo = getPlaceInfo(placed) ?: getPlaceInfo(emptyHashSet) ?: break
             placeCount++
             placed.add(placingInfo.second.offset(placingInfo.first))
-            doPlace(placingInfo.second, placingInfo.first, placeSpeed)
+            runSafeSuspend {
+                doPlace(placingInfo.second, placingInfo.first, placeSpeed)
+            }
             if (placeCount >= 4) {
-                Thread.sleep(100L)
+                delay(100L)
                 placeCount = 0
                 placed.clear()
             }
@@ -206,16 +210,17 @@ object BlockUtils {
     /**
      * Placing function for multithreading only
      */
-    fun doPlace(pos: BlockPos, facing: EnumFacing, placeSpeed: Float) {
+    suspend fun SafeClientEvent.doPlace(pos: BlockPos, facing: EnumFacing, placeSpeed: Float) {
         val hitVecOffset = getHitVecOffset(facing)
         val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
         val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
         val placePacket = CPacketPlayerTryUseItemOnBlock(pos, facing, EnumHand.MAIN_HAND, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
-        mc.connection!!.sendPacket(rotationPacket)
-        Thread.sleep((40f / placeSpeed).toLong())
-        mc.connection!!.sendPacket(placePacket)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
-        Thread.sleep((10f / placeSpeed).toLong())
+
+        connection.sendPacket(rotationPacket)
+        delay((40f / placeSpeed).toLong())
+        connection.sendPacket(placePacket)
+        player.swingArm(EnumHand.MAIN_HAND)
+        delay((10f / placeSpeed).toLong())
     }
 
     /**
