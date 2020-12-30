@@ -49,6 +49,7 @@ public class KamiMod {
 
     private static boolean ready = false;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
