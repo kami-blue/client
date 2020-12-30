@@ -58,11 +58,11 @@ class PluginInfo private constructor(
 
     override fun hashCode() = name.hashCode()
 
-    override fun toString() = "Name: ${name}, " +
-        "Version: ${version}, " +
-        "Authors: ${authors.joinToString(",")}, " +
-        "Description: ${description}, " +
-        "KAMI Blue Version: ${kamiVersion}, " +
+    override fun toString() = "Name: ${name}\n" +
+        "Version: ${version}\n" +
+        "Authors: ${authors.joinToString(",")}\n" +
+        "Description: ${description}\n " +
+        "KAMI Blue Version: ${kamiVersion}\n" +
         "Required Plugins: ${requiredPlugins.joinToString(",")}"
 
     companion object {

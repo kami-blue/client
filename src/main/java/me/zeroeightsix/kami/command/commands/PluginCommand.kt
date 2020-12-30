@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.plugin.Plugin
 import me.zeroeightsix.kami.plugin.PluginError
 import me.zeroeightsix.kami.plugin.PluginLoader
 import me.zeroeightsix.kami.plugin.PluginManager
@@ -146,8 +147,7 @@ object PluginCommand : ClientCommand(
                         }
                     val loader = PluginManager.pluginLoaderMap[plugin]!!
 
-                    MessageSendHelper.sendChatMessage("Info for plugin: $loader")
-                    MessageSendHelper.sendRawChatMessage(plugin.toString())
+                    sendPluginInfo(plugin, loader)
                 }
             }
 
@@ -161,10 +161,15 @@ object PluginCommand : ClientCommand(
                         }
                     val loader = PluginManager.pluginLoaderMap[plugin]!!
 
-                    MessageSendHelper.sendChatMessage("Info for plugin: $loader")
-                    MessageSendHelper.sendRawChatMessage(plugin.toString())
+                    sendPluginInfo(plugin, loader)
                 }
             }
         }
     }
+
+    private fun sendPluginInfo(plugin: Plugin, loader: PluginLoader) {
+        MessageSendHelper.sendChatMessage("Info for plugin: $loader")
+        MessageSendHelper.sendRawChatMessage(plugin.toString())
+    }
+
 }
