@@ -15,7 +15,6 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.block.Block
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -105,7 +104,7 @@ object CrystalBasePlace : Module() {
 
     private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
-    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.item) == Blocks.OBSIDIAN
+    private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
     private fun getObby(): Int? {
         val slots = InventoryUtils.getSlotsHotbar(49)

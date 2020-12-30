@@ -14,7 +14,6 @@ import net.minecraft.entity.monster.EntityIronGolem
 import net.minecraft.entity.monster.EntityPigZombie
 import net.minecraft.entity.passive.*
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -154,7 +153,7 @@ object EntityUtils {
         for (currentEntity in mc.world.loadedEntityList) {
             if (currentEntity.getDistance(mc.player) > range) continue /* Entities within specified  blocks radius */
             if (currentEntity !is EntityItem) continue /* Entites that are dropped item */
-            if (Item.getIdFromItem(currentEntity.item.item) != itemId) continue /* Dropped items that are has give item id */
+            if (currentEntity.item.item.id != itemId) continue /* Dropped items that are has give item id */
             entityList.add(currentEntity)
         }
         return entityList

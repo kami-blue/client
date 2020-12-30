@@ -16,9 +16,9 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiShulkerBox
+import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.inventory.ClickType
-import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -323,7 +323,7 @@ object AutoObsidian : Module() {
                 val currentContainer = mc.player.openContainer
                 var enderChestSlot = -1
                 for (i in 0..26) {
-                    if (getIdFromItem(currentContainer.inventory[i].item) == 130) {
+                    if (currentContainer.inventory[i].item == Blocks.ENDER_CHEST) {
                         enderChestSlot = i
                     }
                 }

@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
 import net.minecraft.inventory.ClickType
-import net.minecraft.item.Item
 import net.minecraft.network.play.client.CPacketClickWindow
 
 object InventoryUtils {
@@ -37,7 +36,7 @@ object InventoryUtils {
         mc.player?.inventory?.mainInventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemID) continue
+                if (clonedList[i].item.id != itemID) continue
                 slots.add(i)
             }
         }
@@ -62,7 +61,7 @@ object InventoryUtils {
         mc.player?.openContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
+                if (clonedList[i].item.id != itemId) continue
                 slots.add(i)
             }
         }
@@ -100,7 +99,7 @@ object InventoryUtils {
         mc.player?.inventoryContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
+                if (clonedList[i].item.id != itemId) continue
                 slots.add(i)
             }
         }
@@ -148,7 +147,7 @@ object InventoryUtils {
                 val clonedList = ArrayList(it)
                 for (i in min..max) {
                     val itemStack = clonedList.getOrNull(i) ?: continue
-                    if (Item.getIdFromItem(itemStack.item) != itemId) continue
+                    if (itemStack.item.id != itemId) continue
                     currentCount += if (itemId == 0) 1 else itemStack.count
                 }
             }
@@ -184,7 +183,7 @@ object InventoryUtils {
             val clonedList = ArrayList(it)
             for (i in 36..44) { /* Finds slot contains no exception item first */
                 val itemStack = clonedList[i]
-                if (Item.getIdFromItem(itemStack.item) != exceptionID) {
+                if (itemStack.item.id != exceptionID) {
                     slot2 = i
                     break
                 }
