@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import kotlin.math.*
 
@@ -47,7 +48,7 @@ object HoleSnap : Module() {
     private fun findHole(): BlockPos? {
         var closestHole = Pair(69.69, BlockPos.ORIGIN)
         val playerPos = mc.player.positionVector.toBlockPos()
-        val ceilRange = ceil(range.value).toInt()
+        val ceilRange = (range.value).ceilToInt()
         val posList = VectorUtils.getBlockPositionsInArea(playerPos.add(ceilRange, -1, ceilRange), playerPos.add(-ceilRange, -1, -ceilRange))
         for (posXZ in posList) {
             val dist = mc.player.getDistanceSqToCenter(posXZ)

@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BlockUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
@@ -24,11 +25,10 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
-import kotlin.math.floor
 
 @Module.Info(
         name = "AutoObsidian",
@@ -95,7 +95,7 @@ object AutoObsidian : Module() {
                             SearchingState.COLLECTING -> collectDroppedItem(shulkerBoxId)
                             SearchingState.DONE -> {
                                 /* Positions need to be updated after moving while collecting dropped shulker box */
-                                val currentPos = BlockPos(floor(mc.player.posX).toInt(), floor(mc.player.posY).toInt(), floor(mc.player.posZ).toInt())
+                                val currentPos = mc.player.flooredPosition
                                 playerPos = currentPos
                                 setPlacingPos()
                             }
@@ -131,7 +131,7 @@ object AutoObsidian : Module() {
     }
 
     private fun updateState() {
-        val currentPos = BlockPos(floor(mc.player.posX).toInt(), floor(mc.player.posY).toInt(), floor(mc.player.posZ).toInt())
+        val currentPos = mc.player.flooredPosition
         if (state != State.DONE && placingPos.y == -1) {
             playerPos = currentPos
             setPlacingPos()
@@ -222,7 +222,7 @@ object AutoObsidian : Module() {
     private fun countObby(): Int {
         val inventory = InventoryUtils.countItemAll(49)
         val dropped = EntityUtils.getDroppedItems(49, 8.0f).sumBy { it.item.count }
-        return ceil((inventory + dropped) / 8.0f).toInt() / 8
+        return ((inventory + dropped) / 8.0f).ceilToInt() / 8
     }
 
     private fun setPlacingPos() {

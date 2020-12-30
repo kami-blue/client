@@ -13,9 +13,9 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.GuiIngameForge
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.glColor4f
-import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.min
@@ -84,7 +84,7 @@ object HungerOverlay : Module() {
 
     private fun drawBarHalf(start: Int, end: Float, left: Int, top: Int, textureX: Int, alpha: Float) {
         glColor4f(1f, 1f, 1f, alpha)
-        for (currentBar in start..ceil(end).toInt()) {
+        for (currentBar in start..(end).ceilToInt()) {
             val remainBars = min((floor((end - currentBar) * 2f) / 2f), 1f)
             val posX = left - (currentBar * 8)
             when (remainBars) {
@@ -97,7 +97,7 @@ object HungerOverlay : Module() {
 
     private fun drawBarFourth(start: Int, end: Float, left: Int, top: Int, alpha: Float) {
         glColor4f(1f, 1f, 1f, alpha)
-        for (currentBar in start..ceil(end).toInt()) {
+        for (currentBar in start..(end).ceilToInt()) {
             val remainBars = min((floor((end - currentBar) * 4f) / 4f), 1f)
             val posX = left - (currentBar * 8)
             when (remainBars) {

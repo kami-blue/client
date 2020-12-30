@@ -30,13 +30,13 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
-import kotlin.math.ceil
 
 @Module.Info(
     name = "CombatSetting",
@@ -111,7 +111,7 @@ object CombatSetting : Module() {
         listener<RenderOverlayEvent> {
             if (!renderPredictedPos.value) return@listener
             CombatManager.target?.let {
-                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+                val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
                 val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
                 val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return@listener
                 val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
@@ -197,7 +197,7 @@ object CombatSetting : Module() {
 
     fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+            val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
             CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.entityBoundingBox
         } else {
             it.positionVector to it.entityBoundingBox

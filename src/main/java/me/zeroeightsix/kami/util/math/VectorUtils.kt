@@ -4,6 +4,8 @@ import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.BlockAir
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.ceilToInt
+import org.kamiblue.commons.extension.floorToInt
 import kotlin.math.*
 
 /**
@@ -140,11 +142,11 @@ object VectorUtils {
     }
 
     private fun getAxisRange(d1: Double, d2: Float): IntRange {
-        return IntRange(floor(d1 - d2).toInt(), ceil(d1 + d2).toInt())
+        return IntRange((d1 - d2).floorToInt(), (d1 + d2).ceilToInt())
     }
 
     fun Vec3d.toBlockPos(): BlockPos {
-        return BlockPos(floor(x), floor(y), floor(z))
+        return BlockPos(x.floorToInt(), y.floorToInt(), z.floorToInt())
     }
 
     fun BlockPos.toVec3d(): Vec3d {

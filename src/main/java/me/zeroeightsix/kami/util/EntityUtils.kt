@@ -18,9 +18,13 @@ import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import kotlin.math.floor
 
 object EntityUtils {
     private val mc = Minecraft.getMinecraft()
+
+    val Entity.flooredPosition get() = BlockPos(floor(posX).toInt(), floor(posY).toInt(), floor(posZ).toInt())
+    val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
 
     @JvmStatic
     fun mobTypeSettings(entity: Entity, mobs: Boolean, passive: Boolean, neutral: Boolean, hostile: Boolean): Boolean {
@@ -28,9 +32,11 @@ object EntityUtils {
     }
 
     @JvmStatic
-    fun isPassiveMob(entity: Entity?) = entity is EntityAnimal || entity is EntityAgeable || entity is EntityTameable || entity is EntityAmbientCreature || entity is EntitySquid
-
-    val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
+    fun isPassiveMob(entity: Entity?) = entity is EntityAnimal
+        || entity is EntityAgeable
+        || entity is EntityTameable
+        || entity is EntityAmbientCreature
+        || entity is EntitySquid
 
     /**
      * Find the entities interpolated position
@@ -79,27 +85,17 @@ object EntityUtils {
         return entity.isCreatureType(EnumCreatureType.MONSTER, false) && !isNeutralMob(entity)
     }
 
-    fun isInWater(entity: Entity?): Boolean {
-        if (entity == null) return false
-        val y = entity.posY + 0.01
-        for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
-            val pos = BlockPos(x, y.toInt(), z)
-            if (mc.world.getBlockState(pos).block is BlockLiquid) return true
-        }
-        return false
-    }
-
-    fun isDrivenByPlayer(entity: Entity) = mc.player != null && entity == mc.player.ridingEntity
-
     fun isAboveWater(entity: Entity?) = isAboveWater(entity, false)
 
     fun isAboveWater(entity: Entity?, packet: Boolean): Boolean {
         if (entity == null) return false
         val y = entity.posY - if (packet) 0.03 else if (entity is EntityPlayer) 0.2 else 0.5 // increasing this seems to flag more in NCP but needs to be increased so the player lands on solid water
+
         for (x in MathHelper.floor(entity.posX) until MathHelper.ceil(entity.posX)) for (z in MathHelper.floor(entity.posZ) until MathHelper.ceil(entity.posZ)) {
             val pos = BlockPos(x, MathHelper.floor(y), z)
             if (mc.world.getBlockState(pos).block is BlockLiquid) return true
         }
+
         return false
     }
 
@@ -127,7 +123,8 @@ object EntityUtils {
     }
 
     @JvmStatic
-    fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name)) && (sleeping || !player.isPlayerSleeping)
+    fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name))
+            && (sleeping || !player.isPlayerSleeping)
 
     /**
      * Ray tracing the 8 vertex of the entity bounding box

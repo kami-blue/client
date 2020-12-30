@@ -5,13 +5,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
-import net.minecraft.util.math.BlockPos
 import org.kamiblue.event.listener.listener
-import kotlin.math.floor
 
 @Module.Info(
         name = "ArmorHUD",
@@ -69,7 +68,7 @@ object ArmorHUD : Module() {
 
     private fun isEyeInWater(): Boolean {
         val eyePos = mc.player.getPositionEyes(1f)
-        val flooredEyePos = BlockPos(floor(eyePos.x), floor(eyePos.y), floor(eyePos.z))
+        val flooredEyePos = eyePos.toBlockPos()
         val block = mc.world.getBlockState(flooredEyePos).block
         return block == Blocks.WATER || block == Blocks.FLOWING_WATER
     }

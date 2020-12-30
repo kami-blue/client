@@ -12,8 +12,8 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
-import kotlin.math.ceil
 
 @Module.Info(
         name = "InventoryManager",
@@ -265,7 +265,7 @@ object InventoryManager : Module() {
     private fun getRefillableSlot(): Int? {
         for (i in 36..45) {
             val currentStack = mc.player.inventoryContainer.inventory[i]
-            val stackTarget = ceil(currentStack.maxStackSize / 64.0f * refillThreshold.value).toInt()
+            val stackTarget = (currentStack.maxStackSize / 64.0f * refillThreshold.value).ceilToInt()
             if (currentStack.isEmpty) continue
             if (!currentStack.isStackable || currentStack.count > stackTarget) continue
             if (getIdFromItem(currentStack.getItem()) == buildingBlockID.value && buildingMode.value) continue
