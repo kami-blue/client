@@ -11,10 +11,10 @@ import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils.getGroundPos
-import me.zeroeightsix.kami.util.BlockUtils.isLiquidBelow
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
+import me.zeroeightsix.kami.util.WorldUtils.isLiquidBelow
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord

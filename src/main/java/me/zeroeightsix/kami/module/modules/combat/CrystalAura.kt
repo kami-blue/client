@@ -287,7 +287,7 @@ object CrystalAura : Module() {
     }
 
     private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
-            CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f)
+            CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f)
 
     private fun sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))

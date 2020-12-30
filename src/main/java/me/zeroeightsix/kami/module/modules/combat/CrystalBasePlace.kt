@@ -121,7 +121,7 @@ object CrystalBasePlace : Module() {
         if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
         val placeInfo = getPlaceInfo(entity)
         if (placeInfo != null) {
-            val offset = BlockUtils.getHitVecOffset(placeInfo.first)
+            val offset = WorldUtils.getHitVecOffset(placeInfo.first)
             val hitVec = Vec3d(placeInfo.second).add(offset)
             rotationTo = hitVec
             placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.second, placeInfo.first, EnumHand.MAIN_HAND, offset.x.toFloat(), offset.y.toFloat(), offset.z.toFloat())
@@ -146,10 +146,10 @@ object CrystalBasePlace : Module() {
 
         for (pos in posList) {
             // Placeable check
-            if (!BlockUtils.isPlaceable(pos, false)) continue
+            if (!WorldUtils.isPlaceable(pos, false)) continue
 
             // Neighbour blocks check
-            if (!BlockUtils.hasNeighbour(pos)) continue
+            if (!WorldUtils.hasNeighbour(pos)) continue
 
             // Damage check
             val damage = calcDamage(pos, entity, prediction.first, prediction.second)
@@ -159,7 +159,7 @@ object CrystalBasePlace : Module() {
         }
 
         for (pos in cacheMap.values) {
-            return BlockUtils.getNeighbour(pos, 1) ?: continue
+            return WorldUtils.getNeighbour(pos, 1) ?: continue
         }
         return null
     }

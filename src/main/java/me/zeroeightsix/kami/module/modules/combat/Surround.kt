@@ -18,8 +18,6 @@ import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.event.listener.listener
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -147,7 +145,7 @@ object Surround : Module() {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (BlockUtils.isPlaceable(pos, true)) return true
+            if (WorldUtils.isPlaceable(pos, true)) return true
         }
         return false
     }
@@ -163,9 +161,9 @@ object Surround : Module() {
 
     private fun runSurround() = defaultScope.launch {
         spoofHotbar()
-        BlockUtils.buildStructure(placeSpeed.value) {
+        WorldUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
-                BlockUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
+                WorldUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
             } else {
                 null
             }

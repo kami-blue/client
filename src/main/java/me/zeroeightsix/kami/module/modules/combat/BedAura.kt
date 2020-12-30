@@ -71,8 +71,8 @@ object BedAura : Module() {
         listener<PacketEvent.PostSend> {
             if (!CombatManager.isOnTopPriority(this) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@listener
             val hand = getBedHand() ?: EnumHand.MAIN_HAND
-            val facing = if (state == State.PLACE) EnumFacing.UP else BlockUtils.getHitSide(clickPos)
-            val hitVecOffset = BlockUtils.getHitVecOffset(facing)
+            val facing = if (state == State.PLACE) EnumFacing.UP else WorldUtils.getHitSide(clickPos)
+            val hitVecOffset = WorldUtils.getHitVecOffset(facing)
             val packet = CPacketPlayerTryUseItemOnBlock(clickPos, facing, hand, hitVecOffset.x.toFloat(), hitVecOffset.y.toFloat(), hitVecOffset.z.toFloat())
             mc.connection!!.sendPacket(packet)
             mc.player.swingArm(hand)
@@ -120,7 +120,7 @@ object BedAura : Module() {
             val damagePosMap = HashMap<Pair<Float, Float>, BlockPos>()
             for (pos in posList) {
                 val dist = mc.player.distanceTo(pos)
-                if (BlockUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
+                if (WorldUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
                 val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
                 val rotation = RotationUtils.getRotationTo(topSideVec, true)
                 val facing = EnumFacing.fromAngle(rotation.x)
@@ -159,7 +159,7 @@ object BedAura : Module() {
                 if (!tileEntity.isHeadPiece) continue
                 val dist = mc.player.distanceTo(tileEntity.pos).toFloat()
                 if (dist > range.value) continue
-                if (BlockUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
+                if (WorldUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
                 damagePosMap[dist] = tileEntity.pos
             }
             damagePosMap

@@ -21,12 +21,7 @@ import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.add
 import kotlin.math.floor
 
-/**
- * Created by hub on 15/06/19
- * Updated by hub on 12/01/19
- * Updated by Xiaro on 22/08/20
- */
-object BlockUtils {
+object WorldUtils {
     val blackList = linkedSetOf(
         Blocks.ENDER_CHEST,
         Blocks.CHEST,
