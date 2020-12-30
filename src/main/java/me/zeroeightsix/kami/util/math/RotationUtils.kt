@@ -36,7 +36,7 @@ object RotationUtils {
     fun getPlayerRotation(pTicks: Float = 1f): Vec2d {
         val rotation = Vec2d(mc.player.rotationYaw.toDouble(), mc.player.rotationPitch.toDouble())
         val prevRotation = Vec2d(mc.player.prevRotationYaw.toDouble(), mc.player.prevRotationPitch.toDouble())
-        return prevRotation.add(rotation.subtract(prevRotation).multiply(pTicks.toDouble()))
+        return prevRotation.plus(rotation.minus(prevRotation).times(pTicks.toDouble()))
     }
 
     fun getRotationDiff(r1: Vec2d, r2: Vec2d): Double {

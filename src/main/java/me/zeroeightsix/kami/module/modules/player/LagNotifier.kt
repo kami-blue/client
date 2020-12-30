@@ -88,7 +88,7 @@ object LagNotifier : Module() {
             if (!detectRubberBand.value || mc.player == null || it.packet !is SPacketPlayerPosLook) return@listener
 
             val dist = Vec3d(it.packet.x, it.packet.y, it.packet.z).subtract(mc.player.positionVector).length()
-            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).subtract(Vec2f(mc.player)).length()
+            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).minus(Vec2f(mc.player)).length()
 
             if (dist in 0.5..64.0 || rotationDiff > 1.0) lastRubberBandTimer.reset()
         }
