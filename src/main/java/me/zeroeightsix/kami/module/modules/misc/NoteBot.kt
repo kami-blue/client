@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -9,8 +10,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.multiplayer.WorldClient
+import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -145,19 +145,18 @@ object NoteBot : Module() {
     }
 
     private fun scanNoteBlocks() {
-        val world = mc.world ?: return
-        val player = mc.player ?: return
+        runSafe {
+            for (x in -5..5) {
+                for (y in -3..6) {
+                    for (z in -5..5) {
+                        val pos = player.position.add(x, y, z)
+                        if (!world.isAirBlock(pos.up())) continue
 
-        for (x in -5..5) {
-            for (y in -3..6) {
-                for (z in -5..5) {
-                    val pos = player.position.add(x, y, z)
-                    if (!world.isAirBlock(pos.up())) continue
+                        val blockState = world.getBlockState(pos)
+                        if (blockState.block != Blocks.NOTEBLOCK) continue
 
-                    val blockState = world.getBlockState(pos)
-                    if (blockState.block != Blocks.NOTEBLOCK) continue
-
-                    noteBlocks.add(pos)
+                        noteBlocks.add(pos)
+                    }
                 }
             }
         }
@@ -167,13 +166,15 @@ object NoteBot : Module() {
         listener<SafeTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@listener
 
-            if (noteBlocks.isNotEmpty()) {
-                val pos = noteBlocks.removeLast()
-                clickBlock(pos, mc.player, mc.world)
-                clickedBlocks.add(pos)
-            } else if (noteBlocks.isNotEmpty() && soundTimer.tick(5L, false)) {
-                noteBlocks.addAll(clickedBlocks)
-                clickedBlocks.clear()
+            runSafe {
+                if (noteBlocks.isNotEmpty()) {
+                    val pos = noteBlocks.removeLast()
+                    clickBlock(pos)
+                    clickedBlocks.add(pos)
+                } else if (noteBlocks.isNotEmpty() && soundTimer.tick(5L, false)) {
+                    noteBlocks.addAll(clickedBlocks)
+                    clickedBlocks.clear()
+                }
             }
         }
 
@@ -214,43 +215,43 @@ object NoteBot : Module() {
     init {
         listener<RenderWorldEvent> {
             if (noteBlocks.isNotEmpty() && clickedBlocks.isNotEmpty()) return@listener
-            val world = mc.world ?: return@listener
-            val player = mc.player ?: return@listener
 
-            if (playingSong) {
-                if (!player.isCreative) {
-                    while (noteSequence.isNotEmpty() && noteSequence.firstKey() <= elapsed) {
-                        playNotes(noteSequence.pollFirstEntry().value, player, world)
-                    }
+            runSafe {
+                if (playingSong) {
+                    if (!player.isCreative) {
+                        while (noteSequence.isNotEmpty() && noteSequence.firstKey() <= elapsed) {
+                            playNotes(noteSequence.pollFirstEntry().value)
+                        }
 
-                    if (noteSequence.isEmpty()) {
-                        MessageSendHelper.sendChatMessage("Finished playing song.")
+                        if (noteSequence.isEmpty()) {
+                            MessageSendHelper.sendChatMessage("Finished playing song.")
+                            playingSong = false
+                        }
+
+                        elapsed = System.currentTimeMillis() - startTime
+                    } else {
+                        // Pause song
                         playingSong = false
+                        MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
                     }
-
-                    elapsed = System.currentTimeMillis() - startTime
-                } else {
-                    // Pause song
-                    playingSong = false
-                    MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
                 }
             }
         }
     }
 
-    private fun playNotes(notes: List<Note>, player: EntityPlayerSP, world: WorldClient) {
+    private fun SafeClientEvent.playNotes(notes: List<Note>) {
         for (note in notes) {
             if (note.track == 9) {
                 val instrument = getPercussionInstrument(note.note) ?: continue
                 noteBlockMap[instrument]?.firstOrNull()?.let {
-                    clickBlock(it, player, world)
+                    clickBlock(it)
                 }
             } else {
                 val instrument = channelSettings[note.track].value
                 val pitch = note.noteBlockNote
 
                 noteBlockMap[instrument]?.get(pitch)?.let {
-                    clickBlock(it, player, world)
+                    clickBlock(it)
                 }
             }
         }
@@ -265,16 +266,16 @@ object NoteBot : Module() {
         }
     }
 
-    private fun clickBlock(pos: BlockPos, player: EntityPlayerSP, world: WorldClient) {
-        val side = getExposedSide(pos, player, world)
-        mc.connection?.apply {
+    private fun SafeClientEvent.clickBlock(pos: BlockPos) {
+        val side = getExposedSide(pos)
+        connection.apply {
             sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, side))
             sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, pos, side))
         }
         player.swingArm(EnumHand.MAIN_HAND)
     }
 
-    private fun getExposedSide(pos: BlockPos, player: EntityPlayerSP, world: WorldClient): EnumFacing {
+    private fun SafeClientEvent.getExposedSide(pos: BlockPos): EnumFacing {
         val playerPos = player.positionVector
 
         return EnumFacing.values()
