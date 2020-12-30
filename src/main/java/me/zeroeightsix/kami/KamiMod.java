@@ -50,12 +50,13 @@ public class KamiMod {
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     @Mod.Instance
-    public static final KamiMod INSTANCE = new KamiMod();
+    public static KamiMod INSTANCE;
 
     private static boolean ready = false;
     private KamiGUI guiManager;
     private Setting<JsonObject> guiStateSetting;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
