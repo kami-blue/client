@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.util.graphics.font
 
-@Suppress("UNUSED")
-enum class HAlign(val multiplier: Float) {
-    LEFT(0f),
-    CENTER(0.5f),
-    RIGHT(1f)
+import org.kamiblue.commons.interfaces.DisplayEnum
+
+enum class HAlign(override val displayName: String, val multiplier: Float) : DisplayEnum {
+    LEFT("Left", 0.0f),
+    CENTER("Center", 0.5f),
+    RIGHT("Right", 1.0f)
 }
 
-@Suppress("UNUSED")
-enum class VAlign(val multiplier: Float) {
-    TOP(0f),
-    CENTER(0.5f),
-    BOTTOM(1f)
+enum class VAlign(override val displayName: String, val multiplier: Float) : DisplayEnum {
+    TOP("Top", 0.0f),
+    CENTER("Center", 0.5f),
+    BOTTOM("Bottom", 1.0f)
 }
