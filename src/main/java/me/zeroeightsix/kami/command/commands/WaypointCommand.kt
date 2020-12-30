@@ -7,9 +7,9 @@ import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
-import me.zeroeightsix.kami.util.onMainThreadSafe
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(
@@ -61,6 +61,23 @@ object WaypointCommand : ClientCommand(
             int("id") { idArg ->
                 executeAsync("Go to a waypoint with Baritone") {
                     goto(idArg.value)
+                }
+            }
+
+            blockPos("pos") { posArg ->
+                executeAsync("Go to a coordinate with Baritone") {
+                    val pos = posArg.value
+                    goto(pos.x, pos.y, pos.z)
+                }
+            }
+
+            int("x") { xArg ->
+                int("y") { yArg ->
+                    int("z") { zArg ->
+                        executeAsync("Go to a coordinate with Baritone") {
+                            goto(xArg.value, yArg.value, zArg.value)
+                        }
+                    }
                 }
             }
         }
@@ -115,6 +132,13 @@ object WaypointCommand : ClientCommand(
             } else {
                 MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
             }
+        }
+    }
+
+    private fun goto(x: Int, y: Int, z: Int) {
+        onMainThreadSafe {
+            if (AutoWalk.isEnabled) AutoWalk.disable()
+            MessageSendHelper.sendBaritoneCommand("goto", x.toString(), y.toString(), z.toString())
         }
     }
 

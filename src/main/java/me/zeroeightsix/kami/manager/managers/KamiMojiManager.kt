@@ -5,151 +5,133 @@
 
 package me.zeroeightsix.kami.manager.managers
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.threads.mainScope
+import me.zeroeightsix.kami.util.threads.onMainThread
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
-import org.apache.commons.compress.utils.Charsets
-import org.apache.commons.io.IOUtils
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.net.URL
 import java.util.zip.ZipInputStream
 import javax.imageio.ImageIO
 
 object KamiMojiManager : Manager {
-    private const val FOLDER = "emojis"
-    private const val VERSION_URL = "https://raw.githubusercontent.com/2b2t-Utilities/emojis/master/version.json"
-    private val LOCAL_VERSION = File(FOLDER + File.separator + "version.json")
-    private const val ZIP_URL = "https://github.com/2b2t-Utilities/emojis/archive/master.zip"
 
-    private val KAMIMOJIS = HashMap<String, ResourceLocation?>()
-    private val files = HashMap<String, File>()
-    private val thread: Thread
+    private const val directory = "${KamiMod.DIRECTORY}emojis"
+    private const val versionURL = "https://raw.githubusercontent.com/2b2t-Utilities/emojis/master/version.json"
+    private const val zipUrl = "https://github.com/2b2t-Utilities/emojis/archive/master.zip"
 
-    @Throws(IOException::class)
+    private val parser = JsonParser()
+    private val emojiMap = HashMap<String, ResourceLocation?>()
+
+    private val job = mainScope.launch(Dispatchers.IO) {
+        val directory = File(directory)
+
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+
+        try {
+            checkEmojiUpdate()
+        } catch (e: Exception) {
+            KamiMod.LOG.warn("Failed to check emoji update", e)
+        }
+
+        KamiMod.LOG.info("KamiMoji Initialized")
+    }
+
+    private fun checkEmojiUpdate() {
+        val localVersion = File("$directory/version.json")
+
+        if (!localVersion.exists()) {
+            updateEmojis()
+        } else {
+            val globalVer = streamToJson(URL(versionURL).openStream())
+            val localVer = streamToJson(FileInputStream(localVersion))
+
+            if (globalVer != null) {
+                if (!globalVer.has("version")) {
+                    updateEmojis()
+                } else if (globalVer["version"].asInt != localVer?.get("version")?.asInt ?: 8) {
+                    updateEmojis()
+                }
+            }
+        }
+    }
+
+    private fun streamToJson(stream: InputStream): JsonObject? {
+        return try {
+            parser.parse(stream.reader()).asJsonObject
+        } catch (e: Exception) {
+            KamiMod.LOG.warn("Failed to parse emoji version Json", e)
+            null
+        }
+    }
+
     private fun updateEmojis() {
-        val zip = ZipInputStream(URL(ZIP_URL).openStream())
+        val zip = ZipInputStream(URL(zipUrl).openStream())
         var entry = zip.nextEntry
 
         while (entry != null) {
-            val filePath = FOLDER + File.separator + entry.name.substring(entry.name.indexOf("/"))
-
             if (!entry.isDirectory) {
-                val bos = BufferedOutputStream(FileOutputStream(filePath))
-                val bytesIn = ByteArray(4096)
-                var read: Int
-
-                while (zip.read(bytesIn).also { read = it } != -1) {
-                    bos.write(bytesIn, 0, read)
+                val path = "$directory/${entry.name.substringAfterLast('/')}"
+                File(path).apply {
+                    if (!exists()) createNewFile()
+                    writeBytes(zip.readBytes())
                 }
-
-                bos.close()
             }
 
             zip.closeEntry()
-
             entry = zip.nextEntry
         }
 
         zip.close()
     }
 
-    private fun addEmoji(file: File) {
+    fun getEmoji(name: String?): ResourceLocation? {
+        if (name == null) return null
+
+        // Returns null if still loading
+        if (job.isActive) {
+            return null
+        }
+
+        // Loads emoji on demand
+        if (!emojiMap.containsKey(name)) {
+            mainScope.launch(Dispatchers.IO) {
+                loadEmoji(name)
+            }
+        }
+
+        return emojiMap[name]
+    }
+
+    fun isEmoji(name: String?) = getEmoji(name) != null
+
+    private fun loadEmoji(name: String) {
+        val file = File("$directory/${name}.png")
+        if (!file.exists()) return
+
         try {
             val image = ImageIO.read(file)
-            val dynamicTexture: DynamicTexture
-            dynamicTexture = DynamicTexture(image)
-            dynamicTexture.loadTexture(Wrapper.minecraft.getResourceManager())
-            KAMIMOJIS[file.name.replace(".png".toRegex(), "")] = Wrapper.minecraft.textureManager.getDynamicTextureLocation(file.name.replace(".png".toRegex(), ""), dynamicTexture)
+
+            onMainThread {
+                val dynamicTexture = DynamicTexture(image)
+                val resourceLocation = Wrapper.minecraft.textureManager.getDynamicTextureLocation(name, dynamicTexture)
+                emojiMap[name] = resourceLocation
+            }
         } catch (e: IOException) {
-            e.printStackTrace()
+            KamiMod.LOG.warn("Failed to load emoji", e)
         }
-
     }
 
-    fun getEmoji(emoji: Emoji): ResourceLocation? {
-        // Loads emoji on demand
-        if (!KAMIMOJIS.contains(emoji.name) && !thread.isAlive) {
-            files[emoji.name]?.let { addEmoji(it) }
-        }
-        return KAMIMOJIS[emoji.name]
-    }
-
-    fun isEmoji(name: String?): Boolean {
-        // Loads emoji on demand
-        if (!KAMIMOJIS.contains(name) && !thread.isAlive) {
-            files[name]?.let { addEmoji(it) }
-        }
-        return KAMIMOJIS.containsKey(name)
-    }
-
-    class Emoji(val name: String)
-
-    init {
-        thread = Thread({
-            KamiMod.LOG.info("Initialising KamiMoji...")
-            val dir = File(FOLDER)
-            val kamiMojiDir = File("kamimoji")
-
-            if (!dir.exists()) {
-                dir.mkdir()
-            }
-
-            if (kamiMojiDir.exists()) {
-                kamiMojiDir.deleteRecursively()
-            }
-
-            try {
-                if (!LOCAL_VERSION.exists()) {
-                    updateEmojis()
-                } else {
-                    val globalVer = streamToJson(URL(VERSION_URL).openStream())
-                    val localVer = streamToJson(FileInputStream(LOCAL_VERSION))
-
-                    if (globalVer != null) {
-                        if (!globalVer.has("version")) {
-                            updateEmojis()
-                        } else {
-                            if (globalVer["version"].asInt != localVer?.get("version")?.asInt ?: 8) {
-                                updateEmojis()
-                            }
-                        }
-                    }
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            synchronized(files) {
-                // Store the files in hash map, we are not loading them yet until we need them
-                files.putAll(File(FOLDER).listFiles { file: File -> file.isFile && file.name.toLowerCase().endsWith(".png") }!!.associateBy { it.name.replace(".png", "") })
-            }
-        }, "KamiMoji Loading Thread")
-
-        thread.start()
-    }
-
-    /**
-     * Pop in a JSON input stream and get a JsonObject as output.
-     *
-     * @param in A JSON input stream ting
-     * @return Corresponding JsonObject
-     */
-    private fun streamToJson(`in`: InputStream?): JsonObject? {
-        val gson = Gson()
-        var jsonObject: JsonObject? = null
-
-        try {
-            val json = IOUtils.toString(`in`, Charsets.UTF_8)
-
-            jsonObject = gson.fromJson(json, JsonObject::class.java)
-        } catch (e: IOException) {
-            KamiMod.LOG.error(e)
-        }
-
-        return jsonObject
-    }
 }

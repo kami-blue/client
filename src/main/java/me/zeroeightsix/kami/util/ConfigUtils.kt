@@ -54,7 +54,7 @@ object ConfigUtils {
      *
      * @return false if exception caught
      */
-    fun loadConfiguration(): Boolean {
+    private fun loadConfiguration(): Boolean {
         return try {
             loadConfigurationUnsafe()
             KamiMod.LOG.info("Config loaded")
@@ -70,7 +70,7 @@ object ConfigUtils {
      *
      * @return false if exception caught
      */
-    fun saveConfiguration(): Boolean {
+    private fun saveConfiguration(): Boolean {
         return try {
             saveConfigurationUnsafe()
             KamiMod.LOG.info("Config saved")

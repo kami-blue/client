@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
@@ -12,12 +14,12 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
+import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -45,9 +47,7 @@ object Surround : Module() {
 
     private var holePos: BlockPos? = null
     private var toggleTimer = TimerUtils.StopTimer(TimerUtils.TimeUnit.TICKS)
-    private val placeThread = Thread { runSurround() }.apply { name = "Surround" }
-    private val threadPool = Executors.newSingleThreadExecutor()
-    private var future: Future<*>? = null
+    private var job: Job? = null
 
     override fun onEnable() {
         toggleTimer.reset()
@@ -60,7 +60,7 @@ object Surround : Module() {
     }
 
     override fun isActive(): Boolean {
-        return isEnabled && future?.isDone == false
+        return isEnabled && job.isActiveOrFalse
     }
 
     init {
@@ -93,9 +93,9 @@ object Surround : Module() {
             }
 
             // The actual job
-            if (future?.isDone != false) {
-                future = threadPool.submit(placeThread)
-            } else if (future?.isDone == false && future?.isCancelled == false) {
+            if (!job.isActiveOrFalse) {
+                job = runSurround()
+            } else if (job.isActiveOrFalse) {
                 spoofHotbar()
                 PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
             } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
@@ -161,10 +161,10 @@ object Surround : Module() {
         }
     }
 
-    private fun runSurround() {
+    private fun runSurround() = defaultScope.launch {
         spoofHotbar()
         BlockUtils.buildStructure(placeSpeed.value) {
-            if (isEnabled && CombatManager.isOnTopPriority(this)) {
+            if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
                 BlockUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
             } else {
                 null

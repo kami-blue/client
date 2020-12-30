@@ -36,7 +36,7 @@ object MessageDetection {
             }
         },
         OTHER {
-            private val regex = "^<(\\w)>".toRegex()
+            private val regex = "^<(\\w+)>".toRegex()
 
             override fun detect(input: CharSequence) = playerName(input) != null
 
@@ -45,7 +45,7 @@ object MessageDetection {
             }
         },
         ANY {
-            private val regex = "^<(\\w)>".toRegex()
+            private val regex = "^<(\\w+)>".toRegex()
 
             override fun detect(input: CharSequence) = input.contains(regex)
 
