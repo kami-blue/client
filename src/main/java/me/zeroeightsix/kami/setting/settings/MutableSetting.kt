@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.setting.settings
 
 import com.google.gson.JsonElement
+import kotlin.reflect.KProperty
 
 /**
  * Basic MutableSetting class
@@ -30,6 +31,10 @@ open class MutableSetting<T : Any>(
             }
         }
     override val valueClass: Class<T> = valueIn.javaClass
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value
+    }
 
     final override fun resetValue() {
         value = defaultValue

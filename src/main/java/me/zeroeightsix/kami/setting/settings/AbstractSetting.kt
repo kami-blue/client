@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import org.kamiblue.commons.interfaces.Nameable
+import kotlin.reflect.KProperty
 
 abstract class AbstractSetting<T : Any> : Nameable {
 
@@ -18,6 +19,8 @@ abstract class AbstractSetting<T : Any> : Nameable {
     val valueListeners = ArrayList<(T, T) -> Unit>()
 
     val isVisible get() = visibility()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>) = value
 
     open fun setValue(valueIn: String) {
         read(parser.parse(valueIn))
