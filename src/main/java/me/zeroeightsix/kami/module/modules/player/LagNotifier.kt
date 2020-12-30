@@ -9,6 +9,8 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.WebUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -36,9 +38,9 @@ object LagNotifier : Module() {
     private val feedback = setting("PauseFeedback", true, { pauseBaritone.value })
     private val timeout = setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
-    private val pingTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private var lastPacketTimer = TimerUtils.TickTimer()
-    private var lastRubberBandTimer = TimerUtils.TickTimer()
+    private val pingTimer = TickTimer(TimeUnit.SECONDS)
+    private var lastPacketTimer = TickTimer()
+    private var lastRubberBandTimer = TickTimer()
     private var text = ""
     var paused = false
 
@@ -90,7 +92,7 @@ object LagNotifier : Module() {
             if (!detectRubberBand.value || mc.player == null || it.packet !is SPacketPlayerPosLook) return@listener
 
             val dist = Vec3d(it.packet.x, it.packet.y, it.packet.z).subtract(mc.player.positionVector).length()
-            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).subtract(Vec2f(mc.player)).length()
+            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).minus(Vec2f(mc.player)).length()
 
             if (dist in 0.5..64.0 || rotationDiff > 1.0) lastRubberBandTimer.reset()
         }

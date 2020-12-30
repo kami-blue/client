@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.speed
 import net.minecraft.client.settings.KeyBinding
 import org.kamiblue.event.listener.listener
 import kotlin.math.cos
@@ -36,7 +37,7 @@ object Strafe : Module() {
                 reset()
                 return@listener
             }
-            MovementUtils.setSpeed(MovementUtils.getSpeed())
+            MovementUtils.setSpeed(mc.player.speed)
             if (airSpeedBoost.value) mc.player.jumpMovementFactor = 0.029f
             if (timerBoost.value) mc.timer.tickLength = 45.87155914306640625f
 

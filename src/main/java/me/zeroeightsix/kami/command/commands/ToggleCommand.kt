@@ -8,7 +8,7 @@ import net.minecraft.util.text.TextFormatting
 
 object ToggleCommand : ClientCommand(
     name = "toggle",
-    alias = arrayOf("switch"),
+    alias = arrayOf("switch", "t"),
     description = "Toggle a module on and off!"
 ) {
     init {

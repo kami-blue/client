@@ -4,6 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.onMainThread
 import net.minecraft.util.text.TextFormatting
 
 object SetCommand : ClientCommand(
@@ -29,10 +31,10 @@ object SetCommand : ClientCommand(
                             var value = valueArg.value
                             if (setting is EnumSetting) value = value.toUpperCase()
 
-                            setting.setValue(value)
-
-                            MessageSendHelper.sendChatMessage("Set ${TextFormatting.AQUA}${setting.name}${TextFormatting.RESET}" +
-                                " to ${TextFormatting.DARK_AQUA}${value}${TextFormatting.RESET}.")
+                            onMainThread {
+                                setting.setValue(value)
+                                MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
+                            }
 
                         } catch (e: Exception) {
                             MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.GOLD}${e.message}")
@@ -51,10 +53,10 @@ object SetCommand : ClientCommand(
                         return@executeAsync
                     }
 
-                    val string = "${TextFormatting.AQUA}$settingName${TextFormatting.RESET} " +
-                        "is a ${TextFormatting.DARK_AQUA}${setting.valueClass.simpleName}${TextFormatting.RESET}. " +
-                        "Its current value is ${TextFormatting.DARK_AQUA}$setting"
-                    MessageSendHelper.sendChatMessage(string)
+                    MessageSendHelper.sendChatMessage("${formatValue(settingName)} is a " +
+                        "${formatValue(setting.valueClass.simpleName)}. " +
+                        "Its current value is ${formatValue(setting)}"
+                    )
                 }
             }
 
@@ -69,8 +71,6 @@ object SetCommand : ClientCommand(
     }
 
     private fun sendUnknownSettingMessage(moduleName: String, settingName: String) {
-        val string = "Unknown setting ${TextFormatting.AQUA}$settingName${TextFormatting.RESET} " +
-            "in ${TextFormatting.AQUA}$moduleName${TextFormatting.RESET}!"
-        MessageSendHelper.sendChatMessage(string)
+        MessageSendHelper.sendChatMessage("Unknown setting ${formatValue(settingName)} in ${formatValue(moduleName)}!")
     }
 }

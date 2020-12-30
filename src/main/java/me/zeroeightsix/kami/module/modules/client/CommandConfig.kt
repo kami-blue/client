@@ -6,7 +6,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -29,7 +30,7 @@ object CommandConfig : Module() {
     private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
     val modifierEnabled = setting("ModifierEnabled", false, { false })
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TickTimer(TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
     private const val title = "${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION_SIMPLE}"
 

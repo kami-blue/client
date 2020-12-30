@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -21,7 +21,7 @@ object MessageManager : Manager {
 
     private val messageQueue = TreeSet<QueuedMessage>(Comparator.reverseOrder())
     private val packetSet = HashSet<CPacketChatMessage>()
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     var lastPlayerMessage = ""
     private var currentId = 0
 

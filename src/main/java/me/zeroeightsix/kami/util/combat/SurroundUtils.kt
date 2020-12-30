@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import kotlin.math.floor
 import kotlin.math.round
 
 /**
@@ -37,7 +36,7 @@ object SurroundUtils {
 
     @JvmStatic
     fun checkHole(entity: Entity): HoleType {
-        return checkHole(BlockPos(floor(entity.posX).toInt(), floor(entity.posY).toInt(), floor(entity.posZ).toInt()))
+        return checkHole(entity.flooredPosition)
     }
 
     @JvmStatic
@@ -68,12 +67,12 @@ object SurroundUtils {
         val centered = isCentered()
         if (!centered) {
             if (tp) {
-                val posX = mc.player.posX + MathHelper.clamp(centerDiff.x, -0.2, 0.2)
-                val posZ = mc.player.posZ + MathHelper.clamp(centerDiff.z, -0.2, 0.2)
+                val posX = mc.player.posX + (centerDiff.x).coerceIn(-0.2, 0.2)
+                val posZ = mc.player.posZ + (centerDiff.z).coerceIn(-0.2, 0.2)
                 mc.player.setPosition(posX, mc.player.posY, posZ)
             } else {
-                mc.player.motionX = MathHelper.clamp(centerDiff.x / 2.0, -0.2, 0.2)
-                mc.player.motionZ = MathHelper.clamp(centerDiff.z / 2.0, -0.2, 0.2)
+                mc.player.motionX = (centerDiff.x / 2.0).coerceIn(-0.2, 0.2)
+                mc.player.motionZ = (centerDiff.z / 2.0).coerceIn(-0.2, 0.2)
             }
         }
         return centered

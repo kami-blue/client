@@ -11,7 +11,8 @@ import me.zeroeightsix.kami.mixin.client.accessor.*
 import me.zeroeightsix.kami.mixin.client.accessor.network.*
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.item.ItemStack
@@ -39,7 +40,7 @@ object PlayerPacketManager : Manager {
     var lastSwapTime = 0L; private set
 
     private var spoofingHotbar = false
-    private var hotbarResetTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var hotbarResetTimer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<OnUpdateWalkingPlayerEvent> {

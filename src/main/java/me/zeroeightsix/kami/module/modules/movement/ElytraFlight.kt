@@ -11,7 +11,13 @@ import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
+import me.zeroeightsix.kami.setting.Setting
+import me.zeroeightsix.kami.setting.Setting.SettingListeners
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
+import me.zeroeightsix.kami.util.WorldUtils.isLiquidBelow
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -211,7 +217,7 @@ object ElytraFlight : Module() {
         if (shouldSwing()) {
             mc.player.prevLimbSwingAmount = mc.player.limbSwingAmount
             mc.player.limbSwing += swingSpeed.value
-            val speedRatio = (MovementUtils.getSpeed() / getSettingSpeed()).toFloat()
+            val speedRatio = (mc.player.speed / getSettingSpeed()).toFloat()
             mc.player.limbSwingAmount += ((speedRatio * swingAmount.value) - mc.player.limbSwingAmount) * 0.4f
         }
     }
@@ -242,7 +248,7 @@ object ElytraFlight : Module() {
                 autoLanding.value = false
                 return
             }
-            checkForLiquid() -> {
+            isLiquidBelow() -> {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
@@ -256,9 +262,9 @@ object ElytraFlight : Module() {
             }
             else -> {
                 when {
-                    mc.player.posY > getGroundPosY(false) + 1.0 -> {
+                    mc.player.posY > getGroundPos().y + 1.0 -> {
                         mc.timer.tickLength = 50.0f
-                        mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
+                        mc.player.motionY = max(min(-(mc.player.posY - getGroundPos().y) / 20.0, -0.5), -5.0)
                     }
                     mc.player.motionY != 0.0 -> { /* Pause falling to reset fall distance */
                         if (!mc.isSingleplayer) mc.timer.tickLength = 200.0f /* Use timer to pause longer */
@@ -279,9 +285,9 @@ object ElytraFlight : Module() {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
-        val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.isSingleplayer
+        val closeToGround = mc.player.posY <= getGroundPos().y + height && !wasInLiquid && !mc.isSingleplayer
         if (!easyTakeOff.value || LagNotifier.paused || mc.player.onGround) {
-            if (LagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+            if (LagNotifier.paused && mc.player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
             return
         }
@@ -470,13 +476,15 @@ object ElytraFlight : Module() {
 
     private fun spoofRotation() {
         if (mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return
-        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(mc.player))
+        val packet = PlayerPacketManager.PlayerPacket(rotating = true)
+        var rotation = Vec2f(mc.player)
+
         if (autoLanding.value) {
-            packet.rotation!!.y = -20f
+            rotation = Vec2f(rotation.x, -20f)
         } else if (mode.value != ElytraFlightMode.BOOST) {
-            if (!isStandingStill && mode.value != ElytraFlightMode.CREATIVE) packet.rotation!!.x = packetYaw
+            if (!isStandingStill && mode.value != ElytraFlightMode.CREATIVE) rotation = Vec2f(packetYaw, rotation.y)
             if (spoofPitch.value) {
-                if (!isStandingStill) packet.rotation!!.y = packetPitch
+                if (!isStandingStill) rotation = Vec2f(rotation.x, packetPitch)
 
                 /* Cancels rotation packets if player is not moving and not clicking */
                 val cancelRotation = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract.value) || !blockInteract.value)
@@ -485,6 +493,8 @@ object ElytraFlight : Module() {
                 }
             }
         }
+
+        packet.rotation = rotation
         PlayerPacketManager.addPacket(this, packet)
     }
 

@@ -6,6 +6,8 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.MovementUtils.isMoving
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
@@ -49,7 +51,7 @@ object LoginMessage : Module() {
                 }
             }
 
-            if (!moved) moved = MovementUtils.isMoving
+            if (!moved) moved = mc.player.isMoving
         }
     }
 

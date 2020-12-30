@@ -7,6 +7,9 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -24,7 +27,7 @@ object LogoutLogger : Module() {
     private val print = setting("PrintToChat", true)
 
     private val loggedPlayers = HashMap<GameProfile, BlockPos>()
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<ConnectionEvent.Disconnect> {

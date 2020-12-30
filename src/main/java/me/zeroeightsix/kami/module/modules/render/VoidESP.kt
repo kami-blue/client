@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
@@ -42,11 +43,10 @@ object VoidESP : Module() {
             renderer.aOutline = if (outline.value) aOutline.value else 0
             val color = ColorHolder(r.value, g.value, b.value)
             val side = if (renderMode.value != Mode.FLAT) GeometryMasks.Quad.ALL else GeometryMasks.Quad.DOWN
-            val squaredDist = renderDistance.value * renderDistance.value
 
             for (x in -renderDistance.value..renderDistance.value) for (z in -renderDistance.value..renderDistance.value) {
                 val pos = BlockPos(mc.player.posX + x, 0.0, mc.player.posZ + z)
-                if (mc.player.getDistanceSqToCenter(pos) > squaredDist) continue
+                if (mc.player.distanceTo(pos) > renderDistance.value) continue
                 if (!isVoid(pos)) continue
                 val renderPos = if (renderMode.value == Mode.BLOCK_VOID) pos.down() else pos
                 renderer.add(renderPos, color, side)

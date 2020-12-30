@@ -7,21 +7,21 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.isWeapon
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
-import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule
 @Module.Info(
-        name = "KillAura",
-        alias = ["KA", "Aura", "TriggerBot"],
-        category = Module.Category.COMBAT,
-        description = "Hits entities around you",
-        modulePriority = 50
+    name = "KillAura",
+    alias = ["KA", "Aura", "TriggerBot"],
+    category = Module.Category.COMBAT,
+    description = "Hits entities around you",
+    modulePriority = 50
 )
 object KillAura : Module() {
     private val delayMode = setting("Mode", WaitMode.DELAY)
@@ -50,32 +50,45 @@ object KillAura : Module() {
             if (it.phase != TickEvent.Phase.START) return@listener
 
             inactiveTicks++
+
             if (mc.player.isDead) {
                 if (mc.player.isDead && disableOnDeath.value) disable()
                 return@listener
             }
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val target = CombatManager.target
 
-            if (target != null && mc.player.getDistance(target) < range.value) {
-                inactiveTicks = 0
-                if (lockView.value) {
-                    faceEntityClosest(target)
-                } else if (spoofRotation.value) {
-                    val rotation = Vec2f(RotationUtils.getRotationToEntityClosest(target))
-                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
-                }
-                if (canAttack()) attack(target)
+            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
+            val target = CombatManager.target ?: return@listener
+            if (mc.player.getDistance(target) > range.value) return@listener
+
+            if (autoWeapon.value) {
+                CombatUtils.equipBestWeapon(prefer.value as CombatUtils.PreferWeapon)
             }
+
+            if (weaponOnly.value && !mc.player.heldItemMainhand.item.isWeapon) {
+                return@listener
+            }
+
+            inactiveTicks = 0
+            rotate(target)
+            if (canAttack()) attack(target)
+        }
+    }
+
+    private fun rotate(target: EntityLivingBase) {
+        if (lockView.value) {
+            RotationUtils.faceEntityClosest(target)
+        } else if (spoofRotation.value) {
+            val rotation = RotationUtils.getRotationToEntityClosest(target)
+            PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
         }
     }
 
     private fun canAttack(): Boolean {
-        val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
         return if (delayMode.value == WaitMode.DELAY) {
-            (mc.player.getCooledAttackStrength(adjustTicks) >= 1f)
+            val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
+            mc.player.getCooledAttackStrength(adjustTicks) >= 1f
         } else {
-            if (tickCount < waitTick.value) {
+            if (tickCount < spamDelay.value) {
                 tickCount++
                 false
             } else {
@@ -86,7 +99,6 @@ object KillAura : Module() {
     }
 
     private fun attack(e: Entity) {
-        if (autoTool.value) CombatUtils.equipBestWeapon(prefer.value)
         mc.playerController.attackEntity(mc.player, e)
         mc.player.swingArm(EnumHand.MAIN_HAND)
     }

@@ -7,6 +7,8 @@ import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.BlockUtils.faceVectorPacketInstant
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.block.BlockDeadBush
@@ -24,6 +26,9 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
 
+/**
+ * TODO: Rewrite
+ */
 @Module.Info(
     name = "AutoSpawner",
     category = Module.Category.MISC,
@@ -47,7 +52,7 @@ object AutoSpawner : Module() {
         SNOW, IRON, WITHER
     }
 
-    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private var timer = TickTimer(TimeUnit.TICKS)
     private var placeTarget: BlockPos? = null
     private var rotationPlaceableX = false
     private var rotationPlaceableZ = false
@@ -120,15 +125,15 @@ object AutoSpawner : Module() {
                 }
                 Stage.BODY -> {
                     InventoryUtils.swapSlot(bodySlot)
-                    for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos), rotate.value)
+                    for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos))
                     if (entityMode.value == EntityMode.WITHER || entityMode.value == EntityMode.IRON) {
                         if (rotationPlaceableX) {
                             for (pos in BodyParts.ArmsX) {
-                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                                placeBlock(placeTarget!!.add(pos))
                             }
                         } else if (rotationPlaceableZ) {
                             for (pos in BodyParts.ArmsZ) {
-                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                                placeBlock(placeTarget!!.add(pos))
                             }
                         }
                     }
@@ -139,17 +144,17 @@ object AutoSpawner : Module() {
                     InventoryUtils.swapSlot(headSlot)
 
                     if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.SNOW) {
-                        for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos), rotate.value)
+                        for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos))
                     }
 
                     if (entityMode.value == EntityMode.WITHER) {
                         if (rotationPlaceableX) {
                             for (pos in BodyParts.headsX) {
-                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                                placeBlock(placeTarget!!.add(pos))
                             }
                         } else if (rotationPlaceableZ) {
                             for (pos in BodyParts.headsZ) {
-                                placeBlock(placeTarget!!.add(pos), rotate.value)
+                                placeBlock(placeTarget!!.add(pos))
                             }
                         }
                     }
@@ -298,17 +303,16 @@ object AutoSpawner : Module() {
         return !mc.world.isAirBlock(pos) || !mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
     }
 
-    private fun placeBlock(pos: BlockPos, rotate: Boolean) {
+    private fun placeBlock(pos: BlockPos) {
         val side = getPlaceableSide(pos) ?: return
         val neighbour = pos.offset(side)
         val opposite = side.opposite
         val hitVec = Vec3d(neighbour).add(0.5, 0.5, 0.5).add(Vec3d(opposite.directionVec).scale(0.5))
         val neighbourBlock = mc.world.getBlockState(neighbour).block
-        if (!isSneaking && (BlockUtils.blackList.contains(neighbourBlock) || BlockUtils.shulkerList.contains(neighbourBlock))) {
+        if (!isSneaking && (WorldUtils.blackList.contains(neighbourBlock) || WorldUtils.shulkerList.contains(neighbourBlock))) {
             mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
             isSneaking = true
         }
-        if (rotate) faceVectorPacketInstant(hitVec)
         mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND)
         mc.player.swingArm(EnumHand.MAIN_HAND)
     }
