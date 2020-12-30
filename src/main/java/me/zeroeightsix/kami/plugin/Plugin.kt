@@ -6,6 +6,8 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.util.threads.BackgroundJob
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import org.kamiblue.commons.collections.CloseableList
 import org.kamiblue.commons.interfaces.Nameable
 import org.kamiblue.event.ListenerManager
@@ -30,25 +32,32 @@ open class Plugin : Nameable {
     val hotReload: Boolean get() = info.hotReload
 
     /**
-     * The list of managers the plugin will add.
+     * The list of [Manager] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.manager.managers.KamiMojiManager
      */
     val managers = CloseableList<Manager>()
 
     /**
-     * The list of commands the plugin will add.
+     * The list of [ClientCommand] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.command.commands.CreditsCommand
      */
     val commands = CloseableList<ClientCommand>()
 
     /**
-     * The list of modules the plugin will add.
+     * The list of [Module] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.module.modules.combat.KillAura
      */
     val modules = CloseableList<Module>()
+
+    /**
+     * The list of [BackgroundJob] the plugin will add.
+     *
+     * @sample me.zeroeightsix.kami.module.modules.client.CommandConfig
+     */
+    val bgJobs = CloseableList<BackgroundJob>()
 
     internal fun setInfo(infoIn: PluginInfo) {
         info = infoIn
@@ -58,10 +67,12 @@ open class Plugin : Nameable {
         managers.close()
         commands.close()
         modules.close()
+        bgJobs.close()
 
         managers.forEach(KamiEventBus::subscribe)
         commands.forEach(CommandManager::register)
         modules.forEach(ModuleManager::register)
+        bgJobs.forEach(BackgroundScope::launchLooping)
 
         // TODO: Loads config here (After GUI PR)
 
@@ -83,6 +94,7 @@ open class Plugin : Nameable {
             ModuleManager.unregister(it)
             ListenerManager.unregister(it)
         }
+        bgJobs.forEach(BackgroundScope::cancel)
     }
 
     /**
