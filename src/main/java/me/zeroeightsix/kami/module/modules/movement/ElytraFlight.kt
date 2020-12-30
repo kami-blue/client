@@ -474,13 +474,15 @@ object ElytraFlight : Module() {
 
     private fun spoofRotation() {
         if (mc.player.isSpectator || !elytraIsEquipped || elytraDurability <= 1 || !isFlying) return
-        val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(mc.player))
+        val packet = PlayerPacketManager.PlayerPacket(rotating = true)
+        var rotation = Vec2f(mc.player)
+
         if (autoLanding.value) {
-            packet.rotation!!.y = -20f
+            rotation = Vec2f(rotation.x, -20f)
         } else if (mode.value != ElytraFlightMode.BOOST) {
-            if (!isStandingStill && mode.value != ElytraFlightMode.CREATIVE) packet.rotation!!.x = packetYaw
+            if (!isStandingStill && mode.value != ElytraFlightMode.CREATIVE) rotation = Vec2f(packetYaw, rotation.y)
             if (spoofPitch.value) {
-                if (!isStandingStill) packet.rotation!!.y = packetPitch
+                if (!isStandingStill) rotation = Vec2f(rotation.x, packetPitch)
 
                 /* Cancels rotation packets if player is not moving and not clicking */
                 val cancelRotation = isStandingStill && ((!mc.gameSettings.keyBindUseItem.isKeyDown && !mc.gameSettings.keyBindAttack.isKeyDown && blockInteract.value) || !blockInteract.value)
@@ -489,6 +491,8 @@ object ElytraFlight : Module() {
                 }
             }
         }
+
+        packet.rotation = rotation
         PlayerPacketManager.addPacket(this, packet)
     }
 

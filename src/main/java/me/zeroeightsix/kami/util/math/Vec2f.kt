@@ -9,7 +9,7 @@ import kotlin.math.sqrt
  *
  * Created by Xiaro on 27/08/20
  */
-class Vec2f(@JvmField var x: Float, @JvmField var y: Float) {
+class Vec2f(val x: Float, val y: Float) {
 
     /**
      * Create a Vec2f from this entity's rotations

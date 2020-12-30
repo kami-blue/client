@@ -114,7 +114,7 @@ public class MixinEntityRenderer {
     public void turn(EntityPlayerSP player, float yaw, float pitch) {
         if (ViewLock.INSTANCE.isEnabled() && Freecam.INSTANCE.isDisabled()) {
             Vec2f rotation = ViewLock.INSTANCE.handleTurn(yaw, pitch);
-            player.turn(rotation.x, rotation.y);
+            player.turn(rotation.getX(), rotation.getY());
         } else {
             player.turn(yaw, pitch);
         }
