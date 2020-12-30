@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.BlockPos
@@ -51,8 +52,8 @@ object HoleSnap : Module() {
         val ceilRange = (range.value).ceilToInt()
         val posList = VectorUtils.getBlockPositionsInArea(playerPos.add(ceilRange, -1, ceilRange), playerPos.add(-ceilRange, -1, -ceilRange))
         for (posXZ in posList) {
-            val dist = mc.player.getDistanceSqToCenter(posXZ)
-            if (dist > range.value.pow(2) || dist > closestHole.first) continue
+            val dist = mc.player.distanceTo(posXZ)
+            if (dist > range.value || dist > closestHole.first) continue
             for (posY in 0..5) {
                 val pos = posXZ.add(0, -posY, 0)
                 if (!mc.world.isAirBlock(pos.up())) break

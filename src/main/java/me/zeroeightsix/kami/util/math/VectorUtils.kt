@@ -1,12 +1,13 @@
 package me.zeroeightsix.kami.util.math
 
+import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.Vec3i
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
+import kotlin.math.*
 
 /**
  * Utilities for managing and transforming blockPos positions
@@ -74,6 +75,42 @@ object VectorUtils {
     }
 
     fun BlockPos.toVec3d(): Vec3d {
-        return Vec3d(x + 0.5, y + 0.5, z + 0.5)
+        return toVec3d(0.0, 0.0, 0.0)
+    }
+
+    fun BlockPos.toVec3d(xOffset: Double, yOffset: Double, zOffset: Double): Vec3d {
+        return Vec3d(x + 0.5 + xOffset, y + 0.5 + yOffset, z + 0.5 + zOffset)
+    }
+
+    fun Vec3i.distanceTo(vec3i: Vec3i): Double {
+        val xDiff = vec3i.x - x
+        val yDiff = vec3i.y - y
+        val zDiff = vec3i.z - z
+        return sqrt((xDiff * xDiff + yDiff * yDiff + zDiff * zDiff).toDouble())
+    }
+
+    fun Vec3d.distanceTo(vec3i: Vec3i): Double {
+        val xDiff = vec3i.x + 0.5 - x
+        val yDiff = vec3i.y + 0.5 - y
+        val zDiff = vec3i.z + 0.5 - z
+        return sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff)
+    }
+
+    fun Entity.distanceTo(vec3i: Vec3i): Double {
+        val xDiff = vec3i.x + 0.5 - posX
+        val yDiff = vec3i.y + 0.5 - posY
+        val zDiff = vec3i.z + 0.5 - posZ
+        return sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff)
+    }
+
+    fun Entity.distanceTo(vec3d: Vec3d): Double {
+        val xDiff = vec3d.x - posX
+        val yDiff = vec3d.y - posY
+        val zDiff = vec3d.z - posZ
+        return sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff)
+    }
+
+    fun Entity.distanceTo(chunkPos: ChunkPos): Double {
+        return hypot(chunkPos.x * 16 + 8 - posX, chunkPos.z * 16 + 8 - posZ)
     }
 }

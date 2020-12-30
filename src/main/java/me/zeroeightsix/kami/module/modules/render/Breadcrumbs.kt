@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
@@ -100,7 +101,7 @@ object Breadcrumbs : Module() {
                 val serverIP = getServerIP()
                 val dimension = mc.player.dimension
                 val posList = ((mainList[serverIP] ?: return@listener)[dimension] ?: return@listener)
-                val cutoffPos = posList.lastOrNull { pos -> mc.player.getDistance(pos.x, pos.y, pos.z) > maxDistance.value }
+                val cutoffPos = posList.lastOrNull { pos -> mc.player.distanceTo(pos) > maxDistance.value }
                 if (cutoffPos != null) while (posList.first() != cutoffPos) {
                     posList.remove()
                 }

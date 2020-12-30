@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.init.Blocks
@@ -22,7 +23,6 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.max
-import kotlin.math.sqrt
 
 @Module.Info(
     name = "Search",
@@ -216,7 +216,7 @@ object Search : Module() {
             for (posList in mainList.values) {
                 for (i in posList.indices) {
                     val pos = posList[i]
-                    val distance = sqrt(mc.player.getDistanceSq(pos))
+                    val distance = mc.player.distanceTo(pos)
                     if (distance > range.value) continue
                     cacheDistMap[distance] = pos
                 }

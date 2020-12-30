@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -323,7 +324,7 @@ object CrystalAura : Module() {
             // Wall distance check
             val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, 0.5, 0.5))
             val hitBlockPos = rayTraceResult?.blockPos ?: pos
-            if (hitBlockPos.distanceSq(pos) > 2.0 && triple.third > wallPlaceRange.value) continue
+            if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange.value) continue
 
             // Collide check
             if (!CrystalUtils.canPlaceCollide(pos)) continue

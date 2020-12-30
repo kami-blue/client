@@ -15,6 +15,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayer
@@ -27,8 +28,6 @@ import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -122,7 +121,7 @@ object BedAura : Module() {
             val posList = VectorUtils.getBlockPosInSphere(mc.player.getPositionEyes(1f), range.value)
             val damagePosMap = HashMap<Pair<Float, Float>, BlockPos>()
             for (pos in posList) {
-                val dist = sqrt(mc.player.getDistanceSqToCenter(pos))
+                val dist = mc.player.distanceTo(pos)
                 if (BlockUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
                 val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
                 val rotation = RotationUtils.getRotationTo(topSideVec, true)
@@ -160,9 +159,9 @@ object BedAura : Module() {
             for (tileEntity in mc.world.loadedTileEntityList) {
                 if (tileEntity !is TileEntityBed) continue
                 if (!tileEntity.isHeadPiece) continue
-                val dist = mc.player.getDistanceSqToCenter(tileEntity.pos).toFloat()
-                if (dist > range.value.pow(2)) continue
-                if (BlockUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value.pow(2)) continue
+                val dist = mc.player.distanceTo(tileEntity.pos).toFloat()
+                if (dist > range.value) continue
+                if (BlockUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
                 damagePosMap[dist] = tileEntity.pos
             }
             damagePosMap

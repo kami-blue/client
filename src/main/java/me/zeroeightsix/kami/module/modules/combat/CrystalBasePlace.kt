@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.Block
 import net.minecraft.entity.EntityLivingBase
@@ -143,7 +143,7 @@ object CrystalBasePlace : Module() {
         val eyePos = mc.player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
-            .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
+            .filter { eyePos.distanceTo(it.key) < range.value }
             .map { it.value.first }
             .maxOrNull() ?: 0.0f
 

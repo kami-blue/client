@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
@@ -161,7 +162,7 @@ object CombatSetting : Module() {
         val prediction = target?.let { getPrediction(it) }
 
         for (pos in CrystalUtils.getPlacePos(target, mc.player, 8f)) {
-            val dist = eyePos.distanceTo(pos.toVec3d().add(0.0, 0.5, 0.0))
+            val dist = eyePos.distanceTo(pos.toVec3d(0.0, 0.5, 0.0))
             val damage = target?.let { CrystalUtils.calcDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
             val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
             cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
@@ -184,7 +185,7 @@ object CombatSetting : Module() {
         for (entity in entityList) {
             if (entity.isDead) continue
             if (entity !is EntityEnderCrystal) continue
-            val dist = entity.positionVector.distanceTo(eyePos)
+            val dist = entity.distanceTo(eyePos)
             if (dist > 16.0f) continue
             val damage = if (target != null && prediction != null) CrystalUtils.calcDamage(entity, target, prediction.first, prediction.second) else 0.0f
             val selfDamage = CrystalUtils.calcDamage(entity, mc.player)
