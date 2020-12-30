@@ -23,7 +23,7 @@ internal object LoaderWrapper {
     }
 
     @JvmStatic
-    fun loadALL() {
+    fun loadAll() {
         runBlocking {
             loaderList.forEach { it.load() }
         }

@@ -56,7 +56,6 @@ public class KamiMod {
     private KamiGUI guiManager;
     private Setting<JsonObject> guiStateSetting;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
@@ -70,7 +69,7 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        LoaderWrapper.loadALL();
+        LoaderWrapper.loadAll();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
