@@ -29,17 +29,28 @@ import kotlin.math.sqrt
 object ChatEncryption : Module() {
     private val self = register(Settings.b("DecryptOwn", true))
     private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
-    private val keyA = register(Settings.integerBuilder("KeyA").withValue(3).withRange(0, 26).withStep(1))
-    private val keyB = register(Settings.integerBuilder("KeyB").withValue(10).withRange(0, 26).withStep(1))
-    private val delimiterSetting = register(Settings.b("Delimiter", true))
+    private val keyA = register(Settings.integerBuilder("KeyA").withValue(3).withRange(0, 26).withStep(1).withVisibility{mode.value != EncryptionMode.VIGNERE})
+    private val keyB = register(Settings.integerBuilder("KeyB").withValue(10).withRange(0, 26).withStep(1).withVisibility{mode.value != EncryptionMode.VIGNERE})
+    private val keyValueForVignere = register(Settings.stringBuilder("key").withValue("defaultKey"))
+    private val delimiterSetting = register(Settings.b("Delimiter", false))
     val delimiterValue = register(Settings.s("delimiterV", "unchanged"))
 
     private enum class EncryptionMode {
-        SHUFFLE, SHIFT
+        SHUFFLE, SHIFT, VIGNERE
     }
 
     private val pattern = Pattern.compile("<.*?> ")
-    private val originChar = charArrayOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '_', '/', ';', '=', '?', '+', '\u00B5', '\u00A3', '*', '^', '\u00F9', '$', '!', '{', '}', '\'', '"', '|', '&')
+    private val originChar = charArrayOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '_', '/', ';', '=', '?', '+', '\u00B5', '\u00A3', '*', '^', '\u00F9', '$', '!', '{', '}', '\'', '"', '|', '&', ' ')
+    val cypher : Array<Array<Char>> = Array(originChar.size){ i -> Array(originChar.size){ originChar[getSensibleIndex(it + i)]} }
+
+    fun getSensibleIndex(origin : Int) : Int{
+        return if (origin >= originChar.size){
+            origin - originChar.size
+        }else{
+            origin
+        }
+    }
+
     private val delimiter: String?
         get() {
             if (delimiterValue.value == "unchanged") {
@@ -50,31 +61,53 @@ object ChatEncryption : Module() {
             return delimiterValue.value
         }
 
+    private val key: String?
+    get(){
+        if ( keyValueForVignere.value == "defaultKey"){
+            sendErrorMessage("$chatName Please change the key with ${formatValue("${CommandManager.prefix}set $name key <newKey>")}")
+            disable()
+            return null
+        }
+        return keyValueForVignere.value
+    }
+
+    var prevMessage = ""
+
     init {
         listener<PacketEvent.Send> {
+
             if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
             var s = it.packet.packetMessage
-            if (delimiterSetting.value) {
-                if (delimiter == null || !s.startsWith(delimiter!!)) return@listener
-                s = s.substring(1)
+            if(s == prevMessage){ // fix existing issue - for some reason this is run twice sometimes (single player only)
+                prevMessage = ""
+                return@listener
             }
-            val builder = StringBuilder()
-            when (mode.value as EncryptionMode) {
-                EncryptionMode.SHUFFLE -> {
-                    builder.append(shuffle(getKey(), s))
-                    builder.append("\uD83D\uDE4D")
+
+            if (delimiterSetting.value){
+                val sub = s.split(delimiter!!)
+
+                val builder = StringBuilder()
+
+                for (i in 0..sub.size-1){
+                    if( i % 2 == 0){
+                        builder.append(sub[i])
+                    }else{
+                        builder.append("\uD83D\uDE4D")
+                        builder.append(encode(sub[i]))
+                        builder.append("\uD83D\uDE4D")
+                    }
                 }
-                EncryptionMode.SHIFT -> {
-                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
-                    builder.append("\uD83D\uDE48")
-                }
+                s = builder.toString()
+            }else{
+                s = encode(s) + "\uD83D\uDE4D"
             }
-            s = builder.toString()
+
             if (s.length > 256) {
                 sendChatMessage("Encrypted message length was too long, couldn't send!")
                 it.cancel()
                 return@listener
             }
+            prevMessage = s
             it.packet.packetMessage = s
         }
 
@@ -89,22 +122,55 @@ object ChatEncryption : Module() {
                 username = username.substring(1, username.length - 2)
                 s = matcher.replaceFirst("")
             }
+
+            if (!s.contains("\uD83D\uDE4D")) return@listener
+
+            val sub = s.split("\uD83D\uDE4D")
+
             val builder = StringBuilder()
-            val substring = s.substring(0, s.length - 2)
-            when (mode.value as EncryptionMode) {
-                EncryptionMode.SHUFFLE -> {
-                    if (!s.endsWith("\uD83D\uDE4D")) return@listener
-                    s = substring
-                    builder.append(unShuffle(getKey(), s))
-                }
-                EncryptionMode.SHIFT -> {
-                    if (!s.endsWith("\uD83D\uDE48")) return@listener
-                    s = substring
-                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
+
+            for (i in 0..sub.size-1){
+                if( i % 2 == 0){
+                    builder.append(sub[i])
+                }else{
+                    builder.append(decode(sub[i]))
                 }
             }
-            it.packet.textComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "lDECRYPTED" + TextFormatting.RESET + ": " + builder.toString())
+            s = builder.toString()
+            it.packet.textComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "DECRYPTED" + TextFormatting.RESET + ": " + s)
         }
+    }
+
+    private fun encode(s : String) : String{
+        val builder = StringBuilder()
+        when (mode.value as EncryptionMode) {
+            EncryptionMode.SHUFFLE -> {
+                builder.append(shuffle(getKey(), s))
+            }
+            EncryptionMode.SHIFT -> {
+                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
+
+            }
+            EncryptionMode.VIGNERE ->{
+                builder.append(encodeVignere(key!!, s))
+            }
+        }
+        return builder.toString()
+    }
+    private fun decode(s : String) : String{
+        val builder = StringBuilder()
+        when (mode.value as EncryptionMode) {
+            EncryptionMode.SHUFFLE -> {
+                builder.append(unShuffle(getKey(), s))
+            }
+            EncryptionMode.SHIFT -> {
+                s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
+            }
+            EncryptionMode.VIGNERE ->{
+                builder.append(decodeVignere(key!!, s))
+            }
+        }
+        return builder.toString()
     }
 
     private fun generateShuffleMap(seed: Int): Map<Char, Char> {
@@ -150,5 +216,37 @@ object ChatEncryption : Module() {
 
     private fun getKey(): Int {
         return sqrt((keyA.value * keyB.value).toDouble()).toInt()
+    }
+
+    private fun encodeVignere(key : String, text : String ) : String{
+        var endText = ""
+        var keyPos = 0
+        println(text)
+        for (char in text.toCharArray()){
+
+            val index = originChar.indexOf(char)
+            if(index == -1){
+                continue
+            }
+            endText += cypher[originChar.indexOf(key[keyPos])][index]
+            keyPos ++
+            if(keyPos >= key.length){
+                keyPos -= key.length
+            }
+        }
+        return endText
+    }
+
+    private fun decodeVignere(key : String, text: String) : String{
+        var endText = ""
+        var keyPos = 0
+        for (char in text.toCharArray()){
+            endText += originChar[cypher[originChar.indexOf(key[keyPos])].indexOf(char)]
+            keyPos ++
+            if(keyPos >= key.length){
+                keyPos -= key.length
+            }
+        }
+        return endText
     }
 }
