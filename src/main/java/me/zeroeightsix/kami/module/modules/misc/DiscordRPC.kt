@@ -6,8 +6,6 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.module.modules.client.InfoOverlay
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.TpsCalculator
@@ -33,7 +31,6 @@ object DiscordRPC : Module() {
     private val line2Left = setting("Line2Left", LineInfo.SERVER_IP) // state left
     private val line2Right = setting("Line2Right", LineInfo.HEALTH) // state right
     private val coordsConfirm = setting("CoordsConfirm", false, { showCoordsConfirm() })
-    private val updateDelay = setting("UpdateDelay", 4f, 1.0f..10.0f, 0.5f)
 
     private enum class LineInfo {
         VERSION, WORLD, DIMENSION, USERNAME, HEALTH, HUNGER, SERVER_IP, COORDS, SPEED, HELD_ITEM, FPS, TPS, NONE

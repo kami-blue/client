@@ -44,7 +44,7 @@ object ConfigUtils {
      *
      * @return false if exception caught
      */
-    fun loadConfig(config: AbstractConfig<*>): Boolean {
+    private fun loadConfig(config: AbstractConfig<*>): Boolean {
         return try {
             config.load()
             KamiMod.LOG.info("${config.name} config loaded")

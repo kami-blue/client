@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami;
 
-import com.google.common.base.Converter;
-import com.google.gson.JsonObject;
-import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.GuiManager;
@@ -10,7 +7,6 @@ import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
-import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
 import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;

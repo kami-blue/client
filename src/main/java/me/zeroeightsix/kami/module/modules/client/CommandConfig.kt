@@ -1,8 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig
@@ -41,7 +39,7 @@ object CommandConfig : Module() {
         }
 
         BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
-            if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
+            if (autoSaving.value && mc.currentScreen !is KamiClickGui && timer.tick(savingInterval.value.toLong())) {
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
                 ConfigUtils.saveConfig(ModuleConfig)
             }
