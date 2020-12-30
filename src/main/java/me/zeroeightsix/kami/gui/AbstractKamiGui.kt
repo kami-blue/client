@@ -254,9 +254,11 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
     }
     // End of rendering
 
+    override fun doesGuiPauseGame(): Boolean {
+        return false
+    }
 
     companion object {
-
         fun getRealMousePos(): Vec2f {
             val scaleFactor = ClickGUI.getScaleFactorFloat()
             return Vec2f(
@@ -264,6 +266,5 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
                 (Wrapper.minecraft.displayHeight - 1 - Mouse.getY()) / scaleFactor
             )
         }
-
     }
 }
