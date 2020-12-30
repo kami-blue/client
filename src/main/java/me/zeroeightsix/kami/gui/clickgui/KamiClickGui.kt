@@ -14,15 +14,37 @@ import org.lwjgl.input.Keyboard
 
 object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
 
+    private val moduleWindows = ArrayList<ListWindow>()
+
     init {
-        val allButtons = ModuleManager.getModules().map { ModuleButton(it) }
+        val allButtons = ModuleManager.getModules()
+            .groupBy { it.category.displayName }
+            .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
+
         var posX = 10.0f
 
-        for (category in Module.Category.values()) {
-            val buttons = allButtons.filter { it.module.category == category }.toTypedArray()
-            if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.displayName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.CLICK_GUI, *buttons))
+        for ((category, buttons) in allButtons) {
+            val window = ListWindow(category, posX, 10.0f, 100.0f, 300.0f, Component.SettingGroup.CLICK_GUI)
+
+            window.children.addAll(buttons)
+            moduleWindows.add(window)
+
             posX += 110.0f
+        }
+
+        windowList.addAll(moduleWindows)
+    }
+
+    override fun onDisplayed() {
+        super.onDisplayed()
+
+        val allButtons = ModuleManager.getModules()
+            .groupBy { it.category.displayName }
+            .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
+
+        moduleWindows.forEach { window ->
+            window.children.clear()
+            allButtons[window.originalName]?.let { window.children.addAll(it) }
         }
     }
 

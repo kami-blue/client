@@ -17,7 +17,7 @@ abstract class SettingWindow<T : Any>(
     posX: Float,
     posY: Float,
     settingGroup: SettingGroup
-) : ListWindow(name, posX, posY, 100.0f, 200.0f, settingGroup) {
+) : ListWindow(name, posX, posY, 150.0f, 200.0f, settingGroup) {
 
     override val minWidth: Float get() = 100.0f
     override val minHeight: Float get() = draggableHeight

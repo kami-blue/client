@@ -96,7 +96,7 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
     abstract fun newSettingWindow(element: E, mousePos: Vec2f): S
 
     // Gui init
-    fun onDisplayed() {
+    open fun onDisplayed() {
         for (window in windowList) window.onDisplayed()
     }
 
