@@ -1,40 +1,33 @@
 package me.zeroeightsix.kami.manager
 
+import kotlinx.coroutines.Deferred
+import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.util.TimerUtils
 import org.kamiblue.commons.utils.ClassUtils
 
-object ManagerLoader {
+internal object ManagerLoader : AsyncLoader<List<Class<out Manager>>> {
+    override var deferred: Deferred<List<Class<out Manager>>>? = null
 
-    /** Thread for scanning managers during Forge pre-init */
-    private var preLoadingThread: Thread? = null
+    override fun preLoad0(): List<Class<out Manager>> {
+        val stopTimer = TimerUtils.StopTimer()
 
-    /** List for manager classes found during pre-loading */
-    private var managerClassList: List<Class<out Manager>>? = null
+        val list = ClassUtils.findClasses("me.zeroeightsix.kami.manager.managers", Manager::class.java)
+        val time = stopTimer.stop()
 
-    @JvmStatic
-    fun preLoad() {
-        preLoadingThread = Thread {
-            val stopTimer = TimerUtils.StopTimer()
-            managerClassList = ClassUtils.findClasses("me.zeroeightsix.kami.manager.managers", Manager::class.java)
-            val time = stopTimer.stop()
-            KamiMod.LOG.info("${managerClassList!!.size} manager(s) found, took ${time}ms")
-        }
-        preLoadingThread!!.name = "Managers Pre-Loading"
-        preLoadingThread!!.start()
+        KamiMod.LOG.info("${list.size} managers found, took ${time}ms")
+        return list
     }
 
-    @JvmStatic
-    fun load() {
-        preLoadingThread!!.join()
+    override fun load0(input: List<Class<out Manager>>) {
         val stopTimer = TimerUtils.StopTimer()
-        for (clazz in managerClassList!!) {
+
+        for (clazz in input) {
             ClassUtils.getInstance(clazz).also { KamiEventBus.subscribe(it) }
         }
+
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${managerClassList!!.size} managers loaded, took ${time}ms")
-        preLoadingThread = null
-        managerClassList = null
+        KamiMod.LOG.info("${input.size} managers loaded, took ${time}ms")
     }
 }

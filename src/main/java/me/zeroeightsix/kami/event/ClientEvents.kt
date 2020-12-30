@@ -1,5 +1,6 @@
-package me.zeroeightsix.kami.command
+package me.zeroeightsix.kami.event
 
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.PlayerControllerMP
@@ -23,7 +24,7 @@ open class ClientEvent : AbstractClientEvent() {
     final override val connection: NetHandlerPlayClient? = mc.connection
 }
 
-open class SafeClientEvent(
+open class SafeClientEvent internal constructor(
     override val world: WorldClient,
     override val player: EntityPlayerSP,
     override val playerController: PlayerControllerMP,
@@ -34,18 +35,10 @@ class ClientExecuteEvent(
     args: Array<String>
 ) : ClientEvent(), IExecuteEvent by ExecuteEvent(CommandManager, args)
 
-class SafeExecuteEvent(
+class SafeExecuteEvent internal constructor(
     world: WorldClient,
     player: EntityPlayerSP,
     playerController: PlayerControllerMP,
     connection: NetHandlerPlayClient,
     event: ClientExecuteEvent
 ) : SafeClientEvent(world, player, playerController, connection), IExecuteEvent by event
-
-fun ClientEvent.toSafe() =
-    if (world != null && player != null && playerController != null && connection != null) SafeClientEvent(world, player, playerController, connection)
-    else null
-
-fun ClientExecuteEvent.toSafe() =
-    if (world != null && player != null && playerController != null && connection != null) SafeExecuteEvent(world, player, playerController, connection, this)
-    else null

@@ -1,8 +1,5 @@
 package me.zeroeightsix.kami.module
 
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
@@ -28,21 +25,21 @@ open class Module {
 
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Info(
-            val name: String,
-            val alias: Array<String> = [],
-            val description: String,
-            val category: Category,
-            val modulePriority: Int = -1,
-            val alwaysListening: Boolean = false,
-            val showOnArray: Boolean = true,
-            val alwaysEnabled: Boolean = false,
-            val enabledByDefault: Boolean = false
+        val name: String,
+        val alias: Array<String> = [],
+        val description: String,
+        val category: Category,
+        val modulePriority: Int = -1,
+        val alwaysListening: Boolean = false,
+        val showOnArray: Boolean = true,
+        val alwaysEnabled: Boolean = false,
+        val enabledByDefault: Boolean = false
     )
 
     /**
      * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
      */
-    enum class Category(override val displayName: String): DisplayEnum {
+    enum class Category(override val displayName: String) : DisplayEnum {
         CHAT("Chat"),
         CLIENT("Client"),
         COMBAT("Combat"),
@@ -154,6 +151,5 @@ open class Module {
 
     protected companion object {
         @JvmField val mc: Minecraft = Minecraft.getMinecraft()
-        val moduleScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Module"))
     }
 }

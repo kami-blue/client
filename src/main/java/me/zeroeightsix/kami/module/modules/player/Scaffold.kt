@@ -16,6 +16,8 @@ import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.server.SPacketPlayerPosLook
@@ -141,7 +143,7 @@ object Scaffold : Module() {
 
             if (placeTimer.tick(delay.value.toLong())) {
                 val shouldSneak = sneak.value && !mc.player.isSneaking
-                moduleScope.launch {
+                defaultScope.launch {
                     if (shouldSneak) {
                         mc.player?.let {
                             it.connection.sendPacket(CPacketEntityAction(it, CPacketEntityAction.Action.START_SNEAKING))
