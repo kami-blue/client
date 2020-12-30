@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.speed
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
@@ -38,7 +39,7 @@ object Criticals : Module() {
                 val target = it.packet.getEntityFromWorld(mc.world)
                 if (target == null || target !is EntityLivingBase) return@listener
                 mc.player.isSprinting = false
-                if (MovementUtils.getSpeed() > 0.2) MovementUtils.setSpeed(0.2)
+                if (mc.player.speed > 0.2) MovementUtils.setSpeed(0.2)
                 if (mode.value == CriticalMode.PACKET) {
                     packetMode()
                 } else {
@@ -53,7 +54,7 @@ object Criticals : Module() {
             /* Sends attack packet and swing packet when falling */
             if (mode.value == CriticalMode.DELAY && delayTick != 0) {
                 mc.player.isSprinting = false
-                if (MovementUtils.getSpeed() > 0.2) MovementUtils.setSpeed(0.2)
+                if (mc.player.speed > 0.2) MovementUtils.setSpeed(0.2)
                 if (mc.player.motionY < -0.1 && delayTick in 1..15) {
                     sendingPacket = true
                     mc.connection!!.sendPacket(attackPacket)

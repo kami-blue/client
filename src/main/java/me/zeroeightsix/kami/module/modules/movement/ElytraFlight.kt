@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
 import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -213,7 +214,7 @@ object ElytraFlight : Module() {
         if (shouldSwing()) {
             mc.player.prevLimbSwingAmount = mc.player.limbSwingAmount
             mc.player.limbSwing += swingSpeed.value
-            val speedRatio = (MovementUtils.getSpeed() / getSettingSpeed()).toFloat()
+            val speedRatio = (mc.player.speed / getSettingSpeed()).toFloat()
             mc.player.limbSwingAmount += ((speedRatio * swingAmount.value) - mc.player.limbSwingAmount) * 0.4f
         }
     }

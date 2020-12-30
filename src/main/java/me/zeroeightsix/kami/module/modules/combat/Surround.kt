@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -20,6 +20,8 @@ import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
 import org.kamiblue.event.listener.listener
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -115,7 +117,7 @@ object Surround : Module() {
         }
     }
 
-    private fun inHoleCheck() = mc.player.onGround && MovementUtils.getSpeed() < 0.15 && SurroundUtils.checkHole(mc.player) == SurroundUtils.HoleType.OBBY
+    private fun inHoleCheck() = mc.player.onGround && mc.player.speed < 0.15 && SurroundUtils.checkHole(mc.player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
         if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
