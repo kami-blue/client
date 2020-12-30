@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.plugin.PluginManager
 import me.zeroeightsix.kami.util.threads.mainScope
 
 internal object LoaderWrapper {
@@ -15,6 +16,7 @@ internal object LoaderWrapper {
         loaderList.add(ModuleManager)
         loaderList.add(CommandManager)
         loaderList.add(ManagerLoader)
+        loaderList.add(PluginManager)
     }
 
     @JvmStatic
@@ -30,7 +32,7 @@ internal object LoaderWrapper {
     }
 }
 
-interface AsyncLoader<T> {
+internal interface AsyncLoader<T> {
     var deferred: Deferred<T>?
 
     fun preLoad() {

@@ -76,7 +76,7 @@ object PluginCommand : ClientCommand(
 
                 ConfigUtils.saveAll()
                 PluginManager.unloadAll()
-                PluginManager.loadAll(PluginManager.preLoad())
+                PluginManager.loadAll(PluginManager.getLoaders())
                 ConfigUtils.loadAll()
 
                 val stopTime = System.currentTimeMillis() - time

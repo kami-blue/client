@@ -26,7 +26,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
         val stopTimer = TimerUtils.StopTimer()
 
         for (clazz in input) {
-            moduleMap[clazz] = ClassUtils.getInstance(clazz)
+            register(ClassUtils.getInstance(clazz))
         }
 
         val time = stopTimer.stop()

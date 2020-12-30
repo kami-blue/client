@@ -1,16 +1,15 @@
 package me.zeroeightsix.kami.plugin
 
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.mainScope
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File
 import java.io.FileNotFoundException
 
-internal object PluginManager {
+internal object PluginManager : AsyncLoader<List<PluginLoader>> {
+    override var deferred: Deferred<List<PluginLoader>>? = null
 
     val loadedPlugins = NameableSet<Plugin>()
     val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
@@ -19,21 +18,14 @@ internal object PluginManager {
 
     private val lockObject = Any()
     private val kamiVersion = DefaultArtifactVersion(KamiMod.VERSION_MAJOR)
-    private lateinit var deferred: Deferred<List<PluginLoader>>
 
-    fun preInit() {
-        deferred = mainScope.async {
-            preLoad()
-        }
+    override fun preLoad0() = getLoaders()
+
+    override fun load0(input: List<PluginLoader>) {
+        loadAll(input)
     }
 
-    fun init() {
-        runBlocking {
-            loadAll(deferred.await())
-        }
-    }
-
-    fun preLoad(): List<PluginLoader> {
+    fun getLoaders(): List<PluginLoader> {
         val dir = File(pluginPath)
         if (!dir.exists()) dir.mkdir()
 
