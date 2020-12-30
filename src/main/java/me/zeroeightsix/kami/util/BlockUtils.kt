@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.threads.runSafeSuspend
 import net.minecraft.client.Minecraft
+import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.client.CPacketPlayer
@@ -17,6 +18,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.add
 import kotlin.math.floor
 
 /**
@@ -25,7 +27,7 @@ import kotlin.math.floor
  * Updated by Xiaro on 22/08/20
  */
 object BlockUtils {
-    val blackList = listOf(
+    val blackList = linkedSetOf(
         Blocks.ENDER_CHEST,
         Blocks.CHEST,
         Blocks.TRAPPED_CHEST,
@@ -39,7 +41,7 @@ object BlockUtils {
         Blocks.ENCHANTING_TABLE
     )
 
-    val shulkerList = listOf(
+    val shulkerList = linkedSetOf(
         Blocks.WHITE_SHULKER_BOX,
         Blocks.ORANGE_SHULKER_BOX,
         Blocks.MAGENTA_SHULKER_BOX,
@@ -60,20 +62,56 @@ object BlockUtils {
 
     private val mc = Minecraft.getMinecraft()
 
-    @JvmStatic
-    fun faceVectorPacketInstant(vec: Vec3d) {
-        val rotation = RotationUtils.getRotationTo(vec, true)
-        mc.player.connection.sendPacket(CPacketPlayer.Rotation(rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround))
+    fun isLiquidBelow(entity: Entity = mc.player): Boolean {
+        val results = rayTraceBoundingBoxToGround(entity, true)
+        if (results.all { it.typeOfHit == RayTraceResult.Type.MISS || it.hitVec?.y ?: 911.0 < 0.0 }) {
+            return true
+        }
+
+        val pos = results.maxByOrNull { it.hitVec?.y ?: -69420.0 }?.blockPos ?: return false
+        return isLiquid(pos)
     }
 
-    fun hasNeighbour(blockPos: BlockPos): Boolean {
-        for (side in EnumFacing.values()) {
-            val neighbour = blockPos.offset(side)
-            if (!mc.world.getBlockState(neighbour).material.isReplaceable) {
-                return true
+    fun getGroundPos(entity: Entity = mc.player): Vec3d {
+        val results = rayTraceBoundingBoxToGround(entity, false)
+        if (results.all { it.typeOfHit == RayTraceResult.Type.MISS || it.hitVec?.y ?: 911.0 < 0.0 }) {
+            return Vec3d(0.0, -999.0, 0.0)
+        }
+
+        return results.maxByOrNull { it.hitVec?.y ?: -69420.0 }?.hitVec ?: entity.positionVector
+    }
+
+    private fun rayTraceBoundingBoxToGround(entity: Entity, stopOnLiquid: Boolean): List<RayTraceResult> {
+        val boundingBox = entity.entityBoundingBox
+        val xArray = arrayOf(floor(boundingBox.minX), floor(boundingBox.maxX))
+        val zArray = arrayOf(floor(boundingBox.minZ), floor(boundingBox.maxZ))
+
+        val results = ArrayList<RayTraceResult>(4)
+
+        for (x in xArray) {
+            for (z in zArray) {
+                val result = rayTraceToGround(Vec3d(x, boundingBox.minY, z), stopOnLiquid)
+                results.add(result)
             }
         }
-        return false
+
+        return results
+    }
+
+    private fun rayTraceToGround(vec3d: Vec3d, stopOnLiquid: Boolean): RayTraceResult? {
+        return mc.world.rayTraceBlocks(vec3d, Vec3d(vec3d.x, -1.0, vec3d.z), stopOnLiquid, true, false)
+    }
+
+    fun isLiquid(pos: BlockPos): Boolean {
+        return mc.world.getBlockState(pos).material.isLiquid
+    }
+
+    fun isWater(pos: BlockPos): Boolean {
+        return mc.world.getBlockState(pos).block == Blocks.WATER
+    }
+
+    fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
+        return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
     }
 
     fun getHitSide(blockPos: BlockPos): EnumFacing {
@@ -88,49 +126,6 @@ object BlockUtils {
     fun getHitVecOffset(facing: EnumFacing): Vec3d {
         val vec = facing.directionVec
         return Vec3d(vec.x * 0.5 + 0.5, vec.y * 0.5 + 0.5, vec.z * 0.5 + 0.5)
-    }
-
-    /**
-     * @return true if there is liquid below
-     */
-    fun checkForLiquid(): Boolean {
-        return getGroundPosY(true) == -999.0
-    }
-
-    /**
-     * Get the height of the ground surface below, and check for liquid if [checkLiquid] is true
-     *
-     * @return The y position of the ground surface, -999.0 if found liquid below and [checkLiquid]
-     * is true or player is above the void
-     */
-    fun getGroundPosY(checkLiquid: Boolean): Double {
-        val boundingBox = mc.player.entityBoundingBox
-        var yOffset = mc.player.posY - boundingBox.minY
-        val xArray = arrayOf(floor(boundingBox.minX).toInt(), floor(boundingBox.maxX).toInt())
-        val zArray = arrayOf(floor(boundingBox.minZ).toInt(), floor(boundingBox.maxZ).toInt())
-        while (!mc.world.collidesWithAnyBlock(boundingBox.offset(0.0, yOffset, 0.0))) {
-            if (checkLiquid) {
-                for (x in 0..1) for (z in 0..1) {
-                    val blockPos = BlockPos(xArray[x], (mc.player.posY + yOffset).toInt(), zArray[z])
-                    if (isLiquid(blockPos)) return -999.0
-                }
-            }
-            yOffset -= 0.05
-            if (mc.player.posY + yOffset < 0.0f) return -999.0
-        }
-        return boundingBox.offset(0.0, yOffset + 0.05, 0.0).minY
-    }
-
-    fun isLiquid(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).material.isLiquid
-    }
-
-    fun isWater(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).block == Blocks.WATER
-    }
-
-    fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
-        return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
     }
 
     /**
@@ -150,7 +145,10 @@ object BlockUtils {
         return isPlaceable(pos) && !mc.world.getBlockState(pos.down()).material.isReplaceable && mc.world.isAirBlock(pos.up())
     }
 
-    suspend fun buildStructure(placeSpeed: Float, getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?) {
+    suspend fun buildStructure(
+        placeSpeed: Float,
+        getPlaceInfo: (HashSet<BlockPos>) -> Pair<EnumFacing, BlockPos>?
+    ) {
         val emptyHashSet = HashSet<BlockPos>()
         val placed = HashSet<BlockPos>()
         var placeCount = 0
@@ -169,7 +167,19 @@ object BlockUtils {
         }
     }
 
-    fun getPlaceInfo(center: BlockPos?, structureOffset: Array<BlockPos>, toIgnore: HashSet<BlockPos>, maxAttempts: Int, attempts: Int = 1): Pair<EnumFacing, BlockPos>? {
+    fun hasNeighbour(blockPos: BlockPos): Boolean {
+        return EnumFacing.values().any {
+            !mc.world.getBlockState(blockPos.offset(it)).material.isReplaceable
+        }
+    }
+
+    fun getPlaceInfo(
+        center: BlockPos?,
+        structureOffset: Array<BlockPos>,
+        toIgnore: HashSet<BlockPos>,
+        maxAttempts: Int,
+        attempts: Int = 1
+    ): Pair<EnumFacing, BlockPos>? {
         center?.let {
             for (offset in structureOffset) {
                 val pos = it.add(offset)
@@ -210,7 +220,11 @@ object BlockUtils {
     /**
      * Placing function for multithreading only
      */
-    suspend fun SafeClientEvent.doPlace(pos: BlockPos, facing: EnumFacing, placeSpeed: Float) {
+    suspend fun SafeClientEvent.doPlace(
+        pos: BlockPos,
+        facing: EnumFacing,
+        placeSpeed: Float
+    ) {
         val hitVecOffset = getHitVecOffset(facing)
         val rotation = RotationUtils.getRotationTo(Vec3d(pos).add(hitVecOffset), true)
         val rotationPacket = CPacketPlayer.PositionRotation(mc.player.posX, mc.player.posY, mc.player.posZ, rotation.x.toFloat(), rotation.y.toFloat(), mc.player.onGround)
@@ -218,6 +232,7 @@ object BlockUtils {
 
         connection.sendPacket(rotationPacket)
         delay((40f / placeSpeed).toLong())
+
         connection.sendPacket(placePacket)
         player.swingArm(EnumHand.MAIN_HAND)
         delay((10f / placeSpeed).toLong())
@@ -226,7 +241,10 @@ object BlockUtils {
     /**
      * Placing block without desync
      */
-    fun SafeClientEvent.placeBlock(pos: BlockPos, side: EnumFacing) {
+    fun SafeClientEvent.placeBlock(
+        pos: BlockPos,
+        side: EnumFacing
+    ) {
         if (!isPlaceable(pos.offset(side))) return
 
         val hitVecOffset = getHitVecOffset(side)

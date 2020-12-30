@@ -71,7 +71,7 @@ object NoFall : Module() {
         }
     }
 
-    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || BlockUtils.getGroundPosY(false) == -999.0
+    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || BlockUtils.getGroundPos().y == -999.0
 
     private fun fallMode() {
         if (fallModeSetting.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {

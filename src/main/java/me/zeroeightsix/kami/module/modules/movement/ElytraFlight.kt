@@ -11,8 +11,8 @@ import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils.checkForLiquid
-import me.zeroeightsix.kami.util.BlockUtils.getGroundPosY
+import me.zeroeightsix.kami.util.BlockUtils.getGroundPos
+import me.zeroeightsix.kami.util.BlockUtils.isLiquidBelow
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -245,7 +245,7 @@ object ElytraFlight : Module() {
                 autoLanding.value = false
                 return
             }
-            checkForLiquid() -> {
+            isLiquidBelow() -> {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
@@ -259,9 +259,9 @@ object ElytraFlight : Module() {
             }
             else -> {
                 when {
-                    mc.player.posY > getGroundPosY(false) + 1.0 -> {
+                    mc.player.posY > getGroundPos().y + 1.0 -> {
                         mc.timer.tickLength = 50.0f
-                        mc.player.motionY = max(min(-(mc.player.posY - getGroundPosY(false)) / 20.0, -0.5), -5.0)
+                        mc.player.motionY = max(min(-(mc.player.posY - getGroundPos().y) / 20.0, -0.5), -5.0)
                     }
                     mc.player.motionY != 0.0 -> { /* Pause falling to reset fall distance */
                         if (!mc.isSingleplayer) mc.timer.tickLength = 200.0f /* Use timer to pause longer */
@@ -282,9 +282,9 @@ object ElytraFlight : Module() {
         /* Pause Takeoff if server is lagging, player is in water/lava, or player is on ground */
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
-        val closeToGround = mc.player.posY <= getGroundPosY(false) + height && !wasInLiquid && !mc.isSingleplayer
+        val closeToGround = mc.player.posY <= getGroundPos().y + height && !wasInLiquid && !mc.isSingleplayer
         if (!easyTakeOff.value || LagNotifier.paused || mc.player.onGround) {
-            if (LagNotifier.paused && mc.player.posY - getGroundPosY(false) > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+            if (LagNotifier.paused && mc.player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
             return
         }
