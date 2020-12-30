@@ -1,37 +1,47 @@
 package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.*
+import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.onMainThread
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThread
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
 import org.kamiblue.commons.utils.ClassUtils
 
-object CommandManager : AbstractCommandManager<ClientExecuteEvent>() {
-
-    val commandScope = CoroutineScope(Dispatchers.Default + CoroutineName("KAMI Blue Command"))
+object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoader<List<Class<out ClientCommand>>> {
+    override var deferred: Deferred<List<Class<out ClientCommand>>>? = null
     val prefix: String get() = CommandConfig.prefix.value
 
-    @JvmStatic
-    fun init() {
+    override fun preLoad0(): List<Class<out ClientCommand>> {
         val stopTimer = TimerUtils.StopTimer()
-        val commandClasses = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
 
-        for (clazz in commandClasses) {
+        val list = ClassUtils.findClasses("me.zeroeightsix.kami.command.commands", ClientCommand::class.java)
+        val time = stopTimer.stop()
+
+        KamiMod.LOG.info("${list.size} commands found, took ${time}ms")
+        return list
+    }
+
+    override fun load0(input: List<Class<out ClientCommand>>) {
+        val stopTimer = TimerUtils.StopTimer()
+
+        for (clazz in input) {
             register(ClassUtils.getInstance(clazz))
         }
 
         val time = stopTimer.stop()
-        KamiMod.LOG.info("${getCommands().size} commands loaded, took ${time}ms")
+        KamiMod.LOG.info("${input.size} commands loaded, took ${time}ms")
     }
 
     fun runCommand(string: String) {
-        commandScope.launch {
+        defaultScope.launch {
             val args = tryParseArgument(string) ?: return@launch
             KamiMod.LOG.debug("Running command with args: [${args.joinToString()}]")
 

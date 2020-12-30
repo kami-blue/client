@@ -1,14 +1,17 @@
 package me.zeroeightsix.kami;
 
+import com.google.common.base.Converter;
+import com.google.gson.JsonObject;
 import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.GuiManager;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
+import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -20,9 +23,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(
-        modid = KamiMod.ID,
-        name = KamiMod.NAME,
-        version = KamiMod.VERSION
+    modid = KamiMod.ID,
+    name = KamiMod.NAME,
+    version = KamiMod.VERSION
 )
 public class KamiMod {
 
@@ -46,21 +49,17 @@ public class KamiMod {
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");
 
     @Mod.Instance
-    public static KamiMod INSTANCE;
-    public static Thread MAIN_THREAD;
+    public static final KamiMod INSTANCE = new KamiMod();
 
     private static boolean ready = false;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
 
-        MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
-        ModuleManager.preLoad();
-        ManagerLoader.preLoad();
+        LoaderWrapper.preLoadAll();
         GuiManager.preLoad();
     }
 
@@ -68,10 +67,8 @@ public class KamiMod {
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        ModuleManager.load();
-        ManagerLoader.load();
+        LoaderWrapper.loadAll();
         GuiManager.load();
-        CommandManager.init();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
@@ -82,6 +79,8 @@ public class KamiMod {
             if (module.getAlwaysListening()) KamiEventBus.INSTANCE.subscribe(module);
             if (module.isEnabled()) module.enable();
         }
+
+        BackgroundScope.INSTANCE.start();
 
         LOG.info(NAME + " Mod initialized!");
     }

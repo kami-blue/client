@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
@@ -39,7 +40,7 @@ object CustomFont : Module() {
 
     init {
         fontName.listeners.add {
-            if (Thread.currentThread() == KamiMod.MAIN_THREAD) KamiFontRenderer.reloadFonts()
+            if (mc.isCallingFromMinecraftThread) KamiFontRenderer.reloadFonts()
         }
     }
 }
