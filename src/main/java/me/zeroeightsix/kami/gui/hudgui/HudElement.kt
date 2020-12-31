@@ -20,7 +20,7 @@ open class HudElement(
     val category: Category,
     val description: String,
     val alwaysListening: Boolean = false,
-    val enabledByDefault: Boolean = false
+    enabledByDefault: Boolean = false
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
     override val resizable = false
@@ -63,8 +63,12 @@ open class HudElement(
 
     init {
         visibleSetting.valueListeners.add { _, it ->
-            if (it) KamiEventBus.subscribe(this)
-            else if (!alwaysListening) KamiEventBus.unsubscribe(this)
+            if (it) {
+                KamiEventBus.subscribe(this)
+                lastActiveTime = System.currentTimeMillis()
+            } else if (!alwaysListening) {
+                KamiEventBus.unsubscribe(this)
+            }
         }
 
         if (!enabledByDefault) visible = false
