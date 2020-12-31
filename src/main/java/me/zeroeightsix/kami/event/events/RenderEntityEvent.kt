@@ -12,7 +12,7 @@ open class RenderEntityEvent(
         val y: Double,
         val z: Double,
         val yaw: Float,
-        override val partialTicks: Float,
+        val partialTicks: Float,
         val debug: Boolean
 ) : KamiEvent() {
 

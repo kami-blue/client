@@ -28,7 +28,7 @@ public class MixinRenderManager {
     public void renderEntityPre(Entity entity, double x, double y, double z, float yaw, float partialTicks, boolean debug, CallbackInfo ci) {
         RenderEntityEvent.Pre event = new RenderEntityEvent.Pre(entity, x, y, z, yaw, partialTicks, debug);
         KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) ci.cancel();
+        if (event.getCancelled()) ci.cancel();
     }
 
     // Weird way around because don't wanna mess up with shadow and hitbox rendering

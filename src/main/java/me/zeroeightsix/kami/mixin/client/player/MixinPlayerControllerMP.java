@@ -29,7 +29,7 @@ public class MixinPlayerControllerMP {
         if (targetEntity == null) return;
         ClientPlayerAttackEvent event = new ClientPlayerAttackEvent(targetEntity);
         KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             ci.cancel();
         }
     }

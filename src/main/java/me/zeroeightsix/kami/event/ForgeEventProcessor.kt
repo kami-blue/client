@@ -62,13 +62,11 @@ object ForgeEventProcessor {
         ProjectionUtils.updateMatrix()
 
         mc.profiler.startSection("KamiWorldRender")
+
         KamiTessellator.prepareGL()
-        val renderWorldEvent = RenderWorldEvent(KamiTessellator, event.partialTicks)
-        renderWorldEvent.setupTranslation()
-
-        KamiEventBus.post(renderWorldEvent)
-
+        KamiEventBus.post(RenderWorldEvent())
         KamiTessellator.releaseGL()
+
         mc.profiler.endSection()
     }
 

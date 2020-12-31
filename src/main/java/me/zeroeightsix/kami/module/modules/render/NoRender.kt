@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.*
@@ -19,6 +18,7 @@ import net.minecraft.tileentity.*
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
     name = "NoRender",
@@ -90,7 +90,7 @@ object NoRender : Module() {
             ) it.cancel()
 
             if (it.packet is SPacketSpawnObject) {
-                it.isCancelled = when (it.packet.type) {
+                it.cancelled = when (it.packet.type) {
                     71 -> packets.value && itemFrame.value
                     78 -> packets.value && armorStand.value
                     51 -> packets.value && crystal.value

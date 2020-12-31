@@ -23,7 +23,7 @@ public class MixinEntity {
     public void addVelocity(Entity entity, double x, double y, double z) {
         EntityEvent.EntityCollision entityCollisionEvent = new EntityEvent.EntityCollision(entity, x, y, z);
         KamiEventBus.INSTANCE.post(entityCollisionEvent);
-        if (entityCollisionEvent.isCancelled()) return;
+        if (entityCollisionEvent.getCancelled()) return;
 
         entity.motionX += x;
         entity.motionY += y;

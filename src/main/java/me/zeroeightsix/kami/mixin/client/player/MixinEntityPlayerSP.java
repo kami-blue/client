@@ -86,7 +86,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     public void move(MoverType type, double x, double y, double z, CallbackInfo info) {
         PlayerMoveEvent event = new PlayerMoveEvent(type, x, y, z);
         KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) info.cancel();
+        if (event.getCancelled()) info.cancel();
     }
 
     @ModifyArg(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;setSprinting(Z)V"), index = 0)
@@ -127,7 +127,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         event.setEra(KamiEvent.Era.PERI);
         KamiEventBus.INSTANCE.post(event);
 
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             ci.cancel();
 
             ++this.positionUpdateTicks;

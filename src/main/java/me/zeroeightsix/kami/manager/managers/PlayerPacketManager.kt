@@ -64,7 +64,7 @@ object PlayerPacketManager : Manager {
         }
 
         listener<PacketEvent.PostSend>(-6969) {
-            if (it.isCancelled) return@listener
+            if (it.cancelled) return@listener
             if (it.packet is CPacketPlayer) {
                 if (it.packet.moving) {
                     serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
