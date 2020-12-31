@@ -9,10 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.ViewFrustum;
 import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -34,7 +32,6 @@ public abstract class MixinRenderGlobal {
 
     private Minecraft mc = Minecraft.getMinecraft();
 
-
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks, CallbackInfo ci) {
         if (SelectionHighlight.INSTANCE.isEnabled() && SelectionHighlight.INSTANCE.getBlock().getValue()) {
@@ -48,7 +45,7 @@ public abstract class MixinRenderGlobal {
         KamiEventBus.INSTANCE.post(event);
     }
 
-    //cant use @ModifyVariable here because it crashes outside devenv with optifine or im too stupid
+    // Can't use @ModifyVariable here because it crashes outside of a dev env with Optifine
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;getRenderChunkOffset(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/chunk/RenderChunk;Lnet/minecraft/util/EnumFacing;)Lnet/minecraft/client/renderer/chunk/RenderChunk;"))
     public RenderChunk test(RenderGlobal renderGlobal, BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing) {
         if (Freecam.INSTANCE.isEnabled()) {
@@ -56,8 +53,10 @@ public abstract class MixinRenderGlobal {
                 MathHelper.floor(mc.player.posY / 16.0D) * 16,
                 MathHelper.floor(mc.player.posZ / 16.0D) * 16);
         }
-        //cant use a @shadow of getRenderChunkOffset because it crashes outside devenv with optifine or im too stupid
+
+        // Can't use a @Shadow of getRenderChunkOffset because it crashes outside of a dev env with Optifine
         BlockPos blockpos = renderChunkBase.getBlockPosOffset16(facing);
+
         if (MathHelper.abs(playerPos.getX() - blockpos.getX()) > this.renderDistanceChunks * 16) {
             return null;
         } else if (blockpos.getY() >= 0 && blockpos.getY() < 256) {
@@ -67,9 +66,10 @@ public abstract class MixinRenderGlobal {
         }
     }
 
-    // updateChunkPositions is called from loadrenderers too
-    // but as long as you dont change your renderdistance while in freecam loadrenderers wont be called
-    // one could add the same redirect for loadrenderers if needed
+    /*
+     * updateChunkPositions loadRenderers as well, but as long as you don't change your renderDistance in Freecam loadRenderers won't be called
+     * One could add the same redirect for loadRenderers if needed
+     */
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ViewFrustum;updateChunkPositions(DD)V"))
     public void updateSetupTerrain(ViewFrustum viewFrustum, double viewEntityX, double viewEntityZ) {
         if (Freecam.INSTANCE.isEnabled()) {
@@ -78,6 +78,4 @@ public abstract class MixinRenderGlobal {
         }
         viewFrustum.updateChunkPositions(viewEntityX, viewEntityZ);
     }
-
-
 }
