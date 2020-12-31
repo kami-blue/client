@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
@@ -44,7 +44,7 @@ object PlayerPacketManager : Manager {
 
     init {
         listener<OnUpdateWalkingPlayerEvent> {
-            if (it.era != KamiEvent.Era.PERI) return@listener
+            if (it.phase != Phase.PERI) return@listener
             if (packetList.isNotEmpty()) {
                 packetList.values.first().apply(it) // Apply the packet from the module that has the highest priority
                 packetList.clear()

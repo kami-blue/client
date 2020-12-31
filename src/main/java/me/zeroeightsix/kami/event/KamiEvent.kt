@@ -1,15 +1,9 @@
 package me.zeroeightsix.kami.event
 
-open class KamiEvent {
-    var era = Era.PRE
-
+open class KamiEvent() {
     var cancelled = false
 
     fun cancel() {
         cancelled = true
-    }
-
-    enum class Era {
-        PRE, PERI, POST
     }
 }

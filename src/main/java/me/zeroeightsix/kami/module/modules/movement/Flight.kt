@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
@@ -88,7 +88,7 @@ object Flight : Module() {
         }
 
         listener<OnUpdateWalkingPlayerEvent> {
-            if (mode.value != FlightMode.PACKET || it.era != KamiEvent.Era.PRE) return@listener
+            if (mode.value != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(moving = false, rotating = false))
         }
 
