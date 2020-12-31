@@ -5,15 +5,12 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.item.Item.getIdFromItem
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
-import kotlin.math.ceil
 
 @Module.Info(
         name = "InventoryManager",
@@ -78,7 +75,7 @@ object InventoryManager : Module() {
 
     private var currentState = State.IDLE
     private var paused = false
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val timer = TickTimer(TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && currentState != State.IDLE
@@ -168,7 +165,7 @@ object InventoryManager : Module() {
     /* Tasks */
     private fun saveItem() {
         val currentSlot = mc.player.inventory.currentItem
-        val currentItemID = getIdFromItem(mc.player.inventory.getCurrentItem().getItem())
+        val currentItemID = mc.player.inventory.getCurrentItem().item.id
 
         if (autoRefill.value && getUndamagedItem(currentItemID) != null) { /* Replaces item if autoRefill is on and a undamaged (not reached threshold) item found */
             val targetSlot = getUndamagedItem(currentItemID)!!
@@ -255,7 +252,7 @@ object InventoryManager : Module() {
         if (InventoryUtils.getSlotsNoHotbar(buildingBlockID.value) == null) return null
         for (i in 36..45) {
             val currentStack = mc.player.inventoryContainer.inventory[i]
-            if (getIdFromItem(currentStack.getItem()) != buildingBlockID.value) continue
+            if (currentStack.item.id != buildingBlockID.value) continue
             if (!currentStack.isStackable || currentStack.count >= currentStack.maxStackSize) continue
             return i
         }
@@ -265,11 +262,11 @@ object InventoryManager : Module() {
     private fun getRefillableSlot(): Int? {
         for (i in 36..45) {
             val currentStack = mc.player.inventoryContainer.inventory[i]
-            val stackTarget = ceil(currentStack.maxStackSize / 64.0f * refillThreshold.value).toInt()
+            val stackTarget = (currentStack.maxStackSize / 64.0f * refillThreshold.value).ceilToInt()
             if (currentStack.isEmpty) continue
             if (!currentStack.isStackable || currentStack.count > stackTarget) continue
-            if (getIdFromItem(currentStack.getItem()) == buildingBlockID.value && buildingMode.value) continue
-            if (ejectArrayList.contains(currentStack.getItem().registryName.toString()) && autoEject.value) continue
+            if (currentStack.item.id == buildingBlockID.value && buildingMode.value) continue
+            if (ejectArrayList.contains(currentStack.item.registryName.toString()) && autoEject.value) continue
             if (getCompatibleStack(currentStack) == null) continue
             return i
         }
@@ -277,7 +274,7 @@ object InventoryManager : Module() {
     }
 
     private fun getCompatibleStack(stack: ItemStack): Int? {
-        val slots = InventoryUtils.getSlotsFullInvNoHotbar(getIdFromItem(stack.getItem())) ?: return null
+        val slots = InventoryUtils.getSlotsFullInvNoHotbar(stack.item.id) ?: return null
         for (slot in slots) {
             if (isCompatibleStacks(stack, mc.player.inventoryContainer.inventory[slot])) return slot
         }
@@ -291,8 +288,8 @@ object InventoryManager : Module() {
     private fun getEjectSlot(): Int? {
         for (slot in 9..44) {
             val currentStack = mc.player.inventoryContainer.inventory[slot]
-            if (((getIdFromItem(currentStack.getItem()) != buildingBlockID.value && buildingMode.value) || !buildingMode.value) && /* Don't throw the building block */
-                    ejectArrayList.contains(currentStack.getItem().registryName.toString())) {
+            if (((currentStack.item.id != buildingBlockID.value && buildingMode.value) || !buildingMode.value) && /* Don't throw the building block */
+                    ejectArrayList.contains(currentStack.item.registryName.toString())) {
                 return slot
             }
         }

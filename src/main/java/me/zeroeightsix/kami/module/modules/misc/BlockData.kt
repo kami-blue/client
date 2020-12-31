@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
@@ -16,7 +16,7 @@ import org.lwjgl.input.Mouse
         description = "Right click blocks to display their data"
 )
 object BlockData : Module() {
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private var lastPos = BlockPos.ORIGIN
 
     init {

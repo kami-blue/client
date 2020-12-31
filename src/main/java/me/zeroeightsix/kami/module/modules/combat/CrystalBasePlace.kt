@@ -6,19 +6,14 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.block.Block
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -47,7 +42,7 @@ object CrystalBasePlace : Module() {
     private val range = register(Settings.floatBuilder("Range").withValue(4.0f).withRange(0.0f, 8.0f).withStep(0.5f))
     private val delay = register(Settings.integerBuilder("Delay").withValue(20).withRange(0, 50).withStep(5))
 
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }
     private var inactiveTicks = 0
     private var rotationTo: Vec3d? = null
@@ -97,8 +92,8 @@ object CrystalBasePlace : Module() {
 
             if (isActive()) {
                 rotationTo?.let { hitVec ->
-                    val rotation = RotationUtils.getRotationTo(hitVec, true)
-                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(rotation)))
+                    val rotation = RotationUtils.getRotationTo(hitVec)
+                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 }
             } else {
                 rotationTo = null
@@ -108,7 +103,7 @@ object CrystalBasePlace : Module() {
 
     private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
-    private fun isObby(itemStack: ItemStack) = Block.getBlockFromItem(itemStack.item) == Blocks.OBSIDIAN
+    private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
     private fun getObby(): Int? {
         val slots = InventoryUtils.getSlotsHotbar(49)
@@ -124,7 +119,7 @@ object CrystalBasePlace : Module() {
         if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
         val placeInfo = getPlaceInfo(entity)
         if (placeInfo != null) {
-            val offset = BlockUtils.getHitVecOffset(placeInfo.first)
+            val offset = WorldUtils.getHitVecOffset(placeInfo.first)
             val hitVec = Vec3d(placeInfo.second).add(offset)
             rotationTo = hitVec
             placePacket = CPacketPlayerTryUseItemOnBlock(placeInfo.second, placeInfo.first, EnumHand.MAIN_HAND, offset.x.toFloat(), offset.y.toFloat(), offset.z.toFloat())
@@ -143,16 +138,16 @@ object CrystalBasePlace : Module() {
         val eyePos = mc.player.getPositionEyes(1.0f)
         val posList = VectorUtils.getBlockPosInSphere(eyePos, range.value)
         val maxCurrentDamage = CombatManager.placeMap.entries
-            .filter { eyePos.distanceTo(it.key.toVec3d()) < range.value }
+            .filter { eyePos.distanceTo(it.key) < range.value }
             .map { it.value.first }
             .maxOrNull() ?: 0.0f
 
         for (pos in posList) {
             // Placeable check
-            if (!BlockUtils.isPlaceable(pos, false)) continue
+            if (!WorldUtils.isPlaceable(pos, false)) continue
 
             // Neighbour blocks check
-            if (!BlockUtils.hasNeighbour(pos)) continue
+            if (!WorldUtils.hasNeighbour(pos)) continue
 
             // Damage check
             val damage = calcDamage(pos, entity, prediction.first, prediction.second)
@@ -162,7 +157,7 @@ object CrystalBasePlace : Module() {
         }
 
         for (pos in cacheMap.values) {
-            return BlockUtils.getNeighbour(pos, 1) ?: continue
+            return WorldUtils.getNeighbour(pos, 1) ?: continue
         }
         return null
     }

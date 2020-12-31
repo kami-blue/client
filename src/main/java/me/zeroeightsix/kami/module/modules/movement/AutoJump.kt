@@ -3,7 +3,8 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -14,7 +15,7 @@ import org.kamiblue.event.listener.listener
 object AutoJump : Module() {
     private val delay = register(Settings.integerBuilder("TickDelay").withValue(10).withRange(0, 40).withStep(1))
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val timer = TickTimer(TimeUnit.TICKS)
 
     init {
         listener<SafeTickEvent> {

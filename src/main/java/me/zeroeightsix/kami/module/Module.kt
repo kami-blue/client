@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
+import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.input.Keyboard
 import java.util.*
 
@@ -52,15 +53,16 @@ open class Module {
      *
      * @see me.zeroeightsix.kami.module.modules.client.ActiveModules
      */
-    enum class Category(val categoryName: String, val isHidden: Boolean) {
-        CHAT("Chat", false),
-        COMBAT("Combat", false),
-        CLIENT("Client", false),
-        HIDDEN("Hidden", true),
-        MISC("Misc", false),
-        MOVEMENT("Movement", false),
-        PLAYER("Player", false),
-        RENDER("Render", false);
+    enum class Category(override val displayName: String): DisplayEnum {
+        CHAT("Chat"),
+        CLIENT("Client"),
+        COMBAT("Combat"),
+        MISC("Misc"),
+        MOVEMENT("Movement"),
+        PLAYER("Player"),
+        RENDER("Render");
+
+        override fun toString() = displayName
     }
     /* End of annotations */
 
@@ -85,7 +87,6 @@ open class Module {
     val bindName: String get() = if (bind.value.key < 1) "NONE" else Wrapper.getKeyName(bind.value.key)
     val chatName: String get() = "[${name.value}]"
     val isOnArray: Boolean get() = showOnArray.value == ShowOnArray.ON
-    val isProduction: Boolean get() = category != Category.HIDDEN
     /* End of properties */
 
 

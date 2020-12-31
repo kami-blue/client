@@ -4,7 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketUpdateHealth
@@ -61,7 +62,7 @@ object AutoExcuse : Module() {
             "Impact"
     )
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<PacketEvent.Receive> {

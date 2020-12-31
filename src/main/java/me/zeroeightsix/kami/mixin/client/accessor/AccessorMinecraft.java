@@ -9,22 +9,22 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Minecraft.class)
 public interface AccessorMinecraft {
 
-    @Accessor
+    @Accessor("timer")
     Timer getTimer();
 
-    @Accessor
+    @Accessor("renderPartialTicksPaused")
     float getRenderPartialTicksPaused();
 
-    @Accessor
+    @Accessor("rightClickDelayTimer")
     int getRightClickDelayTimer();
 
-    @Accessor
+    @Accessor("rightClickDelayTimer")
     void setRightClickDelayTimer(int value);
 
-    @Invoker
+    @Invoker("rightClickMouse")
     void invokeRightClickMouse();
 
-    @Invoker
+    @Invoker("sendClickBlockToController")
     void invokeSendClickBlockToController(boolean leftClick);
 
 }

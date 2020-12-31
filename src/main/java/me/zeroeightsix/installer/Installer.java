@@ -2,8 +2,7 @@ package me.zeroeightsix.installer;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.util.WebUtils;
-import me.zeroeightsix.kami.util.filesystem.FolderHelper;
-import me.zeroeightsix.kami.util.filesystem.OperatingSystemHelper;
+import me.zeroeightsix.kami.util.filesystem.FolderUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,19 +13,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * Created by humboldt123 on 14/07/20
- * Rewritten almost entirely by l1ving on 14/07/20
- * Added more background images by humboldt123 on 15/08/20
- */
 public class Installer extends JPanel {
-    String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
+    private final String[] downloadsAPI = WebUtils.INSTANCE.getUrlContents(KamiMod.DOWNLOADS_API).replace("\n", "").split("\"");
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main(String[] args) throws IOException {
         System.out.println("Ran the " + KamiMod.NAME + " " + KamiMod.VERSION + " installer!");
 
         /* ensure mods exists */
-        new File(getModsFolder()).mkdirs();
+        new File(FolderUtils.getModsFolder()).mkdirs();
 
         URL kamiLogo = Installer.class.getResource("/installer/kami.png");
         JFrame frame = new JFrame("KAMI Blue Installer");
@@ -42,11 +37,11 @@ public class Installer extends JPanel {
 
         if (!hasForge) {
             notify("Attention! It looks like Forge 1.12.2 is not installed. You need Forge 1.12.2 in order to use KAMI Blue. " +
-                    "Head to https://kamiblue.org/faq to get instructions for installing Forge");
+                "Head to https://kamiblue.org/faq to get instructions for installing Forge");
         }
         if (kamiJars != null) {
             notify("Attention! It looks like you had KAMI Blue installed before. Closing this popup will delete the older versions, " +
-                    "so if you want to save those jars you should go and make a copy somewhere else");
+                "so if you want to save those jars you should go and make a copy somewhere else");
             deleteKamiJars(kamiJars);
         }
     }
@@ -112,8 +107,8 @@ public class Installer extends JPanel {
         backgroundPane.setBounds(0, 0, 600, 355);
 
         stableButton.addActionListener(e -> {
-            stableButton.disable();
-            betaButton.disable();
+            stableButton.setEnabled(false);
+            betaButton.setEnabled(false);
             stableButtonIcon.setOpaque(false);
             betaButtonIcon.setOpaque(false);
             download(VersionType.STABLE);
@@ -122,8 +117,8 @@ public class Installer extends JPanel {
         });
 
         betaButton.addActionListener(e -> {
-            stableButton.disable();
-            betaButton.disable();
+            stableButton.setEnabled(false);
+            betaButton.setEnabled(false);
             stableButtonIcon.setOpaque(false);
             betaButtonIcon.setOpaque(false);
             download(VersionType.BETA);
@@ -149,7 +144,7 @@ public class Installer extends JPanel {
             dialog[0] = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION).createDialog(null, "KAMI Blue - Downloading");
             dialog[0].setResizable(false);
             dialog[0].setSize(300, 0);
-            dialog[0].show();
+            dialog[0].setVisible(true);
 //            notify("KAMI Blue is currently being downloaded, please wait")
         }).start();
 
@@ -157,16 +152,16 @@ public class Installer extends JPanel {
         System.out.println(KamiMod.NAME + " download started!");
         if (version == VersionType.STABLE) {
             try {
-                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], getModsFolder() + getFullJarName(downloadsAPI[9]));
-                dialog[0].hide();
+                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[9], FolderUtils.getModsFolder() + getFullJarName(downloadsAPI[9]));
+                dialog[0].dispose();
                 System.out.println(KamiMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
             }
         } else if (version == VersionType.BETA) {
             try {
-                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], getModsFolder() + getFullJarName(downloadsAPI[19]));
-                dialog[0].hide();
+                WebUtils.INSTANCE.downloadUsingNIO(downloadsAPI[19], FolderUtils.getModsFolder() + getFullJarName(downloadsAPI[19]));
+                dialog[0].dispose();
                 System.out.println(KamiMod.NAME + " download finished!");
             } catch (IOException e) {
                 notifyAndExitWeb(e);
@@ -183,6 +178,7 @@ public class Installer extends JPanel {
      *
      * @param files list of KAMI jar Files
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void deleteKamiJars(ArrayList<File> files) {
         for (File file : files) {
             file.delete();
@@ -193,7 +189,7 @@ public class Installer extends JPanel {
      * @return null if there were no KAMI jars, otherwise returns a list of files to delete
      */
     private static ArrayList<File> getKamiJars() {
-        File mods = new File(getModsFolder());
+        File mods = new File(FolderUtils.getModsFolder());
         File[] files = mods.listFiles();
         ArrayList<File> foundFiles = new ArrayList<>();
         boolean found = false;
@@ -216,7 +212,7 @@ public class Installer extends JPanel {
      * @return true if Forge is installed
      */
     private static boolean checkForForge() {
-        File ver = new File(getVersionsFolder());
+        File ver = new File(FolderUtils.getVersionsFolder());
         File[] files = ver.listFiles();
         boolean found = false;
 
@@ -233,18 +229,6 @@ public class Installer extends JPanel {
      */
     private static void notify(String message) {
         JOptionPane.showMessageDialog(null, message);
-    }
-
-    private static String getVersionsFolder() {
-        return FolderHelper.INSTANCE.getVersionsFolder(OperatingSystemHelper.INSTANCE.getOS());
-    }
-
-    private static String getModsFolder() {
-        return FolderHelper.INSTANCE.getModsFolder(OperatingSystemHelper.INSTANCE.getOS());
-    }
-
-    private static String getMinecraftFolder() {
-        return FolderHelper.INSTANCE.getMinecraftFolder(OperatingSystemHelper.INSTANCE.getOS());
     }
 
     /**

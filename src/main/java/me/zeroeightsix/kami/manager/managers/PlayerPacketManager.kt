@@ -11,14 +11,16 @@ import me.zeroeightsix.kami.mixin.client.accessor.*
 import me.zeroeightsix.kami.mixin.client.accessor.network.*
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.math.Vec2f
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 object PlayerPacketManager : Manager {
@@ -38,7 +40,7 @@ object PlayerPacketManager : Manager {
     var lastSwapTime = 0L; private set
 
     private var spoofingHotbar = false
-    private var hotbarResetTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var hotbarResetTimer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<OnUpdateWalkingPlayerEvent> {
@@ -49,16 +51,16 @@ object PlayerPacketManager : Manager {
             }
         }
 
-        listener<PacketEvent.Send> {
-                if (it.packet is CPacketHeldItemChange) {
-                    if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
-                        if (hotbarResetTimer.tick(2L)) {
-                            spoofingHotbar = false
-                        } else {
-                            it.cancel()
-                        }
+        listener<PacketEvent.Send>(-69420) {
+            if (it.packet is CPacketHeldItemChange) {
+                if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
+                    if (hotbarResetTimer.tick(2L)) {
+                        spoofingHotbar = false
+                    } else {
+                        it.cancel()
                     }
                 }
+            }
         }
 
         listener<PacketEvent.PostSend>(-6969) {
@@ -113,11 +115,14 @@ object PlayerPacketManager : Manager {
         packetList[caller] = packet
     }
 
+    fun getHoldingItemStack(): ItemStack =
+        Wrapper.player?.inventory?.mainInventory?.get(serverSideHotbar) ?: ItemStack.EMPTY
+
     fun spoofHotbar(slot: Int) {
         Wrapper.minecraft.connection?.let {
             if (serverSideHotbar != slot) {
-                it.sendPacket(CPacketHeldItemChange(slot))
                 serverSideHotbar = slot
+                it.sendPacket(CPacketHeldItemChange(slot))
                 spoofingHotbar = true
             }
             hotbarResetTimer.reset()

@@ -8,10 +8,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting.SettingListeners
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.world.chunk.Chunk
@@ -25,7 +27,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.sqrt
 
 @Module.Info(
         name = "NewChunks",
@@ -53,7 +54,7 @@ object NewChunks : Module() {
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
+    private val timer = TickTimer(TimeUnit.MINUTES)
     val chunks = HashSet<Chunk>()
 
     override fun onDisable() {
@@ -82,7 +83,7 @@ object NewChunks : Module() {
             val color = if (customColor.value) ColorHolder(red.value, green.value, blue.value) else ColorHolder(155, 144, 255)
             val buffer = KamiTessellator.buffer
             for (chunk in chunks) {
-                if (sqrt(chunk.pos.getDistanceSq(mc.player)) > range.value) continue
+                if (mc.player.distanceTo(chunk.pos) > range.value) continue
                 KamiTessellator.begin(GL_LINE_LOOP)
                 buffer.pos(chunk.pos.xStart.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
                 buffer.pos(chunk.pos.xEnd + 1.toDouble(), y, chunk.pos.zStart.toDouble()).color(color.r, color.g, color.b, 255).endVertex()
@@ -93,17 +94,18 @@ object NewChunks : Module() {
             GlStateUtils.depth(true)
         }
 
-        listener<ChunkEvent> {
-            if (it.packet.isFullChunk) return@listener
-            chunks.add(it.chunk)
-            if (saveNewChunks.value) saveNewChunk(it.chunk)
+        listener<ChunkEvent> { event ->
+            if (event.packet.isFullChunk) return@listener
+            chunks.add(event.chunk)
+            if (saveNewChunks.value) saveNewChunk(event.chunk)
             if (removeMode.value == RemoveMode.MAX_NUM && chunks.size > maxNum.value) {
                 var removeChunk = chunks.first()
                 var maxDist = Double.MIN_VALUE
-                chunks.forEach { c ->
-                    if (c.pos.getDistanceSq(mc.player) > maxDist) {
-                        maxDist = c.pos.getDistanceSq(mc.player)
-                        removeChunk = c
+                chunks.forEach {
+                    val dist = mc.player.distanceTo(it.pos)
+                    if (dist > maxDist) {
+                        maxDist = dist
+                        removeChunk = it
                     }
                 }
                 chunks.remove(removeChunk)

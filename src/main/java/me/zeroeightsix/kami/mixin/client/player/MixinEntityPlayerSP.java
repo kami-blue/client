@@ -165,14 +165,14 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             if (this.isCurrentViewEntity()) {
 
                 if (this.isRiding()) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.getX(), rotation.getY(), onGround));
                     moving = false;
                 } else if (moving && rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(pos.x, pos.y, pos.z, rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(pos.x, pos.y, pos.z, rotation.getX(), rotation.getY(), onGround));
                 } else if (moving) {
                     this.connection.sendPacket(new CPacketPlayer.Position(pos.x, pos.y, pos.z, onGround));
                 } else if (rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.getX(), rotation.getY(), onGround));
                 } else if (this.prevOnGround != onGround) {
                     this.connection.sendPacket(new CPacketPlayer(onGround));
                 }
@@ -185,8 +185,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
                 }
 
                 if (rotating) {
-                    this.lastReportedYaw = rotation.x;
-                    this.lastReportedPitch = rotation.y;
+                    this.lastReportedYaw = rotation.getX();
+                    this.lastReportedPitch = rotation.getY();
                 }
 
                 this.prevOnGround = onGround;

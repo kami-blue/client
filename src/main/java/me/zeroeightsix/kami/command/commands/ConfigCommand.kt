@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -18,7 +19,7 @@ object ConfigCommand : ClientCommand(
     init {
         literal("reload") {
             execute("Reload configs from storage") {
-                commandScope.launch(Dispatchers.IO) {
+                defaultScope.launch(Dispatchers.IO) {
                     val loaded = ConfigUtils.loadAll()
                     if (loaded) MessageSendHelper.sendChatMessage("All configurations reloaded!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
@@ -28,7 +29,7 @@ object ConfigCommand : ClientCommand(
 
         literal("save") {
             execute("Force save configs") {
-                commandScope.launch(Dispatchers.IO) {
+                defaultScope.launch(Dispatchers.IO) {
                     val saved = ConfigUtils.saveAll()
                     if (saved) MessageSendHelper.sendChatMessage("All configurations saved!")
                     else MessageSendHelper.sendErrorMessage("Failed to load config!")
@@ -39,7 +40,7 @@ object ConfigCommand : ClientCommand(
         literal("path") {
             string("path") { pathArg ->
                 execute("Switch config files") {
-                    commandScope.launch(Dispatchers.IO) {
+                    defaultScope.launch(Dispatchers.IO) {
                         val newPath = pathArg.value
 
                         if (!ConfigUtils.isPathValid(newPath)) {
@@ -62,7 +63,7 @@ object ConfigCommand : ClientCommand(
             }
 
             execute("Print current config files") {
-                commandScope.launch(Dispatchers.IO) {
+                defaultScope.launch(Dispatchers.IO) {
                     val path = Paths.get(ConfigUtils.getConfigName())
                     MessageSendHelper.sendChatMessage("Path to configuration: &b" + path.toAbsolutePath().toString())
                 }

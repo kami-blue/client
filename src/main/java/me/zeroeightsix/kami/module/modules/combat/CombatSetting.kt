@@ -1,21 +1,23 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -26,22 +28,20 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
-import kotlin.math.ceil
 
 @Module.Info(
-        name = "CombatSetting",
-        description = "Settings for combat module targeting",
-        category = Module.Category.COMBAT,
-        showOnArray = Module.ShowOnArray.OFF,
-        alwaysEnabled = true
+    name = "CombatSetting",
+    description = "Settings for combat module targeting",
+    category = Module.Category.COMBAT,
+    showOnArray = Module.ShowOnArray.OFF,
+    alwaysEnabled = true
 )
 object CombatSetting : Module() {
     private val page = register(Settings.e<Page>("Page", Page.TARGETING))
@@ -90,18 +90,17 @@ object CombatSetting : Module() {
 
     private var overrideRange = range.value
     private var paused = false
-    private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
-    private val threadMap = hashMapOf<Thread, Future<*>?>(
-            Thread { updateTarget() } to null,
-            Thread { updatePlacingList() } to null,
-            Thread { updateCrystalList() } to null
+    private val resumeTimer = TickTimer(TimeUnit.SECONDS)
+    private val jobMap = hashMapOf<() -> Unit, Job?>(
+        { updateTarget() } to null,
+        { updatePlacingList() } to null,
+        { updateCrystalList() } to null
     )
-    private val threadPool = Executors.newCachedThreadPool()
 
     val pause
         get() = mc.player.ticksExisted < 10
-                || pauseForDigging.value && mc.player.heldItemMainhand.getItem() is ItemPickaxe && mc.playerController.isHittingBlock
-                || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.getItem() is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
+            || pauseForDigging.value && mc.player.heldItemMainhand.item is ItemPickaxe && mc.playerController.isHittingBlock
+            || pauseForEating.value && mc.player.isHandActive && mc.player.activeItemStack.item is ItemFood && (mc.player.activeHand != EnumHand.OFF_HAND || !ignoreOffhandEating.value)
 
 
     override fun isActive() = KillAura.isActive() || BedAura.isActive() || CrystalAura.isActive() || Surround.isActive()
@@ -110,7 +109,7 @@ object CombatSetting : Module() {
         listener<RenderOverlayEvent> {
             if (!renderPredictedPos.value) return@listener
             CombatManager.target?.let {
-                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+                val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
                 val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
                 val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return@listener
                 val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
@@ -126,9 +125,9 @@ object CombatSetting : Module() {
         }
 
         listener<SafeTickEvent>(5000) {
-            for ((thread, future) in threadMap) {
-                if (future?.isDone == false) continue // Skip if the previous thread isn't done
-                threadMap[thread] = threadPool.submit(thread)
+            for ((function, future) in jobMap) {
+                if (future.isActiveOrFalse) continue // Skip if the previous thread isn't done
+                jobMap[function] = defaultScope.launch { function.invoke() }
             }
 
             if (pauseBaritone.value && !paused && isActive()) {
@@ -147,7 +146,6 @@ object CombatSetting : Module() {
         }
 
         getTargetList().let {
-            CombatManager.targetList = it
             CombatManager.target = getTarget(it)
         }
     }
@@ -161,7 +159,7 @@ object CombatSetting : Module() {
         val prediction = target?.let { getPrediction(it) }
 
         for (pos in CrystalUtils.getPlacePos(target, mc.player, 8f)) {
-            val dist = eyePos.distanceTo(pos.toVec3d().add(0.0, 0.5, 0.0))
+            val dist = eyePos.distanceTo(pos.toVec3d(0.0, 0.5, 0.0))
             val damage = target?.let { CrystalUtils.calcDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
             val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
             cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
@@ -184,7 +182,7 @@ object CombatSetting : Module() {
         for (entity in entityList) {
             if (entity.isDead) continue
             if (entity !is EntityEnderCrystal) continue
-            val dist = entity.positionVector.distanceTo(eyePos)
+            val dist = entity.distanceTo(eyePos)
             if (dist > 16.0f) continue
             val damage = if (target != null && prediction != null) CrystalUtils.calcDamage(entity, target, prediction.first, prediction.second) else 0.0f
             val selfDamage = CrystalUtils.calcDamage(entity, mc.player)
@@ -197,7 +195,7 @@ object CombatSetting : Module() {
 
     fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+            val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
             CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.entityBoundingBox
         } else {
             it.positionVector to it.entityBoundingBox
@@ -210,19 +208,19 @@ object CombatSetting : Module() {
         val targetList = LinkedList<EntityLivingBase>()
         for (entity in getCacheList()) {
             if (AntiBot.isEnabled
-                    && AntiBot.botSet.contains((entity))) continue
+                && AntiBot.botSet.contains((entity))) continue
 
             if (!tamed.value
-                    && (entity is EntityTameable && entity.isTamed
+                && (entity is EntityTameable && entity.isTamed
                     || entity is AbstractHorse && entity.isTame)) continue
 
             if (!teammates.value
-                    && mc.player.isOnSameTeam(entity)) continue
+                && mc.player.isOnSameTeam(entity)) continue
 
             if (!shouldIgnoreWall()
-                    && mc.player.canEntityBeSeen(entity)
-                    && !EntityUtils.canEntityFeetBeSeen(entity)
-                    && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
+                && mc.player.canEntityBeSeen(entity)
+                && !EntityUtils.canEntityFeetBeSeen(entity)
+                && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
 
             targetList.add(entity)
         }

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.max
@@ -25,7 +25,7 @@ object FullBright : Module() {
         set(gammaIn) {
             mc.gameSettings.gammaSetting = gammaIn
         }
-    private var disableTimer = TimerUtils.TickTimer()
+    private var disableTimer = TickTimer()
 
     override fun onEnable() {
         oldValue.value = mc.gameSettings.gammaSetting

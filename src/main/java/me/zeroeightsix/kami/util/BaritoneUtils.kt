@@ -15,26 +15,17 @@ object BaritoneUtils {
     val isPathing get() = primary?.pathingBehavior?.isPathing ?: false
     val isActive
         get() = primary?.customGoalProcess?.isActive ?: false
-            || primary?.pathingControlManager?.mostRecentInControl()?.let {
-            it.isPresent && it.get().isActive
-        } ?: false
+            || primary?.pathingControlManager?.mostRecentInControl()?.orElse(null)?.isActive ?: false
 
     fun pause() {
         if (!paused) {
-            primary?.pathingControlManager?.registerProcess(TemporaryPauseProcess)
             paused = true
+            primary?.pathingControlManager?.registerProcess(TemporaryPauseProcess)
         }
     }
 
     fun unpause() {
-        if (paused) {
-            primary?.pathingControlManager?.mostRecentInControl()?.let {
-                if (it.isPresent && it.get() == TemporaryPauseProcess) /* Don't run if not paused lol */ {
-                    paused = false
-                    it.get().onLostControl()
-                }
-            }
-        }
+        paused = false
     }
 
     fun cancelEverything() = primary?.pathingBehavior?.cancelEverything()

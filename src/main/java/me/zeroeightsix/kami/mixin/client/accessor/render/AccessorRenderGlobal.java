@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(RenderGlobal.class)
 public interface AccessorRenderGlobal {
 
-    @Accessor
+    @Accessor("entityOutlineShader")
     ShaderGroup getEntityOutlineShader();
 
 }

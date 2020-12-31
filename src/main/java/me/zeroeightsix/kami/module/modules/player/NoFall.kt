@@ -1,14 +1,18 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
@@ -22,9 +26,9 @@ import net.minecraft.util.math.Vec3d
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
-        name = "NoFall",
-        category = Module.Category.PLAYER,
-        description = "Prevents fall damage"
+    name = "NoFall",
+    category = Module.Category.PLAYER,
+    description = "Prevents fall damage"
 )
 object NoFall : Module() {
     private val distance = register(Settings.integerBuilder("Distance").withValue(3).withRange(1, 10))
@@ -67,7 +71,7 @@ object NoFall : Module() {
         }
     }
 
-    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || BlockUtils.getGroundPosY(false) == -999.0
+    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || WorldUtils.getGroundPos().y == -999.0
 
     private fun fallMode() {
         if (fallModeSetting.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {
@@ -90,15 +94,13 @@ object NoFall : Module() {
             }
 
             if (pickup.value) {
-                Thread {
-                    try { // this is just pozzed and should be properly calculating it based on velocity but I cba to do it
-                        Thread.sleep(pickupDelay.value.toLong())
-                    } catch (ignored: InterruptedException) {
-                        // this is fine
+                defaultScope.launch {
+                    delay(pickupDelay.value.toLong())
+                    onMainThreadSafe {
+                        player.rotationPitch = 90f
+                        mc.rightClickMouse()
                     }
-                    mc.player.rotationPitch = 90f
-                    mc.rightClickMouse()
-                }.start()
+                }
             }
         }
     }

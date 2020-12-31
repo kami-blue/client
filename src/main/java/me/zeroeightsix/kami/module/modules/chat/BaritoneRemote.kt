@@ -7,14 +7,8 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detectAndRemove
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.util.text.Regexes
-import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
@@ -48,30 +42,24 @@ object BaritoneRemote : Module() {
             if (it.packet !is SPacketChat) return@listener
             val message = it.packet.chatComponent.unformattedText
 
-            if (MessageDetectionHelper.isDirect(true, message)) {
-                val username = MessageDetectionHelper.getDirectUsername(message) ?: return@listener
-                val command = message.detectAndRemove(Regexes.DIRECT)
-                    ?: message.detectAndRemove(Regexes.DIRECT_ALT_1)
-                    ?: message.detectAndRemove(Regexes.DIRECT_ALT_2) ?: return@listener
+            if (MessageDetection.Direct.RECEIVE detectNot message) return@listener
 
-                val bPrefix = BaritoneUtils.prefix
-                val kbPrefix = "${CommandManager.prefix}b "
-                if ((!command.startsWith(bPrefix) && !command.startsWith(kbPrefix)) || !isValidUser(username)) return@listener
+            val command = MessageDetection.Direct.RECEIVE.removedOrNull(message) ?: return@listener
+            val username = MessageDetection.Direct.RECEIVE.playerName(message) ?: return@listener
 
-                val baritoneCommand =
-                    if (command.startsWith(bPrefix)) command.substring(bPrefix.length).split(" ")
-                    else command.substring(kbPrefix.length).split(" ")
+            if (!isValidUser(username)) return@listener
 
-                MessageSendHelper.sendBaritoneCommand(*baritoneCommand.toTypedArray())
-                sendNextMsg = true
-                lastController = username
-            }
+            val baritoneCommand = MessageDetection.Command.BARITONE.removedOrNull(command) ?: return@listener
+
+            MessageSendHelper.sendBaritoneCommand(*baritoneCommand.split(' ').toTypedArray())
+            sendNextMsg = true
+            lastController = username
         }
 
         /* forward baritone feedback to controller */
         listener<PrintChatMessageEvent> {
             lastController?.let { controller ->
-                if (feedback.value && it.chatComponent.unformattedText.detect(Regexes.BARITONE)) {
+                if (feedback.value && MessageDetection.Other.BARITONE detect it.chatComponent.unformattedText) {
                     sendServerMessage("/msg $controller " + it.chatComponent.unformattedText)
                 }
             }

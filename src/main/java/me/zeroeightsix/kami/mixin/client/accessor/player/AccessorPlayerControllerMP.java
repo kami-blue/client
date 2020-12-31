@@ -8,16 +8,16 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(PlayerControllerMP.class)
 public interface AccessorPlayerControllerMP {
 
-    @Accessor
+    @Accessor("blockHitDelay")
     int getBlockHitDelay();
 
-    @Accessor
+    @Accessor("blockHitDelay")
     void setBlockHitDelay(int value);
 
-    @Accessor
+    @Accessor("currentPlayerItem")
     int getCurrentPlayerItem();
 
-    @Invoker
+    @Invoker("syncCurrentPlayItem")
     void invokeSyncCurrentPlayItem();
 
 }

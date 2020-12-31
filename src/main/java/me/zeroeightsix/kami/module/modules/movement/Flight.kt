@@ -67,7 +67,7 @@ object Flight : Module() {
                         if (mc.gameSettings.keyBindJump.isKeyDown) 0.0622
                         else -0.0622
                     } else {
-                        if (MovementUtils.isInputing()) {
+                        if (MovementUtils.isInputting) {
                             val yaw = MovementUtils.calcMoveYaw()
                             mc.player.motionX = -sin(yaw) * 0.2f
                             mc.player.motionZ = cos(yaw) * 0.2f

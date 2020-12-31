@@ -96,7 +96,7 @@ public class RootScrollpaneUI extends AbstractComponentUI<Scrollpane> {
                     color.setA((int) (alpha * 255f));
                     VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
                     Vec2d pos1 = new Vec2d(component.getWidth() - 6, y);
-                    Vec2d pos2 = pos1.add(4, barHeight);
+                    Vec2d pos2 = pos1.plus(4, barHeight);
 
                     RenderUtils2D.drawRoundedRectFilled(vertexHelper, pos1, pos2, 1, 8, color);
                 }

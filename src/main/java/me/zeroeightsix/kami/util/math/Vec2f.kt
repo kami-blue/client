@@ -1,84 +1,60 @@
 package me.zeroeightsix.kami.util.math
 
 import net.minecraft.entity.Entity
+import org.kamiblue.commons.extension.toRadian
+import kotlin.math.hypot
 import kotlin.math.pow
-import kotlin.math.sqrt
 
-/**
- * @author Xiaro
- *
- * Created by Xiaro on 27/08/20
- */
-class Vec2f(@JvmField var x: Float, @JvmField var y: Float) {
+data class Vec2f(val x: Float, val y: Float) {
 
     /**
      * Create a Vec2f from this entity's rotations
      */
     constructor(entity: Entity) : this(entity.rotationYaw, entity.rotationPitch)
 
+    constructor(x: Double, y: Double) : this(x.toFloat(), y.toFloat())
+
     constructor(vec2d: Vec2d) : this(vec2d.x.toFloat(), vec2d.y.toFloat())
 
-    fun toRadians(): Vec2d {
-        return Vec2d(this.x / 180.0 * Math.PI, this.y / 180.0 * Math.PI)
+    fun toRadians(): Vec2f {
+        return Vec2f(x.toRadian(), y.toRadian())
     }
 
-    fun length(): Float {
-        return sqrt(lengthSquared())
-    }
 
-    fun lengthSquared(): Float {
-        return (this.x.pow(2) + this.y.pow(2))
-    }
+    fun length() = hypot(x, y)
 
-    fun divide(vec2f: Vec2f): Vec2f {
-        return divide(vec2f.x, vec2f.y)
-    }
+    fun lengthSquared() = (x.pow(2) + y.pow(2))
 
-    fun divide(divider: Float): Vec2f {
-        return divide(divider, divider)
-    }
 
-    fun divide(x: Float, y: Float): Vec2f {
-        return Vec2f(this.x / x, this.y / y)
-    }
+    operator fun div(vec2f: Vec2f) = div(vec2f.x, vec2f.y)
 
-    fun multiply(vec2f: Vec2f): Vec2f {
-        return multiply(vec2f.x, vec2f.y)
-    }
+    operator fun div(divider: Float) = div(divider, divider)
 
-    fun multiply(mulitplier: Float): Vec2f {
-        return multiply(mulitplier, mulitplier)
-    }
+    fun div(x: Float, y: Float) = Vec2f(this.x / x, this.y / y)
 
-    fun multiply(x: Float, y: Float): Vec2f {
-        return Vec2f(this.x * x, this.y * y)
-    }
 
-    fun subtract(vec2f: Vec2f): Vec2f {
-        return subtract(vec2f.x, vec2f.y)
-    }
+    operator fun times(vec2f: Vec2f) = times(vec2f.x, vec2f.y)
 
-    fun subtract(sub: Float): Vec2f {
-        return subtract(sub, sub)
-    }
+    operator fun times(multiplier: Float) = times(multiplier, multiplier)
 
-    fun subtract(x: Float, y: Float): Vec2f {
-        return add(-x, -y)
-    }
+    fun times(x: Float, y: Float) = Vec2f(this.x * x, this.y * y)
 
-    fun add(vec2f: Vec2f): Vec2f {
-        return add(vec2f.x, vec2f.y)
-    }
 
-    fun add(add: Float): Vec2f {
-        return add(add, add)
-    }
+    operator fun minus(vec2f: Vec2f) = minus(vec2f.x, vec2f.y)
 
-    fun add(x: Float, y: Float): Vec2f {
-        return Vec2f(this.x + x, this.y + y)
-    }
+    operator fun minus(value: Float) = minus(value, value)
+
+    fun minus(x: Float, y: Float) = plus(-x, -y)
+
+
+    operator fun plus(vec2f: Vec2f) = plus(vec2f.x, vec2f.y)
+
+    operator fun plus(value: Float) = plus(value, value)
+
+    fun plus(x: Float, y: Float) = Vec2f(this.x + x, this.y + y)
 
     companion object {
-        val ZERO get() = Vec2f(0f, 0f)
+        @JvmField
+        val ZERO = Vec2f(0f, 0f)
     }
 }

@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
-import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -180,7 +180,7 @@ object CrystalAura : Module() {
             if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
 
             if (it.era == KamiEvent.Era.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
-                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = Vec2f(getLastRotation()))
+                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = getLastRotation())
                 PlayerPacketManager.addPacket(this, packet)
             }
 
@@ -286,7 +286,7 @@ object CrystalAura : Module() {
     }
 
     private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
-            CPacketPlayerTryUseItemOnBlock(pos, BlockUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f)
+            CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f)
 
     private fun sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))
@@ -323,7 +323,7 @@ object CrystalAura : Module() {
             // Wall distance check
             val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, 0.5, 0.5))
             val hitBlockPos = rayTraceResult?.blockPos ?: pos
-            if (hitBlockPos.distanceSq(pos) > 2.0 && triple.third > wallPlaceRange.value) continue
+            if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange.value) continue
 
             // Collide check
             if (!CrystalUtils.canPlaceCollide(pos)) continue
@@ -336,7 +336,7 @@ object CrystalAura : Module() {
 
             // Yaw speed check
             val hitVec = Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5)
-            if (!checkYawSpeed(RotationUtils.getRotationTo(hitVec, true).x)) continue
+            if (!checkYawSpeed(RotationUtils.getRotationTo(hitVec).x)) continue
 
             return pos
         }
@@ -442,13 +442,13 @@ object CrystalAura : Module() {
     /* End of general */
 
     /* Rotation */
-    private fun checkYawSpeed(yaw: Double): Boolean {
+    private fun checkYawSpeed(yaw: Float): Boolean {
         val yawDiff = abs(RotationUtils.normalizeAngle(yaw - PlayerPacketManager.serverSideRotation.x))
         return yawDiffList.sum() + yawDiff <= maxYawSpeed.value
     }
 
     private fun getLastRotation() =
-            RotationUtils.getRotationTo(lastLookAt, true)
+            RotationUtils.getRotationTo(lastLookAt)
 
     private fun resetRotation() {
         lastLookAt = CombatManager.target?.positionVector ?: Vec3d.ZERO

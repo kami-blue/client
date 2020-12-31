@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.MovementUtils.isMoving
+import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -40,7 +40,7 @@ object LoginMessage : Module() {
 
             if (!sent && (!sendAfterMoving.value || moved)) {
                 loginMessage?.let {
-                    if (MessageDetectionHelper.isKamiCommand(it)) {
+                    if (MessageDetection.Command.KAMI_BLUE detect it) {
                         MessageSendHelper.sendKamiCommand(it)
                     } else {
                         sendServerMessage(it)
@@ -49,7 +49,7 @@ object LoginMessage : Module() {
                 }
             }
 
-            if (!moved) moved = MovementUtils.isMoving
+            if (!moved) moved = mc.player.isMoving
         }
     }
 

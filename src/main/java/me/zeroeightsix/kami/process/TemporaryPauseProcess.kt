@@ -3,15 +3,8 @@ package me.zeroeightsix.kami.process
 import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
-import me.zeroeightsix.kami.module.modules.player.AutoEat
 import me.zeroeightsix.kami.util.BaritoneUtils
 
-/**
- * Created by Dewy on the 17th of May, 2020
- * Updated by Xiaro on 11/09/20
- *
- * thanks leijurv for pseudocode
- */
 object TemporaryPauseProcess : IBaritoneProcess {
 
     override fun isTemporary(): Boolean {
@@ -27,7 +20,6 @@ object TemporaryPauseProcess : IBaritoneProcess {
     }
 
     override fun onTick(calcFailed: Boolean, isSafeToCancel: Boolean): PathingCommand {
-        if (!isSafeToCancel) AutoEat.eating = false
         return PathingCommand(null, PathingCommandType.REQUEST_PAUSE)
     }
 
