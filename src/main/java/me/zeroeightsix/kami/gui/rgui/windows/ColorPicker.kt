@@ -107,7 +107,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val relativeMousePos = mousePos.minus(posX, posY)
 
         hoveredChild?.let {
-            it.onClick(relativeMousePos.subtract(it.posX, it.posY), buttonId)
+            it.onClick(relativeMousePos.minus(it.posX, it.posY), buttonId)
         } ?: run {
             updateValues(relativeMousePos, relativeMousePos)
         }
@@ -118,7 +118,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val relativeMousePos = mousePos.minus(posX, posY)
 
         hoveredChild?.let {
-            it.onRelease(relativeMousePos.subtract(it.posX, it.posY), buttonId)
+            it.onRelease(relativeMousePos.minus(it.posX, it.posY), buttonId)
             if (it.listening) listeningChild = it
         } ?: run {
             updateValues(relativeMousePos, relativeMousePos)
@@ -205,7 +205,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Outline
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(fieldPos.first), Vec2d(fieldPos.second), 1.5f, GuiColors.outline)
+        RenderUtils2D.drawRectOutline(vertexHelper, fieldPos.first.toVec2d(), fieldPos.second.toVec2d(), 1.5f, GuiColors.outline)
 
         // Circle pointer
         val interpolatedSaturation = prevSaturation + (saturation - prevSaturation) * mc.renderPartialTicks
@@ -229,19 +229,19 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         RenderUtils2D.prepareGl()
         glLineWidth(16.0f)
         vertexHelper.begin(GL_LINE_STRIP)
-        vertexHelper.put(Vec2d(hueLinePos.first), color1)
-        vertexHelper.put(Vec2d(hueLinePos.first).add(0.0, height), color2)
-        vertexHelper.put(Vec2d(hueLinePos.first).add(0.0, height * 2.0), color3)
-        vertexHelper.put(Vec2d(hueLinePos.first).add(0.0, height * 3.0), color4)
-        vertexHelper.put(Vec2d(hueLinePos.first).add(0.0, height * 4.0), color5)
-        vertexHelper.put(Vec2d(hueLinePos.first).add(0.0, height * 5.0), color6)
-        vertexHelper.put(Vec2d(hueLinePos.second), color1)
+        vertexHelper.put(hueLinePos.first.toVec2d(), color1)
+        vertexHelper.put(hueLinePos.first.toVec2d().plus(0.0, height), color2)
+        vertexHelper.put(hueLinePos.first.toVec2d().plus(0.0, height * 2.0), color3)
+        vertexHelper.put(hueLinePos.first.toVec2d().plus(0.0, height * 3.0), color4)
+        vertexHelper.put(hueLinePos.first.toVec2d().plus(0.0, height * 4.0), color5)
+        vertexHelper.put(hueLinePos.first.toVec2d().plus(0.0, height * 5.0), color6)
+        vertexHelper.put(hueLinePos.second.toVec2d(), color1)
         vertexHelper.end()
         glLineWidth(1.0f)
         RenderUtils2D.releaseGl()
 
         // Outline
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(huePos.first), Vec2d(huePos.second), 1.5f, GuiColors.outline)
+        RenderUtils2D.drawRectOutline(vertexHelper, huePos.first.toVec2d(), huePos.second.toVec2d(), 1.5f, GuiColors.outline)
 
         // Arrow pointer
         val interpolatedHue = prevHue + (hue - prevHue) * mc.renderPartialTicks
@@ -255,14 +255,14 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
         // Previous color
         val prevColor = setting?.value?.clone()?.apply { a = 255 }
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(prevColorPos.first), Vec2d(prevColorPos.second), prevColor
+        RenderUtils2D.drawRectFilled(vertexHelper, prevColorPos.first.toVec2d(), prevColorPos.second.toVec2d(), prevColor
             ?: ColorHolder())
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(prevColorPos.first), Vec2d(prevColorPos.second), 1.5f, GuiColors.outline)
+        RenderUtils2D.drawRectOutline(vertexHelper, prevColorPos.first.toVec2d(), prevColorPos.second.toVec2d(), 1.5f, GuiColors.outline)
 
         // Current color
         val currentColor = ColorHolder(r.value, g.value, b.value)
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(currentColorPos.first), Vec2d(currentColorPos.second), currentColor)
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(currentColorPos.first), Vec2d(currentColorPos.second), 1.5f, GuiColors.outline)
+        RenderUtils2D.drawRectFilled(vertexHelper, currentColorPos.first.toVec2d(), currentColorPos.second.toVec2d(), currentColor)
+        RenderUtils2D.drawRectOutline(vertexHelper, currentColorPos.first.toVec2d(), currentColorPos.second.toVec2d(), 1.5f, GuiColors.outline)
 
         // Previous hex
 
