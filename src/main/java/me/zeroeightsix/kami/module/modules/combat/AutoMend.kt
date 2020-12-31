@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -26,11 +26,11 @@ object AutoMend : Module() {
     private var isGuiOpened = false
 
     init {
-        listener<GuiScreenEvent.Displayed> {
+        listener<GuiEvent.Displayed> {
             isGuiOpened = it.screen != null
         }
 
-        listener<GuiScreenEvent.Closed> {
+        listener<GuiEvent.Closed> {
             isGuiOpened = false
         }
 
