@@ -107,7 +107,7 @@ object ESP : Module() {
         }
 
         listener<RenderShaderEvent> {
-            if (mode.value != ESPMode.SHADER || it.phase != RenderShaderEvent.Phase.PRE) return@listener
+            if (mode.value != ESPMode.SHADER) return@listener
 
             frameBuffer?.bindFramebuffer(false)
             shaderHelper.shader?.render(KamiTessellator.pTicks())
