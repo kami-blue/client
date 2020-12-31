@@ -50,12 +50,15 @@ object ModuleList : HudElement(
     }
 
     override val maxWidth: Float
-        get() = sortedModuleList.firstOrNull { toggleMap[it]?.value == true }?.let {
-            max(it.textLine.getWidth(), 100.0f)
-        } ?: 80.0f
+        get() = sortedModuleList.maxOfOrNull {
+            if (toggleMap[it]?.value == true) it.textLine.getWidth() + 4.0f
+            else 20.0f
+        }?.let {
+            max(it, 20.0f)
+        } ?: 20.0f
 
     override val maxHeight: Float
-        get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 160.0f)
+        get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
     private var sortedModuleList = ModuleManager.getModules()
     private val textLineMap = HashMap<Module, TextComponent.TextLine>()
