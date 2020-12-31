@@ -18,7 +18,7 @@ open class WindowComponent(
 ) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
 
     // Basic info
-    private val minimizedSetting =setting("Minimized", false,
+    private val minimizedSetting = setting("Minimized", false,
         { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
     )
     var minimized by minimizedSetting
