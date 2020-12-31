@@ -231,7 +231,7 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         GlStateUtils.depth(true)
 
         for (window in windowList) {
-            if (!window.visible.value) continue
+            if (!window.visible) continue
             glPushMatrix()
             glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
             window.onRender(vertexHelper, Vec2f(window.renderPosX, window.renderPosY))

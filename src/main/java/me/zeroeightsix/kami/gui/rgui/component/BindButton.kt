@@ -15,7 +15,7 @@ class BindButton(
 
     override fun onTick() {
         super.onTick()
-        visible.value = setting.isVisible
+        visible = setting.isVisible
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {

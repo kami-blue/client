@@ -32,7 +32,7 @@ object ModuleList : HudElement(
 ) {
 
     private val sortingMode by setting("SortingMode", SortingMode.LENGTH)
-    private val showInvisible = setting("ShowInvisible", false)
+    private val showInvisible by setting("ShowInvisible", false)
     private val rainbow = setting("Rainbow", true)
     private val rainbowLength = setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
     private val indexedHue = setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
@@ -79,7 +79,7 @@ object ModuleList : HudElement(
             toggleMap.keys.removeIf { !moduleSet.contains(it) }
 
             for ((module, timedFlag) in toggleMap) {
-                val state = module.isEnabled && (module.isVisible || showInvisible.value)
+                val state = module.isEnabled && (module.isVisible || showInvisible)
                 if (timedFlag.value != state) timedFlag.value = state
 
                 if (timedFlag.progress <= 0.0f) continue
@@ -94,8 +94,8 @@ object ModuleList : HudElement(
         super.renderHud(vertexHelper)
         GlStateManager.pushMatrix()
 
-        GlStateManager.translate(renderWidth * dockingH.value.multiplier, 0.0f, 0.0f)
-        if (dockingV.value == VAlign.BOTTOM) GlStateManager.translate(0.0f, renderHeight, 0.0f)
+        GlStateManager.translate(renderWidth * dockingH.multiplier, 0.0f, 0.0f)
+        if (dockingV == VAlign.BOTTOM) GlStateManager.translate(0.0f, renderHeight, 0.0f)
 
         drawModuleList()
 
@@ -117,9 +117,9 @@ object ModuleList : HudElement(
 
             val textLine = module.textLine
             val textWidth = textLine.getWidth()
-            val animationXOffset = textWidth * dockingH.value.offset * (1.0f - progress)
-            val stringPosX = textWidth * dockingH.value.multiplier
-            val margin = 2.0f * dockingH.value.offset
+            val animationXOffset = textWidth * dockingH.offset * (1.0f - progress)
+            val stringPosX = textWidth * dockingH.multiplier
+            val margin = 2.0f * dockingH.offset
 
             GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
@@ -132,7 +132,7 @@ object ModuleList : HudElement(
                     module.getHudInfo().let {
                         if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
                     }
-                    if (dockingH.value == HAlign.RIGHT) reverse()
+                    if (dockingH == HAlign.RIGHT) reverse()
                     drawLine(progress, true, HAlign.LEFT, FontRenderAdapter.useCustomFont)
                 }
             } else {
@@ -141,7 +141,7 @@ object ModuleList : HudElement(
 
             GlStateManager.popMatrix()
             var yOffset = timedFlag.displayHeight
-            if (dockingV.value == VAlign.BOTTOM) yOffset *= -1.0f
+            if (dockingV == VAlign.BOTTOM) yOffset *= -1.0f
             GlStateManager.translate(0.0f, yOffset, 0.0f)
         }
     }
@@ -157,7 +157,7 @@ object ModuleList : HudElement(
             getHudInfo().let {
                 if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
             }
-            if (dockingH.value == HAlign.RIGHT) reverse()
+            if (dockingH == HAlign.RIGHT) reverse()
         }
 
     private val TimedFlag<Boolean>.displayHeight

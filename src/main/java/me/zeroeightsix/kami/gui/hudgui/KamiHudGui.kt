@@ -55,10 +55,10 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             if (Hud.isEnabled) {
                 for (window in windowList) {
-                    if (window !is HudElement || !window.visible.value) continue
+                    if (window !is HudElement || !window.visible) continue
                     renderHudElement(vertexHelper, window)
                 }
-            } else if (WaterMark.visible.value) {
+            } else if (WaterMark.visible) {
                 renderHudElement(vertexHelper, WaterMark)
             }
 

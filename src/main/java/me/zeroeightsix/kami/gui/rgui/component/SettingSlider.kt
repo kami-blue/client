@@ -36,7 +36,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
 
     override fun onClosed() {
         super.onClosed()
-        name.value = originalName
+        name = originalName
     }
 
     override fun onTick() {
@@ -48,7 +48,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
                 value = (setting.value.toDouble() - min) / range
             }
         }
-        visible.value = setting.isVisible
+        visible = setting.isVisible
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -65,10 +65,10 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
             if (!listening) {
                 listening = true
                 value = 0.0
-                name.value = "0"
+                name = "0"
             } else {
                 listening = false
-                name.value = originalName
+                name = originalName
             }
         }
     }
@@ -79,8 +79,8 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
     }
 
     private fun updateValue(mousePos: Vec2f) {
-        value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.value.toDouble()
-        else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.value.toDouble()
+        value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.toDouble()
+        else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.toDouble()
 
         var roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
         if (abs(roundedValue) == 0.0) roundedValue = 0.0
@@ -93,17 +93,17 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         if (keyState) {
             when (keyCode) {
                 Keyboard.KEY_RETURN -> {
-                    name.value.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
+                    name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
                     listening = false
-                    name.value = originalName
+                    name = originalName
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
-                    name.value = name.value.substring(0, max(name.value.length - 1, 0))
-                    if (name.value.isBlank()) name.value = "0"
+                    name = name.substring(0, max(name.length - 1, 0))
+                    if (name.isBlank()) name = "0"
                 }
                 else -> if (typedChar.isDigit() || typedChar == '.' || typedChar.equals('e', true)) {
-                    if (name.value == "0") name.value = ""
-                    name.value += typedChar
+                    if (name == "0") name = ""
+                    name += typedChar
                 }
             }
         }

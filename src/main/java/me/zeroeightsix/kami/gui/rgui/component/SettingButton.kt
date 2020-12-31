@@ -12,7 +12,7 @@ class SettingButton(val setting: BooleanSetting) : BooleanSlider(setting.name, 0
     override fun onTick() {
         super.onTick()
         value = if (setting.value) 1.0 else 0.0
-        visible.value = setting.isVisible
+        visible = setting.isVisible
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {

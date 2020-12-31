@@ -58,13 +58,13 @@ open class ListWindow(
     }
 
     private fun updateChild() {
-        var y = (if (draggableHeight != height.value) draggableHeight else 0.0f) + lineSpace
+        var y = (if (draggableHeight != height) draggableHeight else 0.0f) + lineSpace
         for (child in children) {
-            if (!child.visible.value) continue
+            if (!child.visible) continue
             child.posX = lineSpace * 1.618f
             child.posY = y
-            child.width.value = width.value - lineSpace * 3.236f
-            y += child.height.value + lineSpace
+            child.width = width - lineSpace * 3.236f
+            y += child.height + lineSpace
         }
     }
 
@@ -92,8 +92,8 @@ open class ListWindow(
     override fun onTick() {
         super.onTick()
         if (children.isEmpty()) return
-        val lastVisible = children.lastOrNull { it.visible.value }
-        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height.value + lineSpace - height.value, 0.01f) }
+        val lastVisible = children.lastOrNull { it.visible }
+        val maxScrollProgress = lastVisible?.let { max(it.posY + it.height + lineSpace - height, 0.01f) }
             ?: draggableHeight
 
         scrollProgress = (scrollProgress + scrollSpeed)
@@ -121,7 +121,7 @@ open class ListWindow(
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
         for (child in children) {
-            if (!child.visible.value) continue
+            if (!child.visible) continue
             if (child.renderPosY + child.renderHeight - renderScrollProgress < draggableHeight) continue
             if (child.renderPosY - renderScrollProgress > renderHeight) continue
             glPushMatrix()
@@ -143,14 +143,14 @@ open class ListWindow(
         if (mouseState != MouseState.DRAG) {
             updateHovered(relativeMousePos)
         }
-        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized) (hoveredChild as? InteractiveComponent)?.let {
             it.onMouseInput(getRelativeMousePos(mousePos, it))
         }
     }
 
     private fun updateHovered(relativeMousePos: Vec2f) {
         hoveredChild = if (relativeMousePos.y < draggableHeight || relativeMousePos.x < lineSpace || relativeMousePos.x > renderWidth - lineSpace) null
-        else children.firstOrNull { it.visible.value && relativeMousePos.y in it.posY..it.posY + it.height.value }
+        else children.firstOrNull { it.visible && relativeMousePos.y in it.posY..it.posY + it.height }
     }
 
     override fun onLeave(mousePos: Vec2f) {
@@ -160,28 +160,28 @@ open class ListWindow(
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized) (hoveredChild as? InteractiveComponent)?.let {
             it.onClick(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized) (hoveredChild as? InteractiveComponent)?.let {
             it.onRelease(getRelativeMousePos(mousePos, it), buttonId)
         }
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
-        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.let {
+        if (!minimized) (hoveredChild as? InteractiveComponent)?.let {
             it.onDrag(getRelativeMousePos(mousePos, it), clickPos, buttonId)
         }
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {
         super.onKeyInput(keyCode, keyState)
-        if (!minimized.value) (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
+        if (!minimized) (hoveredChild as? InteractiveComponent)?.onKeyInput(keyCode, keyState)
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =

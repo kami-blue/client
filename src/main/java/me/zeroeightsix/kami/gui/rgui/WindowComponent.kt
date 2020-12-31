@@ -18,12 +18,13 @@ open class WindowComponent(
 ) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
 
     // Basic info
-    val minimized = setting("Minimized", false,
+    private val minimizedSetting =setting("Minimized", false,
         { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
     )
+    var minimized by minimizedSetting
 
     // Interactive info
-    open val draggableHeight get() = height.value
+    open val draggableHeight get() = height
     var lastActiveTime: Long = System.currentTimeMillis(); protected set
     var preDragMousePos = Vec2f.ZERO; private set
     var preDragPos = Vec2f.ZERO; private set
@@ -34,7 +35,7 @@ open class WindowComponent(
     private val renderMinimizeProgress: Float
         get() {
             val deltaTime = AnimationUtils.toDeltaTimeFloat(minimizedTime)
-            return if (minimized.value) AnimationUtils.halfSineDec(deltaTime, 200.0f)
+            return if (minimized) AnimationUtils.halfSineDec(deltaTime, 200.0f)
             else AnimationUtils.halfSineInc(deltaTime, 200.0f)
         }
     override val renderHeight: Float
@@ -44,7 +45,7 @@ open class WindowComponent(
     open val minimizable get() = false
 
     init {
-        minimized.valueListeners.add { prev, it ->
+        minimizedSetting.valueListeners.add { prev, it ->
             if (it != prev) minimizedTime = System.currentTimeMillis()
         }
     }
@@ -54,9 +55,9 @@ open class WindowComponent(
 
     override fun onDisplayed() {
         super.onDisplayed()
-        if (!minimized.value) {
-            minimized.value = true
-            minimized.value = false
+        if (!minimized) {
+            minimized = true
+            minimized = false
         }
     }
 
@@ -78,14 +79,14 @@ open class WindowComponent(
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         lastActiveTime = System.currentTimeMillis()
-        if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized.value = !minimized.value
+        if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized = !minimized
         if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.minus(posX, posY))
     }
 
     private fun updatePreDrag(mousePos: Vec2f?) {
         mousePos?.let { preDragMousePos = it }
         preDragPos = Vec2f(posX, posY)
-        preDragSize = Vec2f(width.value, height.value)
+        preDragSize = Vec2f(width, height)
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
@@ -102,7 +103,7 @@ open class WindowComponent(
             else -> null
         }
 
-        val centerSplitterVCenter = if (draggableHeight != height.value && horizontalSide == HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
+        val centerSplitterVCenter = if (draggableHeight != height && horizontalSide == HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
         val verticalSide = when (relativeClickPos.y) {
             in -5.0..centerSplitterVCenter -> VAlign.TOP
             in centerSplitterVCenter..preDragSize.y - centerSplitterV -> VAlign.CENTER
@@ -113,21 +114,21 @@ open class WindowComponent(
         val draggedDist = mousePos.minus(clickPos)
 
         if (horizontalSide != null && verticalSide != null) {
-            if (resizable && !minimized.value && (horizontalSide != HAlign.CENTER || verticalSide != VAlign.CENTER)) {
+            if (resizable && !minimized && (horizontalSide != HAlign.CENTER || verticalSide != VAlign.CENTER)) {
 
                 when (horizontalSide) {
                     HAlign.LEFT -> {
                         var newWidth = max(preDragSize.x - draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
-                        posX += width.value - newWidth
-                        width.value = newWidth
+                        posX += width - newWidth
+                        width = newWidth
                     }
                     HAlign.RIGHT -> {
                         var newWidth = max(preDragSize.x + draggedDist.x, minWidth)
                         if (maxWidth != -1.0f) newWidth = min(newWidth, maxWidth)
 
-                        width.value = newWidth
+                        width = newWidth
                     }
                     else -> {
                         // Nothing lol
@@ -139,14 +140,14 @@ open class WindowComponent(
                         var newHeight = max(preDragSize.y - draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
-                        posY += height.value - newHeight
-                        height.value = newHeight
+                        posY += height - newHeight
+                        height = newHeight
                     }
                     VAlign.BOTTOM -> {
                         var newHeight = max(preDragSize.y + draggedDist.y, minHeight)
                         if (maxHeight != -1.0f) newHeight = min(newHeight, maxHeight)
 
-                        height.value = newHeight
+                        height = newHeight
                     }
                     else -> {
                         // Nothing lol
@@ -154,9 +155,9 @@ open class WindowComponent(
                 }
 
                 onResize()
-            } else if (draggableHeight == height.value || relativeClickPos.y <= draggableHeight) {
-                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width.value)
-                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height.value)
+            } else if (draggableHeight == height || relativeClickPos.y <= draggableHeight) {
+                posX = (preDragPos.x + draggedDist.x).coerceIn(0.0f, mc.displayWidth - width)
+                posY = (preDragPos.y + draggedDist.y).coerceIn(0.0f, mc.displayHeight - height)
 
                 onReposition()
             } else {
@@ -166,14 +167,14 @@ open class WindowComponent(
     }
 
     fun isInWindow(mousePos: Vec2f): Boolean {
-        return visible.value && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
+        return visible && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
             && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
     }
 
     init {
         with({ updatePreDrag(null) }) {
-            dockingH.listeners.add(this)
-            dockingV.listeners.add(this)
+            dockingHSetting.listeners.add(this)
+            dockingVSetting.listeners.add(this)
         }
     }
 

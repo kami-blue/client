@@ -29,20 +29,20 @@ open class HudElement(
 
     init {
         listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || !visible.value) return@listener
-            width.value = maxWidth
-            height.value = maxHeight
+            if (it.phase != TickEvent.Phase.END || !visible) return@listener
+            width = maxWidth
+            height = maxHeight
         }
     }
 
     override fun onGuiInit() {
         super.onGuiInit()
-        if (alwaysListening || visible.value) KamiEventBus.subscribe(this)
+        if (alwaysListening || visible) KamiEventBus.subscribe(this)
     }
 
     override fun onClosed() {
         super.onClosed()
-        if (alwaysListening || visible.value) KamiEventBus.subscribe(this)
+        if (alwaysListening || visible) KamiEventBus.subscribe(this)
     }
 
     final override fun onTick() {
@@ -62,12 +62,12 @@ open class HudElement(
     }
 
     init {
-        visible.valueListeners.add { _, it ->
+        visibleSetting.valueListeners.add { _, it ->
             if (it) KamiEventBus.subscribe(this)
             else if (!alwaysListening) KamiEventBus.unsubscribe(this)
         }
 
-        if (!enabledByDefault) visible.value = false
+        if (!enabledByDefault) visible = false
     }
 
     enum class Category(override val displayName: String) : DisplayEnum {

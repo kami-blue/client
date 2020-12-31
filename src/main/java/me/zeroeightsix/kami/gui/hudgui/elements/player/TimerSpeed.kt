@@ -18,6 +18,6 @@ object TimerSpeed : LabelHud(
     }
 
     init {
-        visible.value = false
+        visible = false
     }
 }

@@ -21,41 +21,44 @@ open class Component(
 
     // Basic info
     val originalName = name
-    val name = setting("Name", name, { false })
-    val visible = setting("Visible", true, { false }, { _, it -> it || !closeable })
+    var name by setting("Name", name, { false })
+    protected val visibleSetting = setting("Visible", true, { false }, { _, it -> it || !closeable })
+    var visible by visibleSetting
 
-    protected val relativePosX = setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width.value - 2.0f, 2.069f))) else it })
-    protected val relativePosY = setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
-        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height.value - 2.0f, 2.069f))) else it })
+    protected var relativePosX by setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
+        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.069f))) else it })
+    protected var relativePosY by setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
+        { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.069f))) else it })
 
-    val width = setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, scaledWidth) })
-    val height = setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, scaledHeight) })
+    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, scaledWidth) })
+    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, scaledHeight) })
 
-    val dockingH = setting("DockingH", HAlign.LEFT)
-    val dockingV = setting("DockingV", VAlign.TOP)
+    protected val dockingHSetting = setting("DockingH", HAlign.LEFT)
+    protected val dockingVSetting = setting("DockingV", VAlign.TOP)
+    var dockingH by dockingHSetting
+    var dockingV by dockingVSetting
 
     var posX: Float
         get() {
-            return relativeToAbsX(relativePosX.value)
+            return relativeToAbsX(relativePosX)
         }
         set(value) {
             if (!KamiMod.isReady()) return
-            relativePosX.value = absToRelativeX(value)
+            relativePosX = absToRelativeX(value)
         }
 
     var posY: Float
         get() {
-            return relativeToAbsY(relativePosY.value)
+            return relativeToAbsY(relativePosY)
         }
         set(value) {
             if (!KamiMod.isReady()) return
-            relativePosY.value = absToRelativeY(value)
+            relativePosY = absToRelativeY(value)
         }
 
     init {
-        dockingH.listeners.add { posX = prevPosX }
-        dockingV.listeners.add { posY = prevPosY }
+        dockingHSetting.listeners.add { posX = prevPosX }
+        dockingVSetting.listeners.add { posY = prevPosY }
     }
 
     // Extra info
@@ -74,20 +77,20 @@ open class Component(
 
     var prevWidth = 0.0f; protected set
     var prevHeight = 0.0f; protected set
-    val renderWidth get() = prevWidth + (width.value - prevWidth) * mc.renderPartialTicks
-    open val renderHeight get() = prevHeight + (height.value - prevHeight) * mc.renderPartialTicks
+    val renderWidth get() = prevWidth + (width - prevWidth) * mc.renderPartialTicks
+    open val renderHeight get() = prevHeight + (height - prevHeight) * mc.renderPartialTicks
 
-    private fun relativeToAbsX(xIn: Float) = xIn + scaledWidth * dockingH.value.multiplier - dockWidth
-    private fun relativeToAbsY(yIn: Float) = yIn + scaledHeight * dockingV.value.multiplier - dockHeight
-    private fun absToRelativeX(xIn: Float) = xIn - scaledWidth * dockingH.value.multiplier + dockWidth
-    private fun absToRelativeY(yIn: Float) = yIn - scaledHeight * dockingV.value.multiplier + dockHeight
+    private fun relativeToAbsX(xIn: Float) = xIn + scaledWidth * dockingH.multiplier - dockWidth
+    private fun relativeToAbsY(yIn: Float) = yIn + scaledHeight * dockingV.multiplier - dockHeight
+    private fun absToRelativeX(xIn: Float) = xIn - scaledWidth * dockingH.multiplier + dockWidth
+    private fun absToRelativeY(yIn: Float) = yIn - scaledHeight * dockingV.multiplier + dockHeight
 
     protected val scaledWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
     protected val scaledHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
-    private val dockWidth get() = width.value * dockingH.value.multiplier
-    private val dockHeight get() = height.value * dockingV.value.multiplier
-    private val prevDockWidth get() = prevWidth * dockingH.value.multiplier
-    private val prevDockHeight get() = prevHeight * dockingV.value.multiplier
+    private val dockWidth get() = width * dockingH.multiplier
+    private val dockHeight get() = height * dockingV.multiplier
+    private val prevDockWidth get() = prevWidth * dockingH.multiplier
+    private val prevDockHeight get() = prevHeight * dockingV.multiplier
 
     // Update methods
     open fun onDisplayed() {}
@@ -110,8 +113,8 @@ open class Component(
     }
 
     private fun updatePrevSize() {
-        prevWidth = width.value
-        prevHeight = height.value
+        prevWidth = width
+        prevHeight = height
     }
 
     open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}

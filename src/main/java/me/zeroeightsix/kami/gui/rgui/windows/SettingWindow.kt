@@ -50,7 +50,7 @@ abstract class SettingWindow<T : Any>(
     }
 
     private fun displayColorPicker(colorSetting: ColorSetting) {
-        ColorPicker.visible.value = true
+        ColorPicker.visible = true
         ColorPicker.setting = colorSetting
         ColorPicker.onDisplayed()
     }
@@ -77,7 +77,7 @@ abstract class SettingWindow<T : Any>(
     override fun onClosed() {
         super.onClosed()
         listeningChild = null
-        ColorPicker.visible.value = false
+        ColorPicker.visible = false
     }
 
     override fun onKeyInput(keyCode: Int, keyState: Boolean) {

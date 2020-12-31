@@ -95,7 +95,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
         windowList.filterIsInstance<ListWindow>().forEach {
             for (child in it.children) {
                 if (child !is ModuleButton) continue
-                child.visible.value = function(child)
+                child.visible = function(child)
             }
         }
     }

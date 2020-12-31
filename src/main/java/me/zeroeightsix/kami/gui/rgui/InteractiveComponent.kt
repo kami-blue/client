@@ -59,7 +59,7 @@ open class InteractiveComponent(
 
     }
 
-    fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width.value && mousePos.y in 0.0f..height.value
+    fun isInComponent(mousePos: Vec2f) = mousePos.x in 0.0f..width && mousePos.y in 0.0f..height
 
     @Suppress("UNUSED")
     enum class MouseState {

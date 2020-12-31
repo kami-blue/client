@@ -15,7 +15,7 @@ object WaterMark : LabelHud(
 
     override fun onGuiInit() {
         super.onGuiInit()
-        visible.value = visible.value
+        visible = visible
     }
 
     override fun updateText() {

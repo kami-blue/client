@@ -73,7 +73,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
             g.value = it.value.g
             b.value = it.value.b
             if (it.hasAlpha) a.value = it.value.a
-            sliderA.visible.value = it.hasAlpha
+            sliderA.visible = it.hasAlpha
             updateHSBFromRGB()
         }
         lastActiveTime = System.currentTimeMillis() + 1000L
@@ -94,9 +94,9 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         super.onMouseInput(mousePos)
 
         hoveredChild = components.firstOrNull {
-            it.visible.value
-                && preDragMousePos.x in it.posX..it.posX + it.width.value
-                && preDragMousePos.y in it.posY..it.posY + it.height.value
+            it.visible
+                && preDragMousePos.x in it.posX..it.posX + it.width
+                && preDragMousePos.y in it.posY..it.posY + it.height
         }?.also {
             it.onMouseInput(mousePos)
         }
@@ -168,7 +168,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         drawColorPreview(vertexHelper)
 
         for (component in components) {
-            if (!component.visible.value) continue
+            if (!component.visible) continue
             glPushMatrix()
             glTranslatef(component.renderPosX, component.renderPosY, 0.0f)
             component.onRender(vertexHelper, absolutePos.plus(component.renderPosX, component.renderPosY))
@@ -276,7 +276,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     private fun actionCancel() {
         setting = null
-        visible.value = false
+        visible = false
     }
 
     private fun updateRGBFromHSB() {
@@ -296,46 +296,46 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     private fun updatePos() {
         // Red slider
         sliderR.posY = 4.0f + draggableHeight
-        sliderR.width.value = 128.0f
+        sliderR.width = 128.0f
 
         // Green slider
-        sliderG.posY = sliderR.posY + sliderR.height.value + 4.0f
-        sliderG.width.value = 128.0f
+        sliderG.posY = sliderR.posY + sliderR.height + 4.0f
+        sliderG.width = 128.0f
 
         // Blue slider
-        sliderB.posY = sliderG.posY + sliderG.height.value + 4.0f
-        sliderB.width.value = 128.0f
+        sliderB.posY = sliderG.posY + sliderG.height + 4.0f
+        sliderB.width = 128.0f
 
         // Alpha slider
-        sliderA.posY = sliderB.posY + sliderB.height.value + 4.0f
-        sliderA.width.value = 128.0f
+        sliderA.posY = sliderB.posY + sliderB.height + 4.0f
+        sliderA.width = 128.0f
 
         // Okay button
-        buttonOkay.posY = sliderA.posY + sliderA.height.value + 4.0f
-        buttonOkay.width.value = 50.0f
+        buttonOkay.posY = sliderA.posY + sliderA.height + 4.0f
+        buttonOkay.width = 50.0f
 
         // Cancel button
-        buttonCancel.posY = buttonOkay.posY + (buttonOkay.height.value + 4.0f) * 2.0f
-        buttonCancel.width.value = 50.0f
+        buttonCancel.posY = buttonOkay.posY + (buttonOkay.height + 4.0f) * 2.0f
+        buttonCancel.width = 50.0f
 
         // Main window
-        dockingH.value = HAlign.CENTER
-        dockingV.value = VAlign.CENTER
-        relativePosX.value = 0.0f
-        relativePosY.value = 0.0f
-        height.value = buttonCancel.posY + buttonCancel.height.value + 4.0f
-        width.value = height.value - draggableHeight + 4.0f + 8.0f + 4.0f + 128.0f + 8.0f
+        dockingH = HAlign.CENTER
+        dockingV = VAlign.CENTER
+        relativePosX = 0.0f
+        relativePosY = 0.0f
+        height = buttonCancel.posY + buttonCancel.height + 4.0f
+        width = height - draggableHeight + 4.0f + 8.0f + 4.0f + 128.0f + 8.0f
 
         // PositionX of components
-        sliderR.posX = width.value - 4.0f - 128.0f
-        sliderG.posX = width.value - 4.0f - 128.0f
-        sliderB.posX = width.value - 4.0f - 128.0f
-        sliderA.posX = width.value - 4.0f - 128.0f
-        buttonOkay.posX = width.value - 4.0f - 50.0f
-        buttonCancel.posX = width.value - 4.0f - 50.0f
+        sliderR.posX = width - 4.0f - 128.0f
+        sliderG.posX = width - 4.0f - 128.0f
+        sliderB.posX = width - 4.0f - 128.0f
+        sliderA.posX = width - 4.0f - 128.0f
+        buttonOkay.posX = width - 4.0f - 50.0f
+        buttonCancel.posX = width - 4.0f - 50.0f
 
         // Variables
-        fieldHeight = height.value - 8.0f - draggableHeight
+        fieldHeight = height - 8.0f - draggableHeight
         fieldPos = Pair(
             Vec2f(4.0f, 4.0f + draggableHeight),
             Vec2f(4.0f + fieldHeight, 4.0f + fieldHeight + draggableHeight)
@@ -359,7 +359,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     }
 
     init {
-        visible.value = false
+        visible = false
         updatePos()
     }
 }
