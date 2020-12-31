@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
@@ -110,10 +111,12 @@ object NoRender : Module() {
             }
         }
 
-        listener<RenderEntityEvent.Pre> {
-            if (it.entity != null && entityList.contains(it.entity::class.java) ||
-                animals.value && it.entity !is EntityMob && it.entity is IAnimals ||
-                mobs.value && it.entity is EntityMob) {
+        listener<RenderEntityEvent> {
+            if (it.phase != Phase.PRE) return@listener
+
+            if (entityList.contains(it.entity::class.java)
+                || animals.value && it.entity !is EntityMob && it.entity is IAnimals
+                || mobs.value && it.entity is EntityMob) {
                 it.cancel()
             }
         }

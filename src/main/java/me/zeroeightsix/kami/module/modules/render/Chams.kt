@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
@@ -60,33 +61,35 @@ object Chams : Module() {
     private var cycler = HueCycler(600)
 
     init {
-        listener<RenderEntityEvent.Pre>(2000) {
-            if (it.entity == null || !checkEntityType(it.entity)) return@listener
-            if (!texture.value) glDisable(GL_TEXTURE_2D)
-            if (!lightning.value) glDisable(GL_LIGHTING)
-            if (customColor.value) {
-                if (rainbow.value) cycler.currentRgba(a.value).setGLColor()
-                else glColor4f(r.value / 255.0f, g.value / 255.0f, b.value / 255.0f, a.value / 255.0f)
-                GlStateUtils.colorLock(true)
-                GlStateUtils.blend(true)
-                GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-            }
-            if (throughWall.value) {
-                glDepthRange(0.0, 0.01)
-            }
-        }
+        listener<RenderEntityEvent>(2000) {
+            if (!checkEntityType(it.entity)) return@listener
 
-        listener<RenderEntityEvent.Post>(500) {
-            if (it.entity == null || !checkEntityType(it.entity)) return@listener
-            if (!texture.value) glEnable(GL_TEXTURE_2D)
-            if (!lightning.value) glEnable(GL_LIGHTING)
-            if (customColor.value) {
-                GlStateUtils.blend(false)
-                GlStateUtils.colorLock(false)
-                glColor4f(1f, 1f, 1f, 1f)
+            if (it.phase == Phase.PRE) {
+                if (!texture.value) glDisable(GL_TEXTURE_2D)
+                if (!lightning.value) glDisable(GL_LIGHTING)
+                if (customColor.value) {
+                    if (rainbow.value) cycler.currentRgba(a.value).setGLColor()
+                    else glColor4f(r.value / 255.0f, g.value / 255.0f, b.value / 255.0f, a.value / 255.0f)
+                    GlStateUtils.colorLock(true)
+                    GlStateUtils.blend(true)
+                    GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+                }
+                if (throughWall.value) {
+                    glDepthRange(0.0, 0.01)
+                }
             }
-            if (throughWall.value) {
-                glDepthRange(0.0, 1.0)
+
+            if (it.phase == Phase.PERI) {
+                if (!texture.value) glEnable(GL_TEXTURE_2D)
+                if (!lightning.value) glEnable(GL_LIGHTING)
+                if (customColor.value) {
+                    GlStateUtils.blend(false)
+                    GlStateUtils.colorLock(false)
+                    glColor4f(1f, 1f, 1f, 1f)
+                }
+                if (throughWall.value) {
+                    glDepthRange(0.0, 1.0)
+                }
             }
         }
 

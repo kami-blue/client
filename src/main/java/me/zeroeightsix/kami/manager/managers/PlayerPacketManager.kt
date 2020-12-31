@@ -87,20 +87,22 @@ object PlayerPacketManager : Manager {
             prevServerSideRotation = serverSideRotation
         }
 
-        listener<RenderEntityEvent.Pre> {
-            if (it.entity == null || it.entity != Wrapper.player || it.entity.isRiding) return@listener
-            with(it.entity) {
-                clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
-                prevRotationPitch = prevServerSideRotation.y
-                rotationPitch = serverSideRotation.y
-            }
-        }
+        listener<RenderEntityEvent> {
+            if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
 
-        listener<RenderEntityEvent.Final> {
-            if (it.entity == null || it.entity != Wrapper.player || it.entity.isRiding) return@listener
-            with(it.entity) {
-                prevRotationPitch = clientSidePitch.x
-                rotationPitch = clientSidePitch.y
+            if (it.phase == Phase.PRE) {
+                with(it.entity) {
+                    clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
+                    prevRotationPitch = prevServerSideRotation.y
+                    rotationPitch = serverSideRotation.y
+                }
+            }
+
+            if (it.phase == Phase.POST) {
+                with(it.entity) {
+                    prevRotationPitch = clientSidePitch.x
+                    rotationPitch = clientSidePitch.y
+                }
             }
         }
     }
