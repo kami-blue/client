@@ -19,5 +19,6 @@ val RenderManager.renderPosZ: Double get() = (this as AccessorRenderManager).ren
 val RenderManager.renderOutlines: Boolean get() = (this as AccessorRenderManager).renderOutlines
 
 val ShaderGroup.listShaders: List<Shader> get() = (this as AccessorShaderGroup).listShaders
-//for completeness because i only use it in mixins which are java classes feel free to remove if you want
+
+// Unused, but kept for consistency. Java equivalent used in Mixins
 fun ViewFrustum.getRenderChunk(pos: BlockPos) = (this as AccessorViewFrustum).invokeGetRenderChunk(pos)
