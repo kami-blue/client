@@ -1,14 +1,6 @@
 package me.zeroeightsix.kami.event
 
-open class Event {
-    protected open fun pre() {
-
-    }
-
-    protected open fun post() {
-
-    }
-}
+interface Event
 
 interface IMultiPhase<T : Event> {
     val phase: Phase

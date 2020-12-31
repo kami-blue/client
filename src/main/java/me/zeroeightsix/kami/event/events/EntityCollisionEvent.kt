@@ -10,4 +10,4 @@ open class EntityCollisionEvent(
     var x: Double,
     var y: Double,
     var z: Double
-) : Event(), ICancellable by Cancellable()
+) : Event, ICancellable by Cancellable()

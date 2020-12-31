@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.mixin.extension.renderPosZ
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 
-class RenderWorldEvent : Event() {
+class RenderWorldEvent : Event {
     init {
         KamiTessellator.buffer.setTranslation(
             -Wrapper.minecraft.renderManager.renderPosX,

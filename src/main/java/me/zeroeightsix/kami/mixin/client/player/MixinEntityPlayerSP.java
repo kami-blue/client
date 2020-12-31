@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.mixin.client.player;
 import com.mojang.authlib.GameProfile;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
-import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import me.zeroeightsix.kami.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
@@ -16,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.network.play.client.CPacketEntityAction;
@@ -79,13 +77,6 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
                 }
             }
         }
-    }
-
-    @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    public void move(MoverType type, double x, double y, double z, CallbackInfo info) {
-        PlayerMoveEvent event = new PlayerMoveEvent(type, x, y, z);
-        KamiEventBus.INSTANCE.post(event);
-        if (event.getCancelled()) info.cancel();
     }
 
     @ModifyArg(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;setSprinting(Z)V"), index = 0)

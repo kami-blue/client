@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.Cancellable
 import me.zeroeightsix.kami.event.Event
-import me.zeroeightsix.kami.event.ICancellable
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
@@ -18,6 +17,6 @@ class AddCollisionBoxToListEvent(
     val entityBox: AxisAlignedBB,
     collidingBoxes: List<AxisAlignedBB>,
     val entity: Entity?
-) : Event(), ICancellable by Cancellable() {
+) : Event, Cancellable() {
     val collidingBoxes = ArrayList(collidingBoxes)
 }
