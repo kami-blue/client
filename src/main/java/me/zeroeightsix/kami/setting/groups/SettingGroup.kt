@@ -24,7 +24,7 @@ open class SettingGroup(
      * Adds a setting to this group
      *
      * @param S type of the setting
-     * @param setting MutableSetting to add
+     * @param setting Setting to add
      *
      * @return [setting]
      */

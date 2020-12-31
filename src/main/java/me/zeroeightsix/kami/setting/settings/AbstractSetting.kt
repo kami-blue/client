@@ -33,7 +33,7 @@ abstract class AbstractSetting<T : Any> : Nameable {
     override fun toString() = value.toString()
 
     override fun equals(other: Any?) = this === other
-        || (other is MutableSetting<*>
+        || (other is AbstractSetting<*>
         && this.valueClass == other.valueClass
         && this.name == other.name
         && this.value == other.value)

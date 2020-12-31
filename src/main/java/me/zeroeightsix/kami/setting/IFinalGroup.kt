@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
 /**
- * MutableSetting group that can be saved to a .json file
+ * Setting group that can be saved to a .json file
  *
  * @param T Type to have extension function for registering setting
  */
@@ -20,7 +20,7 @@ interface IFinalGroup<T> {
      * Register a setting to this group
      *
      * @param S Type of the setting
-     * @param setting MutableSetting to register
+     * @param setting Setting to register
      *
      * @return [setting]
      */
