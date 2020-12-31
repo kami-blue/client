@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.GuiManager
 import me.zeroeightsix.kami.gui.hudgui.component.HudButton
+import me.zeroeightsix.kami.gui.hudgui.elements.client.WaterMark
 import me.zeroeightsix.kami.gui.hudgui.window.HudSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
@@ -47,23 +48,32 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
     init {
         listener<RenderOverlayEvent>(0) {
-            if (mc?.world == null || mc?.player == null || mc?.currentScreen == this
-                || mc?.gameSettings?.showDebugInfo != false || Hud.isDisabled) return@listener
+            if (mc?.world == null || mc?.player == null || mc?.currentScreen == this || mc?.gameSettings?.showDebugInfo != false) return@listener
 
             val vertexHelper = VertexHelper(GlStateUtils.useVbo())
             GlStateUtils.rescaleKami()
-            for (window in windowList) {
-                if (window !is HudElement || !window.visible.value) continue
-                glPushMatrix()
-                glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
-                if (Hud.hudFrame) window.renderFrame(vertexHelper)
-                window.renderHud(vertexHelper)
-                glPopMatrix()
+
+            if (Hud.isEnabled) {
+                for (window in windowList) {
+                    if (window !is HudElement || !window.visible.value) continue
+                    renderHudElement(vertexHelper, window)
+                }
+            } else if (WaterMark.visible.value) {
+                renderHudElement(vertexHelper, WaterMark)
             }
+
             GlStateUtils.rescaleMc()
         }
 
         KamiEventBus.subscribe(this)
+    }
+
+    private fun renderHudElement(vertexHelper: VertexHelper, window: HudElement) {
+        glPushMatrix()
+        glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
+        if (Hud.hudFrame) window.renderFrame(vertexHelper)
+        window.renderHud(vertexHelper)
+        glPopMatrix()
     }
 
 }
