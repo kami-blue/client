@@ -1,8 +1,6 @@
 package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent
-import me.zeroeightsix.kami.event.MultiPhaseEvent
-import me.zeroeightsix.kami.event.Phase
+import me.zeroeightsix.kami.event.*
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.next
@@ -16,7 +14,7 @@ class OnUpdateWalkingPlayerEvent private constructor(
     var pos: Vec3d,
     var rotation: Vec2f,
     override val phase: Phase
-) : KamiEvent(), MultiPhaseEvent<OnUpdateWalkingPlayerEvent>, Cloneable {
+) : KamiEvent(), IMultiPhase<OnUpdateWalkingPlayerEvent>, ICancellable by Cancellable() {
 
     constructor(moving: Boolean, rotating: Boolean, sprinting: Boolean, sneaking: Boolean, onGround: Boolean, pos: Vec3d, rotation: Vec2f)
         : this(moving, rotating, sprinting, sneaking, onGround, pos, rotation, Phase.PRE)
