@@ -31,7 +31,7 @@ object ModuleList : HudElement(
     description = "List of enabled modules"
 ) {
 
-    private val sortingMode = setting("SortingMode", SortingMode.LENGTH)
+    private val sortingMode by setting("SortingMode", SortingMode.LENGTH)
     private val showInvisible = setting("ShowInvisible", false)
     private val rainbow = setting("Rainbow", true)
     private val rainbowLength = setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
@@ -57,7 +57,7 @@ object ModuleList : HudElement(
     override val maxHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 160.0f)
 
-    private val sortedModuleList = LinkedList(ModuleManager.getModules())
+    private var sortedModuleList = ModuleManager.getModules()
     private val textLineMap = HashMap<Module, TextComponent.TextLine>()
     private val toggleMap = ModuleManager.getModules()
         .associateWith { TimedFlag(false) }
@@ -67,6 +67,14 @@ object ModuleList : HudElement(
         listener<SafeTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END || !visible.value) return@listener
 
+            val moduleSet = ModuleManager.getModules().toSet()
+
+            for (module in moduleSet) {
+                toggleMap.computeIfAbsent(module) { TimedFlag(false) }
+            }
+
+            toggleMap.keys.removeIf { !moduleSet.contains(it) }
+
             for ((module, timedFlag) in toggleMap) {
                 val state = module.isEnabled && (module.isVisible || showInvisible.value)
                 if (timedFlag.value != state) timedFlag.value = state
@@ -75,7 +83,7 @@ object ModuleList : HudElement(
                 textLineMap[module] = module.newTextLine
             }
 
-            sortedModuleList.sortWith(sortingMode.value.comparator)
+            sortedModuleList = moduleSet.sortedWith(sortingMode.comparator)
         }
     }
 
@@ -106,10 +114,11 @@ object ModuleList : HudElement(
 
             val textLine = module.textLine
             val textWidth = textLine.getWidth()
-            val animationXOffset = textWidth * (dockingH.value.multiplier * 2.0f - 1.0f) * (1.0f - progress)
+            val animationXOffset = textWidth * dockingH.value.offset * (1.0f - progress)
             val stringPosX = textWidth * dockingH.value.multiplier
+            val margin = 2.0f * dockingH.value.offset
 
-            GlStateManager.translate(animationXOffset - stringPosX, 0.0f, 0.0f)
+            GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
             if (rainbow.value) {
                 val hue = timedHue + indexedHue.value * 0.005f * index
