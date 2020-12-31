@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.module.modules.client.GuiColors
+import me.zeroeightsix.kami.module.modules.client.Hud
 import me.zeroeightsix.kami.setting.GuiConfig
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
@@ -49,12 +50,16 @@ open class HudElement(
     }
 
     final override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), GuiColors.backGround)
-        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), 1.5f, GuiColors.outline)
+        renderFrame(vertexHelper)
         renderHud(vertexHelper)
     }
 
     open fun renderHud(vertexHelper: VertexHelper) {}
+
+    open fun renderFrame(vertexHelper: VertexHelper) {
+        RenderUtils2D.drawRectFilled(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), GuiColors.backGround)
+        RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), 1.5f, GuiColors.outline)
+    }
 
     init {
         visible.valueListeners.add { _, it ->
@@ -71,6 +76,11 @@ open class HudElement(
         PLAYER("Player"),
         WORLD("World"),
         MISC("Misc")
+    }
+
+    protected companion object {
+        val primaryColor get() = Hud.primaryColor
+        val secondaryColor get() = Hud.secondaryColor
     }
 
 }

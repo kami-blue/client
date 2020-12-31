@@ -19,8 +19,8 @@ object WaterMark : LabelHud(
     }
 
     override fun updateText() {
-        displayText.add(KamiMod.NAME, primaryColor.value)
-        displayText.add(KamiMod.VERSION_SIMPLE, secondaryColor.value)
+        displayText.add(KamiMod.NAME, primaryColor)
+        displayText.add(KamiMod.VERSION_SIMPLE, secondaryColor)
     }
 
     init {

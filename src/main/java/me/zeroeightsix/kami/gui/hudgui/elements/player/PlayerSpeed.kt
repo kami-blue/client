@@ -37,8 +37,8 @@ object PlayerSpeed : LabelHud(
         var averageSpeed = if (speedList.isEmpty()) 0.0 else speedList.sum() / speedList.size
         if (speedUnit.value == SpeedUnit.KMH) averageSpeed *= 3.6
         averageSpeed = MathUtils.round(averageSpeed, 2)
-        displayText.add(averageSpeed.toString(), primaryColor.value)
-        displayText.add(speedUnit.value.displayName, secondaryColor.value)
+        displayText.add(averageSpeed.toString(), primaryColor)
+        displayText.add(speedUnit.value.displayName, secondaryColor)
     }
 
     private fun updateSpeedList() {

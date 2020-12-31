@@ -10,8 +10,8 @@ object Ping : LabelHud(
 ) {
 
     override fun updateText() {
-        displayText.add(InfoCalculator.ping().toString(), primaryColor.value)
-        displayText.add("ms", secondaryColor.value)
+        displayText.add(InfoCalculator.ping().toString(), primaryColor)
+        displayText.add("ms", secondaryColor)
     }
 
 }

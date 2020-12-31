@@ -17,18 +17,18 @@ object Durability : LabelHud(
 
     override fun updateText() {
         if (mc.player.heldItemMainhand.isItemStackDamageable) {
-            if (showOffhand.value) displayText.add("MainHand:", secondaryColor.value)
+            if (showOffhand.value) displayText.add("MainHand:", secondaryColor)
             addDuraText(EnumHand.MAIN_HAND)
         }
         if (showOffhand.value && mc.player.heldItemOffhand.isItemStackDamageable) {
-            displayText.add("OffHand:", secondaryColor.value)
+            displayText.add("OffHand:", secondaryColor)
             addDuraText(EnumHand.OFF_HAND)
         }
     }
 
     private fun addDuraText(hand: EnumHand) {
         val itemStack = mc.player.getHeldItem(hand)
-        if (showItemName.value) displayText.add(itemStack.displayName, primaryColor.value)
+        if (showItemName.value) displayText.add(itemStack.displayName, primaryColor)
 
         val dura = itemStack.maxDamage - itemStack.itemDamage
         val duraText = if (showPercentage.value) {
@@ -37,7 +37,7 @@ object Durability : LabelHud(
             "$dura/${itemStack.maxDamage}"
         }
 
-        displayText.addLine(duraText, primaryColor.value)
+        displayText.addLine(duraText, primaryColor)
     }
 
 }

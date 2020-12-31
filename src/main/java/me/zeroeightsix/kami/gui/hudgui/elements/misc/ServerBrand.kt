@@ -10,7 +10,7 @@ object ServerBrand : LabelHud(
 
     override fun updateText() {
         val serverBrand = mc.player?.serverBrand ?: "Unknown"
-        displayText.add(serverBrand, primaryColor.value)
+        displayText.add(serverBrand, primaryColor)
     }
 
 }

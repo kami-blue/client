@@ -21,17 +21,17 @@ object Coordinate : LabelHud(
     override fun updateText() {
         val entity = mc.renderViewEntity ?: mc.player ?: return
 
-        displayText.add("Current", secondaryColor.value)
+        displayText.add("Current", secondaryColor)
         displayText.addLine(getFormattedCoords(entity.positionVector))
 
         if (showNetherOverworld.value) {
             when (entity.dimension) {
                 -1 -> { // Nether
-                    displayText.add("Overworld", secondaryColor.value)
+                    displayText.add("Overworld", secondaryColor)
                     displayText.addLine(getFormattedCoords(entity.positionVector.scale(8.0)))
                 }
                 0 -> { // Overworld
-                    displayText.add("Nether", secondaryColor.value)
+                    displayText.add("Nether", secondaryColor)
                     displayText.addLine(getFormattedCoords(entity.positionVector.scale(0.125)))
                 }
             }
@@ -46,7 +46,7 @@ object Coordinate : LabelHud(
             if (showX.value) append(x)
             if (showY.value) appendWithComma(y.toString())
             if (showZ.value) appendWithComma(z.toString())
-            TextComponent.TextElement(toString(), primaryColor.value)
+            TextComponent.TextElement(toString(), primaryColor)
         }
     }
 

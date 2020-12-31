@@ -13,9 +13,9 @@ object UserName : LabelHud(
     private val suffix = setting("Suffix", "")
 
     override fun updateText() {
-        displayText.add(prefix.value, primaryColor.value)
-        displayText.add(mc.session.username, secondaryColor.value)
-        displayText.add(suffix.value, primaryColor.value)
+        displayText.add(prefix.value, primaryColor)
+        displayText.add(mc.session.username, secondaryColor)
+        displayText.add(suffix.value, primaryColor)
     }
 
 }

@@ -8,11 +8,9 @@ import me.zeroeightsix.kami.module.Module
     name = "HudEditor",
     description = "Edits the Hud",
     category = Module.Category.CLIENT,
-    showOnArray = false,
-    alwaysListening = true
+    showOnArray = false
 )
 object HudEditor : Module() {
-
     override fun onEnable() {
         if (mc.currentScreen !is KamiHudGui) {
             ClickGUI.disable()
@@ -27,5 +25,4 @@ object HudEditor : Module() {
             mc.displayGuiScreen(null)
         }
     }
-
 }

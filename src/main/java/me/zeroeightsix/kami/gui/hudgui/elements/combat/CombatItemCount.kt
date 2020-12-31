@@ -66,8 +66,8 @@ object CombatItemCount : LabelHud(
             if (showIcon.value) {
                 itemStacks[index].count = count + 1 // Weird way to get around Minecraft item count check
             } else if (count > -1) {
-                displayText.add(entry.key.name, primaryColor.value)
-                displayText.addLine("x$count", secondaryColor.value)
+                displayText.add(entry.key.name, primaryColor)
+                displayText.addLine("x$count", secondaryColor)
             }
         }
     }

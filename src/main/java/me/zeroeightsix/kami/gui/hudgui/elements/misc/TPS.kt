@@ -19,8 +19,8 @@ object TPS : LabelHud(
 
         val tps = MathUtils.round(tpsList.average(), 2)
 
-        displayText.add("$tps", primaryColor.value)
-        displayText.add("tps", secondaryColor.value)
+        displayText.add("$tps", primaryColor)
+        displayText.add("tps", secondaryColor)
     }
 
 }

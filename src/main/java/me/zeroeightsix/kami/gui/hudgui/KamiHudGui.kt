@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.gui.hudgui.component.HudButton
 import me.zeroeightsix.kami.gui.hudgui.window.HudSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
+import me.zeroeightsix.kami.module.modules.client.Hud
 import me.zeroeightsix.kami.module.modules.client.HudEditor
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
@@ -46,8 +47,8 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
     init {
         listener<RenderOverlayEvent>(0) {
-            if (mc?.world == null || mc?.player == null
-                || mc?.currentScreen == this || mc?.gameSettings?.showDebugInfo != false) return@listener
+            if (mc?.world == null || mc?.player == null || mc?.currentScreen == this
+                || mc?.gameSettings?.showDebugInfo != false || Hud.isDisabled) return@listener
 
             val vertexHelper = VertexHelper(GlStateUtils.useVbo())
             GlStateUtils.rescaleKami()
@@ -55,6 +56,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
                 if (window !is HudElement || !window.visible.value) continue
                 glPushMatrix()
                 glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
+                if (Hud.hudFrame) window.renderFrame(vertexHelper)
                 window.renderHud(vertexHelper)
                 glPopMatrix()
             }

@@ -12,8 +12,8 @@ object Biome : LabelHud(
         val biome = mc.player?.let {
             mc.world?.getBiome(it.position)?.biomeName
         } ?: "Unknown"
-        displayText.add(biome, primaryColor.value)
-        displayText.add("Biome", secondaryColor.value)
+        displayText.add(biome, primaryColor)
+        displayText.add("Biome", secondaryColor)
     }
 
 }
