@@ -53,7 +53,6 @@ public class MixinNetworkManager {
             throwable.printStackTrace();
             ci.cancel();
         }
-        return; // DON'T REMOVE THE FUCKING RETURN
     }
 
 }

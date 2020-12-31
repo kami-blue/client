@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
@@ -32,7 +32,7 @@ object AntiBot : Module() {
             botSet.clear()
         }
 
-        listener<ClientPlayerAttackEvent> {
+        listener<PlayerAttackEvent> {
             if (isEnabled && botSet.contains(it.entity)) it.cancel()
         }
 

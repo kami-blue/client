@@ -2,10 +2,7 @@ package me.zeroeightsix.kami.event
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.gui.kami.KamiGUI
 import me.zeroeightsix.kami.gui.mc.KamiGuiChat
 import me.zeroeightsix.kami.gui.rgui.component.container.use.Frame
@@ -25,6 +22,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 import org.lwjgl.input.Keyboard
+import java.util.*
 
 object ForgeEventProcessor {
     private val mc = Wrapper.minecraft
@@ -97,6 +95,10 @@ object ForgeEventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatSent(event: ClientChatEvent) {
+        MessageDetection.Command.BARITONE.removedOrNull(event.message)?.let {
+            KamiEventBus.post(BaritoneCommandEvent(it.toString().substringBefore(' ').toLowerCase(Locale.ROOT)))
+        }
+
         if (MessageDetection.Command.KAMI_BLUE detect event.message) {
             CommandManager.runCommand(event.message.removePrefix(CommandManager.prefix))
             event.isCanceled = true

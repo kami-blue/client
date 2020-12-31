@@ -19,3 +19,7 @@ interface ICancellable {
 open class Cancellable : ICancellable {
     override var cancelled = false
 }
+
+enum class Phase {
+    PRE, PERI, POST;
+}
