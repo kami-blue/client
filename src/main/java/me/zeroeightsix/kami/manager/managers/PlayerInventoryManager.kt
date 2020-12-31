@@ -23,7 +23,7 @@ object PlayerInventoryManager : Manager {
         listener<RenderOverlayEvent>(0) {
             if (mc.player == null || !timer.tick((1000.0f / TpsCalculator.tickRate).toLong())) return@listener
 
-            if (!mc.player.inventory.getItemStack().isEmpty()) {
+            if (!mc.player.inventory.itemStack.isEmpty) {
                 if (mc.currentScreen is GuiContainer) timer.reset(250L) // Wait for 5 extra ticks if player is moving item
                 else InventoryUtils.removeHoldingItem()
                 return@listener
@@ -44,13 +44,13 @@ object PlayerInventoryManager : Manager {
     }
 
     private fun getTaskOrNext() =
-            currentTask?.let {
-                if (!it.isDone) it
-                else null
-            } ?: synchronized(lockObject) {
-                actionQueue.removeIf { it.isDone }
-                actionQueue.firstOrNull()
-            }
+        currentTask?.let {
+            if (!it.isDone) it
+            else null
+        } ?: synchronized(lockObject) {
+            actionQueue.removeIf { it.isDone }
+            actionQueue.firstOrNull()
+        }
 
     /**
      * Adds a new task to the inventory manager
@@ -60,24 +60,24 @@ object PlayerInventoryManager : Manager {
      * @return [TaskState] representing the state of this task
      */
     fun Module.addInventoryTask(vararg clickInfo: ClickInfo) =
-            InventoryTask(currentId++, modulePriority, clickInfo).let {
-                actionQueue.add(it)
-                it.taskState
-            }
+        InventoryTask(currentId++, modulePriority, clickInfo).let {
+            actionQueue.add(it)
+            it.taskState
+        }
 
     private data class InventoryTask(
-            private val id: Int,
-            private val priority: Int,
-            private val infoArray: Array<out ClickInfo>,
-            val taskState: TaskState = TaskState(),
-            private var index: Int = 0
+        private val id: Int,
+        private val priority: Int,
+        private val infoArray: Array<out ClickInfo>,
+        val taskState: TaskState = TaskState(),
+        private var index: Int = 0
     ) : Comparable<InventoryTask> {
         val isDone get() = taskState.done
 
         fun nextInfo() =
-                infoArray.getOrNull(index++).also {
-                    if (it == null) taskState.done = true
-                }
+            infoArray.getOrNull(index++).also {
+                if (it == null) taskState.done = true
+            }
 
 
         override fun compareTo(other: InventoryTask): Int {
