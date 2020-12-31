@@ -75,7 +75,7 @@ object AutoOffhand : Module() {
     }
 
     private val transactionLog = HashMap<Short, Boolean>()
-    private val movingTimer = TimerUtils.TickTimer()
+    private val movingTimer = TickTimer()
     private var maxDamage = 0f
 
     init {

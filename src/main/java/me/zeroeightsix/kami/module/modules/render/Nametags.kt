@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.*
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.originalName
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
@@ -505,7 +506,7 @@ object Nametags : Module() {
             val itemCountMap = TreeMap<String, Int>(Comparator.naturalOrder())
             for (entityItem in itemSet) {
                 val itemStack = entityItem.item
-                val originalName = itemStack.item.getItemStackDisplayName(itemStack)
+                val originalName = itemStack.originalName
                 val displayName = itemStack.displayName
                 val finalName = if (displayName == originalName) originalName else "$displayName ($originalName)"
                 val count = itemCountMap.getOrDefault(finalName, 0) + itemStack.count

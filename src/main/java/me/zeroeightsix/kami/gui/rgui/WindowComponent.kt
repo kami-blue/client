@@ -67,7 +67,7 @@ open class WindowComponent(
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
-        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.subtract(posX, posY))
+        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.minus(posX, posY))
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -79,7 +79,7 @@ open class WindowComponent(
         super.onRelease(mousePos, buttonId)
         lastActiveTime = System.currentTimeMillis()
         if (minimizable && buttonId == 1 && mousePos.y - posY < draggableHeight) minimized.value = !minimized.value
-        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.subtract(posX, posY))
+        if (mouseState != MouseState.DRAG) updatePreDrag(mousePos.minus(posX, posY))
     }
 
     private fun updatePreDrag(mousePos: Vec2f?) {
@@ -91,7 +91,7 @@ open class WindowComponent(
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
 
-        val relativeClickPos = clickPos.subtract(preDragPos)
+        val relativeClickPos = clickPos.minus(preDragPos)
         val centerSplitterH = min(10.0, preDragSize.x / 3.0)
         val centerSplitterV = min(10.0, preDragSize.y / 3.0)
 
@@ -110,7 +110,7 @@ open class WindowComponent(
             else -> null
         }
 
-        val draggedDist = mousePos.subtract(clickPos)
+        val draggedDist = mousePos.minus(clickPos)
 
         if (horizontalSide != null && verticalSide != null) {
             if (resizable && !minimized.value && (horizontalSide != HAlign.CENTER || verticalSide != VAlign.CENTER)) {

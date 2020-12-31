@@ -63,7 +63,6 @@ object ForgeEventProcessor {
     @SubscribeEvent
     fun onRenderPre(event: RenderGameOverlayEvent.Pre) {
         KamiEventBus.post(event)
-        if (event.isCanceled) return
     }
 
     @SubscribeEvent

@@ -12,7 +12,7 @@ import java.util.*
 
 object PlayerInventoryManager : Manager {
     private val mc = Wrapper.minecraft
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private val lockObject = Any()
     private val actionQueue = TreeSet<InventoryTask>(Comparator.reverseOrder())
 

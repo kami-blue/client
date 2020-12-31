@@ -104,7 +104,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
-        val relativeMousePos = mousePos.subtract(posX, posY)
+        val relativeMousePos = mousePos.minus(posX, posY)
 
         hoveredChild?.let {
             it.onClick(relativeMousePos.subtract(it.posX, it.posY), buttonId)
@@ -115,7 +115,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        val relativeMousePos = mousePos.subtract(posX, posY)
+        val relativeMousePos = mousePos.minus(posX, posY)
 
         hoveredChild?.let {
             it.onRelease(relativeMousePos.subtract(it.posX, it.posY), buttonId)
@@ -127,8 +127,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
         super.onDrag(mousePos, clickPos, buttonId)
-        val relativeMousePos = mousePos.subtract(posX, posY)
-        val relativeClickPos = clickPos.subtract(posX, posY)
+        val relativeMousePos = mousePos.minus(posX, posY)
+        val relativeClickPos = clickPos.minus(posX, posY)
 
         hoveredChild?.let {
             it.onDrag(relativeMousePos.subtract(it.posX, it.posY), clickPos, buttonId)
@@ -171,7 +171,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
             if (!component.visible.value) continue
             glPushMatrix()
             glTranslatef(component.renderPosX, component.renderPosY, 0.0f)
-            component.onRender(vertexHelper, absolutePos.add(component.renderPosX, component.renderPosY))
+            component.onRender(vertexHelper, absolutePos.plus(component.renderPosX, component.renderPosY))
             glPopMatrix()
         }
     }
@@ -185,20 +185,20 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val rightColor = ColorHolder(Color.getHSBColor(interpolatedHue, 1.0f, 1.0f))
         val leftColor = ColorHolder(255, 255, 255)
         vertexHelper.begin(GL_TRIANGLE_STRIP)
-        vertexHelper.put(Vec2d(fieldPos.first), leftColor) // Top left
-        vertexHelper.put(Vec2d(fieldPos.first.x, fieldPos.second.y), leftColor) // Bottom left
-        vertexHelper.put(Vec2d(fieldPos.second.x, fieldPos.first.y), rightColor) // Top right
-        vertexHelper.put(Vec2d(fieldPos.second), rightColor) // Bottom right
+        vertexHelper.put(fieldPos.first.toVec2d(), leftColor) // Top left
+        vertexHelper.put(Vec2f(fieldPos.first.x, fieldPos.second.y).toVec2d(), leftColor) // Bottom left
+        vertexHelper.put(Vec2f(fieldPos.second.x, fieldPos.first.y).toVec2d(), rightColor) // Top right
+        vertexHelper.put(fieldPos.second.toVec2d(), rightColor) // Bottom right
         vertexHelper.end()
 
         // Brightness
         val topColor = ColorHolder(0, 0, 0, 0)
         val bottomColor = ColorHolder(0, 0, 0, 255)
         vertexHelper.begin(GL_TRIANGLE_STRIP)
-        vertexHelper.put(Vec2d(fieldPos.first), topColor) // Top left
-        vertexHelper.put(Vec2d(fieldPos.first.x, fieldPos.second.y), bottomColor) // Bottom left
-        vertexHelper.put(Vec2d(fieldPos.second.x, fieldPos.first.y), topColor) // Top right
-        vertexHelper.put(Vec2d(fieldPos.second), bottomColor) // Bottom right
+        vertexHelper.put(fieldPos.first.toVec2d(), leftColor) // Top left
+        vertexHelper.put(Vec2f(fieldPos.first.x, fieldPos.second.y).toVec2d(), bottomColor) // Bottom left
+        vertexHelper.put(Vec2f(fieldPos.second.x, fieldPos.first.y).toVec2d(), topColor) // Top right
+        vertexHelper.put(fieldPos.second.toVec2d(), rightColor) // Bottom right
         vertexHelper.end()
 
         RenderUtils2D.releaseGl()

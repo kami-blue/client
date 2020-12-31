@@ -59,7 +59,7 @@ object AntiBot : Module() {
             || entity.ticksExisted < ticksExists.value
 
     private fun hoverCheck(entity: EntityPlayer): Boolean {
-        val distXZ = Vec2d(entity.posX, entity.posZ).subtract(mc.player.posX, mc.player.posZ).lengthSquared()
+        val distXZ = Vec2d(entity.posX, entity.posZ).minus(mc.player.posX, mc.player.posZ).lengthSquared()
         return distXZ < 16 && entity.posY - mc.player.posY > 2.0 && abs(entity.posY - entity.prevPosY) < 0.1
     }
 }

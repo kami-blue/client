@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos
 object CombatManager : Manager {
     private val combatModules: List<Module>
 
-    var targetList = emptyList<EntityLivingBase>()
     var target: EntityLivingBase? = null
         set(value) {
             motionTracker.target = value

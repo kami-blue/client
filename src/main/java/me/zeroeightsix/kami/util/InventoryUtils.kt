@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
-import net.minecraft.item.Item
 import net.minecraft.network.play.client.CPacketClickWindow
 
 object InventoryUtils {
@@ -38,7 +37,7 @@ object InventoryUtils {
         mc.player?.inventory?.mainInventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemID) continue
+                if (clonedList[i].item.id != itemID) continue
                 slots.add(i)
             }
         }
@@ -63,7 +62,7 @@ object InventoryUtils {
         mc.player?.openContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
+                if (clonedList[i].item.id != itemId) continue
                 slots.add(i)
             }
         }
@@ -101,7 +100,7 @@ object InventoryUtils {
         mc.player?.inventoryContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in min..max) {
-                if (Item.getIdFromItem(clonedList[i].item) != itemId) continue
+                if (clonedList[i].item.id != itemId) continue
                 slots.add(i)
             }
         }
@@ -177,6 +176,7 @@ object InventoryUtils {
                 val clonedList = ArrayList(it)
                 for (i in min..max) {
                     val itemStack = clonedList.getOrNull(i) ?: continue
+                    if (itemStack.item.id != itemId) continue
                     currentCount += if (itemId == 0) 1 else itemStack.count
                 }
             }
@@ -222,21 +222,25 @@ object InventoryUtils {
     /**
      * Try to move item with given [itemID] to empty hotbar slot or slot contains no exception [exceptionID]
      * If none of those found, then move it to slot 0
+     * @return the inventory slot [itemID] was moved to, -1 if failed
      */
-    fun moveToHotbar(itemID: Int, exceptionID: Int) {
-        val slot1 = getSlotsFullInvNoHotbar(itemID)?.getOrNull(0) ?: return
-        var slot2 = 36
+    fun moveToHotbar(itemID: Int, vararg exceptionID: Int): Int {
+        val slotFrom = getSlotsFullInvNoHotbar(itemID)?.getOrNull(0) ?: return -1
+        var slotTo = 36
+
         mc.player?.inventoryContainer?.inventory?.let {
             val clonedList = ArrayList(it)
             for (i in 36..44) { /* Finds slot contains no exception item first */
                 val itemStack = clonedList[i]
-                if (Item.getIdFromItem(itemStack.item) != exceptionID) {
-                    slot2 = i
+                if (!exceptionID.contains(itemStack.item.id)) {
+                    slotTo = i
                     break
                 }
             }
         }
-        moveToSlot(slot1, slot2)
+
+        moveToSlot(slotFrom, slotTo)
+        return slotTo
     }
 
     /**

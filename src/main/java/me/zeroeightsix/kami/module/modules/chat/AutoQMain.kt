@@ -2,6 +2,8 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -21,7 +23,7 @@ object AutoQMain : Module() {
     private val dimensionWarning = setting("DimensionWarning", true)
     private val delay = setting("Delay", 30, 5..120, 5)
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<SafeTickEvent> {

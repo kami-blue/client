@@ -11,12 +11,15 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
@@ -30,13 +33,13 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
-import kotlin.math.ceil
 
 @Module.Info(
         name = "CombatSetting",
@@ -92,7 +95,7 @@ object CombatSetting : Module() {
 
     private var overrideRange = range.value
     private var paused = false
-    private val resumeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val resumeTimer = TickTimer(TimeUnit.SECONDS)
     private val jobMap = hashMapOf<() -> Unit, Job?>(
         { updateTarget() } to null,
         { updatePlacingList() } to null,
@@ -111,7 +114,7 @@ object CombatSetting : Module() {
         listener<RenderOverlayEvent> {
             if (!renderPredictedPos.value) return@listener
             CombatManager.target?.let {
-                val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+                val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
                 val posCurrent = EntityUtils.getInterpolatedPos(it, KamiTessellator.pTicks())
                 val posAhead = CombatManager.motionTracker.calcPositionAhead(ticks, true) ?: return@listener
                 val posAheadEye = posAhead.add(0.0, it.eyeHeight.toDouble(), 0.0)
@@ -148,7 +151,6 @@ object CombatSetting : Module() {
         }
 
         getTargetList().let {
-            CombatManager.targetList = it
             CombatManager.target = getTarget(it)
         }
     }
@@ -162,7 +164,7 @@ object CombatSetting : Module() {
         val prediction = target?.let { getPrediction(it) }
 
         for (pos in CrystalUtils.getPlacePos(target, mc.player, 8f)) {
-            val dist = eyePos.distanceTo(pos.toVec3d().add(0.0, 0.5, 0.0))
+            val dist = eyePos.distanceTo(pos.toVec3d(0.0, 0.5, 0.0))
             val damage = target?.let { CrystalUtils.calcDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
             val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
             cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
@@ -185,7 +187,7 @@ object CombatSetting : Module() {
         for (entity in entityList) {
             if (entity.isDead) continue
             if (entity !is EntityEnderCrystal) continue
-            val dist = entity.positionVector.distanceTo(eyePos)
+            val dist = entity.distanceTo(eyePos)
             if (dist > 16.0f) continue
             val damage = if (target != null && prediction != null) CrystalUtils.calcDamage(entity, target, prediction.first, prediction.second) else 0.0f
             val selfDamage = CrystalUtils.calcDamage(entity, mc.player)
@@ -198,7 +200,7 @@ object CombatSetting : Module() {
 
     fun getPrediction(entity: Entity) = CombatManager.target?.let {
         if (motionPrediction.value) {
-            val ticks = if (pingSync.value) ceil(InfoCalculator.ping() / 25f).toInt() else ticksAhead.value
+            val ticks = if (pingSync.value) (InfoCalculator.ping() / 25f).ceilToInt() else ticksAhead.value
             CombatManager.motionTracker.getPositionAndBBAhead(ticks) ?: it.positionVector to it.entityBoundingBox
         } else {
             it.positionVector to it.entityBoundingBox

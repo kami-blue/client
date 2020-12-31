@@ -4,6 +4,9 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.*
@@ -26,7 +29,7 @@ object AutoRemount : Module() {
     private val range = setting("Range", 2.0f, 1.0f..5.0f, 0.5f)
     private val remountDelay = setting("RemountDelay", 5, 0..10, 1)
 
-    private var remountTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private var remountTimer = TickTimer(TimeUnit.TICKS)
 
     init {
         listener<SafeTickEvent> {
