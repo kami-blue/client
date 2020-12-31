@@ -33,8 +33,9 @@ import org.lwjgl.opengl.GL11.glColor4f
 )
 object LagNotifier : Module() {
     private val detectRubberBand = setting("DetectRubberBand", true)
-    private val pauseTakeoff = setting("PauseElytraTakeoff", true)
     private val pauseBaritone = setting("PauseBaritone", true)
+    val pauseTakeoff = setting("PauseElytraTakeoff", true)
+    val pauseAutoWalk = setting("PauseAutoWalk", true)
     private val feedback = setting("PauseFeedback", true, { pauseBaritone.value })
     private val timeout = setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
@@ -108,7 +109,7 @@ object LagNotifier : Module() {
             if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
             BaritoneUtils.pause()
         }
-        if (pauseTakeoff.value) paused = true
+        if (pauseTakeoff.value || pauseAutoWalk.value) paused = true
     }
 
     private fun unpause() {

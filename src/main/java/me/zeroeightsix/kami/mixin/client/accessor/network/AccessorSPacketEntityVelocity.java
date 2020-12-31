@@ -7,13 +7,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SPacketEntityVelocity.class)
 public interface AccessorSPacketEntityVelocity {
 
-    @Accessor
+    @Accessor("motionX")
     void setMotionX(int value);
 
-    @Accessor
+    @Accessor("motionY")
     void setMotionY(int value);
 
-    @Accessor
+    @Accessor("motionZ")
     void setMotionZ(int value);
 
 }

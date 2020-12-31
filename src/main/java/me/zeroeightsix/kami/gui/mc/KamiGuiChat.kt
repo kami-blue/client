@@ -42,7 +42,7 @@ class KamiGuiChat(
         }
 
         if (canAutoComplete && keyCode == Keyboard.KEY_TAB && predictString.isNotBlank()) {
-            inputField.text += "$predictString "
+            inputField.text += predictString
             predictString = ""
         }
 

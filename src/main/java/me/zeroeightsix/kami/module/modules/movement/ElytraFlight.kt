@@ -252,7 +252,7 @@ object ElytraFlight : Module() {
                 sendChatMessage("$chatName Liquid below, disabling.")
                 autoLanding.value = false
             }
-            LagNotifier.paused -> {
+            LagNotifier.paused && LagNotifier.pauseTakeoff.value -> {
                 holdPlayer(event)
             }
             mc.player.capabilities.isFlying || !mc.player.isElytraFlying || isPacketFlying -> {
@@ -286,8 +286,8 @@ object ElytraFlight : Module() {
         val timerSpeed = if (highPingOptimize.value) 400.0f else 200.0f
         val height = if (highPingOptimize.value) 0.0f else minTakeoffHeight.value
         val closeToGround = mc.player.posY <= getGroundPos().y + height && !wasInLiquid && !mc.isSingleplayer
-        if (!easyTakeOff.value || LagNotifier.paused || mc.player.onGround) {
-            if (LagNotifier.paused && mc.player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
+        if (!easyTakeOff.value || (LagNotifier.paused && LagNotifier.pauseTakeoff.value)|| mc.player.onGround) {
+            if (LagNotifier.paused && LagNotifier.pauseTakeoff.value && mc.player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(mc.player.onGround)
             return
         }
