@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
 import org.kamiblue.commons.interfaces.DisplayEnum
-import org.kamiblue.event.listener.listener
+import org.kamiblue.event.listener.asyncListener
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
@@ -67,8 +67,8 @@ object ModuleList : HudElement(
         .toMutableMap()
 
     init {
-        listener<SafeTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END || !visible.value) return@listener
+        asyncListener<SafeTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@asyncListener
 
             val moduleSet = ModuleManager.getModules().toSet()
 

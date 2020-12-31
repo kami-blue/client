@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.event
 
 import io.netty.util.internal.ConcurrentSet
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.zeroeightsix.kami.util.threads.defaultScope
 import org.kamiblue.event.eventbus.AbstractAsyncEventBus
 import org.kamiblue.event.listener.AsyncListener
 import org.kamiblue.event.listener.Listener
@@ -22,20 +22,20 @@ object KamiEventBus : AbstractAsyncEventBus() {
     override val newSetAsync get() = ConcurrentSet<AsyncListener<*>>()
 
     override fun post(event: Any) {
-        val asyncList = subscribedListenersAsync[event.javaClass]?.map {
-            defaultScope.async {
-                @Suppress("UNCHECKED_CAST") // IDE meme
-                (it as AsyncListener<Any>).function.invoke(event)
-            }
-        }
-
-        subscribedListeners[event.javaClass]?.forEach {
-            @Suppress("UNCHECKED_CAST") // IDE meme
-            (it as Listener<Any>).function.invoke(event)
-        }
-
         runBlocking {
-            asyncList?.awaitAll()
+            coroutineScope {
+                subscribedListenersAsync[event.javaClass]?.forEach {
+                    launch(Dispatchers.Default) {
+                        @Suppress("UNCHECKED_CAST") // IDE meme
+                        (it as AsyncListener<Any>).function.invoke(event)
+                    }
+                }
+            }
+
+            subscribedListeners[event.javaClass]?.forEach {
+                @Suppress("UNCHECKED_CAST") // IDE meme
+                (it as Listener<Any>).function.invoke(event)
+            }
         }
     }
 }

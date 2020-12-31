@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
+import org.kamiblue.event.listener.asyncListener
 
 abstract class LabelHud(
     name: String,
@@ -25,8 +25,8 @@ abstract class LabelHud(
     protected val displayText = TextComponent()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || !visible.value) return@listener
+        asyncListener<SafeTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@asyncListener
             displayText.clear()
             updateText()
         }

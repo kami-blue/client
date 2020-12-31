@@ -17,7 +17,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
-import org.kamiblue.event.listener.listener
+import org.kamiblue.event.listener.asyncListener
 import kotlin.math.max
 
 object Armor : HudElement(
@@ -54,8 +54,8 @@ object Armor : HudElement(
     )
 
     init {
-        listener<SafeTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END || !visible.value) return@listener
+        asyncListener<SafeTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@asyncListener
 
             for ((index, item) in armorItems.withIndex()) {
                 armorCounts[index] = InventoryUtils.countItemAll(item)
