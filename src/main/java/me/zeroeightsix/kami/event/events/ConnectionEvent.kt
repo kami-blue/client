@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Event
 
-abstract class ConnectionEvent : KamiEvent() {
+abstract class ConnectionEvent : Event() {
     class Connect : ConnectionEvent()
     class Disconnect : ConnectionEvent()
 }

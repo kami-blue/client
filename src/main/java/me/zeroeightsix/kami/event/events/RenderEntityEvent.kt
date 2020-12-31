@@ -11,7 +11,7 @@ class RenderEntityEvent(
     val yaw: Float,
     val partialTicks: Float,
     override val phase: Phase
-) : KamiEvent(), ICancellable by Cancellable(), IMultiPhase<RenderEntityEvent> {
+) : Event(), ICancellable by Cancellable(), IMultiPhase<RenderEntityEvent> {
     override fun nextPhase(): RenderEntityEvent {
         throw UnsupportedOperationException()
     }

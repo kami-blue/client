@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.event.events
 
 import me.zeroeightsix.kami.event.Cancellable
+import me.zeroeightsix.kami.event.Event
 import me.zeroeightsix.kami.event.ICancellable
-import me.zeroeightsix.kami.event.KamiEvent
 import net.minecraft.entity.Entity
 
-class ClientPlayerAttackEvent(val entity: Entity) : KamiEvent(), ICancellable by Cancellable()
+class ClientPlayerAttackEvent(val entity: Entity) : Event(), ICancellable by Cancellable()

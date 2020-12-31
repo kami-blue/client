@@ -14,7 +14,7 @@ class OnUpdateWalkingPlayerEvent private constructor(
     var pos: Vec3d,
     var rotation: Vec2f,
     override val phase: Phase
-) : KamiEvent(), IMultiPhase<OnUpdateWalkingPlayerEvent>, ICancellable by Cancellable() {
+) : Event(), IMultiPhase<OnUpdateWalkingPlayerEvent>, ICancellable by Cancellable() {
 
     constructor(moving: Boolean, rotating: Boolean, sprinting: Boolean, sneaking: Boolean, onGround: Boolean, pos: Vec3d, rotation: Vec2f)
         : this(moving, rotating, sprinting, sneaking, onGround, pos, rotation, Phase.PRE)
