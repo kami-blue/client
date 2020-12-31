@@ -195,10 +195,10 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val topColor = ColorHolder(0, 0, 0, 0)
         val bottomColor = ColorHolder(0, 0, 0, 255)
         vertexHelper.begin(GL_TRIANGLE_STRIP)
-        vertexHelper.put(fieldPos.first.toVec2d(), leftColor) // Top left
+        vertexHelper.put(fieldPos.first.toVec2d(), topColor) // Top left
         vertexHelper.put(Vec2f(fieldPos.first.x, fieldPos.second.y).toVec2d(), bottomColor) // Bottom left
         vertexHelper.put(Vec2f(fieldPos.second.x, fieldPos.first.y).toVec2d(), topColor) // Top right
-        vertexHelper.put(fieldPos.second.toVec2d(), rightColor) // Bottom right
+        vertexHelper.put(fieldPos.second.toVec2d(), bottomColor) // Bottom right
         vertexHelper.end()
 
         RenderUtils2D.releaseGl()
