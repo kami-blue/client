@@ -8,8 +8,6 @@ import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper

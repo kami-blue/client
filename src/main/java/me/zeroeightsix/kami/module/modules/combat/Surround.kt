@@ -8,12 +8,6 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.combat.SurroundUtils
@@ -22,9 +16,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import net.minecraft.util.math.BlockPos
-import org.kamiblue.event.listener.listener
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule

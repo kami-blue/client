@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.InteractiveComponent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
@@ -40,7 +40,7 @@ open class ListWindow(
             field = value
         }
 
-    private val scrollTimer = TimerUtils.TickTimer()
+    private val scrollTimer = TickTimer()
     private var scrollSpeed = 0.0f
 
     private var scrollProgress = 0.0f
@@ -126,7 +126,7 @@ open class ListWindow(
             if (child.renderPosY - renderScrollProgress > renderHeight) continue
             glPushMatrix()
             glTranslatef(child.renderPosX, child.renderPosY, 0.0f)
-            child.onRender(vertexHelper, absolutePos.add(child.renderPosX, child.renderPosY - renderScrollProgress))
+            child.onRender(vertexHelper, absolutePos.plus(child.renderPosX, child.renderPosY - renderScrollProgress))
             glPopMatrix()
         }
         glDisable(GL_SCISSOR_TEST)
@@ -134,7 +134,7 @@ open class ListWindow(
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
-        val relativeMousePos = mousePos.subtract(posX, posY - renderScrollProgress)
+        val relativeMousePos = mousePos.minus(posX, posY - renderScrollProgress)
         if (Mouse.getEventDWheel() != 0) {
             scrollTimer.reset()
             scrollSpeed -= Mouse.getEventDWheel() * 0.1f
@@ -185,5 +185,5 @@ open class ListWindow(
     }
 
     private fun getRelativeMousePos(mousePos: Vec2f, component: InteractiveComponent) =
-        mousePos.subtract(posX, posY - renderScrollProgress).subtract(component.posX, component.posY)
+        mousePos.minus(posX, posY - renderScrollProgress).minus(component.posX, component.posY)
 }

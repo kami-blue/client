@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.CPacketClickWindow
 
 object InventoryUtils {

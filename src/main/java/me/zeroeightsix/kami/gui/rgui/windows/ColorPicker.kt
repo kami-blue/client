@@ -131,7 +131,7 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         val relativeClickPos = clickPos.minus(posX, posY)
 
         hoveredChild?.let {
-            it.onDrag(relativeMousePos.subtract(it.posX, it.posY), clickPos, buttonId)
+            it.onDrag(relativeMousePos.minus(it.posX, it.posY), clickPos, buttonId)
         } ?: run {
             updateValues(relativeMousePos, relativeClickPos)
         }

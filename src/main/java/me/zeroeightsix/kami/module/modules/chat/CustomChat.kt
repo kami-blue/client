@@ -4,8 +4,6 @@ import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
@@ -67,7 +65,6 @@ object CustomChat : Module() {
         DecoMode.NONE -> " " + getText()
         DecoMode.CLASSIC -> " \u00ab " + getText() + " \u00bb"
         DecoMode.SEPARATOR -> " | " + getText()
-        else -> ""
     }
 
     init {
