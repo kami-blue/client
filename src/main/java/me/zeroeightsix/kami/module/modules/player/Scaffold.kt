@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
@@ -86,7 +86,7 @@ object Scaffold : Module() {
             && mc.player.posY - floor(mc.player.posY) <= 0.1
     init {
         listener<OnUpdateWalkingPlayerEvent> { event ->
-            if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
+            if (mc.world == null || mc.player == null || event.phase != Phase.PRE) return@listener
             inactiveTicks++
             placeInfo = calcNextPos()?.let {
                 WorldUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))

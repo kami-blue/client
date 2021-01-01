@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
+import me.zeroeightsix.kami.event.events.EntityCollisionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
 import me.zeroeightsix.kami.mixin.extension.packetMotionX
@@ -8,9 +8,9 @@ import me.zeroeightsix.kami.mixin.extension.packetMotionY
 import me.zeroeightsix.kami.mixin.extension.packetMotionZ
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
+import org.kamiblue.event.listener.listener
 
 /**
  * @see MixinBlockLiquid.modifyAcceleration
@@ -52,7 +52,7 @@ object Velocity : Module() {
             }
         }
 
-        listener<EntityCollision> {
+        listener<EntityCollisionEvent> {
             if (it.entity != mc.player) return@listener
             if (noPush.value || isZero) {
                 it.cancel()

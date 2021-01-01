@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.mixin.extension.editLine
 import me.zeroeightsix.kami.mixin.extension.tileSign
 import me.zeroeightsix.kami.module.Module
@@ -18,7 +18,7 @@ import java.io.IOException
 )
 object ColorSign : Module() {
     init {
-        listener<GuiScreenEvent.Displayed> { event ->
+        listener<GuiEvent.Displayed> { event ->
             if (event.screen !is GuiEditSign) return@listener
             (event.screen as? GuiEditSign?)?.tileSign?.let { event.screen = KamiGuiEditSign(it) }
         }

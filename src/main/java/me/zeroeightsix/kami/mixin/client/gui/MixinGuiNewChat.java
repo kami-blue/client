@@ -27,7 +27,7 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "printChatMessage", at = @At("HEAD"))
     private void printChatMessage(ITextComponent chatComponent, CallbackInfo ci) {
-        KamiEventBus.INSTANCE.post(new PrintChatMessageEvent(chatComponent, chatComponent.getUnformattedComponentText()));
+        KamiEventBus.INSTANCE.post(new PrintChatMessageEvent(chatComponent));
     }
 
     @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 0, remap = false))

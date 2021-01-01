@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -21,7 +21,7 @@ object AutoRespawn : Module() {
     private val antiGlitchScreen = register(Settings.b("AntiGlitchScreen", true))
 
     init {
-        listener<GuiScreenEvent.Displayed> {
+        listener<GuiEvent.Displayed> {
             if (it.screen !is GuiGameOver) return@listener
 
             if (deathCoords.value && mc.player.health <= 0) {

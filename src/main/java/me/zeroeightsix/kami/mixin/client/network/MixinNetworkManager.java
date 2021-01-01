@@ -21,7 +21,7 @@ public class MixinNetworkManager {
         PacketEvent event = new PacketEvent.Send(packet);
         KamiEventBus.INSTANCE.post(event);
 
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             callbackInfo.cancel();
         }
     }
@@ -31,7 +31,7 @@ public class MixinNetworkManager {
         PacketEvent event = new PacketEvent.Receive(packet);
         KamiEventBus.INSTANCE.post(event);
 
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             callbackInfo.cancel();
         }
     }
@@ -41,7 +41,7 @@ public class MixinNetworkManager {
         PacketEvent event = new PacketEvent.PostSend(packet);
         KamiEventBus.INSTANCE.post(event);
 
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             callbackInfo.cancel();
         }
     }
@@ -53,7 +53,6 @@ public class MixinNetworkManager {
             throwable.printStackTrace();
             ci.cancel();
         }
-        return; // DON'T REMOVE THE FUCKING RETURN
     }
 
 }

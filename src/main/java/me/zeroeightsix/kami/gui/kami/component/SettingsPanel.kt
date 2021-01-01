@@ -20,7 +20,7 @@ import me.zeroeightsix.kami.setting.impl.numerical.FloatSetting
 import me.zeroeightsix.kami.setting.impl.numerical.IntegerSetting
 import me.zeroeightsix.kami.setting.impl.numerical.NumberSetting
 import me.zeroeightsix.kami.util.Bind
-import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.commons.extension.readableName
 import java.util.*
 
 /**
@@ -123,7 +123,7 @@ class SettingsPanel(theme: Theme?, module: Module?) : OrganisedContainer(theme, 
 
                     val enumClass = setting.clazz
                     val enumValues = enumClass.enumConstants
-                    val modes = enumValues.map { if (it is DisplayEnum) it.displayName else it.name }.toTypedArray()
+                    val modes = enumValues.map { it.readableName() }.toTypedArray()
                     val enumButton = EnumButton(name, null, modes)
 
                     enumButton.addPoof(object : EnumbuttonIndexPoof<EnumButton, EnumbuttonInfo>() {

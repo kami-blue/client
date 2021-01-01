@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import baritone.api.pathing.goals.GoalTwoBlocks
-import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -80,7 +80,7 @@ object Freecam : Module() {
             if (it.packet.getEntityFromWorld(mc.world) == mc.player) it.cancel()
         }
 
-        listener<ClientPlayerAttackEvent> {
+        listener<PlayerAttackEvent> {
             if (it.entity == mc.player) it.cancel()
         }
 

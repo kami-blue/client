@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
@@ -179,12 +179,12 @@ object CrystalAura : Module() {
         listener<OnUpdateWalkingPlayerEvent> {
             if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
 
-            if (it.era == KamiEvent.Era.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
+            if (it.phase == Phase.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = getLastRotation())
                 PlayerPacketManager.addPacket(this, packet)
             }
 
-            if (it.era == KamiEvent.Era.POST) {
+            if (it.phase == Phase.POST) {
                 for (packet in packetList) sendPacketDirect(packet)
                 packetList.clear()
             }
