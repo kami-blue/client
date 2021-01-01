@@ -3,6 +3,8 @@ package me.zeroeightsix.kami.setting.settings.impl.primitive
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.setting.settings.MutableSetting
+import org.kamiblue.commons.extension.next
+import java.util.*
 
 class EnumSetting<T : Enum<T>>(
         name: String,
@@ -14,6 +16,14 @@ class EnumSetting<T : Enum<T>>(
 
     val enumClass: Class<T> = value.declaringClass
     val enumValues: Array<out T> = enumClass.enumConstants
+
+    fun nextValue() {
+        value = value.next()
+    }
+
+    override fun setValue(valueIn: String) {
+        super.setValue(valueIn.toUpperCase(Locale.ROOT).replace(' ', '_'))
+    }
 
     override fun write(): JsonElement = JsonPrimitive(value.name)
 

@@ -24,7 +24,7 @@ class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, settin
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
-        if (prevState != MouseState.DRAG) setting.setValue(enumValues[(setting.value.ordinal + 1) % enumValues.size].name)
+        if (prevState != MouseState.DRAG) setting.nextValue()
     }
 
     override fun onDrag(mousePos: Vec2f, clickPos: Vec2f, buttonId: Int) {
