@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.config.AbstractMultiConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
-object ModuleConfig : AbstractMultiConfig<Module>(
+internal object ModuleConfig : AbstractMultiConfig<Module>(
         "Modules",
         KamiMod.DIRECTORY,
         *Module.Category.values().map { it.displayName }.toTypedArray()

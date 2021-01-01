@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.setting.config.AbstractMultiConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
-object GuiConfig : AbstractMultiConfig<Component>(
+internal object GuiConfig : AbstractMultiConfig<Component>(
         "Gui",
         KamiMod.DIRECTORY,
         "ClickGUI", "HudGUI"
