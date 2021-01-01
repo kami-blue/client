@@ -35,7 +35,6 @@ object InventoryViewer : HudElement(
         drawFrame()
         drawFrameTexture()
         drawItems()
-        GlStateUtils.depth(true)
     }
 
     private fun drawFrame() {

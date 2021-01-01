@@ -176,6 +176,18 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
         }
     }
 
+    override fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        super.onPostRender(vertexHelper, absolutePos)
+
+        for (component in components) {
+            if (!component.visible) continue
+            glPushMatrix()
+            glTranslatef(component.renderPosX, component.renderPosY, 0.0f)
+            component.onPostRender(vertexHelper, absolutePos.plus(component.renderPosX, component.renderPosY))
+            glPopMatrix()
+        }
+    }
+
     private fun drawColorField(vertexHelper: VertexHelper) {
         RenderUtils2D.prepareGl()
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE)

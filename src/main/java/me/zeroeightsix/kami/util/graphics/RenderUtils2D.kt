@@ -28,6 +28,8 @@ object RenderUtils2D {
 
         RenderHelper.disableStandardItemLighting()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
+        GlStateUtils.depth(false)
     }
 
     @JvmStatic

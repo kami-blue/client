@@ -85,8 +85,8 @@ open class Component(
     private fun absToRelativeX(xIn: Float) = xIn - scaledWidth * dockingH.multiplier + dockWidth
     private fun absToRelativeY(yIn: Float) = yIn - scaledHeight * dockingV.multiplier + dockHeight
 
-    protected val scaledWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
-    protected val scaledHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
+    private val scaledWidth get() = mc.displayWidth / ClickGUI.getScaleFactorFloat()
+    private val scaledHeight get() = mc.displayHeight / ClickGUI.getScaleFactorFloat()
     private val dockWidth get() = width * dockingH.multiplier
     private val dockHeight get() = height * dockingV.multiplier
     private val prevDockWidth get() = prevWidth * dockingH.multiplier
@@ -118,6 +118,8 @@ open class Component(
     }
 
     open fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
+
+    open fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
 
     enum class SettingGroup(val groupName: String?) {
         NONE(null),

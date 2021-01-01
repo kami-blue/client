@@ -272,20 +272,26 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     private fun drawWindows(vertexHelper: VertexHelper) {
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        GlStateManager.depthMask(true)
-        GlStateManager.depthFunc(GL_LEQUAL)
-        GlStateUtils.depth(true)
 
+        drawEachWindow {
+            it.onRender(vertexHelper, Vec2f(it.renderPosX, it.renderPosY))
+        }
+
+        drawEachWindow {
+            it.onPostRender(vertexHelper, Vec2f(it.renderPosX, it.renderPosY))
+        }
+
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+    }
+
+    private fun drawEachWindow(renderBlock: (WindowComponent) -> Unit) {
         for (window in windowList) {
             if (!window.visible) continue
             glPushMatrix()
             glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
-            window.onRender(vertexHelper, Vec2f(window.renderPosX, window.renderPosY))
+            renderBlock(window)
             glPopMatrix()
         }
-
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-        GlStateUtils.depth(false)
     }
 
     private fun drawTypedString() {

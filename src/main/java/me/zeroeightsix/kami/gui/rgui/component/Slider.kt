@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.module.modules.client.Tooltips
 import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.graphics.AnimationUtils
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -93,7 +92,7 @@ open class Slider(
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), 1.5f, GuiColors.outline)
 
         // Slider name
-        GlStateUtils.pushScissor()
+        //GlStateUtils.pushScissor()
         /*if (protectedWidth > 0.0) {
             GlStateUtils.scissor(
                     ((absolutePos.x + renderWidth - protectedWidth) * ClickGUI.getScaleFactor()).roundToInt(),
@@ -103,13 +102,12 @@ open class Slider(
             )
         }*/
         FontRenderAdapter.drawString(name, 2f, 1.0f, color = GuiColors.text)
-        GlStateUtils.popScissor()
-
-        // Tooltips
-        if (Tooltips.isEnabled && descriptionIn.isNotBlank()) drawToolTips(vertexHelper, absolutePos)
+        //GlStateUtils.popScissor()
     }
 
-    private fun drawToolTips(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+    override fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        if (Tooltips.isDisabled || descriptionIn.isBlank()) return
+
         var deltaTime = AnimationUtils.toDeltaTimeFloat(lastStateUpdateTime)
 
         if (mouseState == MouseState.HOVER && deltaTime > 500L || prevState == MouseState.HOVER && shown) {

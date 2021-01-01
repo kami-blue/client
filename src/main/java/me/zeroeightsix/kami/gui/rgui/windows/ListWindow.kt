@@ -31,7 +31,7 @@ open class ListWindow(
     override val maxHeight get() = mc.displayHeight.toFloat()
     override val resizable: Boolean get() = hoveredChild == null
 
-    protected val lineSpace = 3.0f
+    private val lineSpace = 3.0f
     var hoveredChild: Component? = null
         private set(value) {
             if (value == field) return
@@ -49,7 +49,7 @@ open class ListWindow(
             field = value
         }
     private var prevScrollProgress = 0.0f
-    protected val renderScrollProgress
+    private val renderScrollProgress
         get() = prevScrollProgress + (scrollProgress - prevScrollProgress) * mc.renderPartialTicks
 
     init {
@@ -112,6 +112,21 @@ open class ListWindow(
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
+
+        renderChildren {
+            it.onRender(vertexHelper, absolutePos.plus(it.renderPosX, it.renderPosY - renderScrollProgress))
+        }
+    }
+
+    override fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
+        super.onPostRender(vertexHelper, absolutePos)
+
+        renderChildren {
+            it.onPostRender(vertexHelper, absolutePos.plus(it.renderPosX, it.renderPosY - renderScrollProgress))
+        }
+    }
+
+    private fun renderChildren(renderBlock: (Component) -> Unit) {
         GlStateUtils.scissor(
             ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor()).roundToInt(),
             ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
@@ -120,15 +135,17 @@ open class ListWindow(
         )
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)
+
         for (child in children) {
             if (!child.visible) continue
             if (child.renderPosY + child.renderHeight - renderScrollProgress < draggableHeight) continue
             if (child.renderPosY - renderScrollProgress > renderHeight) continue
             glPushMatrix()
             glTranslatef(child.renderPosX, child.renderPosY, 0.0f)
-            child.onRender(vertexHelper, absolutePos.plus(child.renderPosX, child.renderPosY - renderScrollProgress))
+            renderBlock(child)
             glPopMatrix()
         }
+
         glDisable(GL_SCISSOR_TEST)
     }
 
