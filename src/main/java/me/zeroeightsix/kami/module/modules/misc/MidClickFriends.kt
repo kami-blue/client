@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -19,7 +19,7 @@ import org.lwjgl.input.Mouse
     showOnArray = Module.ShowOnArray.OFF
 )
 object MidClickFriends : Module() {
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private var lastPlayer: EntityOtherPlayerMP? = null
 
     init {

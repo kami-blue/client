@@ -5,14 +5,14 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
-import org.kamiblue.event.listener.listener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
+import org.kamiblue.event.listener.listener
 import java.util.*
 
 object PlayerInventoryManager : Manager {
     private val mc = Wrapper.minecraft
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private val lockObject = Any()
     private val actionQueue = TreeSet<InventoryTask>(Comparator.reverseOrder())
 

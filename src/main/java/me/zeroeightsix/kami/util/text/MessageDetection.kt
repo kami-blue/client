@@ -19,7 +19,7 @@ object MessageDetection {
             override val prefixes: Array<out CharSequence>
                 get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
                     CommandManager.prefix,
-                    ChatEncryption.delimiterValue.value
+                    ChatEncryption.delimiterSetting.value
                 )
         }
     }

@@ -13,10 +13,10 @@ import java.util.UUID;
 @Mixin(GuiBossOverlay.class)
 public interface AccessorGuiBossOverlay {
 
-    @Accessor
+    @Accessor("mapBossInfos")
     Map<UUID, BossInfoClient> getMapBossInfos();
 
-    @Invoker
+    @Invoker("render")
     void invokeRender(int x, int y, BossInfo info);
 
 }

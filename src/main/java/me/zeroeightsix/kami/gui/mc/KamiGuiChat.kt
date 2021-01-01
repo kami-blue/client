@@ -16,16 +16,16 @@ import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.AutoComplete
 import org.kamiblue.commons.extension.stream
 import org.lwjgl.input.Keyboard
-import java.util.*
 import kotlin.math.min
 
 class KamiGuiChat(
     startStringIn: String,
-    historyBufferIn: String? = null,
-    sentHistoryCursorIn: Int? = null
+    private val historyBufferIn: String? = null,
+    private val sentHistoryCursorIn: Int? = null
 ) : GuiChat(startStringIn) {
 
-    init {
+    override fun initGui() {
+        super.initGui()
         historyBufferIn?.let { historyBuffer = it }
         sentHistoryCursorIn?.let { sentHistoryCursor = it }
     }
@@ -43,7 +43,7 @@ class KamiGuiChat(
         }
 
         if (canAutoComplete && keyCode == Keyboard.KEY_TAB && predictString.isNotBlank()) {
-            inputField.text += "$predictString "
+            inputField.text += predictString
             predictString = ""
         }
 
@@ -80,11 +80,10 @@ class KamiGuiChat(
     }
 
     private fun displayNormalChatGUI() {
-        GuiChat(inputField.text).apply {
-            historyBuffer = this@KamiGuiChat.historyBuffer
-            sentHistoryCursor = this@KamiGuiChat.sentHistoryCursor
-        }.also {
+        GuiChat(inputField.text).also {
             mc.displayGuiScreen(it)
+            it.historyBuffer = this.historyBuffer
+            it.sentHistoryCursor = this.sentHistoryCursor
         }
     }
 
@@ -175,7 +174,7 @@ class KamiGuiChat(
         // Draw outline around input field
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         val pos1 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
-        val pos2 = pos1.add(inputField.width.toDouble(), inputField.height.toDouble())
+        val pos2 = pos1.plus(inputField.width.toDouble(), inputField.height.toDouble())
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, ColorHolder(KamiGuiColors.GuiC.windowOutline.color))
     }
 

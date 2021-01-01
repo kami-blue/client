@@ -6,17 +6,19 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.math.roundToInt
@@ -64,11 +66,10 @@ object WaypointRender : Module() {
 
     // This has to be sorted so the further ones doesn't overlaps the closer ones
     private val waypointMap = TreeMap<Waypoint, TextComponent>(compareByDescending {
-        it.pos.distanceSq(mc.player?.position
-            ?: BlockPos(0, -69420, 0))
+        mc.player?.distanceTo(it.pos) ?: it.pos.getDistance(0, -69420, 0)
     })
     private var currentServer: String? = null
-    private var timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var timer = TickTimer(TimeUnit.SECONDS)
     private var prevDimension = -2
     private val lockObject = Any()
 
@@ -83,7 +84,7 @@ object WaypointRender : Module() {
             renderer.thickness = thickness.value
             GlStateUtils.depth(false)
             for (waypoint in waypointMap.keys) {
-                val distance = sqrt(mc.player.getDistanceSq(waypoint.pos))
+                val distance = mc.player.distanceTo(waypoint.pos)
                 if (espRangeLimit.value && distance > espRange.value) continue
                 renderer.add(AxisAlignedBB(waypoint.pos), color) /* Adds pos to ESPRenderer list */
                 drawVerticalLines(waypoint.pos, color, aOutline.value) /* Draw lines from y 0 to y 256 */

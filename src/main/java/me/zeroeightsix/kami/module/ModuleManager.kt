@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
 
@@ -13,7 +13,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
     private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
 
     override fun preLoad0(): List<Class<out Module>> {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         val list = ClassUtils.findClasses("me.zeroeightsix.kami.module.modules", Module::class.java)
         val time = stopTimer.stop()
@@ -23,7 +23,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
     }
 
     override fun load0(input: List<Class<out Module>>) {
-        val stopTimer = TimerUtils.StopTimer()
+        val stopTimer = StopTimer()
 
         for (clazz in input) {
             register(ClassUtils.getInstance(clazz))

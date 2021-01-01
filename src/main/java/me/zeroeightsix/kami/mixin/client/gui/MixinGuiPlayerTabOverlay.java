@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.mixin.client.gui;
 
 import me.zeroeightsix.kami.module.modules.render.ExtraTab;
 import me.zeroeightsix.kami.module.modules.render.TabFriends;
-import me.zeroeightsix.kami.util.TimerUtils;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by 086 on 8/04/2018.

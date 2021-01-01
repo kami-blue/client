@@ -11,8 +11,8 @@ import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.BlockUtils.placeBlock
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.WorldUtils.placeBlock
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -50,8 +50,8 @@ object Scaffold : Module() {
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
     private var inactiveTicks = 69
 
-    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
-    private val rubberBandTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val placeTimer = TickTimer(TimeUnit.TICKS)
+    private val rubberBandTimer = TickTimer(TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5
@@ -89,13 +89,13 @@ object Scaffold : Module() {
             if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
             inactiveTicks++
             placeInfo = calcNextPos()?.let {
-                BlockUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
-                    ?: BlockUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
+                WorldUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
+                    ?: WorldUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
             }
 
             placeInfo?.let {
-                val hitVec = BlockUtils.getHitVec(it.second, it.first)
-                lastRotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+                val hitVec = WorldUtils.getHitVec(it.second, it.first)
+                lastRotation = RotationUtils.getRotationTo(hitVec)
                 swapAndPlace(it.second, it.first)
             }
 

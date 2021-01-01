@@ -59,7 +59,7 @@ public class RootCheckButtonUI<T extends CheckButton> extends AbstractComponentU
 
                 VertexHelper vertexHelper = new VertexHelper(GlStateUtils.useVbo());
                 Vec2d pos1 = new Vec2d(component.getWidth() + tooltipX, -2);
-                Vec2d pos2 = pos1.add(tooltipWidth, FontRenderAdapter.INSTANCE.getFontHeight() + 2);
+                Vec2d pos2 = pos1.plus(tooltipWidth, FontRenderAdapter.INSTANCE.getFontHeight() + 2);
 
                 RenderUtils2D.drawRectFilled(vertexHelper, pos1, pos2, new ColorHolder(GuiC.windowFilled.color));
                 RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, new ColorHolder(GuiC.windowOutline.color));

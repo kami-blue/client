@@ -15,8 +15,17 @@ fun ClientExecuteEvent.toSafe() =
     if (world != null && player != null && playerController != null && connection != null) SafeExecuteEvent(world, player, playerController, connection, this)
     else null
 
+fun runSafe(block: SafeClientEvent.() -> Unit) {
+    ClientEvent().toSafe()?.let { block(it) }
+}
+
 fun <R> runSafe(block: SafeClientEvent.() -> R): R? {
     return ClientEvent().toSafe()?.let { block(it) }
+}
+
+@JvmName("runSafeSuspendUnit")
+suspend fun runSafeSuspend(block: suspend SafeClientEvent.() -> Unit) {
+    ClientEvent().toSafe()?.let { block(it) }
 }
 
 suspend fun <R> runSafeSuspend(block: suspend SafeClientEvent.() -> R): R? {

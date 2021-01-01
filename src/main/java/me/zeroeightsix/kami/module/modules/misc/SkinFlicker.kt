@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.TickTimer
 import net.minecraft.entity.player.EnumPlayerModelParts
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "SkinFlicker",
@@ -20,7 +20,7 @@ object SkinFlicker : Module() {
         HORIZONTAL, VERTICAL, RANDOM
     }
 
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private var lastIndex = 0
 
     init {

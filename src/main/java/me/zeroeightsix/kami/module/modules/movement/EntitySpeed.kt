@@ -71,7 +71,7 @@ object EntitySpeed : Module() {
         val motionX = -sin(yawRad) * speed.value
         val motionZ = cos(yawRad) * speed.value
 
-        if (MovementUtils.isInputing() && !isBorderingChunk(entity, motionX, motionZ)) {
+        if (MovementUtils.isInputting && !isBorderingChunk(entity, motionX, motionZ)) {
             entity.motionX = motionX
             entity.motionZ = motionZ
         } else {

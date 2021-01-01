@@ -8,8 +8,8 @@ import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
@@ -71,7 +71,7 @@ object NoFall : Module() {
         }
     }
 
-    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || BlockUtils.getGroundPosY(false) == -999.0
+    private fun fallDistCheck() = (!voidOnly.value && mc.player.fallDistance >= distance.value) || WorldUtils.getGroundPos().y == -999.0
 
     private fun fallMode() {
         if (fallModeSetting.value == FallMode.BUCKET && mc.player.dimension != -1 && !EntityUtils.isAboveWater(mc.player) && System.currentTimeMillis() - last > 100) {

@@ -17,15 +17,15 @@ object RenderUtils2D {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcOutline(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), segments, lineWidth, color) // Top left
-        drawArcOutline(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), segments, lineWidth, color) // Top right
-        drawArcOutline(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), segments, lineWidth, color) // Bottom right
-        drawArcOutline(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), segments, lineWidth, color) // Bottom left
+        drawArcOutline(vertexHelper, posBegin.plus(radius), radius, Pair(-90f, 0f), segments, lineWidth, color) // Top left
+        drawArcOutline(vertexHelper, pos2.plus(-radius, radius), radius, Pair(0f, 90f), segments, lineWidth, color) // Top right
+        drawArcOutline(vertexHelper, posEnd.minus(radius), radius, Pair(90f, 180f), segments, lineWidth, color) // Bottom right
+        drawArcOutline(vertexHelper, pos4.plus(radius, -radius), radius, Pair(180f, 270f), segments, lineWidth, color) // Bottom left
 
-        drawLine(vertexHelper, posBegin.add(radius, 0.0), pos2.subtract(radius, 0.0), lineWidth, color) // Top
-        drawLine(vertexHelper, posBegin.add(0.0, radius), pos4.subtract(0.0, radius), lineWidth, color) // Left
-        drawLine(vertexHelper, pos2.add(0.0, radius), posEnd.subtract(0.0, radius), lineWidth, color) // Right
-        drawLine(vertexHelper, pos4.add(radius, 0.0), posEnd.subtract(radius, 0.0), lineWidth, color) // Bottom
+        drawLine(vertexHelper, posBegin.plus(radius, 0.0), pos2.minus(radius, 0.0), lineWidth, color) // Top
+        drawLine(vertexHelper, posBegin.plus(0.0, radius), pos4.minus(0.0, radius), lineWidth, color) // Left
+        drawLine(vertexHelper, pos2.plus(0.0, radius), posEnd.minus(0.0, radius), lineWidth, color) // Right
+        drawLine(vertexHelper, pos4.plus(radius, 0.0), posEnd.minus(radius, 0.0), lineWidth, color) // Bottom
     }
 
     @JvmStatic
@@ -34,14 +34,14 @@ object RenderUtils2D {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
         val pos4 = Vec2d(posBegin.x, posEnd.y) // Bottom left
 
-        drawArcFilled(vertexHelper, posBegin.add(radius), radius, Pair(-90f, 0f), segments, color) // Top left
-        drawArcFilled(vertexHelper, pos2.add(-radius, radius), radius, Pair(0f, 90f), segments, color) // Top right
-        drawArcFilled(vertexHelper, posEnd.subtract(radius), radius, Pair(90f, 180f), segments, color) // Bottom right
-        drawArcFilled(vertexHelper, pos4.add(radius, -radius), radius, Pair(180f, 270f), segments, color) // Bottom left
+        drawArcFilled(vertexHelper, posBegin.plus(radius), radius, Pair(-90f, 0f), segments, color) // Top left
+        drawArcFilled(vertexHelper, pos2.plus(-radius, radius), radius, Pair(0f, 90f), segments, color) // Top right
+        drawArcFilled(vertexHelper, posEnd.minus(radius), radius, Pair(90f, 180f), segments, color) // Bottom right
+        drawArcFilled(vertexHelper, pos4.plus(radius, -radius), radius, Pair(180f, 270f), segments, color) // Bottom left
 
-        drawRectFilled(vertexHelper, posBegin.add(radius, 0.0), pos2.add(-radius, radius), color) // Top
-        drawRectFilled(vertexHelper, posBegin.add(0.0, radius), posEnd.subtract(0.0, radius), color) // Center
-        drawRectFilled(vertexHelper, pos4.add(radius, -radius), posEnd.subtract(radius, 0.0), color) // Bottom
+        drawRectFilled(vertexHelper, posBegin.plus(radius, 0.0), pos2.plus(-radius, radius), color) // Top
+        drawRectFilled(vertexHelper, posBegin.plus(0.0, radius), posEnd.minus(0.0, radius), color) // Center
+        drawRectFilled(vertexHelper, pos4.plus(radius, -radius), posEnd.minus(radius, 0.0), color) // Bottom
     }
 
     @JvmStatic
@@ -197,7 +197,7 @@ object RenderUtils2D {
 
         return Array(seg + 1) {
             val angle = Math.toRadians(it * segAngle + angleRange.first.toDouble())
-            val unRounded = Vec2d(sin(angle), -cos(angle)).multiply(radius).add(center)
+            val unRounded = Vec2d(sin(angle), -cos(angle)).times(radius).plus(center)
             Vec2d(MathUtils.round(unRounded.x, 8), MathUtils.round(unRounded.y, 8))
         }
     }

@@ -9,8 +9,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.BlockUtils
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
@@ -70,7 +70,7 @@ object AutoTrap : Module() {
     private fun isPlaceable(): Boolean {
         (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()?.let {
             for (offset in trapMode.value.offset) {
-                if (!BlockUtils.isPlaceable(it.add(offset))) continue
+                if (!WorldUtils.isPlaceable(it.add(offset))) continue
                 return true
             }
         }
@@ -88,10 +88,10 @@ object AutoTrap : Module() {
     }
 
     private fun runAutoTrap() = defaultScope.launch {
-        BlockUtils.buildStructure(placeSpeed.value) {
+        WorldUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@AutoTrap)) {
                 val center = (if (selfTrap.value) mc.player else CombatManager.target)?.positionVector?.toBlockPos()
-                BlockUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
+                WorldUtils.getPlaceInfo(center, trapMode.value.offset, it, 3)
             } else {
                 null
             }

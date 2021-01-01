@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.util.combat
 
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.VectorUtils
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -30,7 +31,7 @@ object CrystalUtils {
             for (entity in ArrayList(it)) {
                 if (entity !is EntityEnderCrystal) continue
                 if (entity.isDead) continue
-                if (center.distanceTo(entity.positionVector) > range) continue
+                if (entity.distanceTo(center) > range) continue
                 crystalList.add(entity)
             }
         }

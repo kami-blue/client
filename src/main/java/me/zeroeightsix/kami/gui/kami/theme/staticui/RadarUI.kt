@@ -137,6 +137,6 @@ class RadarUI : AbstractComponentUI<Radar?>() {
     }
 
     private fun getChunkPos(x: Int, z: Int, playerOffset: Vec2d): Vec2d {
-        return Vec2d((x shl 4).toDouble(), (z shl 4).toDouble()).subtract(playerOffset).divide(NewChunks.radarScale.value)
+        return Vec2d((x shl 4).toDouble(), (z shl 4).toDouble()).minus(playerOffset).div(NewChunks.radarScale.value)
     }
 }

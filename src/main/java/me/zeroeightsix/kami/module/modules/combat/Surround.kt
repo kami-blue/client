@@ -9,10 +9,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -46,7 +44,7 @@ object Surround : Module() {
     }
 
     private var holePos: BlockPos? = null
-    private var toggleTimer = TimerUtils.StopTimer(TimerUtils.TimeUnit.TICKS)
+    private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
     override fun onEnable() {
@@ -115,7 +113,7 @@ object Surround : Module() {
         }
     }
 
-    private fun inHoleCheck() = mc.player.onGround && MovementUtils.getSpeed() < 0.15 && SurroundUtils.checkHole(mc.player) == SurroundUtils.HoleType.OBBY
+    private fun inHoleCheck() = mc.player.onGround && mc.player.speed < 0.15 && SurroundUtils.checkHole(mc.player) == SurroundUtils.HoleType.OBBY
 
     private fun outOfHoleCheck() {
         if (autoDisable.value == AutoDisableMode.OUT_OF_HOLE) {
@@ -147,7 +145,7 @@ object Surround : Module() {
         val playerPos = mc.player.positionVector.toBlockPos()
         for (offset in SurroundUtils.surroundOffset) {
             val pos = playerPos.add(offset)
-            if (BlockUtils.isPlaceable(pos, true)) return true
+            if (WorldUtils.isPlaceable(pos, true)) return true
         }
         return false
     }
@@ -163,9 +161,9 @@ object Surround : Module() {
 
     private fun runSurround() = defaultScope.launch {
         spoofHotbar()
-        BlockUtils.buildStructure(placeSpeed.value) {
+        WorldUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {
-                BlockUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
+                WorldUtils.getPlaceInfo(mc.player.positionVector.toBlockPos(), SurroundUtils.surroundOffset, it, 2)
             } else {
                 null
             }

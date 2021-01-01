@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
+import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.Blocks
@@ -93,7 +94,7 @@ object BreakingESP : Module() {
         }
 
         listener<BlockBreakEvent> {
-            if (mc.player == null || mc.player.getDistanceSq(it.position) > range.value * range.value) return@listener
+            if (mc.player == null || mc.player.distanceTo(it.position) > range.value) return@listener
             val breaker = mc.world.getEntityByID(it.breakId) ?: return@listener
             if (it.progress in 0..9) {
                 val render = mc.player != breaker || espSelf.value

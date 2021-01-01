@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
+import me.zeroeightsix.kami.util.block
+import me.zeroeightsix.kami.util.id
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import net.minecraft.block.Block.getBlockFromItem
 import net.minecraft.block.BlockAir
-import net.minecraft.item.Item.getIdFromItem
 
 // TODO: Remove once GUI has Block settings
 object SetBuildingBlockCommand : ClientCommand(
@@ -20,8 +20,8 @@ object SetBuildingBlockCommand : ClientCommand(
                     InventoryManager.buildingBlockID.value = 0
                     MessageSendHelper.sendChatMessage("Building block has been reset")
                 }
-                getBlockFromItem(heldItem.item) !is BlockAir -> {
-                    InventoryManager.buildingBlockID.value = getIdFromItem(heldItem.item)
+                heldItem.item.block !is BlockAir -> {
+                    InventoryManager.buildingBlockID.value = heldItem.item.id
                     MessageSendHelper.sendChatMessage("Building block has been set to ${heldItem.displayName}")
                 }
                 else -> {
