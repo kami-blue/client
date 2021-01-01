@@ -4,6 +4,7 @@ import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.events.ShutdownEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
@@ -59,6 +60,10 @@ object DiscordRPC : Module() {
                         "Do NOT use this if you do not want your coords displayed")
             }
         }
+
+        listener<ShutdownEvent> {
+            end()
+        }
     }
 
     private fun start() {
@@ -74,7 +79,7 @@ object DiscordRPC : Module() {
         KamiMod.LOG.info("Discord RPC initialised successfully")
     }
 
-    fun end() {
+    private fun end() {
         if (!connected) return
 
         KamiMod.LOG.info("Shutting down Discord RPC...")

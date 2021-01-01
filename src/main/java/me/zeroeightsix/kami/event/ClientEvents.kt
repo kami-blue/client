@@ -9,7 +9,7 @@ import net.minecraft.client.network.NetHandlerPlayClient
 import org.kamiblue.command.ExecuteEvent
 import org.kamiblue.command.IExecuteEvent
 
-abstract class AbstractClientEvent {
+abstract class AbstractClientEvent : Event {
     val mc = Wrapper.minecraft
     abstract val world: WorldClient?
     abstract val player: EntityPlayerSP?
