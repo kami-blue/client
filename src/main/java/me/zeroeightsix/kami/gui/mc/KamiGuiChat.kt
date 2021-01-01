@@ -15,16 +15,16 @@ import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.AutoComplete
 import org.kamiblue.commons.extension.stream
 import org.lwjgl.input.Keyboard
-import java.util.*
 import kotlin.math.min
 
 class KamiGuiChat(
     startStringIn: String,
-    historyBufferIn: String? = null,
-    sentHistoryCursorIn: Int? = null
+    private val historyBufferIn: String? = null,
+    private val sentHistoryCursorIn: Int? = null
 ) : GuiChat(startStringIn) {
 
-    init {
+    override fun initGui() {
+        super.initGui()
         historyBufferIn?.let { historyBuffer = it }
         sentHistoryCursorIn?.let { sentHistoryCursor = it }
     }
@@ -79,11 +79,10 @@ class KamiGuiChat(
     }
 
     private fun displayNormalChatGUI() {
-        GuiChat(inputField.text).apply {
-            historyBuffer = this@KamiGuiChat.historyBuffer
-            sentHistoryCursor = this@KamiGuiChat.sentHistoryCursor
-        }.also {
+        GuiChat(inputField.text).also {
             mc.displayGuiScreen(it)
+            it.historyBuffer = this.historyBuffer
+            it.sentHistoryCursor = this.sentHistoryCursor
         }
     }
 

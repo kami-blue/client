@@ -199,6 +199,7 @@ object Freecam : Module() {
             mc.world?.removeEntityFromWorld(ENTITY_ID)
             mc.renderViewEntity = mc.player
             cameraGuy = null
+            mc.renderGlobal.loadRenderers()
             if (prevThirdPersonViewSetting != -1) mc.gameSettings.thirdPersonView = prevThirdPersonViewSetting
         }
     }

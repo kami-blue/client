@@ -26,6 +26,7 @@
     "accessor.render.AccessorRenderGlobal",
     "accessor.render.AccessorRenderManager",
     "accessor.render.AccessorShaderGroup",
+    "accessor.render.AccessorViewFrustum",
     "baritone.MixinBaritoneSettings",
     "baritone.MixinExecutionWrapper",
     "entity.MixinEntity",
