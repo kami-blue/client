@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.gui.hudgui
 
-import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.gui.GuiManager
@@ -19,6 +18,8 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 
 object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
+
+    override val alwaysTicking = true
 
     init {
         val allButtons = GuiManager.hudElementsMap.values.map { HudButton(it) }
@@ -64,8 +65,6 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             GlStateUtils.rescaleMc()
         }
-
-        KamiEventBus.subscribe(this)
     }
 
     private fun renderHudElement(vertexHelper: VertexHelper, window: HudElement) {

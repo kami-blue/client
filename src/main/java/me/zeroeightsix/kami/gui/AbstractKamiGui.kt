@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui
 
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.rgui.WindowComponent
 import me.zeroeightsix.kami.gui.rgui.windows.ColorPicker
@@ -7,6 +8,7 @@ import me.zeroeightsix.kami.gui.rgui.windows.SettingWindow
 import me.zeroeightsix.kami.mixin.extension.listShaders
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.GuiColors
+import me.zeroeightsix.kami.util.TimedFlag
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
@@ -27,22 +29,24 @@ import kotlin.collections.HashMap
 
 abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
+    open val alwaysTicking = false
+
     // Window
     val windowList = LinkedHashSet<WindowComponent>()
-    protected var lastClickedWindow: WindowComponent? = null
-    protected var hoveredWindow: WindowComponent? = null
+    private var lastClickedWindow: WindowComponent? = null
+    private var hoveredWindow: WindowComponent? = null
         set(value) {
             if (value == field) return
             field?.onLeave(getRealMousePos())
             value?.onHover(getRealMousePos())
             field = value
         }
-    protected val settingMap = HashMap<E, S>()
+    private val settingMap = HashMap<E, S>()
     protected var settingWindow: S? = null
 
     // Mouse
-    protected var lastEventButton = -1
-    protected var lastClickPos = Vec2f(0.0f, 0.0f)
+    private var lastEventButton = -1
+    private var lastClickPos = Vec2f(0.0f, 0.0f)
 
     // Searching
     protected var typedString = ""
@@ -53,11 +57,28 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
             prevStringWidth = renderStringPosX
             field = value
         }
-    protected val renderStringPosX
+    private val renderStringPosX
         get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 250.0f, prevStringWidth, stringWidth)
 
     // Shader
     private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
+
+    // Animations
+    private var displayed = TimedFlag(false)
+    private val fadeMultiplier
+        get() = if (displayed.value) {
+            if (ClickGUI.fadeInTime > 0.0f) {
+                AnimationUtils.exponentInc(AnimationUtils.toDeltaTimeFloat(displayed.lastUpdateTime), ClickGUI.fadeInTime * 1000.0f)
+            } else {
+                1.0f
+            }
+        } else {
+            if (ClickGUI.fadeOutTime > 0.0f) {
+                AnimationUtils.exponentDec(AnimationUtils.toDeltaTimeFloat(displayed.lastUpdateTime), ClickGUI.fadeOutTime * 1000.0f)
+            } else {
+                0.0f
+            }
+        }
 
 
     init {
@@ -66,13 +87,22 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
         listener<SafeTickEvent> { event ->
             if (event.phase != TickEvent.Phase.START) return@listener
-            for (window in windowList) window.onTick()
 
             blurShader.shader?.let {
-                val multiplier = ClickGUI.blur.value / 1.0f
+                val multiplier = ClickGUI.blur * fadeMultiplier
                 for (shader in it.listShaders) {
                     shader.shaderManager.getShaderUniform("multiplier")?.set(multiplier)
                 }
+            }
+
+            if (displayed.value || alwaysTicking) {
+                for (window in windowList) window.onTick()
+            }
+        }
+
+        listener<RenderOverlayEvent>(-69420) {
+            if (!displayed.value && fadeMultiplier > 0.0f) {
+                drawScreen(0, 0, mc.renderPartialTicks)
             }
         }
     }
@@ -97,22 +127,30 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
 
     // Gui init
     open fun onDisplayed() {
+        displayed.value = true
+
         for (window in windowList) window.onDisplayed()
     }
 
     override fun initGui() {
         super.initGui()
+
         val scaledResolution = ScaledResolution(mc)
         width = scaledResolution.scaledWidth + 16
         height = scaledResolution.scaledHeight + 16
+
         for (window in windowList) window.onGuiInit()
     }
 
     override fun onGuiClosed() {
         lastClickedWindow = null
         hoveredWindow = null
+
         typedString = ""
         lastTypedTime = 0L
+
+        displayed.value = false
+
         for (window in windowList) window.onClosed()
         updateSettingWindow()
     }
@@ -197,17 +235,26 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
     // End of keyboard input
 
     // Rendering
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    final override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val scale = ClickGUI.getScaleFactorFloat()
+        val scaledResolution = ScaledResolution(mc)
+        val multiplier = fadeMultiplier
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
+
         drawBackground(vertexHelper, partialTicks)
+
+        GlStateUtils.rescaleKami()
+        glTranslatef(0.0f, -(mc.displayHeight / scale * (1.0f - multiplier)), 0.0f)
         drawWindows(vertexHelper)
+
         GlStateUtils.rescaleMc()
+        glTranslatef(0.0f, -(scaledResolution.scaledHeight * (1.0f - multiplier)), 0.0f)
         drawTypedString()
     }
 
     private fun drawBackground(vertexHelper: VertexHelper, partialTicks: Float) {
         // Blur effect
-        if (ClickGUI.blur.value > 0.0f) {
+        if (ClickGUI.blur > 0.0f) {
             glPushMatrix()
             blurShader.shader?.render(partialTicks)
             mc.framebuffer.bindFramebuffer(true)
@@ -216,15 +263,14 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         }
 
         // Darkened background
-        if (ClickGUI.darkness.value > 0.0f) {
+        if (ClickGUI.darkness > 0.0f) {
             GlStateUtils.rescaleActual()
-            val color = ColorHolder(0, 0, 0, (ClickGUI.darkness.value * 255.0f).toInt())
+            val color = ColorHolder(0, 0, 0, (ClickGUI.darkness * 255.0f * fadeMultiplier).toInt())
             RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(mc.displayWidth.toDouble(), mc.displayHeight.toDouble()), color = color)
         }
     }
 
     private fun drawWindows(vertexHelper: VertexHelper) {
-        GlStateUtils.rescaleKami()
         GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.depthMask(true)
         GlStateManager.depthFunc(GL_LEQUAL)

@@ -44,7 +44,7 @@ object PlayerModel : HudElement(
         GuiInventory.drawEntityOnScreen(0, 0, (scale * 35.0f).roundToInt(), -yaw, -pitch, entity)
         GlStateUtils.texture2d(true)
         GlStateUtils.blend(true)
-        GlStateManager.disableColorLogic()
+        GlStateManager.disableColorMaterial()
         glPopMatrix()
     }
 

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
@@ -37,5 +38,8 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
 
         KamiClickGui.onGuiClosed()
         KamiHudGui.onGuiClosed()
+
+        KamiEventBus.subscribe(KamiClickGui)
+        KamiEventBus.subscribe(KamiHudGui)
     }
 }

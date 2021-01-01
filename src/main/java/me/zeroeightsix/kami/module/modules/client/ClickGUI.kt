@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.client
 
-import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
@@ -19,8 +18,10 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = setting("Scale", 100, 50..400, 5)
-    val blur = setting("Blur", 0.5f, 0.0f..1.0f, 0.05f)
-    val darkness = setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
+    val blur by setting("Blur", 0.5f, 0.0f..1.0f, 0.05f)
+    val darkness by setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
+    val fadeInTime by setting("FadeInTime", 0.25f, 0.0f..1.0f, 0.05f)
+    val fadeOutTime by setting("FadeOutTime", 0.1f, 0.0f..1.0f, 0.05f)
 
     private var prevScale = scaleSetting.value / 100.0f
     private var scale = prevScale
@@ -58,7 +59,6 @@ object ClickGUI : Module() {
         if (mc.currentScreen !is KamiClickGui) {
             HudEditor.disable()
             mc.displayGuiScreen(KamiClickGui)
-            KamiEventBus.subscribe(KamiClickGui)
             KamiClickGui.onDisplayed()
         }
     }
@@ -66,7 +66,6 @@ object ClickGUI : Module() {
     override fun onDisable() {
         if (mc.currentScreen is KamiClickGui) {
             mc.displayGuiScreen(null)
-            KamiEventBus.unsubscribe(KamiClickGui)
         }
     }
 
