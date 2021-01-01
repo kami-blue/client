@@ -3,11 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper.detect
-import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.text.Regexes
-import me.zeroeightsix.kami.util.text.SpamFilters
+import me.zeroeightsix.kami.util.text.*
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
@@ -91,6 +87,7 @@ object AntiSpam : Module() {
             }
 
             val pattern = isSpam(event.message.unformattedText)
+
             if (pattern != null) { // null means no pattern found
                 if (mode.value == Mode.HIDE) {
                     event.isCanceled = true
@@ -122,13 +119,23 @@ object AntiSpam : Module() {
 
     private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
-                || MessageDetectionHelper.isDirect(!filterDMs.value, message)
-                || message.detect(!filterServer.value, Regexes.QUEUE)
-                || message.detect(!filterServer.value, Regexes.RESTART)) {
+                || !filterDMs.value && MessageDetection.Direct.ANY detect message
+                || !filterServer.value && MessageDetection.Server.ANY detect message) {
             null
         } else {
             detectSpam(removeUsername(message))
         }
+    }
+
+    private fun detectSpam(message: String): String? {
+        for ((key, value) in settingMap) {
+            val pattern = findPatterns(value, message)
+            if (key.value && pattern != null) {
+                sendResult(key.name, message)
+                return pattern
+            }
+        }
+        return null
     }
 
     private fun removeUsername(username: String): String {
@@ -142,17 +149,6 @@ object AntiSpam : Module() {
         } else {
             rawMessage.substring(0, rawMessage.indexOf(">")) // a bit hacky
         }
-    }
-
-    private fun detectSpam(message: String): String? {
-        for ((key, value) in settingMap) {
-            val pattern = findPatterns(value, message)
-            if (key.value && pattern != null) {
-                sendResult(key.name, message)
-                return pattern
-            }
-        }
-        return null
     }
 
     private fun checkDupes(message: String): Boolean {

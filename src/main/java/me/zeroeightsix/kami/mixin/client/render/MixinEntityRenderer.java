@@ -2,7 +2,9 @@ package me.zeroeightsix.kami.mixin.client.render;
 
 import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.event.KamiEventBus;
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
+import me.zeroeightsix.kami.gui.UIRenderer;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -36,6 +38,12 @@ import java.util.List;
 
 @Mixin(value = EntityRenderer.class, priority = Integer.MAX_VALUE)
 public class MixinEntityRenderer {
+
+    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(F)V", shift = At.Shift.AFTER))
+    public void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci) {
+        KamiEventBus.INSTANCE.post(new RenderOverlayEvent(partialTicks));
+        UIRenderer.INSTANCE.renderAndUpdateFrames();
+    }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     public RayTraceResult rayTraceBlocks(WorldClient world, Vec3d start, Vec3d end) {

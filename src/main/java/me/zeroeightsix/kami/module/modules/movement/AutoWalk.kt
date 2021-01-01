@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
@@ -61,6 +62,8 @@ object AutoWalk : Module() {
         }
 
         listener<InputUpdateEvent>(6969) {
+            if (LagNotifier.paused && LagNotifier.pauseAutoWalk.value) return@listener
+
             if (it.movementInput !is MovementInputFromOptions) return@listener
 
             when (mode.value) {

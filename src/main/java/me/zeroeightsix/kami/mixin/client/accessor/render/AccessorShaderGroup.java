@@ -10,7 +10,7 @@ import java.util.List;
 @Mixin(ShaderGroup.class)
 public interface AccessorShaderGroup {
 
-    @Accessor
+    @Accessor("listShaders")
     List<Shader> getListShaders();
 
 }

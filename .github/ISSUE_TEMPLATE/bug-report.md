@@ -17,8 +17,8 @@ labels: bug, -module
 **Expected behavior**
 <!-- A clear and concise description of what you expected to happen. -->
 
-**Screenshots**
-<!-- If applicable, add screenshots to help explain your problem. -->
+**Debug info**
+<!-- A screenshot or copy of the `;tsc` command output is required for valid bug reports -->
 
-**Additional context**
-<!-- Add any other context about the problem here. -->
+**Additional context / media**
+<!-- Add any other context about the problem here, such as a video or screenshot. -->

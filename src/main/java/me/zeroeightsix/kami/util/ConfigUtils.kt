@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.gui.rgui.util.ContainerHelper
 import me.zeroeightsix.kami.gui.rgui.util.Docking
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.MacroManager
+import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.config.Configuration
@@ -25,10 +26,9 @@ object ConfigUtils {
 
     fun loadAll(): Boolean {
         var success = MacroManager.loadMacros()
-
         success = WaypointManager.loadWaypoints() && success
-
         success = FriendManager.loadFriends() && success
+        success = UUIDManager.load() && success
 
         KamiMod.INSTANCE.guiManager = KamiGUI()
         KamiMod.INSTANCE.guiManager.initializeGUI()
@@ -41,11 +41,9 @@ object ConfigUtils {
 
     fun saveAll(): Boolean {
         var success = MacroManager.saveMacros()
-
         success = WaypointManager.saveWaypoints() && success
-
         success = FriendManager.saveFriends() && success
-
+        success = UUIDManager.load() && success
         success = saveConfiguration() && success
 
         return success
@@ -61,9 +59,8 @@ object ConfigUtils {
             loadConfigurationUnsafe()
             KamiMod.LOG.info("Config loaded")
             true
-        } catch (e: IOException) {
-            KamiMod.LOG.error("Failed to load config! ${e.message}")
-            e.printStackTrace()
+        } catch (e: Exception) {
+            KamiMod.LOG.error("Failed to load config!", e)
             false
         }
     }
@@ -78,9 +75,8 @@ object ConfigUtils {
             saveConfigurationUnsafe()
             KamiMod.LOG.info("Config saved")
             true
-        } catch (e: IOException) {
-            KamiMod.LOG.error("Failed to save config! ${e.message}")
-            e.printStackTrace()
+        } catch (e: Exception) {
+            KamiMod.LOG.error("Failed to load config!", e)
             false
         }
     }
@@ -123,18 +119,26 @@ object ConfigUtils {
     }
 
     fun fixEmptyJson(file: File, isArray: Boolean = false) {
-        if (!file.exists()) file.createNewFile()
-        var notEmpty = false
-        file.forEachLine { notEmpty = notEmpty || it.trim().isNotBlank() || it == "[]" || it == "{}" }
+        var empty = false
 
-        if (!notEmpty) {
-            val fileWriter = FileWriter(file)
-            try {
-                fileWriter.write(if (isArray) "[]" else "{}")
-            } catch (exception: IOException) {
-                exception.printStackTrace()
+        if (!file.exists()) {
+            file.createNewFile()
+            empty = true
+        } else if (file.length() <= 8) {
+            val string = file.readText()
+            empty = string.isBlank() || string.all {
+                it == '[' || it == ']' || it == '{' || it == '}' || it == ' ' || it == '\n' || it == '\r'
             }
-            fileWriter.close()
+        }
+
+        if (empty) {
+            try {
+                FileWriter(file, false).use {
+                    it.write(if (isArray) "[]" else "{}")
+                }
+            } catch (exception: IOException) {
+                KamiMod.LOG.warn("Failed fixing empty json", exception)
+            }
         }
     }
 

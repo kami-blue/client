@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GuiDisconnected.class)
 public interface AccessorGuiDisconnected {
 
-    @Accessor
+    @Accessor("parentScreen")
     GuiScreen getParentScreen();
 
-    @Accessor
+    @Accessor("reason")
     String getReason();
 
-    @Accessor
+    @Accessor("message")
     ITextComponent getMessage();
 
 }

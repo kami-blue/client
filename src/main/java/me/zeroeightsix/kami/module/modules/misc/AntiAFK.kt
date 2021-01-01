@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TimerUtils
-import me.zeroeightsix.kami.util.text.MessageDetectionHelper
+import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
@@ -77,7 +77,7 @@ object AntiAFK : Module() {
     init {
         listener<PacketEvent.Receive> {
             if (!autoReply.value || it.packet !is SPacketChat) return@listener
-            if (MessageDetectionHelper.isDirectReceived(true, it.packet.chatComponent.unformattedText)) {
+            if (MessageDetection.Direct.RECEIVE detect it.packet.chatComponent.unformattedText) {
                 sendServerMessage("/r I am currently AFK and using KAMI Blue!")
             }
         }

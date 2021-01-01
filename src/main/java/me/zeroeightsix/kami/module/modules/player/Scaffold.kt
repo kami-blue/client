@@ -1,168 +1,172 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
+import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.BlockUtils
-import me.zeroeightsix.kami.util.EntityUtils
-import org.kamiblue.event.listener.listener
-import net.minecraft.block.Block
-import net.minecraft.block.BlockContainer
-import net.minecraft.block.BlockFalling
+import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.BlockUtils.placeBlock
+import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketEntityAction
+import net.minecraft.network.play.server.SPacketPlayerPosLook
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.client.event.InputUpdateEvent
-import kotlin.math.round
+import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.Vec3d
+import org.kamiblue.event.listener.listener
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /**
  * @see MixinEntity.isSneaking
- *
- * TODO: Rewrite this
  */
 @Module.Info(
-        name = "Scaffold",
-        category = Module.Category.PLAYER,
-        description = "Places blocks under you"
+    name = "Scaffold",
+    category = Module.Category.PLAYER,
+    description = "Places blocks under you",
+    modulePriority = 500
 )
 object Scaffold : Module() {
-    private val placeBlocks = register(Settings.b("PlaceBlocks", true))
     private val tower = register(Settings.b("Tower", true))
-    private val modeSetting = register(Settings.e<Mode>("Mode", Mode.NORMAL))
-    private val randomDelay = register(Settings.booleanBuilder("RandomDelay").withValue(false).withVisibility { modeSetting.value == Mode.LEGIT })
-    private val delayRange = register(Settings.integerBuilder("DelayRange").withValue(6).withRange(0, 10).withVisibility { modeSetting.value == Mode.LEGIT && randomDelay.value })
-    private val ticks = register(Settings.integerBuilder("Ticks").withValue(2).withRange(0, 60).withStep(2).withVisibility { modeSetting.value == Mode.NORMAL })
+    private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
+    val safeWalk = register(Settings.b("SafeWalk", true))
+    private val sneak = register(Settings.b("Sneak", true))
+    private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
+    private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
 
-    private var shouldSlow = false
-    private var towerStart = 0.0
-    private var holding = false
+    private var lastRotation = Vec2f.ZERO
+    private var placeInfo: Pair<EnumFacing, BlockPos>? = null
+    private var inactiveTicks = 69
 
-    private enum class Mode {
-        NORMAL, LEGIT
+    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val rubberBandTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+
+    override fun isActive(): Boolean {
+        return isEnabled && inactiveTicks <= 5
+    }
+
+    override fun onDisable() {
+        placeInfo = null
+        inactiveTicks = 69
     }
 
     init {
-        listener<InputUpdateEvent> {
-            if (modeSetting.value == Mode.LEGIT && shouldSlow) {
-                if (randomDelay.value) {
-                    it.movementInput.moveStrafe *= 0.2f + randomInRange
-                    it.movementInput.moveForward *= 0.2f + randomInRange
-                } else {
-                    it.movementInput.moveStrafe *= 0.2f
-                    it.movementInput.moveForward *= 0.2f
-                }
-            }
+        listener<PacketEvent.Receive> {
+            if (it.packet !is SPacketPlayerPosLook) return@listener
+            rubberBandTimer.reset()
         }
 
-        listener<SafeTickEvent> {
-            shouldSlow = false
-
-            val towering = mc.gameSettings.keyBindJump.isKeyDown && tower.value
-            var vec3d = EntityUtils.getInterpolatedPos(mc.player, ticks.value.toFloat())
-
-            if (modeSetting.value == Mode.LEGIT) vec3d = EntityUtils.getInterpolatedPos(mc.player, 0f)
-
-            val blockPos = BlockPos(vec3d).down()
-            val belowBlockPos = blockPos.down()
-            val legitPos = BlockPos(EntityUtils.getInterpolatedPos(mc.player, 2f))
-
-            /* when legitBridge is enabled */
-            /* check if block behind player is air or other replaceable block and if it is, make the player crouch */
-            if (modeSetting.value == Mode.LEGIT && mc.world.getBlockState(legitPos.down()).material.isReplaceable && mc.player.onGround && !towering) {
-                shouldSlow = true
-                mc.player.movementInput.sneak = true
-                mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
-            }
-
-            if (towering) {
-                if (mc.player.posY <= blockPos.y + 1.0f) {
-                    return@listener
-                }
-            }
-
-            if (!mc.world.getBlockState(blockPos).material.isReplaceable) {
-                return@listener
-            }
-
-            val oldSlot = mc.player.inventory.currentItem
-            setSlotToBlocks(belowBlockPos)
-
-            /* check if we don't have a block adjacent to the blockPos */
-            val neighbor = BlockUtils.getNeighbour(blockPos, attempts = 1) ?: return@listener
-
-            /* place the block */
-            if (placeBlocks.value) BlockUtils.placeBlock(neighbor.second, neighbor.first)
-
-            /* Reset the slot */
-            if (!holding) mc.player.inventory.currentItem = oldSlot
-
-            if (towering) {
-                val motion = 0.42 // jump motion
-                if (mc.player.onGround) {
-                    towerStart = mc.player.posY
-                    mc.player.motionY = motion
-                }
-                if (mc.player.posY > towerStart + motion) {
-                    mc.player.setPosition(mc.player.posX, round(mc.player.posY), mc.player.posZ)
-                    mc.player.motionY = motion
-                    towerStart = mc.player.posY
-                }
-            } else {
-                towerStart = 0.0
-            }
-
-            if (shouldSlow) {
-                mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
-                shouldSlow = false
+        listener<PlayerTravelEvent> {
+            if (mc.player == null || !tower.value || !mc.gameSettings.keyBindJump.isKeyDown || inactiveTicks > 5 || !isHoldingBlock) return@listener
+            if (rubberBandTimer.tick(10, false)) {
+                if (shouldTower) mc.player.motionY = 0.41999998688697815
+            } else if (mc.player.fallDistance <= 2.0f) {
+                mc.player.motionY = -0.169
             }
         }
     }
 
-    private val randomInRange: Float
-        get() = 0.11f + Math.random().toFloat() * (delayRange.value / 10.0f - 0.11f)
+    private val isHoldingBlock: Boolean
+        get() = PlayerPacketManager.getHoldingItemStack().item is ItemBlock
 
-    private fun setSlotToBlocks(belowBlockPos: BlockPos) {
-        if (isBlock(mc.player.heldItemMainhand, belowBlockPos)) {
-            holding = true
-            return
+    private val shouldTower: Boolean
+        get() = !mc.player.onGround
+            && mc.player.posY - floor(mc.player.posY) <= 0.1
+    init {
+        listener<OnUpdateWalkingPlayerEvent> { event ->
+            if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
+            inactiveTicks++
+            placeInfo = calcNextPos()?.let {
+                BlockUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
+                    ?: BlockUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
+            }
+
+            placeInfo?.let {
+                val hitVec = BlockUtils.getHitVec(it.second, it.first)
+                lastRotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+                swapAndPlace(it.second, it.first)
+            }
+
+            if (inactiveTicks > 5) {
+                PlayerPacketManager.resetHotbar()
+            } else if (isHoldingBlock) {
+                val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation)
+                PlayerPacketManager.addPacket(this, packet)
+            }
         }
-        holding = false
+    }
 
-        /* search blocks in hotbar */
-        var newSlot = -1
+    private fun calcNextPos(): BlockPos? {
+        val posVec = mc.player.positionVector
+        val blockPos = posVec.toBlockPos()
+        return checkPos(blockPos)
+            ?: run {
+                val realMotion = posVec.subtract(mc.player.prevPosVector)
+                val nextPos = blockPos.add(roundToRange(realMotion.x), 0, roundToRange(realMotion.z))
+                checkPos(nextPos)
+            }
+    }
+
+    private fun checkPos(blockPos: BlockPos): BlockPos? {
+        val center = Vec3d(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
+        val rayTraceResult = mc.world.rayTraceBlocks(
+            center,
+            center.subtract(0.0, 0.5, 0.0),
+            false,
+            true,
+            false
+        )
+        return blockPos.down().takeIf { rayTraceResult?.typeOfHit != RayTraceResult.Type.BLOCK }
+    }
+
+    private fun roundToRange(value: Double) =
+        (value * 2.5 * maxRange.value).roundToInt().coerceAtMost(maxRange.value)
+
+    private fun swapAndPlace(pos: BlockPos, side: EnumFacing) {
+        getBlockSlot()?.let { slot ->
+            if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(slot)
+            else InventoryUtils.swapSlot(slot)
+
+            inactiveTicks = 0
+
+            if (placeTimer.tick(delay.value.toLong())) {
+                val shouldSneak = sneak.value && !mc.player.isSneaking
+                moduleScope.launch {
+                    if (shouldSneak) {
+                        mc.player?.let {
+                            it.connection.sendPacket(CPacketEntityAction(it, CPacketEntityAction.Action.START_SNEAKING))
+                        }
+                    }
+                    delay(5)
+                    onMainThreadSafe {
+                        placeBlock(pos, side)
+                        if (shouldSneak) {
+                            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBlockSlot(): Int? {
+        mc.playerController.updateController()
         for (i in 0..8) {
-            /* filter out non-block items */
-            val stack = mc.player.inventory.getStackInSlot(i)
-
-            if (isBlock(stack, belowBlockPos)) {
-                newSlot = i
-                break
-            }
+            val itemStack = mc.player.inventory.mainInventory[i]
+            if (itemStack.isEmpty || itemStack.item !is ItemBlock) continue
+            return i
         }
-
-        /* check if any blocks were found, and if they were then set the slot */
-        if (newSlot != -1) {
-            mc.player.inventory.currentItem = newSlot
-        }
+        return null
     }
 
-    private fun isBlock(stack: ItemStack, belowBlockPos: BlockPos): Boolean {
-        /* filter out non-block items */
-        if (stack == ItemStack.EMPTY || stack.getItem() !is ItemBlock) return false
-
-        val block = (stack.getItem() as ItemBlock).block
-        if (BlockUtils.blackList.contains(block) || block is BlockContainer) return false
-
-        /* filter out non-solid blocks */
-        if (!Block.getBlockFromItem(stack.getItem()).defaultState.isFullBlock) return false
-
-        /* don't use falling blocks if it'd fall */
-        if ((stack.getItem() as ItemBlock).block is BlockFalling) {
-            if (mc.world.getBlockState(belowBlockPos).material.isReplaceable) return false
-        }
-
-        return true
-    }
 }

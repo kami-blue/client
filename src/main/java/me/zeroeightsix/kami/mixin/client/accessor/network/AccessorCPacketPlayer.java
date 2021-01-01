@@ -16,19 +16,19 @@ public interface AccessorCPacketPlayer {
     @Accessor("z")
     void setZ(double value);
 
-    @Accessor
+    @Accessor("yaw")
     void setYaw(float value);
 
-    @Accessor
+    @Accessor("pitch")
     void setPitch(float value);
 
-    @Accessor
+    @Accessor("onGround")
     void setOnGround(boolean value);
 
-    @Accessor
+    @Accessor("moving")
     boolean getMoving();
 
-    @Accessor
+    @Accessor("rotating")
     boolean getRotating();
 
 }

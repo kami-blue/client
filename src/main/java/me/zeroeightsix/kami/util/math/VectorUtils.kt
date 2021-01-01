@@ -148,6 +148,6 @@ object VectorUtils {
     }
 
     fun BlockPos.toVec3d(): Vec3d {
-        return Vec3d(this).add(0.5, 0.5, 0.5)
+        return Vec3d(x + 0.5, y + 0.5, z + 0.5)
     }
 }

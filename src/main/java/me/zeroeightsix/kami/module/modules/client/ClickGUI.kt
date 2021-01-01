@@ -19,6 +19,7 @@ import kotlin.math.round
 )
 object ClickGUI : Module() {
     private val scaleSetting = register(Settings.integerBuilder("Scale").withValue(100).withRange(50, 400).withStep(5))
+    val pauseInSinglePlayer = register(Settings.booleanBuilder("PauseInSinglePlayer").withValue(false))
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale

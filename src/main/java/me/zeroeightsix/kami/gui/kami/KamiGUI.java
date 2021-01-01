@@ -118,7 +118,6 @@ public class KamiGUI extends GUI {
     public void initializeGUI() {
         HashMap<Module.Category, Pair<Scrollpane, SettingsPanel>> categoryScrollpaneHashMap = new HashMap<>();
         for (Module module : ModuleManager.getModules()) {
-            if (module.getCategory().isHidden()) continue;
             Module.Category moduleCategory = module.getCategory();
             if (!categoryScrollpaneHashMap.containsKey(moduleCategory)) {
                 Stretcherlayout stretcherlayout = new Stretcherlayout(1);
@@ -187,7 +186,7 @@ public class KamiGUI extends GUI {
         for (Map.Entry<Module.Category, Pair<Scrollpane, SettingsPanel>> entry : categoryScrollpaneHashMap.entrySet()) {
             Stretcherlayout stretcherlayout = new Stretcherlayout(1);
             stretcherlayout.COMPONENT_OFFSET_Y = 1;
-            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getCategoryName());
+            Frame frame = new Frame(getTheme(), stretcherlayout, entry.getKey().getDisplayName());
             Scrollpane scrollpane = entry.getValue().getFirst();
             frame.addChild(scrollpane);
             frame.addChild(entry.getValue().getSecond());

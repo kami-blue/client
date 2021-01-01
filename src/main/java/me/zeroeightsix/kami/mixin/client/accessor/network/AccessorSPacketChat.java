@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SPacketChat.class)
 public interface AccessorSPacketChat {
 
-    @Accessor
+    @Accessor("chatComponent")
     void setChatComponent(ITextComponent value);
 
 }

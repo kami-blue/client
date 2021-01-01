@@ -7,7 +7,7 @@ import org.kamiblue.capeapi.AbstractUUIDManager
 import org.kamiblue.capeapi.PlayerProfile
 import org.kamiblue.capeapi.UUIDUtils
 
-object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json"), Manager {
+object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json", KamiMod.LOG), Manager {
 
     override fun getOrRequest(nameOrUUID: String): PlayerProfile? {
         return Wrapper.minecraft.connection?.playerInfoMap?.let { playerInfoMap ->
@@ -17,14 +17,11 @@ object UUIDManager : AbstractUUIDManager(KamiMod.DIRECTORY + "UUIDCache.json"), 
 
             infoMap.find {
                 isUUID && UUIDUtils.removeDashes(it.gameProfile.id.toString()).equals(withOutDashes, ignoreCase = true)
-                        || !isUUID && it.gameProfile.name.equals(nameOrUUID, ignoreCase = true)
+                    || !isUUID && it.gameProfile.name.equals(nameOrUUID, ignoreCase = true)
             }?.gameProfile?.let {
                 PlayerProfile(it.id, it.name)
             }
         } ?: super.getOrRequest(nameOrUUID)
     }
 
-    override fun logError(message: String) {
-        KamiMod.LOG.error(message)
-    }
 }

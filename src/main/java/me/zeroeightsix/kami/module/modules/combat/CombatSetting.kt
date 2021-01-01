@@ -147,7 +147,6 @@ object CombatSetting : Module() {
         }
 
         getTargetList().let {
-            CombatManager.targetList = it
             CombatManager.target = getTarget(it)
         }
     }
