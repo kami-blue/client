@@ -22,7 +22,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase {
     public void travel(float strafe, float vertical, float forward, CallbackInfo info) {
         PlayerTravelEvent event = new PlayerTravelEvent();
         KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             move(MoverType.SELF, motionX, motionY, motionZ);
             info.cancel();
         }

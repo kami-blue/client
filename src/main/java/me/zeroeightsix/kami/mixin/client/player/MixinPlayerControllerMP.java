@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.mixin.client.player;
 
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.ClientPlayerAttackEvent;
+import me.zeroeightsix.kami.event.events.PlayerAttackEvent;
 import me.zeroeightsix.kami.module.modules.player.TpsSync;
 import me.zeroeightsix.kami.util.TpsCalculator;
 import net.minecraft.block.state.IBlockState;
@@ -27,9 +27,9 @@ public class MixinPlayerControllerMP {
     @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity, CallbackInfo ci) {
         if (targetEntity == null) return;
-        ClientPlayerAttackEvent event = new ClientPlayerAttackEvent(targetEntity);
+        PlayerAttackEvent event = new PlayerAttackEvent(targetEntity);
         KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             ci.cancel();
         }
     }

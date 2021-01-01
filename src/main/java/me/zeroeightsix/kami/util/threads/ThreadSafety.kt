@@ -5,7 +5,19 @@ import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.SafeExecuteEvent
 import me.zeroeightsix.kami.util.Wrapper
+import org.kamiblue.event.ListenerManager
+import org.kamiblue.event.listener.AsyncListener
+import org.kamiblue.event.listener.DEFAULT_PRIORITY
+import org.kamiblue.event.listener.Listener
 import java.util.concurrent.Callable
+
+inline fun <reified T : Any> Any.safeAsyncListener(noinline function: suspend SafeClientEvent.(T) -> Unit) {
+    ListenerManager.register(this, AsyncListener(T::class.java) { runSafeSuspend{ function(it) } })
+}
+
+inline fun <reified T : Any> Any.safeListener(priority: Int = DEFAULT_PRIORITY, noinline function: SafeClientEvent.(T) -> Unit) {
+    ListenerManager.register(this, Listener(T::class.java, priority) { runSafe { function(it) } })
+}
 
 fun ClientEvent.toSafe() =
     if (world != null && player != null && playerController != null && connection != null) SafeClientEvent(world, player, playerController, connection)

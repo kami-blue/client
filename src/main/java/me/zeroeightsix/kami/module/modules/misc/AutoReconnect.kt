@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.mixin.extension.message
 import me.zeroeightsix.kami.mixin.extension.parentScreen
 import me.zeroeightsix.kami.mixin.extension.reason
@@ -25,11 +25,11 @@ object AutoReconnect : Module() {
     private var prevServerDate: ServerData? = null
 
     init {
-        listener<GuiScreenEvent.Closed> {
+        listener<GuiEvent.Closed> {
             if (it.screen is GuiConnecting) prevServerDate = mc.currentServerData
         }
 
-        listener<GuiScreenEvent.Displayed> {
+        listener<GuiEvent.Displayed> {
             if (isDisabled || (prevServerDate == null && mc.currentServerData == null)) return@listener
             (it.screen as? GuiDisconnected)?.let { gui ->
                 it.screen = KamiGuiDisconnected(gui)

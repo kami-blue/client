@@ -40,7 +40,7 @@ public class MixinEntityRenderer {
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(F)V", shift = At.Shift.AFTER))
     public void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci) {
-        KamiEventBus.INSTANCE.post(new RenderOverlayEvent(partialTicks));
+        KamiEventBus.INSTANCE.post(new RenderOverlayEvent());
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
@@ -102,10 +102,8 @@ public class MixinEntityRenderer {
 
     @Inject(method = "renderWorldPass", at = @At("RETURN"))
     public void renderShaderPre(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        RenderShaderEvent eventPre = new RenderShaderEvent(RenderShaderEvent.Phase.PRE);
+        RenderShaderEvent eventPre = new RenderShaderEvent();
         KamiEventBus.INSTANCE.post(eventPre);
-        RenderShaderEvent eventPost = new RenderShaderEvent(RenderShaderEvent.Phase.POST);
-        KamiEventBus.INSTANCE.post(eventPost);
     }
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;turn(FF)V"))

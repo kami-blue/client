@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.EntityEvent.EntityCollision
+import me.zeroeightsix.kami.event.events.EntityCollisionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
 import me.zeroeightsix.kami.mixin.extension.packetMotionX
@@ -52,7 +52,7 @@ object Velocity : Module() {
             }
         }
 
-        listener<EntityCollision> {
+        listener<EntityCollisionEvent> {
             if (it.entity != mc.player) return@listener
             if (noPush.value || isZero) {
                 it.cancel()

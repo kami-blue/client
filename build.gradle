@@ -88,6 +88,12 @@ minecraft {
 
 configurations {
     jarLibs
+    // Force choosing the correct nightly build because Mac OS chooses an invalid one
+    all {
+        resolutionStrategy {
+            force 'org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209'
+        }
+    }
 }
 
 dependencies {

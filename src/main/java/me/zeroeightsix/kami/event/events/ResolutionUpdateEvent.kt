@@ -1,5 +1,5 @@
 package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Event
 
-class ResolutionUpdateEvent(val width: Int, val height: Int) : KamiEvent()
+class ResolutionUpdateEvent(val width: Int, val height: Int) : Event

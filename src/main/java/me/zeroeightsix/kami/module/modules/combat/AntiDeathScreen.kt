@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
@@ -12,7 +12,7 @@ import org.kamiblue.event.listener.listener
 )
 object AntiDeathScreen : Module() {
     init {
-        listener<GuiScreenEvent.Displayed> {
+        listener<GuiEvent.Displayed> {
             if (it.screen !is GuiGameOver) return@listener
             if (mc.player.health > 0) {
                 mc.player.respawnPlayer()
