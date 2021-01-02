@@ -27,10 +27,7 @@ public abstract class MixinRenderGlobal {
     @Shadow private int renderDistanceChunks;
     @Shadow private ViewFrustum viewFrustum;
 
-    @Shadow
-    protected abstract void fixTerrainFrustum(double x, double y, double z);
-
-    private Minecraft mc = Minecraft.getMinecraft();
+    private final Minecraft mc = Minecraft.getMinecraft();
 
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks, CallbackInfo ci) {
