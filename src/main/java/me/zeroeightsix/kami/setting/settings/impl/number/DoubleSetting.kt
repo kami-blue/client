@@ -10,13 +10,13 @@ class DoubleSetting(
         visibility: () -> Boolean = { true },
         consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
         description: String = ""
-) : NumberSetting<Double>(name, value, range.start, range.endInclusive, step, visibility, consumer, description) {
+) : NumberSetting<Double>(name, value, range, step, visibility, consumer, description) {
 
-    override var value: Double = value
-        set(value) {
-            field = consumer(field, value.coerceIn(min, max))
-            for (listener in listeners) listener()
+    init {
+        consumers.add(0) { _, it ->
+            it.coerceIn(range)
         }
+    }
 
     override fun read(jsonElement: JsonElement?) {
         jsonElement?.asJsonPrimitive?.asDouble?.let { value = it }

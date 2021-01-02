@@ -16,7 +16,7 @@ import kotlin.math.round
 
 class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, setting.description) {
 
-    private val range = setting.max.toDouble() - setting.min.toDouble()
+    private val range = setting.range.endInclusive.toDouble() - setting.range.start.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()
     private val settingStep = if (setting.step.toDouble() > 0.0) setting.step else getDefaultStep()
     private val stepDouble = settingStep.toDouble()
@@ -42,7 +42,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
     override fun onTick() {
         super.onTick()
         if (mouseState != MouseState.DRAG && !listening) {
-            val min = setting.min.toDouble()
+            val min = setting.range.start.toDouble()
             val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
             if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
                 value = (setting.value.toDouble() - min) / range
@@ -82,7 +82,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         value = if (!Keyboard.isKeyDown(Keyboard.KEY_LMENU)) mousePos.x.toDouble() / width.toDouble()
         else (preDragMousePos.x + (mousePos.x - preDragMousePos.x) * 0.1) / width.toDouble()
 
-        var roundedValue = MathUtils.round(round((value * range + setting.min.toDouble()) / stepDouble) * stepDouble, places)
+        var roundedValue = MathUtils.round(round((value * range + setting.range.start.toDouble()) / stepDouble) * stepDouble, places)
         if (abs(roundedValue) == 0.0) roundedValue = 0.0
         setting.setValue(roundedValue.toString())
     }

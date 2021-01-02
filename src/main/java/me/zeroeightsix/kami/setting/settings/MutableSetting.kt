@@ -16,7 +16,7 @@ open class MutableSetting<T : Any>(
     override val name: String,
     valueIn: T,
     override val visibility: () -> Boolean,
-    val consumer: (prev: T, input: T) -> T,
+    consumer: (prev: T, input: T) -> T,
     override val description: String
 ) : AbstractSetting<T>() {
 
@@ -25,12 +25,21 @@ open class MutableSetting<T : Any>(
         set(value) {
             if (value != field) {
                 val prev = field
-                field = consumer(field, value)
+                var new = value
+
+                for (index in consumers.size -1 downTo 0) {
+                    new = consumers[index](prev, new)
+                }
+                field = new
+
+                valueListeners.forEach { it(prev, field) }
                 for (listener in valueListeners) listener(prev, field)
-                for (listener in listeners) listener()
+                listeners.forEach { it() }
             }
         }
+
     override val valueClass: Class<T> = valueIn.javaClass
+    val consumers = arrayListOf(consumer)
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         this.value = value
