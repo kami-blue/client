@@ -75,7 +75,7 @@ object ClickGUI : Module() {
     }
 
     init {
-        bind.value.key = Keyboard.KEY_Y
+        bind.value.setBind(Keyboard.KEY_Y)
         scaleSetting.listeners.add {
             settingTimer.reset()
         }

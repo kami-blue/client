@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
+import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -32,8 +33,8 @@ object Step : Module() {
     private val entityStep = setting("Entities", true)
     private val height = setting("Height", 1.0f, 0.25f..2.0f, 0.25f)
     private val downSpeed = setting("DownSpeed", 0.2f, 0.0f..1.0f, 0.05f)
-    private val bindUpStep = setting("BindUpStep")
-    private val bindDownStep = setting("BindDownStep")
+    private val bindUpStep = setting("BindUpStep", Bind())
+    private val bindDownStep = setting("BindDownStep", Bind())
 
     private const val defaultHeight = 0.6f
     private val shouldRunStep get() = !mc.player.isElytraFlying && !mc.player.capabilities.isFlying && !mc.player.isOnLadder && !mc.player.isInWater && !mc.player.isInLava

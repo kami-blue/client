@@ -37,7 +37,7 @@ import java.util.*
         modulePriority = 90
 )
 object CrystalBasePlace : Module() {
-    private val manualPlaceBind = setting("BindManualPlace")
+    private val manualPlaceBind = setting("BindManualPlace", Bind())
     private val minDamageInc = setting("MinDamageInc", 2.0f, 0.0f..10.0f, 0.25f)
     private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
     private val delay = setting("Delay", 20, 0..50, 5)

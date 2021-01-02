@@ -3,34 +3,49 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import org.lwjgl.input.Keyboard
 
-/**
- * Created by 086 on 9/10/2018.
- * Updated by Xiaro on 08/18/20
- */
 class Bind(
-    var isCtrl: Boolean,
-    var isAlt: Boolean,
-    var isShift: Boolean,
-    var key: Int
+    ctrlIn: Boolean,
+    altIn: Boolean,
+    shiftIn: Boolean,
+    keyIn: Int
 ) {
-    val isEmpty: Boolean get() = !isCtrl && !isShift && !isAlt && key < 0
+
+    constructor() : this(0)
+
+    constructor(keyIn: Int) : this(false, false, false, keyIn)
+
+    var ctrl = ctrlIn; private set
+    var alt = altIn; private set
+    var shift = shiftIn; private set
+    var key = keyIn; private set
+
+    val isEmpty: Boolean get() = !ctrl && !shift && !alt && key < 0
 
     fun clear() {
-        isCtrl = false
-        isShift = false
-        isAlt = false
+        ctrl = false
+        shift = false
+        alt = false
         key = -1
     }
 
-    fun isDown(eventKey: Int): Boolean {
-        return !isEmpty && (!CommandConfig.modifierEnabled.value || isShift == isShiftDown() && isCtrl == isCtrlDown() && isAlt == isAltDown()) && eventKey == key
+    fun isDown(keyIn: Int): Boolean {
+        return !isEmpty
+            && (!CommandConfig.modifierEnabled.value || shift == isShiftDown() && ctrl == isCtrlDown() && alt == isAltDown())
+            && key == keyIn
     }
 
-    fun setBind(eventKey: Int) {
-        isCtrl = isCtrlDown()
-        isShift = isShiftDown()
-        isAlt = isAltDown()
-        key = eventKey
+    fun setBind(ctrlIn: Boolean, altIn: Boolean, shiftIn: Boolean, keyIn: Int) {
+        ctrl = ctrlIn
+        alt = altIn
+        shift = shiftIn
+        key = keyIn
+    }
+
+    fun setBind(keyIn: Int) {
+        ctrl = isCtrlDown()
+        alt = isAltDown()
+        shift = isShiftDown()
+        key = keyIn
     }
 
     private fun isShiftDown(): Boolean {
@@ -55,26 +70,14 @@ class Bind(
         return if (isEmpty) "None"
         else {
             StringBuffer().apply {
-                if (isCtrl) append("Ctrl+")
-                if (isAlt) append("Alt+")
-                if (isShift) append("Shift+")
-                append(getKeyName())
+                if (ctrl) append("Ctrl+")
+                if (alt) append("Alt+")
+                if (shift) append("Shift+")
+                append(
+                    if (key in 0..255) Keyboard.getKeyName(key).toLowerCase().capitalize()
+                    else "None"
+                )
             }.toString()
-        }
-    }
-
-    private fun getKeyName(): String {
-        return if (key in 0..255) {
-            Keyboard.getKeyName(key).toLowerCase().capitalize()
-        } else {
-            "None"
-        }
-    }
-
-    companion object {
-        @JvmStatic
-        fun none(): Bind {
-            return Bind(false, false, false, -1)
         }
     }
 }

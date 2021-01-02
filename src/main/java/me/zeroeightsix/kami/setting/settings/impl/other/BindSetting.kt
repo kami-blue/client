@@ -2,21 +2,30 @@ package me.zeroeightsix.kami.setting.settings.impl.other
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.zeroeightsix.kami.setting.settings.MutableSetting
+import me.zeroeightsix.kami.setting.settings.ImmutableSetting
 import me.zeroeightsix.kami.util.Bind
 import org.lwjgl.input.Keyboard
 
 class BindSetting(
         name: String,
+        value: Bind,
         visibility: () -> Boolean = { true },
         description: String = ""
-) : MutableSetting<Bind>(name, Bind.none(), visibility, { _, input -> input }, description) {
+) : ImmutableSetting<Bind>(name, value, visibility, { _, input -> input }, description) {
 
-    override fun write() = JsonPrimitive(value.toString())
+    override val defaultValue: Bind = Bind(value.ctrl, value.alt, value.shift, value.key)
 
-    override fun read(jsonElement: JsonElement?) {
-        var string = jsonElement?.asString ?: "None"
-        if (string.equals("None", ignoreCase = true)) value = Bind.none()
+    override fun resetValue() {
+        value.setBind(defaultValue.ctrl, defaultValue.alt, defaultValue.shift, defaultValue.key)
+    }
+
+    override fun setValue(valueIn: String) {
+        var string = valueIn
+
+        if (string.equals("None", ignoreCase = true)) {
+            value.setBind(0)
+            return
+        }
 
         val ctrl = string.startsWith("Ctrl+")
         if (ctrl) {
@@ -35,7 +44,13 @@ class BindSetting(
 
         val key = Keyboard.getKeyIndex(string.toUpperCase())
 
-        value = if (key == 0) Bind.none() else Bind(ctrl, alt, shift, key)
+        value.setBind(ctrl, alt, shift, key)
+    }
+
+    override fun write() = JsonPrimitive(value.toString())
+
+    override fun read(jsonElement: JsonElement?) {
+        setValue(jsonElement?.asString ?: "None")
     }
 
 }

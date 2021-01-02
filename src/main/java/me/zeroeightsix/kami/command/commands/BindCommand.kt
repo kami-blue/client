@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.util.text.TextFormatting
 
@@ -15,11 +15,11 @@ object BindCommand : ClientCommand(
     init {
         literal("list") {
             execute("List used module binds") {
-                val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bindName }
+                val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bind.toString() }
 
                 MessageSendHelper.sendChatMessage("Used binds: ${formatValue(modules.size)}")
                 modules.forEach {
-                    MessageSendHelper.sendRawChatMessage("${formatValue(it.bindName)} ${it.name}")
+                    MessageSendHelper.sendRawChatMessage("${formatValue(it.bind)} ${it.name}")
                 }
             }
         }
@@ -37,9 +37,11 @@ object BindCommand : ClientCommand(
         literal("modifiers") {
             boolean("enabled") { modifiersArg ->
                 execute("Disallow binds while holding a modifier") {
-                    CommandConfig.modifierEnabled.value = modifiersArg.value
+                    val modifiers = modifiersArg.value
+
+                    CommandConfig.modifierEnabled.value = modifiers
                     MessageSendHelper.sendChatMessage(
-                        "Modifiers ${if (modifiersArg.value) " ${TextFormatting.GREEN}enabled" else " ${TextFormatting.RED}disabled"}"
+                        "Modifiers ${if (modifiers) " ${TextFormatting.GREEN format "enabled"}" else " ${TextFormatting.RED format "disabled"}"}"
                     )
                 }
             }
@@ -57,19 +59,14 @@ object BindCommand : ClientCommand(
                         return@execute
                     }
 
-                    val key = Wrapper.getKey(bind)
-
-                    if (key == 0) {
-                        Wrapper.sendUnknownKeyError(bind)
-                    } else {
-                        module.bind.value.key = key
-                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${formatValue(module.bindName)}!")
-                    }
+                    module.bind.setValue(bind)
+                    MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${formatValue(module.bind)}!")
                 }
             }
 
             execute("Get the bind of a module") {
-                MessageSendHelper.sendChatMessage("${moduleArg.value.name} is bound to ${formatValue(moduleArg.value.bindName)}")
+                val module = moduleArg.value
+                MessageSendHelper.sendChatMessage("${module.name} is bound to ${formatValue(module.bind)}")
             }
         }
     }

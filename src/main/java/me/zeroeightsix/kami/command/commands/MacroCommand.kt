@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.manager.managers.MacroManager
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import org.lwjgl.input.Keyboard
 
 object MacroCommand : ClientCommand(
     name = "macro",
@@ -15,15 +15,15 @@ object MacroCommand : ClientCommand(
         literal("list") {
             string("key") { keyArg ->
                 execute("List macros for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     val macros = MacroManager.macros.filter { it.key == key }
-                    val formattedName = formatValue(Wrapper.getKeyName(key))
+                    val formattedName = formatValue(getKeyName(key))
 
                     if (macros.isEmpty()) {
                         MessageSendHelper.sendChatMessage("&cYou have no macros for the key $formattedName")
@@ -42,7 +42,7 @@ object MacroCommand : ClientCommand(
                 } else {
                     MessageSendHelper.sendChatMessage("You have the following macros: ")
                     for ((key, value) in MacroManager.macros.entries.sortedBy { it.key }) {
-                        MessageSendHelper.sendRawChatMessage("${formatValue(Wrapper.getKeyName(key))} $value")
+                        MessageSendHelper.sendRawChatMessage("${formatValue(getKeyName(key))} $value")
                     }
                 }
 
@@ -52,17 +52,17 @@ object MacroCommand : ClientCommand(
         literal("clear") {
             string("key") { keyArg ->
                 execute("Clear macros for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     MacroManager.removeMacro(key)
                     MacroManager.saveMacros()
                     MacroManager.loadMacros()
-                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(Wrapper.getKeyName(key))}")
+                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(getKeyName(key))}")
                 }
             }
         }
@@ -70,18 +70,35 @@ object MacroCommand : ClientCommand(
         string("key") { keyArg ->
             greedy("command / message") { greedyArg ->
                 execute("Set a command / message for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     MacroManager.addMacroToKey(key, greedyArg.value)
                     MacroManager.saveMacros()
-                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key ${formatValue(Wrapper.getKeyName(key))}")
+                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key ${formatValue(getKeyName(key))}")
                 }
             }
         }
+    }
+
+    private fun sendUnknownKeyError(bind: String) {
+        MessageSendHelper.sendErrorMessage("Unknown key [${formatValue(bind)}]! " +
+            "left alt is ${formatValue("lmenu")}, " +
+            "left Control is ${formatValue("lcontrol")}, " +
+            "and ` is ${formatValue("grave")}. " +
+            "You cannot bind the ${formatValue("meta")} key."
+        )
+    }
+
+    private fun getKey(keyName: String): Int {
+        return Keyboard.getKeyIndex(keyName.toUpperCase())
+    }
+
+    private fun getKeyName(keycode: Int): String {
+        return Keyboard.getKeyName(keycode)
     }
 }

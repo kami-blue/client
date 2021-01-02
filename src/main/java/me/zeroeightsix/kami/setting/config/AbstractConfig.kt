@@ -15,6 +15,7 @@ import me.zeroeightsix.kami.setting.settings.impl.other.ColorSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
+import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import java.io.File
@@ -61,9 +62,10 @@ abstract class AbstractConfig<T>(
     /** Bind Setting */
     fun T.setting(
             name: String,
+            value: Bind,
             visibility: () -> Boolean = { true },
             description: String = ""
-    ) = setting(BindSetting(name, visibility, description))
+    ) = setting(BindSetting(name, value, visibility, description))
 
     /** Color Setting */
     fun T.setting(

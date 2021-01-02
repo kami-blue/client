@@ -33,7 +33,7 @@ object AutoOffhand : Module() {
 
     // Totem
     private val hpThreshold = setting("HpThreshold", 5f, 1f..20f, 0.5f, { type.value == Type.TOTEM })
-    private val bindTotem = setting("BindTotem", { type.value == Type.TOTEM })
+    private val bindTotem = setting("BindTotem", Bind(), { type.value == Type.TOTEM })
     private val checkDamage = setting("CheckDamage", true, { type.value == Type.TOTEM })
     private val mob = setting("Mob", true, { type.value == Type.TOTEM && checkDamage.value })
     private val player = setting("Player", true, { type.value == Type.TOTEM && checkDamage.value })
@@ -42,20 +42,20 @@ object AutoOffhand : Module() {
 
     // Gapple
     private val offhandGapple = setting("OffhandGapple", false, { type.value == Type.GAPPLE })
-    private val bindGapple = setting("BindGapple", { type.value == Type.GAPPLE && offhandGapple.value })
+    private val bindGapple = setting("BindGapple", Bind(), { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkAuraG = setting("CheckAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkWeaponG = setting("CheckWeaponG", false, { type.value == Type.GAPPLE && offhandGapple.value })
     private val checkCAGapple = setting("CheckCrystalAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
 
     // Strength
     private val offhandStrength = setting("OffhandStrength", false, { type.value == Type.STRENGTH })
-    private val bindStrength = setting("BindStrength", { type.value == Type.STRENGTH && offhandStrength.value })
+    private val bindStrength = setting("BindStrength", Bind(), { type.value == Type.STRENGTH && offhandStrength.value })
     private val checkAuraS = setting("CheckAuraS", true, { type.value == Type.STRENGTH && offhandStrength.value })
     private val checkWeaponS = setting("CheckWeaponS", false, { type.value == Type.STRENGTH && offhandStrength.value })
 
     // Crystal
     private val offhandCrystal = setting("OffhandCrystal", false, { type.value == Type.CRYSTAL })
-    private val bindCrystal = setting("BindCrystal", { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val bindCrystal = setting("BindCrystal", Bind(), { type.value == Type.CRYSTAL && offhandCrystal.value })
     private val checkCACrystal = setting("CheckCrystalAuraC", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
 
     // General

@@ -8,10 +8,7 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.WorldUtils
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
@@ -65,7 +62,7 @@ object CrystalAura : Module() {
     private val swingMode = setting("SwingMode", SwingMode.CLIENT, { page.value == Page.GENERAL })
 
     /* Force place */
-    private val bindForcePlace = setting("BindForcePlace", { page.value == Page.FORCE_PLACE })
+    private val bindForcePlace = setting("BindForcePlace", Bind(), { page.value == Page.FORCE_PLACE })
     private val forcePlaceHealth = setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page.value == Page.FORCE_PLACE })
     private val forcePlaceArmorDura = setting("ForcePlaceArmorDura", 10, 0..50, 1, { page.value == Page.FORCE_PLACE })
     private val minDamageForcePlace = setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page.value == Page.FORCE_PLACE })

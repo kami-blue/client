@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
+import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -29,7 +30,7 @@ import org.lwjgl.input.Keyboard
 object AutoTrap : Module() {
     private val trapMode = setting("TrapMode", TrapMode.FULL_TRAP)
     private val selfTrap = setting("SelfTrap", false)
-    private val bindSelfTrap = setting("BindSelfTrap")
+    private val bindSelfTrap = setting("BindSelfTrap", Bind())
     private val autoDisable = setting("AutoDisable", true)
     private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
 

@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.DisplayEnum
@@ -56,7 +57,7 @@ open class Module {
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(this.category.displayName).getGroupOrPut(this.name).getSettings()
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
-    val bind = setting("Bind", { !annotation.alwaysEnabled })
+    val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })
     private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
     private val visible = setting("Visible", annotation.showOnArray)
     private val default = setting("Default", false, { settingList.isNotEmpty() })
@@ -65,7 +66,6 @@ open class Module {
     /* Properties */
     val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
-    val bindName: String get() = bind.value.toString()
     val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
     /* End of properties */
