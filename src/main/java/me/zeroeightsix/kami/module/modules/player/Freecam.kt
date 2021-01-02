@@ -44,7 +44,7 @@ object Freecam : Module() {
     private val autoRotate = register(Settings.b("AutoRotate", true))
     private val arrowKeyMove = register(Settings.b("ArrowKeyMove", true))
     private val disableOnDisconnect = register(Settings.b("DisconnectDisable", true))
-    private val leftClickCome = register(Settings.b("LeftClickCome", false))
+    private val leftClickCome = register(Settings.b("LeftClickCome", true))
 
     private enum class FlightMode(override val displayName: String) : DisplayEnum {
         CREATIVE("Creative"),
