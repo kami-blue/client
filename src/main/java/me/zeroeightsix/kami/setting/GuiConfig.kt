@@ -7,15 +7,16 @@ import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import java.io.File
 
 internal object GuiConfig : AbstractMultiConfig<Component>(
-        "Gui",
+        "gui",
         KamiMod.DIRECTORY,
-        "ClickGUI", "HudGUI"
+        "click_gui", "hud_gui"
 ) {
     override val file: File get() = File("$directoryPath$name")
 
     override fun <S : AbstractSetting<*>> Component.setting(setting: S): S {
-        settingGroup.groupName?.let {
-            getGroupOrPut(it).getGroupOrPut(originalName).addSetting(setting)
+        val groupName = settingGroup.groupName
+        if (groupName.isNotEmpty()) {
+            getGroupOrPut(groupName).getGroupOrPut(originalName).addSetting(setting)
         }
         return setting
     }

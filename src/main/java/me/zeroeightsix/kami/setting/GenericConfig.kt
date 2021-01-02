@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.setting.config.AbstractConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
 
 internal object GenericConfig : AbstractConfig<Any>(
-        "Generic",
+        "generic",
         KamiMod.DIRECTORY
 ) {
 

@@ -121,10 +121,10 @@ open class Component(
 
     open fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {}
 
-    enum class SettingGroup(val groupName: String?) {
-        NONE(null),
-        CLICK_GUI("ClickGui"),
-        HUD_GUI("HudGui")
+    enum class SettingGroup(val groupName: String) {
+        NONE(""),
+        CLICK_GUI("click_gui"),
+        HUD_GUI("hud_gui")
     }
 
 }

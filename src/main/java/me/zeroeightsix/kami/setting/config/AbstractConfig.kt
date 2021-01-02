@@ -22,7 +22,7 @@ import java.io.File
 
 abstract class AbstractConfig<T>(
         name: String,
-        private val filePath: String
+        protected val filePath: String
 ) : SettingMultiGroup(name), IFinalGroup<T> {
 
     /* Setting registering */
@@ -109,6 +109,10 @@ abstract class AbstractConfig<T>(
     override val backup get() =  File("$filePath$name.bak")
 
     override fun save() {
+        File(filePath).run {
+            if (!exists()) mkdirs()
+        }
+
         saveToFile(this, file, backup)
     }
 

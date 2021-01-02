@@ -54,7 +54,7 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(this.category.displayName).getGroupOrPut(this.name).getSettings()
+    val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
     val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })

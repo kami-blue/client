@@ -4,10 +4,11 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import org.kamiblue.commons.interfaces.Nameable
 
 open class SettingGroup(
-        val name: String
-) {
+    override val name: String
+) : Nameable {
 
     /** Settings in this group */
     protected val subSetting = LinkedHashMap<String, AbstractSetting<*>>()

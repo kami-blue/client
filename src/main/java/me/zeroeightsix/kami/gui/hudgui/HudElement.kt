@@ -25,7 +25,7 @@ open class HudElement(
 
     override val resizable = false
 
-    val settingList get() = GuiConfig.getGroupOrPut("HudGui").getGroupOrPut(originalName).getSettings()
+    val settingList get() = GuiConfig.getGroupOrPut(SettingGroup.HUD_GUI.groupName).getGroupOrPut(originalName).getSettings()
 
     init {
         listener<SafeTickEvent> {

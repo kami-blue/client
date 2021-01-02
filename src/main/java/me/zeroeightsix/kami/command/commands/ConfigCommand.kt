@@ -9,8 +9,6 @@ import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
-import java.io.File
-import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Paths
 
@@ -50,18 +48,18 @@ object ConfigCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                             return@launch
                         }
-                        val prevPath = ModuleConfig.currentPath.value
+                        val prevPath = ModuleConfig.currentPath
 
                         try {
                             ConfigUtils.saveConfig(ModuleConfig)
-                            ModuleConfig.currentPath.value = newPath
+                            ModuleConfig.currentPath = newPath
                             ConfigUtils.saveConfig(GenericConfig)
                             ConfigUtils.loadAll()
                             MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
                         } catch (e: IOException) {
                             MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                             KamiMod.LOG.warn("Couldn't set path!", e)
-                            ModuleConfig.currentPath.value = prevPath
+                            ModuleConfig.currentPath = prevPath
                             ConfigUtils.saveConfig(ModuleConfig)
                         }
                     }
@@ -70,7 +68,7 @@ object ConfigCommand : ClientCommand(
 
             execute("Print current config files") {
                 defaultScope.launch(Dispatchers.IO) {
-                    val path = Paths.get(ModuleConfig.currentPath.value).toAbsolutePath()
+                    val path = Paths.get(ModuleConfig.currentPath).toAbsolutePath()
                     MessageSendHelper.sendChatMessage("Path to configuration: ${formatValue(path)}")
                 }
             }
