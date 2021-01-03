@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
@@ -84,30 +85,32 @@ object ESP : Module() {
             resetGlow()
         }
 
-        listener<RenderEntityEvent.Pre> {
-            if (mode.value != ESPMode.SHADER || it.entity == null || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
-            if (hideOriginal.value) {
-                // Steal it from Minecraft rendering kek
-                prepareFrameBuffer()
-                drawNametag = true
-            }
-        }
+        listener<RenderEntityEvent> {
+            if (mode.value != ESPMode.SHADER || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
 
-        listener<RenderEntityEvent.Post> {
-            if (mode.value != ESPMode.SHADER || it.entity == null || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
-            if (!hideOriginal.value) {
-                prepareFrameBuffer()
-                mc.renderManager.getEntityRenderObject<Entity>(it.entity)?.doRender(it.entity, it.x, it.y, it.z, it.yaw, it.partialTicks)
+            if (it.phase == Phase.PRE) {
+                if (hideOriginal.value) {
+                    // Steal it from Minecraft rendering kek
+                    prepareFrameBuffer()
+                    drawNametag = true
+                }
             }
 
-            mc.framebuffer.bindFramebuffer(false)
-            GlStateManager.disableOutlineMode()
-            drawingOutline = false
-            drawNametag = false
+            if (it.phase == Phase.PERI) {
+                if (!hideOriginal.value) {
+                    prepareFrameBuffer()
+                    mc.renderManager.getEntityRenderObject<Entity>(it.entity)?.doRender(it.entity, it.x, it.y, it.z, it.yaw, it.partialTicks)
+                }
+
+                mc.framebuffer.bindFramebuffer(false)
+                GlStateManager.disableOutlineMode()
+                drawingOutline = false
+                drawNametag = false
+            }
         }
 
         listener<RenderShaderEvent> {
-            if (mode.value != ESPMode.SHADER || it.phase != RenderShaderEvent.Phase.PRE) return@listener
+            if (mode.value != ESPMode.SHADER) return@listener
 
             frameBuffer?.bindFramebuffer(false)
             shaderHelper.shader?.render(KamiTessellator.pTicks())

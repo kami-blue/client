@@ -8,7 +8,8 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
@@ -41,8 +42,8 @@ object AntiAFK : Module() {
     private var startPos: BlockPos? = null
     private var squareStep = 0
     private var baritoneDisconnectOnArrival = false
-    private val inputTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
-    private val actionTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val inputTimer = TickTimer(TimeUnit.MINUTES)
+    private val actionTimer = TickTimer(TimeUnit.TICKS)
     private var nextActionDelay = 0
 
     override fun getHudInfo(): String? {

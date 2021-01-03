@@ -1,154 +1,201 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.mixin.extension.packetMessage
+import me.zeroeightsix.kami.manager.managers.MessageManager
+import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.mixin.extension.textComponent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendErrorMessage
+import me.zeroeightsix.kami.util.text.MessageDetection
+import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
-import net.minecraft.network.play.client.CPacketChatMessage
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
-import net.minecraft.util.ChatAllowedCharacters
-import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
-import org.kamiblue.event.listener.listener
-import java.nio.CharBuffer
+import org.kamiblue.commons.utils.SystemUtils
 import java.util.*
-import java.util.regex.Pattern
-import java.util.stream.Collectors
-import kotlin.math.sqrt
+import kotlin.collections.HashMap
 
+// TODO: for GUI branch: Update instructions to not use commands
+// The old gui doesn't support string settings
+// TODO: Add proper RSA encryption
 @Module.Info(
     name = "ChatEncryption",
     description = "Encrypts and decrypts chat messages",
-    category = Module.Category.CHAT
+    category = Module.Category.CHAT,
+    modulePriority = -69420
 )
 object ChatEncryption : Module() {
+    private val commands = register(Settings.b("Commands", false))
     private val self = register(Settings.b("DecryptOwn", true))
-    private val mode = register(Settings.e<EncryptionMode>("Mode", EncryptionMode.SHUFFLE))
-    private val keyA = register(Settings.integerBuilder("KeyA").withValue(3).withRange(0, 26).withStep(1))
-    private val keyB = register(Settings.integerBuilder("KeyB").withValue(10).withRange(0, 26).withStep(1))
-    private val delimiterSetting = register(Settings.b("Delimiter", true))
-    val delimiterValue = register(Settings.s("delimiterV", "unchanged"))
+    private val keySetting = register(Settings.s("KeySetting", "DefaultKey"))
+    val delimiter = register(Settings.stringBuilder("Delimiter").withValue("%").withRestriction { it.length == 1 && !charsSet.contains(it.first()) })
 
-    private enum class EncryptionMode {
-        SHUFFLE, SHIFT
+    private const val personFrowning = "🙍"
+
+    private val chars = charArrayOf(
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        ',', '.', '!', '?', ' '
+    )
+    private val charsSet = chars.toSet()
+
+        private val charsMap: Map<Char, Int> = HashMap<Char, Int>(67).apply {
+            for ((index, char) in chars.withIndex()) {
+                put(char, index)
+            }
+        }
+
+    private val vigenereSquare = Array(chars.size) { index1 ->
+        CharArray(chars.size) { index2 ->
+            chars[(index1 + index2) % chars.size]
+        }
     }
 
-    private val pattern = Pattern.compile("<.*?> ")
-    private val originChar = charArrayOf('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '_', '/', ';', '=', '?', '+', '\u00B5', '\u00A3', '*', '^', '\u00F9', '$', '!', '{', '}', '\'', '"', '|', '&')
-    private val delimiter: String?
-        get() {
-            if (delimiterValue.value == "unchanged") {
-                sendErrorMessage("$chatName Please change the delimiter with ${formatValue("${CommandManager.prefix}set $name delimiterV <delimiter>")}")
-                disable()
-                return null
-            }
-            return delimiterValue.value
+    private val reversedSquare = Array(chars.size) { index1 ->
+        CharArray(chars.size) { index2 ->
+            chars[Math.floorMod((index1 - index2), chars.size)]
         }
+    }
+
+    private val modifier = newMessageModifier(
+        filter = {
+            (commands.value || MessageDetection.Command.ANY_EXCEPT_DELIMITER detectNot it.packet.message)
+        },
+        modifier = {
+            it.encrypt() ?: it.packet.message
+        }
+    )
+
+    private var previousMessage = ""
+
+    override fun onEnable() {
+        getOrGenKey()
+        modifier.enable()
+    }
+
+    override fun onDisable() {
+        modifier.disable()
+    }
+
+    private fun getOrGenKey(): String {
+        var key = keySetting.value
+
+        if (key == "DefaultKey") {
+            key = randomChars()
+            keySetting.value = key
+
+            MessageSendHelper.sendChatMessage("$chatName Your encryption key was set to ${formatValue(key)}, and copied to your clipboard.\n" +
+                "You may change it with ${formatValue("${CommandManager.prefix}set $name key <newKey>")}"
+            )
+
+            defaultScope.launch(Dispatchers.IO) {
+                SystemUtils.copyToClipboard(key)
+            }
+        }
+
+        return key
+    }
+
+    private fun randomChars() = StringBuilder().run {
+        for (i in 1..32) {
+            append(chars.random())
+        }
+        toString()
+    }
 
     init {
-        listener<PacketEvent.Send> {
-            if (it.packet !is CPacketChatMessage || mc.player == null) return@listener
-            var s = it.packet.packetMessage
-            if (delimiterSetting.value) {
-                if (delimiter == null || !s.startsWith(delimiter!!)) return@listener
-                s = s.substring(1)
-            }
-            val builder = StringBuilder()
-            when (mode.value as EncryptionMode) {
-                EncryptionMode.SHUFFLE -> {
-                    builder.append(shuffle(getKey(), s))
-                    builder.append("\uD83D\uDE4D")
-                }
-                EncryptionMode.SHIFT -> {
-                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter((value + getKey()).toChar())) getKey() else 0).toChar()) }
-                    builder.append("\uD83D\uDE48")
-                }
-            }
-            s = builder.toString()
-            if (s.length > 256) {
-                sendChatMessage("Encrypted message length was too long, couldn't send!")
-                it.cancel()
-                return@listener
-            }
-            it.packet.packetMessage = s
-        }
+        safeListener<PacketEvent.Receive> {
+            if (it.packet !is SPacketChat) return@safeListener
 
-        listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketChat) return@listener
-            var s = it.packet.textComponent.unformattedText
-            if (!self.value && isOwn(s)) return@listener
-            val matcher = pattern.matcher(s)
-            var username = "unnamed"
-            if (matcher.find()) {
-                username = matcher.group()
-                username = username.substring(1, username.length - 2)
-                s = matcher.replaceFirst("")
-            }
-            val builder = StringBuilder()
-            val substring = s.substring(0, s.length - 2)
-            when (mode.value as EncryptionMode) {
-                EncryptionMode.SHUFFLE -> {
-                    if (!s.endsWith("\uD83D\uDE4D")) return@listener
-                    s = substring
-                    builder.append(unShuffle(getKey(), s))
+            val fullMessage: CharSequence = it.packet.textComponent.unformattedText
+            if (!fullMessage.contains(personFrowning)) return@safeListener
+
+            val playerName = MessageDetection.Message.ANY.playerName(fullMessage) ?: "Unknown User"
+            if (!self.value && playerName == player.name) return@safeListener
+
+            val message = MessageDetection.Message.ANY.removedOrNull(fullMessage) ?: return@safeListener
+            val splitString = message.split(personFrowning)
+
+            val final = StringBuilder().run {
+                for ((index, string) in splitString.withIndex()) {
+                    if (index % 2 == 0) {
+                        append(string)
+                    } else {
+                        decodeVigenere(string)
+                    }
                 }
-                EncryptionMode.SHIFT -> {
-                    if (!s.endsWith("\uD83D\uDE48")) return@listener
-                    s = substring
-                    s.chars().forEachOrdered { value: Int -> builder.append((value + if (ChatAllowedCharacters.isAllowedCharacter(value.toChar())) -getKey() else 0).toChar()) }
-                }
+                toString()
             }
-            it.packet.textComponent = TextComponentString("<" + username + "> " + TextFormatting.BOLD + "lDECRYPTED" + TextFormatting.RESET + ": " + builder.toString())
+
+            if (final == message) return@safeListener // prevent further possible issues
+
+            MessageSendHelper.sendRawChatMessage("<$playerName> ${TextFormatting.BOLD format "DECRYPTED"}: $final")
         }
     }
 
-    private fun generateShuffleMap(seed: Int): Map<Char, Char> {
-        val r = Random(seed.toLong())
-        val characters = CharBuffer.wrap(originChar).chars().mapToObj { value: Int -> value.toChar() }.collect(Collectors.toList())
-        val counter = ArrayList(characters)
-        counter.shuffle(r)
-        val map = LinkedHashMap<Char, Char>() // ordered
-        for (i in characters.indices) {
-            map[characters[i]] = counter[i]
+    private fun MessageManager.QueuedMessage.encrypt(): String? {
+        val message = packet.message
+
+        // fix existing issue - for some reason this is run twice sometimes (single player only)
+        if (message == previousMessage) {
+            previousMessage = ""
+            return null
         }
-        return map
+
+        val splitString = message.split(delimiter.value)
+
+        val encrypted = StringBuilder().run {
+            for ((index, string) in splitString.withIndex()) {
+                if (index % 2 == 0) {
+                    append(string)
+                } else {
+                    append(personFrowning)
+                    encodeVigenere(string)
+                    append(personFrowning)
+                }
+            }
+            toString()
+        }
+
+        if (encrypted.isBlank()) return null
+
+        if (encrypted.length > 256) { // this shouldn't happen unless your message was already around 254 chars?
+            MessageSendHelper.sendChatMessage("Encrypted message length was too long, couldn't send!")
+            return null
+        }
+
+        previousMessage = encrypted
+        return encrypted
     }
 
-    private fun shuffle(seed: Int, input: String): String {
-        val s = generateShuffleMap(seed)
-        val builder = StringBuilder()
-        swapCharacters(input, s, builder)
-        return builder.toString()
-    }
+    private fun StringBuilder.encodeVigenere(string: String) {
+        val key = getOrGenKey()
 
-    private fun unShuffle(seed: Int, input: String): String {
-        val s = generateShuffleMap(seed)
-        val builder = StringBuilder()
-        swapCharacters(input, reverseMap(s), builder)
-        return builder.toString()
-    }
+        for ((index, char) in string.withIndex()) {
+            val indexOfKey = charsMap[key[index % key.length]]?: continue
+            val indexOfChar = charsMap[char]?: continue
+            val encodedChar = vigenereSquare[indexOfKey][indexOfChar]
 
-    private fun <K, V> reverseMap(map: Map<K, V>): Map<V, K> {
-        return map.entries.stream().collect(Collectors.toMap({ it.value }) { it.key })
-    }
-
-    private fun swapCharacters(input: String, s: Map<Char, Char>, builder: StringBuilder) {
-        CharBuffer.wrap(input.toCharArray()).chars().forEachOrdered { value: Int ->
-            val c = value.toChar()
-            if (s.containsKey(c)) builder.append(s[c]) else builder.append(c)
+            append(encodedChar)
         }
     }
 
-    private fun isOwn(message: String): Boolean {
-        return Pattern.compile("^<" + mc.player.name + "> ", Pattern.CASE_INSENSITIVE).matcher(message).find()
-    }
+    private fun StringBuilder.decodeVigenere(string: String) {
+        val key = getOrGenKey()
 
-    private fun getKey(): Int {
-        return sqrt((keyA.value * keyB.value).toDouble()).toInt()
+        for ((index, char) in string.withIndex()) {
+            val indexOfKey = charsMap[key[index % key.length]]?: continue
+            val indexOfChar = charsMap[char]?: continue
+            val decodedChar = reversedSquare[indexOfChar][indexOfKey]
+
+            append(decodedChar)
+        }
     }
 }

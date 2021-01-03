@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
@@ -23,7 +23,7 @@ object ClickGUI : Module() {
 
     private var prevScale = scaleSetting.value / 100.0
     private var scale = prevScale
-    private val settingTimer = TimerUtils.StopTimer()
+    private val settingTimer = StopTimer()
 
     fun resetScale() {
         scaleSetting.value = 100

@@ -42,8 +42,8 @@ object AutoTunnel : Module() {
             if (!isActive()) sendTunnel()
         }
 
-        listener<BaritoneCommandEvent> { event ->
-            if (event.command.names.any { it.contains("cancel")}) {
+        listener<BaritoneCommandEvent> {
+            if (it.command.contains("cancel")) {
                 disable()
             }
         }

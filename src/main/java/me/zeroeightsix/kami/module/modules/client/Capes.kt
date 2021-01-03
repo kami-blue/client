@@ -6,10 +6,10 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC
 import me.zeroeightsix.kami.util.EntityUtils
-import me.zeroeightsix.kami.util.TimerUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelElytra
 import net.minecraft.client.renderer.GlStateManager
@@ -22,13 +22,10 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.Cape
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.capeapi.CapeUser
 import org.kamiblue.commons.utils.ConnectionUtils
-import org.kamiblue.commons.utils.ThreadUtils
-import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.cos
@@ -45,17 +42,11 @@ object Capes : Module() {
     private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
     var isPremium = false; private set
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.MINUTES)
     private val gson = Gson()
-    private val thread = Thread { updateCapes() }
-
-    override fun onEnable() {
-        ThreadUtils.submitTask(thread)
-    }
 
     init {
-        listener<TickEvent.ClientTickEvent> {
-            if (timer.tick(5L)) ThreadUtils.submitTask(thread)
+        BackgroundScope.launchLooping("Cape", 300000L) {
+            updateCapes()
         }
     }
 
@@ -93,7 +84,7 @@ object Capes : Module() {
                 || !player.hasPlayerInfo()
                 || player.isInvisible
                 || !player.isWearing(EnumPlayerModelParts.CAPE)
-                || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == Items.ELYTRA) return false
+                || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item == Items.ELYTRA) return false
 
         val cape = capeUsers[player.gameProfile.id]
 
@@ -175,7 +166,7 @@ object Capes : Module() {
     ): Boolean {
         if (isDisabled
                 || entity !is AbstractClientPlayer
-                || entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) return false
+                || entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item != Items.ELYTRA) return false
 
         val cape = capeUsers[entity.gameProfile.id]
 

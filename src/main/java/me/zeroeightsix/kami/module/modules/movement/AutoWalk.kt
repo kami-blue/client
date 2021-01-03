@@ -9,13 +9,14 @@ import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.Direction
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
+import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
-import kotlin.math.floor
 
 @Module.Info(
         name = "AutoWalk",
@@ -31,7 +32,7 @@ object AutoWalk : Module() {
     }
 
     private const val border = 30000000
-    private val messageTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private val messageTimer = TickTimer(TimeUnit.SECONDS)
     var direction = Direction.NORTH; private set
 
     override fun isActive(): Boolean {
@@ -51,8 +52,8 @@ object AutoWalk : Module() {
     }
 
     init {
-        listener<BaritoneCommandEvent> { event ->
-            if (event.command.names.any { it.contains("cancel") }) {
+        listener<BaritoneCommandEvent> {
+            if (it.command.contains("cancel")) {
                 disable()
             }
         }
@@ -91,8 +92,8 @@ object AutoWalk : Module() {
             if (!mc.world.isChunkGeneratedAt(it.chunkCoordX, it.chunkCoordZ)) return
 
             direction = Direction.fromEntity(it)
-            val x = floor(it.posX).toInt() + direction.directionVec.x * border
-            val z = floor(it.posZ).toInt() + direction.directionVec.z * border
+            val x = it.posX.floorToInt() + direction.directionVec.x * border
+            val z = it.posZ.floorToInt() + direction.directionVec.z * border
 
             BaritoneUtils.cancelEverything()
             BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))

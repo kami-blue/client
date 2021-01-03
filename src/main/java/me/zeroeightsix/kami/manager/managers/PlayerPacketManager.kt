@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
@@ -11,7 +11,8 @@ import me.zeroeightsix.kami.mixin.client.accessor.*
 import me.zeroeightsix.kami.mixin.client.accessor.network.*
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.Vec2f
 import net.minecraft.item.ItemStack
@@ -39,11 +40,11 @@ object PlayerPacketManager : Manager {
     var lastSwapTime = 0L; private set
 
     private var spoofingHotbar = false
-    private var hotbarResetTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.SECONDS)
+    private var hotbarResetTimer = TickTimer(TimeUnit.SECONDS)
 
     init {
         listener<OnUpdateWalkingPlayerEvent> {
-            if (it.era != KamiEvent.Era.PERI) return@listener
+            if (it.phase != Phase.PERI) return@listener
             if (packetList.isNotEmpty()) {
                 packetList.values.first().apply(it) // Apply the packet from the module that has the highest priority
                 packetList.clear()
@@ -63,7 +64,7 @@ object PlayerPacketManager : Manager {
         }
 
         listener<PacketEvent.PostSend>(-6969) {
-            if (it.isCancelled) return@listener
+            if (it.cancelled) return@listener
             if (it.packet is CPacketPlayer) {
                 if (it.packet.moving) {
                     serverSidePosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
@@ -86,20 +87,22 @@ object PlayerPacketManager : Manager {
             prevServerSideRotation = serverSideRotation
         }
 
-        listener<RenderEntityEvent.Pre> {
-            if (it.entity == null || it.entity != Wrapper.player || it.entity.isRiding) return@listener
-            with(it.entity) {
-                clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
-                prevRotationPitch = prevServerSideRotation.y
-                rotationPitch = serverSideRotation.y
-            }
-        }
+        listener<RenderEntityEvent> {
+            if (it.entity != Wrapper.player || it.entity.isRiding) return@listener
 
-        listener<RenderEntityEvent.Final> {
-            if (it.entity == null || it.entity != Wrapper.player || it.entity.isRiding) return@listener
-            with(it.entity) {
-                prevRotationPitch = clientSidePitch.x
-                rotationPitch = clientSidePitch.y
+            if (it.phase == Phase.PRE) {
+                with(it.entity) {
+                    clientSidePitch = Vec2f(prevRotationPitch, rotationPitch)
+                    prevRotationPitch = prevServerSideRotation.y
+                    rotationPitch = serverSideRotation.y
+                }
+            }
+
+            if (it.phase == Phase.POST) {
+                with(it.entity) {
+                    prevRotationPitch = clientSidePitch.x
+                    rotationPitch = clientSidePitch.y
+                }
             }
         }
     }

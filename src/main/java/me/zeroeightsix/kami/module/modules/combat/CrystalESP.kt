@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ProjectionUtils
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumHand
@@ -178,7 +178,7 @@ object CrystalESP : Module() {
             for ((pos, quad) in renderCrystalMap) {
                 glPushMatrix()
 
-                val screenPos = ProjectionUtils.toScreenPos(pos.toVec3d())
+                val screenPos = ProjectionUtils.toScreenPos(pos.toVec3dCenter())
                 glTranslated(screenPos.x, screenPos.y, 0.0)
                 glScalef(textScale.value * 2.0f, textScale.value * 2.0f, 1.0f)
 

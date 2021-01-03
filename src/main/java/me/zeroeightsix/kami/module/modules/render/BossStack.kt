@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.mixin.extension.mapBossInfos
 import me.zeroeightsix.kami.mixin.extension.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
 import net.minecraft.client.gui.ScaledResolution
@@ -34,7 +34,7 @@ object BossStack : Module() {
 
     private val texture = ResourceLocation("textures/gui/bars.png")
     private val bossInfoMap = LinkedHashMap<BossInfoClient, Int>()
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
 
     init {
         listener<RenderGameOverlayEvent.Pre> {

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
@@ -11,11 +11,13 @@ import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.BlockUtils.placeBlock
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
+import me.zeroeightsix.kami.util.WorldUtils.placeBlock
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.server.SPacketPlayerPosLook
@@ -48,8 +50,8 @@ object Scaffold : Module() {
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null
     private var inactiveTicks = 69
 
-    private val placeTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
-    private val rubberBandTimer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val placeTimer = TickTimer(TimeUnit.TICKS)
+    private val rubberBandTimer = TickTimer(TimeUnit.TICKS)
 
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5
@@ -84,16 +86,16 @@ object Scaffold : Module() {
             && mc.player.posY - floor(mc.player.posY) <= 0.1
     init {
         listener<OnUpdateWalkingPlayerEvent> { event ->
-            if (mc.world == null || mc.player == null || event.era != KamiEvent.Era.PRE) return@listener
+            if (mc.world == null || mc.player == null || event.phase != Phase.PRE) return@listener
             inactiveTicks++
             placeInfo = calcNextPos()?.let {
-                BlockUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
-                    ?: BlockUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
+                WorldUtils.getNeighbour(it, 1, sides = arrayOf(EnumFacing.DOWN))
+                    ?: WorldUtils.getNeighbour(it, 3, sides = EnumFacing.HORIZONTALS)
             }
 
             placeInfo?.let {
-                val hitVec = BlockUtils.getHitVec(it.second, it.first)
-                lastRotation = Vec2f(RotationUtils.getRotationTo(hitVec, true))
+                val hitVec = WorldUtils.getHitVec(it.second, it.first)
+                lastRotation = RotationUtils.getRotationTo(hitVec)
                 swapAndPlace(it.second, it.first)
             }
 
@@ -141,7 +143,7 @@ object Scaffold : Module() {
 
             if (placeTimer.tick(delay.value.toLong())) {
                 val shouldSneak = sneak.value && !mc.player.isSneaking
-                moduleScope.launch {
+                defaultScope.launch {
                     if (shouldSneak) {
                         mc.player?.let {
                             it.connection.sendPacket(CPacketEntityAction(it, CPacketEntityAction.Action.START_SNEAKING))

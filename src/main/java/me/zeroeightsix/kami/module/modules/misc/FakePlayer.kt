@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.GuiScreenEvent
+import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -30,7 +30,7 @@ object FakePlayer : Module() {
             disable()
         }
 
-        listener<GuiScreenEvent.Displayed> {
+        listener<GuiEvent.Displayed> {
             if (it.screen is GuiGameOver) disable()
         }
     }

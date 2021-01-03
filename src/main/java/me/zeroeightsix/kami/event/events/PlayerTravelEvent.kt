@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Cancellable
+import me.zeroeightsix.kami.event.Event
+import me.zeroeightsix.kami.event.ICancellable
 
-/**
- * Updated by Xiaro on 18/08/20
- */
-class PlayerTravelEvent : KamiEvent() 
+class PlayerTravelEvent : Event, ICancellable by Cancellable()

@@ -6,15 +6,15 @@ interface Detector {
     infix fun detectNot(input: CharSequence) = !detect(input)
 }
 
-interface RemovableDetector: Detector {
+interface RemovableDetector {
     fun removedOrNull(input: CharSequence): CharSequence?
 }
 
-interface PlayerDetector: Detector {
+interface PlayerDetector {
     fun playerName(input: CharSequence): String?
 }
 
-interface PrefixDetector : Detector , RemovableDetector{
+interface PrefixDetector : Detector, RemovableDetector {
     val prefixes: Array<out CharSequence>
 
     override fun detect(input: CharSequence) = prefixes.any { input.startsWith(it) }

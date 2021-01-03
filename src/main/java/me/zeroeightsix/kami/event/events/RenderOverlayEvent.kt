@@ -1,5 +1,5 @@
 package me.zeroeightsix.kami.event.events
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Event
 
-class RenderOverlayEvent(override val partialTicks: Float) : KamiEvent()
+class RenderOverlayEvent : Event

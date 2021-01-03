@@ -10,6 +10,7 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.threads.defaultScope
 import net.minecraft.client.gui.GuiChat
 import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.AutoComplete
@@ -47,7 +48,7 @@ class KamiGuiChat(
         }
 
         // Async offloading
-        CommandManager.commandScope.launch {
+        defaultScope.launch {
             cachePredict = ""
             canAutoComplete = false
             autoComplete()
@@ -173,7 +174,7 @@ class KamiGuiChat(
         // Draw outline around input field
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())
         val pos1 = Vec2d(inputField.x - 2.0, inputField.y - 2.0)
-        val pos2 = pos1.add(inputField.width.toDouble(), inputField.height.toDouble())
+        val pos2 = pos1.plus(inputField.width.toDouble(), inputField.height.toDouble())
         RenderUtils2D.drawRectOutline(vertexHelper, pos1, pos2, 1.5f, ColorHolder(KamiGuiColors.GuiC.windowOutline.color))
     }
 

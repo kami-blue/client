@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.KamiEvent
+import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
@@ -67,7 +67,7 @@ object Flight : Module() {
                         if (mc.gameSettings.keyBindJump.isKeyDown) 0.0622
                         else -0.0622
                     } else {
-                        if (MovementUtils.isInputing()) {
+                        if (MovementUtils.isInputting) {
                             val yaw = MovementUtils.calcMoveYaw()
                             mc.player.motionX = -sin(yaw) * 0.2f
                             mc.player.motionZ = cos(yaw) * 0.2f
@@ -88,7 +88,7 @@ object Flight : Module() {
         }
 
         listener<OnUpdateWalkingPlayerEvent> {
-            if (mode.value != FlightMode.PACKET || it.era != KamiEvent.Era.PRE) return@listener
+            if (mode.value != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(moving = false, rotating = false))
         }
 

@@ -2,18 +2,17 @@ package me.zeroeightsix.kami;
 
 import com.google.common.base.Converter;
 import com.google.gson.JsonObject;
-import me.zeroeightsix.kami.command.CommandManager;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.kami.KamiGUI;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.manager.ManagerLoader;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.setting.Setting;
 import me.zeroeightsix.kami.setting.Settings;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer;
+import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -25,17 +24,17 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 @Mod(
-        modid = KamiMod.ID,
-        name = KamiMod.NAME,
-        version = KamiMod.VERSION
+    modid = KamiMod.ID,
+    name = KamiMod.NAME,
+    version = KamiMod.VERSION
 )
 public class KamiMod {
 
     public static final String NAME = "KAMI Blue";
     public static final String ID = "kamiblue";
-    public static final String VERSION = "1.12.xx-dev"; // Used for debugging. R.MM.DD-hash format.
-    public static final String VERSION_SIMPLE = "1.12.xx-dev"; // Shown to the user. R.MM.DD[-beta] format.
-    public static final String VERSION_MAJOR = "1.12.01"; // Used for update checking. RR.MM.01 format.
+    public static final String VERSION = "2.01.xx-dev"; // Used for debugging. R.MM.DD-hash format.
+    public static final String VERSION_SIMPLE = "2.01.xx-dev"; // Shown to the user. R.MM.DD[-beta] format.
+    public static final String VERSION_MAJOR = "2.01.01"; // Used for update checking. RR.MM.01 format.
     public static final int BUILD_NUMBER = -1; // Do not remove, currently unused but will be used in the future.
 
     public static final String APP_ID = "638403216278683661";
@@ -52,31 +51,26 @@ public class KamiMod {
 
     @Mod.Instance
     public static KamiMod INSTANCE;
-    public static Thread MAIN_THREAD;
 
     private static boolean ready = false;
     private KamiGUI guiManager;
     private Setting<JsonObject> guiStateSetting;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored") // Java meme
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
 
-        MAIN_THREAD = Thread.currentThread();
         KamiGuiUpdateNotification.updateCheck();
-        ModuleManager.preLoad();
-        ManagerLoader.preLoad();
+        LoaderWrapper.preLoadAll();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
-        ModuleManager.load();
-        ManagerLoader.load();
-        CommandManager.init();
+        LoaderWrapper.loadAll();
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
@@ -104,6 +98,7 @@ public class KamiMod {
 
         // Need to reload the font after the settings were loaded
         KamiFontRenderer.INSTANCE.reloadFonts();
+        BackgroundScope.INSTANCE.start();
         ready = true;
 
         LOG.info(NAME + " Mod initialized!");

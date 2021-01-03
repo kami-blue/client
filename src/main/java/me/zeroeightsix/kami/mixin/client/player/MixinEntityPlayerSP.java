@@ -1,10 +1,8 @@
 package me.zeroeightsix.kami.mixin.client.player;
 
 import com.mojang.authlib.GameProfile;
-import me.zeroeightsix.kami.event.KamiEvent;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent;
-import me.zeroeightsix.kami.event.events.PlayerMoveEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiBeacon;
 import me.zeroeightsix.kami.manager.managers.MessageManager;
 import me.zeroeightsix.kami.module.modules.chat.PortalChat;
@@ -17,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.network.play.client.CPacketEntityAction;
@@ -82,13 +79,6 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         }
     }
 
-    @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    public void move(MoverType type, double x, double y, double z, CallbackInfo info) {
-        PlayerMoveEvent event = new PlayerMoveEvent(type, x, y, z);
-        KamiEventBus.INSTANCE.post(event);
-        if (event.isCancelled()) info.cancel();
-    }
-
     @ModifyArg(method = "setSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;setSprinting(Z)V"), index = 0)
     public boolean modifySprinting(boolean sprinting) {
         if (Sprint.INSTANCE.isEnabled() && Sprint.INSTANCE.shouldSprint()) {
@@ -124,10 +114,11 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
         OnUpdateWalkingPlayerEvent event = new OnUpdateWalkingPlayerEvent(moving, rotating, sprinting, sneaking, onGround, pos, rotation);
         KamiEventBus.INSTANCE.post(event);
-        event.setEra(KamiEvent.Era.PERI);
+
+        event = event.nextPhase();
         KamiEventBus.INSTANCE.post(event);
 
-        if (event.isCancelled()) {
+        if (event.getCancelled()) {
             ci.cancel();
 
             ++this.positionUpdateTicks;
@@ -165,14 +156,14 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
             if (this.isCurrentViewEntity()) {
 
                 if (this.isRiding()) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, rotation.getX(), rotation.getY(), onGround));
                     moving = false;
                 } else if (moving && rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(pos.x, pos.y, pos.z, rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.PositionRotation(pos.x, pos.y, pos.z, rotation.getX(), rotation.getY(), onGround));
                 } else if (moving) {
                     this.connection.sendPacket(new CPacketPlayer.Position(pos.x, pos.y, pos.z, onGround));
                 } else if (rotating) {
-                    this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.x, rotation.y, onGround));
+                    this.connection.sendPacket(new CPacketPlayer.Rotation(rotation.getX(), rotation.getY(), onGround));
                 } else if (this.prevOnGround != onGround) {
                     this.connection.sendPacket(new CPacketPlayer(onGround));
                 }
@@ -185,8 +176,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
                 }
 
                 if (rotating) {
-                    this.lastReportedYaw = rotation.x;
-                    this.lastReportedPitch = rotation.y;
+                    this.lastReportedYaw = rotation.getX();
+                    this.lastReportedPitch = rotation.getY();
                 }
 
                 this.prevOnGround = onGround;
@@ -194,7 +185,8 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
             }
         }
-        event.setEra(KamiEvent.Era.POST);
+
+        event = event.nextPhase();
         KamiEventBus.INSTANCE.post(event);
     }
 

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.mixin.client.entity;
 
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.EntityEvent;
+import me.zeroeightsix.kami.event.events.EntityCollisionEvent;
 import me.zeroeightsix.kami.module.modules.movement.SafeWalk;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.Scaffold;
@@ -21,9 +21,9 @@ public class MixinEntity {
 
     @Redirect(method = "applyEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;addVelocity(DDD)V"))
     public void addVelocity(Entity entity, double x, double y, double z) {
-        EntityEvent.EntityCollision entityCollisionEvent = new EntityEvent.EntityCollision(entity, x, y, z);
-        KamiEventBus.INSTANCE.post(entityCollisionEvent);
-        if (entityCollisionEvent.isCancelled()) return;
+        EntityCollisionEvent event = new EntityCollisionEvent(entity, x, y, z);
+        KamiEventBus.INSTANCE.post(event);
+        if (event.getCancelled()) return;
 
         entity.motionX += x;
         entity.motionY += y;

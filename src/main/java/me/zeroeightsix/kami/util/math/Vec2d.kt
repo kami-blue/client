@@ -1,92 +1,57 @@
 package me.zeroeightsix.kami.util.math
 
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.toRadian
+import kotlin.math.hypot
 import kotlin.math.pow
-import kotlin.math.sqrt
 
-class Vec2d(var x: Double = 0.0, var y: Double = 0.0) {
+data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
     constructor(vec3d: Vec3d) : this(vec3d.x, vec3d.y)
 
     constructor(vec2d: Vec2d) : this(vec2d.x, vec2d.y)
 
-    fun toRadians(): Vec2d {
-        return Vec2d(this.x / 180.0 * Math.PI, this.y / 180.0 * Math.PI)
-    }
+    fun toRadians() = Vec2d(x.toRadian(), y.toRadian())
 
-    fun length(): Double {
-        return sqrt(lengthSquared())
-    }
 
-    fun lengthSquared(): Double {
-        return (this.x.pow(2) + this.y.pow(2))
-    }
+    fun length() = hypot(x, y)
 
-    fun divide(vec3d: Vec3d): Vec2d {
-        return divide(vec3d.x, vec3d.y)
-    }
+    fun lengthSquared() = (this.x.pow(2) + this.y.pow(2))
 
-    fun divide(vec2d: Vec2d): Vec2d {
-        return divide(vec2d.x, vec2d.y)
-    }
 
-    fun divide(divider: Double): Vec2d {
-        return divide(divider, divider)
-    }
+    operator fun div(vec2d: Vec2d) = div(vec2d.x, vec2d.y)
 
-    fun divide(x: Double, y: Double): Vec2d {
-        return Vec2d(this.x / x, this.y / y)
-    }
+    operator fun div(divider: Double) = div(divider, divider)
 
-    fun multiply(vec3d: Vec3d): Vec2d {
-        return multiply(vec3d.x, vec3d.y)
-    }
+    fun div(x: Double, y: Double) = Vec2d(this.x / x, this.y / y)
 
-    fun multiply(vec2d: Vec2d): Vec2d {
-        return multiply(vec2d.x, vec2d.y)
-    }
 
-    fun multiply(mulitplier: Double): Vec2d {
-        return multiply(mulitplier, mulitplier)
-    }
+    operator fun times(vec2d: Vec2d) = times(vec2d.x, vec2d.y)
 
-    fun multiply(x: Double, y: Double): Vec2d {
-        return Vec2d(this.x * x, this.y * y)
-    }
+    operator fun times(multiplier: Double) = times(multiplier, multiplier)
 
-    fun subtract(vec3d: Vec3d): Vec2d {
-        return subtract(vec3d.x, vec3d.y)
-    }
+    fun times(x: Double, y: Double) = Vec2d(this.x * x, this.y * y)
 
-    fun subtract(vec2d: Vec2d): Vec2d {
-        return subtract(vec2d.x, vec2d.y)
-    }
 
-    fun subtract(sub: Double): Vec2d {
-        return subtract(sub, sub)
-    }
+    operator fun minus(vec2d: Vec2d) = minus(vec2d.x, vec2d.y)
 
-    fun subtract(x: Double, y: Double): Vec2d {
-        return add(-x, -y)
-    }
+    operator fun minus(sub: Double) = minus(sub, sub)
 
-    fun add(vec3d: Vec3d): Vec2d {
-        return add(vec3d.x, vec3d.y)
-    }
+    fun minus(x: Double, y: Double) = plus(-x, -y)
 
-    fun add(vec2d: Vec2d): Vec2d {
-        return add(vec2d.x, vec2d.y)
-    }
 
-    fun add(add: Double): Vec2d {
-        return add(add, add)
-    }
+    operator fun plus(vec2d: Vec2d) = plus(vec2d.x, vec2d.y)
 
-    fun add(x: Double, y: Double): Vec2d {
-        return Vec2d(this.x + x, this.y + y)
-    }
+    operator fun plus(add: Double) = plus(add, add)
+
+    fun plus(x: Double, y: Double) = Vec2d(this.x + x, this.y + y)
 
     override fun toString(): String {
         return "Vec2d[${this.x}, ${this.y}]"
+    }
+
+    companion object {
+        @JvmField
+        val ZERO = Vec2d(0.0, 0.0)
     }
 }

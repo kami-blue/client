@@ -1,9 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -11,13 +13,13 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 @Module.Info(
-        name = "MidClickFriends",
-        category = Module.Category.MISC,
-        description = "Middle click players to friend or unfriend them",
-        showOnArray = Module.ShowOnArray.OFF
+    name = "MidClickFriends",
+    category = Module.Category.MISC,
+    description = "Middle click players to friend or unfriend them",
+    showOnArray = Module.ShowOnArray.OFF
 )
 object MidClickFriends : Module() {
-    private val timer = TimerUtils.TickTimer()
+    private val timer = TickTimer()
     private var lastPlayer: EntityOtherPlayerMP? = null
 
     init {
@@ -40,9 +42,9 @@ object MidClickFriends : Module() {
     }
 
     private fun add(name: String) {
-        Thread {
+        defaultScope.launch {
             if (FriendManager.addFriend(name)) MessageSendHelper.sendChatMessage("Failed to find UUID of $name")
             else MessageSendHelper.sendChatMessage("&b$name&r has been friended.")
-        }.start()
+        }
     }
 }

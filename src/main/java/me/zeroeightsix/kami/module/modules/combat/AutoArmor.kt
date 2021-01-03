@@ -5,9 +5,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.TaskState
-import me.zeroeightsix.kami.util.TimerUtils
+import me.zeroeightsix.kami.util.*
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
@@ -24,7 +22,7 @@ import org.kamiblue.event.listener.listener
 object AutoArmor : Module() {
     private val delay = register(Settings.integerBuilder("Delay").withValue(5).withRange(1, 10).withStep(1))
 
-    private val timer = TimerUtils.TickTimer(TimerUtils.TimeUnit.TICKS)
+    private val timer = TickTimer(TimeUnit.TICKS)
     private var lastTask = TaskState(true)
 
     init {

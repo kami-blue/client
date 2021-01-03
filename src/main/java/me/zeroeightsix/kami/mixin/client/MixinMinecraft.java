@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.mixin.client;
 
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
-import me.zeroeightsix.kami.event.events.GuiScreenEvent;
+import me.zeroeightsix.kami.event.events.GuiEvent;
+import me.zeroeightsix.kami.event.events.ShutdownEvent;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
-import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -55,9 +55,9 @@ public class MixinMinecraft {
 
     @ModifyVariable(method = "displayGuiScreen", at = @At("HEAD"), argsOnly = true)
     public GuiScreen editDisplayGuiScreen(GuiScreen guiScreenIn) {
-        GuiScreenEvent.Closed screenEvent = new GuiScreenEvent.Closed(this.currentScreen);
+        GuiEvent.Closed screenEvent = new GuiEvent.Closed(this.currentScreen);
         KamiEventBus.INSTANCE.post(screenEvent);
-        GuiScreenEvent.Displayed screenEvent1 = new GuiScreenEvent.Displayed(guiScreenIn);
+        GuiEvent.Displayed screenEvent1 = new GuiEvent.Displayed(guiScreenIn);
         KamiEventBus.INSTANCE.post(screenEvent1);
         return screenEvent1.getScreen();
     }
@@ -74,10 +74,11 @@ public class MixinMinecraft {
 
     private void save() {
         if (!KamiMod.isReady()) return;
+
+        ShutdownEvent.INSTANCE.post();
         System.out.println("Shutting down: saving KAMI configuration");
         ConfigUtils.INSTANCE.saveAll();
         System.out.println("Configuration saved.");
-        DiscordRPC.INSTANCE.end();
     }
 
 }
