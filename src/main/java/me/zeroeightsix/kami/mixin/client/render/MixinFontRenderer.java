@@ -40,14 +40,9 @@ public abstract class MixinFontRenderer {
     @Shadow public float green;
     @Shadow public float blue;
 
-    @Shadow
-    protected abstract void renderStringAtPos(String text, boolean shadow);
-
-    @Shadow
-    public abstract int getStringWidth(String s);
-
-    @Shadow
-    public abstract int getCharWidth(char character);
+    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
+    @Shadow public abstract int getStringWidth(String s);
+    @Shadow public abstract int getCharWidth(char character);
 
     /**
      * @author Tiger
