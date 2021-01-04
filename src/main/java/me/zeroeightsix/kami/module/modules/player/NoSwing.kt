@@ -26,10 +26,10 @@ object NoSwing : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            mc.player.isSwingInProgress = false
-            mc.player.swingProgressInt = 0
-            mc.player.swingProgress = 0.0f
-            mc.player.prevSwingProgress = 0.0f
+            player.isSwingInProgress = false
+            player.swingProgressInt = 0
+            player.swingProgress = 0.0f
+            player.prevSwingProgress = 0.0f
         }
     }
 }

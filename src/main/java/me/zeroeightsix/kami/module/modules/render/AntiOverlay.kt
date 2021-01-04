@@ -50,8 +50,8 @@ object AntiOverlay : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
-            if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
+            if (blindness.value) player.removeActivePotionEffect(MobEffects.BLINDNESS)
+            if (nausea.value) player.removeActivePotionEffect(MobEffects.NAUSEA)
             if (tutorial.value) mc.gameSettings.tutorialStep = TutorialSteps.NONE
         }
     }

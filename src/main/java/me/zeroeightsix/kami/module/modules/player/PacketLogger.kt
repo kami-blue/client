@@ -46,7 +46,7 @@ object PacketLogger : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.ticksExisted % 200 == 0) write()
+            if (player.ticksExisted % 200 == 0) write()
         }
     }
 

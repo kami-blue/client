@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
@@ -24,12 +25,12 @@ object Sprint : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (!shouldSprint()) return@safeListener
 
-            sprinting = if (multiDirection.value) mc.player.moveForward != 0f || mc.player.moveStrafing != 0f
-            else mc.player.moveForward > 0
+            sprinting = if (multiDirection.value) player.moveForward != 0f || player.moveStrafing != 0f
+            else player.moveForward > 0
 
-            if (mc.player.collidedHorizontally || (onHolding.value && !mc.gameSettings.keyBindSprint.isKeyDown)) sprinting = false
+            if (player.collidedHorizontally || (onHolding.value && !mc.gameSettings.keyBindSprint.isKeyDown)) sprinting = false
 
-            mc.player.isSprinting = sprinting
+            player.isSprinting = sprinting
         }
     }
 

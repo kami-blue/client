@@ -73,11 +73,11 @@ object Surround : Module() {
 
             // Update hole pos
             if (holePos == null || inHoleCheck()) {
-                holePos = mc.player.positionVector.toBlockPos()
+                holePos = player.positionVector.toBlockPos()
             }
 
             // Out of hole check
-            if (mc.player.positionVector.toBlockPos() != holePos) {
+            if (player.positionVector.toBlockPos() != holePos) {
                 outOfHoleCheck()
                 return@safeListener
             } else {

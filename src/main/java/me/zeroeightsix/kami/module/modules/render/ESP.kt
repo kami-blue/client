@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.Phase
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
@@ -89,12 +90,10 @@ object ESP : Module() {
         listener<RenderEntityEvent> {
             if (mode.value != ESPMode.SHADER || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
 
-            if (it.phase == Phase.PRE) {
-                if (hideOriginal.value) {
-                    // Steal it from Minecraft rendering kek
-                    prepareFrameBuffer()
-                    drawNametag = true
-                }
+            if (it.phase == Phase.PRE && hideOriginal.value) {
+                // Steal it from Minecraft rendering kek
+                prepareFrameBuffer()
+                drawNametag = true
             }
 
             if (it.phase == Phase.PERI) {
@@ -169,7 +168,7 @@ object ESP : Module() {
                         shader.shaderManager.getShaderUniform("Radius")?.set(width.value)
                     }
 
-                    for (entity in mc.world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
+                    for (entity in world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
                         entity.isGlowing = entityList.contains(entity)
                     }
                 } else {
@@ -185,20 +184,20 @@ object ESP : Module() {
         }
     }
 
-    private fun getEntityList(): List<Entity> {
+    private fun SafeClientEvent.getEntityList(): List<Entity> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val entityList = ArrayList<Entity>()
         if (all.value) {
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity == mc.renderViewEntity) continue
                 if (mc.player.getDistance(entity) > range.value) continue
                 entityList.add(entity)
             }
         } else {
             entityList.addAll(getTargetList(player, mob, invisible.value, range.value.toFloat(), ignoreSelf = false))
-            for (entity in mc.world.loadedEntityList) {
-                if (entity == mc.player) continue
+            for (entity in world.loadedEntityList) {
+                if (entity == player) continue
                 if (mc.player.getDistance(entity) > range.value) continue
                 if (entity is EntityXPOrb && experience.value
                         || entity is EntityArrow && arrows.value

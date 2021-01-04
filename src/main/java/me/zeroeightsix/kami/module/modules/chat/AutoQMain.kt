@@ -37,7 +37,7 @@ object AutoQMain : Module() {
                 return@safeListener
             }
 
-            if (mc.player.dimension != 1 && dimensionWarning.value) {
+            if (player.dimension != 1 && dimensionWarning.value) {
                 sendMessage("&l&6Warning: &r&6You are not in the end. Not running &b/queue main&7.")
                 return@safeListener
             }

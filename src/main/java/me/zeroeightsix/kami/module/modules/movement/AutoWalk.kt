@@ -76,14 +76,14 @@ object AutoWalk : Module() {
                     it.movementInput.moveForward = -1.0f
                 }
                 else -> {
-
+                    // this is fine, Java meme
                 }
             }
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (mode.value == AutoWalkMode.BARITONE) {
-                if (!checkBaritoneElytra() && !isActive()) startPathing()
+            if (mode.value == AutoWalkMode.BARITONE && !checkBaritoneElytra() && !isActive()) {
+                startPathing()
             }
         }
     }

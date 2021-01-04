@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
@@ -44,9 +45,9 @@ object AutoEat : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (CombatSetting.isActive()) return@safeListener
 
-            if (eating && !mc.player.isHandActive) {
+            if (eating && !player.isHandActive) {
                 if (lastSlot != -1) {
-                    mc.player.inventory.currentItem = lastSlot
+                    player.inventory.currentItem = lastSlot
                     lastSlot = -1
                 }
                 eating = false
@@ -60,10 +61,10 @@ object AutoEat : Module() {
 
             if (eating) return@safeListener
 
-            val stats = mc.player.foodStats
+            val stats = player.foodStats
 
-            if (isValid(mc.player.heldItemOffhand, stats.foodLevel)) {
-                mc.player.activeHand = EnumHand.OFF_HAND
+            if (isValid(player.heldItemOffhand, stats.foodLevel)) {
+                player.activeHand = EnumHand.OFF_HAND
 
                 if (pauseBaritone.value && !eating) {
                     pause()
@@ -73,10 +74,10 @@ object AutoEat : Module() {
                 BaritoneUtils.settings?.allowInventory?.value = Baritone.allowInventory.value
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-                mc.playerController.processRightClick(mc.player, mc.world, EnumHand.OFF_HAND)
+                playerController.processRightClick(player, world, EnumHand.OFF_HAND)
             } else {
                 for (i in 0..44) {
-                    val itemStack = mc.player.inventory.getStackInSlot(i)
+                    val itemStack = player.inventory.getStackInSlot(i)
                     if (isValid(itemStack, stats.foodLevel)) {
 
                         val newSlot = if (i > 8) { // not in hotbar
@@ -87,8 +88,8 @@ object AutoEat : Module() {
                             i
                         }
 
-                        lastSlot = mc.player.inventory.currentItem
-                        mc.player.inventory.currentItem = newSlot
+                        lastSlot = player.inventory.currentItem
+                        player.inventory.currentItem = newSlot
 
                         if (pauseBaritone.value && !eating) {
                             pause()
@@ -96,7 +97,7 @@ object AutoEat : Module() {
 
                         eating = true
                         KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-                        mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+                        playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                         return@safeListener
                     }
                 }
@@ -104,11 +105,11 @@ object AutoEat : Module() {
         }
     }
 
-    private fun avoidSlots(initialItem: Int): IntArray {
+    private fun SafeClientEvent.avoidSlots(initialItem: Int): IntArray {
         val invalidItems = ArrayList<Int>()
 
         for (i in 0..6) { // first 7 slots
-            val item = mc.player.inventory.getStackInSlot(i).item
+            val item = player.inventory.getStackInSlot(i).item
 
             if (item is ItemTool || item is ItemBlock) {
                 invalidItems.add(item.id)

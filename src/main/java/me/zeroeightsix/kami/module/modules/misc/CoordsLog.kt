@@ -28,19 +28,17 @@ object CoordsLog : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (autoLog.value) {
-                if (timer.tick(delay.value.toLong())) {
-                    val currentCoord = mc.player.positionVector.toBlockPos().asString()
+            if (autoLog.value && timer.tick(delay.value.toLong())) {
+                    val currentCoord = player.positionVector.toBlockPos().asString()
 
-                    if (currentCoord != previousCoord) {
-                        WaypointManager.add("autoLogger")
-                        previousCoord = currentCoord
+                if (currentCoord != previousCoord) {
+                    WaypointManager.add("autoLogger")
+                    previousCoord = currentCoord
                     }
-                }
             }
 
             if (saveOnDeath.value) {
-                savedDeath = if (mc.player.isDead || mc.player.health <= 0.0f) {
+                savedDeath = if (player.isDead || player.health <= 0.0f) {
                     if (!savedDeath) {
                         val deathPoint = WaypointManager.add("Death - " + InfoCalculator.getServerType()).pos
                         MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")

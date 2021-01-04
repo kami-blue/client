@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -51,20 +52,20 @@ object KillAura : Module() {
 
             inactiveTicks++
 
-            if (mc.player.isDead) {
-                if (mc.player.isDead && disableOnDeath.value) disable()
+            if (player.isDead) {
+                if (disableOnDeath.value) disable()
                 return@safeListener
             }
 
             if (!CombatManager.isOnTopPriority(KillAura) || CombatSetting.pause) return@safeListener
             val target = CombatManager.target ?: return@safeListener
-            if (mc.player.getDistance(target) > range.value) return@safeListener
+            if (player.getDistance(target) > range.value) return@safeListener
 
             if (autoWeapon.value) {
                 CombatUtils.equipBestWeapon(prefer.value as CombatUtils.PreferWeapon)
             }
 
-            if (weaponOnly.value && !mc.player.heldItemMainhand.item.isWeapon) {
+            if (weaponOnly.value && !player.heldItemMainhand.item.isWeapon) {
                 return@safeListener
             }
 
@@ -83,10 +84,10 @@ object KillAura : Module() {
         }
     }
 
-    private fun canAttack(): Boolean {
+    private fun SafeClientEvent.canAttack(): Boolean {
         return if (delayMode.value == WaitMode.DELAY) {
             val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
-            mc.player.getCooledAttackStrength(adjustTicks) >= 1f
+            player.getCooledAttackStrength(adjustTicks) >= 1f
         } else {
             if (tickCount < spamDelay.value) {
                 tickCount++
@@ -98,8 +99,8 @@ object KillAura : Module() {
         }
     }
 
-    private fun attack(e: Entity) {
-        mc.playerController.attackEntity(mc.player, e)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
+    private fun SafeClientEvent.attack(e: Entity) {
+        playerController.attackEntity(player, e)
+        player.swingArm(EnumHand.MAIN_HAND)
     }
 }

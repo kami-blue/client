@@ -106,15 +106,15 @@ object AutoEZ : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.isDead || mc.player.health <= 0.0f) {
+            if (player.isDead || player.health <= 0.0f) {
                 attackedPlayers.clear()
                 return@safeListener
             }
 
             // Update attacked Entity
-            val attacked = mc.player.lastAttackedEntity
+            val attacked = player.lastAttackedEntity
             if (attacked is EntityPlayer && !attacked.isDead && attacked.health > 0.0f) {
-                attackedPlayers[attacked] = mc.player.lastAttackedEntityTime
+                attackedPlayers[attacked] = player.lastAttackedEntityTime
             }
 
             // Check death
@@ -127,7 +127,7 @@ object AutoEZ : Module() {
             }
 
             // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
-            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || mc.player.ticksExisted - it.value > 100 }
+            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || player.ticksExisted - it.value > 100 }
 
             // Send custom message type help message
             sendHelpMessage()

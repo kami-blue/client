@@ -54,12 +54,12 @@ object Criticals : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             /* Sends attack packet and swing packet when falling */
             if (mode.value == CriticalMode.DELAY && delayTick != 0) {
-                mc.player.isSprinting = false
-                if (mc.player.speed > 0.2) MovementUtils.setSpeed(0.2)
-                if (mc.player.motionY < -0.1 && delayTick in 1..15) {
+                player.isSprinting = false
+                if (player.speed > 0.2) MovementUtils.setSpeed(0.2)
+                if (player.motionY < -0.1 && delayTick in 1..15) {
                     sendingPacket = true
-                    mc.connection!!.sendPacket(attackPacket)
-                    mc.connection!!.sendPacket(swingPacket)
+                    connection.sendPacket(attackPacket)
+                    connection.sendPacket(swingPacket)
                     delayTick = 16
                 }
                 if (delayTick in 1..19) {

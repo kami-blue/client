@@ -40,8 +40,8 @@ object MidClickPearl : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
-                mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+            if (startTime == 0L && player.getCooledAttackStrength(0f) >= 1f) {
+                playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                 startTime = System.currentTimeMillis()
             } else if (startTime > 0L) {
                 if (prevSlot != -1) {

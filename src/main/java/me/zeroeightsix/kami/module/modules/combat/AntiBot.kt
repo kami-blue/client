@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.module.Module
@@ -39,9 +40,9 @@ object AntiBot : Module() {
 
         safeListener<TickEvent.ClientTickEvent> {
             val cacheSet = HashSet<EntityPlayer>()
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity !is EntityPlayer) continue
-                if (entity == mc.player) continue
+                if (entity == player) continue
                 if (!isBot(entity)) continue
                 cacheSet.add(entity)
             }
@@ -50,17 +51,17 @@ object AntiBot : Module() {
         }
     }
 
-    private fun isBot(entity: EntityPlayer) = entity.name == mc.player.name
+    private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
             || entity.name == FakePlayer.playerName.value
-            || tabList.value && mc.connection?.getPlayerInfo(entity.name) == null
-            || ping.value && mc.connection?.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
+            || tabList.value && connection.getPlayerInfo(entity.name) == null
+            || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
             || hp.value && entity.health !in 0f..20f
             || sleeping.value && entity.isPlayerSleeping && !entity.onGround
             || hoverOnTop.value && hoverCheck(entity)
             || entity.ticksExisted < ticksExists.value
 
-    private fun hoverCheck(entity: EntityPlayer): Boolean {
-        val distXZ = Vec2d(entity.posX, entity.posZ).minus(mc.player.posX, mc.player.posZ).lengthSquared()
-        return distXZ < 16 && entity.posY - mc.player.posY > 2.0 && abs(entity.posY - entity.prevPosY) < 0.1
+    private fun SafeClientEvent.hoverCheck(entity: EntityPlayer): Boolean {
+        val distXZ = Vec2d(entity.posX, entity.posZ).minus(player.posX, player.posZ).lengthSquared()
+        return distXZ < 16 && entity.posY - player.posY > 2.0 && abs(entity.posY - entity.prevPosY) < 0.1
     }
 }

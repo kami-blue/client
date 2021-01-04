@@ -117,7 +117,7 @@ object BreakingESP : Module() {
 
         safeListener<TickEvent.ClientTickEvent> {
             breakingBlockList.values.removeIf { triple ->
-                mc.world.isAirBlock(triple.first)
+                world.isAirBlock(triple.first)
             }
         }
     }

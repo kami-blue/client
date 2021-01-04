@@ -96,7 +96,7 @@ object AutoSpawner : Module() {
                         }
                         return@safeListener
                     }
-                    val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
+                    val blockPosList = VectorUtils.getBlockPosInSphere(player.positionVector, placeRange.value)
                     var noPositionInArea = true
 
                     for (pos in blockPosList) {
@@ -154,7 +154,7 @@ object AutoSpawner : Module() {
                     }
 
                     if (isSneaking) {
-                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        player.connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
                         isSneaking = false
                     }
 

@@ -44,12 +44,12 @@ object ElytraReplace : Module() {
                 sendFinalElytraWarning()
             }
 
-            if (mc.player.onGround && autoChest.value) {
+            if (player.onGround && autoChest.value) {
                 swapToChest()
             } else if (shouldAttemptElytraSwap()) {
                 var shouldSwap = isCurrentElytraBroken()
                 if (autoChest.value) {
-                    shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].item === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
+                    shouldSwap = shouldSwap || !(player.inventory.armorInventory[2].item === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
                 }
 
                 if (shouldSwap) {

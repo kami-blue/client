@@ -138,7 +138,7 @@ object NoRender : Module() {
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && items.value) {
-                for (entity in mc.world.loadedEntityList) {
+                for (entity in world.loadedEntityList) {
                     if (entity !is EntityItem) continue
                     entity.setDead()
                 }

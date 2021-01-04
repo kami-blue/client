@@ -98,7 +98,7 @@ object InventoryManager : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START || mc.player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
+            if (it.phase != TickEvent.Phase.START || player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
             if (!timer.tick(delay.value.toLong())) return@safeListener
             setState()
             if (currentState == State.IDLE) InventoryUtils.removeHoldingItem()
@@ -108,9 +108,10 @@ object InventoryManager : Module() {
                 State.REFILLING -> refill()
                 State.EJECTING -> eject()
                 else -> {
+                    // this is fine, Java meme
                 }
             }
-            mc.playerController.syncCurrentPlayItem()
+            playerController.syncCurrentPlayItem()
         }
     }
 

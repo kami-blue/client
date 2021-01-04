@@ -19,8 +19,8 @@ object AutoJump : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.isInWater || mc.player.isInLava) mc.player.motionY = 0.1
-            else if (mc.player.onGround && timer.tick(delay.value.toLong())) mc.player.jump()
+            if (player.isInWater || player.isInLava) player.motionY = 0.1
+            else if (player.onGround && timer.tick(delay.value.toLong())) player.jump()
         }
     }
 }

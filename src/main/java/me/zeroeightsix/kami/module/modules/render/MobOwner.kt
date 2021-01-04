@@ -24,7 +24,7 @@ object MobOwner : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 /* Non Horse types, such as wolves */
                 if (entity is EntityTameable) {
                     val owner = entity.owner
@@ -53,6 +53,7 @@ object MobOwner : Module() {
             try {
                 entity.alwaysRenderNameTag = false
             } catch (_: Exception) {
+                // this is fine
             }
         }
     }

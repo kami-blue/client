@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
@@ -145,7 +146,7 @@ object Search : Module() {
         }
     }
 
-    private fun updateLoadedChunkList() {
+    private fun SafeClientEvent.updateLoadedChunkList() {
         /* Removes unloaded chunks from the list */
         Thread {
             for (chunkPos in loadedChunks) {
@@ -157,11 +158,11 @@ object Search : Module() {
 
             /* Adds new loaded chunks to the list */
             val renderDist = mc.gameSettings.renderDistanceChunks
-            val playerChunkPos = ChunkPos(mc.player.position)
+            val playerChunkPos = ChunkPos(player.position)
             val chunkPos1 = ChunkPos(playerChunkPos.x - renderDist, playerChunkPos.z - renderDist)
             val chunkPos2 = ChunkPos(playerChunkPos.x + renderDist, playerChunkPos.z + renderDist)
             for (x in chunkPos1.x..chunkPos2.x) for (z in chunkPos1.z..chunkPos2.z) {
-                val chunk = mc.world.getChunk(x, z)
+                val chunk = world.getChunk(x, z)
                 if (!chunk.isLoaded) continue
                 loadedChunks.add(chunk.pos)
             }
@@ -210,14 +211,14 @@ object Search : Module() {
         }
     }
 
-    private fun updateRenderList() {
+    private fun SafeClientEvent.updateRenderList() {
         Thread {
             val cacheDistMap = TreeMap<Double, BlockPos>(Comparator.naturalOrder())
             /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
             for (posList in mainList.values) {
                 for (i in posList.indices) {
                     val pos = posList[i]
-                    val distance = mc.player.distanceTo(pos)
+                    val distance = player.distanceTo(pos)
                     if (distance > range.value) continue
                     cacheDistMap[distance] = pos
                 }
@@ -250,14 +251,14 @@ object Search : Module() {
         }.start()
     }
 
-    private fun getPosColor(pos: BlockPos): ColorHolder {
-        val blockState = mc.world.getBlockState(pos)
+    private fun SafeClientEvent.getPosColor(pos: BlockPos): ColorHolder {
+        val blockState = world.getBlockState(pos)
         val block = blockState.block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
                 ColorHolder(82, 49, 153)
             } else {
-                val colorInt = blockState.getMapColor(mc.world, pos).colorValue
+                val colorInt = blockState.getMapColor(world, pos).colorValue
                 ColorHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
         } else {
@@ -266,7 +267,7 @@ object Search : Module() {
     }
     /* End of rendering */
 
-    private fun isChunkLoaded(chunkPos: ChunkPos): Boolean {
-        return mc.world.getChunk(chunkPos.x, chunkPos.z).isLoaded
+    private fun SafeClientEvent.isChunkLoaded(chunkPos: ChunkPos): Boolean {
+        return world.getChunk(chunkPos.x, chunkPos.z).isLoaded
     }
 }

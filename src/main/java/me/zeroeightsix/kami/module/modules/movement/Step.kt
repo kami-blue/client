@@ -80,9 +80,9 @@ object Step : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START || !shouldRunStep) return@safeListener
             setStepHeight()
-            if (downStep.value && mc.player.motionY <= 0.0 && mc.player.ticksExisted - onGroundTick <= 3) downStep()
-            if (mc.player.collidedHorizontally) lastCollidedTick = mc.player.ticksExisted
-            if (mc.player.onGround) onGroundTick = mc.player.ticksExisted
+            if (downStep.value && player.motionY <= 0.0 && player.ticksExisted - onGroundTick <= 3) downStep()
+            if (player.collidedHorizontally) lastCollidedTick = player.ticksExisted
+            if (player.onGround) onGroundTick = player.ticksExisted
         }
     }
 

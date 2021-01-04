@@ -58,23 +58,23 @@ object TotemPopCounter : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
 
-            if (wasDead && !mc.player.isDead && resetOnDeath.value) {
-                sendMessage("${formatName(mc.player)} died and ${grammar(mc.player)} pop list was reset!")
+            if (wasDead && !player.isDead && resetOnDeath.value) {
+                sendMessage("${formatName(player)} died and ${grammar(player)} pop list was reset!")
                 playerList.clear()
                 wasDead = false
                 return@safeListener
             }
 
             val toRemove = ArrayList<EntityPlayer>()
-            for ((player, count) in playerList) {
-                if (!player.isDead) continue
-                if (player == mc.player) continue
-                sendMessage("${formatName(player)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
-                toRemove.add(player)
+            for ((poppedPlayer, count) in playerList) {
+                if (!poppedPlayer.isDead) continue
+                if (poppedPlayer == player) continue
+                sendMessage("${formatName(poppedPlayer)} died after popping ${formatNumber(count)} ${plural(count)}${ending()}")
+                toRemove.add(poppedPlayer)
             }
             playerList.keys.removeAll(toRemove)
 
-            wasDead = mc.player.isDead
+            wasDead = player.isDead
         }
     }
 

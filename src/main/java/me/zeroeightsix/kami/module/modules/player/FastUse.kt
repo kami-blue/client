@@ -42,13 +42,13 @@ object FastUse : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.END || mc.player.isSpectator) return@safeListener
+            if (it.phase != TickEvent.Phase.END || player.isSpectator) return@safeListener
 
-            if ((allItems.value || bow.value) && mc.player.isHandActive && (mc.player.activeItemStack.getItem() == Items.BOW) && mc.player.itemInUseMaxCount >= getBowCharge()) {
+            if ((allItems.value || bow.value) && player.isHandActive && (player.activeItemStack.item == Items.BOW) && player.itemInUseMaxCount >= getBowCharge()) {
                 randomVariation = 0
-                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
-                mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
-                mc.player.stopActiveHand()
+                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, player.horizontalFacing))
+                connection.sendPacket(CPacketPlayerTryUseItem(player.activeHand))
+                player.stopActiveHand()
             }
 
             if (delay.value > 0) {
@@ -60,7 +60,7 @@ object FastUse : Module() {
                 }
             }
 
-            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).item)) {
+            if (passItemCheck(player.getHeldItem(lastUsedHand).item)) {
                 mc.rightClickDelayTimer = 0
             }
         }

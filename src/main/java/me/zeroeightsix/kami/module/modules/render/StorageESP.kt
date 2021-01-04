@@ -80,14 +80,14 @@ object StorageESP : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             cycler++
             renderList.clear()
-            for (tileEntity in mc.world.loadedTileEntityList) {
+            for (tileEntity in world.loadedTileEntityList) {
                 if (tileEntity is TileEntityChest && chest.value
                         || tileEntity is TileEntityDispenser && dispenser.value
                         || tileEntity is TileEntityShulkerBox && shulker.value
                         || tileEntity is TileEntityEnderChest && enderChest.value
                         || tileEntity is TileEntityFurnace && furnace.value
                         || tileEntity is TileEntityHopper && hopper.value) {
-                    val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
+                    val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos)
                     val color = getTileEntityColor(tileEntity) ?: continue
                     var side = GeometryMasks.Quad.ALL
                     if (tileEntity is TileEntityChest) {
@@ -101,7 +101,7 @@ object StorageESP : Module() {
                 }
             }
 
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity is EntityItemFrame && frameShulkerOrAny(entity)
                         || (entity is EntityMinecartChest
                                 || entity is EntityMinecartHopper

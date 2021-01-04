@@ -99,9 +99,9 @@ object Breadcrumbs : Module() {
                 tickCount++
             } else {
                 val serverIP = getServerIP()
-                val dimension = mc.player.dimension
+                val dimension = player.dimension
                 val posList = ((mainList[serverIP] ?: return@safeListener)[dimension] ?: return@safeListener)
-                val cutoffPos = posList.lastOrNull { pos -> mc.player.distanceTo(pos) > maxDistance.value }
+                val cutoffPos = posList.lastOrNull { pos -> player.distanceTo(pos) > maxDistance.value }
                 if (cutoffPos != null) while (posList.first() != cutoffPos) {
                     posList.remove()
                 }

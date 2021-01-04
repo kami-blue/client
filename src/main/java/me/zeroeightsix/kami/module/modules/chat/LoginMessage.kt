@@ -49,7 +49,7 @@ object LoginMessage : Module() {
                 }
             }
 
-            if (!moved) moved = mc.player.isMoving
+            if (!moved) moved = player.isMoving
         }
     }
 

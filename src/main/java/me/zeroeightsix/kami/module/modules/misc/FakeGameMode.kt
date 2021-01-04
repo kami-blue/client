@@ -26,13 +26,13 @@ object FakeGameMode : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            mc.playerController.setGameType(gamemode.value.gameType)
+            playerController.setGameType(gamemode.value.gameType)
         }
     }
 
     override fun onEnable() {
         if (mc.player == null) disable()
-        else prevGameMode = mc.playerController.getCurrentGameType()
+        else prevGameMode = mc.playerController.currentGameType
     }
 
     override fun onDisable() {

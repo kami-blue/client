@@ -28,20 +28,20 @@ object FastFall : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.onGround
-                    || mc.player.isElytraFlying
-                    || mc.player.isInLava
-                    || mc.player.isInWater
-                    || mc.player.isInWeb
-                    || mc.player.fallDistance < fallDistance.value
-                    || mc.player.capabilities.isFlying) {
+            if (player.onGround
+                    || player.isElytraFlying
+                    || player.isInLava
+                    || player.isInWater
+                    || player.isInWeb
+                    || player.fallDistance < fallDistance.value
+                    || player.capabilities.isFlying) {
                 reset()
                 return@safeListener
             }
 
             when (mode.value) {
                 Mode.MOTION -> {
-                    mc.player.motionY -= fallSpeed.value
+                    player.motionY -= fallSpeed.value
                     motioning = true
                 }
                 Mode.TIMER -> {
@@ -49,6 +49,7 @@ object FastFall : Module() {
                     timering = true
                 }
                 else -> {
+                    // this is fine, Java meme
                 }
             }
         }

@@ -64,7 +64,7 @@ object HoleMiner : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (!CombatManager.isOnTopPriority(HoleMiner)) return@safeListener
-            if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE) {
+            if (player.heldItemMainhand.item != Items.DIAMOND_PICKAXE) {
                 val slot = InventoryUtils.getSlotsHotbar(278)?.get(0)
                 if (slot == null) {
                     MessageSendHelper.sendChatMessage("$chatName No pickaxe found, disabling")
@@ -78,20 +78,20 @@ object HoleMiner : Module() {
             if (pos == null) {
                 MessageSendHelper.sendChatMessage("$chatName No hole block to mine, disabling")
                 disable()
-            } else if (mc.player.ticksExisted % 2 == 0) {
-                if (mc.world.isAirBlock(pos)) {
+            } else if (player.ticksExisted % 2 == 0) {
+                if (world.isAirBlock(pos)) {
                     MessageSendHelper.sendChatMessage("$chatName Done mining")
                     disable()
                     return@safeListener
                 }
                 val action = if (start) CPacketPlayerDigging.Action.START_DESTROY_BLOCK else CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK
                 val rotation = RotationUtils.getRotationTo(pos.toVec3dCenter())
-                val diff = mc.player.getPositionEyes(1f).subtract(pos.toVec3dCenter())
+                val diff = player.getPositionEyes(1f).subtract(pos.toVec3dCenter())
                 val normalizedVec = diff.scale(1.0 / diff.length())
                 val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
                 PlayerPacketManager.addPacket(HoleMiner, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
-                mc.connection!!.sendPacket(CPacketPlayerDigging(action, pos, facing))
-                mc.player.swingArm(EnumHand.MAIN_HAND)
+                connection.sendPacket(CPacketPlayerDigging(action, pos, facing))
+                player.swingArm(EnumHand.MAIN_HAND)
                 start = false
             }
         }

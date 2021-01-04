@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
@@ -32,21 +33,21 @@ object AutoRemount : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
             // we don't need to do anything if we're already riding.
-            if (mc.player.isRiding) {
+            if (player.isRiding) {
                 remountTimer.reset()
                 return@safeListener
             }
             if (remountTimer.tick(remountDelay.value.toLong())) {
-                mc.world.loadedEntityList.stream()
+                world.loadedEntityList.stream()
                         .filter { entity: Entity -> isValidEntity(entity) }
-                        .min(compareBy { mc.player.getDistance(it) })
-                        .ifPresent { mc.playerController.interactWithEntity(mc.player, it, EnumHand.MAIN_HAND) }
+                        .min(compareBy { player.getDistance(it) })
+                        .ifPresent { playerController.interactWithEntity(player, it, EnumHand.MAIN_HAND) }
             }
         }
     }
 
-    private fun isValidEntity(entity: Entity): Boolean {
-        if (entity.getDistance(mc.player) > range.value) return false
+    private fun SafeClientEvent.isValidEntity(entity: Entity): Boolean {
+        if (entity.getDistance(player) > range.value) return false
         return entity is EntityBoat && boat.value
                 || entity is EntityAnimal && !entity.isChild // FBI moment
                 && (entity is EntityHorse && horse.value

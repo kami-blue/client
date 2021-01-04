@@ -97,8 +97,8 @@ object AutoOffhand : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent>(1100) {
-            if (mc.player.isDead || !movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
-            if (!mc.player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
+            if (player.isDead || !movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
+            if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
                     movingTimer.reset() // delay for 5 ticks
                 } else { // If inventory is not open (ex. inventory desync)

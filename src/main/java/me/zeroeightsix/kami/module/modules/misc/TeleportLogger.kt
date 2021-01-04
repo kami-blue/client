@@ -25,31 +25,31 @@ object TeleportLogger : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            for (player in mc.world.playerEntities) {
-                if (player == mc.player) continue
+            for (worldPlayer in world.playerEntities) {
+                if (worldPlayer == player) continue
 
                 /* 8 chunk render distance * 16 */
-                if (remove.value && player.getDistance(mc.player) < 128) {
-                    if (teleportedPlayers.contains(player.name)) {
-                        val removed = WaypointManager.remove(teleportedPlayers[player.name]!!)
-                        teleportedPlayers.remove(player.name)
+                if (remove.value && worldPlayer.getDistance(player) < 128) {
+                    if (teleportedPlayers.contains(worldPlayer.name)) {
+                        val removed = WaypointManager.remove(teleportedPlayers[worldPlayer.name]!!)
+                        teleportedPlayers.remove(worldPlayer.name)
 
                         if (removed) {
-                            if (printRemove.value) MessageSendHelper.sendChatMessage("$chatName Removed ${player.name}, they are now ${MathUtils.round(player.getDistance(mc.player), 1)} blocks away")
+                            if (printRemove.value) MessageSendHelper.sendChatMessage("$chatName Removed ${worldPlayer.name}, they are now ${MathUtils.round(worldPlayer.getDistance(mc.player), 1)} blocks away")
                         } else {
-                            if (printRemove.value) MessageSendHelper.sendErrorMessage("$chatName Error removing ${player.name} from coords, their position wasn't saved anymore")
+                            if (printRemove.value) MessageSendHelper.sendErrorMessage("$chatName Error removing ${worldPlayer.name} from coords, their position wasn't saved anymore")
                         }
                     }
                     continue
                 }
 
-                if (player.getDistance(mc.player) < minimumDistance.value || teleportedPlayers.containsKey(player.name)) {
+                if (worldPlayer.getDistance(player) < minimumDistance.value || teleportedPlayers.containsKey(worldPlayer.name)) {
                     continue
                 }
 
-                val coords = logCoordinates(player.position, "${player.name} Teleport Spot")
-                teleportedPlayers[player.name] = coords
-                if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${player.name} teleported, ${getSaveText()} ${coords.x}, ${coords.y}, ${coords.z}")
+                val coords = logCoordinates(worldPlayer.position, "${worldPlayer.name} Teleport Spot")
+                teleportedPlayers[worldPlayer.name] = coords
+                if (printAdd.value) MessageSendHelper.sendChatMessage("$chatName ${worldPlayer.name} teleported, ${getSaveText()} ${coords.x}, ${coords.y}, ${coords.z}")
             }
         }
     }

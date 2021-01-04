@@ -49,10 +49,10 @@ object ViewLock : Module() {
                 snapToSlice()
             }
             if (yaw.value && !autoYaw.value) {
-                mc.player.rotationYaw = specificYaw.value
+                player.rotationYaw = specificYaw.value
             }
             if (pitch.value && !autoPitch.value) {
-                mc.player.rotationPitch = specificPitch.value
+                player.rotationPitch = specificPitch.value
             }
         }
     }

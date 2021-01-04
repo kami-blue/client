@@ -13,8 +13,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AntiLevitation : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.isPotionActive(MobEffects.LEVITATION)) {
-                mc.player.removeActivePotionEffect(MobEffects.LEVITATION)
+            if (player.isPotionActive(MobEffects.LEVITATION)) {
+                player.removeActivePotionEffect(MobEffects.LEVITATION)
             }
         }
     }

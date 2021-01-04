@@ -93,12 +93,12 @@ object Freecam : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
 
-            if (mc.player.isDead || mc.player.health <= 0.0f) {
+            if (player.isDead || player.health <= 0.0f) {
                 if (cameraGuy != null) resetCameraGuy()
                 return@safeListener
             }
 
-            if (cameraGuy == null && mc.player.ticksExisted > 20) spawnCameraGuy()
+            if (cameraGuy == null && player.ticksExisted > 20) spawnCameraGuy()
         }
 
         listener<InputUpdateEvent>(9999) {

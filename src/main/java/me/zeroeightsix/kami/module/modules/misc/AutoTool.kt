@@ -48,12 +48,12 @@ object AutoTool : Module() {
             if (mouse && !shouldMoveBack) {
                 lastChange = System.currentTimeMillis()
                 shouldMoveBack = true
-                lastSlot = mc.player.inventory.currentItem
-                mc.playerController.syncCurrentPlayItem()
+                lastSlot = player.inventory.currentItem
+                playerController.syncCurrentPlayItem()
             } else if (!mouse && shouldMoveBack && (lastChange + timeout.value * 10 < System.currentTimeMillis())) {
                 shouldMoveBack = false
-                mc.player.inventory.currentItem = lastSlot
-                mc.playerController.syncCurrentPlayItem()
+                player.inventory.currentItem = lastSlot
+                playerController.syncCurrentPlayItem()
             }
         }
     }

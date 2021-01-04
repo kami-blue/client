@@ -52,13 +52,11 @@ object PlayerPacketManager : Manager {
         }
 
         listener<PacketEvent.Send>(-69420) {
-            if (it.packet is CPacketHeldItemChange) {
-                if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
-                    if (hotbarResetTimer.tick(2L)) {
-                        spoofingHotbar = false
-                    } else {
-                        it.cancel()
-                    }
+            if (it.packet is CPacketHeldItemChange && spoofingHotbar && it.packet.slotId != serverSideHotbar) {
+                if (hotbarResetTimer.tick(2L)) {
+                    spoofingHotbar = false
+                } else {
+                    it.cancel()
                 }
             }
         }
@@ -134,7 +132,8 @@ object PlayerPacketManager : Manager {
     fun resetHotbar() {
         if (!spoofingHotbar) return
         spoofingHotbar = false
-        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem ?: 0))
+        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem
+            ?: 0))
     }
 
     /**
@@ -143,13 +142,13 @@ object PlayerPacketManager : Manager {
      * the packet
      */
     class PlayerPacket(
-            var moving: Boolean? = null,
-            var rotating: Boolean? = null,
-            var sprinting: Boolean? = null,
-            var sneaking: Boolean? = null,
-            var onGround: Boolean? = null,
-            pos: Vec3d? = null,
-            rotation: Vec2f? = null
+        var moving: Boolean? = null,
+        var rotating: Boolean? = null,
+        var sprinting: Boolean? = null,
+        var sneaking: Boolean? = null,
+        var onGround: Boolean? = null,
+        pos: Vec3d? = null,
+        rotation: Vec2f? = null
     ) {
         var pos: Vec3d? = pos
             set(value) {
@@ -170,12 +169,12 @@ object PlayerPacketManager : Manager {
          */
         fun isEmpty(): Boolean {
             return moving == null
-                    && rotating == null
-                    && sprinting == null
-                    && sneaking == null
-                    && onGround == null
-                    && pos == null
-                    && rotation == null
+                && rotating == null
+                && sprinting == null
+                && sneaking == null
+                && onGround == null
+                && pos == null
+                && rotation == null
         }
 
         /**

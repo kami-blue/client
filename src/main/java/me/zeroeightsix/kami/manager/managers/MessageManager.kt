@@ -47,7 +47,7 @@ object MessageManager : Manager {
                     if (timer.tick((ChatSetting.delay.value * 1000.0f).toLong())) {
                         messageQueue.pollFirst()?.let {
                             for (modifier in activeModifiers) modifier.apply(it)
-                            if (it.packet.message.isNotBlank()) mc.connection?.sendPacket(it.packet)
+                            if (it.packet.message.isNotBlank()) connection.sendPacket(it.packet)
                             it.state.done = true
                         }
                     }

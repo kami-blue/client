@@ -31,10 +31,10 @@ object Jesus : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (isInWater(mc.player) && !mc.player.isSneaking) {
-                mc.player.motionY = 0.1
-                if (mc.player.ridingEntity != null && mc.player.ridingEntity !is EntityBoat) {
-                    mc.player.ridingEntity!!.motionY = 0.3
+            if (isInWater(player) && !player.isSneaking) {
+                player.motionY = 0.1
+                if (player.ridingEntity != null && player.ridingEntity !is EntityBoat) {
+                    player.ridingEntity!!.motionY = 0.3
                 }
             }
         }

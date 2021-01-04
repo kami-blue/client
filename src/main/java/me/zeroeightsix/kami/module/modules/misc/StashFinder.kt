@@ -50,7 +50,7 @@ object StashFinder : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            mc.world.loadedTileEntityList
+            world.loadedTileEntityList
                     .filter {
                         logChests.value && it is TileEntityChest
                                 || logShulkers.value && it is TileEntityShulkerBox
@@ -69,7 +69,7 @@ object StashFinder : Module() {
                 }
 
                 if (playSound.value) {
-                    mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 }
 
                 if (logToChat.value) {

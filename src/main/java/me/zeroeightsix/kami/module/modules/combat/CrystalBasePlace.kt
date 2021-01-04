@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
@@ -81,8 +82,8 @@ object CrystalBasePlace : Module() {
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
                     if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot)
-                    mc.player.swingArm(EnumHand.MAIN_HAND)
-                    mc.connection!!.sendPacket(packet)
+                    player.swingArm(EnumHand.MAIN_HAND)
+                    connection.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
                     placePacket = null
                 }
@@ -101,7 +102,7 @@ object CrystalBasePlace : Module() {
         }
     }
 
-    private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+    private val SafeClientEvent.isHoldingObby get() = isObby(player.heldItemMainhand) || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 

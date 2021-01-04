@@ -34,17 +34,17 @@ object LogoutLogger : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            for (player in mc.world.loadedEntityList) {
-                if (player !is EntityOtherPlayerMP) continue
-                mc.connection?.getPlayerInfo(player.gameProfile.id)?.let {
-                    loggedPlayers[it.gameProfile] = player.positionVector.toBlockPos()
+            for (loadedPlayer in world.loadedEntityList) {
+                if (loadedPlayer !is EntityOtherPlayerMP) continue
+                connection.getPlayerInfo(loadedPlayer.gameProfile.id).let {
+                    loggedPlayers[it.gameProfile] = loadedPlayer.positionVector.toBlockPos()
                 }
             }
 
             if (timer.tick(1L)) {
                 val toRemove = ArrayList<GameProfile>()
                 for ((profile, pos) in loggedPlayers) {
-                    if (mc.connection?.getPlayerInfo(profile.id) != null) continue
+                    if (connection.getPlayerInfo(profile.id) != null) continue
                     if (print.value) MessageSendHelper.sendChatMessage("${profile.name} logged out at ${pos.asString()}")
                     if (saveToFile.value) WaypointManager.add(pos, "${profile.name} Logout Spot")
                     toRemove.add(profile)

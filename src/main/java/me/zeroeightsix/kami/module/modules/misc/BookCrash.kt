@@ -43,7 +43,7 @@ object BookCrash : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.currentServerData == null || mc.currentServerData?.serverIP.isNullOrBlank() || mc.connection == null) {
+            if (mc.currentServerData == null || mc.currentServerData?.serverIP.isNullOrBlank()) {
                 sendChatMessage("Not connected to a server")
                 disable()
                 return@safeListener
@@ -52,9 +52,8 @@ object BookCrash : Module() {
             if (!timer.tick(delay.value.toLong())) return@safeListener
 
             val list = NBTTagList()
-            val text: String
 
-            text = when (fillMode.value as FillMode) {
+            val text = when (fillMode.value as FillMode) {
                 FillMode.RANDOM -> {
                     val chars = Random().ints(0x80, 0x10FFFF - 0x800).map { if (it < 0xd800) it else it + 0x800 }
                     chars.collectToPages()
@@ -83,9 +82,9 @@ object BookCrash : Module() {
             }
 
             for (i in 0 until uses.value) {
-                mc.connection!!.sendPacket(CPacketClickWindow(0, 0, 0, ClickType.PICKUP, bookObj, 0.toShort()))
+                connection.sendPacket(CPacketClickWindow(0, 0, 0, ClickType.PICKUP, bookObj, 0.toShort()))
                 if (mode.value == Mode.JESSICA) {
-                    mc.connection!!.sendPacket(CPacketCreativeInventoryAction(0, bookObj))
+                    connection.sendPacket(CPacketCreativeInventoryAction(0, bookObj))
                 }
             }
         }

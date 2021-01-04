@@ -162,6 +162,7 @@ object WaypointRender : Module() {
                     WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
                     WaypointUpdateEvent.Type.RELOAD -> updateList()
                     else -> {
+                        // this is fine, Java meme
                     }
                 }
             }

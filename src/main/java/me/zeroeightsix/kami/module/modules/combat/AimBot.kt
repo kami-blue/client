@@ -22,7 +22,7 @@ object AimBot : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (bowOnly.value && mc.player.heldItemMainhand.getItem() != Items.BOW) {
+            if (bowOnly.value && player.heldItemMainhand.getItem() != Items.BOW) {
                 if (autoSwap.value) InventoryUtils.swapSlotToItem(261)
                 return@safeListener
             }

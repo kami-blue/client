@@ -51,7 +51,7 @@ object NoBreakAnimation : Module() {
             if (isMining) {
                 lastPos?.let { lastPos ->
                     lastFacing?.let { lastFacing ->
-                        mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, lastPos, lastFacing))
+                        connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, lastPos, lastFacing))
                     }
                 }
             }

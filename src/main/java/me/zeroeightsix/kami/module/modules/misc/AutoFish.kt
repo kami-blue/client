@@ -50,12 +50,12 @@ object AutoFish : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
+            if (player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
                 reset()
                 return@safeListener
             }
 
-            if (mc.player.fishEntity == null) {
+            if (player.fishEntity == null) {
                 if (recasting) { // Recast the fishing rod
                     if (timer.tick(recastDelay.value.toLong())) {
                         mc.rightClickMouse()
@@ -106,7 +106,6 @@ object AutoFish : Module() {
 
     private fun isAnySplash(soundName: String): Boolean {
         return soundName.contains("entity.generic.splash")
-                || soundName.contains("entity.generic.splash")
                 || soundName.contains("entity.hostile.splash")
                 || soundName.contains("entity.player.splash")
     }

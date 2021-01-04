@@ -42,7 +42,7 @@ object FastBreak : Module() {
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            if (delay.value != 5 && mc.playerController.blockHitDelay == 5) mc.playerController.blockHitDelay = delay.value
+            if (delay.value != 5 && playerController.blockHitDelay == 5) playerController.blockHitDelay = delay.value
         }
     }
 }

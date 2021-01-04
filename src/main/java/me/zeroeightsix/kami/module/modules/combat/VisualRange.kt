@@ -30,11 +30,11 @@ object VisualRange : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.END || isDisabled && mc.player.ticksExisted % 5 != 0) return@safeListener
+            if (it.phase != TickEvent.Phase.END || isDisabled && player.ticksExisted % 5 != 0) return@safeListener
 
-            val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
+            val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (player in loadedPlayerSet) {
-                if (player == mc.renderViewEntity || player == mc.player || !friends.value && FriendManager.isFriend(player.name)) continue
+                if (player == mc.renderViewEntity || player == player || !friends.value && FriendManager.isFriend(player.name)) continue
                 if (playerSet.add(player) && isEnabled) {
                     onEnter(player)
                 }
