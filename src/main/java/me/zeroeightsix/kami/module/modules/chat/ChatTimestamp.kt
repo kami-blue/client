@@ -1,7 +1,10 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimeUtils
+import me.zeroeightsix.kami.util.color.EnumTextColor
+import me.zeroeightsix.kami.util.text.format
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
@@ -13,15 +16,17 @@ import org.kamiblue.event.listener.listener
     showOnArray = false
 )
 object ChatTimestamp : Module() {
+    private val color = setting("Color", EnumTextColor.GRAY)
+    private val timeFormat = setting("TimeFormat", TimeUtils.TimeFormat.HHMM)
+    private val timeUnit = setting("TimeUnit", TimeUtils.TimeUnit.H12)
 
     init {
         listener<ClientChatReceivedEvent> {
             if (mc.player == null) return@listener
-            val prefix = TextComponentString(formattedTime)
-            it.message = prefix.appendSibling(it.message)
+            it.message = TextComponentString(formattedTime).appendSibling(it.message)
         }
     }
 
     val formattedTime: String
-        get() = "<${TimeUtils.getTime()}>"
+        get() = "<${color.value format TimeUtils.getTime(timeFormat.value, timeUnit.value)}>"
 }
