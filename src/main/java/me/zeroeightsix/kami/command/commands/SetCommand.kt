@@ -34,11 +34,13 @@ object SetCommand : ClientCommand(
                                     setting.value = !setting.value
                                 }
                             }
+
                             is EnumSetting -> {
                                 onMainThread {
                                     setting.nextValue()
                                 }
                             }
+
                             else -> {
                                 MessageSendHelper.sendChatMessage("Unable to toggle value for ${formatValue(setting.name)}")
                             }
