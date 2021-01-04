@@ -132,8 +132,7 @@ object PlayerPacketManager : Manager {
     fun resetHotbar() {
         if (!spoofingHotbar) return
         spoofingHotbar = false
-        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem
-            ?: 0))
+        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem ?: 0))
     }
 
     /**
