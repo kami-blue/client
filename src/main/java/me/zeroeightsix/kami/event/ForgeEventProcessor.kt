@@ -33,12 +33,6 @@ object ForgeEventProcessor {
     fun onTick(event: TickEvent.ClientTickEvent) {
         KamiEventBus.post(event)
 
-        if (mc.world != null && mc.player != null) {
-            TickEvent.ClientTickEvent(event.phase).also {
-                KamiEventBus.post(it)
-            }
-        }
-
         if (event.phase == TickEvent.Phase.END) {
             if (prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
                 prevWidth = mc.displayWidth
