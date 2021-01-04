@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -26,7 +26,7 @@ import org.kamiblue.event.listener.listener
 )
 object Jesus : Module() {
 
-    private val dolphin = register(Settings.b("Dolphin", false))
+    private val dolphin = setting("Dolphin", false)
 
     private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 
