@@ -27,7 +27,7 @@ import org.kamiblue.event.listener.listener
 )
 object Jesus : Module() {
 
-    var dolphinSetting = register(Settings.b("dolphin", false))
+    private var dolphinSetting = register(Settings.b("dolphin", false))
 
     override fun onToggle() {
         BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
@@ -35,11 +35,11 @@ object Jesus : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (dolphinSetting.value){
+            if (dolphinSetting.value) {
                 if (isInWater(player) && !player.isSneaking) {
                     mc.player.jump()
                 }
-            }else {
+            } else {
                 if (isInWater(player) && !player.isSneaking) {
                     player.motionY = 0.1
                     if (player.ridingEntity != null && player.ridingEntity !is EntityBoat) {
