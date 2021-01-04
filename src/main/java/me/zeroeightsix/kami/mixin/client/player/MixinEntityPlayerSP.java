@@ -47,9 +47,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Shadow private boolean serverSneakState;
     @Shadow private boolean prevOnGround;
     @Shadow private boolean autoJumpEnabled;
-
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
+    @Shadow protected abstract boolean isCurrentViewEntity();
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
