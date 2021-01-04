@@ -28,7 +28,7 @@ object SetCommand : ClientCommand(
                             return@executeAsync
                         }
 
-                        when(setting) {
+                        when (setting) {
                             is BooleanSetting -> {
                                 onMainThread {
                                     setting.value = !setting.value
@@ -93,6 +93,7 @@ object SetCommand : ClientCommand(
             executeAsync("List settings for a module") {
                 val module = moduleArg.value
                 val settingList = module.fullSettingList
+
                 MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: " +
                     formatValue(settingList.size)
                 )
