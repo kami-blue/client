@@ -22,7 +22,7 @@ object PlayerSpeed : LabelHud(
     private enum class SpeedUnit(val displayName: String) {
         MPS("m/s"),
         KMH("km/h"),
-        MPH("mi/h")
+        MPH("mph")
     }
 
     private val speedList = ArrayDeque<Double>()
