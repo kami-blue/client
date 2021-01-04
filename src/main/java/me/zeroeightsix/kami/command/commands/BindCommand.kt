@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
+import me.zeroeightsix.kami.util.KeyboardUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
@@ -59,8 +60,14 @@ object BindCommand : ClientCommand(
                         return@execute
                     }
 
-                    module.bind.setValue(bind)
-                    MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${formatValue(module.bind)}!")
+
+                    val key = KeyboardUtils.getKey(bind)
+                    if (key <= 0) {
+                        KeyboardUtils.sendUnknownKeyError(bind)
+                    } else {
+                        module.bind.setValue(bind)
+                        MessageSendHelper.sendChatMessage("Bind for ${module.name} set to ${formatValue(module.bind)}!")
+                    }
                 }
             }
 
