@@ -13,6 +13,7 @@ object Rotation : LabelHud(
     override fun updateText() {
         val yaw = MathUtils.round(RotationUtils.normalizeAngle(mc.player?.rotationYaw ?: 0.0f), 1)
         val pitch = MathUtils.round(mc.player?.rotationPitch ?: 0.0f, 1)
+
         displayText.add("Yaw", secondaryColor)
         displayText.add(yaw.toString(), primaryColor)
         displayText.add("Pitch", secondaryColor)
