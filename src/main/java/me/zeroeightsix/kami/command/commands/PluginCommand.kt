@@ -20,6 +20,7 @@ object PluginCommand : ClientCommand(
                 execute {
                     val name = nameArg.value
                     val file = File("${PluginManager.pluginPath}$name")
+
                     if (!file.exists() || !file.extension.equals("jar", true)) {
                         MessageSendHelper.sendErrorMessage("$name is not a valid jar file name!")
                     }
@@ -29,10 +30,12 @@ object PluginCommand : ClientCommand(
 
                     ConfigUtils.saveAll()
                     val loader = PluginLoader(file)
+
                     if (PluginManager.loadedPlugins.containsName(loader.info.name)) {
-                        MessageSendHelper.sendWarningMessage("Plugin $name already loaded!")
+                        MessageSendHelper.sendWarningMessage("Plugin $name is already loaded!")
                         return@execute
                     }
+
                     PluginManager.load(loader)
                     ConfigUtils.loadAll()
 
@@ -51,14 +54,15 @@ object PluginCommand : ClientCommand(
                     val plugin = PluginManager.loadedPlugins[name]
 
                     if (plugin == null) {
-                        MessageSendHelper.sendErrorMessage("No plugin found for name $name")
+                        MessageSendHelper.sendErrorMessage("No plugins called $name were found")
                         return@execute
                     }
 
                     val time = System.currentTimeMillis()
-                    MessageSendHelper.sendChatMessage("Reloading plugins $name...")
+                    MessageSendHelper.sendChatMessage("Reloading plugins for $name...")
 
                     ConfigUtils.saveAll()
+
                     val file = PluginManager.pluginLoaderMap[plugin]!!.file
                     PluginManager.unload(plugin)
                     PluginManager.load(PluginLoader(file))
