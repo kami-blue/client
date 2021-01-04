@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.threads.safeListener
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -135,9 +135,9 @@ object NoRender : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && items.value) {
-                for (entity in mc.world.loadedEntityList) {
+                for (entity in world.loadedEntityList) {
                     if (entity !is EntityItem) continue
                     entity.setDead()
                 }

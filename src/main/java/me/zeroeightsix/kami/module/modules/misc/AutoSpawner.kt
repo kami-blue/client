@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockDeadBush
 import net.minecraft.block.BlockSoulSand
 import net.minecraft.block.BlockTallGrass
@@ -19,7 +19,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * TODO: Rewrite
@@ -81,7 +81,7 @@ object AutoSpawner : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             when (buildStage) {
                 Stage.PRE -> {
                     isSneaking = false
@@ -95,9 +95,9 @@ object AutoSpawner : Module() {
                             if (debug.value) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode.value}, disabling.")
                             disable()
                         }
-                        return@listener
+                        return@safeListener
                     }
-                    val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
+                    val blockPosList = VectorUtils.getBlockPosInSphere(player.positionVector, placeRange.value)
                     var noPositionInArea = true
 
                     for (pos in blockPosList) {
@@ -112,7 +112,7 @@ object AutoSpawner : Module() {
                         if (useMode.value == UseMode.SINGLE) {
                             if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
                             disable()
-                            return@listener
+                            return@safeListener
                         }
                     }
 
@@ -155,7 +155,7 @@ object AutoSpawner : Module() {
                     }
 
                     if (isSneaking) {
-                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        player.connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
                         isSneaking = false
                     }
 

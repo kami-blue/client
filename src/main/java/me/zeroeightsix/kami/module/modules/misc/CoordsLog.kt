@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -10,7 +9,8 @@ import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
     name = "CoordsLog",
@@ -27,20 +27,18 @@ object CoordsLog : Module() {
     private var timer = TickTimer(TimeUnit.SECONDS)
 
     init {
-        listener<SafeTickEvent> {
-            if (autoLog.value) {
-                if (timer.tick(delay.value.toLong())) {
-                    val currentCoord = mc.player.positionVector.toBlockPos().asString()
+        safeListener<TickEvent.ClientTickEvent> {
+            if (autoLog.value && timer.tick(delay.value.toLong())) {
+                    val currentCoord = player.positionVector.toBlockPos().asString()
 
-                    if (currentCoord != previousCoord) {
-                        WaypointManager.add("autoLogger")
-                        previousCoord = currentCoord
+                if (currentCoord != previousCoord) {
+                    WaypointManager.add("autoLogger")
+                    previousCoord = currentCoord
                     }
-                }
             }
 
             if (saveOnDeath.value) {
-                savedDeath = if (mc.player.isDead || mc.player.health <= 0.0f) {
+                savedDeath = if (player.isDead || player.health <= 0.0f) {
                     if (!savedDeath) {
                         val deathPoint = WaypointManager.add("Death - " + InfoCalculator.getServerType()).pos
                         MessageSendHelper.sendChatMessage("You died at ${deathPoint.x}, ${deathPoint.y}, ${deathPoint.z}")

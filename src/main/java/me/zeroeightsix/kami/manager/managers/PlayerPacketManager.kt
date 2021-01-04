@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.mixin.*
 import me.zeroeightsix.kami.mixin.client.accessor.*
@@ -15,6 +14,7 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
@@ -52,13 +52,11 @@ object PlayerPacketManager : Manager {
         }
 
         listener<PacketEvent.Send>(-69420) {
-            if (it.packet is CPacketHeldItemChange) {
-                if (spoofingHotbar && it.packet.slotId != serverSideHotbar) {
-                    if (hotbarResetTimer.tick(2L)) {
-                        spoofingHotbar = false
-                    } else {
-                        it.cancel()
-                    }
+            if (it.packet is CPacketHeldItemChange && spoofingHotbar && it.packet.slotId != serverSideHotbar) {
+                if (hotbarResetTimer.tick(2L)) {
+                    spoofingHotbar = false
+                } else {
+                    it.cancel()
                 }
             }
         }
@@ -81,8 +79,8 @@ object PlayerPacketManager : Manager {
             }
         }
 
-        listener<SafeTickEvent>(0x2269420) {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent>(0x2269420) {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
             prevServerSidePosition = serverSidePosition
             prevServerSideRotation = serverSideRotation
         }
@@ -143,13 +141,13 @@ object PlayerPacketManager : Manager {
      * the packet
      */
     class PlayerPacket(
-            var moving: Boolean? = null,
-            var rotating: Boolean? = null,
-            var sprinting: Boolean? = null,
-            var sneaking: Boolean? = null,
-            var onGround: Boolean? = null,
-            pos: Vec3d? = null,
-            rotation: Vec2f? = null
+        var moving: Boolean? = null,
+        var rotating: Boolean? = null,
+        var sprinting: Boolean? = null,
+        var sneaking: Boolean? = null,
+        var onGround: Boolean? = null,
+        pos: Vec3d? = null,
+        rotation: Vec2f? = null
     ) {
         var pos: Vec3d? = pos
             set(value) {
@@ -170,12 +168,12 @@ object PlayerPacketManager : Manager {
          */
         fun isEmpty(): Boolean {
             return moving == null
-                    && rotating == null
-                    && sprinting == null
-                    && sneaking == null
-                    && onGround == null
-                    && pos == null
-                    && rotation == null
+                && rotating == null
+                && sprinting == null
+                && sneaking == null
+                && onGround == null
+                && pos == null
+                && rotation == null
         }
 
         /**

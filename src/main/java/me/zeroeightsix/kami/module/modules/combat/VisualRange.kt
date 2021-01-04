@@ -1,18 +1,17 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "VisualRange",
@@ -30,12 +29,12 @@ object VisualRange : Module() {
     private val playerSet = LinkedHashSet<EntityPlayer>()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || isDisabled && mc.player.ticksExisted % 5 != 0) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END || isDisabled && player.ticksExisted % 5 != 0) return@safeListener
 
-            val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
+            val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (player in loadedPlayerSet) {
-                if (player == mc.renderViewEntity || player == mc.player || !friends.value && FriendManager.isFriend(player.name)) continue
+                if (player == mc.renderViewEntity || player == player || !friends.value && FriendManager.isFriend(player.name)) continue
                 if (playerSet.add(player) && isEnabled) {
                     onEnter(player)
                 }

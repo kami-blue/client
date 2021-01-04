@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
@@ -12,7 +12,7 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "ElytraReplace",
@@ -33,9 +33,9 @@ object ElytraReplace : Module() {
     private var shouldSendFinalWarning = true
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (!inventoryMode.value && mc.currentScreen is GuiContainer) {
-                return@listener
+                return@safeListener
             }
 
             getElytraChestCount()
@@ -44,12 +44,12 @@ object ElytraReplace : Module() {
                 sendFinalElytraWarning()
             }
 
-            if (mc.player.onGround && autoChest.value) {
+            if (player.onGround && autoChest.value) {
                 swapToChest()
             } else if (shouldAttemptElytraSwap()) {
                 var shouldSwap = isCurrentElytraBroken()
                 if (autoChest.value) {
-                    shouldSwap = shouldSwap || !(mc.player.inventory.armorInventory[2].item === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
+                    shouldSwap = shouldSwap || !(player.inventory.armorInventory[2].item === Items.ELYTRA) // if current elytra broken or no elytra found in chest area
                 }
 
                 if (shouldSwap) {

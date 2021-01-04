@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -9,11 +9,11 @@ import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.isWeapon
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -47,26 +47,26 @@ object KillAura : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
 
             inactiveTicks++
 
-            if (mc.player.isDead) {
-                if (mc.player.isDead && disableOnDeath.value) disable()
-                return@listener
+            if (player.isDead) {
+                if (disableOnDeath.value) disable()
+                return@safeListener
             }
 
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val target = CombatManager.target ?: return@listener
-            if (mc.player.getDistance(target) > range.value) return@listener
+            if (!CombatManager.isOnTopPriority(KillAura) || CombatSetting.pause) return@safeListener
+            val target = CombatManager.target ?: return@safeListener
+            if (player.getDistance(target) > range.value) return@safeListener
 
             if (autoWeapon.value) {
                 CombatUtils.equipBestWeapon(prefer.value)
             }
 
-            if (weaponOnly.value && !mc.player.heldItemMainhand.item.isWeapon) {
-                return@listener
+            if (weaponOnly.value && !player.heldItemMainhand.item.isWeapon) {
+                return@safeListener
             }
 
             inactiveTicks = 0
@@ -84,10 +84,10 @@ object KillAura : Module() {
         }
     }
 
-    private fun canAttack(): Boolean {
+    private fun SafeClientEvent.canAttack(): Boolean {
         return if (delayMode.value == WaitMode.DELAY) {
             val adjustTicks = if (!tpsSync.value) 0f else TpsCalculator.adjustTicks
-            mc.player.getCooledAttackStrength(adjustTicks) >= 1f
+            player.getCooledAttackStrength(adjustTicks) >= 1f
         } else {
             if (tickCount < waitTick.value) {
                 tickCount++
@@ -99,8 +99,8 @@ object KillAura : Module() {
         }
     }
 
-    private fun attack(e: Entity) {
-        mc.playerController.attackEntity(mc.player, e)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
+    private fun SafeClientEvent.attack(e: Entity) {
+        playerController.attackEntity(player, e)
+        player.swingArm(EnumHand.MAIN_HAND)
     }
 }

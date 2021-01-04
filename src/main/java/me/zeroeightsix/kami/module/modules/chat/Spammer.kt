@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -12,12 +13,11 @@ import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.io.File
 import java.net.URL
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 @Module.Info(
@@ -87,8 +87,8 @@ object Spammer : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@safeListener
             val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()
             if (MessageDetection.Command.KAMI_BLUE detect message) {
                 MessageSendHelper.sendKamiCommand(message)

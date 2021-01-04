@@ -3,10 +3,12 @@ package me.zeroeightsix.kami.module.modules.client
 import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.event.events.ShutdownEvent
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
+import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.StopTimer
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
@@ -39,7 +41,7 @@ object ClickGUI : Module() {
     fun getScaleFactor() = (prevScale + (scale - prevScale) * mc.renderPartialTicks) * 2.0
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             prevScale = scale
             if (settingTimer.stop() > 500L) {
                 val diff = scale - getRoundedScale()

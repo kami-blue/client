@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.WorldUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiShulkerBox
@@ -72,13 +73,13 @@ object AutoObsidian : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || mc.playerController == null) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
 
             /* Just a delay */
             if (tickCount < delayTicks.value) {
                 tickCount++
-                return@listener
+                return@safeListener
             } else tickCount = 0
 
             updateState()
@@ -95,7 +96,7 @@ object AutoObsidian : Module() {
                             SearchingState.COLLECTING -> collectDroppedItem(shulkerBoxId)
                             SearchingState.DONE -> {
                                 /* Positions need to be updated after moving while collecting dropped shulker box */
-                                val currentPos = mc.player.flooredPosition
+                                val currentPos = player.flooredPosition
                                 playerPos = currentPos
                                 setPlacingPos()
                             }
@@ -111,7 +112,7 @@ object AutoObsidian : Module() {
                 State.DONE -> {
                     if (!autoRefill.value) {
                         sendChatMessage("$chatName Reached target stacks, disabling.")
-                        this.disable()
+                        AutoObsidian.disable()
                     } else {
                         if (active) sendChatMessage("$chatName Reached target stacks, stopping.")
                         reset()
@@ -130,8 +131,8 @@ object AutoObsidian : Module() {
         reset()
     }
 
-    private fun updateState() {
-        val currentPos = mc.player.flooredPosition
+    private fun SafeClientEvent.updateState() {
+        val currentPos = player.flooredPosition
         if (state != State.DONE && placingPos.y == -1) {
             playerPos = currentPos
             setPlacingPos()
@@ -164,7 +165,7 @@ object AutoObsidian : Module() {
         }
     }
 
-    private fun updateMainState() {
+    private fun SafeClientEvent.updateMainState() {
         val obbyCount = countObby()
 
         state = when {
@@ -174,13 +175,13 @@ object AutoObsidian : Module() {
             state == State.COLLECTING && getDroppedItem(49, 8.0f) == null -> {
                 State.DONE
             }
-            state != State.DONE && mc.world.isAirBlock(placingPos) && obbyCount >= targetStacks.value -> {
+            state != State.DONE && world.isAirBlock(placingPos) && obbyCount >= targetStacks.value -> {
                 State.COLLECTING
             }
-            state == State.MINING && mc.world.isAirBlock(placingPos) -> {
+            state == State.MINING && world.isAirBlock(placingPos) -> {
                 State.PLACING
             }
-            state == State.PLACING && !mc.world.isAirBlock(placingPos) -> {
+            state == State.PLACING && !world.isAirBlock(placingPos) -> {
                 State.PRE_MINING
             }
             state == State.SEARCHING && searchingState == SearchingState.DONE && obbyCount < targetStacks.value -> {
@@ -190,7 +191,7 @@ object AutoObsidian : Module() {
         }
     }
 
-    private fun updateSearchingState() {
+    private fun SafeClientEvent.updateSearchingState() {
         searchingState = when {
             searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(130) > 0 -> {
                 SearchingState.DONE
@@ -198,7 +199,7 @@ object AutoObsidian : Module() {
             searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 8.0f) == null -> {
                 SearchingState.DONE
             }
-            searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
+            searchingState == SearchingState.MINING && world.isAirBlock(placingPos) -> {
                 if (InventoryUtils.countItemAll(130) > 0) {
                     SearchingState.COLLECTING
                 } else { /* In case if the shulker wasn't placed due to server lag */
@@ -208,8 +209,8 @@ object AutoObsidian : Module() {
             searchingState == SearchingState.OPENING && (InventoryUtils.countItemAll(130) >= 64 || InventoryUtils.getSlots(0, 35, 0) == null) -> {
                 SearchingState.PRE_MINING
             }
-            searchingState == SearchingState.PLACING && !mc.world.isAirBlock(placingPos) -> {
-                if (mc.world.getBlockState(placingPos).block is BlockShulkerBox) {
+            searchingState == SearchingState.PLACING && !world.isAirBlock(placingPos) -> {
+                if (world.getBlockState(placingPos).block is BlockShulkerBox) {
                     SearchingState.OPENING
                 } else { /* In case if the shulker wasn't placed due to server lag */
                     SearchingState.PRE_MINING
@@ -253,21 +254,21 @@ object AutoObsidian : Module() {
         return BlockPos(0, -1, 0)
     }
 
-    private fun lookAtBlock(pos: BlockPos) {
+    private fun SafeClientEvent.lookAtBlock(pos: BlockPos) {
         val vec3d = Vec3d(pos).add(0.5, 0.0, 0.5)
         val lookAt = RotationUtils.getRotationTo(vec3d)
-        mc.player.rotationYaw = lookAt.x
-        mc.player.rotationPitch = lookAt.y
+        player.rotationYaw = lookAt.x
+        player.rotationPitch = lookAt.y
     }
 
     /* Tasks */
-    private fun placeShulker(pos: BlockPos) {
+    private fun SafeClientEvent.placeShulker(pos: BlockPos) {
         for (i in 219..234) {
             if (InventoryUtils.getSlotsHotbar(i) == null) {
                 if (i != 234) continue else {
                     sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
                     mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                    this.disable()
+                    disable()
                     return
                 }
             }
@@ -276,16 +277,16 @@ object AutoObsidian : Module() {
             break
         }
 
-        if (mc.world.getBlockState(pos).block !is BlockShulkerBox) {
+        if (world.getBlockState(pos).block !is BlockShulkerBox) {
             lookAtBlock(pos)
-            mc.player.isSneaking = true
-            mc.playerController.processRightClickBlock(mc.player, mc.world, pos.down(), EnumFacing.UP, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
-            mc.player.swingArm(EnumHand.MAIN_HAND)
+            player.isSneaking = true
+            playerController.processRightClickBlock(player, world, pos.down(), EnumFacing.UP, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
+            player.swingArm(EnumHand.MAIN_HAND)
             mc.rightClickDelayTimer = 4
         }
     }
 
-    private fun placeEnderChest(pos: BlockPos) {
+    private fun SafeClientEvent.placeEnderChest(pos: BlockPos) {
         if (InventoryUtils.getSlotsHotbar(130) == null && InventoryUtils.getSlotsNoHotbar(130) != null) {
             InventoryUtils.moveToHotbar(130, 278)
             return
@@ -295,32 +296,32 @@ object AutoObsidian : Module() {
             } else {
                 sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                this.disable()
+                disable()
                 return
             }
         }
         InventoryUtils.swapSlotToItem(130)
 
         lookAtBlock(pos)
-        mc.player.isSneaking = true
-        mc.playerController.processRightClickBlock(mc.player, mc.world, pos.down(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
+        player.isSneaking = true
+        playerController.processRightClickBlock(player, world, pos.down(), mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
+        player.swingArm(EnumHand.MAIN_HAND)
         mc.rightClickDelayTimer = 4
     }
 
 
-    private fun openShulker(pos: BlockPos) {
+    private fun SafeClientEvent.openShulker(pos: BlockPos) {
         lookAtBlock(pos)
         if (mc.currentScreen !is GuiShulkerBox) {
             /* Added a delay here so it doesn't spam right click and get you kicked */
             if (System.currentTimeMillis() >= openTime + 2000L) {
                 openTime = System.currentTimeMillis()
-                mc.playerController.processRightClickBlock(mc.player, mc.world, pos, mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
+                playerController.processRightClickBlock(player, world, pos, mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec, EnumHand.MAIN_HAND)
             }
         } else {
             /* Extra delay here to wait for the item list to be loaded */
             Executors.newSingleThreadScheduledExecutor().schedule({
-                val currentContainer = mc.player.openContainer
+                val currentContainer = player.openContainer
                 var enderChestSlot = -1
                 for (i in 0..26) {
                     if (currentContainer.inventory[i].item == Blocks.ENDER_CHEST) {
@@ -328,24 +329,24 @@ object AutoObsidian : Module() {
                     }
                 }
                 if (enderChestSlot != -1) {
-                    mc.playerController.windowClick(currentContainer.windowId, enderChestSlot, 0, ClickType.QUICK_MOVE, mc.player)
+                    playerController.windowClick(currentContainer.windowId, enderChestSlot, 0, ClickType.QUICK_MOVE, player)
                 } else {
                     sendChatMessage("$chatName No ender chest was found in shulker, disabling.")
                     mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                    this.disable()
+                    disable()
                 }
             }, delayTicks.value * 50L, TimeUnit.MILLISECONDS)
         }
     }
 
-    private fun mineBlock(pos: BlockPos, pre: Boolean) {
+    private fun SafeClientEvent.mineBlock(pos: BlockPos, pre: Boolean) {
         if (InventoryUtils.getSlotsHotbar(278) == null && InventoryUtils.getSlotsNoHotbar(278) != null) {
             InventoryUtils.moveToHotbar(278, 130)
             return
         } else if (InventoryUtils.getSlots(0, 35, 278) == null) {
             sendChatMessage("$chatName No pickaxe was found in inventory, disabling.")
             mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-            this.disable()
+            disable()
             return
         }
         InventoryUtils.swapSlotToItem(278)
@@ -353,12 +354,13 @@ object AutoObsidian : Module() {
 
         /* Packet mining lol */
         if (pre) {
-            mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, mc.objectMouseOver.sideHit))
+            connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, mc.objectMouseOver.sideHit))
             if (state != State.SEARCHING) state = State.MINING else searchingState = SearchingState.MINING
         } else {
-            mc.connection!!.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, mc.objectMouseOver.sideHit))
+            connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, mc.objectMouseOver.sideHit))
         }
-        mc.player.swingArm(EnumHand.MAIN_HAND)
+
+        player.swingArm(EnumHand.MAIN_HAND)
     }
 
     private fun collectDroppedItem(itemId: Int) {

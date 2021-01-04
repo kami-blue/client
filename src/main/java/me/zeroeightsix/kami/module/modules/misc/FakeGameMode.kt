@@ -1,10 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.world.GameType
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
     name = "FakeGameMode",
@@ -25,8 +26,8 @@ object FakeGameMode : Module() {
     private var prevGameMode: GameType? = null
 
     init {
-        listener<SafeTickEvent> {
-            mc.playerController.setGameType(gamemode.value.gameType)
+        safeListener<TickEvent.ClientTickEvent> {
+            playerController.setGameType(gamemode.value.gameType)
         }
     }
 

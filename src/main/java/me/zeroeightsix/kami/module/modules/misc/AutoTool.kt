@@ -1,16 +1,17 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Enchantments
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
@@ -39,19 +40,19 @@ object AutoTool : Module() {
             if (swapWeapon.value && it.target is EntityLivingBase) CombatUtils.equipBestWeapon(preferWeapon.value)
         }
 
-        listener<SafeTickEvent> {
-            if (mc.currentScreen != null || !switchBack.value) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (mc.currentScreen != null || !switchBack.value) return@safeListener
 
             val mouse = Mouse.isButtonDown(0)
             if (mouse && !shouldMoveBack) {
                 lastChange = System.currentTimeMillis()
                 shouldMoveBack = true
-                lastSlot = mc.player.inventory.currentItem
-                mc.playerController.syncCurrentPlayItem()
+                lastSlot = player.inventory.currentItem
+                playerController.syncCurrentPlayItem()
             } else if (!mouse && shouldMoveBack && (lastChange + timeout.value * 10 < System.currentTimeMillis())) {
                 shouldMoveBack = false
-                mc.player.inventory.currentItem = lastSlot
-                mc.playerController.syncCurrentPlayItem()
+                player.inventory.currentItem = lastSlot
+                playerController.syncCurrentPlayItem()
             }
         }
     }

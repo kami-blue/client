@@ -1,14 +1,15 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlot
 import me.zeroeightsix.kami.util.InventoryUtils.swapSlotToItem
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
@@ -38,9 +39,9 @@ object MidClickPearl : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
-            if (startTime == 0L && mc.player.getCooledAttackStrength(0f) >= 1f) {
-                mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+        safeListener<TickEvent.ClientTickEvent> {
+            if (startTime == 0L && player.getCooledAttackStrength(0f) >= 1f) {
+                playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                 startTime = System.currentTimeMillis()
             } else if (startTime > 0L) {
                 if (prevSlot != -1) {

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -15,8 +14,9 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -61,24 +61,24 @@ object Surround : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (getObby() == -1) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (getObby() == -1) return@safeListener
             if (isDisabled) {
                 enableInHoleCheck()
-                return@listener
+                return@safeListener
             }
 
             // Following codes will not run if disabled
 
             // Update hole pos
             if (holePos == null || inHoleCheck()) {
-                holePos = mc.player.positionVector.toBlockPos()
+                holePos = player.positionVector.toBlockPos()
             }
 
             // Out of hole check
-            if (mc.player.positionVector.toBlockPos() != holePos) {
+            if (player.positionVector.toBlockPos() != holePos) {
                 outOfHoleCheck()
-                return@listener
+                return@safeListener
             } else {
                 toggleTimer.reset()
             }
@@ -86,7 +86,7 @@ object Surround : Module() {
             // Placeable & Centered check
             if (!isPlaceable() || !centerPlayer()) {
                 if (autoDisable.value == AutoDisableMode.ONE_TIME) disable()
-                return@listener
+                return@safeListener
             }
 
             // The actual job
@@ -94,8 +94,8 @@ object Surround : Module() {
                 job = runSurround()
             } else if (job.isActiveOrFalse) {
                 spoofHotbar()
-                PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
-            } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
+                PlayerPacketManager.addPacket(Surround, PlayerPacketManager.PlayerPacket(rotating = false))
+            } else if (isEnabled && CombatManager.isOnTopPriority(Surround)) {
                 PlayerPacketManager.resetHotbar()
             }
         }

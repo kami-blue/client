@@ -2,11 +2,11 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -14,6 +14,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
@@ -29,11 +30,11 @@ object Jesus : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (isInWater(mc.player) && !mc.player.isSneaking) {
-                mc.player.motionY = 0.1
-                if (mc.player.ridingEntity != null && mc.player.ridingEntity !is EntityBoat) {
-                    mc.player.ridingEntity!!.motionY = 0.3
+        safeListener<TickEvent.ClientTickEvent> {
+            if (isInWater(player) && !player.isSneaking) {
+                player.motionY = 0.1
+                if (player.ridingEntity != null && player.ridingEntity !is EntityBoat) {
+                    player.ridingEntity!!.motionY = 0.3
                 }
             }
         }

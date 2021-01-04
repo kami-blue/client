@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -65,9 +65,9 @@ object InventoryManager : Module() {
             it.cancel()
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || mc.player.isSpectator || mc.currentScreen is GuiContainer) return@listener
-            if (!timer.tick(delay.value.toLong())) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
+            if (!timer.tick(delay.value.toLong())) return@safeListener
             setState()
             if (currentState == State.IDLE) InventoryUtils.removeHoldingItem()
             when (currentState) {
@@ -76,9 +76,10 @@ object InventoryManager : Module() {
                 State.REFILLING -> refill()
                 State.EJECTING -> eject()
                 else -> {
+                    // this is fine, Java meme
                 }
             }
-            mc.playerController.syncCurrentPlayItem()
+            playerController.syncCurrentPlayItem()
         }
     }
 

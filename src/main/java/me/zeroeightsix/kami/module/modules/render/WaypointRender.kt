@@ -14,9 +14,11 @@ import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
@@ -117,7 +119,7 @@ object WaypointRender : Module() {
     private fun drawText(pos: BlockPos, textComponentIn: TextComponent, distance: Int) {
         glPushMatrix()
 
-        val screenPos = ProjectionUtils.toScreenPos(pos.toVec3d())
+        val screenPos = ProjectionUtils.toScreenPos(pos.toVec3dCenter())
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
         glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
 
@@ -144,7 +146,7 @@ object WaypointRender : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()
             }
@@ -159,6 +161,7 @@ object WaypointRender : Module() {
                     WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
                     WaypointUpdateEvent.Type.RELOAD -> updateList()
                     else -> {
+                        // this is fine, Java meme
                     }
                 }
             }

@@ -1,16 +1,17 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.init.SoundEvents
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.roundToInt
 
@@ -49,16 +50,16 @@ object StashFinder : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            mc.world.loadedTileEntityList
-                .filter {
-                    logChests.value && it is TileEntityChest
-                        || logShulkers.value && it is TileEntityShulkerBox
-                        || logDroppers.value && it is TileEntityDropper
-                        || logDispensers.value && it is TileEntityDispenser
-                        || logHoppers.value && it is TileEntityHopper
-                }
-                .forEach { logTileEntity(it) }
+        safeListener<TickEvent.ClientTickEvent> {
+            world.loadedTileEntityList
+                    .filter {
+                        logChests.value && it is TileEntityChest
+                                || logShulkers.value && it is TileEntityShulkerBox
+                                || logDroppers.value && it is TileEntityDropper
+                                || logDispensers.value && it is TileEntityDispenser
+                                || logHoppers.value && it is TileEntityHopper
+                    }
+                    .forEach { logTileEntity(it) }
 
             chunkData.values.filter { it.hot }.forEach { chunkStats ->
                 chunkStats.hot = false

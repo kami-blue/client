@@ -1,15 +1,17 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -102,16 +104,16 @@ object AutoEZ : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
-            if (mc.player.isDead || mc.player.health <= 0.0f) {
+        safeListener<TickEvent.ClientTickEvent> {
+            if (player.isDead || player.health <= 0.0f) {
                 attackedPlayers.clear()
-                return@listener
+                return@safeListener
             }
 
             // Update attacked Entity
-            val attacked = mc.player.lastAttackedEntity
+            val attacked = player.lastAttackedEntity
             if (attacked is EntityPlayer && !attacked.isDead && attacked.health > 0.0f) {
-                attackedPlayers[attacked] = mc.player.lastAttackedEntityTime
+                attackedPlayers[attacked] = player.lastAttackedEntityTime
             }
 
             // Check death
@@ -124,7 +126,7 @@ object AutoEZ : Module() {
             }
 
             // Remove players if they are out of world or we haven't attack them again in 100 ticks (5 seconds)
-            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || mc.player.ticksExisted - it.value > 100 }
+            attackedPlayers.entries.removeIf { !it.key.isAddedToWorld || player.ticksExisted - it.value > 100 }
 
             // Send custom message type help message
             sendHelpMessage()

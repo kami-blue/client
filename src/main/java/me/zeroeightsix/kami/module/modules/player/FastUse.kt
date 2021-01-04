@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -41,14 +41,14 @@ object FastUse : Module() {
     val bowCharge get() = if (isEnabled && (allItems.value || bow.value)) 72000.0 - (chargeSetting.value.toDouble() + chargeVariation.value / 2.0) else null
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || mc.player.isSpectator) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END || player.isSpectator) return@safeListener
 
-            if ((allItems.value || bow.value) && mc.player.isHandActive && (mc.player.activeItemStack.getItem() == Items.BOW) && mc.player.itemInUseMaxCount >= getBowCharge()) {
+            if ((allItems.value || bow.value) && player.isHandActive && (player.activeItemStack.item == Items.BOW) && player.itemInUseMaxCount >= getBowCharge()) {
                 randomVariation = 0
-                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
-                mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
-                mc.player.stopActiveHand()
+                connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, player.horizontalFacing))
+                connection.sendPacket(CPacketPlayerTryUseItem(player.activeHand))
+                player.stopActiveHand()
             }
 
             if (delay.value > 0) {
@@ -56,11 +56,11 @@ object FastUse : Module() {
                     tickCount = delay.value
                 } else {
                     tickCount--
-                    return@listener
+                    return@safeListener
                 }
             }
 
-            if (passItemCheck(mc.player.getHeldItem(lastUsedHand).item)) {
+            if (passItemCheck(player.getHeldItem(lastUsedHand).item)) {
                 mc.rightClickDelayTimer = 0
             }
         }

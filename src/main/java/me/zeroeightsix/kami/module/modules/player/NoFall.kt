@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.player
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
@@ -13,6 +12,7 @@ import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
@@ -23,6 +23,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -61,8 +62,8 @@ object NoFall : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
-            if (mc.player.isCreative || mc.player.isSpectator || !fallDistCheck()) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (player.isCreative || player.isSpectator || !fallDistCheck()) return@safeListener
             if (mode.value == Mode.FALL) {
                 fallMode()
             } else if (mode.value == Mode.CATCH) {

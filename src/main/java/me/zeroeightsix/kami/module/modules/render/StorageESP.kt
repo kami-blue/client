@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -9,11 +8,13 @@ import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 
@@ -76,17 +77,17 @@ object StorageESP : Module() {
             renderer.render(true, cull.value)
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             cycler++
             renderList.clear()
-            for (tileEntity in mc.world.loadedTileEntityList) {
+            for (tileEntity in world.loadedTileEntityList) {
                 if (tileEntity is TileEntityChest && chest.value
                         || tileEntity is TileEntityDispenser && dispenser.value
                         || tileEntity is TileEntityShulkerBox && shulker.value
                         || tileEntity is TileEntityEnderChest && enderChest.value
                         || tileEntity is TileEntityFurnace && furnace.value
                         || tileEntity is TileEntityHopper && hopper.value) {
-                    val box = mc.world.getBlockState(tileEntity.pos).getSelectedBoundingBox(mc.world, tileEntity.pos)
+                    val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos)
                     val color = getTileEntityColor(tileEntity) ?: continue
                     var side = GeometryMasks.Quad.ALL
                     if (tileEntity is TileEntityChest) {
@@ -100,7 +101,7 @@ object StorageESP : Module() {
                 }
             }
 
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity is EntityItemFrame && frameShulkerOrAny(entity)
                         || (entity is EntityMinecartChest
                                 || entity is EntityMinecartHopper

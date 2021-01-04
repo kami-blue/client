@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.chat
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,21 +25,21 @@ object AutoQMain : Module() {
     private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
-        listener<SafeTickEvent> {
-            if (!timer.tick(delay.value.toLong())) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (!timer.tick(delay.value.toLong())) return@safeListener
 
             if (mc.currentServerData == null) {
                 sendMessage("&l&6Error: &r&6You are in singleplayer")
-                return@listener
+                return@safeListener
             }
 
             if (!mc.currentServerData!!.serverIP.equals("2b2t.org", ignoreCase = true)) {
-                return@listener
+                return@safeListener
             }
 
-            if (mc.player.dimension != 1 && dimensionWarning.value) {
+            if (player.dimension != 1 && dimensionWarning.value) {
                 sendMessage("&l&6Warning: &r&6You are not in the end. Not running &b/queue main&7.")
-                return@listener
+                return@safeListener
             }
 
             sendQueueMain()

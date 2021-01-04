@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
@@ -13,6 +13,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayer
@@ -22,6 +23,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
@@ -78,19 +80,19 @@ object BedAura : Module() {
             state = State.NONE
         }
 
-        listener<SafeTickEvent> {
-            if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
+        safeListener<TickEvent.ClientTickEvent> {
+            if (player.dimension == 0 || !CombatManager.isOnTopPriority(BedAura) || CombatSetting.pause) {
                 state = State.NONE
                 resetRotation()
                 inactiveTicks = 6
-                return@listener
+                return@safeListener
             }
 
             inactiveTicks++
             if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
                 InventoryUtils.getSlotsFullInvNoHotbar(355)?.let {
                     InventoryUtils.quickMoveSlot(it[0])
-                    mc.playerController.syncCurrentPlayItem()
+                    playerController.syncCurrentPlayItem()
                 }
             }
 
@@ -113,19 +115,19 @@ object BedAura : Module() {
                 && InventoryUtils.getSlotsNoHotbar(355) != null
     }
 
-    private fun updatePlaceMap() {
+    private fun SafeClientEvent.updatePlaceMap() {
         val cacheMap = CombatManager.target?.let {
-            val posList = VectorUtils.getBlockPosInSphere(mc.player.getPositionEyes(1f), range.value)
+            val posList = VectorUtils.getBlockPosInSphere(player.getPositionEyes(1f), range.value)
             val damagePosMap = HashMap<Pair<Float, Float>, BlockPos>()
             for (pos in posList) {
-                val dist = mc.player.distanceTo(pos)
+                val dist = player.distanceTo(pos)
                 if (WorldUtils.rayTraceTo(pos) == null && dist > wallRange.value) continue
                 val topSideVec = Vec3d(pos).add(0.5, 1.0, 0.5)
                 val rotation = RotationUtils.getRotationTo(topSideVec)
                 val facing = EnumFacing.fromAngle(rotation.x.toDouble())
                 if (!canPlaceBed(pos)) continue
                 val targetDamage = CrystalUtils.calcDamage(pos.offset(facing), it)
-                val selfDamage = CrystalUtils.calcDamage(pos.offset(facing), mc.player)
+                val selfDamage = CrystalUtils.calcDamage(pos.offset(facing), player)
                 if (targetDamage < minDamage.value && (suicideMode.value || selfDamage > maxSelfDamage.value))
                     damagePosMap[Pair(targetDamage, selfDamage)] = pos
             }
@@ -135,28 +137,28 @@ object BedAura : Module() {
         if (cacheMap != null) placeMap.putAll(cacheMap)
     }
 
-    private fun canPlaceBed(pos: BlockPos): Boolean {
-        if (!mc.world.getBlockState(pos).isSideSolid(mc.world, pos, EnumFacing.UP)) return false
+    private fun SafeClientEvent.canPlaceBed(pos: BlockPos): Boolean {
+        if (!world.getBlockState(pos).isSideSolid(world, pos, EnumFacing.UP)) return false
         val bedPos1 = pos.up()
         val bedPos2 = getSecondBedPos(bedPos1)
-        return (!ignoreSecondBaseBlock.value || mc.world.getBlockState(bedPos2.down()).isSideSolid(mc.world, bedPos2.down(), EnumFacing.UP))
+        return (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2.down()).isSideSolid(world, bedPos2.down(), EnumFacing.UP))
                 && !isFire(bedPos1)
                 && !isFire(bedPos2)
-                && mc.world.getBlockState(bedPos1).material.isReplaceable
-                && (!ignoreSecondBaseBlock.value || mc.world.getBlockState(bedPos2).material.isReplaceable)
+                && world.getBlockState(bedPos1).material.isReplaceable
+                && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
     }
 
-    private fun isFire(pos: BlockPos): Boolean {
-        return mc.world.getBlockState(pos).block == Blocks.FIRE
+    private fun SafeClientEvent.isFire(pos: BlockPos): Boolean {
+        return world.getBlockState(pos).block == Blocks.FIRE
     }
 
-    private fun updateBedMap() {
+    private fun SafeClientEvent.updateBedMap() {
         val cacheMap = CombatManager.target?.let {
             val damagePosMap = HashMap<Float, BlockPos>()
-            for (tileEntity in mc.world.loadedTileEntityList) {
+            for (tileEntity in world.loadedTileEntityList) {
                 if (tileEntity !is TileEntityBed) continue
                 if (!tileEntity.isHeadPiece) continue
-                val dist = mc.player.distanceTo(tileEntity.pos).toFloat()
+                val dist = player.distanceTo(tileEntity.pos).toFloat()
                 if (dist > range.value) continue
                 if (WorldUtils.rayTraceTo(tileEntity.pos) == null && dist > wallRange.value) continue
                 damagePosMap[dist] = tileEntity.pos
@@ -200,7 +202,7 @@ object BedAura : Module() {
     private fun getBedHand(): EnumHand? {
         return when (Items.BED) {
             mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
-            mc.player.heldItemMainhand.item -> EnumHand.OFF_HAND
+            mc.player.heldItemOffhand.item -> EnumHand.OFF_HAND
             else -> null
         }
     }
@@ -209,7 +211,7 @@ object BedAura : Module() {
         PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = lastRotation))
     }
 
-    private fun resetRotation() {
-        lastRotation = Vec2f(RotationUtils.normalizeAngle(mc.player.rotationYaw), mc.player.rotationPitch)
+    private fun SafeClientEvent.resetRotation() {
+        lastRotation = Vec2f(RotationUtils.normalizeAngle(player.rotationYaw), player.rotationPitch)
     }
 }

@@ -9,13 +9,6 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import kotlin.math.*
 
-/**
- * Utilities for managing and transforming blockPos positions
- *
- * @author Qther / Vonr
- * Updated by l1ving on 21/04/20.
- * Updated by Xiaro on 09/09/20
- */
 object VectorUtils {
 
     /**
@@ -74,11 +67,27 @@ object VectorUtils {
         return BlockPos(x.floorToInt(), y.floorToInt(), z.floorToInt())
     }
 
-    fun BlockPos.toVec3d(): Vec3d {
+    fun Vec3i.toVec3d(): Vec3d {
         return toVec3d(0.0, 0.0, 0.0)
     }
 
-    fun BlockPos.toVec3d(xOffset: Double, yOffset: Double, zOffset: Double): Vec3d {
+    fun Vec3i.toVec3d(offSet: Vec3d): Vec3d {
+        return Vec3d(x+ offSet.x, y + offSet.y, z + offSet.z)
+    }
+
+    fun Vec3i.toVec3d(xOffset: Double, yOffset: Double, zOffset: Double): Vec3d {
+        return Vec3d(x + xOffset, y + yOffset, z + zOffset)
+    }
+
+    fun Vec3i.toVec3dCenter(): Vec3d {
+        return toVec3dCenter(0.0, 0.0, 0.0)
+    }
+
+    fun Vec3i.toVec3dCenter(offSet: Vec3d): Vec3d {
+        return Vec3d(x + 0.5 + offSet.x, y + 0.5 + offSet.y, z + 0.5 + offSet.z)
+    }
+
+    fun Vec3i.toVec3dCenter(xOffset: Double, yOffset: Double, zOffset: Double): Vec3d {
         return Vec3d(x + 0.5 + xOffset, y + 0.5 + yOffset, z + 0.5 + zOffset)
     }
 

@@ -2,13 +2,13 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils.isMoving
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.io.File
@@ -35,8 +35,8 @@ object LoginMessage : Module() {
             moved = false
         }
 
-        listener<SafeTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@safeListener
 
             if (!sent && (!sendAfterMoving.value || moved)) {
                 loginMessage?.let {
@@ -49,7 +49,7 @@ object LoginMessage : Module() {
                 }
             }
 
-            if (!moved) moved = mc.player.isMoving
+            if (!moved) moved = player.isMoving
         }
     }
 
