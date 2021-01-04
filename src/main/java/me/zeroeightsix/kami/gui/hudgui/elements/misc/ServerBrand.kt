@@ -5,12 +5,16 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 object ServerBrand : LabelHud(
     name = "ServerBrand",
     category = Category.MISC,
-    description = "Brand of the server"
+    description = "Brand / type of the server"
 ) {
 
     override fun updateText() {
-        val serverBrand = mc.player?.serverBrand ?: "Unknown"
-        displayText.add(serverBrand, primaryColor)
+        if (mc.isIntegratedServerRunning) {
+            displayText.add("Singleplayer: " + mc.player?.serverBrand)
+        } else {
+            val serverBrand = mc.player?.serverBrand ?: "Unknown Server Type"
+            displayText.add(serverBrand, primaryColor)
+        }
     }
 
 }
