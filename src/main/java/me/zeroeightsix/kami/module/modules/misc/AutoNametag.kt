@@ -95,8 +95,4 @@ object AutoNametag : Module() {
         val tag = stack.item
         return tag is ItemNameTag && stack.displayName != "Name Tag"
     }
-
-    private enum class Mode {
-        WITHER, ANY
-    }
 }

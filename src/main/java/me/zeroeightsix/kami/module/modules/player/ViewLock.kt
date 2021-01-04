@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.world.GameType
 import net.minecraftforge.fml.common.gameevent.TickEvent

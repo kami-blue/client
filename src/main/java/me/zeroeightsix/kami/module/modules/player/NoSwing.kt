@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
-import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.client.CPacketAnimation
-import org.kamiblue.event.listener.listener
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "NoSwing",

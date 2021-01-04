@@ -27,7 +27,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
-import org.kamiblue.event.listener.listener
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 

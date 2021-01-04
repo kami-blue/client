@@ -2,9 +2,7 @@ package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
-import kotlin.math.hypot
 import me.zeroeightsix.kami.util.MovementUtils.realSpeed
-import org.kamiblue.commons.utils.MathUtils.round
 
 object InfoCalculator {
     private val mc = Wrapper.minecraft

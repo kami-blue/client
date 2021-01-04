@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.threads.safeListener
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.*

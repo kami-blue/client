@@ -5,7 +5,6 @@ import me.zeroeightsix.kami.manager.managers.MacroManager
 import me.zeroeightsix.kami.util.KeyboardUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
-import org.lwjgl.input.Keyboard
 
 object MacroCommand : ClientCommand(
     name = "macro",

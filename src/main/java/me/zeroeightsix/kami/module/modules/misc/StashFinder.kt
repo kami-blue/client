@@ -12,7 +12,6 @@ import net.minecraft.tileentity.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import kotlin.math.roundToInt
 
 @Module.Info(
