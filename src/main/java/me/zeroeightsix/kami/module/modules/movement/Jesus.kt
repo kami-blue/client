@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -25,16 +26,25 @@ import org.kamiblue.event.listener.listener
         category = Module.Category.MOVEMENT
 )
 object Jesus : Module() {
+
+    var dolphinSetting = register(Settings.b("dolphin", false))
+
     override fun onToggle() {
         BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
     }
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (isInWater(player) && !player.isSneaking) {
-                player.motionY = 0.1
-                if (player.ridingEntity != null && player.ridingEntity !is EntityBoat) {
-                    player.ridingEntity!!.motionY = 0.3
+            if (dolphinSetting.value){
+                if (isInWater(player) && !player.isSneaking) {
+                    mc.player.jump()
+                }
+            }else {
+                if (isInWater(player) && !player.isSneaking) {
+                    player.motionY = 0.1
+                    if (player.ridingEntity != null && player.ridingEntity !is EntityBoat) {
+                        player.ridingEntity!!.motionY = 0.3
+                    }
                 }
             }
         }
