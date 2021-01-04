@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.onMainThread
 import net.minecraft.util.text.TextFormatting
@@ -69,7 +70,7 @@ object SetCommand : ClientCommand(
                                 MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
                             }
                         } catch (e: Exception) {
-                            MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.RED format e.message}")
+                            MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.RED format e.message.toString()}")
                             KamiMod.LOG.info("Unable to set value!", e)
                         }
                     }
