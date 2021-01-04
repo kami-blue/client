@@ -92,6 +92,8 @@ open class Slider(
         RenderUtils2D.drawRectOutline(vertexHelper, Vec2d(0.0, 0.0), Vec2f(renderWidth, renderHeight).toVec2d(), 1.5f, GuiColors.outline)
 
         // Slider name
+
+        // TODO: do something with this https://discord.com/channels/573954110454366214/789630848194183209/795732239211429909
         //GlStateUtils.pushScissor()
         /*if (protectedWidth > 0.0) {
             GlStateUtils.scissor(
