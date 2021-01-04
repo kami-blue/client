@@ -45,7 +45,7 @@ object Spammer : Module() {
         get() = if (remoteURL.value != "Unchanged") {
             remoteURL.value
         } else {
-            MessageSendHelper.sendErrorMessage("Change the RemoteURL setting in the GUI!")
+            MessageSendHelper.sendErrorMessage("Change the RemoteURL setting in the ClickGUI!")
             disable()
             null
         }
