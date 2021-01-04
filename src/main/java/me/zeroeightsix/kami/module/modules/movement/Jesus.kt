@@ -37,7 +37,7 @@ object Jesus : Module() {
         safeListener<TickEvent.ClientTickEvent> {
             if (dolphinSetting.value) {
                 if (isInWater(player) && !player.isSneaking) {
-                    mc.player.jump()
+                    player.motionY += 0.03999999910593033
                 }
             } else {
                 if (isInWater(player) && !player.isSneaking) {
@@ -50,7 +50,7 @@ object Jesus : Module() {
         }
 
         listener<AddCollisionBoxToListEvent> {
-            if (it.block !is BlockLiquid || it.entity !is EntityBoat || mc.player == null || mc.player.isSneaking || mc.player.fallDistance > 3) return@listener
+            if (it.block !is BlockLiquid || it.entity !is EntityBoat || mc.player == null || mc.player.isSneaking || mc.player.fallDistance > 3 || dolphinSetting.value) return@listener
             if ((isDrivenByPlayer(it.entity) || it.entity === mc.player)
                     && !isInWater(mc.player) && (EntityUtils.isAboveWater(mc.player, false)
                             || EntityUtils.isAboveWater(mc.player.ridingEntity, false)) && isAboveBlock(mc.player, it.pos)) {
