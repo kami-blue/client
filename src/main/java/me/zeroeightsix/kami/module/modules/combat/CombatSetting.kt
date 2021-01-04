@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.combat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -18,6 +17,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -28,6 +28,7 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
@@ -124,7 +125,7 @@ object CombatSetting : Module() {
             }
         }
 
-        listener<SafeTickEvent>(5000) {
+        safeListener<TickEvent.ClientTickEvent>(5000) {
             for ((function, future) in jobMap) {
                 if (future.isActiveOrFalse) continue // Skip if the previous thread isn't done
                 jobMap[function] = defaultScope.launch { function.invoke() }

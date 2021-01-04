@@ -2,12 +2,13 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -44,7 +45,7 @@ object PacketLogger : Module() {
             lines.add("${sdf.format(Date())}\n${it.packet.javaClass.simpleName}\n${it.packet.javaClass}\n${it.packet}\n\n")
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mc.player.ticksExisted % 200 == 0) write()
         }
     }

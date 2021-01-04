@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -9,11 +8,13 @@ import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*
 import net.minecraft.item.ItemShulkerBox
 import net.minecraft.tileentity.*
 import net.minecraft.util.math.AxisAlignedBB
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 
@@ -76,7 +77,7 @@ object StorageESP : Module() {
             renderer.render(true, cull.value)
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             cycler++
             renderList.clear()
             for (tileEntity in mc.world.loadedTileEntityList) {

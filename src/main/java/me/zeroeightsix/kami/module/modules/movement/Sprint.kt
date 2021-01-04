@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
@@ -21,8 +21,8 @@ object Sprint : Module() {
     var sprinting = false
 
     init {
-        listener<SafeTickEvent> {
-            if (!shouldSprint()) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (!shouldSprint()) return@safeListener
 
             sprinting = if (multiDirection.value) mc.player.moveForward != 0f || mc.player.moveStrafing != 0f
             else mc.player.moveForward > 0

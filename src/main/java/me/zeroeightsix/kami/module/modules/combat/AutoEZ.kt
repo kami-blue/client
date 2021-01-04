@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
@@ -10,8 +9,10 @@ import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -104,10 +105,10 @@ object AutoEZ : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mc.player.isDead || mc.player.health <= 0.0f) {
                 attackedPlayers.clear()
-                return@listener
+                return@safeListener
             }
 
             // Update attacked Entity

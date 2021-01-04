@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "Timer",
@@ -22,7 +22,7 @@ object Timer : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             mc.timer.tickLength =  50.0f /
                     if (!slow.value) tickNormal.value
                     else (tickSlow.value / 10.0f)

@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityAnimal
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemNameTag
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoNametag",
@@ -27,7 +27,7 @@ object AutoNametag : Module() {
     private var currentSlot = -1
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             findNameTags()
             useNameTag()
         }

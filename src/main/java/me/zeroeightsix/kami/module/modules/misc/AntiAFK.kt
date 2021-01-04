@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.misc
 import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -12,10 +11,12 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.random.Random
 
@@ -107,13 +108,13 @@ object AntiAFK : Module() {
             || mc.gameSettings.keyBindRight.isKeyDown
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (inputTimeout.value != 0) {
                 if (BaritoneUtils.isActive) {
                     inputTimer.reset()
                 } else if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
                     startPos = null
-                    return@listener
+                    return@safeListener
                 }
             }
 

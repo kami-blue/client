@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.misc
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.event.events.ShutdownEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
@@ -16,7 +15,9 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.BackgroundJob
 import me.zeroeightsix.kami.util.threads.BackgroundScope
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.Minecraft
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.capeapi.CapeType
 import org.kamiblue.event.listener.listener
 
@@ -52,7 +53,7 @@ object DiscordRPC : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (showCoordsConfirm() && !coordsConfirm.value && timer.tick(10L)) {
                 MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the coords option please enable the coords confirmation option. " +
                     "This will display your coords on the discord rpc. " +

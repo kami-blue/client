@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
 import me.zeroeightsix.kami.mixin.extension.listShaders
 import me.zeroeightsix.kami.mixin.extension.renderOutlines
@@ -16,6 +15,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Shader
 import net.minecraft.entity.Entity
@@ -24,6 +24,7 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -158,7 +159,7 @@ object ESP : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             entityList.clear()
             entityList.addAll(getEntityList())
 

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
@@ -13,6 +12,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayer
@@ -22,6 +22,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.HashMap
@@ -78,12 +79,12 @@ object BedAura : Module() {
             state = State.NONE
         }
 
-        listener<SafeTickEvent> {
-            if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(this) || CombatSetting.pause) {
+        safeListener<TickEvent.ClientTickEvent> {
+            if (mc.player.dimension == 0 || !CombatManager.isOnTopPriority(BedAura) || CombatSetting.pause) {
                 state = State.NONE
                 resetRotation()
                 inactiveTicks = 6
-                return@listener
+                return@safeListener
             }
 
             inactiveTicks++

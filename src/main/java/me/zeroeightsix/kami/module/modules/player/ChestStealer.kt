@@ -1,18 +1,18 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "ChestStealer",
@@ -37,7 +37,7 @@ object ChestStealer : Module() {
     val timer = TickTimer()
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
                 steal(getStealingSlot())
             } else {

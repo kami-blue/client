@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -11,8 +10,10 @@ import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -32,7 +33,7 @@ object LogoutLogger : Module() {
             loggedPlayers.clear()
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             for (player in mc.world.loadedEntityList) {
                 if (player !is EntityOtherPlayerMP) continue
                 mc.connection?.getPlayerInfo(player.gameProfile.id)?.let {

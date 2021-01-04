@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
@@ -10,10 +9,10 @@ import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.EnumTextColor
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.round
-import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
@@ -73,8 +72,8 @@ object InfoOverlay : Module() {
     private val speedList = LinkedList<Double>()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
             updateSpeedList()
         }
     }

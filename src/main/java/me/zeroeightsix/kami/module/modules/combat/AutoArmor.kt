@@ -1,17 +1,17 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoArmor",
@@ -26,13 +26,13 @@ object AutoArmor : Module() {
     private var lastTask = TaskState(true)
 
     init {
-        listener<SafeTickEvent> {
-            if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@safeListener
 
             if (!mc.player.inventory.getItemStack().isEmpty()) {
                 if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
                 else InventoryUtils.removeHoldingItem()
-                return@listener
+                return@safeListener
             }
             // store slots and values of best armor pieces, initialize with currently equipped armor
             // Pair<Slot, Value>

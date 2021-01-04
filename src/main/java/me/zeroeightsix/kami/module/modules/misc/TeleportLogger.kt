@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 
 @Module.Info(
@@ -24,7 +24,7 @@ object TeleportLogger : Module() {
     private val teleportedPlayers = HashMap<String, BlockPos>()
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             for (player in mc.world.playerEntities) {
                 if (player == mc.player) continue
 

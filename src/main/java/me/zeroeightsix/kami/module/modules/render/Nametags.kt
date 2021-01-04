@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EnchantmentUtils
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.*
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.originalName
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
@@ -290,7 +291,7 @@ object Nametags : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             // Updating stuff in different ticks to avoid overloading
             when (updateTick) {
                 0 -> { // Adding items

@@ -3,13 +3,13 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraft.util.text.TextFormatting
@@ -55,14 +55,14 @@ object TotemPopCounter : Module() {
             playerList.clear()
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
 
             if (wasDead && !mc.player.isDead && resetOnDeath.value) {
                 sendMessage("${formatName(mc.player)} died and ${grammar(mc.player)} pop list was reset!")
                 playerList.clear()
                 wasDead = false
-                return@listener
+                return@safeListener
             }
 
             val toRemove = ArrayList<EntityPlayer>()

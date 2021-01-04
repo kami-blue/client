@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -9,6 +8,7 @@ import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
@@ -18,6 +18,7 @@ import net.minecraft.item.*
 import net.minecraft.network.play.server.SPacketConfirmTransaction
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
@@ -95,8 +96,8 @@ object AutoOffhand : Module() {
             if (!transactionLog.containsValue(false)) movingTimer.reset(-175L) // If all the click packets were accepted then we reset the timer for next moving
         }
 
-        listener<SafeTickEvent>(1100) {
-            if (mc.player.isDead || !movingTimer.tick(200L, false)) return@listener // Delays 4 ticks by default
+        safeListener<TickEvent.ClientTickEvent>(1100) {
+            if (mc.player.isDead || !movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
             if (!mc.player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
                     movingTimer.reset() // delay for 5 ticks

@@ -3,12 +3,13 @@ package me.zeroeightsix.kami.module.modules.player
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.blockHitDelay
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayerDigging
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -40,7 +41,7 @@ object FastBreak : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (delay.value != 5 && mc.playerController.blockHitDelay == 5) mc.playerController.blockHitDelay = delay.value
         }
     }

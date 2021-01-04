@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.render
 import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -13,9 +12,11 @@ import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -113,7 +114,7 @@ object Search : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (shouldUpdateChunk()) {
                 updateLoadedChunkList()
                 updateMainList()

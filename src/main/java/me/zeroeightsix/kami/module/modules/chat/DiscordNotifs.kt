@@ -6,7 +6,6 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay
 import me.zeroeightsix.kami.setting.Settings
@@ -14,7 +13,9 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.TimeUtils.getFinalTime
 import me.zeroeightsix.kami.util.text.*
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -61,7 +62,7 @@ object DiscordNotifs : Module() {
         }
 
         /* Always on status code */
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (url.value == "unchanged") {
                 MessageSendHelper.sendErrorMessage(chatName + " You must first set a webhook url with the " +
                     formatValue("${CommandManager.prefix}discordnotifs") +

@@ -1,17 +1,18 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Enchantments
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
@@ -40,8 +41,8 @@ object AutoTool : Module() {
             if (swapWeapon.value && it.target is EntityLivingBase) CombatUtils.equipBestWeapon(preferWeapon.value)
         }
 
-        listener<SafeTickEvent> {
-            if (mc.currentScreen != null || !switchBack.value) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (mc.currentScreen != null || !switchBack.value) return@safeListener
 
             val mouse = Mouse.isButtonDown(0)
             if (mouse && !shouldMoveBack) {

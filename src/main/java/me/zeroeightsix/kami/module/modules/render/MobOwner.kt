@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityTameable
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.round
-import org.kamiblue.event.listener.listener
 import kotlin.math.pow
 
 @Module.Info(
@@ -23,7 +23,7 @@ object MobOwner : Module() {
     private const val invalidText = "Offline or invalid UUID!"
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             for (entity in mc.world.loadedEntityList) {
                 /* Non Horse types, such as wolves */
                 if (entity is EntityTameable) {

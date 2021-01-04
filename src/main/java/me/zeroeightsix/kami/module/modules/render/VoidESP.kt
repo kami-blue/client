@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
@@ -36,8 +36,8 @@ object VoidESP : Module() {
     private val renderer = ESPRenderer()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
             renderer.clear()
             renderer.aFilled = if (filled.value) aFilled.value else 0
             renderer.aOutline = if (outline.value) aOutline.value else 0

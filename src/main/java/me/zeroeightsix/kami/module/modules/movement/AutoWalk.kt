@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.movement
 import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.Setting
@@ -13,8 +12,10 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.Direction
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
@@ -80,7 +81,7 @@ object AutoWalk : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mode.value == AutoWalkMode.BARITONE) {
                 if (!checkBaritoneElytra() && !isActive()) startPathing()
             }

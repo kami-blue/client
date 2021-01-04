@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.module.Module
@@ -11,6 +10,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Bind
 import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -77,8 +77,8 @@ object Step : Module() {
     private fun Setting<Boolean>.toggleMsg() = "$chatName Turned ${this.name} ${if (this.value) "&aon" else "&coff"}&f!"
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || !shouldRunStep) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || !shouldRunStep) return@safeListener
             setStepHeight()
             if (downStep.value && mc.player.motionY <= 0.0 && mc.player.ticksExisted - onGroundTick <= 3) downStep()
             if (mc.player.collidedHorizontally) lastCollidedTick = mc.player.ticksExisted

@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 import kotlin.math.abs
@@ -44,8 +43,8 @@ object ViewLock : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
             if (autoYaw.value || autoPitch.value) {
                 snapToSlice()
             }

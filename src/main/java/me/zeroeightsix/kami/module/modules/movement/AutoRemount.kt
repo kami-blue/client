@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.entity.passive.*
 import net.minecraft.util.EnumHand
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoRemount",
@@ -30,11 +30,11 @@ object AutoRemount : Module() {
     private var remountTimer = TickTimer(TimeUnit.TICKS)
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             // we don't need to do anything if we're already riding.
             if (mc.player.isRiding) {
                 remountTimer.reset()
-                return@listener
+                return@safeListener
             }
             if (remountTimer.tick(remountDelay.value.toLong())) {
                 mc.world.loadedEntityList.stream()

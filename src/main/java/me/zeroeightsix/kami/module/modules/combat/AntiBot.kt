@@ -2,12 +2,13 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PlayerAttackEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 
@@ -36,7 +37,7 @@ object AntiBot : Module() {
             if (isEnabled && botSet.contains(it.entity)) it.cancel()
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             val cacheSet = HashSet<EntityPlayer>()
             for (entity in mc.world.loadedEntityList) {
                 if (entity !is EntityPlayer) continue

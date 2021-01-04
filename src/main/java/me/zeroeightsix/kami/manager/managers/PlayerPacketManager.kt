@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.mixin.*
 import me.zeroeightsix.kami.mixin.client.accessor.*
@@ -15,6 +14,7 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketHeldItemChange
 import net.minecraft.network.play.client.CPacketPlayer
@@ -81,8 +81,8 @@ object PlayerPacketManager : Manager {
             }
         }
 
-        listener<SafeTickEvent>(0x2269420) {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent>(0x2269420) {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
             prevServerSidePosition = serverSidePosition
             prevServerSideRotation = serverSideRotation
         }

@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
@@ -12,7 +12,7 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "ElytraReplace",
@@ -33,9 +33,9 @@ object ElytraReplace : Module() {
     private var shouldSendFinalWarning = true
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (!inventoryMode.value && mc.currentScreen is GuiContainer) {
-                return@listener
+                return@safeListener
             }
 
             getElytraChestCount()

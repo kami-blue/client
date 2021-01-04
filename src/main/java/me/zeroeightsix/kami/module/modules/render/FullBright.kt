@@ -1,11 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,8 +35,8 @@ object FullBright : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
             when {
                 isEnabled -> {
                     transition(gamma.value)

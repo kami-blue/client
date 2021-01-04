@@ -4,13 +4,13 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -163,8 +163,8 @@ object NoteBot : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
 
             runSafe {
                 if (noteBlocks.isNotEmpty()) {

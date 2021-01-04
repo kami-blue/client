@@ -2,13 +2,13 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.mobTypeSettings
 import me.zeroeightsix.kami.util.color.HueCycler
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
@@ -93,7 +93,7 @@ object Chams : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.START) cycler++
         }
     }

@@ -34,7 +34,7 @@ object ForgeEventProcessor {
         KamiEventBus.post(event)
 
         if (mc.world != null && mc.player != null) {
-            SafeTickEvent(event.phase).also {
+            TickEvent.ClientTickEvent(event.phase).also {
                 KamiEventBus.post(it)
             }
         }

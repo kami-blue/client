@@ -1,14 +1,15 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.WorldUtils.isWater
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.lang.Math.random
 import kotlin.math.abs
@@ -48,10 +49,10 @@ object AutoFish : Module() {
             if (isSplash(it.packet)) catch()
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mc.player.heldItemMainhand.item != Items.FISHING_ROD) { // If not holding a fishing rod then don't do anything
                 reset()
-                return@listener
+                return@safeListener
             }
 
             if (mc.player.fishEntity == null) {

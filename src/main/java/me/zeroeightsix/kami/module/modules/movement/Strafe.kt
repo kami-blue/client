@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
@@ -8,8 +7,9 @@ import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.settings.KeyBinding
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -32,10 +32,10 @@ object Strafe : Module() {
 
     /* If you skid this you omega gay */
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (!shouldStrafe()) {
                 reset()
-                return@listener
+                return@safeListener
             }
             MovementUtils.setSpeed(mc.player.speed)
             if (airSpeedBoost.value) mc.player.jumpMovementFactor = 0.029f

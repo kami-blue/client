@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
@@ -13,6 +12,7 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.WorldUtils.isPlaceableForChest
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.inventory.GuiShulkerBox
@@ -72,13 +72,13 @@ object AutoObsidian : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || mc.playerController == null) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END || mc.playerController == null) return@safeListener
 
             /* Just a delay */
             if (tickCount < delayTicks.value) {
                 tickCount++
-                return@listener
+                return@safeListener
             } else tickCount = 0
 
             updateState()
@@ -111,7 +111,7 @@ object AutoObsidian : Module() {
                 State.DONE -> {
                     if (!autoRefill.value) {
                         sendChatMessage("$chatName Reached target stacks, disabling.")
-                        this.disable()
+                        AutoObsidian.disable()
                     } else {
                         if (active) sendChatMessage("$chatName Reached target stacks, stopping.")
                         reset()

@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
@@ -12,8 +11,10 @@ import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
 import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.convertRange
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
@@ -75,7 +76,7 @@ object Tracers : Module() {
             renderer.render(true)
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             cycler++
             alwaysListening = renderList.isNotEmpty()
 

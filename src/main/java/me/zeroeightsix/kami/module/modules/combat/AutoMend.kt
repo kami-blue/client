@@ -1,12 +1,13 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.GuiEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
 
@@ -34,8 +35,8 @@ object AutoMend : Module() {
             isGuiOpened = false
         }
 
-        listener<SafeTickEvent> {
-            if (isGuiOpened && !gui.value) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (isGuiOpened && !gui.value) return@safeListener
 
             if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {
                 if (autoSwitch.value && mc.player.heldItemMainhand.getItem() !== Items.EXPERIENCE_BOTTLE) {
@@ -46,7 +47,7 @@ object AutoMend : Module() {
                             MessageSendHelper.sendWarningMessage("$chatName No XP in hotbar, disabling")
                             disable()
                         }
-                        return@listener
+                        return@safeListener
                     }
                     mc.player.inventory.currentItem = xpSlot
                 }

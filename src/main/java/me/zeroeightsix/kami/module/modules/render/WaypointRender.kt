@@ -16,8 +16,10 @@ import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
@@ -145,7 +147,7 @@ object WaypointRender : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()
             }

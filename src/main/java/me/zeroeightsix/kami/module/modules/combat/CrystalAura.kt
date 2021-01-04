@@ -3,7 +3,6 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -14,6 +13,7 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
@@ -190,7 +190,7 @@ object CrystalAura : Module() {
             }
         }
 
-        listener<SafeTickEvent>(2000) {
+        safeListener<TickEvent.ClientTickEvent>(2000) {
             if (it.phase == TickEvent.Phase.START) {
                 inactiveTicks++
                 hitTimer++
@@ -198,7 +198,7 @@ object CrystalAura : Module() {
                 updateYawSpeed()
             }
 
-            if (CombatManager.isOnTopPriority(this) && !CombatSetting.pause && packetList.size == 0) {
+            if (CombatManager.isOnTopPriority(CrystalAura) && !CombatSetting.pause && packetList.size == 0) {
                 updateMap()
                 if (canExplode()) explode()
                 else if (canPlace()) place()

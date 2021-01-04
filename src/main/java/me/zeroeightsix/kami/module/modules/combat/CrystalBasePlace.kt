@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
@@ -14,6 +13,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -71,12 +71,12 @@ object CrystalBasePlace : Module() {
             if (manualPlaceBind.value.isDown(Keyboard.getEventKey())) prePlace(target)
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
             inactiveTicks++
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val slot = getObby() ?: return@listener
-            val target = CombatManager.target ?: return@listener
+            if (!CombatManager.isOnTopPriority(CrystalBasePlace) || CombatSetting.pause) return@safeListener
+            val slot = getObby() ?: return@safeListener
+            val target = CombatManager.target ?: return@safeListener
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
@@ -93,7 +93,7 @@ object CrystalBasePlace : Module() {
             if (isActive()) {
                 rotationTo?.let { hitVec ->
                     val rotation = RotationUtils.getRotationTo(hitVec)
-                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                    PlayerPacketManager.addPacket(CrystalBasePlace, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 }
             } else {
                 rotationTo = null

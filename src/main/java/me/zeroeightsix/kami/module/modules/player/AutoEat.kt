@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.Baritone
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
@@ -11,6 +10,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.foodValue
 import me.zeroeightsix.kami.util.id
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -18,7 +18,7 @@ import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemTool
 import net.minecraft.util.EnumHand
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
 @Module.Info(
@@ -41,8 +41,8 @@ object AutoEat : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (CombatSetting.isActive()) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (CombatSetting.isActive()) return@safeListener
 
             if (eating && !mc.player.isHandActive) {
                 if (lastSlot != -1) {
@@ -55,10 +55,10 @@ object AutoEat : Module() {
                 BaritoneUtils.settings?.allowInventory?.value = false
 
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
-                return@listener
+                return@safeListener
             }
 
-            if (eating) return@listener
+            if (eating) return@safeListener
 
             val stats = mc.player.foodStats
 
@@ -97,7 +97,7 @@ object AutoEat : Module() {
                         eating = true
                         KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
                         mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
-                        return@listener
+                        return@safeListener
                     }
                 }
             }

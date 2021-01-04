@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -10,7 +9,9 @@ import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.RayTraceResult.Type
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "SelectionHighlight",
@@ -58,7 +59,7 @@ object SelectionHighlight : Module() {
             renderer.render(true)
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             renderer.aFilled = if (filled.value) aFilled.value else 0
             renderer.aOutline = if (outline.value) aOutline.value else 0
             renderer.through = throughBlocks.value

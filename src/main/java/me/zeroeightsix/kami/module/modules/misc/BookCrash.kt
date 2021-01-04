@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Settings
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemStack
@@ -14,7 +14,7 @@ import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.play.client.CPacketClickWindow
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
@@ -42,14 +42,14 @@ object BookCrash : Module() {
     private val timer = TickTimer(TimeUnit.TICKS)
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mc.currentServerData == null || mc.currentServerData?.serverIP.isNullOrBlank() || mc.connection == null) {
                 sendChatMessage("Not connected to a server")
                 disable()
-                return@listener
+                return@safeListener
             }
 
-            if (!timer.tick(delay.value.toLong())) return@listener
+            if (!timer.tick(delay.value.toLong())) return@safeListener
 
             val list = NBTTagList()
             val text: String

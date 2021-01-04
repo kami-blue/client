@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.movement
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.isInWeb
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "FastFall",
@@ -27,7 +27,7 @@ object FastFall : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (mc.player.onGround
                     || mc.player.isElytraFlying
                     || mc.player.isInLava
@@ -36,7 +36,7 @@ object FastFall : Module() {
                     || mc.player.fallDistance < fallDistance.value
                     || mc.player.capabilities.isFlying) {
                 reset()
-                return@listener
+                return@safeListener
             }
 
             when (mode.value) {

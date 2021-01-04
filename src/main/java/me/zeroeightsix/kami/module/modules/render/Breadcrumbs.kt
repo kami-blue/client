@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.Setting
 import me.zeroeightsix.kami.setting.Settings
@@ -10,6 +9,7 @@ import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d
@@ -87,20 +87,20 @@ object Breadcrumbs : Module() {
             drawTail(renderPosList)
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || mc.integratedServer == null && mc.currentServerData == null) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || mc.integratedServer == null && mc.currentServerData == null) return@safeListener
 
             alphaMultiplier = if (isEnabled && shouldRecord(false)) min(alphaMultiplier + 0.07f, 1f)
             else max(alphaMultiplier - 0.05f, 0f)
 
-            if (isDisabled && !whileDisabled.value) return@listener
+            if (isDisabled && !whileDisabled.value) return@safeListener
 
             if (tickCount < 200) {
                 tickCount++
             } else {
                 val serverIP = getServerIP()
                 val dimension = mc.player.dimension
-                val posList = ((mainList[serverIP] ?: return@listener)[dimension] ?: return@listener)
+                val posList = ((mainList[serverIP] ?: return@safeListener)[dimension] ?: return@safeListener)
                 val cutoffPos = posList.lastOrNull { pos -> mc.player.distanceTo(pos) > maxDistance.value }
                 if (cutoffPos != null) while (posList.first() != cutoffPos) {
                     posList.remove()
