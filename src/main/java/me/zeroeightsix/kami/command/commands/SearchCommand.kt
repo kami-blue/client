@@ -43,10 +43,9 @@ object SearchCommand : ClientCommand(
                 execute("Remove a block from search list") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    if (!Search.searchArrayList.contains(blockName)) {
+                    if (!Search.searchList.remove(blockName)) {
                         MessageSendHelper.sendErrorMessage("You do not have ${formatValue(blockName)} added to search block list")
                     } else {
-                        Search.searchRemove(blockName)
                         MessageSendHelper.sendChatMessage("Removed ${formatValue(blockName)} from search block list")
                     }
                 }
@@ -58,7 +57,8 @@ object SearchCommand : ClientCommand(
                 execute("Set the search list to one block") {
                     val blockName = blockArg.value.registryName.toString()
 
-                    Search.searchSet(blockName)
+                    Search.searchList.clear()
+                    Search.searchList.add(blockName)
                     MessageSendHelper.sendChatMessage("Set the search block list to ${formatValue(blockName)}")
                 }
             }
@@ -66,20 +66,20 @@ object SearchCommand : ClientCommand(
 
         literal("reset", "default") {
             execute("Reset the search list to defaults") {
-                Search.searchDefault()
+                Search.searchList.resetValue()
                 MessageSendHelper.sendChatMessage("Reset the search block list to defaults")
             }
         }
 
         literal("list") {
             execute("Print search list") {
-                MessageSendHelper.sendChatMessage(Search.searchGetString())
+                MessageSendHelper.sendChatMessage(Search.searchList.joinToString())
             }
         }
 
         literal("clear") {
             execute("Set the search list to nothing") {
-                Search.searchClear()
+                Search.searchList.clear()
                 MessageSendHelper.sendChatMessage("Cleared the search block list")
             }
         }
@@ -93,19 +93,15 @@ object SearchCommand : ClientCommand(
     }
 
     private fun addBlock(blockName: String) {
-        when {
-            blockName == "minecraft:air" -> {
-                MessageSendHelper.sendChatMessage("You can't add ${formatValue(blockName)} to the search block list")
-            }
+        if (blockName == "minecraft:air") {
+            MessageSendHelper.sendChatMessage("You can't add ${formatValue(blockName)} to the search block list")
+            return
+        }
 
-            Search.searchArrayList.contains(blockName) -> {
-                MessageSendHelper.sendErrorMessage("${formatValue(blockName)} is already added to the search block list")
-            }
-
-            else -> {
-                Search.searchAdd(blockName)
-                MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the search block list")
-            }
+        if (!Search.searchList.add(blockName)) {
+            MessageSendHelper.sendErrorMessage("${formatValue(blockName)} is already added to the search block list")
+        } else {
+            MessageSendHelper.sendChatMessage("${formatValue(blockName)} has been added to the search block list")
         }
     }
 }

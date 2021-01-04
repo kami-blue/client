@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -13,14 +13,14 @@ import net.minecraft.init.Blocks
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
-        name = "ArmorHUD",
+        name = "ArmourHUD",
         category = Module.Category.RENDER,
         description = "Displays your armor and it's durability on screen",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object ArmorHUD : Module() {
-    private val damage = register(Settings.b("Damage", false))
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.25f, 2.0f).withStep(0.05f))
+    private val damage = setting("Damage", false)
+    private val scale = setting("Scale", 1.0f, 0.25f..2.0f, 0.05f)
 
     init {
         listener<RenderOverlayEvent> {

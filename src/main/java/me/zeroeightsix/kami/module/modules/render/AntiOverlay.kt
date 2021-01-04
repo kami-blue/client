@@ -1,13 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.tutorial.TutorialSteps
 import net.minecraft.init.MobEffects
 import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderBlockOverlayEvent.OverlayType
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -16,17 +17,17 @@ import org.kamiblue.event.listener.listener
         category = Module.Category.RENDER
 )
 object AntiOverlay : Module() {
-    private val fire = register(Settings.b("Fire", true))
-    private val water = register(Settings.b("Water", true))
-    private val blocks = register(Settings.b("Blocks", true))
-    private val portals = register(Settings.b("Portals", true))
-    private val blindness = register(Settings.b("Blindness", true))
-    private val nausea = register(Settings.b("Nausea", true))
-    val totems = register(Settings.b("Totems", true))
-    private val vignette = register(Settings.b("Vignette", true))
-    private val helmet = register(Settings.b("Helmet", true))
-    private val tutorial = register(Settings.b("Tutorial", true))
-    val potionIcons = register(Settings.b("PotionIcons", false))
+    private val fire = setting("Fire", true)
+    private val water = setting("Water", true)
+    private val blocks = setting("Blocks", true)
+    private val portals = setting("Portals", true)
+    private val blindness = setting("Blindness", true)
+    private val nausea = setting("Nausea", true)
+    val totems = setting("Totems", true)
+    private val vignette = setting("Vignette", true)
+    private val helmet = setting("Helmet", true)
+    private val tutorial = setting("Tutorial", true)
+    private val potionIcons = setting("PotionIcons", false)
 
     init {
         listener<RenderBlockOverlayEvent> {
@@ -48,9 +49,9 @@ object AntiOverlay : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
-            if (blindness.value) mc.player.removeActivePotionEffect(MobEffects.BLINDNESS)
-            if (nausea.value) mc.player.removeActivePotionEffect(MobEffects.NAUSEA)
+        safeListener<TickEvent.ClientTickEvent> {
+            if (blindness.value) player.removeActivePotionEffect(MobEffects.BLINDNESS)
+            if (nausea.value) player.removeActivePotionEffect(MobEffects.NAUSEA)
             if (tutorial.value) mc.gameSettings.tutorialStep = TutorialSteps.NONE
         }
     }

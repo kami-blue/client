@@ -1,19 +1,20 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
@@ -24,25 +25,25 @@ import kotlin.math.min
         category = Module.Category.RENDER
 )
 object EyeFinder : Module() {
-    private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 128).withVisibility { page.value == Page.ENTITY_TYPE })
+    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
+    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val thickness = register(Settings.floatBuilder("Thickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
+    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.RENDERING })
+    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.RENDERING })
+    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val a = setting("Alpha", 200, 0..255, 1, { page.value == Page.RENDERING })
+    private val thickness = setting("Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
 
 
     private enum class Page {
@@ -59,7 +60,7 @@ object EyeFinder : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             alwaysListening = resultMap.isNotEmpty()
 
             val player = arrayOf(players.value, friends.value, sleeping.value)

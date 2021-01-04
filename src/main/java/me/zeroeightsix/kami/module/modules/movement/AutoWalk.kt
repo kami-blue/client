@@ -3,18 +3,18 @@ package me.zeroeightsix.kami.module.modules.movement
 import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.Direction
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
@@ -24,8 +24,8 @@ import org.kamiblue.event.listener.listener
         description = "Automatically walks somewhere"
 )
 object AutoWalk : Module() {
-    val mode = register(Settings.e<AutoWalkMode>("Direction", AutoWalkMode.BARITONE))
-    private val disableOnDisconnect = register(Settings.b("DisableOnDisconnect", true))
+    val mode = setting("Direction", AutoWalkMode.BARITONE)
+    private val disableOnDisconnect = setting("DisableOnDisconnect", true)
 
     enum class AutoWalkMode {
         FORWARD, BACKWARDS, BARITONE
@@ -75,14 +75,14 @@ object AutoWalk : Module() {
                     it.movementInput.moveForward = -1.0f
                 }
                 else -> {
-
+                    // this is fine, Java meme
                 }
             }
         }
 
-        listener<SafeTickEvent> {
-            if (mode.value == AutoWalkMode.BARITONE) {
-                if (!checkBaritoneElytra() && !isActive()) startPathing()
+        safeListener<TickEvent.ClientTickEvent> {
+            if (mode.value == AutoWalkMode.BARITONE && !checkBaritoneElytra() && !isActive()) {
+                startPathing()
             }
         }
     }
@@ -109,8 +109,8 @@ object AutoWalk : Module() {
     } ?: true
 
     init {
-        mode.settingListener = Setting.SettingListeners {
-            if (mc.player == null || isDisabled) return@SettingListeners
+        mode.listeners.add {
+            if (mc.player == null) return@add
             if (mode.value == AutoWalkMode.BARITONE) {
                 if (!checkBaritoneElytra()) startPathing()
             } else {

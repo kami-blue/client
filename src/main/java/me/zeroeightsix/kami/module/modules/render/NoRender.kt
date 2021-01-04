@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting.SettingListeners
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.*
@@ -28,36 +27,36 @@ import org.kamiblue.event.listener.listener
 )
 object NoRender : Module() {
 
-    private val packets = register(Settings.b("CancelPackets", true))
-    private val page = register(Settings.e<Page>("Page", Page.OTHER))
+    private val packets = setting("CancelPackets", true)
+    private val page = setting("Page", Page.OTHER)
 
     // Entities
-    private val paint = register(Settings.booleanBuilder("Paintings").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val animals = register(Settings.booleanBuilder("Animals").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val player = register(Settings.booleanBuilder("Players").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val sign = register(Settings.booleanBuilder("Signs").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val skull = register(Settings.booleanBuilder("Heads").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val armorStand = register(Settings.booleanBuilder("ArmorStands").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val endPortal = register(Settings.booleanBuilder("EndPortals").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val banner = register(Settings.booleanBuilder("Banners").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val itemFrame = register(Settings.booleanBuilder("ItemFrames").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val xp = register(Settings.booleanBuilder("XP").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val items = register(Settings.booleanBuilder("Items").withValue(false).withVisibility { page.value == Page.ENTITIES })
-    private val crystal = register(Settings.booleanBuilder("Crystals").withValue(false).withVisibility { page.value == Page.ENTITIES })
+    private val paint = setting("Paintings", false, { page.value == Page.ENTITIES })
+    private val animals = setting("Animals", false, { page.value == Page.ENTITIES })
+    private val mobs = setting("Mobs", false, { page.value == Page.ENTITIES })
+    private val player = setting("Players", false, { page.value == Page.ENTITIES })
+    private val sign = setting("Signs", false, { page.value == Page.ENTITIES })
+    private val skull = setting("Heads", false, { page.value == Page.ENTITIES })
+    private val armorStand = setting("ArmorStands", false, { page.value == Page.ENTITIES })
+    private val endPortal = setting("EndPortals", false, { page.value == Page.ENTITIES })
+    private val banner = setting("Banners", false, { page.value == Page.ENTITIES })
+    private val itemFrame = setting("ItemFrames", false, { page.value == Page.ENTITIES })
+    private val xp = setting("XP", false, { page.value == Page.ENTITIES })
+    private val items = setting("Items", false, { page.value == Page.ENTITIES })
+    private val crystal = setting("Crystals", false, { page.value == Page.ENTITIES })
 
     // Others
-    val map = register(Settings.booleanBuilder("Maps").withValue(false).withVisibility { page.value == Page.OTHER })
-    private val explosion = register(Settings.booleanBuilder("Explosions").withValue(true).withVisibility { page.value == Page.OTHER })
-    val signText = register(Settings.booleanBuilder("SignText").withValue(false).withVisibility { page.value == Page.OTHER })
-    val particles = register(Settings.booleanBuilder("Particles").withValue(true).withVisibility { page.value == Page.OTHER })
-    private val falling = register(Settings.booleanBuilder("FallingBlocks").withValue(true).withVisibility { page.value == Page.OTHER })
-    val beacon = register(Settings.booleanBuilder("BeaconBeams").withValue(true).withVisibility { page.value == Page.OTHER })
-    val skylight = register(Settings.booleanBuilder("SkyLightUpdates").withValue(true).withVisibility { page.value == Page.OTHER })
-    private val enchantingTable = register(Settings.booleanBuilder("EnchantingBooks").withValue(true).withVisibility { page.value == Page.OTHER })
-    private val enchantingTableSnow = register(Settings.booleanBuilder("EnchantTableSnow").withValue(false).withVisibility { page.value == Page.OTHER })
-    private val projectiles = register(Settings.booleanBuilder("Projectiles").withValue(false).withVisibility { page.value == Page.OTHER })
-    private val lightning = register(Settings.booleanBuilder("Lightning").withValue(true).withVisibility { page.value == Page.OTHER })
+    val map = setting("Maps", false, { page.value == Page.OTHER })
+    private val explosion = setting("Explosions", true, { page.value == Page.OTHER })
+    val signText = setting("SignText", false, { page.value == Page.OTHER })
+    val particles = setting("Particles", true, { page.value == Page.OTHER })
+    private val falling = setting("FallingBlocks", true, { page.value == Page.OTHER })
+    val beacon = setting("BeaconBeams", true, { page.value == Page.OTHER })
+    val skylight = setting("SkyLightUpdates", true, { page.value == Page.OTHER })
+    private val enchantingTable = setting("EnchantingBooks", true, { page.value == Page.OTHER })
+    private val enchantingTableSnow = setting("EnchantTableSnow", false, { page.value == Page.OTHER })
+    private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
+    private val lightning = setting("Lightning", true, { page.value == Page.OTHER })
 
     private enum class Page {
         OTHER, ENTITIES
@@ -136,9 +135,9 @@ object NoRender : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && items.value) {
-                for (entity in mc.world.loadedEntityList) {
+                for (entity in world.loadedEntityList) {
                     if (entity !is EntityItem) continue
                     entity.setDead()
                 }
@@ -163,8 +162,8 @@ object NoRender : Module() {
     }
 
     init {
-        val listener = SettingListeners { updateList() }
-        settingList.forEach { it.settingListener = listener }
+        val listener = { updateList() }
+        settingList.forEach { it.listeners.add(listener) }
     }
 
 }

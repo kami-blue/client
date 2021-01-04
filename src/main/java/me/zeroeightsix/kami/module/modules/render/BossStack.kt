@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.mixin.extension.mapBossInfos
 import me.zeroeightsix.kami.mixin.extension.render
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
@@ -23,9 +23,9 @@ import kotlin.math.roundToInt
         category = Module.Category.RENDER
 )
 object BossStack : Module() {
-    private val mode = register(Settings.e<BossStackMode>("Mode", BossStackMode.STACK))
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1.0f).withRange(0.1f, 5.0f))
-    private val censor = register(Settings.b("Censor", false))
+    private val mode = setting("Mode", BossStackMode.STACK)
+    private val scale = setting("Scale", 1.0f, 0.1f..5.0f, 0.25f)
+    private val censor = setting("Censor", false)
 
     @Suppress("unused")
     private enum class BossStackMode {

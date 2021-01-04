@@ -1,21 +1,23 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import baritone.api.pathing.goals.GoalXZ
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.random.Random
 
@@ -29,15 +31,15 @@ import kotlin.random.Random
     description = "Prevents being kicked for AFK"
 )
 object AntiAFK : Module() {
-    private val delay = register(Settings.integerBuilder("ActionDelay").withValue(50).withRange(5, 100).withStep(5))
-    private val variation = register(Settings.integerBuilder("Variation").withValue(25).withRange(0, 50))
-    private val autoReply = register(Settings.b("AutoReply", true))
-    private val swing = register(Settings.b("Swing", true))
-    private val jump = register(Settings.b("Jump", true))
-    private val turn = register(Settings.b("Turn", true))
-    private val walk = register(Settings.b("Walk", true))
-    private val radius = register(Settings.integerBuilder("Radius").withValue(64).withRange(1, 128))
-    private val inputTimeout = register(Settings.integerBuilder("InputTimeout(m)").withValue(0).withRange(0, 15))
+    private val delay = setting("ActionDelay", 50, 5..100, 5)
+    private val variation = setting("Variation", 25, 0..50, 5)
+    private val autoReply = setting("AutoReply", true)
+    private val swing = setting("Swing", true)
+    private val jump = setting("Jump", true)
+    private val turn = setting("Turn", true)
+    private val walk = setting("Walk", true)
+    private val radius = setting("Radius", 64, 8..128, 8)
+    private val inputTimeout = setting("InputTimeout(m)", 0, 0..15, 1)
 
     private var startPos: BlockPos? = null
     private var squareStep = 0
@@ -46,8 +48,8 @@ object AntiAFK : Module() {
     private val actionTimer = TickTimer(TimeUnit.TICKS)
     private var nextActionDelay = 0
 
-    override fun getHudInfo(): String? {
-        return if (inputTimeout.value == 0) null
+    override fun getHudInfo(): String {
+        return if (inputTimeout.value == 0) ""
         else ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
     }
 
@@ -107,13 +109,13 @@ object AntiAFK : Module() {
             || mc.gameSettings.keyBindRight.isKeyDown
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (inputTimeout.value != 0) {
                 if (BaritoneUtils.isActive) {
                     inputTimer.reset()
                 } else if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
                     startPos = null
-                    return@listener
+                    return@safeListener
                 }
             }
 
@@ -122,9 +124,9 @@ object AntiAFK : Module() {
                 nextActionDelay = delay.value + random
 
                 when ((getAction())) {
-                    Action.SWING -> mc.player.swingArm(EnumHand.MAIN_HAND)
-                    Action.JUMP -> mc.player.jump()
-                    Action.TURN -> mc.player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
+                    Action.SWING -> player.swingArm(EnumHand.MAIN_HAND)
+                    Action.JUMP -> player.jump()
+                    Action.TURN -> player.rotationYaw = Random.nextDouble(-180.0, 180.0).toFloat()
                 }
 
                 if (walk.value && !BaritoneUtils.isActive) {
@@ -140,8 +142,8 @@ object AntiAFK : Module() {
         return if (action.setting.value) action else getAction()
     }
 
-    private fun squareWalk() {
-        if (startPos == null) startPos = mc.player.position
+    private fun SafeClientEvent.squareWalk() {
+        if (startPos == null) startPos = player.position
 
         startPos?.let {
             when (squareStep) {
@@ -159,14 +161,14 @@ object AntiAFK : Module() {
         BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
     }
 
-    private enum class Action(val setting: Setting<Boolean>) {
+    private enum class Action(val setting: BooleanSetting) {
         SWING(swing),
         JUMP(jump),
         TURN(turn)
     }
 
     init {
-        walk.settingListener = Setting.SettingListeners {
+        walk.listeners.add {
             BaritoneUtils.cancelEverything()
         }
     }

@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.*
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "PacketCancel",
@@ -12,12 +12,12 @@ import net.minecraft.network.play.client.*
         category = Module.Category.PLAYER
 )
 object PacketCancel : Module() {
-    private val all = register(Settings.b("All", false))
-    private val packetInput = register(Settings.booleanBuilder("CPacketInput").withValue(true).withVisibility { !all.value })
-    private val packetPlayer = register(Settings.booleanBuilder("CPacketPlayer").withValue(true).withVisibility { !all.value })
-    private val packetEntityAction = register(Settings.booleanBuilder("CPacketEntityAction").withValue(true).withVisibility { !all.value })
-    private val packetUseEntity = register(Settings.booleanBuilder("CPacketUseEntity").withValue(true).withVisibility { !all.value })
-    private val packetVehicleMove = register(Settings.booleanBuilder("CPacketVehicleMove").withValue(true).withVisibility { !all.value })
+    private val all = setting("All", false)
+    private val packetInput = setting("CPacketInput", true, { !all.value })
+    private val packetPlayer = setting("CPacketPlayer", true, { !all.value })
+    private val packetEntityAction = setting("CPacketEntityAction", true, { !all.value })
+    private val packetUseEntity = setting("CPacketUseEntity", true, { !all.value })
+    private val packetVehicleMove = setting("CPacketVehicleMove", true, { !all.value })
 
     private var numPackets = 0
 

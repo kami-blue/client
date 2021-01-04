@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ResolutionUpdateEvent
 import me.zeroeightsix.kami.util.Wrapper
-import org.kamiblue.event.listener.listener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
@@ -12,6 +11,7 @@ import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.client.shader.ShaderLinkHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_VENDOR
 
 class ShaderHelper(shaderIn: ResourceLocation, vararg frameBufferNames: String) {

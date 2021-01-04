@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.manager.managers.MacroManager
-import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.KeyboardUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 
@@ -15,15 +15,15 @@ object MacroCommand : ClientCommand(
         literal("list") {
             string("key") { keyArg ->
                 execute("List macros for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = KeyboardUtils.getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     val macros = MacroManager.macros.filter { it.key == key }
-                    val formattedName = formatValue(Wrapper.getKeyName(key))
+                    val formattedName = formatValue(KeyboardUtils.getKeyName(key))
 
                     if (macros.isEmpty()) {
                         MessageSendHelper.sendChatMessage("&cYou have no macros for the key $formattedName")
@@ -42,7 +42,7 @@ object MacroCommand : ClientCommand(
                 } else {
                     MessageSendHelper.sendChatMessage("You have the following macros: ")
                     for ((key, value) in MacroManager.macros.entries.sortedBy { it.key }) {
-                        MessageSendHelper.sendRawChatMessage("${formatValue(Wrapper.getKeyName(key))} $value")
+                        MessageSendHelper.sendRawChatMessage("${formatValue(KeyboardUtils.getKeyName(key))} $value")
                     }
                 }
 
@@ -52,17 +52,17 @@ object MacroCommand : ClientCommand(
         literal("clear") {
             string("key") { keyArg ->
                 execute("Clear macros for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = KeyboardUtils.getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     MacroManager.removeMacro(key)
                     MacroManager.saveMacros()
                     MacroManager.loadMacros()
-                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(Wrapper.getKeyName(key))}")
+                    MessageSendHelper.sendChatMessage("Cleared macros for ${formatValue(KeyboardUtils.getKeyName(key))}")
                 }
             }
         }
@@ -70,16 +70,18 @@ object MacroCommand : ClientCommand(
         string("key") { keyArg ->
             greedy("command / message") { greedyArg ->
                 execute("Set a command / message for a key") {
-                    val key = Wrapper.getKey(keyArg.value)
+                    val key = KeyboardUtils.getKey(keyArg.value)
 
                     if (key < 1) {
-                        Wrapper.sendUnknownKeyError(keyArg.value)
+                        KeyboardUtils.sendUnknownKeyError(keyArg.value)
                         return@execute
                     }
 
                     MacroManager.addMacroToKey(key, greedyArg.value)
                     MacroManager.saveMacros()
-                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key ${formatValue(Wrapper.getKeyName(key))}")
+                    MessageSendHelper.sendChatMessage("Added macro ${formatValue(greedyArg.value)} for key " +
+                        formatValue(KeyboardUtils.getKeyName(key))
+                    )
                 }
             }
         }

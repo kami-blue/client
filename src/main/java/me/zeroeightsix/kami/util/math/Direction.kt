@@ -3,13 +3,18 @@ package me.zeroeightsix.kami.util.math
 import net.minecraft.entity.Entity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.Vec3i
+import org.kamiblue.commons.interfaces.DisplayEnum
 import kotlin.math.roundToInt
 
 /**
  * [EnumFacing] but with 45° directions
  */
 @Suppress("UNUSED")
-enum class Direction(val displayName: String, val displayNameXY: String, val directionVec: Vec3i) {
+enum class Direction(
+    override val displayName: String,
+    val displayNameXY: String,
+    val directionVec: Vec3i
+) : DisplayEnum {
     NORTH("North", "-Z", Vec3i(0, 0, -1)),
     NORTH_EAST("North East", "+X -Z", Vec3i(1, 0, -1)),
     EAST("East", "+X", Vec3i(1, 0, 0)),

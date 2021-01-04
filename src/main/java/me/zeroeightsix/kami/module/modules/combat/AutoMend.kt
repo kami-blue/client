@@ -1,12 +1,14 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.util.EnumHand
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
 
@@ -16,11 +18,11 @@ import org.kamiblue.event.listener.listener
         description = "Automatically mends armour"
 )
 object AutoMend : Module() {
-    private val autoThrow = register(Settings.b("AutoThrow", true))
-    private val autoSwitch = register(Settings.b("AutoSwitch", true))
-    private val autoDisable = register(Settings.booleanBuilder("AutoDisable").withValue(false).withVisibility { autoSwitch.value })
-    private val threshold = register(Settings.integerBuilder("Repair%").withValue(75).withRange(1, 100).withStep(1))
-    private val gui = register(Settings.b("RunInGUIs", false))
+    private val autoThrow = setting("AutoThrow", true)
+    private val autoSwitch = setting("AutoSwitch", true)
+    private val autoDisable = setting("AutoDisable", false, { autoSwitch.value })
+    private val threshold = setting("Repair%", 75, 1..100, 1)
+    private val gui = setting("RunInGUIs", false)
 
     private var initHotbarSlot = -1
     private var isGuiOpened = false
@@ -34,11 +36,11 @@ object AutoMend : Module() {
             isGuiOpened = false
         }
 
-        listener<SafeTickEvent> {
-            if (isGuiOpened && !gui.value) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (isGuiOpened && !gui.value) return@safeListener
 
             if (shouldMend(0) || shouldMend(1) || shouldMend(2) || shouldMend(3)) {
-                if (autoSwitch.value && mc.player.heldItemMainhand.getItem() !== Items.EXPERIENCE_BOTTLE) {
+                if (autoSwitch.value && player.heldItemMainhand.item !== Items.EXPERIENCE_BOTTLE) {
                     val xpSlot = findXpPots()
 
                     if (xpSlot == -1) {
@@ -46,12 +48,12 @@ object AutoMend : Module() {
                             MessageSendHelper.sendWarningMessage("$chatName No XP in hotbar, disabling")
                             disable()
                         }
-                        return@listener
+                        return@safeListener
                     }
-                    mc.player.inventory.currentItem = xpSlot
+                    player.inventory.currentItem = xpSlot
                 }
-                if (autoThrow.value && mc.player.heldItemMainhand.getItem() === Items.EXPERIENCE_BOTTLE) {
-                    mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND)
+                if (autoThrow.value && player.heldItemMainhand.item === Items.EXPERIENCE_BOTTLE) {
+                    playerController.processRightClick(player, world, EnumHand.MAIN_HAND)
                 }
             }
         }
@@ -74,7 +76,7 @@ object AutoMend : Module() {
     private fun findXpPots(): Int {
         var slot = -1
         for (i in 0..8) {
-            if (mc.player.inventory.getStackInSlot(i).getItem() === Items.EXPERIENCE_BOTTLE) {
+            if (mc.player.inventory.getStackInSlot(i).item === Items.EXPERIENCE_BOTTLE) {
                 slot = i
                 break
             }
@@ -82,8 +84,8 @@ object AutoMend : Module() {
         return slot
     }
 
-    private fun shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
-        val stack = mc.player.inventory.armorInventory[i]
-        return stack.isItemDamaged && 100 * stack.getItemDamage() / stack.maxDamage > reverseNumber(threshold.value, 1, 100)
+    private fun SafeClientEvent.shouldMend(i: Int): Boolean { // (100 * damage / max damage) >= (100 - 70)
+        val stack = player.inventory.armorInventory[i]
+        return stack.isItemDamaged && 100 * stack.itemDamage / stack.maxDamage > reverseNumber(threshold.value, 1, 100)
     }
 }

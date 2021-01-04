@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.*
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -11,35 +11,35 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
 @Module.Info(
-        name = "AntiSpam",
-        category = Module.Category.CHAT,
-        description = "Removes spam and advertising from the chat",
-        showOnArray = Module.ShowOnArray.OFF
+    name = "AntiSpam",
+    category = Module.Category.CHAT,
+    description = "Removes spam and advertising from the chat",
+    showOnArray = false
 )
 object AntiSpam : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.REPLACE))
-    private val replaceMode = register(Settings.enumBuilder(ReplaceMode::class.java, "ReplaceMode").withValue(ReplaceMode.ASTERISKS).withVisibility { mode.value == Mode.REPLACE })
-    private val page = register(Settings.e<Page>("Page", Page.TYPE))
+    private val mode = setting("Mode", Mode.REPLACE)
+    private val replaceMode = setting("ReplaceMode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
+    private val page = setting("Page", Page.TYPE)
 
     /* Page One */
-    private val discordLinks = register(Settings.booleanBuilder("Discord").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val slurs = register(Settings.booleanBuilder("Slurs").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val swears = register(Settings.booleanBuilder("Swears").withValue(false).withVisibility { page.value == Page.TYPE })
-    private val automated = register(Settings.booleanBuilder("Automated").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val ips = register(Settings.booleanBuilder("ServerIps").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val specialCharEnding = register(Settings.booleanBuilder("SpecialEnding").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val specialCharBegin = register(Settings.booleanBuilder("SpecialBegin").withValue(true).withVisibility { page.value == Page.TYPE })
-    private val greenText = register(Settings.booleanBuilder("GreenText").withValue(false).withVisibility { page.value == Page.TYPE })
-    private val fancyChat = register(Settings.booleanBuilder("FancyChat").withValue(false).withVisibility { page.value == Page.TYPE })
+    private val discordLinks = setting("Discord", true, { page.value == Page.TYPE })
+    private val slurs = setting("Slurs", true, { page.value == Page.TYPE })
+    private val swears = setting("Swears", false, { page.value == Page.TYPE })
+    private val automated = setting("Automated", true, { page.value == Page.TYPE })
+    private val ips = setting("ServerIps", true, { page.value == Page.TYPE })
+    private val specialCharEnding = setting("SpecialEnding", true, { page.value == Page.TYPE })
+    private val specialCharBegin = setting("SpecialBegin", true, { page.value == Page.TYPE })
+    private val greenText = setting("GreenText", false, { page.value == Page.TYPE })
+    private val fancyChat = setting("FancyChat", false, { page.value == Page.TYPE })
 
     /* Page Two */
-    private val aggressiveFiltering = register(Settings.booleanBuilder("AggressiveFiltering").withValue(true).withVisibility { page.value == Page.SETTINGS })
-    private val duplicates = register(Settings.booleanBuilder("Duplicates").withValue(true).withVisibility { page.value == Page.SETTINGS })
-    private val duplicatesTimeout = register(Settings.integerBuilder("DuplicatesTimeout").withValue(30).withRange(1, 600).withStep(5).withVisibility { duplicates.value && page.value == Page.SETTINGS })
-    private val filterOwn = register(Settings.booleanBuilder("FilterOwn").withValue(false).withVisibility { page.value == Page.SETTINGS })
-    private val filterDMs = register(Settings.booleanBuilder("FilterDMs").withValue(false).withVisibility { page.value == Page.SETTINGS })
-    private val filterServer = register(Settings.booleanBuilder("FilterServer").withValue(false).withVisibility { page.value == Page.SETTINGS })
-    private val showBlocked = register(Settings.enumBuilder(ShowBlocked::class.java, "ShowBlocked").withValue(ShowBlocked.LOG_FILE).withVisibility { page.value == Page.SETTINGS })
+    private val aggressiveFiltering = setting("AggressiveFiltering", true, { page.value == Page.SETTINGS })
+    private val duplicates = setting("Duplicates", true, { page.value == Page.SETTINGS })
+    private val duplicatesTimeout = setting("DuplicatesTimeout", 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
+    private val filterOwn = setting("FilterOwn", false, { page.value == Page.SETTINGS })
+    private val filterDMs = setting("FilterDMs", false, { page.value == Page.SETTINGS })
+    private val filterServer = setting("FilterServer", false, { page.value == Page.SETTINGS })
+    private val showBlocked = setting("ShowBlocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
 
     private enum class Mode {
         REPLACE, HIDE
@@ -61,19 +61,19 @@ object AntiSpam : Module() {
 
     private val messageHistory = ConcurrentHashMap<String, Long>()
     private val settingMap = hashMapOf(
-            greenText to SpamFilters.greenText,
-            specialCharBegin to SpamFilters.specialBeginning,
-            specialCharEnding to SpamFilters.specialEnding,
-            automated to SpamFilters.ownsMeAndAll,
-            automated to SpamFilters.thanksTo,
-            discordLinks to SpamFilters.discordInvite,
-            ips to SpamFilters.ipAddress,
-            automated to SpamFilters.announcer,
-            automated to SpamFilters.spammer,
-            automated to SpamFilters.insulter,
-            automated to SpamFilters.greeter,
-            slurs to SpamFilters.slurs,
-            swears to SpamFilters.swears
+        greenText to SpamFilters.greenText,
+        specialCharBegin to SpamFilters.specialBeginning,
+        specialCharEnding to SpamFilters.specialEnding,
+        automated to SpamFilters.ownsMeAndAll,
+        automated to SpamFilters.thanksTo,
+        discordLinks to SpamFilters.discordInvite,
+        ips to SpamFilters.ipAddress,
+        automated to SpamFilters.announcer,
+        automated to SpamFilters.spammer,
+        automated to SpamFilters.insulter,
+        automated to SpamFilters.greeter,
+        slurs to SpamFilters.slurs,
+        swears to SpamFilters.swears
     )
 
     init {
@@ -92,7 +92,7 @@ object AntiSpam : Module() {
                 if (mode.value == Mode.HIDE) {
                     event.isCanceled = true
                 } else if (mode.value == Mode.REPLACE) {
-                    event.message = TextComponentString(sanitize(event.message.formattedText, pattern, (replaceMode.value as ReplaceMode).redaction))
+                    event.message = TextComponentString(sanitize(event.message.formattedText, pattern, replaceMode.value.redaction))
                 }
             }
 

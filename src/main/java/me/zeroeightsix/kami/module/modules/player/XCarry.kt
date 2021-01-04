@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import org.kamiblue.event.listener.listener
 import net.minecraft.network.play.client.CPacketCloseWindow
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "XCarry",

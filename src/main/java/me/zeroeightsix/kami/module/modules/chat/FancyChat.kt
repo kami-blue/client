@@ -2,27 +2,27 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
 @Module.Info(
-        name = "FancyChat",
-        category = Module.Category.CHAT,
-        description = "Makes messages you send fancy",
-        showOnArray = Module.ShowOnArray.OFF,
-        modulePriority = 100
+    name = "FancyChat",
+    category = Module.Category.CHAT,
+    description = "Makes messages you send fancy",
+    showOnArray = false,
+    modulePriority = 100
 )
 object FancyChat : Module() {
-    private val uwu = register(Settings.b("uwu", true))
-    private val leet = register(Settings.b("1337", false))
-    private val mock = register(Settings.b("mOcK", false))
-    private val green = register(Settings.b(">", false))
-    private val blue = register(Settings.b("`", false))
-    private val randomSetting = register(Settings.booleanBuilder("RandomCase").withValue(true).withVisibility { mock.value })
-    private val commands = register(Settings.b("Commands", false))
-    private val spammer = register(Settings.b("Spammer", false))
+    private val uwu = setting("uwu", true)
+    private val leet = setting("1337", false)
+    private val mock = setting("mOcK", false)
+    private val green = setting(">", false)
+    private val blue = setting("`", false)
+    private val randomSetting = setting("RandomCase", true, { mock.value })
+    private val commands = setting("Commands", false)
+    private val spammer = setting("Spammer", false)
 
     private val modifier = newMessageModifier(
             filter = {

@@ -10,7 +10,7 @@ import net.minecraft.util.text.TextFormatting
         name = "TabFriends",
         description = "Highlights friends in the tab menu",
         category = Module.Category.RENDER,
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object TabFriends : Module() {
     @JvmStatic

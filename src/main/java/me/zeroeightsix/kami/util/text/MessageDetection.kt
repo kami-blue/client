@@ -15,16 +15,17 @@ object MessageDetection {
             override val prefixes: Array<out CharSequence>
                 get() = arrayOf(BaritoneUtils.prefix, "${CommandManager.prefix}b", ".b")
         },
+        ANY_EXCEPT_DELIMITER {
+            override val prefixes: Array<out CharSequence>
+                get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "#", "$", CommandManager.prefix)
+        },
         ANY {
             override val prefixes: Array<out CharSequence>
-                get() = arrayOf("/", ",", ".", "-", ";", "?", "*", "^", "&", "%", "#", "$",
-                    CommandManager.prefix,
-                    ChatEncryption.delimiterSetting.value
-                )
+                get() = arrayOf(*ANY_EXCEPT_DELIMITER.prefixes, ChatEncryption.delimiter.value)
         }
     }
 
-    enum class Message : Detector, PlayerDetector {
+    enum class Message : Detector, PlayerDetector, RemovableDetector {
         SELF {
             override fun detect(input: CharSequence) = Wrapper.player?.name?.let {
                 input.startsWith("<${it}>")
@@ -41,7 +42,7 @@ object MessageDetection {
             override fun detect(input: CharSequence) = playerName(input) != null
 
             override fun playerName(input: CharSequence) = Wrapper.player?.name?.let { name ->
-                input.replace(regex, "$1").takeIf { it.isNotBlank() && it != name }
+                regex.find(input)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() && it != name }
             }
         },
         ANY {
@@ -49,7 +50,12 @@ object MessageDetection {
 
             override fun detect(input: CharSequence) = input.contains(regex)
 
-            override fun playerName(input: CharSequence) = input.replace(regex, "$1").takeIf { it.isNotBlank() }
+            override fun playerName(input: CharSequence) =
+                regex.find(input)?.groupValues?.getOrNull(1)?.takeIf { it.isNotBlank() }
+        };
+
+        override fun removedOrNull(input: CharSequence): CharSequence? = playerName(input)?.let {
+            input.removePrefix("<$it>")
         }
     }
 

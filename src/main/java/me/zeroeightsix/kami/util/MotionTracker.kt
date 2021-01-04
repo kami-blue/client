@@ -1,14 +1,13 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.event.KamiEventBus
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.util.*
 
 /**
@@ -28,8 +27,8 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
     private val lockObject = Any()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END) return@safeListener
             synchronized(lockObject) {
                 target?.let { target ->
                     motionLog.add(calcActualMotion(target))

@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
@@ -39,12 +39,12 @@ import kotlin.math.roundToInt
     modulePriority = 500
 )
 object Scaffold : Module() {
-    private val tower = register(Settings.b("Tower", true))
-    private val spoofHotbar = register(Settings.b("SpoofHotbar", true))
-    val safeWalk = register(Settings.b("SafeWalk", true))
-    private val sneak = register(Settings.b("Sneak", true))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(2).withRange(1, 10).withStep(1))
-    private val maxRange = register(Settings.integerBuilder("MaxRange").withValue(1).withRange(0, 3).withStep(1))
+    private val tower = setting("Tower", true)
+    private val spoofHotbar = setting("SpoofHotbar", true)
+    val safeWalk = setting("SafeWalk", true)
+    private val sneak = setting("Sneak", true)
+    private val delay = setting("Delay", 2, 1..10, 1)
+    private val maxRange = setting("MaxRange", 1, 0..3, 1)
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null

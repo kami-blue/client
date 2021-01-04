@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.SurroundUtils
@@ -17,20 +17,20 @@ import org.kamiblue.event.listener.listener
         description = "Show safe holes for crystal pvp"
 )
 object HoleESP : Module() {
-    private val range = register(Settings.integerBuilder("Range").withValue(8).withRange(4, 16).withStep(1))
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val hideOwn = register(Settings.b("HideOwn", true))
-    private val r1 = register(Settings.integerBuilder("Red(Obby)").withValue(208).withRange(0, 255).withStep(1).withVisibility { shouldAddObsidian() })
-    private val g1 = register(Settings.integerBuilder("Green(Obby)").withValue(144).withRange(0, 255).withStep(1).withVisibility { shouldAddObsidian() })
-    private val b1 = register(Settings.integerBuilder("Blue(Obby)").withValue(255).withRange(0, 255).withStep(1).withVisibility { shouldAddObsidian() })
-    private val r2 = register(Settings.integerBuilder("Red(Bedrock)").withValue(144).withRange(0, 255).withStep(1).withVisibility { shouldAddBedrock() })
-    private val g2 = register(Settings.integerBuilder("Green(Bedrock)").withValue(144).withRange(0, 255).withStep(1).withVisibility { shouldAddBedrock() })
-    private val b2 = register(Settings.integerBuilder("Blue(Bedrock)").withValue(255).withRange(0, 255).withStep(1).withVisibility { shouldAddBedrock() })
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withStep(1).withVisibility { filled.value })
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { outline.value })
-    private val renderMode = register(Settings.e<Mode>("Mode", Mode.BLOCK_HOLE))
-    private val holeType = register(Settings.e<HoleType>("HoleType", HoleType.BOTH))
+    private val range = setting("RenderDistance", 8, 4..16, 1)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val hideOwn = setting("HideOwn", true)
+    private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObsidian() })
+    private val g1 = setting("Green(Obby)", 144, 0..255, 1, { shouldAddObsidian() })
+    private val b1 = setting("Blue(Obby)", 255, 0..255, 1, { shouldAddObsidian() })
+    private val r2 = setting("Red(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val g2 = setting("Green(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
+    private val b2 = setting("Blue(Bedrock)", 255, 0..255, 1, { shouldAddBedrock() })
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
+    private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
+    private val holeType = setting("HoleType", HoleType.BOTH)
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT

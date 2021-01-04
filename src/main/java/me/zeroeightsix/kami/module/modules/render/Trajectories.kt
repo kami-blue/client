@@ -4,10 +4,9 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.FastUse
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import org.kamiblue.event.listener.listener
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -22,6 +21,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent
+import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import org.lwjgl.opengl.GL11.glLineWidth
 import kotlin.math.cos
@@ -35,14 +35,14 @@ import kotlin.math.sin
         description = "Draws lines to where trajectories are going to fall"
 )
 object Trajectories : Module() {
-    private val showEntity = register(Settings.b("ShowEntity", true))
-    private val showBlock = register(Settings.b("ShowBlock", false))
-    private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).withStep(1))
-    private val g = register(Settings.integerBuilder("Green").withValue(255).withRange(0, 255).withStep(1))
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1))
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(127).withRange(0, 255).withStep(1))
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1))
-    private val thickness = register(Settings.floatBuilder("Thickness").withValue(2f).withRange(0.25f, 5f).withStep(0.25f))
+    private val showEntity = setting("ShowEntity", true)
+    private val showBlock = setting("ShowBlock", false)
+    private val r = setting("Red", 255, 0..255, 1)
+    private val g = setting("Green", 255, 0..255, 1)
+    private val b = setting("Blue", 255, 0..255, 1)
+    private val aFilled = setting("FilledAlpha", 127, 0..255, 1)
+    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1)
+    private val thickness = setting("Thickness", 2f, 0.25f..5f, 0.25f)
 
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var prevItemUseCount = 0

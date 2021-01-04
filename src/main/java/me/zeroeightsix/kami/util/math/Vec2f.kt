@@ -53,6 +53,8 @@ data class Vec2f(val x: Float, val y: Float) {
 
     fun plus(x: Float, y: Float) = Vec2f(this.x + x, this.y + y)
 
+    fun toVec2d() = Vec2d(x.toDouble(), y.toDouble())
+
     companion object {
         @JvmField
         val ZERO = Vec2f(0f, 0f)

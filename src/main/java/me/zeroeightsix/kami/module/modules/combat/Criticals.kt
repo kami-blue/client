@@ -1,15 +1,16 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -18,8 +19,8 @@ import org.kamiblue.event.listener.listener
         description = "Always do critical attacks"
 )
 object Criticals : Module() {
-    private val mode = register(Settings.e<CriticalMode>("Mode", CriticalMode.PACKET))
-    private val miniJump = register(Settings.booleanBuilder("MiniJump").withValue(true).withVisibility { mode.value == CriticalMode.DELAY }.build())
+    private val mode = setting("Mode", CriticalMode.PACKET)
+    private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
 
     private enum class CriticalMode {
         PACKET, DELAY
@@ -50,15 +51,15 @@ object Criticals : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             /* Sends attack packet and swing packet when falling */
             if (mode.value == CriticalMode.DELAY && delayTick != 0) {
-                mc.player.isSprinting = false
-                if (mc.player.speed > 0.2) MovementUtils.setSpeed(0.2)
-                if (mc.player.motionY < -0.1 && delayTick in 1..15) {
+                player.isSprinting = false
+                if (player.speed > 0.2) MovementUtils.setSpeed(0.2)
+                if (player.motionY < -0.1 && delayTick in 1..15) {
                     sendingPacket = true
-                    mc.connection!!.sendPacket(attackPacket)
-                    mc.connection!!.sendPacket(swingPacket)
+                    connection.sendPacket(attackPacket)
+                    connection.sendPacket(swingPacket)
                     delayTick = 16
                 }
                 if (delayTick in 1..19) {

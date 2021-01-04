@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockDeadBush
 import net.minecraft.block.BlockSoulSand
 import net.minecraft.block.BlockTallGrass
@@ -19,7 +19,7 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * TODO: Rewrite
@@ -30,13 +30,14 @@ import org.kamiblue.event.listener.listener
     description = "Automatically spawns Withers, Iron Golems and Snowmen"
 )
 object AutoSpawner : Module() {
-    private val useMode = register(Settings.e<UseMode>("UseMode", UseMode.SPAM))
-    private val party = register(Settings.b("Party", false))
-    private val partyWithers = register(Settings.booleanBuilder("Withers").withValue(false).withVisibility { party.value })
-    private val entityMode = register(Settings.enumBuilder(EntityMode::class.java).withName("EntityMode").withValue(EntityMode.SNOW).withVisibility { !party.value })
-    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(3.5f).withRange(2f, 10f))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(20).withRange(10, 100).withVisibility { useMode.value == UseMode.SPAM })
-    private val debug = register(Settings.b("Info", true))
+    private val useMode = setting("UseMode", UseMode.SPAM)
+    private val party = setting("Party", false)
+    private val partyWithers = setting("Withers", false, { party.value })
+    private val entityMode = setting("EntityMode", EntityMode.SNOW, { !party.value })
+    private val placeRange = setting("PlaceRange", 3.5f, 2f..10f, 0.5f)
+    private val delay = setting("Delay", 20, 10..100, 5, { useMode.value == UseMode.SPAM })
+    private val rotate = setting("Rotate", true)
+    private val debug = setting("Info", true)
 
     private enum class UseMode {
         SINGLE, SPAM
@@ -80,7 +81,7 @@ object AutoSpawner : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             when (buildStage) {
                 Stage.PRE -> {
                     isSneaking = false
@@ -94,9 +95,9 @@ object AutoSpawner : Module() {
                             if (debug.value) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode.value}, disabling.")
                             disable()
                         }
-                        return@listener
+                        return@safeListener
                     }
-                    val blockPosList = VectorUtils.getBlockPosInSphere(mc.player.positionVector, placeRange.value)
+                    val blockPosList = VectorUtils.getBlockPosInSphere(player.positionVector, placeRange.value)
                     var noPositionInArea = true
 
                     for (pos in blockPosList) {
@@ -111,7 +112,7 @@ object AutoSpawner : Module() {
                         if (useMode.value == UseMode.SINGLE) {
                             if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
                             disable()
-                            return@listener
+                            return@safeListener
                         }
                     }
 
@@ -154,7 +155,7 @@ object AutoSpawner : Module() {
                     }
 
                     if (isSneaking) {
-                        mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING))
+                        player.connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.STOP_SNEAKING))
                         isSneaking = false
                     }
 
@@ -182,7 +183,7 @@ object AutoSpawner : Module() {
             val stack = mc.player.inventory.getStackInSlot(slotIndex) ?: continue
             if (stack.isEmpty) continue
 
-            when (entityMode.value as EntityMode) {
+            when (entityMode.value) {
                 EntityMode.SNOW -> {
                     if (stack.item is ItemBlock) {
                         val block = (stack.item as ItemBlock).block

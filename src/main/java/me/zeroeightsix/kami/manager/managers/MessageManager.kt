@@ -1,7 +1,6 @@
 package me.zeroeightsix.kami.manager.managers
 
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.mixin.extension.packetMessage
 import me.zeroeightsix.kami.module.Module
@@ -9,6 +8,7 @@ import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
@@ -36,8 +36,8 @@ object MessageManager : Manager {
             else addMessageToQueue(it.packet, mc.player?: it, Int.MAX_VALUE - 1)
         }
 
-        listener<SafeTickEvent>(-69420) { event ->
-            if (event.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent>(-69420) { event ->
+            if (event.phase != TickEvent.Phase.START) return@safeListener
 
             synchronized(lockObject) {
                 if (messageQueue.isEmpty()) {
@@ -47,7 +47,7 @@ object MessageManager : Manager {
                     if (timer.tick((ChatSetting.delay.value * 1000.0f).toLong())) {
                         messageQueue.pollFirst()?.let {
                             for (modifier in activeModifiers) modifier.apply(it)
-                            if (it.packet.message.isNotBlank()) mc.connection?.sendPacket(it.packet)
+                            if (it.packet.message.isNotBlank()) connection.sendPacket(it.packet)
                             it.state.done = true
                         }
                     }

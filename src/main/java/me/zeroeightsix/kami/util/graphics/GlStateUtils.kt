@@ -1,13 +1,31 @@
 package me.zeroeightsix.kami.util.graphics
 
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.module.modules.client.ClickGUI
+import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.Wrapper
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
+import java.util.*
 
 object GlStateUtils {
+    private val mc = Wrapper.minecraft
+    private var lastScissor: Quad<Int, Int, Int, Int>? = null
+    private val scissorList = LinkedList<Quad<Int, Int, Int, Int>>()
+
+    fun scissor(x: Int, y: Int, width: Int, height: Int) {
+        lastScissor = Quad(x, y, width, height)
+        glScissor(x, y, width, height)
+    }
+
+    fun pushScissor() {
+        lastScissor?.let { scissorList.add(it) }
+    }
+
+    fun popScissor() {
+        scissorList.pollLast()?.let { scissor(it.first, it.second, it.third, it.fourth) }
+    }
 
     @JvmStatic
     var colorLock = false
@@ -15,7 +33,7 @@ object GlStateUtils {
 
     @JvmStatic
     fun useVbo(): Boolean {
-        return Wrapper.minecraft.gameSettings.useVbo
+        return mc.gameSettings.useVbo
     }
 
     @JvmStatic
@@ -31,7 +49,6 @@ object GlStateUtils {
     fun blend(state: Boolean) {
         if (state) {
             GlStateManager.enableBlend()
-            GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
         } else {
             GlStateManager.disableBlend()
         }
@@ -116,8 +133,8 @@ object GlStateUtils {
 
     @JvmStatic
     fun rescaleKami() {
-        val guiScale = DisplayGuiScreen.getScale()
-        rescale(Wrapper.minecraft.displayWidth / guiScale, Wrapper.minecraft.displayHeight / guiScale)
+        val scale = ClickGUI.getScaleFactor()
+        rescale(Wrapper.minecraft.displayWidth / scale, Wrapper.minecraft.displayHeight / scale)
     }
 
     @JvmStatic
@@ -128,12 +145,13 @@ object GlStateUtils {
 
     @JvmStatic
     fun rescale(width: Double, height: Double) {
-        glClear(256)
-        glMatrixMode(5889)
-        glLoadIdentity()
-        glOrtho(0.0, width, height, 0.0, 1000.0, 3000.0)
-        glMatrixMode(5888)
-        glLoadIdentity()
-        glTranslated(0.0, 0.0, -2000.0)
+        GlStateManager.clear(256)
+        GlStateManager.viewport(0, 0, mc.displayWidth, mc.displayHeight)
+        GlStateManager.matrixMode(GL_PROJECTION)
+        GlStateManager.loadIdentity()
+        GlStateManager.ortho(0.0, width, height, 0.0, 1000.0, 3000.0)
+        GlStateManager.matrixMode(GL_MODELVIEW)
+        GlStateManager.loadIdentity()
+        GlStateManager.translate(0.0f, 0.0f, -2000.0f)
     }
 }

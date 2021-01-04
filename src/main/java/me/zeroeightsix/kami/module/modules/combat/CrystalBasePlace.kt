@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils
@@ -14,6 +14,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -37,10 +38,10 @@ import java.util.*
         modulePriority = 90
 )
 object CrystalBasePlace : Module() {
-    private val manualPlaceBind = register(Settings.custom("BindManualPlace", Bind.none(), BindConverter()))
-    private val minDamageInc = register(Settings.floatBuilder("MinDamageInc").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f))
-    private val range = register(Settings.floatBuilder("Range").withValue(4.0f).withRange(0.0f, 8.0f).withStep(0.5f))
-    private val delay = register(Settings.integerBuilder("Delay").withValue(20).withRange(0, 50).withStep(5))
+    private val manualPlaceBind = setting("BindManualPlace", Bind())
+    private val minDamageInc = setting("MinDamageInc", 2.0f, 0.0f..10.0f, 0.25f)
+    private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
+    private val delay = setting("Delay", 20, 0..50, 5)
 
     private val timer = TickTimer()
     private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }
@@ -71,18 +72,18 @@ object CrystalBasePlace : Module() {
             if (manualPlaceBind.value.isDown(Keyboard.getEventKey())) prePlace(target)
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
             inactiveTicks++
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val slot = getObby() ?: return@listener
-            val target = CombatManager.target ?: return@listener
+            if (!CombatManager.isOnTopPriority(CrystalBasePlace) || CombatSetting.pause) return@safeListener
+            val slot = getObby() ?: return@safeListener
+            val target = CombatManager.target ?: return@safeListener
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
                     if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot)
-                    mc.player.swingArm(EnumHand.MAIN_HAND)
-                    mc.connection!!.sendPacket(packet)
+                    player.swingArm(EnumHand.MAIN_HAND)
+                    connection.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
                     placePacket = null
                 }
@@ -93,7 +94,7 @@ object CrystalBasePlace : Module() {
             if (isActive()) {
                 rotationTo?.let { hitVec ->
                     val rotation = RotationUtils.getRotationTo(hitVec)
-                    PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
+                    PlayerPacketManager.addPacket(CrystalBasePlace, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 }
             } else {
                 rotationTo = null
@@ -101,7 +102,7 @@ object CrystalBasePlace : Module() {
         }
     }
 
-    private val isHoldingObby get() = isObby(mc.player.heldItemMainhand) || isObby(mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+    private val SafeClientEvent.isHoldingObby get() = isObby(player.heldItemMainhand) || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 

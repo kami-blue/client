@@ -2,20 +2,22 @@ package me.zeroeightsix.kami.module.modules.render
 
 import io.netty.util.internal.ConcurrentSet
 import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -30,61 +32,24 @@ import kotlin.math.max
     category = Module.Category.RENDER
 )
 object Search : Module() {
-    private val renderUpdate = register(Settings.integerBuilder("RenderUpdate").withValue(1500).withRange(500, 3000).withStep(100).build())
-    val overrideWarning: Setting<Boolean> = register(Settings.booleanBuilder("OverrideWarning").withValue(false).withVisibility { false }.build())
-    private val range = register(Settings.integerBuilder("SearchRange").withValue(128).withRange(0, 256).withStep(8).build())
-    private val maximumBlocks = register(Settings.integerBuilder("MaximumBlocks").withValue(256).withRange(16, 4096).withStep(128).build())
-    private val filled = register(Settings.b("Filled", true))
-    private val outline = register(Settings.b("Outline", true))
-    private val tracer = register(Settings.b("Tracer", true))
-    private val customColours = register(Settings.b("CustomColours", false))
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(155).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(144).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(255).withMaximum(255).withStep(1).withVisibility { customColours.value }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(31).withRange(0, 255).withStep(1).withVisibility { filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(127).withRange(0, 255).withStep(1).withVisibility { outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withStep(1).withVisibility { tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 5.0f).withStep(0.25f).build())
+    private val defaultSearchList = linkedSetOf("minecraft:portal", "minecraft:end_portal_frame", "minecraft:bed")
 
-    /* Search list */
-    private const val defaultSearchList = "minecraft:portal,minecraft:end_portal_frame,minecraft:bed"
-    private val searchList = register(Settings.stringBuilder("SearchList").withValue(defaultSearchList).withVisibility { false }.build())
-
-    var searchArrayList = searchGetArrayList()
-
-    private fun searchGetArrayList(): ArrayList<String> {
-        return ArrayList(searchList.value.split(","))
-    }
-
-    fun searchGetString(): String {
-        return searchArrayList.joinToString(separator = ",")
-    }
-
-    fun searchAdd(name: String) {
-        searchArrayList.add(name)
-        searchList.value = searchGetString()
-    }
-
-    fun searchRemove(name: String) {
-        searchArrayList.remove(name)
-        searchList.value = searchGetString()
-    }
-
-    fun searchSet(name: String) {
-        searchClear()
-        searchAdd(name)
-    }
-
-    fun searchDefault() {
-        searchList.value = defaultSearchList
-        searchArrayList = searchGetArrayList()
-    }
-
-    fun searchClear() {
-        searchList.value = ""
-        searchArrayList.clear()
-    }
-    /* End of eject list */
+    private val renderUpdate = setting("RenderUpdate", 1500, 500..3000, 100)
+    val overrideWarning = setting("OverrideWarning", false, { false })
+    private val range = setting("SearchRange", 128, 0..256, 8)
+    private val maximumBlocks = setting("MaximumBlocks", 256, 16..4096, 128)
+    private val filled = setting("Filled", true)
+    private val outline = setting("Outline", true)
+    private val tracer = setting("Tracer", true)
+    private val customColours = setting("CustomColours", false)
+    private val r = setting("Red", 155, 0..255, 1, { customColours.value })
+    private val g = setting("Green", 144, 0..255, 1, { customColours.value })
+    private val b = setting("Blue", 255, 0..255, 1, { customColours.value })
+    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
+    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
+    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { tracer.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    val searchList = setting(CollectionSetting("SearchList", defaultSearchList, { false }))
 
     private val chunkThreads = ConcurrentHashMap<ChunkPos, Thread>()
     private val chunkThreadPool = Executors.newCachedThreadPool()
@@ -107,13 +72,12 @@ object Search : Module() {
             disable()
             return
         }
-        searchArrayList = searchGetArrayList()
         startTimeChunk = 0L
         startTimeRender = 0L
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (shouldUpdateChunk()) {
                 updateLoadedChunkList()
                 updateMainList()
@@ -144,7 +108,7 @@ object Search : Module() {
         }
     }
 
-    private fun updateLoadedChunkList() {
+    private fun SafeClientEvent.updateLoadedChunkList() {
         /* Removes unloaded chunks from the list */
         Thread {
             for (chunkPos in loadedChunks) {
@@ -156,11 +120,11 @@ object Search : Module() {
 
             /* Adds new loaded chunks to the list */
             val renderDist = mc.gameSettings.renderDistanceChunks
-            val playerChunkPos = ChunkPos(mc.player.position)
+            val playerChunkPos = ChunkPos(player.position)
             val chunkPos1 = ChunkPos(playerChunkPos.x - renderDist, playerChunkPos.z - renderDist)
             val chunkPos2 = ChunkPos(playerChunkPos.x + renderDist, playerChunkPos.z + renderDist)
             for (x in chunkPos1.x..chunkPos2.x) for (z in chunkPos1.z..chunkPos2.z) {
-                val chunk = mc.world.getChunk(x, z)
+                val chunk = world.getChunk(x, z)
                 if (!chunk.isLoaded) continue
                 loadedChunks.add(chunk.pos)
             }
@@ -171,7 +135,7 @@ object Search : Module() {
         Thread {
             for (chunkPos in loadedChunks) {
                 val thread = Thread {
-                    findBlocksInChunk(chunkPos, searchArrayList.toHashSet())
+                    findBlocksInChunk(chunkPos, searchList.toHashSet())
                 }
                 thread.priority = 1
                 chunkThreads.putIfAbsent(chunkPos, thread)
@@ -209,14 +173,14 @@ object Search : Module() {
         }
     }
 
-    private fun updateRenderList() {
+    private fun SafeClientEvent.updateRenderList() {
         Thread {
             val cacheDistMap = TreeMap<Double, BlockPos>(Comparator.naturalOrder())
             /* Calculates distance for all BlockPos, ignores the ones out of the setting range, and puts them into the cacheMap to sort them */
             for (posList in mainList.values) {
                 for (i in posList.indices) {
                     val pos = posList[i]
-                    val distance = mc.player.distanceTo(pos)
+                    val distance = player.distanceTo(pos)
                     if (distance > range.value) continue
                     cacheDistMap[distance] = pos
                 }
@@ -249,14 +213,14 @@ object Search : Module() {
         }.start()
     }
 
-    private fun getPosColor(pos: BlockPos): ColorHolder {
-        val blockState = mc.world.getBlockState(pos)
+    private fun SafeClientEvent.getPosColor(pos: BlockPos): ColorHolder {
+        val blockState = world.getBlockState(pos)
         val block = blockState.block
         return if (!customColours.value) {
             if (block == Blocks.PORTAL) {
                 ColorHolder(82, 49, 153)
             } else {
-                val colorInt = blockState.getMapColor(mc.world, pos).colorValue
+                val colorInt = blockState.getMapColor(world, pos).colorValue
                 ColorHolder((colorInt shr 16), (colorInt shr 8 and 255), (colorInt and 255))
             }
         } else {
@@ -265,7 +229,7 @@ object Search : Module() {
     }
     /* End of rendering */
 
-    private fun isChunkLoaded(chunkPos: ChunkPos): Boolean {
-        return mc.world.getChunk(chunkPos.x, chunkPos.z).isLoaded
+    private fun SafeClientEvent.isChunkLoaded(chunkPos: ChunkPos): Boolean {
+        return world.getChunk(chunkPos.x, chunkPos.z).isLoaded
     }
 }

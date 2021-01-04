@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
-import org.kamiblue.event.listener.listener
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.CPacketConfirmTeleport
+import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "PortalGodMode",
@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.CPacketConfirmTeleport
         description = "Don't take damage in portals"
 )
 object PortalGodMode : Module() {
-    private val confirm = register(Settings.b("InstantTeleport"))
+    private val confirm = setting("InstantTeleport", true)
 
     private var packet: CPacketConfirmTeleport? = null
 

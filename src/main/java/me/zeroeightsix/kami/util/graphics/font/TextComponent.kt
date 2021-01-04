@@ -8,7 +8,7 @@ import kotlin.math.max
 /**
  * Renders multi line text easily
  */
-class TextComponent(val separator: String = "  ") {
+class TextComponent(val separator: String = " ") {
     private val textLines = ArrayList<TextLine?>()
     var currentLine = 0
         set(value) {
@@ -26,7 +26,7 @@ class TextComponent(val separator: String = "  ") {
     /**
      * Create a new text component from a multi line string
      */
-    constructor(string: String, separator: String = "  ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
+    constructor(string: String, separator: String = " ", vararg delimiters: String = arrayOf(separator)) : this(separator) {
         val lines = string.lines()
         for (line in lines) {
             for (splitText in line.split(delimiters = delimiters)) {
@@ -83,6 +83,7 @@ class TextComponent(val separator: String = "  ") {
      */
     fun draw(pos: Vec2d = Vec2d(0.0, 0.0),
              lineSpace: Int = 2,
+             alpha: Float = 1.0f,
              scale: Float = 1f,
              drawShadow: Boolean = true,
              skipEmptyLine: Boolean = true,
@@ -101,7 +102,7 @@ class TextComponent(val separator: String = "  ") {
         }
         for (line in textLines) {
             if (skipEmptyLine && (line == null || line.isEmpty())) continue
-            line?.drawLine(drawShadow, horizontalAlign, customFont)
+            line?.drawLine(alpha, drawShadow, horizontalAlign, customFont)
             glTranslatef(0f, (FontRenderAdapter.getFontHeight(customFont = customFont) + lineSpace), 0f)
         }
         glPopMatrix()
@@ -113,14 +114,14 @@ class TextComponent(val separator: String = "  ") {
         it?.getWidth(customFont) ?: 0f
     }.maxOrNull() ?: 0f
 
-    fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = false, customFont: Boolean = FontRenderAdapter.useCustomFont) =
+    fun getHeight(lineSpace: Int, skipEmptyLines: Boolean = true, customFont: Boolean = FontRenderAdapter.useCustomFont) =
         FontRenderAdapter.getFontHeight(customFont = customFont) * getLines(skipEmptyLines) + lineSpace * (getLines(skipEmptyLines) - 1)
 
     fun getLines(skipEmptyLines: Boolean = true) = textLines.count { !skipEmptyLines || (it != null && !it.isEmpty()) }
 
     override fun toString() = textLines.joinToString(separator = "\n")
 
-    private class TextLine(val separator: String) {
+    class TextLine(val separator: String) {
         private val textElementList = ArrayList<TextElement>()
 
         fun isEmpty() = textElementList.size == 0
@@ -129,7 +130,7 @@ class TextComponent(val separator: String = "  ") {
             textElementList.add(textElement)
         }
 
-        fun drawLine(drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
+        fun drawLine(alpha: Float, drawShadow: Boolean, horizontalAlign: HAlign, customFont: Boolean) {
             glPushMatrix()
             if (horizontalAlign != HAlign.LEFT) {
                 var width = getWidth(customFont)
@@ -137,15 +138,25 @@ class TextComponent(val separator: String = "  ") {
                 glTranslatef(-width, 0f, 0f)
             }
             for (textElement in textElementList) {
-                FontRenderAdapter.drawString(textElement.text, drawShadow = drawShadow, color = textElement.color, customFont = customFont)
-                glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + separator, customFont = customFont), 0f, 0f)
+                val color = textElement.color.clone()
+                color.a = (color.a * alpha).toInt()
+                FontRenderAdapter.drawString(textElement.text, drawShadow = drawShadow, color = color, customFont = customFont)
+                val adjustedSeparator = if (separator == " " && customFont) "  " else " "
+                glTranslatef(FontRenderAdapter.getStringWidth(textElement.text + adjustedSeparator, customFont = customFont), 0f, 0f)
             }
             glPopMatrix()
         }
 
-        fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont) = FontRenderAdapter.getStringWidth(toString(), customFont = customFont)
+        fun getWidth(customFont: Boolean = FontRenderAdapter.useCustomFont): Float {
+            val adjustedSeparator = if (separator == " " && customFont) "  " else " "
+            val string = textElementList.joinToString(separator = adjustedSeparator)
+            return FontRenderAdapter.getStringWidth(string, customFont = customFont)
+        }
 
-        override fun toString() = textElementList.joinToString(separator = separator)
+        fun reverse() {
+            textElementList.reverse()
+        }
+
     }
 
     class TextElement(textIn: String, val color: ColorHolder = ColorHolder(255, 255, 255), val style: Style = Style.REGULAR) {

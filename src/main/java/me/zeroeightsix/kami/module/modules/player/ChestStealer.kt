@@ -1,18 +1,17 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "ChestStealer",
@@ -20,10 +19,10 @@ import org.kamiblue.event.listener.listener
         description = "Automatically steal items from containers"
 )
 object ChestStealer : Module() {
-    val stealMode: Setting<StealMode> = register(Settings.e<StealMode>("StealMode", StealMode.TOGGLE))
-    private val movingMode = register(Settings.e<MovingMode>("MovingMode", MovingMode.QUICK_MOVE))
-    private val ignoreEjectItem = register(Settings.b("IgnoresEjectItem", false))
-    private val delay = register(Settings.integerBuilder("Delay(ms)").withValue(250).withRange(0, 1000).build())
+    val stealMode = setting("StealMode", StealMode.TOGGLE)
+    private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
+    private val ignoreEjectItem = setting("IgnoresEjectItem", false)
+    private val delay = setting("Delay(ms)", 250, 0..1000, 25)
 
     enum class StealMode {
         ALWAYS, TOGGLE, MANUAL
@@ -37,7 +36,7 @@ object ChestStealer : Module() {
     val timer = TickTimer()
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
                 steal(getStealingSlot())
             } else {
@@ -76,8 +75,6 @@ object ChestStealer : Module() {
                 MovingMode.QUICK_MOVE -> InventoryUtils.quickMoveSlot(windowID, slot)
                 MovingMode.PICKUP -> InventoryUtils.moveToSlot(windowID, slot, slotTo)
                 MovingMode.THROW -> InventoryUtils.throwAllInSlot(windowID, slot)
-                else -> {
-                }
             }
         }
         return true
@@ -85,11 +82,10 @@ object ChestStealer : Module() {
 
     private fun getStealingSlot(): Int? {
         val container = mc.player.openContainer.inventory
-        val ejectList = InventoryManager.ejectArrayList
         for (slot in 0 until getContainerSlotSize()) {
-            val item = container[slot].getItem()
+            val item = container[slot].item
             if (item == Items.AIR) continue
-            if (ignoreEjectItem.value && ejectList.contains(item.registryName.toString())) continue
+            if (ignoreEjectItem.value && InventoryManager.ejectList.contains(item.registryName.toString())) continue
             return slot
         }
         return null

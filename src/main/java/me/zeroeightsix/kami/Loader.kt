@@ -4,6 +4,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.gui.GuiManager
 import me.zeroeightsix.kami.manager.ManagerLoader
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.plugin.PluginManager
@@ -16,6 +17,7 @@ internal object LoaderWrapper {
         loaderList.add(ModuleManager)
         loaderList.add(CommandManager)
         loaderList.add(ManagerLoader)
+        loaderList.add(GuiManager)
         loaderList.add(PluginManager)
     }
 

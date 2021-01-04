@@ -2,13 +2,11 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.combat.SurroundUtils
@@ -16,8 +14,9 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 @Module.Info(
@@ -27,13 +26,13 @@ import org.kamiblue.event.listener.listener
         modulePriority = 200
 )
 object Surround : Module() {
-    private val autoCenter = register(Settings.e<AutoCenterMode>("AutoCenter", AutoCenterMode.MOTION))
-    private val placeSpeed = register(Settings.floatBuilder("PlacesPerTick").withValue(4f).withRange(0.25f, 5f).withStep(0.25f))
-    private val autoDisable = register(Settings.e<AutoDisableMode>("AutoDisable", AutoDisableMode.OUT_OF_HOLE))
-    private val outOfHoleTimeout = register(Settings.integerBuilder("OutOfHoleTimeout(t)").withValue(10).withRange(1, 50).withVisibility { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
-    private val enableInHole = register(Settings.b("EnableInHole", false))
-    private val inHoleTimeout = register(Settings.integerBuilder("InHoleTimeout(t)").withValue(50).withRange(1, 100).withVisibility { enableInHole.value })
-    private val disableStrafe = register(Settings.b("DisableStrafe", true))
+    private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
+    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
+    private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout = setting("OutOfHoleTimeout(t)", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
+    private val enableInHole = setting("EnableInHole", true)
+    private val inHoleTimeout = setting("InHoleTimeout(t)", 50, 1..100, 5, { enableInHole.value })
+    private val disableStrafe = setting("DisableStrafe", true)
 
     enum class AutoCenterMode {
         OFF, TP, MOTION
@@ -62,24 +61,24 @@ object Surround : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (getObby() == -1) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (getObby() == -1) return@safeListener
             if (isDisabled) {
                 enableInHoleCheck()
-                return@listener
+                return@safeListener
             }
 
             // Following codes will not run if disabled
 
             // Update hole pos
             if (holePos == null || inHoleCheck()) {
-                holePos = mc.player.positionVector.toBlockPos()
+                holePos = player.positionVector.toBlockPos()
             }
 
             // Out of hole check
-            if (mc.player.positionVector.toBlockPos() != holePos) {
+            if (player.positionVector.toBlockPos() != holePos) {
                 outOfHoleCheck()
-                return@listener
+                return@safeListener
             } else {
                 toggleTimer.reset()
             }
@@ -87,7 +86,7 @@ object Surround : Module() {
             // Placeable & Centered check
             if (!isPlaceable() || !centerPlayer()) {
                 if (autoDisable.value == AutoDisableMode.ONE_TIME) disable()
-                return@listener
+                return@safeListener
             }
 
             // The actual job
@@ -95,8 +94,8 @@ object Surround : Module() {
                 job = runSurround()
             } else if (job.isActiveOrFalse) {
                 spoofHotbar()
-                PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(rotating = false))
-            } else if (isEnabled && CombatManager.isOnTopPriority(this)) {
+                PlayerPacketManager.addPacket(Surround, PlayerPacketManager.PlayerPacket(rotating = false))
+            } else if (isEnabled && CombatManager.isOnTopPriority(Surround)) {
                 PlayerPacketManager.resetHotbar()
             }
         }
@@ -172,7 +171,7 @@ object Surround : Module() {
 
     init {
         alwaysListening = enableInHole.value
-        enableInHole.settingListener = Setting.SettingListeners {
+        enableInHole.listeners.add {
             alwaysListening = enableInHole.value
         }
     }

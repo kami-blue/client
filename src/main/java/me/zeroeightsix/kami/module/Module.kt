@@ -1,20 +1,14 @@
 package me.zeroeightsix.kami.module
 
-import com.google.common.base.Converter
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.events.ModuleToggleEvent
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
-import me.zeroeightsix.kami.setting.builder.SettingBuilder
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.DisplayEnum
-import org.lwjgl.input.Keyboard
-import java.util.*
 
 open class Module {
     /* Annotations */
@@ -22,8 +16,8 @@ open class Module {
         javaClass.annotations.firstOrNull { it is Info } as? Info
             ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
 
-    val originalName = annotation.name
-    val alias = arrayOf(originalName, *annotation.alias)
+    val name = annotation.name
+    val alias = arrayOf(name, *annotation.alias)
     val category = annotation.category
     val description = annotation.description
     val modulePriority = annotation.modulePriority
@@ -37,21 +31,15 @@ open class Module {
         val category: Category,
         val modulePriority: Int = -1,
         val alwaysListening: Boolean = false,
-        val showOnArray: ShowOnArray = ShowOnArray.ON,
+        val showOnArray: Boolean = true,
         val alwaysEnabled: Boolean = false,
         val enabledByDefault: Boolean = false
     )
 
-    enum class ShowOnArray {
-        ON, OFF
-    }
-
     /**
      * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
-     *
-     * @see me.zeroeightsix.kami.module.modules.client.ActiveModules
      */
-    enum class Category(override val displayName: String): DisplayEnum {
+    enum class Category(override val displayName: String) : DisplayEnum {
         CHAT("Chat"),
         CLIENT("Client"),
         COMBAT("Combat"),
@@ -65,28 +53,28 @@ open class Module {
     /* End of annotations */
 
     /* Settings */
-    val fullSettingList = ArrayList<Setting<*>>()
-    val settingList: List<Setting<*>> by lazy {
-        fullSettingList.filter {
-            it != name && it != bind && it != enabled && it != showOnArray && it != default
-        }
-    }
+    val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()
+    val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
-    val name = register(Settings.s("Name", originalName))
-    val bind = register(Settings.custom("Bind", Bind.none(), BindConverter()))
-    private val enabled = register(Settings.booleanBuilder("Enabled").withVisibility { false }.withValue(annotation.enabledByDefault || annotation.alwaysEnabled))
-    private val showOnArray = register(Settings.e<ShowOnArray>("Visible", annotation.showOnArray))
-    private val default = Settings.booleanBuilder("Default").withValue(false).withVisibility { settingList.isNotEmpty() }.build().also { fullSettingList.add(it) }
+    val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })
+    private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
+    private val visible = setting("Visible", annotation.showOnArray)
+    private val default = setting("Default", false, { settingList.isNotEmpty() })
     /* End of settings */
 
     /* Properties */
     val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
-    val bindName: String get() = if (bind.value.key < 1) "NONE" else Wrapper.getKeyName(bind.value.key)
-    val chatName: String get() = "[${name.value}]"
-    val isOnArray: Boolean get() = showOnArray.value == ShowOnArray.ON
+    val chatName: String get() = "[${name}]"
+    val isVisible: Boolean get() = visible.value
     /* End of properties */
 
+
+    fun resetSettings() {
+        for (setting in settingList) {
+            setting.resetValue()
+        }
+    }
 
     fun toggle() {
         setEnabled(!isEnabled)
@@ -129,8 +117,8 @@ open class Module {
         return isEnabled || alwaysListening
     }
 
-    open fun getHudInfo(): String? {
-        return null
+    open fun getHudInfo(): String {
+        return ""
     }
 
     protected open fun onEnable() {
@@ -145,57 +133,9 @@ open class Module {
         // override to run code when the module is enabled or disabled
     }
 
-    /* Setting registering */
-    protected fun <T> register(setting: Setting<T>): Setting<T> {
-        fullSettingList.add(setting)
-        return SettingBuilder.register(setting, "modules.$originalName")
-    }
-
-    protected fun <T> register(builder: SettingBuilder<T>): Setting<T> {
-        val setting = builder.build()
-        fullSettingList.add(setting)
-        return SettingBuilder.register(setting, "modules.$originalName")
-    }
-    /* End of setting registering */
-
-    /* Key binding */
-    protected class BindConverter : Converter<Bind, JsonElement>() {
-        override fun doForward(bind: Bind): JsonElement {
-            return JsonPrimitive(bind.toString())
-        }
-
-        override fun doBackward(jsonElement: JsonElement): Bind {
-            var s = jsonElement.asString
-            if (s.equals("None", ignoreCase = true)) return Bind.none()
-            var ctrl = false
-            var alt = false
-            var shift = false
-            if (s.startsWith("Ctrl+")) {
-                ctrl = true
-                s = s.substring(5)
-            }
-            if (s.startsWith("Alt+")) {
-                alt = true
-                s = s.substring(4)
-            }
-            if (s.startsWith("Shift+")) {
-                shift = true
-                s = s.substring(6)
-            }
-            var key = -1
-            try {
-                key = Keyboard.getKeyIndex(s.toUpperCase())
-            } catch (ignored: Exception) {
-                // this is fine, user manually edited or something
-            }
-            return if (key == 0) Bind.none() else Bind(ctrl, alt, shift, key)
-        }
-    }
-    /* End of key binding */
-
     init {
-        default.settingListener = Setting.SettingListeners {
-            if (default.value) {
+        default.valueListeners.add { _, it ->
+            if (it) {
                 settingList.forEach { it.resetValue() }
                 default.value = false
                 MessageSendHelper.sendChatMessage("$chatName Set to defaults!")

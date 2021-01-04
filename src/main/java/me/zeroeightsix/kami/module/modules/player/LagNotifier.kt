@@ -3,18 +3,19 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.glColor4f
@@ -28,14 +29,12 @@ import org.lwjgl.opengl.GL11.glColor4f
         category = Module.Category.PLAYER
 )
 object LagNotifier : Module() {
-    private val detectRubberBand = register(Settings.b("DetectRubberBand", true))
-
-    private val pauseBaritone = register(Settings.b("PauseBaritone", true))
-    val pauseTakeoff = register(Settings.b("PauseElytraTakeoff", true))
-    val pauseAutoWalk = register(Settings.b("PauseAutoWalk", true))
-
-    private val feedback = register(Settings.booleanBuilder("PauseFeedback").withValue(true).withVisibility { pauseBaritone.value })
-    private val timeout = register(Settings.floatBuilder("Timeout").withValue(3.5f).withRange(0.0f, 10.0f))
+    private val detectRubberBand = setting("DetectRubberBand", true)
+    private val pauseBaritone = setting("PauseBaritone", true)
+    val pauseTakeoff = setting("PauseElytraTakeoff", true)
+    val pauseAutoWalk = setting("PauseAutoWalk", true)
+    private val feedback = setting("PauseFeedback", true, { pauseBaritone.value })
+    private val timeout = setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TickTimer(TimeUnit.SECONDS)
     private var lastPacketTimer = TickTimer()
@@ -60,7 +59,7 @@ object LagNotifier : Module() {
             glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if ((mc.currentScreen != null && mc.currentScreen !is GuiChat) || mc.isIntegratedServerRunning) {
                 if (mc.isIntegratedServerRunning) unpause()
                 text = ""

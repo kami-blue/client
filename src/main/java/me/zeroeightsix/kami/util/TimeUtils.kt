@@ -1,61 +1,47 @@
 package me.zeroeightsix.kami.util
 
-import net.minecraft.util.text.TextFormatting
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
+import kotlin.collections.HashMap
 
 object TimeUtils {
-    /**
-     * Get current time
-     */
-    fun time(format: SimpleDateFormat): String {
-        val date = Date(System.currentTimeMillis())
-        return format.format(date)
-    }
 
-    private fun formatTimeString(timeType: TimeType): String {
-        return when (timeType) {
-            TimeType.HHMM -> ":mm"
-            TimeType.HHMMSS -> ":mm:ss"
-            else -> ""
+    private val formatterMap = HashMap<Pair<TimeFormat, TimeUnit>, DateTimeFormatter>()
+
+    fun getDate(): String = LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT))
+
+    fun getDate(dateFormat: DateFormat): String = LocalDate.now().format(dateFormat.formatter)
+
+    fun getTime(): String = LocalTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+
+    fun getTime(timeFormat: TimeFormat, timeUnit: TimeUnit): String = LocalTime.now().format(timeFormat.getFormatter(timeUnit))
+
+    private fun TimeFormat.getFormatter(timeUnit: TimeUnit) =
+        formatterMap.getOrPut(this to timeUnit) {
+            val pattern = if (timeUnit == TimeUnit.H24) pattern.replace('h', 'H') else "$pattern a"
+            DateTimeFormatter.ofPattern(pattern, Locale.US)
         }
+
+    @Suppress("UNUSED")
+    enum class DateFormat(val formatter: DateTimeFormatter) {
+        DDMMYY(DateTimeFormatter.ofPattern("dd/MM/yy")),
+        YYMMDD(DateTimeFormatter.ofPattern("yy/MM/dd")),
+        MMDDYY(DateTimeFormatter.ofPattern("MM/dd/yy"))
     }
 
-    fun dateFormatter(timeUnit: TimeUnit, timeType: TimeType): SimpleDateFormat {
-        return when (timeUnit) {
-            TimeUnit.H12 -> SimpleDateFormat("hh" + formatTimeString(timeType), Locale.UK)
-            TimeUnit.H24 -> SimpleDateFormat("HH" + formatTimeString(timeType), Locale.UK)
-        }
+    @Suppress("UNUSED")
+    enum class TimeFormat(val pattern: String) {
+        HHMMSS("hh:mm:ss"),
+        HHMM("hh:mm"),
+        HH("hh")
     }
 
-    fun getFinalTime(colourCode2: TextFormatting, colourCode1: TextFormatting, timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
-        val time = time(dateFormatter(TimeUnit.H24, TimeType.HH))
-        val locale = if (timeUnit == TimeUnit.H12 && doLocale) {
-            // checks if the 24 hour time minus 12 is negative or 0, if it is it's pm
-            if (time.toInt() - 12 >= 0) " pm"
-            else " am"
-        } else ""
-        return colourCode1.toString() + time(dateFormatter(timeUnit, timeType)) + colourCode2.toString() + locale
-    }
-
-    fun getFinalTime(timeUnit: TimeUnit, timeType: TimeType, doLocale: Boolean): String {
-        var locale = ""
-        val time = time(dateFormatter(TimeUnit.H24, TimeType.HH))
-        if (timeUnit == TimeUnit.H12 && doLocale) {
-            locale = if (time.toInt() - 12 >= 0) { // checks if the 24 hour time minus 12 is negative or 0, if it is it's pm
-                "pm"
-            } else {
-                "am"
-            }
-        }
-        return time(dateFormatter(timeUnit, timeType)) + locale
-    }
-
-    enum class TimeType {
-        HHMM, HHMMSS, HH
-    }
-
+    @Suppress("UNUSED")
     enum class TimeUnit {
-        H24, H12
+        H12, H24
     }
+
 }

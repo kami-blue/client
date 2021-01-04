@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.mixin.client;
 import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiEvent;
+import me.zeroeightsix.kami.event.events.RenderEvent;
 import me.zeroeightsix.kami.event.events.ShutdownEvent;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
-import me.zeroeightsix.kami.module.modules.misc.DiscordRPC;
 import me.zeroeightsix.kami.plugin.PluginError;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import net.minecraft.client.Minecraft;
@@ -65,6 +65,11 @@ public abstract class MixinMinecraft {
         GuiEvent.Displayed screenEvent1 = new GuiEvent.Displayed(guiScreenIn);
         KamiEventBus.INSTANCE.post(screenEvent1);
         return screenEvent1.getScreen();
+    }
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/shader/Framebuffer;framebufferRender(II)V"))
+    public void runGameLoop(CallbackInfo ci) {
+        KamiEventBus.INSTANCE.post(new RenderEvent());
     }
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))

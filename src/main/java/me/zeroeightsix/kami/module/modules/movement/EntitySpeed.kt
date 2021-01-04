@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -26,14 +26,14 @@ import kotlin.math.sin
         description = "Abuse client-sided movement to shape sound barrier breaking rideables"
 )
 object EntitySpeed : Module() {
-    private val speed = register(Settings.floatBuilder("Speed").withValue(1.0f).withRange(0.1f, 25.0f).withStep(0.1f))
-    private val antiStuck = register(Settings.b("AntiStuck", true))
-    private val flight = register(Settings.b("Flight", false))
-    private val glideSpeed = register(Settings.floatBuilder("GlideSpeed").withValue(0.1f).withRange(0.0f, 1.0f).withStep(0.01f).withVisibility { flight.value })
-    private val upSpeed = register(Settings.floatBuilder("UpSpeed").withValue(1.0f).withRange(0.0f, 5.0f).withStep(0.1f).withVisibility { flight.value })
-    private val opacity = register(Settings.floatBuilder("BoatOpacity").withValue(1.0f).withRange(0.0f, 1.0f).withStep(0.01f))
-    private val forceInteract = register(Settings.b("ForceInteract", false))
-    private val interactTickDelay = register(Settings.integerBuilder("InteractTickDelay").withValue(2).withRange(1, 20).withStep(1).withVisibility { forceInteract.value })
+    private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
+    private val antiStuck = setting("AntiStuck", true)
+    private val flight = setting("Flight", false)
+    private val glideSpeed = setting("GlideSpeed", 0.1f, 0.0f..1.0f, 0.01f, { flight.value })
+    private val upSpeed = setting("UpSpeed", 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
+    private val opacity = setting("BoatOpacity", 1.0f, 0.0f..1.0f, 0.01f)
+    private val forceInteract = setting("ForceInteract", false)
+    private val interactTickDelay = setting("InteractTickDelay", 2, 1..20, 1, { forceInteract.value })
 
     init {
         listener<PacketEvent.Send> {

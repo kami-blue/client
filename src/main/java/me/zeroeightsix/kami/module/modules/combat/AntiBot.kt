@@ -1,13 +1,15 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PlayerAttackEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.FakePlayer
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 
@@ -18,12 +20,12 @@ import kotlin.math.abs
         alwaysListening = true
 )
 object AntiBot : Module() {
-    private val tabList = register(Settings.b("TabList", true))
-    private val ping = register(Settings.b("Ping", true))
-    private val hp = register(Settings.b("HP", true))
-    private val sleeping = register(Settings.b("Sleeping", false))
-    private val hoverOnTop = register(Settings.b("HoverOnTop", true))
-    private val ticksExists = register(Settings.integerBuilder("TicksExists").withValue(200).withRange(0, 500))
+    private val tabList = setting("TabList", true)
+    private val ping = setting("Ping", true)
+    private val hp = setting("HP", true)
+    private val sleeping = setting("Sleeping", false)
+    private val hoverOnTop = setting("HoverOnTop", true)
+    private val ticksExists = setting("TicksExists", 200, 0..500, 10)
 
     val botSet = HashSet<EntityPlayer>()
 
@@ -36,11 +38,11 @@ object AntiBot : Module() {
             if (isEnabled && botSet.contains(it.entity)) it.cancel()
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             val cacheSet = HashSet<EntityPlayer>()
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity !is EntityPlayer) continue
-                if (entity == mc.player) continue
+                if (entity == player) continue
                 if (!isBot(entity)) continue
                 cacheSet.add(entity)
             }
@@ -49,17 +51,17 @@ object AntiBot : Module() {
         }
     }
 
-    private fun isBot(entity: EntityPlayer) = entity.name == mc.player.name
+    private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
             || entity.name == FakePlayer.playerName.value
-            || tabList.value && mc.connection?.getPlayerInfo(entity.name) == null
-            || ping.value && mc.connection?.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
+            || tabList.value && connection.getPlayerInfo(entity.name) == null
+            || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
             || hp.value && entity.health !in 0f..20f
             || sleeping.value && entity.isPlayerSleeping && !entity.onGround
             || hoverOnTop.value && hoverCheck(entity)
             || entity.ticksExisted < ticksExists.value
 
-    private fun hoverCheck(entity: EntityPlayer): Boolean {
-        val distXZ = Vec2d(entity.posX, entity.posZ).minus(mc.player.posX, mc.player.posZ).lengthSquared()
-        return distXZ < 16 && entity.posY - mc.player.posY > 2.0 && abs(entity.posY - entity.prevPosY) < 0.1
+    private fun SafeClientEvent.hoverCheck(entity: EntityPlayer): Boolean {
+        val distXZ = Vec2d(entity.posX, entity.posZ).minus(player.posX, player.posZ).lengthSquared()
+        return distXZ < 16 && entity.posY - player.posY > 2.0 && abs(entity.posY - entity.prevPosY) < 0.1
     }
 }
