@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.gui.hudgui.elements.client
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 
-object UserName : LabelHud(
-    name = "UserName",
+object Username : LabelHud(
+    name = "Username",
     category = Category.CLIENT,
-    description = "User name"
+    description = "Player username"
 ) {
 
     private val prefix = setting("Prefix", "Welcome")
