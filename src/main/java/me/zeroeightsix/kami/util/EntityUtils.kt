@@ -25,38 +25,20 @@ object EntityUtils {
     val Entity.flooredPosition get() = BlockPos(floor(posX).toInt(), floor(posY).toInt(), floor(posZ).toInt())
     val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
 
-    @JvmStatic
-    fun mobTypeSettings(entity: Entity, mobs: Boolean, passive: Boolean, neutral: Boolean, hostile: Boolean): Boolean {
-        return mobs && (passive && isPassiveMob(entity) || neutral && isCurrentlyNeutral(entity) || hostile && isMobAggressive(entity))
-    }
+    val Entity.isPassive get() = this is EntityAnimal
+        || this is EntityAgeable
+        || this is EntityTameable
+        || this is EntityAmbientCreature
+        || this is EntitySquid
 
-    @JvmStatic
-    fun isPassiveMob(entity: Entity?) = entity is EntityAnimal
-        || entity is EntityAgeable
-        || entity is EntityTameable
-        || entity is EntityAmbientCreature
-        || entity is EntitySquid
+    val Entity.isNeutral get() = isNeutralMob(this) && !isMobAggressive(this)
 
-    /**
-     * Find the entities interpolated position
-     */
-    @JvmStatic
-    fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d = entity.prevPosVector.add(getInterpolatedAmount(entity, ticks))
+    val Entity.isHostile get() = isMobAggressive(this)
 
-    /**
-     * Find the entities interpolated amount
-     */
-    fun getInterpolatedAmount(entity: Entity, ticks: Float): Vec3d = entity.positionVector.subtract(entity.prevPosVector).scale(ticks.toDouble())
-
-    /**
-     * If the mob is currently neutral but not aggressive
-     */
-    fun isCurrentlyNeutral(entity: Entity) = isNeutralMob(entity) && !isMobAggressive(entity)
-
-    /**
-     * If the mob by default wont attack the player, but will if the player attacks it
-     */
-    private fun isNeutralMob(entity: Entity) = entity is EntityPigZombie || entity is EntityWolf || entity is EntityEnderman || entity is EntityIronGolem
+    private fun isNeutralMob(entity: Entity) = entity is EntityPigZombie
+        || entity is EntityWolf
+        || entity is EntityEnderman
+        || entity is EntityIronGolem
 
     private fun isMobAggressive(entity: Entity) = when (entity) {
         is EntityPigZombie -> {
@@ -73,16 +55,25 @@ object EntityUtils {
             entity.revengeTarget != null
         }
         else -> {
-            isHostileMob(entity)
+            entity.isCreatureType(EnumCreatureType.MONSTER, false)
         }
     }
 
-    /**
-     * If the mob is hostile
-     */
-    private fun isHostileMob(entity: Entity): Boolean {
-        return entity.isCreatureType(EnumCreatureType.MONSTER, false) && !isNeutralMob(entity)
+    @JvmStatic
+    fun mobTypeSettings(entity: Entity, mobs: Boolean, passive: Boolean, neutral: Boolean, hostile: Boolean): Boolean {
+        return mobs && (passive && entity.isPassive || neutral && entity.isNeutral || hostile && entity.isHostile)
     }
+
+    /**
+     * Find the entities interpolated position
+     */
+    @JvmStatic
+    fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d = entity.prevPosVector.add(getInterpolatedAmount(entity, ticks))
+
+    /**
+     * Find the entities interpolated amount
+     */
+    fun getInterpolatedAmount(entity: Entity, ticks: Float): Vec3d = entity.positionVector.subtract(entity.prevPosVector).scale(ticks.toDouble())
 
     fun isAboveWater(entity: Entity?) = isAboveWater(entity, false)
 
