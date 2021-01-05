@@ -27,6 +27,7 @@ object EntityList : LabelHud(
     private val passive by setting("Passive Mobs", true)
     private val neutral by setting("Neutral Mobs", true)
     private val hostile by setting("Hostile Mobs", true)
+    private val range by setting("Range", 24.0f, 8.0f..64.0f, 0.5f)
 
     private var cacheMap: Map<String, Int> = emptyMap()
 
@@ -47,6 +48,8 @@ object EntityList : LabelHud(
                 if (!passive && entity.isPassive) continue
                 if (!neutral && entity.isNeutral) continue
                 if (!hostile && entity.isHostile) continue
+
+                if (mc.player.getDistance(entity) > range) continue
 
                 val name = entity.entityListName
                 map[name] = map.getOrDefault(name, 0) + 1
