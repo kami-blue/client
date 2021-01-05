@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
 import org.kamiblue.commons.interfaces.Nameable
+import org.kamiblue.commons.utils.ClassUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Type
@@ -52,8 +53,14 @@ internal class PluginLoader(
         }
 
         val clazz = Class.forName(info.mainClass, true, loader)
-        val plugin = (clazz.newInstance() as? Plugin?)
-            ?: throw IllegalAccessException("The specific main class ${info.mainClass} is not a valid plugin main class")
+        val obj = try {
+            ClassUtils.getInstance(clazz)
+        } catch (e : NoSuchFieldException) {
+            clazz.newInstance()
+        }
+
+        val plugin = obj as? Plugin
+            ?: throw IllegalArgumentException("The specific main class ${info.mainClass} is not a valid plugin main class")
 
         plugin.setInfo(info)
         return plugin
