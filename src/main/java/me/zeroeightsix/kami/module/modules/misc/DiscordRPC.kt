@@ -115,10 +115,6 @@ object DiscordRPC : Module() {
             LineInfo.DIMENSION -> {
                 InfoCalculator.dimension()
             }
-            LineInfo.HIGHWAY__WORK -> {
-                if (HighwayTools.isEnabled) "Making Highways"
-                else "Doing Nothing"
-            }
             LineInfo.USERNAME -> {
                 mc.session.username
             }

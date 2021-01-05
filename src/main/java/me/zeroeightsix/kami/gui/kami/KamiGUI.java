@@ -19,7 +19,6 @@ import me.zeroeightsix.kami.manager.managers.FriendManager;
 import me.zeroeightsix.kami.module.Module;
 import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.module.modules.client.InfoOverlay;
-import me.zeroeightsix.kami.module.modules.misc.HighwayTools;
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.process.TemporaryPauseProcess;
 import me.zeroeightsix.kami.util.BaritoneUtils;
@@ -518,26 +517,6 @@ public class KamiGUI extends GUI {
         coordsLabel.setShadow(true);
         coords.setHeight(20);
         frames.add(coords);
-
-        /*
-         * HighwayTools statistics
-         */
-        Frame ht = new Frame(getTheme(), new Stretcherlayout(1), "HighwayTools");
-        ht.setCloseable(false);
-        ht.setPinnable(true);
-        Label htLabel = new Label("");
-        htLabel.addTickListener(() -> {
-            htLabel.setText("");
-            List<String> statistics = HighwayTools.INSTANCE.gatherStatistics();
-            for (String line: statistics) {
-                htLabel.addLine(line);
-            }
-        });
-        ht.addChild(htLabel);
-        htLabel.setShadow(true);
-        ht.setMinimumHeight(20);
-        ht.setMinimumWidth(80);
-        frames.add(ht);
 
         /*
          * Radar
