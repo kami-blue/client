@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.manager.managers.CombatManager
@@ -16,7 +17,7 @@ object CrystalDamage : LabelHud(
 
     private var prevDamages = Quad(0.0f, 0.0f, 0.0f, 0.0f)
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         val placeList = CombatManager.placeMap
         val crystalList = CombatManager.crystalMap.values
 

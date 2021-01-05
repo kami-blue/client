@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
 object ServerBrand : LabelHud(
@@ -8,7 +9,7 @@ object ServerBrand : LabelHud(
     description = "Brand / type of the server"
 ) {
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         if (mc.isIntegratedServerRunning) {
             displayText.add("Singleplayer: " + mc.player?.serverBrand)
         } else {

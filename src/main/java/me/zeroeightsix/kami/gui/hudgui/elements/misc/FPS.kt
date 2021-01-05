@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.mixin.extension.tickLength
@@ -40,7 +41,7 @@ object FPS : LabelHud(
         }
     }
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         val fps = fptList.average().roundToInt()
         fpsList[fpsIndex] = fps
         fpsIndex = (fpsIndex + 1) % 300

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.module.modules.client.Capes
 
@@ -18,7 +19,7 @@ object WaterMark : LabelHud(
         visible = visible
     }
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         displayText.add(KamiMod.NAME, primaryColor)
         displayText.add(KamiMod.VERSION_SIMPLE, secondaryColor)
     }

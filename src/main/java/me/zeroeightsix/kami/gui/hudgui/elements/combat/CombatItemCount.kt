@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
@@ -59,7 +60,7 @@ object CombatItemCount : LabelHud(
             displayText.getHeight(2)
         }
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         for ((index, entry) in itemSettings.entries.withIndex()) {
             val count = if (entry.key.value) entry.value.sumBy { InventoryUtils.countItemAll(it) }
             else -1

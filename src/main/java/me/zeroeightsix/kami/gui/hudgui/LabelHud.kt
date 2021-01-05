@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
@@ -31,7 +32,7 @@ abstract class LabelHud(
         }
     }
 
-    abstract fun updateText()
+    abstract fun SafeClientEvent.updateText()
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)

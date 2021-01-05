@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
@@ -32,7 +33,7 @@ object PlayerSpeed : LabelHud(
         }
     }
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         var averageSpeed = if (speedList.isEmpty()) 0.0 else speedList.sum() / speedList.size
 
         if (speedUnit.value == SpeedUnit.KMH) {
