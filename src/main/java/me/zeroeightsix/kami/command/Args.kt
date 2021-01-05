@@ -1,9 +1,15 @@
 package me.zeroeightsix.kami.command
 
+import baritone.cache.CachedChunk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
@@ -12,6 +18,7 @@ import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.AutoComplete
 import org.kamiblue.command.DynamicPrefixMatch
 import org.kamiblue.command.StaticPrefixMatch
+import java.io.File
 import java.util.*
 import kotlin.streams.toList
 
@@ -62,13 +69,70 @@ class BlockArg(
     }
 
     private companion object {
-        val allBlockNames = ArrayList<String>().run {
+        val allBlockNames = ArrayList<String>().apply {
             Block.REGISTRY.keys.forEach {
                 add(it.toString())
                 add(it.path)
             }
-            sorted()
+            sort()
         }
+    }
+}
+
+class BaritoneBlockArg(
+    override val name: String
+) : AbstractArg<Block>(), AutoComplete by StaticPrefixMatch(baritoneBlockNames) {
+
+    override suspend fun convertToType(string: String?): Block? {
+        if (string == null) return null
+        return Block.getBlockFromName(string)
+    }
+
+    private companion object {
+        val baritoneBlockNames = ArrayList<String>().apply {
+            CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.forEach { block ->
+                block.registryName?.let {
+                    add(it.toString())
+                    add(it.path)
+                }
+            }
+            sort()
+        }
+    }
+}
+
+class SchematicArg(
+    override val name: String
+) : AbstractArg<File>(), AutoComplete by DynamicPrefixMatch(::schematicFiles) {
+
+    override suspend fun convertToType(string: String?): File? {
+        if (string == null) return null
+
+        val nameWithoutExt = string.removeSuffix(".schematic")
+        val file = File("schematics").listFiles()?.filter {
+            it.exists() && it.isFile && it.name.equals("$nameWithoutExt.schematic", true)
+        } // this stupid find and search is required because ext4 is case sensitive (Linux)
+
+        return file?.firstOrNull()
+    }
+
+    private companion object {
+        val timer = TickTimer(TimeUnit.SECONDS)
+        val schematicFolder = File("schematics")
+        var cachedFiles = emptyList<String>()
+
+        val schematicFiles: Collection<String>
+            get() {
+                if (timer.tick(2L) && schematicFolder.isDirectory) {
+                    defaultScope.launch(Dispatchers.IO) {
+                        schematicFolder.listFiles()?.map { it.name }?.let {
+                            cachedFiles = it
+                        }
+                    }
+                }
+
+                return cachedFiles
+            }
     }
 }
 

@@ -16,6 +16,7 @@ import org.kamiblue.command.AbstractArg
 import org.kamiblue.command.CommandBuilder
 import org.kamiblue.command.utils.BuilderBlock
 import org.kamiblue.command.utils.ExecuteBlock
+import java.io.File
 
 abstract class ClientCommand(
     name: String,
@@ -63,6 +64,22 @@ abstract class ClientCommand(
         block: BuilderBlock<BlockPos>
     ) {
         arg(BlockPosArg(name), block)
+    }
+
+    @CommandBuilder
+    protected fun AbstractArg<*>.baritoneBlock(
+        name: String,
+        block: BuilderBlock<Block>
+    ) {
+        arg(BaritoneBlockArg(name), block)
+    }
+
+    @CommandBuilder
+    protected fun AbstractArg<*>.schematic(
+        name: String,
+        file: BuilderBlock<File>
+    ) {
+        arg(SchematicArg(name), file)
     }
 
     @CommandBuilder

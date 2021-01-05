@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util.threads
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.ClientEvent
 import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.event.SafeClientEvent
@@ -10,9 +11,12 @@ import org.kamiblue.event.listener.AsyncListener
 import org.kamiblue.event.listener.DEFAULT_PRIORITY
 import org.kamiblue.event.listener.Listener
 import java.util.concurrent.Callable
+import java.util.concurrent.CancellationException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 inline fun <reified T : Any> Any.safeAsyncListener(noinline function: suspend SafeClientEvent.(T) -> Unit) {
-    ListenerManager.register(this, AsyncListener(T::class.java) { runSafeSuspend{ function(it) } })
+    ListenerManager.register(this, AsyncListener(T::class.java) { runSafeSuspend { function(it) } })
 }
 
 inline fun <reified T : Any> Any.safeListener(priority: Int = DEFAULT_PRIORITY, noinline function: SafeClientEvent.(T) -> Unit) {
@@ -44,27 +48,48 @@ suspend fun <R> runSafeSuspend(block: suspend SafeClientEvent.() -> R): R? {
     return ClientEvent().toSafe()?.let { block(it) }
 }
 
-/**
- * Run [block] on Minecraft main thread (Client thread) and wait for its result while blocking the current thread.
- *
- * @throws Exception if an exception thrown during [block] execution
- *
- * @see [onMainThreadSafe]
- */
-fun <R> onMainThread(block: ClientEvent.() -> R) =
-    Wrapper.minecraft.addScheduledTask(Callable {
-        runCatching { ClientEvent().block() }
-    }).get().getOrThrow()
 
 /**
- * Run [block] on Minecraft main thread (Client thread) and wait for its result while blocking the current thread.
- * The [block] will the called with a [SafeClientEvent] to ensure null safety
- *
- * @throws Exception if an exception thrown during [block] execution
+ * Runs [block] on Minecraft main thread (Client thread) without waiting for the result to be returned.
+ * The [block] will the called with a [SafeClientEvent] to ensure null safety.
+ * All the thrown exceptions will be handled by minecraft scheduled task system.
  *
  * @see [onMainThread]
  */
-fun <R> onMainThreadSafe(block: SafeClientEvent.() -> R) =
-    Wrapper.minecraft.addScheduledTask(Callable {
-        runCatching { ClientEvent().toSafe()?.block() }
-    }).get().getOrThrow()
+fun onMainThreadSafe(block: SafeClientEvent.() -> Unit) {
+    onMainThread { ClientEvent().toSafe()?.block() }
+}
+
+
+/**
+ * Runs [block] on Minecraft main thread (Client thread) without waiting for the result to be returned.
+ * The [block] will the called with a [SafeClientEvent] to ensure null safety.
+ * All the thrown exceptions will be handled by minecraft scheduled task system.
+ *
+ * @see [onMainThread]
+ */
+fun onMainThread(block: () -> Unit) {
+    Wrapper.minecraft.addScheduledTask(block)
+}
+
+/**
+ * Runs [block] on Minecraft main thread (Client thread) and wait for its result while blocking the current thread.
+ *
+ * @throws Exception if an exception thrown during [block] execution
+ *
+ * @see [onMainThreadSafeW]
+ */
+fun <R> onMainThreadW(timeout: Long = 100L, block: () -> R) =
+    runCatching {
+        Wrapper.minecraft.addScheduledTask(Callable {
+            runCatching { block() }
+        }).get(timeout, TimeUnit.MILLISECONDS)
+    }.getOrElse {
+        when (it) {
+            is TimeoutException -> KamiMod.LOG.info("Task timeout while running on main thread!", it)
+            is CancellationException -> KamiMod.LOG.warn("Task cancelled while running on main thread!", it)
+            is InterruptedException -> KamiMod.LOG.warn("Task interrupted while running on main thread!", it)
+            else -> throw it
+        }
+        null
+    }?.getOrThrow()

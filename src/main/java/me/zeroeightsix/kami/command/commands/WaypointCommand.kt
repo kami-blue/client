@@ -9,7 +9,6 @@ import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.math.CoordinateConverter.bothConverted
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.util.math.BlockPos
 
 object WaypointCommand : ClientCommand(
@@ -59,13 +58,13 @@ object WaypointCommand : ClientCommand(
 
         literal("goto", "path") {
             int("id") { idArg ->
-                executeAsync("Go to a waypoint with Baritone") {
+                execute("Go to a waypoint with Baritone") {
                     goto(idArg.value)
                 }
             }
 
             blockPos("pos") { posArg ->
-                executeAsync("Go to a coordinate with Baritone") {
+                execute("Go to a coordinate with Baritone") {
                     val pos = posArg.value
                     goto(pos.x, pos.y, pos.z)
                 }
@@ -74,7 +73,7 @@ object WaypointCommand : ClientCommand(
             int("x") { xArg ->
                 int("y") { yArg ->
                     int("z") { zArg ->
-                        executeAsync("Go to a coordinate with Baritone") {
+                        execute("Go to a coordinate with Baritone") {
                             goto(xArg.value, yArg.value, zArg.value)
                         }
                     }
@@ -124,22 +123,18 @@ object WaypointCommand : ClientCommand(
 
     private fun goto(id: Int) {
         val waypoint = WaypointManager.get(id)
-        onMainThreadSafe {
-            if (waypoint != null) {
-                if (AutoWalk.isEnabled) AutoWalk.disable()
-                val pos = waypoint.currentPos()
-                MessageSendHelper.sendBaritoneCommand("goto", pos.x.toString(), pos.y.toString(), pos.z.toString())
-            } else {
-                MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
-            }
+        if (waypoint != null) {
+            if (AutoWalk.isEnabled) AutoWalk.disable()
+            val pos = waypoint.currentPos()
+            MessageSendHelper.sendBaritoneCommand("goto", pos.x.toString(), pos.y.toString(), pos.z.toString())
+        } else {
+            MessageSendHelper.sendChatMessage("Couldn't find a waypoint with the ID $id")
         }
     }
 
     private fun goto(x: Int, y: Int, z: Int) {
-        onMainThreadSafe {
-            if (AutoWalk.isEnabled) AutoWalk.disable()
-            MessageSendHelper.sendBaritoneCommand("goto", x.toString(), y.toString(), z.toString())
-        }
+        if (AutoWalk.isEnabled) AutoWalk.disable()
+        MessageSendHelper.sendBaritoneCommand("goto", x.toString(), y.toString(), z.toString())
     }
 
     private fun list() {
