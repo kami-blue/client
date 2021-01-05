@@ -12,7 +12,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
     override var deferred: Deferred<List<PluginLoader>>? = null
 
     val loadedPlugins = NameableSet<Plugin>()
-    val pluginLoaderMap = HashMap<Plugin, PluginLoader>()
+    val loadedPluginLoader = NameableSet<PluginLoader>()
 
     const val pluginPath = "${KamiMod.DIRECTORY}plugins/"
 
@@ -77,13 +77,18 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             }
 
             // Duplicate check
-            loaderSet[loader.name]?.let {
+            if (loadedPluginLoader.contains(loader)) {
                 PluginError.DUPLICATE.handleError(loader)
                 invalids.add(loader)
-                PluginError.DUPLICATE.handleError(it)
-                invalids.add(it)
-            } ?: run {
-                loaderSet.add(loader)
+            } else {
+                loaderSet[loader.name]?.let {
+                    PluginError.DUPLICATE.handleError(loader)
+                    invalids.add(loader)
+                    PluginError.DUPLICATE.handleError(it)
+                    invalids.add(it)
+                } ?: run {
+                    loaderSet.add(loader)
+                }
             }
         }
 
@@ -137,7 +142,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             plugin.onLoad()
             plugin.register()
             loadedPlugins.add(plugin)
-            pluginLoaderMap[plugin] = loader
+            loadedPluginLoader.add(loader)
             plugin
         }
 
@@ -167,7 +172,7 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             if (loadedPlugins.remove(plugin)) {
                 plugin.unregister()
                 plugin.onUnload()
-                pluginLoaderMap[plugin]?.close()
+                loadedPluginLoader[plugin.name]?.close()
             }
         }
 

@@ -63,7 +63,7 @@ object PluginCommand : ClientCommand(
 
                     ConfigUtils.saveAll()
 
-                    val file = PluginManager.pluginLoaderMap[plugin]!!.file
+                    val file = PluginManager.loadedPluginLoader[plugin.name]!!.file
                     PluginManager.unload(plugin)
                     PluginManager.load(PluginLoader(file))
                     ConfigUtils.loadAll()
@@ -149,7 +149,7 @@ object PluginCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("No plugin found for index: ${formatValue(index)}")
                             return@execute
                         }
-                    val loader = PluginManager.pluginLoaderMap[plugin]!!
+                    val loader = PluginManager.loadedPluginLoader[plugin.name]!!
 
                     sendPluginInfo(plugin, loader)
                 }
@@ -163,7 +163,7 @@ object PluginCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("No plugin found for name: ${formatValue(name)}")
                             return@execute
                         }
-                    val loader = PluginManager.pluginLoaderMap[plugin]!!
+                    val loader = PluginManager.loadedPluginLoader[plugin.name]!!
 
                     sendPluginInfo(plugin, loader)
                 }
