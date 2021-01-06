@@ -96,7 +96,7 @@ object ModuleList : HudElement(
 
         GlStateManager.translate(renderWidth * dockingH.multiplier, 0.0f, 0.0f)
         if (dockingV == VAlign.BOTTOM) {
-            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f) , 0.0f)
+            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
         }
 
         drawModuleList()
@@ -109,7 +109,9 @@ object ModuleList : HudElement(
         val lengthMs = rainbowLength.value * 1000.0f
         val timedHue = System.currentTimeMillis() % lengthMs.toLong() / lengthMs
 
-        for ((index, module) in sortedModuleList.withIndex()) {
+        var index = 0
+
+        for (module in sortedModuleList) {
             val timedFlag = toggleMap[module] ?: continue
             val progress = timedFlag.progress
 
@@ -126,7 +128,7 @@ object ModuleList : HudElement(
             GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
             if (rainbow.value) {
-                val hue = timedHue + indexedHue.value * 0.005f * index
+                val hue = timedHue + indexedHue.value * 0.005f * index++
                 val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
 
                 TextComponent.TextLine(" ").run {

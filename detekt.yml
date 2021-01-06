@@ -1,8 +1,7 @@
 complexity:
   active: true
   ComplexMethod:
-    active: true
-    threshold: 50
+    active: false
 
 style:
   active: true

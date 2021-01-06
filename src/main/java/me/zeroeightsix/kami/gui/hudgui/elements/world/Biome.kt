@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.world
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
 object Biome : LabelHud(
@@ -8,10 +9,8 @@ object Biome : LabelHud(
     description = "Display the current biome you are in"
 ) {
 
-    override fun updateText() {
-        val biome = mc.player?.let {
-            mc.world?.getBiome(it.position)?.biomeName
-        } ?: "Unknown"
+    override fun SafeClientEvent.updateText() {
+        val biome = world.getBiome(player.position).biomeName ?: "Unknown"
 
         displayText.add(biome, primaryColor)
         displayText.add("Biome", secondaryColor)

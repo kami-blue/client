@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.event
 
 import io.netty.util.internal.ConcurrentSet
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import org.kamiblue.event.eventbus.AbstractAsyncEventBus
 import org.kamiblue.event.listener.AsyncListener
@@ -21,11 +21,14 @@ object KamiEventBus : AbstractAsyncEventBus() {
     override val subscribedListenersAsync = ConcurrentHashMap<Class<*>, MutableSet<AsyncListener<*>>>()
     override val newSetAsync get() = ConcurrentSet<AsyncListener<*>>()
 
+    @Suppress("EXPERIMENTAL_API_USAGE")
+    private val asyncEventDispatcher = newFixedThreadPoolContext(2, "KAMI Blue Event")
+
     override fun post(event: Any) {
         runBlocking {
             coroutineScope {
                 subscribedListenersAsync[event.javaClass]?.forEach {
-                    launch(Dispatchers.Default) {
+                    launch(asyncEventDispatcher) {
                         @Suppress("UNCHECKED_CAST") // IDE meme
                         (it as AsyncListener<Any>).function.invoke(event)
                     }

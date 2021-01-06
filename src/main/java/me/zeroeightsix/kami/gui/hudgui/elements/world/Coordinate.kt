@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.world
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
@@ -18,7 +19,7 @@ object Coordinate : LabelHud(
     private val showNetherOverworld = setting("ShowNether/Overworld", true)
     private val decimalPlaces = setting("DecimalPlaces", 1, 0..4, 1)
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         val entity = mc.renderViewEntity ?: mc.player ?: return
 
         displayText.add("Current", secondaryColor)

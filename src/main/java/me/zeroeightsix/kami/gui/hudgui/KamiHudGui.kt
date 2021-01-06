@@ -64,6 +64,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
             }
 
             GlStateUtils.rescaleMc()
+            GlStateUtils.depth(true)
         }
     }
 

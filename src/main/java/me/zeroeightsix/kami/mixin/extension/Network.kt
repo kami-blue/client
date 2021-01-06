@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.mixin.extension
 import me.zeroeightsix.kami.mixin.client.accessor.network.*
 import net.minecraft.network.play.client.CPacketChatMessage
 import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
@@ -47,6 +48,18 @@ var CPacketPlayer.onGround: Boolean
     }
 val CPacketPlayer.moving: Boolean get() = (this as AccessorCPacketPlayer).moving
 val CPacketPlayer.rotating: Boolean get() = (this as AccessorCPacketPlayer).rotating
+
+var CPacketUseEntity.id: Int
+    get() = (this as AccessorCPacketUseEntity).id
+    set(value) {
+        (this as AccessorCPacketUseEntity).id = value
+    }
+
+var CPacketUseEntity.packetAction: CPacketUseEntity.Action
+    get() = this.action
+    set(value) {
+        (this as AccessorCPacketUseEntity).setAction(value)
+    }
 
 var SPacketChat.textComponent: ITextComponent
     get() = this.chatComponent

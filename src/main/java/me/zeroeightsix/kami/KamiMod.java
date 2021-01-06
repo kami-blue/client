@@ -38,7 +38,7 @@ public class KamiMod {
     public static final String GITHUB_LINK = "https://github.com/kami-blue/";
     public static final String WEBSITE_LINK = "https://kamiblue.org";
 
-    public static final String KAMI_KATAKANA = "\u30ab\u30df\u30d6\u30eb";
+    public static final String KAMI_KATAKANA = "カミブル";
 
     public static final String DIRECTORY = "kamiblue/";
     public static final Logger LOG = LogManager.getLogger("KAMI Blue");

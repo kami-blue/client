@@ -24,12 +24,16 @@ object CreditsCommand : ClientCommand(
             }
 
             MessageSendHelper.sendChatMessage("Contributors to kami-blue/client: ${formatValue(contributors.size)}")
-            contributors.forEach {
-                var name = it.name
-                knownNames[it.id]?.let { knownName -> name += " ($knownName)" }
 
-                MessageSendHelper.sendRawChatMessage("$name - &7${it.contributions}&f contributions")
-            }
+            val formatted = StringBuilder().apply {
+                contributors.forEach {
+                    var name = it.name
+                    alternateNames[it.id]?.let { knownName -> name += " ($knownName)" }
+                    append("$name - &7${it.contributions}&f contributions")
+                }
+            }.toString()
+
+            MessageSendHelper.sendRawChatMessage(formatted)
         }
     }
 
@@ -52,7 +56,7 @@ object CreditsCommand : ClientCommand(
         val contributions: Int = 0
     )
 
-    private val knownNames = hashMapOf(
+    private val alternateNames = hashMapOf(
         17222512 to "liv",
         37771542 to "dewy",
         48992448 to "hub",

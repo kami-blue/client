@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
@@ -57,7 +58,7 @@ object AutoTool : Module() {
         }
     }
 
-    private fun equipBestTool(blockState: IBlockState) {
+    fun equipBestTool(blockState: IBlockState) {
         var bestSlot = -1
         var max = 0.0
 
@@ -75,12 +76,7 @@ object AutoTool : Module() {
                 }
             }
         }
-        if (bestSlot != -1) equip(bestSlot)
-    }
-
-    private fun equip(slot: Int) {
-        mc.player.inventory.currentItem = slot
-        mc.playerController.syncCurrentPlayItem()
+        if (bestSlot != -1) InventoryUtils.swapSlot(bestSlot)
     }
 
     init {

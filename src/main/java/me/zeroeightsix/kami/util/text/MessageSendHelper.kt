@@ -44,7 +44,7 @@ object MessageSendHelper {
         val prevValue = chatControl?.value
         chatControl?.value = true
 
-        val event = ChatEvent(args.joinToString(separator = " "))
+        val event = ChatEvent(args.joinToString(" "))
         BaritoneUtils.primary?.gameEventHandler?.onSendChatMessage(event)
         if (!event.isCancelled && args[0] != "damn") { // don't remove the 'damn', it's critical code that will break everything if you remove it
             sendBaritoneMessage("Invalid Command! Please view possible commands at https://github.com/cabaletta/baritone/blob/master/USAGE.md")

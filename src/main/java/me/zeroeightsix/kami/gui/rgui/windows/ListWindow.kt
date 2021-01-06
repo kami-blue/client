@@ -8,11 +8,12 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.commons.extension.ceilToInt
+import org.kamiblue.commons.extension.floorToInt
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 open class ListWindow(
     name: String,
@@ -128,10 +129,10 @@ open class ListWindow(
 
     private fun renderChildren(renderBlock: (Component) -> Unit) {
         GlStateUtils.scissor(
-            ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor()).roundToInt(),
-            ((mc.displayHeight - (renderPosY + renderHeight) * ClickGUI.getScaleFactor())).roundToInt(),
-            ((renderWidth - lineSpace * 3.236) * ClickGUI.getScaleFactor()).roundToInt(),
-            ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor()).roundToInt()
+            ((renderPosX + lineSpace * 1.618) * ClickGUI.getScaleFactor() - 0.5f).floorToInt(),
+            mc.displayHeight - ((renderPosY + renderHeight) * ClickGUI.getScaleFactor() - 0.5f).floorToInt(),
+            ((renderWidth - lineSpace * 3.236) * ClickGUI.getScaleFactor() + 1.0f).ceilToInt(),
+            ((renderHeight - draggableHeight) * ClickGUI.getScaleFactor() + 1.0f).ceilToInt()
         )
         glEnable(GL_SCISSOR_TEST)
         glTranslatef(0.0f, -renderScrollProgress, 0.0f)

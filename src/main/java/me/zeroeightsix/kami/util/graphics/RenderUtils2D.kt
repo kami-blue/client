@@ -30,6 +30,7 @@ object RenderUtils2D {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
         GlStateUtils.depth(false)
+        GlStateUtils.texture2d(true)
     }
 
     @JvmStatic

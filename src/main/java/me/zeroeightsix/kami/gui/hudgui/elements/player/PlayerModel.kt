@@ -43,6 +43,7 @@ object PlayerModel : HudElement(
         glTranslatef(width / 2, height - adjust(7.5f), 0f)
         GlStateUtils.depth(true)
         GuiInventory.drawEntityOnScreen(0, 0, (scale * 35.0f).roundToInt(), -yaw, -pitch, entity)
+        GlStateUtils.depth(false)
         GlStateUtils.texture2d(true)
         GlStateUtils.blend(true)
         GlStateManager.disableColorMaterial()

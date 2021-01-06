@@ -1,15 +1,13 @@
 package me.zeroeightsix.kami.command.commands
 
-import io.netty.buffer.Unpooled
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.util.itemPayload
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.item.ItemWritableBook
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
-import net.minecraft.network.PacketBuffer
-import net.minecraft.network.play.client.CPacketCustomPayload
 import org.kamiblue.commons.extension.max
 
 object SignBookCommand : ClientCommand(
@@ -43,10 +41,7 @@ object SignBookCommand : ClientCommand(
                         item.setTagInfo("author", NBTTagString(player.name))
                     }
 
-                    val buf = PacketBuffer(Unpooled.buffer())
-                    buf.writeItemStack(item)
-
-                    player.connection.sendPacket(CPacketCustomPayload("MC|BSign", buf))
+                    itemPayload(item, "MC|BSign")
                     sendChatMessage("Signed book with title: ${formatValue(title)}")
                 } else {
                     MessageSendHelper.sendErrorMessage("You're not holding a writable book!")

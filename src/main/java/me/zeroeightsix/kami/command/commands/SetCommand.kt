@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.onMainThread
+import me.zeroeightsix.kami.util.threads.onMainThreadW
 import net.minecraft.util.text.TextFormatting
 
 object SetCommand : ClientCommand(
@@ -65,7 +66,7 @@ object SetCommand : ClientCommand(
                         try {
                             val value = valueArg.value
 
-                            onMainThread {
+                            onMainThreadW {
                                 setting.setValue(value)
                                 MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
                             }

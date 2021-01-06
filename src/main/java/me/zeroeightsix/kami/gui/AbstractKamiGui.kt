@@ -249,6 +249,8 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         GlStateUtils.rescaleMc()
         glTranslatef(0.0f, -(scaledResolution.scaledHeight * (1.0f - multiplier)), 0.0f)
         drawTypedString()
+
+        GlStateUtils.depth(false)
     }
 
     private fun drawBackground(vertexHelper: VertexHelper, partialTicks: Float) {

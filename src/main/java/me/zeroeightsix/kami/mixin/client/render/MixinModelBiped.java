@@ -68,6 +68,9 @@ public abstract class MixinModelBiped extends ModelBase {
                 case ITEM:
                     this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F - ((float) Math.PI / 10F);
                     this.bipedLeftArm.rotateAngleY = 0.0F;
+                    break;
+                default:
+                    // don't do anything
             }
 
             switch (this.rightArmPose) {
@@ -81,6 +84,9 @@ public abstract class MixinModelBiped extends ModelBase {
                 case ITEM:
                     this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - ((float) Math.PI / 10F);
                     this.bipedRightArm.rotateAngleY = 0.0F;
+                    break;
+                default:
+                    // don't do anything
             }
 
             if (this.swingProgress > 0.0F) {

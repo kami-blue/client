@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.util.math.RotationUtils
+import me.zeroeightsix.kami.util.math.corners
 import me.zeroeightsix.kami.util.threads.runSafeSuspend
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
@@ -105,6 +106,14 @@ object WorldUtils {
         return mc.world.getBlockState(pos).block == Blocks.WATER
     }
 
+    /**
+     * Checks if given [pos] is able to place block in it
+     *
+     * @return true playing is not colliding with [pos] and there is block below it
+     */
+    fun isPlaceable(pos: BlockPos, ignoreSelfCollide: Boolean = false) = mc.world.getBlockState(pos).material.isReplaceable
+        && mc.world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) mc.player else null)
+
     fun rayTraceTo(blockPos: BlockPos): RayTraceResult? {
         return mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(blockPos).add(0.5, 0.5, 0.5))
     }
@@ -123,22 +132,20 @@ object WorldUtils {
         return Vec3d(vec.x * 0.5 + 0.5, vec.y * 0.5 + 0.5, vec.z * 0.5 + 0.5)
     }
 
-    /**
-     * Checks if given [pos] is able to place block in it
-     *
-     * @return true playing is not colliding with [pos] and there is block below it
-     */
-    fun isPlaceable(pos: BlockPos, ignoreSelfCollide: Boolean = false) = mc.world.getBlockState(pos).material.isReplaceable
-        && mc.world.checkNoEntityCollision(AxisAlignedBB(pos), if (ignoreSelfCollide) mc.player else null)
+    fun SafeClientEvent.rayTraceHitVec(pos: BlockPos) : RayTraceResult? {
+        val eyePos = player.getPositionEyes(1f)
+        val bb = world.getBlockState(pos).getSelectedBoundingBox(world, pos)
 
-    /**
-     * Checks if given [pos] is able to chest (air above) block in it
-     *
-     * @return true playing is not colliding with [pos] and there is block below it
-     */
-    fun isPlaceableForChest(pos: BlockPos): Boolean {
-        return isPlaceable(pos) && !mc.world.getBlockState(pos.down()).material.isReplaceable && mc.world.isAirBlock(pos.up())
+        return world.rayTraceBlocks(eyePos, bb.center, false, false, true)?.takeIf {
+                it.isEqualTo(pos)
+            } ?: bb.corners(0.95).mapNotNull { corner ->
+                world.rayTraceBlocks(eyePos, corner, false, false, true)?.takeIf { it.isEqualTo(pos) }
+            }.minByOrNull {
+                it.hitVec?.distanceTo(eyePos) ?: 69420.0
+            }
     }
+
+    private fun RayTraceResult.isEqualTo(pos: BlockPos) = typeOfHit == RayTraceResult.Type.BLOCK && blockPos == pos
 
     suspend fun buildStructure(
         placeSpeed: Float,
