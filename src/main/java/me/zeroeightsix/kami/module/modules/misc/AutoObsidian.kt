@@ -385,29 +385,19 @@ object AutoObsidian : Module() {
     }
 
     private fun SafeClientEvent.placeShulker(pos: BlockPos) {
+        val shulkerIdInHotbar = getShulkerIdInHotbar()
         val shulkerIdNotInHotbar = getShulkerIdNotInHotBar()
-        if (getShulkerIdInHotbar() == -1 && getShulkerIdNotInHotBar() != -1) {
+        if (shulkerIdInHotbar == -1 && shulkerIdNotInHotbar != -1) {
             InventoryUtils.moveToHotbar(shulkerIdNotInHotbar, Items.DIAMOND_PICKAXE.id)
             shulkerBoxId = shulkerIdNotInHotbar
-        } else {
-           for (i in 219..234) {
-                if (InventoryUtils.getSlotsHotbar(i) == null) {
-                    if (i == 234) {
-                        for (shulkerId in 219..234) {
-                            if (InventoryUtils.getSlotsHotbar(shulkerId) == null) {
-                                if (shulkerId == 234) {
-                                    MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
-                                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                                    disable()
-                                }
-                                continue
-                            }
-                            shulkerBoxId = shulkerId
-                            InventoryUtils.swapSlotToItem(shulkerId)
-                            break
-                        }
-                    }
+            return
+        } else if (shulkerIdInHotbar == -1) {
+            MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
+            mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+            disable()
+        }
 
+        InventoryUtils.swapSlotToItem(shulkerBoxId)
         if (world.getBlockState(pos).block !is BlockShulkerBox) {
             placeBlock(pos)
         }
@@ -426,7 +416,6 @@ object AutoObsidian : Module() {
                 MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 disable()
-                return
             }
         }
 
