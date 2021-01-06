@@ -295,8 +295,9 @@ object CrystalAura : Module() {
     private fun packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
         val triple = placeMap[pos] ?: return
 
-        if (triple.third > explodeRange.value) return
+        if (!noSuicideCheck(triple.second)) return
         if (!checkDamageExplode(triple.first, triple.second)) return
+        if (triple.third > explodeRange.value) return
 
         val attackPacket = CPacketUseEntity().apply {
             id = entityID
