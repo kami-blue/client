@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -15,7 +17,9 @@ import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -92,6 +96,8 @@ object CrystalAura : Module() {
     private val autoForceExplode = setting("AutoForceExplode", true, { page.value == Page.EXPLODE_ONE })
     private val antiWeakness = setting("AntiWeakness", true, { page.value == Page.EXPLODE_ONE })
     private val packetExplode by setting("PacketExplode", true, { page.value == Page.EXPLODE_ONE })
+    private val predictExplode by setting("PredictExplode", false, { page.value == Page.EXPLODE_ONE })
+    private val predictDelay by setting("PredictDelay", 10, 0..200, 1, { page.value == Page.EXPLODE_ONE && predictExplode })
 
     /* Explode page two */
     private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
@@ -128,6 +134,7 @@ object CrystalAura : Module() {
     private var hitTimer = 0
     private var hitCount = 0
     private var yawDiffIndex = 0
+    private var lastEntityID = 0
 
     var inactiveTicks = 20; private set
     val minDamage get() = max(minDamageP.value, minDamageE.value)
@@ -161,12 +168,16 @@ object CrystalAura : Module() {
         safeListener<PacketEvent.Receive> { event ->
             when (event.packet) {
                 is SPacketSpawnObject -> {
+                    lastEntityID = event.packet.entityID
+
                     if (event.packet.type == 51) {
                         val vec3d = Vec3d(event.packet.x, event.packet.y, event.packet.z)
                         val pos = vec3d.toBlockPos()
 
                         placedBBMap.remove(pos)?.let {
-                            packetExplode(event.packet.entityID, pos, vec3d)
+                            if (packetExplode) {
+                                packetExplode(event.packet.entityID, pos.down(), vec3d)
+                            }
                         }
                     }
                 }
@@ -254,6 +265,7 @@ object CrystalAura : Module() {
                 else InventoryUtils.swapSlot(it)
             }
         }
+
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
                 placeTimer = 0
@@ -265,16 +277,25 @@ object CrystalAura : Module() {
 
                 val crystalPos = pos.up()
                 placedBBMap[crystalPos] = CrystalUtils.getCrystalBB(crystalPos) to System.currentTimeMillis()
+
+                if (predictExplode) {
+                    defaultScope.launch {
+                        delay(predictDelay.toLong())
+
+                        synchronized(lockObject) {
+                            if (!placedBBMap.containsKey(crystalPos)) return@synchronized
+                            packetExplode(lastEntityID + 1, pos, crystalPos.toVec3d(0.5, 0.0, 0.5))
+                        }
+                    }
+                }
             }
         }
     }
 
     private fun packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
-        if (!packetExplode) return
-
         val triple = placeMap[pos] ?: return
 
-        if (triple.third > placeRange.value) return
+        if (triple.third > explodeRange.value) return
         if (!checkDamageExplode(triple.first, triple.second)) return
 
         val attackPacket = CPacketUseEntity().apply {
