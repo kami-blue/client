@@ -89,7 +89,7 @@ object EntityList : LabelHud(
                 "Thrown snowball"
             }
             else -> {
-                this.name ?: "Unknown"
+                this.name ?: this.javaClass.simpleName
             }
         }
 }
