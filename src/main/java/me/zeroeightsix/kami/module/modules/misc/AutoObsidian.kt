@@ -93,13 +93,6 @@ object AutoObsidian : Module() {
         VIEW_LOCK("View Lock")
     }
 
-    private enum class ItemID(val id: Int) {
-        OBSIDIAN(49),
-        ENDER_CHEST(130),
-        DIAMOND_PICKAXE(278),
-        AIR(0)
-    }
-
     var goal: Goal? = null; private set
     var state = State.SEARCHING; private set
     private var searchingState = SearchingState.PLACING
@@ -146,7 +139,7 @@ object AutoObsidian : Module() {
                     mineBlock(placingPos, false)
                 }
                 State.COLLECTING -> {
-                    collectDroppedItem(ItemID.OBSIDIAN.id)
+                    collectDroppedItem(Blocks.OBSIDIAN.id)
                 }
                 State.DONE -> {
                     if (!autoRefill) {
@@ -240,10 +233,10 @@ object AutoObsidian : Module() {
         val passCountCheck = checkObbyCount()
 
         state = when {
-            state == State.DONE && autoRefill && InventoryUtils.countItemAll(ItemID.OBSIDIAN.id) <= threshold -> {
+            state == State.DONE && autoRefill && InventoryUtils.countItemAll(Blocks.OBSIDIAN.id) <= threshold -> {
                 State.SEARCHING
             }
-            state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(ItemID.OBSIDIAN.id, 16.0f) == null) -> {
+            state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(Blocks.OBSIDIAN.id, 16.0f) == null) -> {
                 State.DONE
             }
             state != State.DONE && mc.world.isAirBlock(placingPos) && !passCountCheck -> {
@@ -270,7 +263,7 @@ object AutoObsidian : Module() {
      */
     private fun canPickUpObby(): Boolean {
         return fillMode == FillMode.INFINITE || mc.player?.inventory?.mainInventory?.any {
-            it.isEmpty || it.item.id == ItemID.OBSIDIAN.id && it.count < 64
+            it.isEmpty || it.item.id == Blocks.OBSIDIAN.id && it.count < 64
         } ?: false
     }
 
@@ -278,8 +271,8 @@ object AutoObsidian : Module() {
      * @return True if can still place more ender chest
      */
     private fun checkObbyCount(): Boolean {
-        val inventory = InventoryUtils.countItemAll(ItemID.OBSIDIAN.id)
-        val dropped = EntityUtils.getDroppedItems(ItemID.OBSIDIAN.id, 16.0f).sumBy { it.item.count }
+        val inventory = InventoryUtils.countItemAll(Blocks.OBSIDIAN.id)
+        val dropped = EntityUtils.getDroppedItems(Blocks.OBSIDIAN.id, 16.0f).sumBy { it.item.count }
 
         return when (fillMode) {
             FillMode.TARGET_STACKS -> {
@@ -298,7 +291,7 @@ object AutoObsidian : Module() {
         return mc.player?.inventory?.mainInventory?.sumBy {
             when {
                 it.isEmpty -> 64
-                it.item.id == ItemID.OBSIDIAN.id -> 64 - it.count
+                it.item.id == Blocks.OBSIDIAN.id -> 64 - it.count
                 else -> 0
             }
         } ?: 0
@@ -308,21 +301,21 @@ object AutoObsidian : Module() {
         if (state == State.SEARCHING) {
             if (searchingState != SearchingState.DONE) {
                 searchingState = when {
-                    searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(ItemID.ENDER_CHEST.id) > 0 -> {
+                    searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0 -> {
                         SearchingState.DONE
                     }
                     searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
                         SearchingState.DONE
                     }
                     searchingState == SearchingState.MINING && mc.world.isAirBlock(placingPos) -> {
-                        if (InventoryUtils.countItemAll(ItemID.ENDER_CHEST.id) > 0) {
+                        if (InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0) {
                             SearchingState.COLLECTING
                         } else {
                             // In case if the shulker wasn't placed due to server lag
                             SearchingState.PLACING
                         }
                     }
-                    searchingState == SearchingState.OPENING && (InventoryUtils.countItemAll(ItemID.ENDER_CHEST.id) > 0
+                    searchingState == SearchingState.OPENING && (InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0
                         || InventoryUtils.getSlots(0, 35, 0) == null) -> {
                         SearchingState.PRE_MINING
                     }
@@ -397,10 +390,10 @@ object AutoObsidian : Module() {
 
     private fun placeEnderChest(pos: BlockPos) {
         /* Case where we need to move ender chests into the hotbar */
-        if (InventoryUtils.getSlotsHotbar(ItemID.ENDER_CHEST.id) == null && InventoryUtils.getSlotsNoHotbar(ItemID.ENDER_CHEST.id) != null) {
-            InventoryUtils.moveToHotbar(ItemID.ENDER_CHEST.id, ItemID.DIAMOND_PICKAXE.id)
+        if (InventoryUtils.getSlotsHotbar(Blocks.ENDER_CHEST.id) == null && InventoryUtils.getSlotsNoHotbar(Blocks.ENDER_CHEST.id) != null) {
+            InventoryUtils.moveToHotbar(Blocks.ENDER_CHEST.id, Items.DIAMOND_PICKAXE.id)
             return
-        } else if (InventoryUtils.getSlots(0, 35, ItemID.ENDER_CHEST.id) == null) {
+        } else if (InventoryUtils.getSlots(0, 35, Blocks.ENDER_CHEST.id) == null) {
             /* Case where we are out of ender chests */
             if (searchShulker) {
                 state = State.SEARCHING
@@ -413,7 +406,7 @@ object AutoObsidian : Module() {
         }
 
         /* Else, we already have ender chests in the hotbar */
-        InventoryUtils.swapSlotToItem(ItemID.ENDER_CHEST.id)
+        InventoryUtils.swapSlotToItem(Blocks.ENDER_CHEST.id)
 
         placeBlock(pos)
     }
@@ -421,13 +414,13 @@ object AutoObsidian : Module() {
     private fun openShulker(pos: BlockPos) {
         if (mc.currentScreen is GuiShulkerBox) {
             val container = mc.player.openContainer
-            val slot = container.inventory.subList(0, 27).indexOfFirst { it.item.id == ItemID.ENDER_CHEST.id }
+            val slot = container.inventory.subList(0, 27).indexOfFirst { it.item.id == Blocks.ENDER_CHEST.id }
 
             if (slot != -1) {
                 InventoryUtils.inventoryClick(container.windowId, slot, 0, ClickType.QUICK_MOVE)
                 mc.player.closeScreen()
             } else if (shulkerOpenTimer.tick(100, false)) { // Wait for maximum of 5 seconds
-                if (leaveEmptyShulkers && container.inventory.subList(0, 27).indexOfFirst { it.item.id != ItemID.AIR.id } == -1) {
+                if (leaveEmptyShulkers && container.inventory.subList(0, 27).indexOfFirst { it.item.id != Items.AIR.id } == -1) {
                     searchingState = SearchingState.PRE_MINING
                     mc.player.closeScreen()
                 } else {
@@ -485,7 +478,7 @@ object AutoObsidian : Module() {
      * @return The position of the pickaxe. -1 if there is no match.
      */
     private fun getHotbarNonSilkTouchPick(): Int {
-        val slotsWithPickaxes = InventoryUtils.getSlotsHotbar(ItemID.DIAMOND_PICKAXE.id) ?: return -1
+        val slotsWithPickaxes = InventoryUtils.getSlotsHotbar(Items.DIAMOND_PICKAXE.id) ?: return -1
         for (slot in slotsWithPickaxes) {
             if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, mc.player.inventory.getStackInSlot(slot)) == 0) {
                 return slot
@@ -499,7 +492,7 @@ object AutoObsidian : Module() {
      * @return The position of the pickaxe. -1 if there is no match.
      */
     private fun getInventoryNonSilkTouchPick(): Int {
-        val slotsWithPickaxes = InventoryUtils.getSlotsNoHotbar(ItemID.DIAMOND_PICKAXE.id) ?: return -1
+        val slotsWithPickaxes = InventoryUtils.getSlotsNoHotbar(Items.DIAMOND_PICKAXE.id) ?: return -1
         for (slot in slotsWithPickaxes) {
             if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, mc.player.inventory.getStackInSlot(slot)) == 0) {
                 return slot
