@@ -56,7 +56,7 @@ object AutoObsidian : Module() {
     private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
     private val searchShulker by setting("SearchShulker", false)
     private val leaveEmptyShulkers by setting("LeaveEmptyShulkers", true, { searchShulker })
-    private val autoRefill by setting("AutoRefill", false,{ fillMode != FillMode.INFINITE })
+    private val autoRefill by setting("AutoRefill", false, { fillMode != FillMode.INFINITE })
     private val threshold by setting("RefillThreshold", 8, 1..56, 1, { autoRefill && fillMode != FillMode.INFINITE })
     private val targetStacks by setting("TargetStacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
     private val delayTicks by setting("DelayTicks", 5, 0..10, 1)
@@ -478,7 +478,8 @@ object AutoObsidian : Module() {
      * @return The position of the pickaxe. -1 if there is no match.
      */
     private fun SafeClientEvent.getHotbarNonSilkTouchPick(): Int {
-        val slotsWithPickaxes = InventoryUtils.getSlotsHotbar(Items.DIAMOND_PICKAXE.id) ?: return -1
+        val slotsWithPickaxes = InventoryUtils.getSlotsHotbar(Items.DIAMOND_PICKAXE.id)
+            ?: return -1
 
         for (slot in slotsWithPickaxes) {
             if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player.inventory.getStackInSlot(slot)) == 0) {
