@@ -4,8 +4,7 @@ import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -16,8 +15,10 @@ import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 import java.util.*
@@ -31,30 +32,30 @@ import kotlin.math.sqrt
 )
 object WaypointRender : Module() {
 
-    private val page = register(Settings.e<Page>("Page", Page.INFO_BOX))
+    private val page = setting("Page", Page.INFO_BOX)
 
     /* Page one */
-    private val dimension = register(Settings.enumBuilder(Dimension::class.java, "Dimension").withValue(Dimension.CURRENT).withVisibility { page.value == Page.INFO_BOX })
-    private val showName = register(Settings.booleanBuilder("ShowName").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val showDate = register(Settings.booleanBuilder("ShowDate").withValue(false).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val showCoords = register(Settings.booleanBuilder("ShowCoords").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val showDist = register(Settings.booleanBuilder("ShowDistance").withValue(true).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val textScale = register(Settings.floatBuilder("TextScale").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.INFO_BOX }.build())
-    private val infoBoxRange = register(Settings.integerBuilder("InfoBoxRange").withValue(512).withRange(128, 2048).withVisibility { page.value == Page.INFO_BOX }.build())
+    private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
+    private val showName = setting("ShowName", true, { page.value == Page.INFO_BOX })
+    private val showDate = setting("ShowDate", false, { page.value == Page.INFO_BOX })
+    private val showCoords = setting("ShowCoords", true, { page.value == Page.INFO_BOX })
+    private val showDist = setting("ShowDistance", true, { page.value == Page.INFO_BOX })
+    private val textScale = setting("TextScale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
+    private val infoBoxRange = setting("InfoBoxRange", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = register(Settings.booleanBuilder("RenderRange").withValue(true).withVisibility { page.value == Page.ESP }.build())
-    private val espRange = register(Settings.integerBuilder("Range").withValue(4096).withRange(1024, 16384).withVisibility { page.value == Page.ESP && espRangeLimit.value }.build())
-    private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.ESP }.build())
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.ESP }.build())
-    private val tracer = register(Settings.booleanBuilder("Tracer").withValue(true).withVisibility { page.value == Page.ESP }.build())
-    private val r = register(Settings.integerBuilder("Red").withMinimum(0).withValue(31).withMaximum(255).withVisibility { page.value == Page.ESP }.build())
-    private val g = register(Settings.integerBuilder("Green").withMinimum(0).withValue(200).withMaximum(255).withVisibility { page.value == Page.ESP }.build())
-    private val b = register(Settings.integerBuilder("Blue").withMinimum(0).withValue(63).withMaximum(255).withVisibility { page.value == Page.ESP }.build())
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withVisibility { page.value == Page.ESP && filled.value }.build())
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(160).withRange(0, 255).withVisibility { page.value == Page.ESP && outline.value }.build())
-    private val aTracer = register(Settings.integerBuilder("TracerAlpha").withValue(200).withRange(0, 255).withVisibility { page.value == Page.ESP && tracer.value }.build())
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.0f, 8.0f).build())
+    private val espRangeLimit = setting("RenderRange", true, { page.value == Page.ESP })
+    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
+    private val filled = setting("Filled", true, { page.value == Page.ESP })
+    private val outline = setting("Outline", true, { page.value == Page.ESP })
+    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
+    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
+    private val g = setting("Green",200, 0..255, 1, { page.value == Page.ESP })
+    private val b = setting("Blue",63, 0..255, 1, { page.value == Page.ESP })
+    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
+    private val aOutline = setting("OutlineAlpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
+    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private enum class Dimension {
         CURRENT, ANY
@@ -145,7 +146,7 @@ object WaypointRender : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()
             }
@@ -160,6 +161,7 @@ object WaypointRender : Module() {
                     WaypointUpdateEvent.Type.CLEAR -> waypointMap.clear()
                     WaypointUpdateEvent.Type.RELOAD -> updateList()
                     else -> {
+                        // this is fine, Java meme
                     }
                 }
             }
@@ -200,14 +202,19 @@ object WaypointRender : Module() {
     }
 
     init {
-        with(Setting.SettingListeners {
-            synchronized(lockObject) { updateList() } // This could be called from another thread so we have to synchronize the map
-        }) {
-            dimension.settingListener = this
-            showName.settingListener = this
-            showDate.settingListener = this
-            showCoords.settingListener = this
-            showDist.settingListener = this
+        with(
+            { synchronized(lockObject) { updateList() } } // This could be called from another thread so we have to synchronize the map
+        ) {
+            showName.listeners.add(this)
+            showDate.listeners.add(this)
+            showCoords.listeners.add(this)
+            showDist.listeners.add(this)
+        }
+
+        dimension.listeners.add {
+            synchronized(lockObject) {
+                waypointMap.clear(); updateList()
+            }
         }
     }
 }

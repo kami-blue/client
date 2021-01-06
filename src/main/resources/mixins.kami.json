@@ -69,7 +69,6 @@
     "world.MixinBlockLiquid",
     "world.MixinBlockSoulSand",
     "world.MixinBlockWeb",
-    "world.MixinChunkCache",
     "world.MixinWorld"
   ]
 }

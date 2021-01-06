@@ -9,9 +9,7 @@ import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Setting.SettingListeners
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
@@ -36,62 +34,62 @@ import kotlin.math.*
     modulePriority = 1000
 )
 object ElytraFlight : Module() {
-    private val mode = register(Settings.enumBuilder(ElytraFlightMode::class.java).withName("Mode").withValue(ElytraFlightMode.CONTROL))
-    private val page = register(Settings.e<Page>("Page", Page.GENERIC_SETTINGS))
-    private val durabilityWarning = register(Settings.booleanBuilder("DurabilityWarning").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS })
-    private val threshold = register(Settings.integerBuilder("Broken%").withValue(5).withRange(1, 50).withStep(1).withVisibility { durabilityWarning.value && page.value == Page.GENERIC_SETTINGS })
-    private val autoLanding = register(Settings.booleanBuilder("AutoLanding").withValue(false).withVisibility { page.value == Page.GENERIC_SETTINGS })
+    private val mode = setting("Mode", ElytraFlightMode.CONTROL)
+    private val page = setting("Page", Page.GENERIC_SETTINGS)
+    private val durabilityWarning = setting("DurabilityWarning", true, { page.value == Page.GENERIC_SETTINGS })
+    private val threshold = setting("Broken%", 5, 1..50, 1, { durabilityWarning.value && page.value == Page.GENERIC_SETTINGS })
+    private val autoLanding = setting("AutoLanding", false, { page.value == Page.GENERIC_SETTINGS })
 
     /* Generic Settings */
     /* Takeoff */
-    private val easyTakeOff = register(Settings.booleanBuilder("EasyTakeoff").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS })
-    private val timerControl = register(Settings.booleanBuilder("TakeoffTimer").withValue(true).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS })
-    private val highPingOptimize = register(Settings.booleanBuilder("HighPingOptimize").withValue(false).withVisibility { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS })
-    private val minTakeoffHeight = register(Settings.floatBuilder("MinTakeoffHeight").withValue(0.5f).withRange(0.0f, 1.5f).withStep(0.1f).withVisibility { easyTakeOff.value && !highPingOptimize.value && page.value == Page.GENERIC_SETTINGS })
+    private val easyTakeOff = setting("EasyTakeoff", true, { page.value == Page.GENERIC_SETTINGS })
+    private val timerControl = setting("TakeoffTimer", true, { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS })
+    private val highPingOptimize = setting("HighPingOptimize", false, { easyTakeOff.value && page.value == Page.GENERIC_SETTINGS })
+    private val minTakeoffHeight = setting("MinTakeoffHeight", 0.5f, 0.0f..1.5f, 0.1f, { easyTakeOff.value && !highPingOptimize.value && page.value == Page.GENERIC_SETTINGS })
 
     /* Acceleration */
-    private val accelerateStartSpeed = register(Settings.integerBuilder("StartSpeed").withValue(100).withRange(0, 100).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
-    private val accelerateTime = register(Settings.floatBuilder("AccelerateTime").withValue(0.0f).withRange(0.0f, 10.0f).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
-    private val autoReset = register(Settings.booleanBuilder("AutoReset").withValue(false).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val accelerateStartSpeed = setting("StartSpeed", 100, 0..100, 5, { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val accelerateTime = setting("AccelerateTime", 0.0f, 0.0f..10.0f, 0.25f, { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val autoReset = setting("AutoReset", false, { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
 
     /* Spoof Pitch */
-    private val spoofPitch = register(Settings.booleanBuilder("SpoofPitch").withValue(true).withVisibility { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
-    private val blockInteract = register(Settings.booleanBuilder("BlockInteract").withValue(false).withVisibility { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
-    private val forwardPitch = register(Settings.integerBuilder("ForwardPitch").withValue(0).withRange(-90, 90).withStep(5).withVisibility { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val spoofPitch = setting("SpoofPitch", true, { mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val blockInteract = setting("BlockInteract", false, { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
+    private val forwardPitch = setting("ForwardPitch", 0, -90..90, 5, { spoofPitch.value && mode.value != ElytraFlightMode.BOOST && page.value == Page.GENERIC_SETTINGS })
 
     /* Extra */
-    val elytraSounds: Setting<Boolean> = register(Settings.booleanBuilder("ElytraSounds").withValue(true).withVisibility { page.value == Page.GENERIC_SETTINGS })
-    private val swingSpeed = register(Settings.floatBuilder("SwingSpeed").withValue(1.0f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) })
-    private val swingAmount = register(Settings.floatBuilder("SwingAmount").withValue(0.8f).withRange(0.0f, 2.0f).withVisibility { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) })
+    val elytraSounds = setting("ElytraSounds", true, { page.value == Page.GENERIC_SETTINGS })
+    private val swingSpeed = setting("SwingSpeed", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) })
+    private val swingAmount = setting("SwingAmount", 0.8f, 0.0f..2.0f, 0.1f, { page.value == Page.GENERIC_SETTINGS && (mode.value == ElytraFlightMode.CONTROL || mode.value == ElytraFlightMode.PACKET) })
     /* End of Generic Settings */
 
     /* Mode Settings */
     /* Boost */
-    private val speedBoost = register(Settings.floatBuilder("SpeedB").withValue(1.0f).withRange(0.0f, 10.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
-    private val upSpeedBoost = register(Settings.floatBuilder("UpSpeedB").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
-    private val downSpeedBoost = register(Settings.floatBuilder("DownSpeedB").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
+    private val speedBoost = setting("SpeedB", 1.0f, 0.0f..10.0f, 0.1f, { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
+    private val upSpeedBoost = setting("UpSpeedB", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
+    private val downSpeedBoost = setting("DownSpeedB", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.BOOST && page.value == Page.MODE_SETTINGS })
 
     /* Control */
-    private val boostPitchControl = register(Settings.integerBuilder("BaseBoostPitch").withValue(20).withRange(0, 90).withStep(5).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val ncpStrict = register(Settings.booleanBuilder("NCPStrict").withValue(true).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val legacyLookBoost = register(Settings.booleanBuilder("LegacyLookBoost").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val altitudeHoldControl = register(Settings.booleanBuilder("AutoControlAltitude").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val dynamicDownSpeed = register(Settings.booleanBuilder("DynamicDownSpeed").withValue(false).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val speedControl = register(Settings.floatBuilder("SpeedC").withValue(1.81f).withRange(0.0f, 10.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val fallSpeedControl = register(Settings.floatBuilder("FallSpeedC").withValue(0.00000000000003f).withRange(0.0f, 0.3f).withStep(0.01f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val downSpeedControl = register(Settings.floatBuilder("DownSpeedC").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
-    private val fastDownSpeedControl = register(Settings.floatBuilder("DynamicDownSpeedC").withValue(2.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value && page.value == Page.MODE_SETTINGS })
+    private val boostPitchControl = setting("BaseBoostPitch", 20, 0..90, 5, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val ncpStrict = setting("NCPStrict", true, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val legacyLookBoost = setting("LegacyLookBoost", false, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val altitudeHoldControl = setting("AutoControlAltitude", false, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val dynamicDownSpeed = setting("DynamicDownSpeed", false, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val speedControl = setting("SpeedC", 1.81f, 0.0f..10.0f, 0.1f, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val fallSpeedControl = setting("FallSpeedC", 0.00000000000003f, 0.0f..0.3f, 0.01f, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val downSpeedControl = setting("DownSpeedC", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.CONTROL && page.value == Page.MODE_SETTINGS })
+    private val fastDownSpeedControl = setting("DynamicDownSpeedC", 2.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.CONTROL && dynamicDownSpeed.value && page.value == Page.MODE_SETTINGS })
 
     /* Creative */
-    private val speedCreative = register(Settings.floatBuilder("SpeedCR").withValue(1.8f).withRange(0.0f, 10.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
-    private val fallSpeedCreative = register(Settings.floatBuilder("FallSpeedCR").withValue(0.00001f).withRange(0.0f, 0.3f).withStep(0.01f).withVisibility { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
-    private val upSpeedCreative = register(Settings.floatBuilder("UpSpeedCR").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
-    private val downSpeedCreative = register(Settings.floatBuilder("DownSpeedCR").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
+    private val speedCreative = setting("SpeedCR", 1.8f, 0.0f..10.0f, 0.1f, { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
+    private val fallSpeedCreative = setting("FallSpeedCR", 0.00001f, 0.0f..0.3f, 0.01f, { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
+    private val upSpeedCreative = setting("UpSpeedCR", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
+    private val downSpeedCreative = setting("DownSpeedCR", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.CREATIVE && page.value == Page.MODE_SETTINGS })
 
     /* Packet */
-    private val speedPacket = register(Settings.floatBuilder("SpeedP").withValue(1.8f).withRange(0.0f, 10.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
-    private val fallSpeedPacket = register(Settings.floatBuilder("FallSpeedP").withValue(0.00001f).withRange(0.0f, 0.3f).withStep(0.01f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
-    private val downSpeedPacket = register(Settings.floatBuilder("DownSpeedP").withValue(1.0f).withRange(1.0f, 5.0f).withStep(0.1f).withVisibility { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
+    private val speedPacket = setting("SpeedP", 1.8f, 0.0f..10.0f, 0.1f, { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
+    private val fallSpeedPacket = setting("FallSpeedP", 0.00001f, 0.0f..0.3f, 0.01f, { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
+    private val downSpeedPacket = setting("DownSpeedP", 1.0f, 1.0f..5.0f, 0.1f, { mode.value == ElytraFlightMode.PACKET && page.value == Page.MODE_SETTINGS })
     /* End of Mode Settings */
 
     private enum class ElytraFlightMode {
@@ -344,7 +342,6 @@ object ElytraFlight : Module() {
             ElytraFlightMode.CONTROL -> speedControl.value
             ElytraFlightMode.CREATIVE -> speedCreative.value
             ElytraFlightMode.PACKET -> speedPacket.value
-            else -> 0.0f
         }
     }
 
@@ -508,7 +505,7 @@ object ElytraFlight : Module() {
 
     init {
         /* Reset isFlying states when switching mode */
-        mode.settingListener = SettingListeners {
+        mode.listeners.add {
             runSafe { reset(true) }
         }
     }

@@ -2,13 +2,12 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.mixin.extension.textComponent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
@@ -21,8 +20,6 @@ import org.kamiblue.commons.utils.SystemUtils
 import java.util.*
 import kotlin.collections.HashMap
 
-// TODO: for GUI branch: Update instructions to not use commands
-// The old gui doesn't support string settings
 // TODO: Add proper RSA encryption
 @Module.Info(
     name = "ChatEncryption",
@@ -31,10 +28,12 @@ import kotlin.collections.HashMap
     modulePriority = -69420
 )
 object ChatEncryption : Module() {
-    private val commands = register(Settings.b("Commands", false))
-    private val self = register(Settings.b("DecryptOwn", true))
-    private val keySetting = register(Settings.s("KeySetting", "DefaultKey"))
-    val delimiter = register(Settings.stringBuilder("Delimiter").withValue("%").withRestriction { it.length == 1 && !charsSet.contains(it.first()) })
+    private val commands = setting("Commands", false)
+    private val self = setting("DecryptOwn", true)
+    private val keySetting = setting("KeySetting", "DefaultKey")
+    val delimiter = setting("Delimiter", "%", consumer = { prev: String, value: String ->
+        if (value.length == 1 && !chars.contains(value.first())) value else prev
+    })
 
     private const val personFrowning = "🙍"
 
@@ -44,13 +43,12 @@ object ChatEncryption : Module() {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
         ',', '.', '!', '?', ' '
     )
-    private val charsSet = chars.toSet()
 
-        private val charsMap: Map<Char, Int> = HashMap<Char, Int>(67).apply {
-            for ((index, char) in chars.withIndex()) {
-                put(char, index)
-            }
+    private val charsMap: Map<Char, Int> = HashMap<Char, Int>(67).apply {
+        for ((index, char) in chars.withIndex()) {
+            put(char, index)
         }
+    }
 
     private val vigenereSquare = Array(chars.size) { index1 ->
         CharArray(chars.size) { index2 ->
@@ -91,9 +89,7 @@ object ChatEncryption : Module() {
             key = randomChars()
             keySetting.value = key
 
-            MessageSendHelper.sendChatMessage("$chatName Your encryption key was set to ${formatValue(key)}, and copied to your clipboard.\n" +
-                "You may change it with ${formatValue("${CommandManager.prefix}set $name key <newKey>")}"
-            )
+            MessageSendHelper.sendChatMessage("$chatName Your encryption key was set to ${formatValue(key)}, and copied to your clipboard.")
 
             defaultScope.launch(Dispatchers.IO) {
                 SystemUtils.copyToClipboard(key)
@@ -179,8 +175,8 @@ object ChatEncryption : Module() {
         val key = getOrGenKey()
 
         for ((index, char) in string.withIndex()) {
-            val indexOfKey = charsMap[key[index % key.length]]?: continue
-            val indexOfChar = charsMap[char]?: continue
+            val indexOfKey = charsMap[key[index % key.length]] ?: continue
+            val indexOfChar = charsMap[char] ?: continue
             val encodedChar = vigenereSquare[indexOfKey][indexOfChar]
 
             append(encodedChar)
@@ -191,8 +187,8 @@ object ChatEncryption : Module() {
         val key = getOrGenKey()
 
         for ((index, char) in string.withIndex()) {
-            val indexOfKey = charsMap[key[index % key.length]]?: continue
-            val indexOfChar = charsMap[char]?: continue
+            val indexOfKey = charsMap[key[index % key.length]] ?: continue
+            val indexOfChar = charsMap[char] ?: continue
             val decodedChar = reversedSquare[indexOfChar][indexOfKey]
 
             append(decodedChar)

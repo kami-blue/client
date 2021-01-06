@@ -1,9 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorGradient
@@ -12,6 +11,7 @@ import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.*
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.originalName
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
@@ -40,69 +41,69 @@ import kotlin.math.roundToInt
         category = Module.Category.RENDER
 )
 object Nametags : Module() {
-    private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = register(Settings.booleanBuilder("Self").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE }.build())
-    private val experience = register(Settings.booleanBuilder("Experience").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val items = register(Settings.booleanBuilder("Items").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(0, 128).withStep(4).withVisibility { page.value == Page.ENTITY_TYPE })
+    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE })
+    private val items = setting("Items", true, { page.value == Page.ENTITY_TYPE })
+    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
+    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting("Range", 64, 0..128, 4, { page.value == Page.ENTITY_TYPE })
 
     /* Content */
-    private val line1left = register(Settings.enumBuilder(ContentType::class.java, "Line1Left").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
-    private val line1center = register(Settings.enumBuilder(ContentType::class.java, "Line1Center").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
-    private val line1right = register(Settings.enumBuilder(ContentType::class.java, "Line1Right").withValue(ContentType.NONE).withVisibility { page.value == Page.CONTENT })
-    private val line2left = register(Settings.enumBuilder(ContentType::class.java, "Line2Left").withValue(ContentType.NAME).withVisibility { page.value == Page.CONTENT })
-    private val line2center = register(Settings.enumBuilder(ContentType::class.java, "Line2Center").withValue(ContentType.PING).withVisibility { page.value == Page.CONTENT })
-    private val line2right = register(Settings.enumBuilder(ContentType::class.java, "Line2Right").withValue(ContentType.TOTAL_HP).withVisibility { page.value == Page.CONTENT })
-    private val dropItemCount = register(Settings.booleanBuilder("DropItemCount").withValue(true).withVisibility { page.value == Page.CONTENT && items.value })
-    private val maxDropItems = register(Settings.integerBuilder("MaxDropItems").withValue(5).withRange(2, 16).withStep(1).withVisibility { page.value == Page.CONTENT && items.value })
+    private val line1left = setting("Line1Left", ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1center = setting("Line1Center", ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1right = setting("Line1Right", ContentType.NONE, { page.value == Page.CONTENT })
+    private val line2left = setting("Line2Left", ContentType.NAME, { page.value == Page.CONTENT })
+    private val line2center = setting("Line2Center", ContentType.PING, { page.value == Page.CONTENT })
+    private val line2right = setting("Line2Right", ContentType.TOTAL_HP, { page.value == Page.CONTENT })
+    private val dropItemCount = setting("DropItemCount", true, { page.value == Page.CONTENT && items.value })
+    private val maxDropItems = setting("MaxDropItems", 5, 2..16, 1, { page.value == Page.CONTENT && items.value })
 
     /* Item */
-    private val mainHand = register(Settings.booleanBuilder("MainHand").withValue(true).withVisibility { page.value == Page.ITEM })
-    private val offhand = register(Settings.booleanBuilder("OffHand").withValue(true).withVisibility { page.value == Page.ITEM })
-    private val invertHand = register(Settings.booleanBuilder("InvertHand").withValue(false).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value) })
-    private val armor = register(Settings.booleanBuilder("Armor").withValue(true).withVisibility { page.value == Page.ITEM })
-    private val count = register(Settings.booleanBuilder("Count").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val dura = register(Settings.booleanBuilder("Dura").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val enchantment = register(Settings.booleanBuilder("Enchantment").withValue(true).withVisibility { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val itemScale = register(Settings.floatBuilder("ItemScale").withValue(1f).withRange(0.25f, 2f).withStep(0.25f).withVisibility { page.value == Page.ITEM })
+    private val mainHand = setting("MainHand", true, { page.value == Page.ITEM })
+    private val offhand = setting("OffHand", true, { page.value == Page.ITEM })
+    private val invertHand = setting("InvertHand", false, { page.value == Page.ITEM && (mainHand.value || offhand.value) })
+    private val armor = setting("Armor", true, { page.value == Page.ITEM })
+    private val count = setting("Count", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val dura = setting("Dura", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val enchantment = setting("Enchantment", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val itemScale = setting("ItemScale", 1f, 0.25f..2f, 0.25f, { page.value == Page.ITEM })
 
     /* Frame */
-    private val nameFrame = register(Settings.booleanBuilder("NameFrame").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val itemFrame = register(Settings.booleanBuilder("ItemFrame").withValue(false).withVisibility { page.value == Page.FRAME })
-    private val dropItemFrame = register(Settings.booleanBuilder("DropItemFrame").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val filled = register(Settings.booleanBuilder("Filled").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val rFilled = register(Settings.integerBuilder("FilledRed").withValue(39).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val gFilled = register(Settings.integerBuilder("FilledGreen").withValue(36).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val bFilled = register(Settings.integerBuilder("FilledBlue").withValue(64).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(169).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && filled.value })
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.FRAME })
-    private val rOutline = register(Settings.integerBuilder("OutlineRed").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val gOutline = register(Settings.integerBuilder("OutlineGreen").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val bOutline = register(Settings.integerBuilder("OutlineBlue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(240).withRange(0, 255).withStep(1).withVisibility { page.value == Page.FRAME && outline.value })
-    private val outlineWidth = register(Settings.floatBuilder("OutlineWidth").withValue(2f).withRange(0f, 5f).withVisibility { page.value == Page.FRAME && outline.value })
-    private val margins = register(Settings.floatBuilder("Margins").withValue(2f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
-    private val cornerRadius = register(Settings.floatBuilder("CornerRadius").withValue(2f).withRange(0f, 10f).withVisibility { page.value == Page.FRAME })
+    private val nameFrame = setting("NameFrame", true, { page.value == Page.FRAME })
+    private val itemFrame = setting("ItemFrame", false, { page.value == Page.FRAME })
+    private val dropItemFrame = setting("DropItemFrame", true, { page.value == Page.FRAME })
+    private val filled = setting("Filled", true, { page.value == Page.FRAME })
+    private val rFilled = setting("FilledRed", 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val gFilled = setting("FilledGreen", 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val bFilled = setting("FilledBlue", 64, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val aFilled = setting("FilledAlpha", 169, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val outline = setting("Outline", true, { page.value == Page.FRAME })
+    private val rOutline = setting("OutlineRed", 155, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val gOutline = setting("OutlineGreen", 144, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val bOutline = setting("OutlineBlue", 255, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val aOutline = setting("OutlineAlpha", 240, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val outlineWidth = setting("OutlineWidth", 2.0f, 0.0f..5.0f, 0.1f, { page.value == Page.FRAME && outline.value })
+    private val margins = setting("Margins", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
+    private val cornerRadius = setting("CornerRadius", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
 
     /* Rendering settings */
-    private val rText = register(Settings.integerBuilder("TextRed").withValue(232).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val gText = register(Settings.integerBuilder("TextGreen").withValue(229).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val bText = register(Settings.integerBuilder("TextBlue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val aText = register(Settings.integerBuilder("TextAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING })
-    private val customFont = register(Settings.booleanBuilder("CustomFont").withValue(true).withVisibility { page.value == Page.RENDERING })
-    private val textShadow = register(Settings.booleanBuilder("TextShadow").withValue(true).withVisibility { page.value == Page.RENDERING })
-    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(-2.5f, 2.5f).withStep(0.05f).withVisibility { page.value == Page.RENDERING })
-    private val scale = register(Settings.floatBuilder("Scale").withValue(1f).withRange(0.25f, 5f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
-    private val distScaleFactor = register(Settings.floatBuilder("DistanceScaleFactor").withValue(0.0f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
-    private val minDistScale = register(Settings.floatBuilder("MinDistanceScale").withValue(0.35f).withRange(0f, 1f).withVisibility { page.value == Page.RENDERING })
+    private val rText = setting("TextRed", 232, 0..255, 1, { page.value == Page.RENDERING })
+    private val gText = setting("TextGreen", 229, 0..255, 1, { page.value == Page.RENDERING })
+    private val bText = setting("TextBlue", 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val aText = setting("TextAlpha", 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val customFont = setting("CustomFont", true, { page.value == Page.RENDERING })
+    private val textShadow = setting("TextShadow", true, { page.value == Page.RENDERING })
+    private val yOffset = setting("YOffset", 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
+    private val scale = setting("Scale", 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
+    private val distScaleFactor = setting("DistanceScaleFactor", 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
+    private val minDistScale = setting("MinDistanceScale", 0.35f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, CONTENT, ITEM, FRAME, RENDERING
@@ -290,7 +291,7 @@ object Nametags : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             // Updating stuff in different ticks to avoid overloading
             when (updateTick) {
                 0 -> { // Adding items

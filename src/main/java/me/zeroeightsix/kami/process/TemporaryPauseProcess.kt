@@ -12,7 +12,7 @@ object TemporaryPauseProcess : IBaritoneProcess {
     }
 
     override fun priority(): Double {
-        return 3.0
+        return 5.0
     }
 
     override fun isActive(): Boolean {

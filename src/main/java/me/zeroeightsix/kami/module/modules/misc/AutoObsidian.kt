@@ -9,9 +9,8 @@ import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.modules.player.NoBreakAnimation
 import me.zeroeightsix.kami.process.AutoObsidianProcess
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
@@ -19,7 +18,7 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils
-import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
@@ -53,15 +52,15 @@ import org.kamiblue.event.listener.listener
     description = "Breaks down Ender Chests to restock obsidian"
 )
 object AutoObsidian : Module() {
-    private val fillMode = register(Settings.e<FillMode>("FillMode", FillMode.TARGET_STACKS))
-    private val searchShulker = register(Settings.b("SearchShulker", false))
-    private val leaveEmptyShulkers = register(Settings.booleanBuilder("LeaveEmptyShulkers").withValue(true).withVisibility { searchShulker.value == true })
-    private val autoRefill = register(Settings.booleanBuilder("AutoRefill").withValue(false).withVisibility { fillMode.value != FillMode.INFINITE })
-    private val threshold = register(Settings.integerBuilder("RefillThreshold").withValue(8).withRange(1, 56).withVisibility { autoRefill.value && fillMode.value != FillMode.INFINITE })
-    private val targetStacks = register(Settings.integerBuilder("TargetStacks").withValue(1).withRange(1, 20).withVisibility { fillMode.value == FillMode.TARGET_STACKS })
-    private val delayTicks = register(Settings.integerBuilder("DelayTicks").withValue(5).withRange(0, 10))
-    private val interacting = register(Settings.e<InteractMode>("InteractMode", InteractMode.SPOOF))
-    private val maxReach = register(Settings.floatBuilder("MaxReach").withValue(4.5F).withRange(2.0f, 6.0f).withStep(0.1f))
+    private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
+    private val searchShulker by setting("SearchShulker", false)
+    private val leaveEmptyShulkers by setting("LeaveEmptyShulkers", true, { searchShulker })
+    private val autoRefill by setting("AutoRefill", false,{ fillMode != FillMode.INFINITE })
+    private val threshold by setting("RefillThreshold", 8, 1..56, 1, { autoRefill && fillMode != FillMode.INFINITE })
+    private val targetStacks by setting("TargetStacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
+    private val delayTicks by setting("DelayTicks", 5, 0..10, 1)
+    private val interacting by setting("InteractMode", InteractMode.SPOOF)
+    private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
         TARGET_STACKS("Target stacks", "Target Stacks Reached"),
@@ -130,7 +129,7 @@ object AutoObsidian : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END || mc.playerController == null
-                || !tickTimer.tick(delayTicks.value.toLong())) return@safeListener
+                || !tickTimer.tick(delayTicks.toLong())) return@safeListener
 
             updateState()
             when (state) {
@@ -150,11 +149,11 @@ object AutoObsidian : Module() {
                     collectDroppedItem(ItemID.OBSIDIAN.id)
                 }
                 State.DONE -> {
-                    if (!autoRefill.value) {
-                        sendChatMessage("$chatName ${fillMode.value.message}, disabling.")
+                    if (!autoRefill) {
+                        sendChatMessage("$chatName ${fillMode.message}, disabling.")
                         disable()
                     } else {
-                        if (active) sendChatMessage("$chatName ${fillMode.value.message}, stopping.")
+                        if (active) sendChatMessage("$chatName ${fillMode.message}, stopping.")
                         reset()
                     }
                 }
@@ -169,7 +168,7 @@ object AutoObsidian : Module() {
             if (event.phase != Phase.PRE || rotateTimer.tick(20L, false)) return@listener
             val rotation = lastHitVec?.let { getRotationTo(it) } ?: return@listener
 
-            when (interacting.value) {
+            when (interacting) {
                 InteractMode.SPOOF -> {
                     val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
                     PlayerPacketManager.addPacket(this, packet)
@@ -211,7 +210,7 @@ object AutoObsidian : Module() {
         val eyePos = mc.player.getPositionEyes(1f)
         if (isPositionValid(placingPos, mc.world.getBlockState(placingPos), eyePos)) return
 
-        val posList = VectorUtils.getBlockPosInSphere(eyePos, maxReach.value)
+        val posList = VectorUtils.getBlockPosInSphere(eyePos, maxReach)
             .sortedBy { it.distanceSqToCenter(eyePos.x, eyePos.y, eyePos.z) }
             .map { it to mc.world.getBlockState(it) }
             .toList()
@@ -235,13 +234,13 @@ object AutoObsidian : Module() {
             && (blockState.block.let { it == Blocks.ENDER_CHEST || it is BlockShulkerBox }
             || WorldUtils.isPlaceable(pos))
             && mc.world.isAirBlock(pos.up())
-            && mc.world.rayTraceBlocks(eyePos, pos.toVec3d())?.let { it.typeOfHit == RayTraceResult.Type.MISS } ?: true
+            && mc.world.rayTraceBlocks(eyePos, pos.toVec3dCenter())?.let { it.typeOfHit == RayTraceResult.Type.MISS } ?: true
 
     private fun updateMainState() {
         val passCountCheck = checkObbyCount()
 
         state = when {
-            state == State.DONE && autoRefill.value && InventoryUtils.countItemAll(ItemID.OBSIDIAN.id) <= threshold.value -> {
+            state == State.DONE && autoRefill && InventoryUtils.countItemAll(ItemID.OBSIDIAN.id) <= threshold -> {
                 State.SEARCHING
             }
             state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(ItemID.OBSIDIAN.id, 16.0f) == null) -> {
@@ -270,7 +269,7 @@ object AutoObsidian : Module() {
      * There must be at least one slot which is either empty, or contains a stack of obsidian less than 64
      */
     private fun canPickUpObby(): Boolean {
-        return fillMode.value == FillMode.INFINITE || mc.player?.inventory?.mainInventory?.any {
+        return fillMode == FillMode.INFINITE || mc.player?.inventory?.mainInventory?.any {
             it.isEmpty || it.item.id == ItemID.OBSIDIAN.id && it.count < 64
         } ?: false
     }
@@ -282,9 +281,9 @@ object AutoObsidian : Module() {
         val inventory = InventoryUtils.countItemAll(ItemID.OBSIDIAN.id)
         val dropped = EntityUtils.getDroppedItems(ItemID.OBSIDIAN.id, 16.0f).sumBy { it.item.count }
 
-        return when (fillMode.value!!) {
+        return when (fillMode) {
             FillMode.TARGET_STACKS -> {
-                ((inventory + dropped) / 8.0f).ceilToInt() / 8 < targetStacks.value
+                ((inventory + dropped) / 8.0f).ceilToInt() / 8 < targetStacks
             }
             FillMode.FILL_INVENTORY -> {
                 countEmptySlots() - dropped >= 8
@@ -346,7 +345,7 @@ object AutoObsidian : Module() {
     }
 
     private fun searchingState() {
-        if (searchShulker.value) {
+        if (searchShulker) {
             when (searchingState) {
                 SearchingState.PLACING -> {
                     placeShulker(placingPos)
@@ -403,7 +402,7 @@ object AutoObsidian : Module() {
             return
         } else if (InventoryUtils.getSlots(0, 35, ItemID.ENDER_CHEST.id) == null) {
             /* Case where we are out of ender chests */
-            if (searchShulker.value) {
+            if (searchShulker) {
                 state = State.SEARCHING
             } else {
                 sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
@@ -428,7 +427,7 @@ object AutoObsidian : Module() {
                 InventoryUtils.inventoryClick(container.windowId, slot, 0, ClickType.QUICK_MOVE)
                 mc.player.closeScreen()
             } else if (shulkerOpenTimer.tick(100, false)) { // Wait for maximum of 5 seconds
-                if (leaveEmptyShulkers.value && container.inventory.subList(0, 27).indexOfFirst { it.item.id != ItemID.AIR.id } == -1) {
+                if (leaveEmptyShulkers && container.inventory.subList(0, 27).indexOfFirst { it.item.id != ItemID.AIR.id } == -1) {
                     searchingState = SearchingState.PRE_MINING
                     mc.player.closeScreen()
                 } else {
@@ -472,7 +471,6 @@ object AutoObsidian : Module() {
             delay(10L)
             onMainThreadSafe {
                 placeBlock(pair.second, pair.first)
-                if (NoBreakAnimation.isEnabled) NoBreakAnimation.resetMining()
             }
 
             delay(10L)

@@ -10,6 +10,6 @@ import me.zeroeightsix.kami.module.Module
         name = "CameraClip",
         category = Module.Category.RENDER,
         description = "Allows your 3rd person camera to pass through blocks",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object CameraClip : Module()

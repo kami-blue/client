@@ -3,17 +3,17 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
 import net.minecraft.init.MobEffects
@@ -53,50 +53,50 @@ import kotlin.math.min
 )
 object CrystalAura : Module() {
     /* Settings */
-    private val page = register(Settings.e<Page>("Page", Page.GENERAL))
+    private val page = setting("Page", Page.GENERAL)
 
     /* General */
-    private val noSuicideThreshold = register(Settings.floatBuilder("NoSuicide").withValue(8.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.GENERAL })
-    private val rotationTolerance = register(Settings.integerBuilder("RotationTolerance").withValue(10).withRange(5, 25).withStep(5).withVisibility { page.value == Page.GENERAL })
-    private val maxYawSpeed = register(Settings.integerBuilder("MaxYawSpeed").withValue(25).withRange(10, 100).withStep(5).withVisibility { page.value == Page.GENERAL })
-    private val swingMode = register(Settings.enumBuilder(SwingMode::class.java, "SwingMode").withValue(SwingMode.CLIENT).withVisibility { page.value == Page.GENERAL })
+    private val noSuicideThreshold = setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page.value == Page.GENERAL })
+    private val rotationTolerance = setting("RotationTolerance", 10, 5..50, 5, { page.value == Page.GENERAL })
+    private val maxYawSpeed = setting("MaxYawSpeed", 25, 10..100, 5, { page.value == Page.GENERAL })
+    private val swingMode = setting("SwingMode", SwingMode.CLIENT, { page.value == Page.GENERAL })
 
     /* Force place */
-    private val bindForcePlace = register(Settings.custom("BindForcePlace", Bind.none(), BindConverter()).withVisibility { page.value == Page.FORCE_PLACE })
-    private val forcePlaceHealth = register(Settings.floatBuilder("ForcePlaceHealth").withValue(6.0f).withRange(0.0f, 20.0f).withVisibility { page.value == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura = register(Settings.integerBuilder("ForcePlaceArmorDura").withValue(10).withRange(0, 50).withStep(1).withVisibility { page.value == Page.FORCE_PLACE })
-    private val minDamageForcePlace = register(Settings.floatBuilder("MinDamageForcePlace").withValue(1.5f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.FORCE_PLACE })
+    private val bindForcePlace = setting("BindForcePlace", Bind(), { page.value == Page.FORCE_PLACE })
+    private val forcePlaceHealth = setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page.value == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura = setting("ForcePlaceArmorDura", 10, 0..50, 1, { page.value == Page.FORCE_PLACE })
+    private val minDamageForcePlace = setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page.value == Page.FORCE_PLACE })
 
     /* Place page one */
-    private val doPlace = register(Settings.booleanBuilder("Place").withValue(true).withVisibility { page.value == Page.PLACE_ONE })
-    private val autoSwap = register(Settings.booleanBuilder("AutoSwap").withValue(true).withVisibility { page.value == Page.PLACE_ONE })
-    private val spoofHotbar = register(Settings.booleanBuilder("SpoofHotbar").withValue(true).withVisibility { page.value == Page.PLACE_ONE && autoSwap.value })
-    private val placeSwing = register(Settings.booleanBuilder("PlaceSwing").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
-    private val placeSync = register(Settings.booleanBuilder("PlaceSync").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
-    private val extraPlacePacket = register(Settings.booleanBuilder("ExtraPlacePacket").withValue(false).withVisibility { page.value == Page.PLACE_ONE })
+    private val doPlace = setting("Place", true, { page.value == Page.PLACE_ONE })
+    private val autoSwap = setting("AutoSwap", true, { page.value == Page.PLACE_ONE })
+    private val spoofHotbar = setting("SpoofHotbar", true, { page.value == Page.PLACE_ONE && autoSwap.value })
+    private val placeSwing = setting("PlaceSwing", false, { page.value == Page.PLACE_ONE })
+    private val placeSync = setting("PlaceSync", false, { page.value == Page.PLACE_ONE })
+    private val extraPlacePacket = setting("ExtraPlacePacket", false, { page.value == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP = register(Settings.floatBuilder("MinDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO })
-    private val maxSelfDamageP = register(Settings.floatBuilder("MaxSelfDamagePlace").withValue(2.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.PLACE_TWO })
-    private val placeOffset = register(Settings.floatBuilder("PlaceOffset").withValue(1.0f).withRange(0f, 1f).withStep(0.05f).withVisibility { page.value == Page.PLACE_TWO })
-    private val maxCrystal = register(Settings.integerBuilder("MaxCrystal").withValue(2).withRange(1, 5).withVisibility { page.value == Page.PLACE_TWO })
-    private val placeDelay = register(Settings.integerBuilder("PlaceDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.PLACE_TWO })
-    private val placeRange = register(Settings.floatBuilder("PlaceRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
-    private val wallPlaceRange = register(Settings.floatBuilder("WallPlaceRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.PLACE_TWO })
+    private val minDamageP = setting("MinDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page.value == Page.PLACE_TWO })
+    private val maxSelfDamageP = setting("MaxSelfDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page.value == Page.PLACE_TWO })
+    private val placeOffset = setting("PlaceOffset", 1.0f, 0f..1f, 0.05f, { page.value == Page.PLACE_TWO })
+    private val maxCrystal = setting("MaxCrystal", 2, 1..5, 1, { page.value == Page.PLACE_TWO })
+    private val placeDelay = setting("PlaceDelay", 1, 1..10, 1, { page.value == Page.PLACE_TWO })
+    private val placeRange = setting("PlaceRange", 4.0f, 0.0f..5.0f, 0.25f, { page.value == Page.PLACE_TWO })
+    private val wallPlaceRange = setting("WallPlaceRange", 2.0f, 0.0f..5.0f, 0.25f, { page.value == Page.PLACE_TWO })
 
     /* Explode page one */
-    private val doExplode = register(Settings.booleanBuilder("Explode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
-    private val autoForceExplode = register(Settings.booleanBuilder("AutoForceExplode").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
-    private val antiWeakness = register(Settings.booleanBuilder("AntiWeakness").withValue(true).withVisibility { page.value == Page.EXPLODE_ONE })
+    private val doExplode = setting("Explode", true, { page.value == Page.EXPLODE_ONE })
+    private val autoForceExplode = setting("AutoForceExplode", true, { page.value == Page.EXPLODE_ONE })
+    private val antiWeakness = setting("AntiWeakness", true, { page.value == Page.EXPLODE_ONE })
 
     /* Explode page two */
-    private val minDamageE = register(Settings.floatBuilder("MinDamageExplode").withValue(6.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val maxSelfDamageE = register(Settings.floatBuilder("MaxSelfDamageExplode").withValue(3.0f).withRange(0.0f, 10.0f).withStep(0.25f).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val swapDelay = register(Settings.integerBuilder("SwapDelay").withValue(10).withRange(1, 50).withStep(2).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val hitDelay = register(Settings.integerBuilder("HitDelay").withValue(1).withRange(1, 10).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val hitAttempts = register(Settings.integerBuilder("HitAttempts").withValue(4).withRange(0, 8).withStep(1).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val explodeRange = register(Settings.floatBuilder("ExplodeRange").withValue(4.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
-    private val wallExplodeRange = register(Settings.floatBuilder("WallExplodeRange").withValue(2.0f).withRange(0.0f, 5.0f).withVisibility { page.value == Page.EXPLODE_TWO })
+    private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
+    private val maxSelfDamageE = setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
+    private val swapDelay = setting("SwapDelay", 10, 1..50, 2, { page.value == Page.EXPLODE_TWO })
+    private val hitDelay = setting("HitDelay", 1, 1..10, 1, { page.value == Page.EXPLODE_TWO })
+    private val hitAttempts = setting("HitAttempts", 4, 0..8, 1, { page.value == Page.EXPLODE_TWO })
+    private val explodeRange = setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
+    private val wallExplodeRange = setting("WallExplodeRange", 2.0f, 0.0f..5.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
     /* End of settings */
 
     private enum class Page {
@@ -190,7 +190,7 @@ object CrystalAura : Module() {
             }
         }
 
-        listener<SafeTickEvent>(2000) {
+        safeListener<TickEvent.ClientTickEvent>(2000) {
             if (it.phase == TickEvent.Phase.START) {
                 inactiveTicks++
                 hitTimer++
@@ -198,7 +198,7 @@ object CrystalAura : Module() {
                 updateYawSpeed()
             }
 
-            if (CombatManager.isOnTopPriority(this) && !CombatSetting.pause && packetList.size == 0) {
+            if (CombatManager.isOnTopPriority(CrystalAura) && !CombatSetting.pause && packetList.size == 0) {
                 updateMap()
                 if (canExplode()) explode()
                 else if (canPlace()) place()

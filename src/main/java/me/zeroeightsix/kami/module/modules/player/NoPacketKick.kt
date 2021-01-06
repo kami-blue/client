@@ -10,6 +10,6 @@ import me.zeroeightsix.kami.module.Module
         name = "NoPacketKick",
         category = Module.Category.PLAYER,
         description = "Suppress network exceptions and prevent getting kicked",
-        showOnArray = Module.ShowOnArray.OFF
+        showOnArray = false
 )
 object NoPacketKick : Module()

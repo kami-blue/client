@@ -13,7 +13,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.threads.mainScope
-import me.zeroeightsix.kami.util.threads.onMainThread
+import me.zeroeightsix.kami.util.threads.onMainThreadW
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.io.File
@@ -124,7 +124,7 @@ object KamiMojiManager : Manager {
         try {
             val image = ImageIO.read(file)
 
-            onMainThread {
+            onMainThreadW(5000L) {
                 val dynamicTexture = DynamicTexture(image)
                 val resourceLocation = Wrapper.minecraft.textureManager.getDynamicTextureLocation(name, dynamicTexture)
                 emojiMap[name] = resourceLocation

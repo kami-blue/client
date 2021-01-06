@@ -41,7 +41,7 @@ object GenerateWebsiteCommand : ClientCommand(
                             it.appendLine("    <summary>$category (${modules.size})</summary>")
                             it.appendLine("    <p><ul>")
                             for (module in modules) {
-                                it.appendLine("        <li>${module.name.value}<p><i>${module.description}</i></p></li>")
+                                it.appendLine("        <li>${module.name}<p><i>${module.description}</i></p></li>")
                             }
                             it.appendLine("    </ul></p>")
                             it.appendLine("</details>")

@@ -1,21 +1,21 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.Phase
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.event.events.RenderShaderEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.entityOutlineShader
 import me.zeroeightsix.kami.mixin.extension.listShaders
 import me.zeroeightsix.kami.mixin.extension.renderOutlines
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.graphics.ShaderHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Shader
 import net.minecraft.entity.Entity
@@ -24,6 +24,7 @@ import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -32,36 +33,36 @@ import org.kamiblue.event.listener.listener
         description = "Highlights entities"
 )
 object ESP : Module() {
-    private val page = register(Settings.e<Page>("Page", Page.ENTITY_TYPE))
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val all = register(Settings.booleanBuilder("AllEntity").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE })
-    private val experience = register(Settings.booleanBuilder("Experience").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val arrows = register(Settings.booleanBuilder("Arrows").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val throwable = register(Settings.booleanBuilder("Throwable").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val items = register(Settings.booleanBuilder("Items").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.ENTITY_TYPE && !all.value })
-    private val range = register(Settings.integerBuilder("Range").withValue(64).withRange(1, 128).withVisibility { page.value == Page.ENTITY_TYPE })
+    private val all = setting("AllEntity", false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val items = setting("Items", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val mode = register(Settings.enumBuilder(ESPMode::class.java, "Mode").withValue(ESPMode.SHADER).withVisibility { page.value == Page.RENDERING })
-    private val hideOriginal = register(Settings.booleanBuilder("HideOriginal").withValue(false).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val filled = register(Settings.booleanBuilder("Filled").withValue(false).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val outline = register(Settings.booleanBuilder("Outline").withValue(true).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val r = register(Settings.integerBuilder("Red").withValue(155).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val g = register(Settings.integerBuilder("Green").withValue(144).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val b = register(Settings.integerBuilder("Blue").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aFilled = register(Settings.integerBuilder("FilledAlpha").withValue(63).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aOutline = register(Settings.integerBuilder("OutlineAlpha").withValue(255).withRange(0, 255).withStep(1).withVisibility { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val blurRadius = register(Settings.floatBuilder("BlurRadius").withValue(0f).withRange(0f, 16f).withStep(0.5f).withVisibility { page.value == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val width = register(Settings.floatBuilder("Width").withValue(2f).withRange(1f, 8f).withStep(0.25f).withVisibility { page.value == Page.RENDERING })
+    private val mode = setting("Mode", ESPMode.SHADER, { page.value == Page.RENDERING })
+    private val hideOriginal = setting("HideOriginal", false, { page.value == Page.RENDERING && mode.value == ESPMode.SHADER })
+    private val filled = setting("Filled", false, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val outline = setting("Outline", true, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1, { page.value == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val blurRadius = setting("BlurRadius", 0f, 0f..16f, 0.5f, { page.value == Page.RENDERING && mode.value == ESPMode.SHADER })
+    private val width = setting("Width", 2f, 1f..8f, 0.25f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING
@@ -79,7 +80,7 @@ object ESP : Module() {
     val frameBuffer = shaderHelper.getFrameBuffer("final")
 
     init {
-        mode.settingListener = Setting.SettingListeners {
+        mode.listeners.add {
             drawingOutline = false
             drawNametag = false
             resetGlow()
@@ -88,12 +89,10 @@ object ESP : Module() {
         listener<RenderEntityEvent> {
             if (mode.value != ESPMode.SHADER || mc.renderManager.renderOutlines || !entityList.contains(it.entity)) return@listener
 
-            if (it.phase == Phase.PRE) {
-                if (hideOriginal.value) {
-                    // Steal it from Minecraft rendering kek
-                    prepareFrameBuffer()
-                    drawNametag = true
-                }
+            if (it.phase == Phase.PRE && hideOriginal.value) {
+                // Steal it from Minecraft rendering kek
+                prepareFrameBuffer()
+                drawNametag = true
             }
 
             if (it.phase == Phase.PERI) {
@@ -158,7 +157,7 @@ object ESP : Module() {
             }
         }
 
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             entityList.clear()
             entityList.addAll(getEntityList())
 
@@ -168,7 +167,7 @@ object ESP : Module() {
                         shader.shaderManager.getShaderUniform("Radius")?.set(width.value)
                     }
 
-                    for (entity in mc.world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
+                    for (entity in world.loadedEntityList) { // Set glow for entities in the list. Remove glow for entities not in the list
                         entity.isGlowing = entityList.contains(entity)
                     }
                 } else {
@@ -184,20 +183,20 @@ object ESP : Module() {
         }
     }
 
-    private fun getEntityList(): List<Entity> {
+    private fun SafeClientEvent.getEntityList(): List<Entity> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val entityList = ArrayList<Entity>()
         if (all.value) {
-            for (entity in mc.world.loadedEntityList) {
+            for (entity in world.loadedEntityList) {
                 if (entity == mc.renderViewEntity) continue
                 if (mc.player.getDistance(entity) > range.value) continue
                 entityList.add(entity)
             }
         } else {
             entityList.addAll(getTargetList(player, mob, invisible.value, range.value.toFloat(), ignoreSelf = false))
-            for (entity in mc.world.loadedEntityList) {
-                if (entity == mc.player) continue
+            for (entity in world.loadedEntityList) {
+                if (entity == player) continue
                 if (mc.player.getDistance(entity) > range.value) continue
                 if (entity is EntityXPOrb && experience.value
                         || entity is EntityArrow && arrows.value

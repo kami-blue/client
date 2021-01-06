@@ -3,14 +3,14 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.mixin.extension.sendClickBlockToController
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 @Module.Info(
@@ -20,12 +20,12 @@ import org.kamiblue.event.listener.listener
 )
 object AutoMine : Module() {
 
-    private val manual = register(Settings.b("Manual", false))
-    private val iron = register(Settings.booleanBuilder("Iron").withValue(false).withVisibility { !manual.value })
-    private val diamond = register(Settings.booleanBuilder("Diamond").withValue(false).withVisibility { !manual.value })
-    private val gold = register(Settings.booleanBuilder("Gold").withValue(false).withVisibility { !manual.value })
-    private val coal = register(Settings.booleanBuilder("Coal").withValue(false).withVisibility { !manual.value })
-    private val log = register(Settings.booleanBuilder("Log").withValue(false).withVisibility { !manual.value })
+    private val manual = setting("Manual", false)
+    private val iron = setting("Iron", false)
+    private val diamond = setting("Diamond", false)
+    private val gold = setting("Gold", false)
+    private val coal = setting("Coal", false)
+    private val log = setting("Logs", false)
 
     override fun onEnable() {
         if (mc.player == null) {
@@ -64,7 +64,7 @@ object AutoMine : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (manual.value) {
                 mc.sendClickBlockToController(true)
             }
@@ -80,12 +80,12 @@ object AutoMine : Module() {
             }
         }
 
-        with(Setting.SettingListeners { run() }) {
-            iron.settingListener = this
-            diamond.settingListener = this
-            gold.settingListener = this
-            coal.settingListener = this
-            log.settingListener = this
+        with({ run() }) {
+            iron.listeners.add(this)
+            diamond.listeners.add(this)
+            gold.listeners.add(this)
+            coal.listeners.add(this)
+            log.listeners.add(this)
         }
     }
 }

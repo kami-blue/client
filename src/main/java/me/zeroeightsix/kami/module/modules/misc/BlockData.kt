@@ -11,9 +11,9 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 @Module.Info(
-        name = "BlockData",
-        category = Module.Category.MISC,
-        description = "Right click blocks to display their data"
+    name = "BlockData",
+    category = Module.Category.MISC,
+    description = "Right click blocks to display their data"
 )
 object BlockData : Module() {
     private val timer = TickTimer()

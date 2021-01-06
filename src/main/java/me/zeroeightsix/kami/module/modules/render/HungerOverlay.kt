@@ -1,8 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.foodValue
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.saturation
@@ -26,9 +25,9 @@ import kotlin.math.min
         category = Module.Category.RENDER
 )
 object HungerOverlay : Module() {
-    private val saturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("SaturationOverlay").withValue(true))
-    private val foodHungerOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodHungerOverlay").withValue(true))
-    private val foodSaturationOverlay: Setting<Boolean> = register(Settings.booleanBuilder("FoodSaturationOverlay").withValue(true))
+    private val saturationOverlay = setting("SaturationOverlay", true)
+    private val foodHungerOverlay = setting("FoodHungerOverlay", true)
+    private val foodSaturationOverlay = setting("FoodSaturationOverlay", true)
 
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 

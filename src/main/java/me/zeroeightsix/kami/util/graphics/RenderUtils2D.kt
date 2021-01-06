@@ -1,7 +1,11 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.math.Vec2d
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.item.ItemStack
 import org.kamiblue.commons.utils.MathUtils
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.*
@@ -10,6 +14,23 @@ import kotlin.math.*
  * Utils for basic 2D shapes rendering
  */
 object RenderUtils2D {
+    val mc = Wrapper.minecraft
+
+    fun drawItem(itemStack: ItemStack, x: Int, y: Int, text: String? = null, drawOverlay: Boolean = true) {
+        GlStateUtils.blend(true)
+        GlStateUtils.depth(true)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        mc.renderItem.zLevel = 0.0f
+        mc.renderItem.renderItemAndEffectIntoGUI(itemStack, x, y)
+        if (drawOverlay) mc.renderItem.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, x, y, text)
+        mc.renderItem.zLevel = 0.0f
+
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
+        GlStateUtils.depth(false)
+    }
 
     @JvmStatic
     @JvmOverloads
@@ -209,7 +230,7 @@ object RenderUtils2D {
         return max(segments.roundToInt(), 16)
     }
 
-    private fun prepareGl() {
+    fun prepareGl() {
         GlStateUtils.alpha(false)
         GlStateUtils.texture2d(false)
         GlStateUtils.blend(true)
@@ -218,7 +239,7 @@ object RenderUtils2D {
         GlStateUtils.cull(false)
     }
 
-    private fun releaseGl() {
+    fun releaseGl() {
         GlStateUtils.alpha(true)
         GlStateUtils.texture2d(true)
         GlStateUtils.smooth(false)

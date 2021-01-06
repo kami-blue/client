@@ -12,9 +12,9 @@ import org.kamiblue.event.listener.listener
 import java.io.IOException
 
 @Module.Info(
-        name = "ColorSign",
-        description = "Allows ingame coloring of text on signs",
-        category = Module.Category.MISC
+    name = "ColorSign",
+    description = "Allows ingame coloring of text on signs",
+    category = Module.Category.MISC
 )
 object ColorSign : Module() {
     init {

@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import org.kamiblue.event.listener.listener
@@ -18,7 +18,7 @@ import org.kamiblue.event.listener.listener
         description = "Reduces hunger lost when moving around"
 )
 object AntiHunger : Module() {
-    private val cancelMovementState = register(Settings.b("CancelMovementState", true))
+    private val cancelMovementState = setting("CancelMovementState", true)
 
     init {
         listener<PacketEvent.Send> {

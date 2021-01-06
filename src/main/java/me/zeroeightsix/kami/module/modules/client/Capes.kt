@@ -32,11 +32,11 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Module.Info(
-        name = "Capes",
-        category = Module.Category.CLIENT,
-        description = "Controls the display of KAMI Blue capes",
-        showOnArray = Module.ShowOnArray.OFF,
-        enabledByDefault = true
+    name = "Capes",
+    category = Module.Category.CLIENT,
+    description = "Controls the display of KAMI Blue capes",
+    showOnArray = false,
+    enabledByDefault = true
 )
 object Capes : Module() {
     private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
@@ -81,10 +81,10 @@ object Capes : Module() {
 
     fun tryRenderCape(playerRenderer: RenderPlayer, player: AbstractClientPlayer, partialTicks: Float): Boolean {
         if (isDisabled
-                || !player.hasPlayerInfo()
-                || player.isInvisible
-                || !player.isWearing(EnumPlayerModelParts.CAPE)
-                || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item == Items.ELYTRA) return false
+            || !player.hasPlayerInfo()
+            || player.isInvisible
+            || !player.isWearing(EnumPlayerModelParts.CAPE)
+            || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item == Items.ELYTRA) return false
 
         val cape = capeUsers[player.gameProfile.id]
 
@@ -153,20 +153,20 @@ object Capes : Module() {
     }
 
     fun tryRenderElytra(
-            renderer: RenderLivingBase<*>,
-            model: ModelElytra,
-            entity: EntityLivingBase,
-            limbSwing: Float,
-            limbSwingAmount: Float,
-            ageInTicks: Float,
-            netHeadYaw: Float,
-            headPitch: Float,
-            scale: Float,
-            partialTicks: Float
+        renderer: RenderLivingBase<*>,
+        model: ModelElytra,
+        entity: EntityLivingBase,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float,
+        scale: Float,
+        partialTicks: Float
     ): Boolean {
         if (isDisabled
-                || entity !is AbstractClientPlayer
-                || entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item != Items.ELYTRA) return false
+            || entity !is AbstractClientPlayer
+            || entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).item != Items.ELYTRA) return false
 
         val cape = capeUsers[entity.gameProfile.id]
 
@@ -178,17 +178,17 @@ object Capes : Module() {
     }
 
     private fun renderElytra(
-            renderer: RenderLivingBase<*>,
-            model: ModelElytra,
-            player: AbstractClientPlayer,
-            cape: Cape,
-            limbSwing: Float,
-            limbSwingAmount: Float,
-            ageInTicks: Float,
-            netHeadYaw: Float,
-            headPitch: Float,
-            scale: Float,
-            partialTicks: Float
+        renderer: RenderLivingBase<*>,
+        model: ModelElytra,
+        player: AbstractClientPlayer,
+        cape: Cape,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float,
+        scale: Float,
+        partialTicks: Float
     ): Boolean {
         val primaryColor = parseColor(cape.color.primary)
         val borderColor = parseColor(cape.color.border)
@@ -208,18 +208,18 @@ object Capes : Module() {
     }
 
     private fun renderElytraLayer(
-            renderer: RenderLivingBase<*>,
-            model: ModelElytra,
-            player: AbstractClientPlayer,
-            texture: CapeTexture,
-            color: ColorHolder,
-            limbSwing: Float,
-            limbSwingAmount: Float,
-            ageInTicks: Float,
-            netHeadYaw: Float,
-            headPitch: Float,
-            scale: Float,
-            partialTicks: Float
+        renderer: RenderLivingBase<*>,
+        model: ModelElytra,
+        player: AbstractClientPlayer,
+        texture: CapeTexture,
+        color: ColorHolder,
+        limbSwing: Float,
+        limbSwingAmount: Float,
+        ageInTicks: Float,
+        netHeadYaw: Float,
+        headPitch: Float,
+        scale: Float,
+        partialTicks: Float
     ) {
         GlStateManager.color(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, 1.0f)
         renderer.bindTexture(texture.location)

@@ -46,6 +46,8 @@ data class Vec2d(val x: Double = 0.0, val y: Double = 0.0) {
 
     fun plus(x: Double, y: Double) = Vec2d(this.x + x, this.y + y)
 
+    fun toVec2f() = Vec2f(x.toFloat(), y.toFloat())
+
     override fun toString(): String {
         return "Vec2d[${this.x}, ${this.y}]"
     }

@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.util.StopTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
-import me.zeroeightsix.kami.util.threads.onMainThread
+import me.zeroeightsix.kami.util.threads.onMainThreadW
 import org.kamiblue.command.AbstractCommandManager
 import org.kamiblue.command.utils.CommandNotFoundException
 import org.kamiblue.command.utils.SubCommandNotFoundException
@@ -73,7 +73,7 @@ object CommandManager : AbstractCommandManager<ClientExecuteEvent>(), AsyncLoade
         val finalArg = command.finalArgs.firstOrNull { it.checkArgs(event.args) }
             ?: throw SubCommandNotFoundException(event.args, command)
 
-        onMainThread {
+        onMainThreadW(1000L) {
             runBlocking {
                 finalArg.invoke(event)
             }

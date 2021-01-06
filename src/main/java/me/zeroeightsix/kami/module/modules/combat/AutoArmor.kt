@@ -1,17 +1,18 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import me.zeroeightsix.kami.event.events.SafeTickEvent
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
-import org.kamiblue.event.listener.listener
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Module.Info(
         name = "AutoArmor",
@@ -20,32 +21,32 @@ import org.kamiblue.event.listener.listener
         modulePriority = 500
 )
 object AutoArmor : Module() {
-    private val delay = register(Settings.integerBuilder("Delay").withValue(5).withRange(1, 10).withStep(1))
+    private val delay = setting("Delay", 5, 1..10, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)
     private var lastTask = TaskState(true)
 
     init {
-        listener<SafeTickEvent> {
-            if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (!timer.tick(delay.value.toLong()) || !lastTask.done) return@safeListener
 
-            if (!mc.player.inventory.getItemStack().isEmpty()) {
+            if (!player.inventory.itemStack.isEmpty) {
                 if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
                 else InventoryUtils.removeHoldingItem()
-                return@listener
+                return@safeListener
             }
             // store slots and values of best armor pieces, initialize with currently equipped armor
             // Pair<Slot, Value>
-            val bestArmors = Array(4) { -1 to getArmorValue(mc.player.inventory.armorInventory[it]) }
+            val bestArmors = Array(4) { -1 to getArmorValue(player.inventory.armorInventory[it]) }
 
             // search inventory for better armor
             for (slot in 9..44) {
-                val itemStack = mc.player.inventoryContainer.inventory[slot]
-                val item = itemStack.getItem()
+                val itemStack = player.inventoryContainer.inventory[slot]
+                val item = itemStack.item
                 if (item !is ItemArmor) continue
 
                 val armorType = item.armorType.index
-                if (armorType == 2 && mc.player.inventory.armorInventory[2].getItem() == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
+                if (armorType == 2 && player.inventory.armorInventory[2].item == Items.ELYTRA) continue // Skip if item is chestplate and we have elytra equipped
                 val armorValue = getArmorValue(itemStack)
 
                 if (armorValue > bestArmors[armorType].second) bestArmors[armorType] = slot to armorValue
@@ -57,7 +58,7 @@ object AutoArmor : Module() {
     }
 
     private fun getArmorValue(itemStack: ItemStack): Float {
-        val item = itemStack.getItem()
+        val item = itemStack.item
         return if (item !is ItemArmor) -1f
         else item.damageReduceAmount * getProtectionModifier(itemStack)
     }
@@ -72,10 +73,10 @@ object AutoArmor : Module() {
         return 1f
     }
 
-    private fun equipArmor(bestArmors: Array<Pair<Int, Float>>) {
+    private fun SafeClientEvent.equipArmor(bestArmors: Array<Pair<Int, Float>>) {
         for ((index, pair) in bestArmors.withIndex()) {
             if (pair.first == -1) continue // Skip if we didn't find a better armor
-            lastTask = if (mc.player.inventoryContainer.inventory[8 - index].isEmpty) {
+            lastTask = if (player.inventoryContainer.inventory[8 - index].isEmpty) {
                 addInventoryTask(
                         PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE) // Move the new one into armor slot
                 )

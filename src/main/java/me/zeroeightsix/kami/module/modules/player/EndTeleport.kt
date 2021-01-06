@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketRespawn
@@ -15,7 +15,7 @@ import org.kamiblue.event.listener.listener
         description = "Allows for teleportation when going through end portals"
 )
 object EndTeleport : Module() {
-    private val confirmed = register(Settings.b("Confirm", false))
+    private val confirmed = setting("Confirm", false)
 
     override fun onEnable() {
         if (mc.getCurrentServerData() == null) {

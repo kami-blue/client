@@ -2,35 +2,35 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.EnumFacing
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.round
 
 @Module.Info(
-        name = "AutoTunnel",
-        description = "Automatically tunnels forward, at a given size",
-        category = Module.Category.MISC
+    name = "AutoTunnel",
+    description = "Automatically tunnels forward, at a given size",
+    category = Module.Category.MISC
 )
 object AutoTunnel : Module() {
-    private val backFill = register(Settings.b("BackFill", false))
-    private val height = register(Settings.integerBuilder("Height").withValue(2).withRange(2, 10).withStep(1))
-    private val width = register(Settings.integerBuilder("Width").withValue(1).withRange(1, 10).withStep(1))
-    private val disableOnDisconnect = register(Settings.b("DisableOnDisconnect", true))
+    private val backFill = setting("BackFill", false)
+    private val height = setting("Height", 2, 1..10, 1)
+    private val width = setting("Width", 1, 1..10, 1)
+    private val disableOnDisconnect = setting("DisableOnDisconnect", true)
 
     private var lastDirection = EnumFacing.NORTH
 
     override fun isActive(): Boolean {
         return isEnabled
-                && (BaritoneUtils.isPathing
-                || BaritoneUtils.primary?.builderProcess?.isActive == true)
+            && (BaritoneUtils.isPathing
+            || BaritoneUtils.primary?.builderProcess?.isActive == true)
     }
 
     override fun onDisable() {
@@ -38,7 +38,7 @@ object AutoTunnel : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
+        safeListener<TickEvent.ClientTickEvent> {
             if (!isActive()) sendTunnel()
         }
 
@@ -66,16 +66,16 @@ object AutoTunnel : Module() {
         }
     }
 
-    override fun getHudInfo(): String? {
+    override fun getHudInfo(): String {
         return lastDirection.name2.capitalize()
     }
 
     init {
-        with(Setting.SettingListeners { if (isEnabled) sendTunnel() }) {
-            height.settingListener = this
-            width.settingListener = this
+        with({ if (mc.player != null && isEnabled) sendTunnel() }) {
+            height.listeners.add(this)
+            width.listeners.add(this)
         }
 
-        backFill.settingListener = Setting.SettingListeners { BaritoneUtils.settings?.backfill?.value = backFill.value }
+        backFill.listeners.add { BaritoneUtils.settings?.backfill?.value = backFill.value }
     }
 }

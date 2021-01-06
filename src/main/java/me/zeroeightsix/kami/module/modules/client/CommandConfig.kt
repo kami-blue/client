@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.gui.kami.DisplayGuiScreen
+import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -18,16 +18,17 @@ import org.lwjgl.opengl.Display
     name = "CommandConfig",
     category = Module.Category.CLIENT,
     description = "Configures client chat related stuff",
-    showOnArray = Module.ShowOnArray.OFF,
+    showOnArray = false,
     alwaysEnabled = true
 )
 object CommandConfig : Module() {
-    val prefix: Setting<String> = Settings.s("commandPrefix", ";")
-    val toggleMessages = register(Settings.b("ToggleMessages", false))
-    private val customTitle = register(Settings.b("WindowTitle", true))
-    private val autoSaving = register(Settings.b("AutoSavingSettings", true))
-    private val savingFeedBack = register(Settings.booleanBuilder("SavingFeedBack").withValue(false).withVisibility { autoSaving.value })
-    private val savingInterval = register(Settings.integerBuilder("Interval(m)").withValue(3).withRange(1, 10).withVisibility { autoSaving.value })
+    val prefix = setting("Prefix", ";", { false })
+    val toggleMessages = setting("ToggleMessages", false)
+    val customTitle = setting("WindowTitle", true)
+    private val autoSaving = setting("AutoSavingSettings", true)
+    private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
+    private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
+    val modifierEnabled = setting("ModifierEnabled", false, { false })
 
     private val timer = TickTimer(TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
@@ -38,10 +39,10 @@ object CommandConfig : Module() {
             updateTitle()
         }
 
-        BackgroundScope.launchLooping("Auto Saving", 60000L) {
-            if (autoSaving.value && mc.currentScreen !is DisplayGuiScreen && timer.tick(savingInterval.value.toLong())) {
+        BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
+            if (autoSaving.value && mc.currentScreen !is KamiClickGui && timer.tick(savingInterval.value.toLong())) {
                 if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                ConfigUtils.saveAll()
+                ConfigUtils.saveConfig(ModuleConfig)
             }
         }
     }

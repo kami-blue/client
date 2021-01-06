@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent;
 import me.zeroeightsix.kami.event.events.RenderShaderEvent;
-import me.zeroeightsix.kami.gui.UIRenderer;
 import me.zeroeightsix.kami.module.modules.movement.ElytraFlight;
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.player.NoEntityTrace;
@@ -42,7 +41,6 @@ public class MixinEntityRenderer {
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(F)V", shift = At.Shift.AFTER))
     public void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci) {
         KamiEventBus.INSTANCE.post(new RenderOverlayEvent());
-        UIRenderer.INSTANCE.renderAndUpdateFrames();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
@@ -61,9 +59,9 @@ public class MixinEntityRenderer {
     @Inject(method = "setupFog", at = @At(value = "HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo callbackInfo) {
         if (Wrapper.getPlayer() != null
-                && Wrapper.getPlayer().ticksExisted > 20
-                && AntiFog.INSTANCE.isEnabled()
-                && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.NO_FOG) {
+            && Wrapper.getPlayer().ticksExisted > 20
+            && AntiFog.INSTANCE.isEnabled()
+            && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.NO_FOG) {
             callbackInfo.cancel();
         }
     }
@@ -71,9 +69,9 @@ public class MixinEntityRenderer {
     @Redirect(method = "setupFog", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ActiveRenderInfo;getBlockStateAtEntityViewpoint(Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;F)Lnet/minecraft/block/state/IBlockState;"))
     public IBlockState getBlockStateAtEntityViewpoint(World worldIn, Entity entityIn, float p_186703_2_) {
         if (Wrapper.getPlayer() != null
-                && Wrapper.getPlayer().ticksExisted > 20
-                && AntiFog.INSTANCE.isEnabled()
-                && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR) {
+            && Wrapper.getPlayer().ticksExisted > 20
+            && AntiFog.INSTANCE.isEnabled()
+            && AntiFog.INSTANCE.getMode().getValue() == AntiFog.VisionMode.AIR) {
             return Blocks.AIR.getDefaultState();
         } else {
             return ActiveRenderInfo.getBlockStateAtEntityViewpoint(worldIn, entityIn, p_186703_2_);

@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -19,8 +19,8 @@ import java.util.*
     category = Module.Category.MISC
 )
 object FakePlayer : Module() {
-    private val copyInventory = register(Settings.b("CopyInventory", false))
-    val playerName = register(Settings.stringBuilder("PlayerName").withValue("Player").withVisibility { false })
+    private val copyInventory = setting("CopyInventory", false)
+    val playerName = setting("PlayerName", "Player", { false })
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private const val ENTITY_ID = -7170400

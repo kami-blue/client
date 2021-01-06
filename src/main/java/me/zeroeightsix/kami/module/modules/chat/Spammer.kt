@@ -3,19 +3,16 @@ package me.zeroeightsix.kami.module.modules.chat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.command.CommandManager
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -28,10 +25,10 @@ import kotlin.random.Random
     modulePriority = 100
 )
 object Spammer : Module() {
-    private val modeSetting = register(Settings.e<Mode>("Order", Mode.RANDOM_ORDER))
-    private val delay = register(Settings.integerBuilder("Delay(s)").withRange(1, 240).withValue(10).withStep(5))
-    private val loadRemote = register(Settings.b("LoadFromURL", false))
-    private val remoteURL = register(Settings.s("remoteURL", "unchanged"))
+    private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
+    private val delay = setting("Delay(s)", 10,1..100, 1)
+    private val loadRemote = setting("LoadFromURL", false)
+    private val remoteURL = setting("RemoteURL", "Unchanged")
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = Collections.synchronizedList(ArrayList<String>())
@@ -43,16 +40,10 @@ object Spammer : Module() {
     }
 
     private val urlValue
-        get() = if (remoteURL.value != "unchanged") {
+        get() = if (remoteURL.value != "Unchanged") {
             remoteURL.value
         } else {
-            MessageSendHelper.sendErrorMessage(
-                "Use the " +
-                    formatValue("${CommandManager.prefix}set $name remoteURL <url to your raw txt>") +
-                    " command and re-enable spammer.\n" +
-                    "For example:\n" +
-                    formatValue("${CommandManager.prefix}set $name remoteURL https://kamiblue.org/examplefile.txt")
-            )
+            MessageSendHelper.sendErrorMessage("Change the RemoteURL setting in the ClickGUI!")
             disable()
             null
         }
@@ -94,8 +85,8 @@ object Spammer : Module() {
     }
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@safeListener
             val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()
             if (MessageDetection.Command.KAMI_BLUE detect message) {
                 MessageSendHelper.sendKamiCommand(message)

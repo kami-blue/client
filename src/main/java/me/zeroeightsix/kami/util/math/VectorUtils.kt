@@ -72,7 +72,7 @@ object VectorUtils {
     }
 
     fun Vec3i.toVec3d(offSet: Vec3d): Vec3d {
-        return Vec3d(x+ offSet.x, y + offSet.y, z + offSet.z)
+        return Vec3d(x + offSet.x, y + offSet.y, z + offSet.z)
     }
 
     fun Vec3i.toVec3d(xOffset: Double, yOffset: Double, zOffset: Double): Vec3d {
@@ -126,4 +126,12 @@ object VectorUtils {
     fun Vec3i.multiply(multiplier: Int): Vec3i {
         return Vec3i(x * multiplier, y * multiplier, z * multiplier)
     }
+
+    infix operator fun Vec3d.times(vec3d: Vec3d): Vec3d = Vec3d(x * vec3d.x, y * vec3d.y, z * vec3d.z)
+
+    infix operator fun Vec3d.times(multiplier: Double): Vec3d = Vec3d(x * multiplier, y * multiplier, z * multiplier)
+
+    infix operator fun Vec3d.plus(vec3d: Vec3d): Vec3d = add(vec3d)
+
+    infix operator fun Vec3d.minus(vec3d: Vec3d): Vec3d = subtract(vec3d)
 }

@@ -3,10 +3,9 @@ package me.zeroeightsix.kami.module.modules.combat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
@@ -18,6 +17,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -28,6 +28,7 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
@@ -37,44 +38,44 @@ import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 
 @Module.Info(
-    name = "CombatSetting",
-    description = "Settings for combat module targeting",
-    category = Module.Category.COMBAT,
-    showOnArray = Module.ShowOnArray.OFF,
-    alwaysEnabled = true
+        name = "CombatSetting",
+        description = "Settings for combat module targeting",
+        category = Module.Category.COMBAT,
+        showOnArray = false,
+        alwaysEnabled = true
 )
 object CombatSetting : Module() {
-    private val page = register(Settings.e<Page>("Page", Page.TARGETING))
+    private val page = setting("Page", Page.TARGETING)
 
     /* Targeting */
-    private val filter = register(Settings.enumBuilder(TargetFilter::class.java, "Filter").withValue(TargetFilter.ALL).withVisibility { page.value == Page.TARGETING })
-    private val fov = register(Settings.floatBuilder("FOV").withValue(90f).withRange(0f, 180f).withVisibility { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
-    private val priority = register(Settings.enumBuilder(TargetPriority::class.java, "Priority").withValue(TargetPriority.DISTANCE).withVisibility { page.value == Page.TARGETING })
-    private val players = register(Settings.booleanBuilder("Players").withValue(true).withVisibility { page.value == Page.TARGETING })
-    private val friends = register(Settings.booleanBuilder("Friends").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
-    private val teammates = register(Settings.booleanBuilder("Teammates").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
-    private val sleeping = register(Settings.booleanBuilder("Sleeping").withValue(false).withVisibility { page.value == Page.TARGETING && players.value })
-    private val mobs = register(Settings.booleanBuilder("Mobs").withValue(true).withVisibility { page.value == Page.TARGETING })
-    private val passive = register(Settings.booleanBuilder("PassiveMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val neutral = register(Settings.booleanBuilder("NeutralMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val hostile = register(Settings.booleanBuilder("HostileMobs").withValue(true).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val tamed = register(Settings.booleanBuilder("TamedMobs").withValue(false).withVisibility { page.value == Page.TARGETING && mobs.value })
-    private val invisible = register(Settings.booleanBuilder("Invisible").withValue(true).withVisibility { page.value == Page.TARGETING })
-    private val ignoreWalls = register(Settings.booleanBuilder("IgnoreWalls").withValue(false).withVisibility { page.value == Page.TARGETING })
-    private val range = register(Settings.floatBuilder("TargetRange").withValue(16.0f).withRange(2.0f, 64.0f).withStep(2.0f).withVisibility { page.value == Page.TARGETING })
+    private val filter = setting("Filter", TargetFilter.ALL, { page.value == Page.TARGETING })
+    private val fov = setting("FOV", 90.0f, 0.0f..180.0f, 5.0f, { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
+    private val priority = setting("Priority", TargetPriority.DISTANCE, { page.value == Page.TARGETING })
+    private val players = setting("Players", true, { page.value == Page.TARGETING })
+    private val friends = setting("Friends", false, { page.value == Page.TARGETING && players.value })
+    private val teammates = setting("Teammates", false, { page.value == Page.TARGETING && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.TARGETING && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.TARGETING })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val neutral = setting("NeutralMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val hostile = setting("HostileMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val tamed = setting("TamedMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.TARGETING })
+    private val ignoreWalls = setting("IgnoreWalls", false, { page.value == Page.TARGETING })
+    private val range = setting("TargetRange", 16.0f, 2.0f..64.0f, 2.0f, { page.value == Page.TARGETING })
 
     /* In Combat */
-    private val pauseForDigging = register(Settings.booleanBuilder("PauseForDigging").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
-    private val pauseForEating = register(Settings.booleanBuilder("PauseForEating").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
-    private val ignoreOffhandEating = register(Settings.booleanBuilder("IgnoreOffhandEating").withValue(true).withVisibility { page.value == Page.IN_COMBAT && pauseForEating.value })
-    private val pauseBaritone = register(Settings.booleanBuilder("PauseBaritone").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
-    private val resumeDelay = register(Settings.integerBuilder("ResumeDelay").withRange(1, 10).withValue(3).withVisibility { page.value == Page.IN_COMBAT && pauseBaritone.value })
-    private val motionPrediction = register(Settings.booleanBuilder("MotionPrediction").withValue(true).withVisibility { page.value == Page.IN_COMBAT })
-    private val pingSync = register(Settings.booleanBuilder("PingSync").withValue(true).withVisibility { page.value == Page.IN_COMBAT && motionPrediction.value })
-    private val ticksAhead = register(Settings.integerBuilder("TicksAhead").withValue(5).withRange(0, 20).withVisibility { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
+    private val pauseForDigging = setting("PauseForDigging", true, { page.value == Page.IN_COMBAT })
+    private val pauseForEating = setting("PauseForEating", true, { page.value == Page.IN_COMBAT })
+    private val ignoreOffhandEating = setting("IgnoreOffhandEating", true, { page.value == Page.IN_COMBAT && pauseForEating.value })
+    private val pauseBaritone = setting("PauseBaritone", true, { page.value == Page.IN_COMBAT })
+    private val resumeDelay = setting("ResumeDelay", 3, 1..10, 1, { page.value == Page.IN_COMBAT && pauseBaritone.value })
+    private val motionPrediction = setting("MotionPrediction", true, { page.value == Page.IN_COMBAT })
+    private val pingSync = setting("PingSync", true, { page.value == Page.IN_COMBAT && motionPrediction.value })
+    private val ticksAhead = setting("TicksAhead", 5, 0..20, 1, { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
 
     /* Render */
-    private val renderPredictedPos = register(Settings.booleanBuilder("RenderPredictedPosition").withValue(false).withVisibility { page.value == Page.RENDER })
+    private val renderPredictedPos = setting("RenderPredictedPosition", false, { page.value == Page.RENDER })
 
     private enum class Page {
         TARGETING, IN_COMBAT, RENDER
@@ -124,7 +125,7 @@ object CombatSetting : Module() {
             }
         }
 
-        listener<SafeTickEvent>(5000) {
+        safeListener<TickEvent.ClientTickEvent>(5000) {
             for ((function, future) in jobMap) {
                 if (future.isActiveOrFalse) continue // Skip if the previous thread isn't done
                 jobMap[function] = defaultScope.launch { function.invoke() }

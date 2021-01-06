@@ -1,18 +1,17 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 
 @Module.Info(
         name = "VisualRange",
@@ -21,21 +20,21 @@ import org.kamiblue.event.listener.listener
         alwaysListening = true
 )
 object VisualRange : Module() {
-    private val playSound = register(Settings.b("PlaySound", false))
-    private val leaving = register(Settings.b("CountLeaving", false))
-    private val friends = register(Settings.b("Friends", true))
-    private val uwuAura = register(Settings.b("UwUAura", false))
-    private val logToFile = register(Settings.b("LogTo File", false))
+    private val playSound = setting("PlaySound", false)
+    private val leaving = setting("CountLeaving", false)
+    private val friends = setting("Friends", true)
+    private val uwuAura = setting("UwUAura", false)
+    private val logToFile = setting("LogToFile", false)
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
 
     init {
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.END || isDisabled && mc.player.ticksExisted % 5 != 0) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.END || isDisabled && player.ticksExisted % 5 != 0) return@safeListener
 
-            val loadedPlayerSet = LinkedHashSet(mc.world.playerEntities)
+            val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (player in loadedPlayerSet) {
-                if (player == mc.renderViewEntity || player == mc.player || !friends.value && FriendManager.isFriend(player.name)) continue
+                if (player == mc.renderViewEntity || player == player || !friends.value && FriendManager.isFriend(player.name)) continue
                 if (playerSet.add(player) && isEnabled) {
                     onEnter(player)
                 }

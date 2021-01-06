@@ -1,6 +1,6 @@
 package me.zeroeightsix.kami.mixin.client.render;
 
-import me.zeroeightsix.kami.module.modules.render.ArmourHide;
+import me.zeroeightsix.kami.module.modules.render.ArmorHide;
 import me.zeroeightsix.kami.util.graphics.GlStateUtils;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -28,13 +28,13 @@ public abstract class MixinLayerArmorBase {
 
     @Inject(method = "renderArmorLayer", at = @At("HEAD"), cancellable = true)
     public void renderArmorLayerPre(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn, CallbackInfo ci) {
-        if (ArmourHide.INSTANCE.isEnabled()) {
-            if ((ArmourHide.INSTANCE.getPlayer().getValue()) && entityLivingBaseIn instanceof EntityPlayer) {
-                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
-            } else if ((ArmourHide.INSTANCE.getArmourStand().getValue()) && entityLivingBaseIn instanceof EntityArmorStand) {
-                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
-            } else if ((ArmourHide.INSTANCE.getMobs().getValue()) && entityLivingBaseIn instanceof EntityMob) {
-                if (ArmourHide.shouldHidePiece(slotIn)) ci.cancel();
+        if (ArmorHide.INSTANCE.isEnabled()) {
+            if ((ArmorHide.INSTANCE.getPlayer().getValue()) && entityLivingBaseIn instanceof EntityPlayer) {
+                if (ArmorHide.shouldHidePiece(slotIn)) ci.cancel();
+            } else if ((ArmorHide.INSTANCE.getArmourStand().getValue()) && entityLivingBaseIn instanceof EntityArmorStand) {
+                if (ArmorHide.shouldHidePiece(slotIn)) ci.cancel();
+            } else if ((ArmorHide.INSTANCE.getMobs().getValue()) && entityLivingBaseIn instanceof EntityMob) {
+                if (ArmorHide.shouldHidePiece(slotIn)) ci.cancel();
             }
         }
 

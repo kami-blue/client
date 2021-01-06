@@ -12,7 +12,7 @@ object AutoObsidianProcess : IBaritoneProcess {
     }
 
     override fun priority(): Double {
-        return 2.0
+        return 3.0
     }
 
     override fun onLostControl() {}

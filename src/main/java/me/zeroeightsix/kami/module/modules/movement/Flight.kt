@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketCloseWindow
@@ -21,9 +21,9 @@ import kotlin.math.sin
     modulePriority = 500
 )
 object Flight : Module() {
-    private val mode = register(Settings.enumBuilder(FlightMode::class.java, "Mode").withValue(FlightMode.VANILLA))
-    private val speed = register(Settings.floatBuilder("Speed").withValue(1.0f).withRange(0.0f, 10.0f).withStep(0.1f))
-    private val glideSpeed = register(Settings.doubleBuilder("GlideSpeed").withValue(0.05).withRange(0.0, 0.3).withStep(0.001))
+    private val mode = setting("Mode", FlightMode.VANILLA)
+    private val speed = setting("Speed", 1.0f, 0.0f..10.0f, 0.1f)
+    private val glideSpeed = setting("GlideSpeed", 0.05, 0.0..0.3, 0.001)
 
     private enum class FlightMode {
         VANILLA, STATIC, PACKET
@@ -81,8 +81,6 @@ object Flight : Module() {
 
                     mc.connection?.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, mc.player.rotationYaw, mc.player.rotationPitch, false))
                     mc.connection?.sendPacket(CPacketPlayer.Position(posX, mc.player.posY - 42069, posZ, true))
-                }
-                else -> {
                 }
             }
         }

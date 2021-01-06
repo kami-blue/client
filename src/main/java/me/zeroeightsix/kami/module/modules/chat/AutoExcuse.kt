@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -13,53 +13,53 @@ import org.kamiblue.event.listener.listener
 import java.io.File
 
 @Module.Info(
-        name = "AutoExcuse",
-        description = "Makes an excuse for you when you die",
-        category = Module.Category.CHAT,
-        modulePriority = 500
+    name = "AutoExcuse",
+    description = "Makes an excuse for you when you die",
+    category = Module.Category.CHAT,
+    modulePriority = 500
 )
 object AutoExcuse : Module() {
-    private val mode = register(Settings.e<Mode>("Mode", Mode.INTERNAL))
+    private val mode = setting("Mode", Mode.INTERNAL)
 
     private enum class Mode {
         INTERNAL, EXTERNAL
     }
 
     private const val CLIENT_NAME = "%CLIENT%"
-    private val defaultExcuses= arrayOf(
-            "Sorry, im using $CLIENT_NAME client",
-            "My ping is so bad",
-            "I was changing my config :(",
-            "Why did my AutoTotem break",
-            "I was desynced",
-            "Stupid hackers killed me",
-            "Wow, so many try hards",
-            "Lagggg",
-            "I wasn't trying",
-            "I'm not using $CLIENT_NAME client",
-            "Thers to much lag",
-            "My dog ate my pc",
-            "Sorry, $CLIENT_NAME Client is really bad",
-            "I was lagging",
-            "He was cheating!",
-            "Your hacking!",
-            "Lol imagine actully trying",
-            "I didn't move my mouse",
-            "I was playing on easy mode(;",
-            "My wifi went down",
-            "I'm playing vanila",
-            "My optifine didn't work",
-            "The CPU cheated!"
+    private val defaultExcuses = arrayOf(
+        "Sorry, im using $CLIENT_NAME client",
+        "My ping is so bad",
+        "I was changing my config :(",
+        "Why did my AutoTotem break",
+        "I was desynced",
+        "Stupid hackers killed me",
+        "Wow, so many try hards",
+        "Lagggg",
+        "I wasn't trying",
+        "I'm not using $CLIENT_NAME client",
+        "Thers to much lag",
+        "My dog ate my pc",
+        "Sorry, $CLIENT_NAME Client is really bad",
+        "I was lagging",
+        "He was cheating!",
+        "Your hacking!",
+        "Lol imagine actully trying",
+        "I didn't move my mouse",
+        "I was playing on easy mode(;",
+        "My wifi went down",
+        "I'm playing vanila",
+        "My optifine didn't work",
+        "The CPU cheated!"
     )
 
     private val file = File(KamiMod.DIRECTORY + "excuses.txt")
     private var loadedExcuses = defaultExcuses
 
     private val clients = arrayOf(
-            "Future",
-            "Salhack",
-            "Pyro",
-            "Impact"
+        "Future",
+        "Salhack",
+        "Pyro",
+        "Impact"
     )
 
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -87,7 +87,7 @@ object AutoExcuse : Module() {
             } else {
                 file.createNewFile()
                 MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!" +
-                        ", please add them in the &7excuses.txt&f under the &7.minecraft/kamiblue&f directory.")
+                    ", please add them in the &7excuses.txt&f under the &7.minecraft/kamiblue&f directory.")
                 defaultExcuses
             }
         } else {

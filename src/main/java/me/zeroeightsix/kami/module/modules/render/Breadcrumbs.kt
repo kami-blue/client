@@ -2,14 +2,13 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
-import me.zeroeightsix.kami.event.events.SafeTickEvent
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.Setting
-import me.zeroeightsix.kami.setting.Settings
+import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.realms.RealmsMth.sin
 import net.minecraft.util.math.Vec3d
@@ -29,17 +28,17 @@ import kotlin.math.min
         alwaysListening = true
 )
 object Breadcrumbs : Module() {
-    private val clear = register(Settings.b("Clear", false))
-    private val whileDisabled = register(Settings.b("WhileDisabled", false))
-    private val smoothFactor = register(Settings.floatBuilder("SmoothFactor").withValue(5.0f).withRange(0.0f, 10.0f).withStep(0.25f))
-    private val maxDistance = register(Settings.integerBuilder("MaxDistance").withValue(4096).withRange(1024, 16384).withStep(1024))
-    private val yOffset = register(Settings.floatBuilder("YOffset").withValue(0.5f).withRange(0.0f, 1.0f).withStep(0.05f))
-    private val throughBlocks = register(Settings.b("ThroughBlocks", true))
-    private val r = register(Settings.integerBuilder("Red").withValue(255).withRange(0, 255).withStep(1))
-    private val g = register(Settings.integerBuilder("Green").withValue(166).withRange(0, 255).withStep(1))
-    private val b = register(Settings.integerBuilder("Blue").withValue(188).withRange(0, 255).withStep(1))
-    private val a = register(Settings.integerBuilder("Alpha").withValue(200).withRange(0, 255).withStep(1))
-    private val thickness = register(Settings.floatBuilder("LineThickness").withValue(2.0f).withRange(0.25f, 8.0f).withStep(0.25f))
+    private val clear = setting("Clear", false)
+    private val whileDisabled = setting("WhileDisabled", false)
+    private val smoothFactor = setting("SmoothFactor", 5.0f, 0.0f..10.0f, 0.25f)
+    private val maxDistance = setting("MaxDistance", 4096, 1024..16384, 1024)
+    private val yOffset = setting("YOffset", 0.5f, 0.0f..1.0f, 0.05f)
+    private val throughBlocks = setting("ThroughBlocks", true)
+    private val r = setting("Red", 255, 0..255, 1)
+    private val g = setting("Green", 166, 0..255, 1)
+    private val b = setting("Blue", 188, 0..255, 1)
+    private val a = setting("Alpha", 200, 0..255, 1)
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private val mainList = ConcurrentHashMap<String, HashMap<Int, LinkedList<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
     private var prevDimension = -2
@@ -87,21 +86,21 @@ object Breadcrumbs : Module() {
             drawTail(renderPosList)
         }
 
-        listener<SafeTickEvent> {
-            if (it.phase != TickEvent.Phase.START || mc.integratedServer == null && mc.currentServerData == null) return@listener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || mc.integratedServer == null && mc.currentServerData == null) return@safeListener
 
             alphaMultiplier = if (isEnabled && shouldRecord(false)) min(alphaMultiplier + 0.07f, 1f)
             else max(alphaMultiplier - 0.05f, 0f)
 
-            if (isDisabled && !whileDisabled.value) return@listener
+            if (isDisabled && !whileDisabled.value) return@safeListener
 
             if (tickCount < 200) {
                 tickCount++
             } else {
                 val serverIP = getServerIP()
-                val dimension = mc.player.dimension
-                val posList = ((mainList[serverIP] ?: return@listener)[dimension] ?: return@listener)
-                val cutoffPos = posList.lastOrNull { pos -> mc.player.distanceTo(pos) > maxDistance.value }
+                val dimension = player.dimension
+                val posList = ((mainList[serverIP] ?: return@safeListener)[dimension] ?: return@safeListener)
+                val cutoffPos = posList.lastOrNull { pos -> player.distanceTo(pos) > maxDistance.value }
                 if (cutoffPos != null) while (posList.first() != cutoffPos) {
                     posList.remove()
                 }
@@ -156,7 +155,7 @@ object Breadcrumbs : Module() {
     }
 
     init {
-        clear.settingListener = Setting.SettingListeners {
+        clear.listeners.add {
             if (clear.value) {
                 mainList.clear()
                 sendChatMessage("$chatName Cleared!")

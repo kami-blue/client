@@ -10,7 +10,7 @@ object EnchantmentUtils {
 
     fun getAllEnchantments(itemStack: ItemStack): List<LeveledEnchantment> {
         val enchantmentList = ArrayList<LeveledEnchantment>()
-        val nbtTagList = (if (itemStack.getItem() == Items.ENCHANTED_BOOK) itemStack.tagCompound?.getTagList("StoredEnchantments", 10)
+        val nbtTagList = (if (itemStack.item == Items.ENCHANTED_BOOK) itemStack.tagCompound?.getTagList("StoredEnchantments", 10)
         else itemStack.enchantmentTagList) ?: return enchantmentList
 
         for (i in 0 until nbtTagList.tagCount()) {
