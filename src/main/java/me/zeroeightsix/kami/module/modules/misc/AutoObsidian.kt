@@ -364,24 +364,49 @@ object AutoObsidian : Module() {
         }
     }
 
+    /**
+     * @return The id of a shulker found in the hotbar, else returns -1
+     */
+    private fun getShulkerIdInHotbar(): Int {
+        for (shulkerId in 219..234) {
+            if (InventoryUtils.getSlotsHotbar(shulkerId) != null) return shulkerId
+        }
+        return -1
+    }
+
+    /**
+     * @return the id of a shulker found in a non-hotbar slot, else returns -1
+     */
+    private fun getShulkerIdNotInHotBar(): Int {
+        for (shulkerId in 219..234) {
+            if (InventoryUtils.getSlotsNoHotbar(shulkerId) != null) return shulkerId
+        }
+        return -1
+    }
+
     private fun SafeClientEvent.placeShulker(pos: BlockPos) {
-        if (InventoryUtils.getSlotsHotbar(shulkerBoxId) == null && InventoryUtils.getSlotsNoHotbar(shulkerBoxId) != null) {
-            InventoryUtils.moveToHotbar(shulkerBoxId, Items.DIAMOND_PICKAXE.id)
+        val shulkerIdNotInHotbar = getShulkerIdNotInHotBar()
+        if (getShulkerIdInHotbar() == -1 && getShulkerIdNotInHotBar() != -1) {
+            InventoryUtils.moveToHotbar(shulkerIdNotInHotbar, Items.DIAMOND_PICKAXE.id)
+            shulkerBoxId = shulkerIdNotInHotbar
         } else {
-            for (i in 219..234) {
+           for (i in 219..234) {
                 if (InventoryUtils.getSlotsHotbar(i) == null) {
                     if (i == 234) {
-                        MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
-                        mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                        disable()
+                        for (shulkerId in 219..234) {
+                            if (InventoryUtils.getSlotsHotbar(shulkerId) == null) {
+                                if (shulkerId == 234) {
+                                    MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
+                                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                                    disable()
+                                }
+                                continue
+                            }
+                            shulkerBoxId = shulkerId
+                            InventoryUtils.swapSlotToItem(shulkerId)
+                            break
+                        }
                     }
-                    continue
-                }
-                shulkerBoxId = i
-                InventoryUtils.swapSlotToItem(i)
-                break
-            }
-        }
 
         if (world.getBlockState(pos).block !is BlockShulkerBox) {
             placeBlock(pos)
