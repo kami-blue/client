@@ -20,7 +20,7 @@ import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
-import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -143,10 +143,10 @@ object AutoObsidian : Module() {
                 }
                 State.DONE -> {
                     if (!autoRefill) {
-                        sendChatMessage("$chatName ${fillMode.message}, disabling.")
+                        MessageSendHelper.sendChatMessage("$chatName ${fillMode.message}, disabling.")
                         disable()
                     } else {
-                        if (active) sendChatMessage("$chatName ${fillMode.message}, stopping.")
+                        if (active) MessageSendHelper.sendChatMessage("$chatName ${fillMode.message}, stopping.")
                         reset()
                     }
                 }
@@ -216,7 +216,7 @@ object AutoObsidian : Module() {
             renderer.clear()
             renderer.add(pair.first, ColorHolder(64, 255, 64))
         } else {
-            sendChatMessage("$chatName No valid position for placing shulker box / ender chest nearby, disabling.")
+            MessageSendHelper.sendChatMessage("$chatName No valid position for placing shulker box / ender chest nearby, disabling.")
             mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             disable()
         }
@@ -233,7 +233,7 @@ object AutoObsidian : Module() {
         val passCountCheck = checkObbyCount()
 
         state = when {
-            state == State.DONE && autoRefill && InventoryUtils.countItemAll(Blocks.OBSIDIAN.id) <= threshold -> {
+            state == State.DONE && autoRefill && InventoryUtils.countItemAll(Blocks.OBSIDIAN.id) < threshold -> {
                 State.SEARCHING
             }
             state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(Blocks.OBSIDIAN.id, 16.0f) == null) -> {
@@ -371,7 +371,7 @@ object AutoObsidian : Module() {
             for (i in 219..234) {
                 if (InventoryUtils.getSlotsHotbar(i) == null) {
                     if (i == 234) {
-                        sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
+                        MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
                         mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                         disable()
                     }
@@ -398,7 +398,7 @@ object AutoObsidian : Module() {
             if (searchShulker) {
                 state = State.SEARCHING
             } else {
-                sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
+                MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 disable()
                 return
@@ -424,7 +424,7 @@ object AutoObsidian : Module() {
                     searchingState = SearchingState.PRE_MINING
                     player.closeScreen()
                 } else {
-                    sendChatMessage("$chatName No ender chest was found in shulker, disabling.")
+                    MessageSendHelper.sendChatMessage("$chatName No ender chest was found in shulker, disabling.")
                     mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     disable()
                 }
@@ -451,7 +451,7 @@ object AutoObsidian : Module() {
     private fun SafeClientEvent.placeBlock(pos: BlockPos) {
         val pair = WorldUtils.getNeighbour(pos, 1, 6.5f)
             ?: run {
-                sendChatMessage("Can't find neighbour block")
+                MessageSendHelper.sendChatMessage("$chatName Can't find neighbour block")
                 return
             }
 
@@ -519,7 +519,7 @@ object AutoObsidian : Module() {
             InventoryUtils.moveToSlot(0, inventoryPickaxeSlot, 36)
             hotbarPickaxeSlot = 0
         } else if (hotbarPickaxeSlot == -1) {
-            sendChatMessage("No valid pickaxe was found in inventory.")
+            MessageSendHelper.sendChatMessage("No valid pickaxe was found in inventory.")
             mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             disable()
             return
