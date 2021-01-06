@@ -18,6 +18,7 @@
     "accessor.gui.AccessorGuiEditSign",
     "accessor.network.AccessorCPacketChatMessage",
     "accessor.network.AccessorCPacketPlayer",
+    "accessor.network.AccessorCPacketUseEntity",
     "accessor.network.AccessorSPacketChat",
     "accessor.network.AccessorSPacketEntityVelocity",
     "accessor.network.AccessorSPacketExplosion",

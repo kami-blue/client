@@ -5,6 +5,8 @@ import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.id
+import me.zeroeightsix.kami.mixin.extension.packetAction
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
@@ -12,6 +14,7 @@ import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -58,7 +61,7 @@ object CrystalAura : Module() {
     /* General */
     private val noSuicideThreshold = setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page.value == Page.GENERAL })
     private val rotationTolerance = setting("RotationTolerance", 10, 5..50, 5, { page.value == Page.GENERAL })
-    private val maxYawSpeed = setting("MaxYawSpeed", 25, 10..100, 5, { page.value == Page.GENERAL })
+    private val maxYawSpeed = setting("MaxYawSpeed", 50, 10..100, 5, { page.value == Page.GENERAL })
     private val swingMode = setting("SwingMode", SwingMode.CLIENT, { page.value == Page.GENERAL })
 
     /* Force place */
@@ -70,8 +73,8 @@ object CrystalAura : Module() {
     /* Place page one */
     private val doPlace = setting("Place", true, { page.value == Page.PLACE_ONE })
     private val autoSwap = setting("AutoSwap", true, { page.value == Page.PLACE_ONE })
-    private val spoofHotbar = setting("SpoofHotbar", true, { page.value == Page.PLACE_ONE && autoSwap.value })
-    private val placeSwing = setting("PlaceSwing", false, { page.value == Page.PLACE_ONE })
+    private val spoofHotbar = setting("SpoofHotbar", false, { page.value == Page.PLACE_ONE && autoSwap.value })
+    private val placeSwing = setting("PlaceSwing", true, { page.value == Page.PLACE_ONE })
     private val placeSync = setting("PlaceSync", false, { page.value == Page.PLACE_ONE })
     private val extraPlacePacket = setting("ExtraPlacePacket", false, { page.value == Page.PLACE_ONE })
 
@@ -88,6 +91,7 @@ object CrystalAura : Module() {
     private val doExplode = setting("Explode", true, { page.value == Page.EXPLODE_ONE })
     private val autoForceExplode = setting("AutoForceExplode", true, { page.value == Page.EXPLODE_ONE })
     private val antiWeakness = setting("AntiWeakness", true, { page.value == Page.EXPLODE_ONE })
+    private val packetExplode by setting("PacketExplode", true, { page.value == Page.EXPLODE_ONE })
 
     /* Explode page two */
     private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
@@ -109,10 +113,11 @@ object CrystalAura : Module() {
     }
 
     /* Variables */
-    private val placedBBMap = Collections.synchronizedMap(HashMap<AxisAlignedBB, Long>()) // <CrystalBoundingBox, Added Time>
+    private val placedBBMap = Collections.synchronizedMap(HashMap<BlockPos, Pair<AxisAlignedBB, Long>>()) // <CrystalBoundingBox, Added Time>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private val packetList = ArrayList<Packet<*>>(3)
     private val yawDiffList = FloatArray(20)
+    private val lockObject = Any()
 
     private var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, Target Damage, Self Damage>
     private var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage>>
@@ -153,26 +158,31 @@ object CrystalAura : Module() {
             }
         }
 
-        listener<PacketEvent.Receive> {
-            if (mc.player == null) return@listener
+        safeListener<PacketEvent.Receive> { event ->
+            when (event.packet) {
+                is SPacketSpawnObject -> {
+                    if (event.packet.type == 51) {
+                        val vec3d = Vec3d(event.packet.x, event.packet.y, event.packet.z)
+                        val pos = vec3d.toBlockPos()
 
-            if (it.packet is SPacketSpawnObject && it.packet.type == 51) {
-                val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
-                placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
-            }
-
-            // Minecraft sends sounds packets a tick before removing the crystal lol
-            if (it.packet is SPacketSoundEffect
-                    && it.packet.category == SoundCategory.BLOCKS
-                    && it.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 6.0f)
-
-                for (crystal in crystalList) {
-                    crystal.setDead()
+                        placedBBMap.remove(pos)?.let {
+                            packetExplode(event.packet.entityID, pos, vec3d)
+                        }
+                    }
                 }
+                is SPacketSoundEffect -> {
+                    // Minecraft sends sounds packets a tick before removing the crystal lol
+                    if (event.packet.category == SoundCategory.BLOCKS && event.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                        val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 6.0f)
 
-                ignoredList.clear()
-                hitCount = 0
+                        for (crystal in crystalList) {
+                            crystal.setDead()
+                        }
+
+                        ignoredList.clear()
+                        hitCount = 0
+                    }
+                }
             }
         }
 
@@ -185,8 +195,10 @@ object CrystalAura : Module() {
             }
 
             if (it.phase == Phase.POST) {
-                for (packet in packetList) sendPacketDirect(packet)
-                packetList.clear()
+                synchronized(lockObject) {
+                    for (packet in packetList) sendPacketDirect(packet)
+                    packetList.clear()
+                }
             }
         }
 
@@ -201,7 +213,7 @@ object CrystalAura : Module() {
             if (CombatManager.isOnTopPriority(CrystalAura) && !CombatSetting.pause && packetList.size == 0) {
                 updateMap()
                 if (canExplode()) explode()
-                else if (canPlace()) place()
+                if (canPlace()) place()
             }
 
             if (it.phase == TickEvent.Phase.END) {
@@ -221,7 +233,7 @@ object CrystalAura : Module() {
         placeMap = CombatManager.placeMap
         crystalMap = CombatManager.crystalMap
 
-        placedBBMap.values.removeIf { System.currentTimeMillis() - it > max(InfoCalculator.ping(), 100) }
+        placedBBMap.values.removeIf { System.currentTimeMillis() - it.second > max(InfoCalculator.ping(), 100) }
 
         if (inactiveTicks > 20) {
             if (getPlacingPos() == null && placedBBMap.isNotEmpty()) {
@@ -250,8 +262,28 @@ object CrystalAura : Module() {
                 sendOrQueuePacket(getPlacePacket(pos, hand))
                 if (extraPlacePacket.value) sendOrQueuePacket(getPlacePacket(pos, hand))
                 if (placeSwing.value) sendOrQueuePacket(CPacketAnimation(hand))
-                placedBBMap[CrystalUtils.getCrystalBB(pos.up())] = System.currentTimeMillis()
+
+                val crystalPos = pos.up()
+                placedBBMap[crystalPos] = CrystalUtils.getCrystalBB(crystalPos) to System.currentTimeMillis()
             }
+        }
+    }
+
+    private fun packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
+        if (!packetExplode) return
+
+        val triple = placeMap[pos] ?: return
+
+        if (triple.third > placeRange.value) return
+        if (!checkDamageExplode(triple.first, triple.second)) return
+
+        val attackPacket = CPacketUseEntity().apply {
+            id = entityID
+            packetAction = CPacketUseEntity.Action.ATTACK
+        }
+
+        synchronized(lockObject) {
+            explodeDirect(attackPacket, vec3d)
         }
     }
 
@@ -268,21 +300,27 @@ object CrystalAura : Module() {
         }
 
         getExplodingCrystal()?.let {
-            hitTimer = 0
-            inactiveTicks = 0
-            lastLookAt = it.positionVector
-
             if (hitAttempts.value != 0 && it == lastCrystal) {
                 hitCount++
                 if (hitCount >= hitAttempts.value) ignoredList.add(it)
             } else {
                 hitCount = 0
             }
-            sendOrQueuePacket(CPacketUseEntity(it))
-            sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
+
             CombatManager.target?.let { target -> mc.player.setLastAttackedEntity(target) }
             lastCrystal = it
+
+            explodeDirect(CPacketUseEntity(it), it.positionVector)
         }
+    }
+
+    private fun explodeDirect(packet: CPacketUseEntity, pos: Vec3d) {
+        hitTimer = 0
+        inactiveTicks = 0
+        lastLookAt = pos
+
+        sendOrQueuePacket(packet)
+        sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
     }
 
     private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
@@ -331,7 +369,7 @@ object CrystalAura : Module() {
             // Place sync
             if (placeSync.value) {
                 val bb = CrystalUtils.getCrystalBB(pos.up())
-                if (placedBBMap.keys.any { it.intersects(bb) }) continue
+                if (placedBBMap.values.any { it.first.intersects(bb) }) continue
             }
 
             // Yaw speed check
@@ -419,8 +457,8 @@ object CrystalAura : Module() {
             val eyePos = mc.player.getPositionEyes(1f)
 
             if (placeSync.value) {
-                for ((bb, _) in placedBBMap) {
-                    val pos = bb.center.subtract(0.0, 1.0, 0.0)
+                for ((_, pair) in placedBBMap) {
+                    val pos = pair.first.center.subtract(0.0, 1.0, 0.0)
                     if (pos.distanceTo(eyePos) > placeRange.value) continue
                     val damage = CrystalUtils.calcDamage(pos, it)
                     val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
