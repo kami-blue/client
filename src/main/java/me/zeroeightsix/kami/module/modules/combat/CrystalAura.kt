@@ -54,11 +54,11 @@ import kotlin.math.min
 
 @CombatManager.CombatModule
 @Module.Info(
-        name = "CrystalAura",
-        alias = ["CA", "AC", "AutoCrystal"],
-        description = "Places End Crystals to kill enemies",
-        category = Module.Category.COMBAT,
-        modulePriority = 80
+    name = "CrystalAura",
+    alias = ["CA", "AC", "AutoCrystal"],
+    description = "Places End Crystals to kill enemies",
+    category = Module.Category.COMBAT,
+    modulePriority = 80
 )
 object CrystalAura : Module() {
     /* Settings */
@@ -161,7 +161,7 @@ object CrystalAura : Module() {
 
     init {
         listener<InputEvent.KeyInputEvent> {
-            if (bindForcePlace.isDown(Keyboard.getEventKey())){
+            if (bindForcePlace.isDown(Keyboard.getEventKey())) {
                 forcePlacing = !forcePlacing
                 MessageSendHelper.sendChatMessage("$chatName Force placing" + if (forcePlacing) " &aenabled" else " &cdisabled")
             }
@@ -356,7 +356,7 @@ object CrystalAura : Module() {
     }
 
     private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
-            CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
+        CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
 
     private fun SafeClientEvent.sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))
@@ -373,10 +373,10 @@ object CrystalAura : Module() {
     /* Placing */
     private fun SafeClientEvent.canPlace(): Boolean {
         return doPlace
-                && placeTimer > placeDelay
-                && InventoryUtils.countItemAll(426) > 0
-                && getPlacingPos() != null
-                && countValidCrystal() < maxCrystal
+            && placeTimer > placeDelay
+            && InventoryUtils.countItemAll(426) > 0
+            && getPlacingPos() != null
+            && countValidCrystal() < maxCrystal
     }
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
@@ -420,31 +420,31 @@ object CrystalAura : Module() {
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float) =
-            (shouldFacePlace(damage) || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
+        (shouldFacePlace(damage) || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
     /* End of placing */
 
     /* Exploding */
     private fun SafeClientEvent.canExplode() =
-            doExplode
-                    && hitTimer > hitDelay
-                    && getExplodingCrystal() != null
+        doExplode
+            && hitTimer > hitDelay
+            && getExplodingCrystal() != null
 
     private fun SafeClientEvent.getExplodingCrystal() =
-            (crystalMap.entries.firstOrNull { (crystal, triple) ->
-                !ignoredList.contains(crystal)
-                        && !crystal.isDead
-                        && triple.third <= explodeRange
-                        && checkDamageExplode(triple.first, triple.second)
-                        && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
-                        && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-            } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
-                !ignoredList.contains(crystal)
-                        && !crystal.isDead
-                        && triple.third <= wallExplodeRange
-                        && checkDamageExplode(triple.first, triple.second)
-                        && EntityUtils.canEntityHitboxBeSeen(crystal) != null
-                        && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-            })?.key
+        (crystalMap.entries.firstOrNull { (crystal, triple) ->
+            !ignoredList.contains(crystal)
+                && !crystal.isDead
+                && triple.third <= explodeRange
+                && checkDamageExplode(triple.first, triple.second)
+                && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
+            !ignoredList.contains(crystal)
+                && !crystal.isDead
+                && triple.third <= wallExplodeRange
+                && checkDamageExplode(triple.first, triple.second)
+                && EntityUtils.canEntityHitboxBeSeen(crystal) != null
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        })?.key
 
 
     private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
@@ -471,10 +471,10 @@ object CrystalAura : Module() {
     }
 
     private fun shouldFacePlace(damage: Float) =
-            damage >= minDamageForcePlace
-                    && (forcePlacing
-                    || forcePlaceHealth > 0.0f && CombatManager.target?.let { CombatUtils.getHealthSmart(it) <= forcePlaceHealth } ?: false
-                    || forcePlaceArmorDura > 0.0f && getMinArmorDura() <= forcePlaceArmorDura)
+        damage >= minDamageForcePlace
+            && (forcePlacing
+            || forcePlaceHealth > 0.0f && CombatManager.target?.let { CombatUtils.getHealthSmart(it) <= forcePlaceHealth } ?: false
+            || forcePlaceArmorDura > 0.0f && getMinArmorDura() <= forcePlaceArmorDura)
 
     private fun getMinArmorDura() =
         (CombatManager.target?.let { target ->
@@ -521,7 +521,7 @@ object CrystalAura : Module() {
     }
 
     private fun getLastRotation() =
-            RotationUtils.getRotationTo(lastLookAt)
+        RotationUtils.getRotationTo(lastLookAt)
 
     private fun resetRotation() {
         lastLookAt = CombatManager.target?.positionVector ?: Vec3d.ZERO
