@@ -63,24 +63,24 @@ object AutoObsidian : Module() {
     private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
-        TARGET_STACKS("Target stacks", "Target Stacks Reached"),
-        FILL_INVENTORY("Fill inventory", "Inventory filled"),
+        TARGET_STACKS("Target Stacks", "Target Stacks Reached"),
+        FILL_INVENTORY("Fill Inventory", "Inventory filled"),
         INFINITE("Infinite", "")
     }
 
     enum class State(override val displayName: String) : DisplayEnum {
         SEARCHING("Searching"),
         PLACING("Placing"),
-        PRE_MINING("Pre mining"),
+        PRE_MINING("Pre Mining"),
         MINING("Mining"),
         COLLECTING("Collecting"),
         DONE("Done")
     }
 
     private enum class SearchingState(override val displayName: String) : DisplayEnum {
-        PLACING("SearchingState"),
+        PLACING("Placing"),
         OPENING("Opening"),
-        PRE_MINING("Pre mining"),
+        PRE_MINING("Pre Mining"),
         MINING("Mining"),
         COLLECTING("Collecting"),
         DONE("Done")
