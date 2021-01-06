@@ -292,7 +292,24 @@ object CrystalAura : Module() {
         }
     }
 
+    private fun preExplode(): Boolean {
+        if (antiWeakness && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
+            CombatUtils.equipBestWeapon()
+            PlayerPacketManager.resetHotbar()
+            return false
+        }
+
+        // Anticheat doesn't allow you attack right after changing item
+        if (System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50) {
+            return false
+        }
+
+        return true
+    }
+
     private fun packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
+        if (!preExplode()) return
+
         val triple = placeMap[pos] ?: return
 
         if (!noSuicideCheck(triple.second)) return
@@ -310,16 +327,7 @@ object CrystalAura : Module() {
     }
 
     private fun explode() {
-        if (antiWeakness && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
-            CombatUtils.equipBestWeapon()
-            PlayerPacketManager.resetHotbar()
-            return
-        }
-
-        // Anticheat doesn't allow you attack right after changing item
-        if (System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50) {
-            return
-        }
+        if (!preExplode()) return
 
         getExplodingCrystal()?.let {
             if (hitAttempts != 0 && it == lastCrystal) {
