@@ -395,6 +395,7 @@ object AutoObsidian : Module() {
             MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
             mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             disable()
+            return
         }
 
         InventoryUtils.swapSlotToItem(shulkerBoxId)
@@ -416,6 +417,7 @@ object AutoObsidian : Module() {
                 MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 disable()
+                return
             }
         }
 
