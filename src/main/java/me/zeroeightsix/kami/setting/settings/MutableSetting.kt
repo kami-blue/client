@@ -33,7 +33,6 @@ open class MutableSetting<T : Any>(
                 field = new
 
                 valueListeners.forEach { it(prev, field) }
-                for (listener in valueListeners) listener(prev, field)
                 listeners.forEach { it() }
             }
         }
