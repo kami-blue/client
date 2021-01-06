@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.DisplayEnum
 
@@ -58,7 +59,7 @@ open class Module {
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
     val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })
-    private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
+    private val enabled = setting("Enabled", false, { false })
     private val visible = setting("Visible", annotation.showOnArray)
     private val default = setting("Default", false, { settingList.isNotEmpty() })
     /* End of settings */
@@ -70,53 +71,29 @@ open class Module {
     val isVisible: Boolean get() = visible.value
     /* End of properties */
 
-
-    fun resetSettings() {
-        for (setting in settingList) {
-            setting.resetValue()
-        }
+    internal fun postInit() {
+        enabled.value = annotation.enabledByDefault || annotation.alwaysEnabled
+        if (alwaysListening) KamiEventBus.subscribe(this)
     }
 
     fun toggle() {
-        setEnabled(!isEnabled)
-    }
-
-    fun setEnabled(state: Boolean) {
-        if (isEnabled != state) if (state) enable() else disable()
+        enabled.value = !enabled.value
     }
 
     fun enable() {
-        if (!enabled.value) sendToggleMessage()
-
         enabled.value = true
-        onEnable()
-        onToggle()
-        if (!alwaysListening) {
-            KamiEventBus.subscribe(this)
-        }
     }
 
     fun disable() {
-        if (annotation.alwaysEnabled) return
-        if (enabled.value) sendToggleMessage()
-
         enabled.value = false
-        onDisable()
-        onToggle()
-        if (!alwaysListening) {
-            KamiEventBus.unsubscribe(this)
-        }
     }
 
     private fun sendToggleMessage() {
-        if (this !is ClickGUI && CommandConfig.toggleMessages.value) {
-            MessageSendHelper.sendChatMessage(name + if (enabled.value) " &cdisabled" else " &aenabled")
+        runSafe {
+            if (this@Module !is ClickGUI && CommandConfig.toggleMessages.value) {
+                MessageSendHelper.sendChatMessage(name + if (enabled.value) " &cdisabled" else " &aenabled")
+            }
         }
-    }
-
-
-    open fun destroy() {
-        // Cleanup method in case this module wants to do something when the client closes down
     }
 
     open fun isActive(): Boolean {
@@ -140,6 +117,29 @@ open class Module {
     }
 
     init {
+        enabled.consumers.add { prev, input ->
+            val enabled = annotation.alwaysEnabled || input
+
+            if (prev != input && !annotation.alwaysEnabled) {
+                sendToggleMessage()
+                onToggle()
+
+                if (enabled) {
+                    onEnable()
+                } else {
+                    onDisable()
+                }
+            }
+
+            if (enabled || alwaysListening) {
+                KamiEventBus.subscribe(this)
+            } else {
+                KamiEventBus.unsubscribe(this)
+            }
+
+            enabled
+        }
+
         default.valueListeners.add { _, it ->
             if (it) {
                 settingList.forEach { it.resetValue() }

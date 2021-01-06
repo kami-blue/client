@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.setting
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GenericConfig.setting
 import me.zeroeightsix.kami.setting.config.AbstractConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
@@ -24,7 +23,6 @@ internal object ModuleConfig : AbstractConfig<Module>(
 
     override fun save() {
         super.save()
-        for (module in ModuleManager.getModules()) module.destroy()
     }
 
 }

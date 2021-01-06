@@ -1,10 +1,7 @@
 package me.zeroeightsix.kami;
 
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
-import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
-import me.zeroeightsix.kami.module.Module;
-import me.zeroeightsix.kami.module.ModuleManager;
 import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.threads.BackgroundScope;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,12 +64,6 @@ public class KamiMod {
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
         ConfigUtils.INSTANCE.loadAll();
-
-        // After settings loaded, we want to let the enabled modules know they've been enabled (since the setting is done through reflection)
-        for (Module module : ModuleManager.getModules()) {
-            if (module.getAlwaysListening()) KamiEventBus.INSTANCE.subscribe(module);
-            if (module.isEnabled()) module.enable();
-        }
 
         BackgroundScope.INSTANCE.start();
 
