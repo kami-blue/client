@@ -1,10 +1,15 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.Phase
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.mixin.extension.id
+import me.zeroeightsix.kami.mixin.extension.packetAction
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
@@ -12,7 +17,11 @@ import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
+import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -45,58 +54,61 @@ import kotlin.math.min
 
 @CombatManager.CombatModule
 @Module.Info(
-        name = "CrystalAura",
-        alias = ["CA", "AC", "AutoCrystal"],
-        description = "Places End Crystals to kill enemies",
-        category = Module.Category.COMBAT,
-        modulePriority = 80
+    name = "CrystalAura",
+    alias = ["CA", "AC", "AutoCrystal"],
+    description = "Places End Crystals to kill enemies",
+    category = Module.Category.COMBAT,
+    modulePriority = 80
 )
 object CrystalAura : Module() {
     /* Settings */
-    private val page = setting("Page", Page.GENERAL)
+    private val page by setting("Page", Page.GENERAL)
 
     /* General */
-    private val noSuicideThreshold = setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page.value == Page.GENERAL })
-    private val rotationTolerance = setting("RotationTolerance", 10, 5..50, 5, { page.value == Page.GENERAL })
-    private val maxYawSpeed = setting("MaxYawSpeed", 25, 10..100, 5, { page.value == Page.GENERAL })
-    private val swingMode = setting("SwingMode", SwingMode.CLIENT, { page.value == Page.GENERAL })
+    private val noSuicideThreshold by setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page == Page.GENERAL })
+    private val rotationTolerance by setting("RotationTolerance", 10, 5..50, 5, { page == Page.GENERAL })
+    private val maxYawSpeed by setting("MaxYawSpeed", 50, 10..100, 5, { page == Page.GENERAL })
+    private val swingMode by setting("SwingMode", SwingMode.CLIENT, { page == Page.GENERAL })
 
     /* Force place */
-    private val bindForcePlace = setting("BindForcePlace", Bind(), { page.value == Page.FORCE_PLACE })
-    private val forcePlaceHealth = setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page.value == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura = setting("ForcePlaceArmorDura", 10, 0..50, 1, { page.value == Page.FORCE_PLACE })
-    private val minDamageForcePlace = setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page.value == Page.FORCE_PLACE })
+    private val bindForcePlace by setting("BindForcePlace", Bind(), { page == Page.FORCE_PLACE })
+    private val forcePlaceHealth by setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 10, 0..50, 1, { page == Page.FORCE_PLACE })
+    private val minDamageForcePlace by setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
 
     /* Place page one */
-    private val doPlace = setting("Place", true, { page.value == Page.PLACE_ONE })
-    private val autoSwap = setting("AutoSwap", true, { page.value == Page.PLACE_ONE })
-    private val spoofHotbar = setting("SpoofHotbar", true, { page.value == Page.PLACE_ONE && autoSwap.value })
-    private val placeSwing = setting("PlaceSwing", false, { page.value == Page.PLACE_ONE })
-    private val placeSync = setting("PlaceSync", false, { page.value == Page.PLACE_ONE })
-    private val extraPlacePacket = setting("ExtraPlacePacket", false, { page.value == Page.PLACE_ONE })
+    private val doPlace by setting("Place", true, { page == Page.PLACE_ONE })
+    private val autoSwap by setting("AutoSwap", true, { page == Page.PLACE_ONE })
+    private val spoofHotbar by setting("SpoofHotbar", false, { page == Page.PLACE_ONE && autoSwap })
+    private val placeSwing by setting("PlaceSwing", true, { page == Page.PLACE_ONE })
+    private val placeSync by setting("PlaceSync", false, { page == Page.PLACE_ONE })
+    private val extraPlacePacket by setting("ExtraPlacePacket", false, { page == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP = setting("MinDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page.value == Page.PLACE_TWO })
-    private val maxSelfDamageP = setting("MaxSelfDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page.value == Page.PLACE_TWO })
-    private val placeOffset = setting("PlaceOffset", 1.0f, 0f..1f, 0.05f, { page.value == Page.PLACE_TWO })
-    private val maxCrystal = setting("MaxCrystal", 2, 1..5, 1, { page.value == Page.PLACE_TWO })
-    private val placeDelay = setting("PlaceDelay", 1, 1..10, 1, { page.value == Page.PLACE_TWO })
-    private val placeRange = setting("PlaceRange", 4.0f, 0.0f..5.0f, 0.25f, { page.value == Page.PLACE_TWO })
-    private val wallPlaceRange = setting("WallPlaceRange", 2.0f, 0.0f..5.0f, 0.25f, { page.value == Page.PLACE_TWO })
+    private val minDamageP by setting("MinDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val maxSelfDamageP by setting("MaxSelfDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val placeOffset by setting("PlaceOffset", 1.0f, 0f..1f, 0.05f, { page == Page.PLACE_TWO })
+    private val maxCrystal by setting("MaxCrystal", 2, 1..5, 1, { page == Page.PLACE_TWO })
+    private val placeDelay by setting("PlaceDelay", 1, 1..10, 1, { page == Page.PLACE_TWO })
+    private val placeRange by setting("PlaceRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val wallPlaceRange by setting("WallPlaceRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
 
     /* Explode page one */
-    private val doExplode = setting("Explode", true, { page.value == Page.EXPLODE_ONE })
-    private val autoForceExplode = setting("AutoForceExplode", true, { page.value == Page.EXPLODE_ONE })
-    private val antiWeakness = setting("AntiWeakness", true, { page.value == Page.EXPLODE_ONE })
+    private val doExplode by setting("Explode", true, { page == Page.EXPLODE_ONE })
+    private val autoForceExplode by setting("AutoForceExplode", true, { page == Page.EXPLODE_ONE })
+    private val antiWeakness by setting("AntiWeakness", true, { page == Page.EXPLODE_ONE })
+    private val packetExplode by setting("PacketExplode", true, { page == Page.EXPLODE_ONE })
+    private val predictExplode by setting("PredictExplode", false, { page == Page.EXPLODE_ONE })
+    private val predictDelay by setting("PredictDelay", 10, 0..200, 1, { page == Page.EXPLODE_ONE && predictExplode })
 
     /* Explode page two */
-    private val minDamageE = setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
-    private val maxSelfDamageE = setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
-    private val swapDelay = setting("SwapDelay", 10, 1..50, 2, { page.value == Page.EXPLODE_TWO })
-    private val hitDelay = setting("HitDelay", 1, 1..10, 1, { page.value == Page.EXPLODE_TWO })
-    private val hitAttempts = setting("HitAttempts", 4, 0..8, 1, { page.value == Page.EXPLODE_TWO })
-    private val explodeRange = setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
-    private val wallExplodeRange = setting("WallExplodeRange", 2.0f, 0.0f..5.0f, 0.25f, { page.value == Page.EXPLODE_TWO })
+    private val minDamageE by setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val maxSelfDamageE by setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("SwapDelay", 10, 1..50, 2, { page == Page.EXPLODE_TWO })
+    private val hitDelay by setting("HitDelay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
+    private val hitAttempts by setting("HitAttempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
+    private val explodeRange by setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val wallExplodeRange by setting("WallExplodeRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
     /* End of settings */
 
     private enum class Page {
@@ -109,10 +121,11 @@ object CrystalAura : Module() {
     }
 
     /* Variables */
-    private val placedBBMap = Collections.synchronizedMap(HashMap<AxisAlignedBB, Long>()) // <CrystalBoundingBox, Added Time>
+    private val placedBBMap = Collections.synchronizedMap(HashMap<BlockPos, Pair<AxisAlignedBB, Long>>()) // <CrystalBoundingBox, Added Time>
     private val ignoredList = HashSet<EntityEnderCrystal>()
     private val packetList = ArrayList<Packet<*>>(3)
     private val yawDiffList = FloatArray(20)
+    private val lockObject = Any()
 
     private var placeMap = emptyMap<BlockPos, Triple<Float, Float, Double>>() // <BlockPos, Target Damage, Self Damage>
     private var crystalMap = emptyMap<EntityEnderCrystal, Triple<Float, Float, Double>>() // <Crystal, <Target Damage, Self Damage>>
@@ -123,10 +136,11 @@ object CrystalAura : Module() {
     private var hitTimer = 0
     private var hitCount = 0
     private var yawDiffIndex = 0
+    private var lastEntityID = 0
 
     var inactiveTicks = 20; private set
-    val minDamage get() = max(minDamageP.value, minDamageE.value)
-    val maxSelfDamage get() = min(maxSelfDamageP.value, maxSelfDamageE.value)
+    val minDamage get() = max(minDamageP, minDamageE)
+    val maxSelfDamage get() = min(maxSelfDamageP, maxSelfDamageE)
 
     override fun isActive() = isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 20
 
@@ -147,46 +161,57 @@ object CrystalAura : Module() {
 
     init {
         listener<InputEvent.KeyInputEvent> {
-            if (bindForcePlace.value.isDown(Keyboard.getEventKey())){
+            if (bindForcePlace.isDown(Keyboard.getEventKey())) {
                 forcePlacing = !forcePlacing
                 MessageSendHelper.sendChatMessage("$chatName Force placing" + if (forcePlacing) " &aenabled" else " &cdisabled")
             }
         }
 
-        listener<PacketEvent.Receive> {
-            if (mc.player == null) return@listener
+        safeListener<PacketEvent.Receive> { event ->
+            when (event.packet) {
+                is SPacketSpawnObject -> {
+                    lastEntityID = event.packet.entityID
 
-            if (it.packet is SPacketSpawnObject && it.packet.type == 51) {
-                val pos = Vec3d(it.packet.x, it.packet.y + 1.0, it.packet.z)
-                placedBBMap.keys.removeIf { bb -> bb.contains(pos) }
-            }
+                    if (event.packet.type == 51) {
+                        val vec3d = Vec3d(event.packet.x, event.packet.y, event.packet.z)
+                        val pos = vec3d.toBlockPos()
 
-            // Minecraft sends sounds packets a tick before removing the crystal lol
-            if (it.packet is SPacketSoundEffect
-                    && it.packet.category == SoundCategory.BLOCKS
-                    && it.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                val crystalList = CrystalUtils.getCrystalList(Vec3d(it.packet.x, it.packet.y, it.packet.z), 6.0f)
-
-                for (crystal in crystalList) {
-                    crystal.setDead()
+                        placedBBMap.remove(pos)?.let {
+                            if (packetExplode) {
+                                packetExplode(event.packet.entityID, pos.down(), vec3d)
+                            }
+                        }
+                    }
                 }
+                is SPacketSoundEffect -> {
+                    // Minecraft sends sounds packets a tick before removing the crystal lol
+                    if (event.packet.category == SoundCategory.BLOCKS && event.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                        val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 6.0f)
 
-                ignoredList.clear()
-                hitCount = 0
+                        for (crystal in crystalList) {
+                            crystal.setDead()
+                        }
+
+                        ignoredList.clear()
+                        hitCount = 0
+                    }
+                }
             }
         }
 
-        listener<OnUpdateWalkingPlayerEvent> {
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
+        safeListener<OnUpdateWalkingPlayerEvent> {
+            if (!CombatManager.isOnTopPriority(this@CrystalAura) || CombatSetting.pause) return@safeListener
 
             if (it.phase == Phase.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = getLastRotation())
-                PlayerPacketManager.addPacket(this, packet)
+                PlayerPacketManager.addPacket(this@CrystalAura, packet)
             }
 
             if (it.phase == Phase.POST) {
-                for (packet in packetList) sendPacketDirect(packet)
-                packetList.clear()
+                synchronized(lockObject) {
+                    for (packet in packetList) sendPacketDirect(packet)
+                    packetList.clear()
+                }
             }
         }
 
@@ -201,7 +226,7 @@ object CrystalAura : Module() {
             if (CombatManager.isOnTopPriority(CrystalAura) && !CombatSetting.pause && packetList.size == 0) {
                 updateMap()
                 if (canExplode()) explode()
-                else if (canPlace()) place()
+                if (canPlace()) place()
             }
 
             if (it.phase == TickEvent.Phase.END) {
@@ -217,11 +242,11 @@ object CrystalAura : Module() {
         yawDiffIndex = (yawDiffIndex + 1) % 20
     }
 
-    private fun updateMap() {
+    private fun SafeClientEvent.updateMap() {
         placeMap = CombatManager.placeMap
         crystalMap = CombatManager.crystalMap
 
-        placedBBMap.values.removeIf { System.currentTimeMillis() - it > max(InfoCalculator.ping(), 100) }
+        placedBBMap.values.removeIf { System.currentTimeMillis() - it.second > max(InfoCalculator.ping(), 100) }
 
         if (inactiveTicks > 20) {
             if (getPlacingPos() == null && placedBBMap.isNotEmpty()) {
@@ -235,107 +260,155 @@ object CrystalAura : Module() {
         }
     }
 
-    private fun place() {
-        if (autoSwap.value && getHand() == null) {
+    private fun SafeClientEvent.place() {
+        if (autoSwap && getHand() == null) {
             InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
-                if (spoofHotbar.value) PlayerPacketManager.spoofHotbar(it)
+                if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
                 else InventoryUtils.swapSlot(it)
             }
         }
+
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
                 placeTimer = 0
                 inactiveTicks = 0
-                lastLookAt = Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5)
+                lastLookAt = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
                 sendOrQueuePacket(getPlacePacket(pos, hand))
-                if (extraPlacePacket.value) sendOrQueuePacket(getPlacePacket(pos, hand))
-                if (placeSwing.value) sendOrQueuePacket(CPacketAnimation(hand))
-                placedBBMap[CrystalUtils.getCrystalBB(pos.up())] = System.currentTimeMillis()
+                if (extraPlacePacket) sendOrQueuePacket(getPlacePacket(pos, hand))
+                if (placeSwing) sendOrQueuePacket(CPacketAnimation(hand))
+
+                val crystalPos = pos.up()
+                placedBBMap[crystalPos] = CrystalUtils.getCrystalBB(crystalPos) to System.currentTimeMillis()
+
+                if (predictExplode) {
+                    defaultScope.launch {
+                        delay(predictDelay.toLong())
+
+                        synchronized(lockObject) {
+                            if (!placedBBMap.containsKey(crystalPos)) return@synchronized
+                            packetExplode(lastEntityID + 1, pos, crystalPos.toVec3d(0.5, 0.0, 0.5))
+                        }
+                    }
+                }
             }
         }
     }
 
-    private fun explode() {
-        if (antiWeakness.value && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
+    private fun SafeClientEvent.preExplode(): Boolean {
+        if (antiWeakness && player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
             CombatUtils.equipBestWeapon()
             PlayerPacketManager.resetHotbar()
-            return
+            return false
         }
 
         // Anticheat doesn't allow you attack right after changing item
-        if (System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay.value * 50) {
-            return
+        if (System.currentTimeMillis() - PlayerPacketManager.lastSwapTime < swapDelay * 50) {
+            return false
         }
 
-        getExplodingCrystal()?.let {
-            hitTimer = 0
-            inactiveTicks = 0
-            lastLookAt = it.positionVector
+        return true
+    }
 
-            if (hitAttempts.value != 0 && it == lastCrystal) {
+    private fun SafeClientEvent.packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
+        if (!preExplode()) return
+
+        val triple = placeMap[pos] ?: return
+
+        if (!noSuicideCheck(triple.second)) return
+        if (!checkDamageExplode(triple.first, triple.second)) return
+        if (triple.third > explodeRange) return
+
+        val attackPacket = CPacketUseEntity().apply {
+            id = entityID
+            packetAction = CPacketUseEntity.Action.ATTACK
+        }
+
+        synchronized(lockObject) {
+            explodeDirect(attackPacket, vec3d)
+        }
+    }
+
+    private fun SafeClientEvent.explode() {
+        if (!preExplode()) return
+
+        getExplodingCrystal()?.let {
+            if (hitAttempts != 0 && it == lastCrystal) {
                 hitCount++
-                if (hitCount >= hitAttempts.value) ignoredList.add(it)
+                if (hitCount >= hitAttempts) ignoredList.add(it)
             } else {
                 hitCount = 0
             }
-            sendOrQueuePacket(CPacketUseEntity(it))
-            sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
-            CombatManager.target?.let { target -> mc.player.setLastAttackedEntity(target) }
+
+            CombatManager.target?.let { target -> player.setLastAttackedEntity(target) }
             lastCrystal = it
+
+            explodeDirect(CPacketUseEntity(it), it.positionVector)
         }
     }
 
-    private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
-            CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset.value, 0.5f)
+    private fun SafeClientEvent.explodeDirect(packet: CPacketUseEntity, pos: Vec3d) {
+        hitTimer = 0
+        inactiveTicks = 0
+        lastLookAt = pos
 
-    private fun sendOrQueuePacket(packet: Packet<*>) {
+        sendOrQueuePacket(packet)
+        sendOrQueuePacket(CPacketAnimation(getHand() ?: EnumHand.OFF_HAND))
+    }
+
+    private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
+        CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
+
+    private fun SafeClientEvent.sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))
-        if (yawDiff < rotationTolerance.value) sendPacketDirect(packet)
+        if (yawDiff < rotationTolerance) sendPacketDirect(packet)
         else packetList.add(packet)
     }
 
-    private fun sendPacketDirect(packet: Packet<*>) {
-        if (packet is CPacketAnimation && swingMode.value == SwingMode.CLIENT) mc.player?.swingArm(packet.hand)
-        else mc.connection?.sendPacket(packet)
+    private fun SafeClientEvent.sendPacketDirect(packet: Packet<*>) {
+        if (packet is CPacketAnimation && swingMode == SwingMode.CLIENT) player.swingArm(packet.hand)
+        else connection.sendPacket(packet)
     }
     /* End of main functions */
 
     /* Placing */
-    private fun canPlace(): Boolean {
-        return doPlace.value
-                && placeTimer > placeDelay.value
-                && InventoryUtils.countItemAll(426) > 0
-                && getPlacingPos() != null
-                && countValidCrystal() < maxCrystal.value
+    private fun SafeClientEvent.canPlace(): Boolean {
+        return doPlace
+            && placeTimer > placeDelay
+            && InventoryUtils.countItemAll(426) > 0
+            && getPlacingPos() != null
+            && countValidCrystal() < maxCrystal
     }
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
-    private fun getPlacingPos(): BlockPos? {
+    private fun SafeClientEvent.getPlacingPos(): BlockPos? {
         if (placeMap.isEmpty()) return null
+
+        val eyePos = player.getPositionEyes(1f)
+
         for ((pos, triple) in placeMap) {
             // Damage check
             if (!noSuicideCheck(triple.second)) continue
             if (!checkDamagePlace(triple.first, triple.second)) continue
 
             // Distance check
-            if (triple.third > placeRange.value) continue
+            if (triple.third > placeRange) continue
 
             // Wall distance check
-            val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, 0.5, 0.5))
+            val rayTraceResult = world.rayTraceBlocks(eyePos, pos.toVec3dCenter())
             val hitBlockPos = rayTraceResult?.blockPos ?: pos
-            if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange.value) continue
+            if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange) continue
 
             // Collide check
             if (!CrystalUtils.canPlaceCollide(pos)) continue
 
             // Place sync
-            if (placeSync.value) {
+            if (placeSync) {
                 val bb = CrystalUtils.getCrystalBB(pos.up())
-                if (placedBBMap.keys.any { it.intersects(bb) }) continue
+                if (placedBBMap.values.any { it.first.intersects(bb) }) continue
             }
 
             // Yaw speed check
-            val hitVec = Vec3d(pos).add(0.5, placeOffset.value.toDouble(), 0.5)
+            val hitVec = pos.toVec3d().add(0.5, placeOffset.toDouble(), 0.5)
             if (!checkYawSpeed(RotationUtils.getRotationTo(hitVec).x)) continue
 
             return pos
@@ -347,61 +420,61 @@ object CrystalAura : Module() {
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float) =
-            (shouldFacePlace(damage) || damage >= minDamageP.value) && (selfDamage <= maxSelfDamageP.value)
+        (shouldFacePlace(damage) || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
     /* End of placing */
 
     /* Exploding */
-    private fun canExplode() =
-            doExplode.value
-                    && hitTimer > hitDelay.value
-                    && getExplodingCrystal() != null
+    private fun SafeClientEvent.canExplode() =
+        doExplode
+            && hitTimer > hitDelay
+            && getExplodingCrystal() != null
 
-    private fun getExplodingCrystal() =
-            (crystalMap.entries.firstOrNull { (crystal, triple) ->
-                !ignoredList.contains(crystal)
-                        && !crystal.isDead
-                        && triple.third <= explodeRange.value
-                        && checkDamageExplode(triple.first, triple.second)
-                        && (mc.player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
-                        && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-            } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
-                !ignoredList.contains(crystal)
-                        && !crystal.isDead
-                        && triple.third <= wallExplodeRange.value
-                        && checkDamageExplode(triple.first, triple.second)
-                        && EntityUtils.canEntityHitboxBeSeen(crystal) != null
-                        && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-            })?.key
+    private fun SafeClientEvent.getExplodingCrystal() =
+        (crystalMap.entries.firstOrNull { (crystal, triple) ->
+            !ignoredList.contains(crystal)
+                && !crystal.isDead
+                && triple.third <= explodeRange
+                && checkDamageExplode(triple.first, triple.second)
+                && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
+            !ignoredList.contains(crystal)
+                && !crystal.isDead
+                && triple.third <= wallExplodeRange
+                && checkDamageExplode(triple.first, triple.second)
+                && EntityUtils.canEntityHitboxBeSeen(crystal) != null
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        })?.key
 
 
-    private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE.value) && selfDamage <= maxSelfDamageE.value
+    private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
 
-    private fun shouldForceExplode() = autoForceExplode.value && placeMap.isNotEmpty() && placeMap.values.first().second > minDamageE.value
+    private fun shouldForceExplode() = autoForceExplode && placeMap.isNotEmpty() && placeMap.values.first().second > minDamageE
     /* End of exploding */
 
     /* General */
-    private fun getHand(): EnumHand? {
-        val serverSideItem = if (spoofHotbar.value) mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
+    private fun SafeClientEvent.getHand(): EnumHand? {
+        val serverSideItem = if (spoofHotbar) player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
         return when (Items.END_CRYSTAL) {
-            mc.player.heldItemOffhand.item -> EnumHand.OFF_HAND
-            mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
+            player.heldItemOffhand.item -> EnumHand.OFF_HAND
+            player.heldItemMainhand.item -> EnumHand.MAIN_HAND
             serverSideItem -> EnumHand.MAIN_HAND
             else -> null
         }
     }
 
-    private fun noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(mc.player) - selfDamage > noSuicideThreshold.value
+    private fun SafeClientEvent.noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(player) - selfDamage > noSuicideThreshold
 
-    private fun isHoldingTool(): Boolean {
-        val item = mc.player.heldItemMainhand.item
+    private fun SafeClientEvent.isHoldingTool(): Boolean {
+        val item = player.heldItemMainhand.item
         return item is ItemTool || item is ItemSword
     }
 
     private fun shouldFacePlace(damage: Float) =
-            damage >= minDamageForcePlace.value
-                    && (forcePlacing
-                    || forcePlaceHealth.value > 0.0f && CombatManager.target?.let { CombatUtils.getHealthSmart(it) <= forcePlaceHealth.value } ?: false
-                    || forcePlaceArmorDura.value > 0.0f && getMinArmorDura() <= forcePlaceArmorDura.value)
+        damage >= minDamageForcePlace
+            && (forcePlacing
+            || forcePlaceHealth > 0.0f && CombatManager.target?.let { CombatUtils.getHealthSmart(it) <= forcePlaceHealth } ?: false
+            || forcePlaceArmorDura > 0.0f && getMinArmorDura() <= forcePlaceArmorDura)
 
     private fun getMinArmorDura() =
         (CombatManager.target?.let { target ->
@@ -413,17 +486,17 @@ object CrystalAura : Module() {
                 }
         }) ?: 100
 
-    private fun countValidCrystal(): Int {
+    private fun SafeClientEvent.countValidCrystal(): Int {
         var count = 0
         CombatManager.target?.let {
-            val eyePos = mc.player.getPositionEyes(1f)
+            val eyePos = player.getPositionEyes(1f)
 
-            if (placeSync.value) {
-                for ((bb, _) in placedBBMap) {
-                    val pos = bb.center.subtract(0.0, 1.0, 0.0)
-                    if (pos.distanceTo(eyePos) > placeRange.value) continue
+            if (placeSync) {
+                for ((_, pair) in placedBBMap) {
+                    val pos = pair.first.center.subtract(0.0, 1.0, 0.0)
+                    if (pos.distanceTo(eyePos) > placeRange) continue
                     val damage = CrystalUtils.calcDamage(pos, it)
-                    val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+                    val selfDamage = CrystalUtils.calcDamage(pos, player)
                     if (!checkDamagePlace(damage, selfDamage)) continue
                     count++
                 }
@@ -432,7 +505,7 @@ object CrystalAura : Module() {
             for ((crystal, pair) in crystalMap) {
                 if (ignoredList.contains(crystal)) continue
                 if (!checkDamagePlace(pair.first, pair.second)) continue
-                if (crystal.positionVector.distanceTo(eyePos) > placeRange.value) continue
+                if (crystal.positionVector.distanceTo(eyePos) > placeRange) continue
                 if (!checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)) continue
                 count++
             }
@@ -444,11 +517,11 @@ object CrystalAura : Module() {
     /* Rotation */
     private fun checkYawSpeed(yaw: Float): Boolean {
         val yawDiff = abs(RotationUtils.normalizeAngle(yaw - PlayerPacketManager.serverSideRotation.x))
-        return yawDiffList.sum() + yawDiff <= maxYawSpeed.value
+        return yawDiffList.sum() + yawDiff <= maxYawSpeed
     }
 
     private fun getLastRotation() =
-            RotationUtils.getRotationTo(lastLookAt)
+        RotationUtils.getRotationTo(lastLookAt)
 
     private fun resetRotation() {
         lastLookAt = CombatManager.target?.positionVector ?: Vec3d.ZERO

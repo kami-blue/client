@@ -11,7 +11,7 @@ import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.io.IOException
 
-class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
+class KamiGuiUpdateNotification : GuiScreen() {
 
     private val message = "A newer release of KAMI Blue is available ($latest)."
 
@@ -32,10 +32,7 @@ class KamiGuiUpdateNotification(private val buttonId: Int) : GuiScreen() {
     override fun actionPerformed(button: GuiButton) {
         if (button.id == 0) WebUtils.openWebLink(KamiMod.WEBSITE_LINK + "/download")
 
-        val screen = if (buttonId == 1) GuiWorldSelection(GuiMainMenu()) // Single
-        else GuiMultiplayer(GuiMainMenu()) // Multi
-
-        mc.displayGuiScreen(screen)
+        mc.displayGuiScreen(GuiMainMenu())
     }
 
     companion object {

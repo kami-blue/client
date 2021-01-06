@@ -125,7 +125,7 @@ object Armor : HudElement(
             val width = FontRenderAdapter.getStringWidth(string)
             val height = FontRenderAdapter.getFontHeight()
 
-            FontRenderAdapter.drawString(string, x + 16.0f -width, y + 16.0f - height)
+            FontRenderAdapter.drawString(string, x + 16.0f - width, y + 16.0f - height)
         }
     }
 }

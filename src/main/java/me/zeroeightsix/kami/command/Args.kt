@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.command
 
-import baritone.cache.CachedChunk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
@@ -90,7 +90,7 @@ class BaritoneBlockArg(
 
     private companion object {
         val baritoneBlockNames = ArrayList<String>().apply {
-            CachedChunk.BLOCKS_TO_KEEP_TRACK_OF.forEach { block ->
+            BaritoneUtils.baritoneCachedBlocks.forEach { block ->
                 block.registryName?.let {
                     add(it.toString())
                     add(it.path)

@@ -96,7 +96,7 @@ object ModuleList : HudElement(
 
         GlStateManager.translate(renderWidth * dockingH.multiplier, 0.0f, 0.0f)
         if (dockingV == VAlign.BOTTOM) {
-            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f) , 0.0f)
+            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
         }
 
         drawModuleList()

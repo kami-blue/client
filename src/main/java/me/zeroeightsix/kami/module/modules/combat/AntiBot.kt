@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.module.modules.misc.FakePlayer
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
@@ -50,6 +51,8 @@ object AntiBot : Module() {
             botSet.addAll(cacheSet)
         }
     }
+
+    fun isBot(entity: Entity) = isEnabled && entity is EntityPlayer && botSet.contains(entity)
 
     private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
             || entity.name == FakePlayer.playerName.value

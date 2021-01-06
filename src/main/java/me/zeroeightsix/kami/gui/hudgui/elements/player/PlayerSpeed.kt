@@ -1,10 +1,12 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
@@ -14,14 +16,14 @@ object PlayerSpeed : LabelHud(
     description = "Player movement speed"
 ) {
 
-    private val speedUnit = setting("SpeedUnit", SpeedUnit.MPS)
-    private val averageSpeedTime = setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)
+    private val speedUnit by setting("SpeedUnit", SpeedUnit.MPS)
+    private val averageSpeedTime by setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)
 
     @Suppress("UNUSED")
-    private enum class SpeedUnit(val displayName: String) {
-        MPS("m/s"),
-        KMH("km/h"),
-        MPH("mph")
+    private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {
+        MPS("m/s", 1.0),
+        KMH("km/h", 3.6),
+        MPH("mph", 2.237) // Monkey Americans
     }
 
     private val speedList = ArrayDeque<Double>()
@@ -32,19 +34,14 @@ object PlayerSpeed : LabelHud(
         }
     }
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         var averageSpeed = if (speedList.isEmpty()) 0.0 else speedList.sum() / speedList.size
 
-        if (speedUnit.value == SpeedUnit.KMH) {
-            averageSpeed *= 3.6
-        } else if (speedUnit.value == SpeedUnit.MPH) {
-            averageSpeed *= 2.237
-        }
-
+        averageSpeed *= speedUnit.multiplier
         averageSpeed = MathUtils.round(averageSpeed, 2)
 
         displayText.add(averageSpeed.toString(), primaryColor)
-        displayText.add(speedUnit.value.displayName, secondaryColor)
+        displayText.add(speedUnit.displayName, secondaryColor)
     }
 
     private fun updateSpeedList() {
@@ -56,7 +53,7 @@ object PlayerSpeed : LabelHud(
             speedList.poll()
         }
 
-        while (speedList.size > averageSpeedTime.value * 20.0f) speedList.pollFirst()
+        while (speedList.size > averageSpeedTime * 20.0f) speedList.pollFirst()
     }
 
 }

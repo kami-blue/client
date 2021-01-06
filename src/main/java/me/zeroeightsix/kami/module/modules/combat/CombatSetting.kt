@@ -208,8 +208,7 @@ object CombatSetting : Module() {
     private fun getTargetList(): LinkedList<EntityLivingBase> {
         val targetList = LinkedList<EntityLivingBase>()
         for (entity in getCacheList()) {
-            if (AntiBot.isEnabled
-                && AntiBot.botSet.contains((entity))) continue
+            if (AntiBot.isBot(entity)) continue
 
             if (!tamed.value
                 && (entity is EntityTameable && entity.isTamed

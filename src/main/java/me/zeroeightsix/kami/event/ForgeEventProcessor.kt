@@ -41,6 +41,7 @@ object ForgeEventProcessor {
     }
 
     @SubscribeEvent
+    @Suppress("UNUSED_PARAMETER")
     fun onWorldRender(event: RenderWorldLastEvent) {
         ProjectionUtils.updateMatrix()
 

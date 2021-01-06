@@ -97,17 +97,17 @@ open class WindowComponent(
         val centerSplitterV = min(10.0, preDragSize.y / 3.0)
 
         val horizontalSide = when (relativeClickPos.x) {
-            in -5.0..centerSplitterH -> HAlign.LEFT
+            in -2.0..centerSplitterH -> HAlign.LEFT
             in centerSplitterH..preDragSize.x - centerSplitterH -> HAlign.CENTER
-            in preDragSize.x - centerSplitterH..preDragSize.x + 5.0 -> HAlign.RIGHT
+            in preDragSize.x - centerSplitterH..preDragSize.x + 2.0 -> HAlign.RIGHT
             else -> null
         }
 
         val centerSplitterVCenter = if (draggableHeight != height && horizontalSide == HAlign.CENTER) 2.5 else min(15.0, preDragSize.x / 3.0)
         val verticalSide = when (relativeClickPos.y) {
-            in -5.0..centerSplitterVCenter -> VAlign.TOP
+            in -2.0..centerSplitterVCenter -> VAlign.TOP
             in centerSplitterVCenter..preDragSize.y - centerSplitterV -> VAlign.CENTER
-            in preDragSize.y - centerSplitterV..preDragSize.y + 5.0 -> VAlign.BOTTOM
+            in preDragSize.y - centerSplitterV..preDragSize.y + 2.0 -> VAlign.BOTTOM
             else -> null
         }
 
@@ -167,8 +167,8 @@ open class WindowComponent(
     }
 
     fun isInWindow(mousePos: Vec2f): Boolean {
-        return visible && mousePos.x in preDragPos.x - 5.0f..preDragPos.x + preDragSize.x + 5.0f
-            && mousePos.y in preDragPos.y - 5.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 5.0f
+        return visible && mousePos.x in preDragPos.x - 2.0f..preDragPos.x + preDragSize.x + 2.0f
+            && mousePos.y in preDragPos.y - 2.0f..preDragPos.y + max(preDragSize.y * renderMinimizeProgress, draggableHeight) + 2.0f
     }
 
     init {
