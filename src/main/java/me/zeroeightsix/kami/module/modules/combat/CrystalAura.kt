@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.combat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.Phase
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.OnUpdateWalkingPlayerEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
@@ -18,6 +19,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
+import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -197,12 +199,12 @@ object CrystalAura : Module() {
             }
         }
 
-        listener<OnUpdateWalkingPlayerEvent> {
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
+        safeListener<OnUpdateWalkingPlayerEvent> {
+            if (!CombatManager.isOnTopPriority(this@CrystalAura) || CombatSetting.pause) return@safeListener
 
             if (it.phase == Phase.PRE && inactiveTicks <= 20 && lastLookAt != Vec3d.ZERO) {
                 val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = getLastRotation())
-                PlayerPacketManager.addPacket(this, packet)
+                PlayerPacketManager.addPacket(this@CrystalAura, packet)
             }
 
             if (it.phase == Phase.POST) {
@@ -240,7 +242,7 @@ object CrystalAura : Module() {
         yawDiffIndex = (yawDiffIndex + 1) % 20
     }
 
-    private fun updateMap() {
+    private fun SafeClientEvent.updateMap() {
         placeMap = CombatManager.placeMap
         crystalMap = CombatManager.crystalMap
 
@@ -258,7 +260,7 @@ object CrystalAura : Module() {
         }
     }
 
-    private fun place() {
+    private fun SafeClientEvent.place() {
         if (autoSwap && getHand() == null) {
             InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
                 if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
@@ -292,8 +294,8 @@ object CrystalAura : Module() {
         }
     }
 
-    private fun preExplode(): Boolean {
-        if (antiWeakness && mc.player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
+    private fun SafeClientEvent.preExplode(): Boolean {
+        if (antiWeakness && player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
             CombatUtils.equipBestWeapon()
             PlayerPacketManager.resetHotbar()
             return false
@@ -307,7 +309,7 @@ object CrystalAura : Module() {
         return true
     }
 
-    private fun packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
+    private fun SafeClientEvent.packetExplode(entityID: Int, pos: BlockPos, vec3d: Vec3d) {
         if (!preExplode()) return
 
         val triple = placeMap[pos] ?: return
@@ -326,7 +328,7 @@ object CrystalAura : Module() {
         }
     }
 
-    private fun explode() {
+    private fun SafeClientEvent.explode() {
         if (!preExplode()) return
 
         getExplodingCrystal()?.let {
@@ -337,14 +339,14 @@ object CrystalAura : Module() {
                 hitCount = 0
             }
 
-            CombatManager.target?.let { target -> mc.player.setLastAttackedEntity(target) }
+            CombatManager.target?.let { target -> player.setLastAttackedEntity(target) }
             lastCrystal = it
 
             explodeDirect(CPacketUseEntity(it), it.positionVector)
         }
     }
 
-    private fun explodeDirect(packet: CPacketUseEntity, pos: Vec3d) {
+    private fun SafeClientEvent.explodeDirect(packet: CPacketUseEntity, pos: Vec3d) {
         hitTimer = 0
         inactiveTicks = 0
         lastLookAt = pos
@@ -356,20 +358,20 @@ object CrystalAura : Module() {
     private fun getPlacePacket(pos: BlockPos, hand: EnumHand) =
             CPacketPlayerTryUseItemOnBlock(pos, WorldUtils.getHitSide(pos), hand, 0.5f, placeOffset, 0.5f)
 
-    private fun sendOrQueuePacket(packet: Packet<*>) {
+    private fun SafeClientEvent.sendOrQueuePacket(packet: Packet<*>) {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.serverSideRotation.x - getLastRotation().x))
         if (yawDiff < rotationTolerance) sendPacketDirect(packet)
         else packetList.add(packet)
     }
 
-    private fun sendPacketDirect(packet: Packet<*>) {
-        if (packet is CPacketAnimation && swingMode == SwingMode.CLIENT) mc.player?.swingArm(packet.hand)
-        else mc.connection?.sendPacket(packet)
+    private fun SafeClientEvent.sendPacketDirect(packet: Packet<*>) {
+        if (packet is CPacketAnimation && swingMode == SwingMode.CLIENT) player.swingArm(packet.hand)
+        else connection.sendPacket(packet)
     }
     /* End of main functions */
 
     /* Placing */
-    private fun canPlace(): Boolean {
+    private fun SafeClientEvent.canPlace(): Boolean {
         return doPlace
                 && placeTimer > placeDelay
                 && InventoryUtils.countItemAll(426) > 0
@@ -378,8 +380,11 @@ object CrystalAura : Module() {
     }
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
-    private fun getPlacingPos(): BlockPos? {
+    private fun SafeClientEvent.getPlacingPos(): BlockPos? {
         if (placeMap.isEmpty()) return null
+
+        val eyePos = player.getPositionEyes(1f)
+
         for ((pos, triple) in placeMap) {
             // Damage check
             if (!noSuicideCheck(triple.second)) continue
@@ -389,7 +394,7 @@ object CrystalAura : Module() {
             if (triple.third > placeRange) continue
 
             // Wall distance check
-            val rayTraceResult = mc.world.rayTraceBlocks(mc.player.getPositionEyes(1f), Vec3d(pos).add(0.5, 0.5, 0.5))
+            val rayTraceResult = world.rayTraceBlocks(eyePos, pos.toVec3dCenter())
             val hitBlockPos = rayTraceResult?.blockPos ?: pos
             if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange) continue
 
@@ -403,7 +408,7 @@ object CrystalAura : Module() {
             }
 
             // Yaw speed check
-            val hitVec = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
+            val hitVec = pos.toVec3d().add(0.5, placeOffset.toDouble(), 0.5)
             if (!checkYawSpeed(RotationUtils.getRotationTo(hitVec).x)) continue
 
             return pos
@@ -419,18 +424,18 @@ object CrystalAura : Module() {
     /* End of placing */
 
     /* Exploding */
-    private fun canExplode() =
+    private fun SafeClientEvent.canExplode() =
             doExplode
                     && hitTimer > hitDelay
                     && getExplodingCrystal() != null
 
-    private fun getExplodingCrystal() =
+    private fun SafeClientEvent.getExplodingCrystal() =
             (crystalMap.entries.firstOrNull { (crystal, triple) ->
                 !ignoredList.contains(crystal)
                         && !crystal.isDead
                         && triple.third <= explodeRange
                         && checkDamageExplode(triple.first, triple.second)
-                        && (mc.player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
+                        && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
                         && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
             } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
                 !ignoredList.contains(crystal)
@@ -448,20 +453,20 @@ object CrystalAura : Module() {
     /* End of exploding */
 
     /* General */
-    private fun getHand(): EnumHand? {
-        val serverSideItem = if (spoofHotbar) mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
+    private fun SafeClientEvent.getHand(): EnumHand? {
+        val serverSideItem = if (spoofHotbar) player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
         return when (Items.END_CRYSTAL) {
-            mc.player.heldItemOffhand.item -> EnumHand.OFF_HAND
-            mc.player.heldItemMainhand.item -> EnumHand.MAIN_HAND
+            player.heldItemOffhand.item -> EnumHand.OFF_HAND
+            player.heldItemMainhand.item -> EnumHand.MAIN_HAND
             serverSideItem -> EnumHand.MAIN_HAND
             else -> null
         }
     }
 
-    private fun noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(mc.player) - selfDamage > noSuicideThreshold
+    private fun SafeClientEvent.noSuicideCheck(selfDamage: Float) = CombatUtils.getHealthSmart(player) - selfDamage > noSuicideThreshold
 
-    private fun isHoldingTool(): Boolean {
-        val item = mc.player.heldItemMainhand.item
+    private fun SafeClientEvent.isHoldingTool(): Boolean {
+        val item = player.heldItemMainhand.item
         return item is ItemTool || item is ItemSword
     }
 
@@ -481,17 +486,17 @@ object CrystalAura : Module() {
                 }
         }) ?: 100
 
-    private fun countValidCrystal(): Int {
+    private fun SafeClientEvent.countValidCrystal(): Int {
         var count = 0
         CombatManager.target?.let {
-            val eyePos = mc.player.getPositionEyes(1f)
+            val eyePos = player.getPositionEyes(1f)
 
             if (placeSync) {
                 for ((_, pair) in placedBBMap) {
                     val pos = pair.first.center.subtract(0.0, 1.0, 0.0)
                     if (pos.distanceTo(eyePos) > placeRange) continue
                     val damage = CrystalUtils.calcDamage(pos, it)
-                    val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+                    val selfDamage = CrystalUtils.calcDamage(pos, player)
                     if (!checkDamagePlace(damage, selfDamage)) continue
                     count++
                 }
