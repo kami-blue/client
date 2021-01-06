@@ -64,7 +64,7 @@ object AutoObsidian : Module() {
     private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
-        TARGET_STACKS("Target Stacks", "Target Stacks Reached"),
+        TARGET_STACKS("Target Stacks", "Target stacks reached"),
         FILL_INVENTORY("Fill Inventory", "Inventory filled"),
         INFINITE("Infinite", "")
     }
