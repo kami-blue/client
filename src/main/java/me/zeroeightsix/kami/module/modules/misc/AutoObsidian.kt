@@ -59,7 +59,7 @@ object AutoObsidian : Module() {
     private val threshold by setting("RefillThreshold", 8, 1..56, 1, { autoRefill && fillMode != FillMode.INFINITE })
     private val targetStacks by setting("TargetStacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
     private val delayTicks by setting("DelayTicks", 5, 0..10, 1)
-    private val interacting by setting("InteractMode", InteractMode.SPOOF)
+    private val rotationMode by setting("RotationMode", RotationMode.SPOOF)
     private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
@@ -87,7 +87,7 @@ object AutoObsidian : Module() {
     }
 
     @Suppress("UNUSED")
-    private enum class InteractMode(override val displayName: String) : DisplayEnum {
+    private enum class RotationMode(override val displayName: String) : DisplayEnum {
         OFF("Off"),
         SPOOF("Spoof"),
         VIEW_LOCK("View Lock")
@@ -161,17 +161,17 @@ object AutoObsidian : Module() {
             if (event.phase != Phase.PRE || rotateTimer.tick(20L, false)) return@listener
             val rotation = lastHitVec?.let { getRotationTo(it) } ?: return@listener
 
-            when (interacting) {
-                InteractMode.SPOOF -> {
+            when (rotationMode) {
+                RotationMode.SPOOF -> {
                     val packet = PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation)
                     PlayerPacketManager.addPacket(this, packet)
                 }
-                InteractMode.VIEW_LOCK -> {
+                RotationMode.VIEW_LOCK -> {
                     mc.player.rotationYaw = rotation.x
                     mc.player.rotationPitch = rotation.y
                 }
                 else -> {
-
+                    // Rotation off
                 }
             }
         }
