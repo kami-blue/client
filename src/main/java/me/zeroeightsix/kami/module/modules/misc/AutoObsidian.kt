@@ -236,7 +236,7 @@ object AutoObsidian : Module() {
             state == State.DONE && autoRefill && InventoryUtils.countItemAll(Blocks.OBSIDIAN.id) < threshold -> {
                 State.SEARCHING
             }
-            state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(Blocks.OBSIDIAN.id, 16.0f) == null) -> {
+            state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(Blocks.OBSIDIAN.id, 8.0f) == null) -> {
                 State.DONE
             }
             state != State.DONE && world.isAirBlock(placingPos) && !passCountCheck -> {
@@ -268,11 +268,11 @@ object AutoObsidian : Module() {
     }
 
     /**
-     * @return True if can still place more ender chest
+     * @return `true` if can still place more ender chest
      */
     private fun SafeClientEvent.checkObbyCount(): Boolean {
         val inventory = InventoryUtils.countItemAll(Blocks.OBSIDIAN.id)
-        val dropped = EntityUtils.getDroppedItems(Blocks.OBSIDIAN.id, 16.0f).sumBy { it.item.count }
+        val dropped = EntityUtils.getDroppedItems(Blocks.OBSIDIAN.id, 8.0f).sumBy { it.item.count }
 
         return when (fillMode) {
             FillMode.TARGET_STACKS -> {
@@ -304,7 +304,7 @@ object AutoObsidian : Module() {
                     searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0 -> {
                         SearchingState.DONE
                     }
-                    searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 16.0f) == null -> {
+                    searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerBoxId, 8.0f) == null -> {
                         SearchingState.DONE
                     }
                     searchingState == SearchingState.MINING && world.isAirBlock(placingPos) -> {
@@ -550,8 +550,8 @@ object AutoObsidian : Module() {
     }
 
     private fun collectDroppedItem(itemId: Int) {
-        goal = if (getDroppedItem(itemId, 16.0f) != null) {
-            GoalNear(getDroppedItem(itemId, 16.0f), 0)
+        goal = if (getDroppedItem(itemId, 8.0f) != null) {
+            GoalNear(getDroppedItem(itemId, 8.0f), 0)
         } else {
             null
         }
