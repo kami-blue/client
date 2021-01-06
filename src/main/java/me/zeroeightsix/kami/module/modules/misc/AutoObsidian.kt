@@ -276,7 +276,7 @@ object AutoObsidian : Module() {
 
         return when (fillMode) {
             FillMode.TARGET_STACKS -> {
-                ((inventory + dropped) / 8.0f).ceilToInt() / 8 < targetStacks
+                ((inventory + dropped) / 8.0f).ceilToInt() / 8 <= targetStacks
             }
             FillMode.FILL_INVENTORY -> {
                 countEmptySlots() - dropped >= 8
