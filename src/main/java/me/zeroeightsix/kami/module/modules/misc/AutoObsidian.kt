@@ -385,13 +385,13 @@ object AutoObsidian : Module() {
     }
 
     private fun SafeClientEvent.placeShulker(pos: BlockPos) {
-        val shulkerIdInHotbar = getShulkerIdInHotbar()
+        shulkerBoxId = getShulkerIdInHotbar()
         val shulkerIdNotInHotbar = getShulkerIdNotInHotBar()
-        if (shulkerIdInHotbar == -1 && shulkerIdNotInHotbar != -1) {
+        if (shulkerBoxId == -1 && shulkerIdNotInHotbar != -1) {
             InventoryUtils.moveToHotbar(shulkerIdNotInHotbar, Items.DIAMOND_PICKAXE.id)
             shulkerBoxId = shulkerIdNotInHotbar
             return
-        } else if (shulkerIdInHotbar == -1) {
+        } else if (shulkerBoxId == -1) {
             MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
             mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
             disable()
