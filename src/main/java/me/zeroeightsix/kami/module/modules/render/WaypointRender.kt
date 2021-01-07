@@ -137,15 +137,15 @@ object WaypointRender : Module() {
         glPopMatrix()
     }
 
-    override fun onEnable() {
-        timer.reset(-10000L) // Update the map immediately and thread safely
-    }
-
-    override fun onDisable() {
-        currentServer = null
-    }
-
     init {
+        onEnable {
+            timer.reset(-10000L) // Update the map immediately and thread safely
+        }
+
+        onDisable {
+            currentServer = null
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()

@@ -33,11 +33,11 @@ object AutoTunnel : Module() {
             || BaritoneUtils.primary?.builderProcess?.isActive == true)
     }
 
-    override fun onDisable() {
-        if (mc.player != null) BaritoneUtils.cancelEverything()
-    }
-
     init {
+        onDisable {
+            BaritoneUtils.cancelEverything()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (!isActive()) sendTunnel()
         }

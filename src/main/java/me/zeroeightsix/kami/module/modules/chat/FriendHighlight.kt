@@ -26,11 +26,11 @@ object FriendHighlight : Module() {
     private val regex1 = "<(.*?)>".toRegex()
     private val regex2 = "[<>]".toRegex()
 
-    override fun onEnable() {
-        noFriendsCheck()
-    }
-
     init {
+        onEnable {
+            noFriendsCheck()
+        }
+
         listener<ClientChatReceivedEvent>(0) {
             if (noFriendsCheck() || !FriendManager.enabled) return@listener
 

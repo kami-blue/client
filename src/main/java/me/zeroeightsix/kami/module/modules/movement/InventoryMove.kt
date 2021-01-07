@@ -17,8 +17,8 @@ import org.lwjgl.input.Keyboard
         category = Module.Category.MOVEMENT
 )
 object InventoryMove : Module() {
-    private val rotateSpeed = setting("RotateSpeed", 5, 0..20, 1)
-    val sneak = setting("Sneak", false)
+    private val rotateSpeed by setting("RotateSpeed", 5, 0..20, 1)
+    val sneak by setting("Sneak", false)
 
     private var hasSent = false
 
@@ -27,18 +27,18 @@ object InventoryMove : Module() {
             if (it.movementInput !is MovementInputFromOptions || checkGui()) return@listener
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw - rotateSpeed.value
+                mc.player.rotationYaw = mc.player.rotationYaw - rotateSpeed
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw + rotateSpeed.value
+                mc.player.rotationYaw = mc.player.rotationYaw + rotateSpeed
             }
 
             // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
             if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch - rotateSpeed.value).coerceAtLeast(-90.0f)
+                mc.player.rotationPitch = (mc.player.rotationPitch - rotateSpeed).coerceAtLeast(-90.0f)
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch + rotateSpeed.value).coerceAtMost(90.0f)
+                mc.player.rotationPitch = (mc.player.rotationPitch + rotateSpeed).coerceAtMost(90.0f)
             }
 
             it.movementInput.moveStrafe = 0.0f
@@ -77,7 +77,7 @@ object InventoryMove : Module() {
                     it.movementInput.jump = true
                 }
 
-                if (Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.keyCode) && sneak.value) {
+                if (Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.keyCode) && sneak) {
                     it.movementInput.sneak = true
                 }
             } catch (e: IndexOutOfBoundsException) {

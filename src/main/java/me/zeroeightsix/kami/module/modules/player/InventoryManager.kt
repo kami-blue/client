@@ -53,12 +53,12 @@ object InventoryManager : Module() {
         return isEnabled && currentState != State.IDLE
     }
 
-    override fun onToggle() {
-        paused = false
-        BaritoneUtils.unpause()
-    }
-
     init {
+        onToggle {
+            paused = false
+            BaritoneUtils.unpause()
+        }
+
         listener<PlayerTravelEvent> {
             if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
             mc.player.setVelocity(0.0, mc.player.motionY, 0.0)

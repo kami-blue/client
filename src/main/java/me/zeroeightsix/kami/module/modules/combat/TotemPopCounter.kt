@@ -36,13 +36,17 @@ object TotemPopCounter : Module() {
         CLIENT, EVERYONE
     }
 
-    private val playerList = HashMap<EntityPlayer, Int>()
+    private val playerList = Collections.synchronizedMap(HashMap<EntityPlayer, Int>())
     private var wasDead = false
 
     init {
-        listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || mc.player == null || mc.player.isDead) return@listener
-            val player = (it.packet.getEntity(mc.world) as? EntityPlayer) ?: return@listener
+        onDisable {
+            playerList.clear()
+        }
+
+        safeListener<PacketEvent.Receive> {
+            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || player.isDead) return@safeListener
+            val player = (it.packet.getEntity(world) as? EntityPlayer) ?: return@safeListener
 
             if (friendCheck(player) || selfCheck(player)) {
                 val count = playerList.getOrDefault(player, 0) + 1
@@ -76,10 +80,6 @@ object TotemPopCounter : Module() {
 
             wasDead = player.isDead
         }
-    }
-
-    override fun onDisable() {
-        playerList.clear()
     }
 
     private fun friendCheck(player: EntityPlayer) = FriendManager.isFriend(player.name) && countFriends.value

@@ -1,11 +1,11 @@
 package me.zeroeightsix.kami.module.modules.misc
 
-import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.event.events.RenderEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EnumPlayerModelParts
-import org.kamiblue.event.listener.listener
 
 @Module.Info(
     name = "SkinFlicker",
@@ -13,8 +13,8 @@ import org.kamiblue.event.listener.listener
     category = Module.Category.MISC
 )
 object SkinFlicker : Module() {
-    private val mode = setting("Mode", FlickerMode.HORIZONTAL)
-    private val delay = setting("Delay(ms)", 10, 0..500, 10)
+    private val mode by setting("Mode", FlickerMode.HORIZONTAL)
+    private val delay by setting("Delay(ms)", 10, 0..500, 10)
 
     private enum class FlickerMode {
         HORIZONTAL, VERTICAL, RANDOM
@@ -24,11 +24,10 @@ object SkinFlicker : Module() {
     private var lastIndex = 0
 
     init {
-        listener<RenderOverlayEvent> {
-            if (mc.world == null || mc.player == null) return@listener
-            if (!timer.tick(delay.value.toLong())) return@listener
+        safeListener<RenderEvent> {
+            if (!timer.tick(delay.toLong())) return@safeListener
 
-            val part = when (mode.value) {
+            val part = when (mode) {
                 FlickerMode.RANDOM -> EnumPlayerModelParts.values().random()
                 FlickerMode.VERTICAL -> verticalParts[lastIndex]
                 FlickerMode.HORIZONTAL -> horizontalParts[lastIndex]
@@ -36,11 +35,11 @@ object SkinFlicker : Module() {
             mc.gameSettings.switchModelPartEnabled(part)
             lastIndex = (lastIndex + 1) % 7
         }
-    }
 
-    override fun onDisable() {
-        for (model in EnumPlayerModelParts.values()) {
-            mc.gameSettings.setModelPartEnabled(model, true)
+        onDisable {
+            for (model in EnumPlayerModelParts.values()) {
+                mc.gameSettings.setModelPartEnabled(model, true)
+            }
         }
     }
 
@@ -51,7 +50,8 @@ object SkinFlicker : Module() {
         EnumPlayerModelParts.HAT,
         EnumPlayerModelParts.CAPE,
         EnumPlayerModelParts.RIGHT_PANTS_LEG,
-        EnumPlayerModelParts.RIGHT_SLEEVE)
+        EnumPlayerModelParts.RIGHT_SLEEVE
+    )
 
     private val verticalParts = arrayOf(
         EnumPlayerModelParts.HAT,
@@ -60,5 +60,6 @@ object SkinFlicker : Module() {
         EnumPlayerModelParts.LEFT_SLEEVE,
         EnumPlayerModelParts.RIGHT_SLEEVE,
         EnumPlayerModelParts.LEFT_PANTS_LEG,
-        EnumPlayerModelParts.RIGHT_PANTS_LEG)
+        EnumPlayerModelParts.RIGHT_PANTS_LEG
+    )
 }

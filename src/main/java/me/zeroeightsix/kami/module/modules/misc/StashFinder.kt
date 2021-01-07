@@ -14,6 +14,7 @@ import net.minecraft.util.math.ChunkPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.roundToInt
 
+// TODO: Rewrite
 @Module.Info(
     name = "StashFinder",
     category = Module.Category.MISC,
@@ -43,12 +44,12 @@ object StashFinder : Module() {
     private val chunkData = LinkedHashMap<Long, ChunkStats>()
     private val knownPositions = LinkedHashSet<BlockPos>()
 
-    override fun onEnable() {
-        chunkData.clear()
-        knownPositions.clear()
-    }
-
     init {
+        onEnable {
+            chunkData.clear()
+            knownPositions.clear()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             world.loadedTileEntityList
                     .filter {

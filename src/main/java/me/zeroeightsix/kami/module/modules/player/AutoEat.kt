@@ -22,6 +22,7 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
+// TODO: Rewrite
 @Module.Info(
     name = "AutoEat",
     description = "Automatically eat when hungry",
@@ -36,12 +37,12 @@ object AutoEat : Module() {
     private var lastSlot = -1
     var eating = false; private set
 
-    override fun onDisable() {
-        unpause()
-        eating = false
-    }
-
     init {
+        onDisable {
+            unpause()
+            eating = false
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (CombatSetting.isActive()) return@safeListener
 

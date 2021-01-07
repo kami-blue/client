@@ -62,13 +62,12 @@ object BedAura : Module() {
         return isEnabled && inactiveTicks <= 5
     }
 
-    override fun onDisable() {
-        state = State.NONE
-        inactiveTicks = 6
-    }
-
-
     init {
+        onDisable {
+            state = State.NONE
+            inactiveTicks = 6
+        }
+
         listener<PacketEvent.PostSend> {
             if (!CombatManager.isOnTopPriority(this) || it.packet !is CPacketPlayer || state == State.NONE || CombatSetting.pause) return@listener
             val hand = getBedHand() ?: EnumHand.MAIN_HAND

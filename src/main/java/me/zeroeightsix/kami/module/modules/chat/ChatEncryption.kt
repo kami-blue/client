@@ -28,10 +28,10 @@ import kotlin.collections.HashMap
     modulePriority = -69420
 )
 object ChatEncryption : Module() {
-    private val commands = setting("Commands", false)
-    private val self = setting("DecryptOwn", true)
-    private val keySetting = setting("KeySetting", "DefaultKey")
-    val delimiter = setting("Delimiter", "%", consumer = { prev: String, value: String ->
+    private val commands by setting("Commands", false)
+    private val self by setting("DecryptOwn", true)
+    private var keySetting by setting("KeySetting", "DefaultKey")
+    val delimiter by setting("Delimiter", "%", consumer = { prev: String, value: String ->
         if (value.length == 1 && !chars.contains(value.first())) value else prev
     })
 
@@ -64,7 +64,7 @@ object ChatEncryption : Module() {
 
     private val modifier = newMessageModifier(
         filter = {
-            (commands.value || MessageDetection.Command.ANY_EXCEPT_DELIMITER detectNot it.packet.message)
+            (commands || MessageDetection.Command.ANY_EXCEPT_DELIMITER detectNot it.packet.message)
         },
         modifier = {
             it.encrypt() ?: it.packet.message
@@ -73,21 +73,23 @@ object ChatEncryption : Module() {
 
     private var previousMessage = ""
 
-    override fun onEnable() {
-        getOrGenKey()
-        modifier.enable()
-    }
+    init {
+        onEnable {
+            getOrGenKey()
+            modifier.enable()
+        }
 
-    override fun onDisable() {
-        modifier.disable()
+        onDisable {
+            modifier.disable()
+        }
     }
 
     private fun getOrGenKey(): String {
-        var key = keySetting.value
+        var key = keySetting
 
         if (key == "DefaultKey") {
             key = randomChars()
-            keySetting.value = key
+            keySetting = key
 
             MessageSendHelper.sendChatMessage("$chatName Your encryption key was set to ${formatValue(key)}, and copied to your clipboard.")
 
@@ -114,7 +116,7 @@ object ChatEncryption : Module() {
             if (!fullMessage.contains(personFrowning)) return@safeListener
 
             val playerName = MessageDetection.Message.ANY.playerName(fullMessage) ?: "Unknown User"
-            if (!self.value && playerName == player.name) return@safeListener
+            if (!self && playerName == player.name) return@safeListener
 
             val message = MessageDetection.Message.ANY.removedOrNull(fullMessage) ?: return@safeListener
             val splitString = message.split(personFrowning)
@@ -145,7 +147,7 @@ object ChatEncryption : Module() {
             return null
         }
 
-        val splitString = message.split(delimiter.value)
+        val splitString = message.split(delimiter)
 
         val encrypted = StringBuilder().run {
             for ((index, string) in splitString.withIndex()) {

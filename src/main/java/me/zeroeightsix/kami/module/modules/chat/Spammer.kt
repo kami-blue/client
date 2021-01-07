@@ -48,43 +48,45 @@ object Spammer : Module() {
             null
         }
 
-    override fun onEnable() {
-        spammer.clear()
+    init {
+        onEnable {
+            spammer.clear()
 
-        if (loadRemote.value) {
-            val url = urlValue ?: return
+            if (loadRemote.value) {
+                val url = urlValue ?: return@onEnable
 
-            defaultScope.launch(Dispatchers.IO) {
-                try {
-                    val text = URL(url).readText()
-                    spammer.addAll(text.split("\n"))
+                defaultScope.launch(Dispatchers.IO) {
+                    try {
+                        val text = URL(url).readText()
+                        spammer.addAll(text.split("\n"))
 
-                    MessageSendHelper.sendChatMessage("$chatName Loaded remote spammer messages!")
-                } catch (e: Exception) {
-                    MessageSendHelper.sendErrorMessage("$chatName Failed loading remote spammer, $e")
-                    disable()
+                        MessageSendHelper.sendChatMessage("$chatName Loaded remote spammer messages!")
+                    } catch (e: Exception) {
+                        MessageSendHelper.sendErrorMessage("$chatName Failed loading remote spammer, $e")
+                        disable()
+                    }
                 }
-            }
 
-        } else {
-            if (file.exists()) {
-                try {
-                    file.forEachLine { if (it.isNotBlank()) spammer.add(it.trim()) }
-                    MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
-                } catch (e: Exception) {
-                    MessageSendHelper.sendErrorMessage("$chatName Failed loading spammer, $e")
-                    disable()
-                }
             } else {
-                file.createNewFile()
-                MessageSendHelper.sendErrorMessage("$chatName Spammer file is empty!" +
-                    ", please add them in the &7spammer.txt&f under the &7.minecraft/kamiblue&f directory.")
-                disable()
+                defaultScope.launch(Dispatchers.IO) {
+                    if (file.exists()) {
+                        try {
+                            file.forEachLine { if (it.isNotBlank()) spammer.add(it.trim()) }
+                            MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
+                        } catch (e: Exception) {
+                            MessageSendHelper.sendErrorMessage("$chatName Failed loading spammer, $e")
+                            disable()
+                        }
+                    } else {
+                        file.createNewFile()
+                        MessageSendHelper.sendErrorMessage("$chatName Spammer file is empty!" +
+                            ", please add them in the &7spammer.txt&f under the &7.minecraft/kamiblue&f directory.")
+                        disable()
+                    }
+                }
             }
         }
-    }
 
-    init {
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START || spammer.isEmpty() || !timer.tick(delay.value.toLong())) return@safeListener
             val message = if (modeSetting.value == Mode.IN_ORDER) getOrdered() else getRandom()

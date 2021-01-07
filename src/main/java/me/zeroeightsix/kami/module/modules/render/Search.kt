@@ -65,18 +65,18 @@ object Search : Module() {
         return if (renderList.isNotEmpty()) renderList.size.toString() else "0"
     }
 
-    override fun onEnable() {
-        if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
-            MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
-            MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the ${formatValue("${CommandManager.prefix}search override")} command")
-            disable()
-            return
-        }
-        startTimeChunk = 0L
-        startTimeRender = 0L
-    }
-
     init {
+        onEnable {
+            if (!overrideWarning.value && ShaderHelper.isIntegratedGraphics) {
+                MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
+                MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the ${formatValue("${CommandManager.prefix}search override")} command")
+                disable()
+                return@onEnable
+            }
+            startTimeChunk = 0L
+            startTimeRender = 0L
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (shouldUpdateChunk()) {
                 updateLoadedChunkList()

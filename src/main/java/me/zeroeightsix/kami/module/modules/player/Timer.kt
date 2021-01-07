@@ -13,19 +13,19 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
         description = "Changes your client tick speed"
 )
 object Timer : Module() {
-    private val slow = setting("SlowMode", false)
-    private val tickNormal = setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow.value })
-    private val tickSlow = setting("TickS", 8f, 1f..10f, 0.1f, { slow.value })
-
-    public override fun onDisable() {
-        mc.timer.tickLength = 50.0f
-    }
+    private val slow by setting("SlowMode", false)
+    private val tickNormal by setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow })
+    private val tickSlow by setting("TickS", 8f, 1f..10f, 0.1f, { slow })
 
     init {
+        onDisable {
+            mc.timer.tickLength = 50.0f
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             mc.timer.tickLength =  50.0f /
-                    if (!slow.value) tickNormal.value
-                    else (tickSlow.value / 10.0f)
+                    if (!slow) tickNormal
+                    else (tickSlow / 10.0f)
         }
     }
 }

@@ -49,17 +49,17 @@ object CrystalBasePlace : Module() {
     private var rotationTo: Vec3d? = null
     private var placePacket: CPacketPlayerTryUseItemOnBlock? = null
 
-    override fun onDisable() {
-        inactiveTicks = 0
-        placePacket = null
-        PlayerPacketManager.resetHotbar()
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 3
     }
 
     init {
+        onDisable {
+            inactiveTicks = 0
+            placePacket = null
+            PlayerPacketManager.resetHotbar()
+        }
+
         listener<RenderWorldEvent> {
             val clear = inactiveTicks >= 30
             renderer.render(clear)

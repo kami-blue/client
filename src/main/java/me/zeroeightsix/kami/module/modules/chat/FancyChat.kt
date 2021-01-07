@@ -35,12 +35,14 @@ object FancyChat : Module() {
             }
     )
 
-    override fun onEnable() {
-        modifier.enable()
-    }
+    init {
+        onEnable {
+            modifier.enable()
+        }
 
-    override fun onDisable() {
-        modifier.disable()
+        onDisable {
+            modifier.disable()
+        }
     }
 
     private fun getText(s: String): String {

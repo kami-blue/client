@@ -35,13 +35,13 @@ object ViewLock : Module() {
     private var pitchSliceAngle = 1.0f
     private var yawSliceAngle = 1.0f
 
-    override fun onEnable() {
-        yawSliceAngle = 360.0f / yawSlice.value
-        pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
-        if (autoYaw.value || autoPitch.value) snapToNext()
-    }
-
     init {
+        onEnable {
+            yawSliceAngle = 360.0f / yawSlice.value
+            pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
+            if (autoYaw.value || autoPitch.value) snapToNext()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
             if (autoYaw.value || autoPitch.value) {

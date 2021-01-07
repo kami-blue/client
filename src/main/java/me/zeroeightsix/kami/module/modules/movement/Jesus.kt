@@ -30,11 +30,11 @@ object Jesus : Module() {
 
     private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 
-    override fun onToggle() {
-        BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
-    }
-
     init {
+        onToggle {
+            BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (isInWater(player) && !player.isSneaking) {
                 if (dolphin.value) {

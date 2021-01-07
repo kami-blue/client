@@ -61,21 +61,21 @@ object ClickGUI : Module() {
         return round((scaleSetting.value / 100.0f) / 0.1f) * 0.1f
     }
 
-    override fun onEnable() {
-        if (mc.currentScreen !is KamiClickGui) {
-            HudEditor.disable()
-            mc.displayGuiScreen(KamiClickGui)
-            KamiClickGui.onDisplayed()
-        }
-    }
-
-    override fun onDisable() {
-        if (mc.currentScreen is KamiClickGui) {
-            mc.displayGuiScreen(null)
-        }
-    }
-
     init {
+        onEnable {
+            if (mc.currentScreen !is KamiClickGui) {
+                HudEditor.disable()
+                mc.displayGuiScreen(KamiClickGui)
+                KamiClickGui.onDisplayed()
+            }
+        }
+
+        onDisable {
+            if (mc.currentScreen is KamiClickGui) {
+                mc.displayGuiScreen(null)
+            }
+        }
+
         bind.value.setBind(Keyboard.KEY_Y)
         scaleSetting.listeners.add {
             settingTimer.reset()

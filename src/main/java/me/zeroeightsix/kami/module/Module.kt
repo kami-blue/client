@@ -104,16 +104,26 @@ open class Module {
         return ""
     }
 
-    protected open fun onEnable() {
-        // override to run code when the module is enabled
+    protected fun onEnable(block: (Boolean) -> Unit) {
+        enabled.valueListeners.add { _, input ->
+            if (input) {
+                block(input)
+            }
+        }
     }
 
-    protected open fun onDisable() {
-        // override to run code when the module is disabled
+    protected fun onDisable(block: (Boolean) -> Unit) {
+        enabled.valueListeners.add { _, input ->
+            if (!input) {
+                block(input)
+            }
+        }
     }
 
-    protected open fun onToggle() {
-        // override to run code when the module is enabled or disabled
+    protected fun onToggle(block: (Boolean) -> Unit) {
+        enabled.valueListeners.add { _, input ->
+            block(input)
+        }
     }
 
     init {
@@ -122,13 +132,6 @@ open class Module {
 
             if (prev != input && !annotation.alwaysEnabled) {
                 sendToggleMessage()
-                onToggle()
-
-                if (enabled) {
-                    onEnable()
-                } else {
-                    onDisable()
-                }
             }
 
             if (enabled || alwaysListening) {

@@ -32,6 +32,10 @@ object Criticals : Module() {
     private var swingPacket = CPacketAnimation()
 
     init {
+        onDisable {
+            delayTick = 0
+        }
+
         listener<PacketEvent.Send> {
             if (mc.player == null || !(it.packet is CPacketAnimation || it.packet is CPacketUseEntity)) return@listener
             if (mc.player.isInWater || mc.player.isInLava || !mc.player.onGround) return@listener /* Don't run if player is sprinting or weapon is still in cooldown */
@@ -105,9 +109,5 @@ object Criticals : Module() {
                 sendingPacket = false
             }
         }
-    }
-
-    override fun onDisable() {
-        delayTick = 0
     }
 }

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.entity.passive.EntityTameable
@@ -44,16 +45,18 @@ object MobOwner : Module() {
                 }
             }
         }
-    }
 
-    override fun onDisable() {
-        for (entity in mc.world.loadedEntityList) {
-            if (entity !is AbstractHorse) continue
+        onDisable {
+            runSafe {
+                for (entity in world.loadedEntityList) {
+                    if (entity !is AbstractHorse) continue
 
-            try {
-                entity.alwaysRenderNameTag = false
-            } catch (_: Exception) {
-                // this is fine
+                    try {
+                        entity.alwaysRenderNameTag = false
+                    } catch (_: Exception) {
+                        // Ignored
+                    }
+                }
             }
         }
     }

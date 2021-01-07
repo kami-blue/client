@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.x
@@ -7,6 +8,7 @@ import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.mixin.extension.z
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.CPacketPlayer
@@ -20,9 +22,9 @@ import java.util.*
         description = "Cancels server side packets"
 )
 object Blink : Module() {
-    private val cancelPacket = setting("CancelPackets", false)
-    private val autoReset = setting("AutoReset", true)
-    private val resetThreshold = setting("ResetThreshold", 20, 1..100, 5, { autoReset.value })
+    private val cancelPacket by setting("CancelPackets", false)
+    private val autoReset by setting("AutoReset", true)
+    private val resetThreshold by setting("ResetThreshold", 20, 1..100, 5, { autoReset })
 
     private const val ENTITY_ID = -114514
     private val packets = ArrayDeque<CPacketPlayer>()
@@ -30,6 +32,16 @@ object Blink : Module() {
     private var sending = false
 
     init {
+        onEnable {
+            runSafe {
+                begin()
+            }
+        }
+
+        onDisable {
+            end()
+        }
+
         listener<PacketEvent.Send> {
             if (!sending && it.packet is CPacketPlayer) {
                 it.cancel()
@@ -39,7 +51,7 @@ object Blink : Module() {
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
-            if (autoReset.value && packets.size >= resetThreshold.value) {
+            if (autoReset && packets.size >= resetThreshold) {
                 end()
                 begin()
             }
@@ -53,16 +65,7 @@ object Blink : Module() {
         }
     }
 
-    override fun onEnable() {
-        begin()
-    }
-
-    override fun onDisable() {
-        end()
-    }
-
-    private fun begin() {
-        if (mc.player == null) return
+    private fun SafeClientEvent.begin() {
         clonedPlayer = EntityOtherPlayerMP(mc.world, mc.session.profile).apply {
             copyLocationAndAnglesFrom(mc.player)
             rotationYawHead = mc.player.rotationYawHead
@@ -75,22 +78,22 @@ object Blink : Module() {
 
     private fun end() {
         mc.addScheduledTask {
-            val player = mc.player
-            val connection = mc.connection
-            if (player == null || connection == null) return@addScheduledTask
+            runSafe {
+                if (cancelPacket) {
+                    packets.peek()?.let { player.setPosition(it.x, it.y, it.z) }
+                    packets.clear()
+                } else {
+                    sending = true
+                    while (packets.isNotEmpty()) connection.sendPacket(packets.poll())
+                    sending = false
+                }
 
-            if (cancelPacket.value || mc.connection == null) {
-                packets.peek()?.let { player.setPosition(it.x, it.y, it.z) }
-                packets.clear()
-            } else {
-                sending = true
-                while (packets.isNotEmpty()) connection.sendPacket(packets.poll())
-                sending = false
+                clonedPlayer?.setDead()
+                world.removeEntityFromWorld(ENTITY_ID)
+                clonedPlayer = null
             }
 
-            clonedPlayer?.setDead()
-            mc.world?.removeEntityFromWorld(ENTITY_ID)
-            clonedPlayer = null
+            packets.clear()
         }
     }
 

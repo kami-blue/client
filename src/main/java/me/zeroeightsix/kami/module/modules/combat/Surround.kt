@@ -46,21 +46,22 @@ object Surround : Module() {
     private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
-    override fun onEnable() {
-        toggleTimer.reset()
-    }
-
-    override fun onDisable() {
-        PlayerPacketManager.resetHotbar()
-        toggleTimer.reset()
-        holePos = null
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && job.isActiveOrFalse
     }
 
     init {
+        onEnable {
+            toggleTimer.reset()
+        }
+
+        onDisable {
+            PlayerPacketManager.resetHotbar()
+            toggleTimer.reset()
+            holePos = null
+        }
+
+
         safeListener<TickEvent.ClientTickEvent> {
             if (getObby() == -1) return@safeListener
             if (isDisabled) {

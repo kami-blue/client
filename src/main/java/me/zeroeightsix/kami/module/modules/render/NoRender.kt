@@ -81,6 +81,10 @@ object NoRender : Module() {
     var entityList = HashSet<Class<*>>(); private set
 
     init {
+        onEnable {
+            updateList()
+        }
+
         listener<PacketEvent.Receive> {
             if (lightning.value && it.packet is SPacketSpawnGlobalEntity ||
                 explosion.value && it.packet is SPacketExplosion ||
@@ -143,10 +147,6 @@ object NoRender : Module() {
                 }
             }
         }
-    }
-
-    override fun onEnable() {
-        updateList()
     }
 
     private fun updateList() {

@@ -14,12 +14,12 @@ import org.kamiblue.event.listener.listener
     category = Module.Category.MISC
 )
 object ConsoleSpam : Module() {
-    override fun onEnable() {
-        MessageSendHelper.sendChatMessage("$chatName Every time you right click a sign, a warning will appear in console.")
-        MessageSendHelper.sendChatMessage("$chatName Use an auto clicker to automate this process.")
-    }
-
     init {
+        onEnable {
+            MessageSendHelper.sendChatMessage("$chatName Every time you right click a sign, a warning will appear in console.")
+            MessageSendHelper.sendChatMessage("$chatName Use an auto clicker to automate this process.")
+        }
+
         listener<PacketEvent.Send> {
             if (it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
             mc.player.connection.sendPacket(CPacketUpdateSign(it.packet.pos, TileEntitySign().signText))
