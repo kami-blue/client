@@ -14,26 +14,14 @@ import org.kamiblue.commons.interfaces.DisplayEnum
 open class Module(
     val name: String,
     val alias: Array<String> = emptyArray(),
-    val description: String,
     val category: Category,
+    val description: String,
     val modulePriority: Int = -1,
     var alwaysListening: Boolean = false,
-    val showOnArray: Boolean = false,
+    val showOnArray: Boolean = true,
     val alwaysEnabled: Boolean = false,
     val enabledByDefault: Boolean = false
 ) {
-
-    enum class Category(override val displayName: String) : DisplayEnum {
-        CHAT("Chat"),
-        CLIENT("Client"),
-        COMBAT("Combat"),
-        MISC("Misc"),
-        MOVEMENT("Movement"),
-        PLAYER("Player"),
-        RENDER("Render");
-
-        override fun toString() = displayName
-    }
 
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()
@@ -129,6 +117,18 @@ open class Module(
                 MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
             }
         }
+    }
+
+    enum class Category(override val displayName: String) : DisplayEnum {
+        CHAT("Chat"),
+        CLIENT("Client"),
+        COMBAT("Combat"),
+        MISC("Misc"),
+        MOVEMENT("Movement"),
+        PLAYER("Player"),
+        RENDER("Render");
+
+        override fun toString() = displayName
     }
 
     protected companion object {
