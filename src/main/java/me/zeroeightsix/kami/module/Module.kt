@@ -84,7 +84,7 @@ open class Module(
     }
 
     init {
-        enabled.consumers.add { prev, input ->
+        enabled.consumers.add { _, input ->
             val enabled = alwaysEnabled || input
 
             if (enabled || alwaysListening) {
