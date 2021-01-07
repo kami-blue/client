@@ -24,17 +24,30 @@ import kotlin.streams.toList
 
 class ModuleArg(
     override val name: String
-) : AbstractArg<Module>(), AutoComplete by StaticPrefixMatch(allAlias) {
+) : AbstractArg<Module>(), AutoComplete by DynamicPrefixMatch(::allAlias) {
 
     override suspend fun convertToType(string: String?): Module? {
         return ModuleManager.getModuleOrNull(string)
     }
 
     private companion object {
-        val allAlias = ModuleManager.getModules().stream()
-            .flatMap { Arrays.stream(it.alias) }
-            .sorted()
-            .toList()
+        val updateTimer = TickTimer(TimeUnit.SECONDS)
+        var cachedNames: Collection<String>? = null
+
+        val allAlias: Collection<String>
+            get() {
+                val cached = cachedNames
+
+                return if (cached == null || updateTimer.tick(5L)) {
+                    ModuleManager.getModules().stream()
+                        .flatMap { Arrays.stream(arrayOf(it.name, *it.alias)) }
+                        .sorted()
+                        .toList()
+                        .also { cachedNames = it }
+                } else {
+                    cached
+                }
+            }
     }
 
 }

@@ -4,12 +4,13 @@ import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.StopTimer
+import org.kamiblue.commons.collections.AliasSet
 import org.kamiblue.commons.utils.ClassUtils
 import org.lwjgl.input.Keyboard
 
 object ModuleManager : AsyncLoader<List<Class<out Module>>> {
     override var deferred: Deferred<List<Class<out Module>>>? = null
-    private val moduleMap = LinkedHashMap<Class<out Module>, Module>()
+    private val moduleSet = AliasSet<Module>()
 
     override fun preLoad0(): List<Class<out Module>> {
         val stopTimer = StopTimer()
@@ -25,7 +26,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            moduleMap[clazz] = ClassUtils.getInstance(clazz)
+            moduleSet.add(ClassUtils.getInstance(clazz))
         }
 
         val time = stopTimer.stop()
@@ -40,14 +41,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
     }
 
     @JvmStatic
-    fun getModules() = moduleMap.values.toList()
+    fun getModules() = moduleSet.toSet()
 
-    fun getModuleOrNull(moduleName: String?): Module? {
-        return moduleName?.replace(" ", "").let { name ->
-            getModules().firstOrNull { module ->
-                module.name.replace(" ", "").equals(name, true)
-                    || module.alias.any { it.replace(" ", "").equals(name, true) }
-            }
-        }
-    }
+    fun getModuleOrNull(moduleName: String?) = moduleName?.let{ moduleSet[it] }
 }

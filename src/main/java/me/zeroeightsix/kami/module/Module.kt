@@ -9,11 +9,13 @@ import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
+import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.commons.interfaces.Nameable
 
 open class Module(
-    val name: String,
-    val alias: Array<String> = emptyArray(),
+    override val name: String,
+    override val alias: Array<String> = emptyArray(),
     val category: Category,
     val description: String,
     val modulePriority: Int = -1,
@@ -21,7 +23,7 @@ open class Module(
     val showOnArray: Boolean = true,
     val alwaysEnabled: Boolean = false,
     val enabledByDefault: Boolean = false
-) {
+) : Nameable, Alias {
 
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()

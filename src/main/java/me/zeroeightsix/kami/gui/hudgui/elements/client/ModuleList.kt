@@ -60,7 +60,7 @@ object ModuleList : HudElement(
     override val maxHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
-    private var sortedModuleList = ModuleManager.getModules()
+    private var sortedModuleList : Collection<Module> = ModuleManager.getModules()
     private val textLineMap = HashMap<Module, TextComponent.TextLine>()
     private val toggleMap = ModuleManager.getModules()
         .associateWith { TimedFlag(false) }
