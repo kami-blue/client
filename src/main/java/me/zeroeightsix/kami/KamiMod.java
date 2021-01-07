@@ -3,7 +3,9 @@ package me.zeroeightsix.kami;
 import me.zeroeightsix.kami.event.ForgeEventProcessor;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.util.ConfigUtils;
+import me.zeroeightsix.kami.util.KamiLang;
 import me.zeroeightsix.kami.util.threads.BackgroundScope;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -48,6 +50,9 @@ public class KamiMod {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        KamiLang.INSTANCE.load(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode());
+
+
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
 
@@ -60,7 +65,6 @@ public class KamiMod {
         LOG.info("Initializing " + NAME + " " + VERSION);
 
         LoaderWrapper.loadAll();
-
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
         ConfigUtils.INSTANCE.loadAll();
