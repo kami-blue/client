@@ -17,12 +17,11 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
-@Module.Info(
-        name = "HoleSnap",
-        description = "Move you into the hole nearby",
-        category = Module.Category.COMBAT
-)
-object HoleSnap : Module() {
+object HoleSnap : Module(
+    name = "HoleSnap",
+    description = "Move you into the hole nearby",
+    category = Category.COMBAT
+) {
     private val disableStrafe = setting("DisableStrafe", true)
     private val range = setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
 

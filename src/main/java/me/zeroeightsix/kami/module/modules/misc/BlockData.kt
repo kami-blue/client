@@ -10,12 +10,11 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-@Module.Info(
+object BlockData : Module(
     name = "BlockData",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Right click blocks to display their data"
-)
-object BlockData : Module() {
+) {
     private val timer = TickTimer()
     private var lastPos = BlockPos.ORIGIN
 

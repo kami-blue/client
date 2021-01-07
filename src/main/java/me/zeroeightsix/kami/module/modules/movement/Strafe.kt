@@ -14,12 +14,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
-        name = "Strafe",
-        category = Module.Category.MOVEMENT,
-        description = "Improves control in air"
-)
-object Strafe : Module() {
+object Strafe : Module(
+    name = "Strafe",
+    category = Category.MOVEMENT,
+    description = "Improves control in air"
+) {
     private val airSpeedBoost = setting("AirSpeedBoost", true)
     private val timerBoost = setting("TimerBoost", false)
     private val autoJump = setting("AutoJump", false)

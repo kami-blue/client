@@ -4,13 +4,12 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.inventory.EntityEquipmentSlot
 
-@Module.Info(
-        name = "ArmorHide",
-        category = Module.Category.RENDER,
-        description = "Hides the armor on selected entities",
-        showOnArray = false
-)
-object ArmorHide : Module() {
+object ArmorHide : Module(
+    name = "ArmorHide",
+    category = Category.RENDER,
+    description = "Hides the armor on selected entities",
+    showOnArray = false
+) {
     val player = setting("Players", false)
     val armourStand = setting("ArmourStands", true)
     val mobs = setting("Mobs", true)

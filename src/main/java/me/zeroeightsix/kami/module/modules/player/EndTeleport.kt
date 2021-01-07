@@ -9,12 +9,11 @@ import net.minecraft.network.play.server.SPacketRespawn
 import net.minecraft.util.text.TextComponentString
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "EndTeleport",
-        category = Module.Category.PLAYER,
-        description = "Allows for teleportation when going through end portals"
-)
-object EndTeleport : Module() {
+object EndTeleport : Module(
+    name = "EndTeleport",
+    category = Category.PLAYER,
+    description = "Allows for teleportation when going through end portals"
+) {
     private val confirmed = setting("Confirm", false)
 
     override fun onEnable() {

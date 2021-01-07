@@ -10,12 +10,11 @@ import org.kamiblue.event.listener.listener
 import java.io.*
 import java.util.*
 
-@Module.Info(
+object ChatFilter : Module(
     name = "ChatFilter",
     description = "Filters custom words or phrases from the chat",
-    category = Module.Category.CHAT
-)
-object ChatFilter : Module() {
+    category = Category.CHAT
+) {
     private val filterOwn = setting("FilterOwn", false)
     private val filterDMs = setting("FilterDMs", false)
     private val hasRunInfo = setting("Info", false, { false })

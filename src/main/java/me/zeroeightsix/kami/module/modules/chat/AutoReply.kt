@@ -13,12 +13,11 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoReply : Module(
     name = "AutoReply",
     description = "Automatically reply to direct messages",
-    category = Module.Category.CHAT
-)
-object AutoReply : Module() {
+    category = Category.CHAT
+) {
     private val customMessage = setting("CustomMessage", false)
     private val customText = setting("CustomText", "unchanged", { customMessage.value })
 

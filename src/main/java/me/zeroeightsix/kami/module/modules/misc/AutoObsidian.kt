@@ -47,12 +47,11 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoObsidian : Module(
     name = "AutoObsidian",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Breaks down Ender Chests to restock obsidian"
-)
-object AutoObsidian : Module() {
+) {
     private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
     private val searchShulker by setting("SearchShulker", false)
     private val leaveEmptyShulkers by setting("LeaveEmptyShulkers", true, { searchShulker })

@@ -29,13 +29,12 @@ import java.util.*
 import kotlin.collections.HashMap
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "BedAura",
-        description = "Place bed and kills enemies",
-        category = Module.Category.COMBAT,
-        modulePriority = 70
-)
-object BedAura : Module() {
+object BedAura : Module(
+    name = "BedAura",
+    description = "Place bed and kills enemies",
+    category = Category.COMBAT,
+    modulePriority = 70
+) {
     private val ignoreSecondBaseBlock = setting("IgnoreSecondBaseBlock", false)
     private val suicideMode = setting("SuicideMode", false)
     private val hitDelay = setting("HitDelay", 5, 1..10, 1)

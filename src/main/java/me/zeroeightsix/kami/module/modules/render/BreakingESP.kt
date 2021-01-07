@@ -20,12 +20,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "BreakingESP",
-        description = "Highlights blocks being broken near you",
-        category = Module.Category.RENDER
-)
-object BreakingESP : Module() {
+object BreakingESP : Module(
+    name = "BreakingESP",
+    description = "Highlights blocks being broken near you",
+    category = Category.RENDER
+) {
     private val espSelf = setting("ESPSelf", true)
     private val warnSelf = setting("WarnSelf", false)
     private val obsidianOnly = setting("ObsidianOnly", false)

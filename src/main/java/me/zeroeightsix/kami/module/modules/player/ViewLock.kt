@@ -10,12 +10,11 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-@Module.Info(
-        name = "ViewLock",
-        category = Module.Category.PLAYER,
-        description = "Locks your camera view"
-)
-object ViewLock : Module() {
+object ViewLock : Module(
+    name = "ViewLock",
+    category = Category.PLAYER,
+    description = "Locks your camera view"
+) {
 
     private val yaw = setting("Yaw", true)
     private val pitch = setting("Pitch", true)

@@ -13,12 +13,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AutoEZ",
-        category = Module.Category.COMBAT,
-        description = "Sends an insult in chat after killing someone"
-)
-object AutoEZ : Module() {
+object AutoEZ : Module(
+    name = "AutoEZ",
+    category = Category.COMBAT,
+    description = "Sends an insult in chat after killing someone"
+) {
     private val detectMode = setting("DetectMode", DetectMode.HEALTH)
     private val messageMode = setting("MessageMode", MessageMode.ONTOP)
     private val customText = setting("CustomText", "unchanged")

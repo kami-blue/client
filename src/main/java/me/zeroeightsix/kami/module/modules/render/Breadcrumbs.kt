@@ -21,13 +21,12 @@ import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.min
 
-@Module.Info(
-        name = "Breadcrumbs",
-        description = "Draws a tail behind as you move",
-        category = Module.Category.RENDER,
-        alwaysListening = true
-)
-object Breadcrumbs : Module() {
+object Breadcrumbs : Module(
+    name = "Breadcrumbs",
+    description = "Draws a tail behind as you move",
+    category = Category.RENDER,
+    alwaysListening = true
+) {
     private val clear = setting("Clear", false)
     private val whileDisabled = setting("WhileDisabled", false)
     private val smoothFactor = setting("SmoothFactor", 5.0f, 0.0f..10.0f, 0.25f)

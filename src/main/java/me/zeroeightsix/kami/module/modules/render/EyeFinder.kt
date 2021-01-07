@@ -19,12 +19,11 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
 
-@Module.Info(
-        name = "EyeFinder",
-        description = "Draw lines from entity's heads to where they are looking",
-        category = Module.Category.RENDER
-)
-object EyeFinder : Module() {
+object EyeFinder : Module(
+    name = "EyeFinder",
+    description = "Draw lines from entity's heads to where they are looking",
+    category = Category.RENDER
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */

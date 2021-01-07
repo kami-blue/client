@@ -26,12 +26,11 @@ import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.max
 
-@Module.Info(
+object Search : Module(
     name = "Search",
     description = "Highlights blocks in the world",
-    category = Module.Category.RENDER
-)
-object Search : Module() {
+    category = Category.RENDER
+) {
     private val defaultSearchList = linkedSetOf("minecraft:portal", "minecraft:end_portal_frame", "minecraft:bed")
 
     private val renderUpdate = setting("RenderUpdate", 1500, 500..3000, 100)

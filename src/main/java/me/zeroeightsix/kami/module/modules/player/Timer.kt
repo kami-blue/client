@@ -7,12 +7,11 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "Timer",
-        category = Module.Category.PLAYER,
-        description = "Changes your client tick speed"
-)
-object Timer : Module() {
+object Timer : Module(
+    name = "Timer",
+    category = Category.PLAYER,
+    description = "Changes your client tick speed"
+) {
     private val slow = setting("SlowMode", false)
     private val tickNormal = setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow.value })
     private val tickSlow = setting("TickS", 8f, 1f..10f, 0.1f, { slow.value })

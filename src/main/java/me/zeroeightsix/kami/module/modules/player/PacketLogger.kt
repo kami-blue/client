@@ -7,10 +7,9 @@ import me.zeroeightsix.kami.mixin.extension.yaw
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerDigging
-import net.minecraft.util.math.Vec3d
-import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.io.*
@@ -18,12 +17,11 @@ import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Module.Info(
-        name = "PacketLogger",
-        description = "Logs sent packets to a file",
-        category = Module.Category.PLAYER
-)
-object PacketLogger : Module() {
+object PacketLogger : Module(
+    name = "PacketLogger",
+    description = "Logs sent packets to a file",
+    category = Category.PLAYER
+) {
     private val append = setting("Append", false)
     private val clear = setting("Clear", false)
 

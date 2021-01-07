@@ -22,13 +22,12 @@ import org.kamiblue.capeapi.CapeType
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object DiscordRPC : Module(
     name = "DiscordRPC",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Discord Rich Presence",
     enabledByDefault = true
-)
-object DiscordRPC : Module() {
+) {
     private val line1Left = setting("Line1Left", LineInfo.VERSION) // details left
     private val line1Right = setting("Line1Right", LineInfo.USERNAME) // details right
     private val line2Left = setting("Line2Left", LineInfo.SERVER_IP) // state left

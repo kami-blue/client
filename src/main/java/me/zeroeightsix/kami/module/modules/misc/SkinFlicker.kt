@@ -7,12 +7,11 @@ import me.zeroeightsix.kami.util.TickTimer
 import net.minecraft.entity.player.EnumPlayerModelParts
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object SkinFlicker : Module(
     name = "SkinFlicker",
     description = "Toggle your skin layers rapidly for a cool skin effect",
-    category = Module.Category.MISC
-)
-object SkinFlicker : Module() {
+    category = Category.MISC
+) {
     private val mode = setting("Mode", FlickerMode.HORIZONTAL)
     private val delay = setting("Delay(ms)", 10, 0..500, 10)
 

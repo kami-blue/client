@@ -21,12 +21,11 @@ import org.kamiblue.event.listener.listener
  * @see MixinBlockSoulSand
  * @see MixinBlockWeb
  */
-@Module.Info(
-        name = "NoSlowDown",
-        category = Module.Category.MOVEMENT,
-        description = "Prevents being slowed down when using an item or going through cobwebs"
-)
-object NoSlowDown : Module() {
+object NoSlowDown : Module(
+    name = "NoSlowDown",
+    category = Category.MOVEMENT,
+    description = "Prevents being slowed down when using an item or going through cobwebs"
+) {
     private val ncpStrict = setting("NCPStrict", true)
     private val sneak = setting("Sneak", true)
     val soulSand = setting("SoulSand", true)

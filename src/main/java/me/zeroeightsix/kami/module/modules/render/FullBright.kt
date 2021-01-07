@@ -8,13 +8,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 import kotlin.math.min
 
-@Module.Info(
-        name = "FullBright",
-        description = "Makes everything brighter!",
-        category = Module.Category.RENDER,
-        alwaysListening = true
-)
-object FullBright : Module() {
+object FullBright : Module(
+    name = "FullBright",
+    description = "Makes everything brighter!",
+    category = Category.RENDER,
+    alwaysListening = true
+) {
     private val gamma = setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
     private val transitionLength = setting("TransitionLength", 3.0f, 0.0f..10.0f, 0.5f)
     private val oldValue = setting("OldValue", 1.0f, 0.0f..1.0f, 0.1f, { false })

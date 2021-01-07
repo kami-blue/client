@@ -12,12 +12,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "NoBreakAnimation",
-        category = Module.Category.PLAYER,
-        description = "Prevents block break animation server side"
-)
-object NoBreakAnimation : Module() {
+object NoBreakAnimation : Module(
+    name = "NoBreakAnimation",
+    category = Category.PLAYER,
+    description = "Prevents block break animation server side"
+) {
     private var isMining = false
     private var lastPos: BlockPos? = null
     private var lastFacing: EnumFacing? = null

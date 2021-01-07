@@ -11,35 +11,18 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.DisplayEnum
 
-open class Module {
-    /* Annotations */
-    private val annotation =
-        javaClass.annotations.firstOrNull { it is Info } as? Info
-            ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
+open class Module(
+    val name: String,
+    val alias: Array<String> = emptyArray(),
+    val description: String,
+    val category: Category,
+    val modulePriority: Int = -1,
+    var alwaysListening: Boolean = false,
+    val showOnArray: Boolean = false,
+    val alwaysEnabled: Boolean = false,
+    val enabledByDefault: Boolean = false
+) {
 
-    val name = annotation.name
-    val alias = arrayOf(name, *annotation.alias)
-    val category = annotation.category
-    val description = annotation.description
-    val modulePriority = annotation.modulePriority
-    var alwaysListening = annotation.alwaysListening
-
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class Info(
-        val name: String,
-        val alias: Array<String> = [],
-        val description: String,
-        val category: Category,
-        val modulePriority: Int = -1,
-        val alwaysListening: Boolean = false,
-        val showOnArray: Boolean = true,
-        val alwaysEnabled: Boolean = false,
-        val enabledByDefault: Boolean = false
-    )
-
-    /**
-     * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
-     */
     enum class Category(override val displayName: String) : DisplayEnum {
         CHAT("Chat"),
         CLIENT("Client"),
@@ -51,20 +34,19 @@ open class Module {
 
         override fun toString() = displayName
     }
-    /* End of annotations */
 
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
-    val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })
-    private val enabled = setting("Enabled", annotation.enabledByDefault || annotation.alwaysEnabled, { false })
-    private val visible = setting("Visible", annotation.showOnArray)
+    val bind = setting("Bind", Bind(), { !alwaysEnabled })
+    private val enabled = setting("Enabled", enabledByDefault || alwaysEnabled, { false })
+    private val visible = setting("Visible", showOnArray)
     private val default = setting("Default", false, { settingList.isNotEmpty() })
     /* End of settings */
 
     /* Properties */
-    val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
+    val isEnabled: Boolean get() = enabled.value || alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
     val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
@@ -97,7 +79,7 @@ open class Module {
     }
 
     fun disable() {
-        if (annotation.alwaysEnabled) return
+        if (alwaysEnabled) return
         if (enabled.value) sendToggleMessage()
 
         enabled.value = false

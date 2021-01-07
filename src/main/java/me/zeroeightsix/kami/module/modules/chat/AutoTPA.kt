@@ -9,12 +9,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoTPA : Module(
     name = "AutoTPA",
     description = "Automatically accept or decline /TPAs",
-    category = Module.Category.CHAT
-)
-object AutoTPA : Module() {
+    category = Category.CHAT
+) {
     private val friends = setting("AlwaysAcceptFriends", true)
     private val mode = setting("Response", Mode.DENY)
 

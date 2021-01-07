@@ -11,12 +11,11 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AntiOverlay",
-        description = "Prevents rendering of fire, water and block texture overlays.",
-        category = Module.Category.RENDER
-)
-object AntiOverlay : Module() {
+object AntiOverlay : Module(
+    name = "AntiOverlay",
+    description = "Prevents rendering of fire, water and block texture overlays.",
+    category = Category.RENDER
+) {
     private val fire = setting("Fire", true)
     private val water = setting("Water", true)
     private val blocks = setting("Blocks", true)

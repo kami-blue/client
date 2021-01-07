@@ -8,12 +8,11 @@ import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "NoSwing",
-        category = Module.Category.PLAYER,
-        description = "Cancels server or client swing animation"
-)
-object NoSwing : Module() {
+object NoSwing : Module(
+    name = "NoSwing",
+    category = Category.PLAYER,
+    description = "Cancels server or client swing animation"
+) {
     private val mode = setting("Mode", Mode.CLIENT)
 
     private enum class Mode {

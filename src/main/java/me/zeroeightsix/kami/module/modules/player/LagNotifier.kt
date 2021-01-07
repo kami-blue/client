@@ -23,12 +23,11 @@ import org.lwjgl.opengl.GL11.glColor4f
 /**
  * Thanks Brady and cooker and leij for helping me not be completely retarded
  */
-@Module.Info(
-        name = "LagNotifier",
-        description = "Displays a warning when the server is lagging",
-        category = Module.Category.PLAYER
-)
-object LagNotifier : Module() {
+object LagNotifier : Module(
+    name = "LagNotifier",
+    description = "Displays a warning when the server is lagging",
+    category = Category.PLAYER
+) {
     private val detectRubberBand = setting("DetectRubberBand", true)
     private val pauseBaritone = setting("PauseBaritone", true)
     val pauseTakeoff = setting("PauseElytraTakeoff", true)

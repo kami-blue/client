@@ -32,12 +32,11 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
-@Module.Info(
+object Freecam : Module(
     name = "Freecam",
-    category = Module.Category.PLAYER,
+    category = Category.PLAYER,
     description = "Leave your body and transcend into the realm of the gods"
-)
-object Freecam : Module() {
+) {
     private val directionMode = setting("FlightMode", FlightMode.CREATIVE)
     private val horizontalSpeed = setting("HorizontalSpeed", 20f, 1f..50f, 1f)
     private val verticalSpeed = setting("VerticalSpeed", 20f, 1f..50f, 1f)

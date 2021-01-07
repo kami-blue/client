@@ -13,12 +13,11 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoMine : Module(
     name = "AutoMine",
     description = "Automatically mines chosen ores",
-    category = Module.Category.MISC
-)
-object AutoMine : Module() {
+    category = Category.MISC
+) {
 
     private val manual = setting("Manual", false)
     private val iron = setting("Iron", false)

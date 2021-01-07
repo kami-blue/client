@@ -20,12 +20,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object NoRender : Module(
     name = "NoRender",
-    category = Module.Category.RENDER,
+    category = Category.RENDER,
     description = "Ignore entity spawn packets"
-)
-object NoRender : Module() {
+) {
 
     private val packets = setting("CancelPackets", true)
     private val page = setting("Page", Page.OTHER)

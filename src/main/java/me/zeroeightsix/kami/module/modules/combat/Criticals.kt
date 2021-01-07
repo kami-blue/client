@@ -13,12 +13,11 @@ import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "Criticals",
-        category = Module.Category.COMBAT,
-        description = "Always do critical attacks"
-)
-object Criticals : Module() {
+object Criticals : Module(
+    name = "Criticals",
+    category = Category.COMBAT,
+    description = "Always do critical attacks"
+) {
     private val mode = setting("Mode", CriticalMode.PACKET)
     private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
 

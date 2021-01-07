@@ -6,12 +6,11 @@ import net.minecraft.entity.passive.AbstractChestHorse
 import net.minecraft.network.play.client.CPacketUseEntity
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object MountBypass : Module(
     name = "MountBypass",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Might allow you to mount chested animals on servers that block it"
-)
-object MountBypass : Module() {
+) {
     init {
         listener<PacketEvent.Send> {
             if (it.packet !is CPacketUseEntity || it.packet.action != CPacketUseEntity.Action.INTERACT_AT) return@listener

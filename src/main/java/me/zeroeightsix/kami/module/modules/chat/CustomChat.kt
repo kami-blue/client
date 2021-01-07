@@ -11,14 +11,13 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
-@Module.Info(
+object CustomChat : Module(
     name = "CustomChat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Add a custom ending to your message!",
     showOnArray = false,
     modulePriority = 200
-)
-object CustomChat : Module() {
+) {
     private val textMode = setting("Message", TextMode.JAPANESE)
     private val decoMode = setting("Separator", DecoMode.NONE)
     private val commands = setting("Commands", false)

@@ -10,12 +10,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.pow
 
-@Module.Info(
-        name = "MobOwner",
-        description = "Displays the owner of tamed mobs",
-        category = Module.Category.RENDER)
-
-object MobOwner : Module() {
+object MobOwner : Module(
+    name = "MobOwner",
+    description = "Displays the owner of tamed mobs",
+    category = Category.RENDER
+) {
     private val speed = setting("Speed", true)
     private val jump = setting("Jump", true)
     private val hp = setting("Health", true)

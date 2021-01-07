@@ -11,12 +11,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object BaritoneRemote : Module(
     name = "BaritoneRemote",
     description = "Remotely control Baritone with /msg",
-    category = Module.Category.CHAT
-)
-object BaritoneRemote : Module() {
+    category = Category.CHAT
+) {
     private val feedback = setting("SendFeedback", true)
     private val allow = setting("Allow", Allow.FRIENDS)
     private val custom = setting("Custom", "unchanged")

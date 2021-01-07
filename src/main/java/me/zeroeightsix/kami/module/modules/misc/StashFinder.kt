@@ -14,12 +14,11 @@ import net.minecraft.util.math.ChunkPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.roundToInt
 
-@Module.Info(
+object StashFinder : Module(
     name = "StashFinder",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Logs storage units in render distance."
-)
-object StashFinder : Module() {
+) {
     private val saveToFile = setting("SaveToFile", true)
     private val logToChat = setting("LogToChat", true)
     private val playSound = setting("PlaySound", true)

@@ -21,12 +21,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 
-@Module.Info(
-        name = "Chams",
-        category = Module.Category.RENDER,
-        description = "Modify entity rendering"
-)
-object Chams : Module() {
+object Chams : Module(
+    name = "Chams",
+    category = Category.RENDER,
+    description = "Modify entity rendering"
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */

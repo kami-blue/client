@@ -13,12 +13,11 @@ import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "ChestStealer",
-        category = Module.Category.PLAYER,
-        description = "Automatically steal items from containers"
-)
-object ChestStealer : Module() {
+object ChestStealer : Module(
+    name = "ChestStealer",
+    category = Category.PLAYER,
+    description = "Automatically steal items from containers"
+) {
     val stealMode = setting("StealMode", StealMode.TOGGLE)
     private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
     private val ignoreEjectItem = setting("IgnoresEjectItem", false)

@@ -53,14 +53,13 @@ import kotlin.math.max
 import kotlin.math.min
 
 @CombatManager.CombatModule
-@Module.Info(
+object CrystalAura : Module(
     name = "CrystalAura",
-    alias = ["CA", "AC", "AutoCrystal"],
+    alias = arrayOf("CA", "AC", "AutoCrystal"),
     description = "Places End Crystals to kill enemies",
-    category = Module.Category.COMBAT,
+    category = Category.COMBAT,
     modulePriority = 80
-)
-object CrystalAura : Module() {
+) {
     /* Settings */
     private val page by setting("Page", Page.GENERAL)
 

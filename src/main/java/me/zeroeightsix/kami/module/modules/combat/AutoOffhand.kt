@@ -24,12 +24,11 @@ import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
 import kotlin.math.max
 
-@Module.Info(
+object AutoOffhand : Module(
     name = "AutoOffhand",
     description = "Manages item in your offhand",
-    category = Module.Category.COMBAT
-)
-object AutoOffhand : Module() {
+    category = Category.COMBAT
+) {
     private val type = setting("Type", Type.TOTEM)
 
     // Totem

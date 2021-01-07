@@ -11,12 +11,11 @@ import net.minecraftforge.client.event.InputUpdateEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
-@Module.Info(
-        name = "InventoryMove",
-        description = "Allows you to walk around with GUIs opened",
-        category = Module.Category.MOVEMENT
-)
-object InventoryMove : Module() {
+object InventoryMove : Module(
+    name = "InventoryMove",
+    description = "Allows you to walk around with GUIs opened",
+    category = Category.MOVEMENT
+) {
     private val rotateSpeed = setting("RotateSpeed", 5, 0..20, 1)
     val sneak = setting("Sneak", false)
 

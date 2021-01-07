@@ -5,12 +5,11 @@ import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AntiDeathScreen",
-        description = "Fixes random death screen glitches",
-        category = Module.Category.COMBAT
-)
-object AntiDeathScreen : Module() {
+object AntiDeathScreen : Module(
+    name = "AntiDeathScreen",
+    description = "Fixes random death screen glitches",
+    category = Category.COMBAT
+) {
     init {
         listener<GuiEvent.Displayed> {
             if (it.screen !is GuiGameOver) return@listener

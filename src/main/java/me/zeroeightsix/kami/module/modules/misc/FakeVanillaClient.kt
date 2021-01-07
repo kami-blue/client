@@ -2,9 +2,8 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.module.Module
 
-@Module.Info(
+object FakeVanillaClient : Module(
     name = "FakeVanillaClient",
     description = "Fakes a modless client when connecting",
-    category = Module.Category.MISC
+    category = Category.MISC
 )
-object FakeVanillaClient : Module()

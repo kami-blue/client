@@ -22,12 +22,11 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
-@Module.Info(
+object AutoEat : Module(
     name = "AutoEat",
     description = "Automatically eat when hungry",
-    category = Module.Category.PLAYER
-)
-object AutoEat : Module() {
+    category = Category.PLAYER
+) {
     private val foodLevel = setting("BelowHunger", 15, 1..20, 1)
     private val healthLevel = setting("BelowHealth", 8, 1..20, 1)
     private val eatBadFood = setting("EatBadFood", true)

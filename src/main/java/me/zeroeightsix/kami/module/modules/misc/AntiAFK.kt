@@ -25,12 +25,11 @@ import kotlin.random.Random
  * TODO: Path finding to stay inside 1 chunk
  * TODO: Render which chunk is selected
  */
-@Module.Info(
+object AntiAFK : Module(
     name = "AntiAFK",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Prevents being kicked for AFK"
-)
-object AntiAFK : Module() {
+) {
     private val delay = setting("ActionDelay", 50, 5..100, 5)
     private val variation = setting("Variation", 25, 0..50, 5)
     private val autoReply = setting("AutoReply", true)

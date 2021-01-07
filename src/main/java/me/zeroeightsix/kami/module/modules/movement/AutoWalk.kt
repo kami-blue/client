@@ -18,12 +18,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AutoWalk",
-        category = Module.Category.MOVEMENT,
-        description = "Automatically walks somewhere"
-)
-object AutoWalk : Module() {
+object AutoWalk : Module(
+    name = "AutoWalk",
+    category = Category.MOVEMENT,
+    description = "Automatically walks somewhere"
+) {
     val mode = setting("Direction", AutoWalkMode.BARITONE)
     private val disableOnDisconnect = setting("DisableOnDisconnect", true)
 

@@ -16,14 +16,13 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
+object KillAura : Module(
     name = "KillAura",
-    alias = ["KA", "Aura", "TriggerBot"],
-    category = Module.Category.COMBAT,
+    alias = arrayOf("KA", "Aura", "TriggerBot"),
+    category = Category.COMBAT,
     description = "Hits entities around you",
     modulePriority = 50
-)
-object KillAura : Module() {
+) {
     private val delayMode = setting("Mode", WaitMode.DELAY)
     private val lockView = setting("LockView", false)
     private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })

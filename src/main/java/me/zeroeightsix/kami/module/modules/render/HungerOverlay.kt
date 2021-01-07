@@ -19,12 +19,11 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.min
 
-@Module.Info(
-        name = "HungerOverlay",
-        description = "Displays a helpful overlay over your hunger bar.",
-        category = Module.Category.RENDER
-)
-object HungerOverlay : Module() {
+object HungerOverlay : Module(
+    name = "HungerOverlay",
+    description = "Displays a helpful overlay over your hunger bar.",
+    category = Category.RENDER
+) {
     private val saturationOverlay = setting("SaturationOverlay", true)
     private val foodHungerOverlay = setting("FoodHungerOverlay", true)
     private val foodSaturationOverlay = setting("FoodSaturationOverlay", true)

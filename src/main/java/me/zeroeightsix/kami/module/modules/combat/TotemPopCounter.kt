@@ -18,12 +18,11 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Module.Info(
-        name = "TotemPopCounter",
-        description = "Counts how many times players pop",
-        category = Module.Category.COMBAT
-)
-object TotemPopCounter : Module() {
+object TotemPopCounter : Module(
+    name = "TotemPopCounter",
+    description = "Counts how many times players pop",
+    category = Category.COMBAT
+) {
     private val countFriends = setting("CountFriends", true)
     private val countSelf = setting("CountSelf", false)
     private val resetOnDeath = setting("ResetOnDeath", true)

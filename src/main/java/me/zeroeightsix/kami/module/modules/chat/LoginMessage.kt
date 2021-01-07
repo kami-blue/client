@@ -14,14 +14,13 @@ import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.FileReader
 
-@Module.Info(
+object LoginMessage : Module(
     name = "LoginMessage",
     description = "Sends a given message to public chat on login.",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     showOnArray = false,
     modulePriority = 150
-)
-object LoginMessage : Module() {
+) {
     private val sendAfterMoving = setting("SendAfterMoving", false)
 
     private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")

@@ -23,13 +23,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "HoleMiner",
-        category = Module.Category.COMBAT,
-        description = "Mines your opponent's hole",
-        modulePriority = 100
-)
-object HoleMiner : Module() {
+object HoleMiner : Module(
+    name = "HoleMiner",
+    category = Category.COMBAT,
+    description = "Mines your opponent's hole",
+    modulePriority = 100
+) {
     private val range = setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
 
     private var miningPos: BlockPos? = null

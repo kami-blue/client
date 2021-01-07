@@ -12,12 +12,11 @@ import org.kamiblue.event.listener.listener
  * Movement taken from Seppuku
  * https://github.com/seppukudevelopment/seppuku/blob/005e2da/src/main/java/me/rigamortis/seppuku/impl/module/player/NoHungerModule.java
  */
-@Module.Info(
-        name = "AntiHunger",
-        category = Module.Category.MOVEMENT,
-        description = "Reduces hunger lost when moving around"
-)
-object AntiHunger : Module() {
+object AntiHunger : Module(
+    name = "AntiHunger",
+    category = Category.MOVEMENT,
+    description = "Reduces hunger lost when moving around"
+) {
     private val cancelMovementState = setting("CancelMovementState", true)
 
     init {

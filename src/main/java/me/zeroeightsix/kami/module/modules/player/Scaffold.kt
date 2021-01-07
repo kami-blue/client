@@ -32,13 +32,12 @@ import kotlin.math.roundToInt
 /**
  * @see MixinEntity.isSneaking
  */
-@Module.Info(
+object Scaffold : Module(
     name = "Scaffold",
-    category = Module.Category.PLAYER,
+    category = Category.PLAYER,
     description = "Places blocks under you",
     modulePriority = 500
-)
-object Scaffold : Module() {
+) {
     private val tower = setting("Tower", true)
     private val spoofHotbar = setting("SpoofHotbar", true)
     val safeWalk = setting("SafeWalk", true)

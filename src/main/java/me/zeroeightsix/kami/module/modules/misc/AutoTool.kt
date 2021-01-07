@@ -17,12 +17,11 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
 
-@Module.Info(
+object AutoTool : Module(
     name = "AutoTool",
     description = "Automatically switch to the best tools when mining or attacking",
-    category = Module.Category.MISC
-)
-object AutoTool : Module() {
+    category = Category.MISC
+) {
     private val switchBack = setting("SwitchBack", true)
     private val timeout = setting("Timeout", 20, 1..100, 5, { switchBack.value })
     private val swapWeapon = setting("SwitchWeapon", false)

@@ -27,13 +27,12 @@ import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
-@Module.Info(
+object ElytraFlight : Module(
     name = "ElytraFlight",
     description = "Allows infinite and way easier Elytra flying",
-    category = Module.Category.MOVEMENT,
+    category = Category.MOVEMENT,
     modulePriority = 1000
-)
-object ElytraFlight : Module() {
+) {
     private val mode = setting("Mode", ElytraFlightMode.CONTROL)
     private val page = setting("Page", Page.GENERIC_SETTINGS)
     private val durabilityWarning = setting("DurabilityWarning", true, { page.value == Page.GENERIC_SETTINGS })

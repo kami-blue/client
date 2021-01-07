@@ -15,12 +15,11 @@ import org.kamiblue.event.listener.listener
 /**
  * @see MixinBlockLiquid.modifyAcceleration
  */
-@Module.Info(
-        name = "Velocity",
-        description = "Modify knock back impact",
-        category = Module.Category.MOVEMENT
-)
-object Velocity : Module() {
+object Velocity : Module(
+    name = "Velocity",
+    description = "Modify knock back impact",
+    category = Category.MOVEMENT
+) {
     private val noPush = setting("NoPush", true)
     private val horizontal = setting("Horizontal", 0f, -5f..5f, 0.05f)
     private val vertical = setting("Vertical", 0f, -5f..5f, 0.05f)

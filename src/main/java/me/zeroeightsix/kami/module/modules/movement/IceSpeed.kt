@@ -7,12 +7,11 @@ import net.minecraft.init.Blocks
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Suppress("DEPRECATION")
-@Module.Info(
-        name = "IceSpeed",
-        description = "Changes how slippery ice is",
-        category = Module.Category.MOVEMENT
-)
-object IceSpeed : Module() {
+object IceSpeed : Module(
+    name = "IceSpeed",
+    description = "Changes how slippery ice is",
+    category = Category.MOVEMENT
+) {
     private val slipperiness = setting("Slipperiness", 0.4f, 0.1f..1.0f, 0.01f)
 
     init {

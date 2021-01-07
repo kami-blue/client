@@ -27,12 +27,11 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "ESP",
-        category = Module.Category.RENDER,
-        description = "Highlights entities"
-)
-object ESP : Module() {
+object ESP : Module(
+    name = "ESP",
+    category = Category.RENDER,
+    description = "Highlights entities"
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */

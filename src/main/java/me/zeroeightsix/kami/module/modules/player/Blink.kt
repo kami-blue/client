@@ -14,12 +14,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-@Module.Info(
-        name = "Blink",
-        category = Module.Category.PLAYER,
-        description = "Cancels server side packets"
-)
-object Blink : Module() {
+object Blink : Module(
+    name = "Blink",
+    category = Category.PLAYER,
+    description = "Cancels server side packets"
+) {
     private val cancelPacket = setting("CancelPackets", false)
     private val autoReset = setting("AutoReset", true)
     private val resetThreshold = setting("ResetThreshold", 20, 1..100, 5, { autoReset.value })

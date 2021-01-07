@@ -17,12 +17,11 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object DiscordNotifs : Module(
     name = "DiscordNotifs",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Sends your chat to a set Discord channel"
-)
-object DiscordNotifs : Module() {
+) {
     private val timeout = setting("Timeout", true)
     private val timeoutTime = setting("Seconds", 10, 0..120, 5, { timeout.value })
     private val time = setting("Timestamp", true)

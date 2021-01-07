@@ -18,12 +18,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 
-@Module.Info(
-        name = "StorageESP",
-        description = "Draws an ESP on top of storage units",
-        category = Module.Category.RENDER
-)
-object StorageESP : Module() {
+object StorageESP : Module(
+    name = "StorageESP",
+    description = "Draws an ESP on top of storage units",
+    category = Category.RENDER
+) {
     private val page = setting("Page", Page.TYPE)
 
     /* Type settings */

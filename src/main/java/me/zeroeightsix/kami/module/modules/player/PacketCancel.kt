@@ -6,12 +6,11 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.*
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "PacketCancel",
-        description = "Cancels specific packets used for various actions",
-        category = Module.Category.PLAYER
-)
-object PacketCancel : Module() {
+object PacketCancel : Module(
+    name = "PacketCancel",
+    description = "Cancels specific packets used for various actions",
+    category = Category.PLAYER
+) {
     private val all = setting("All", false)
     private val packetInput = setting("CPacketInput", true, { !all.value })
     private val packetPlayer = setting("CPacketPlayer", true, { !all.value })
