@@ -16,10 +16,6 @@ object Timer : Module(
     private val tickNormal by setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow })
     private val tickSlow by setting("TickS", 8f, 1f..10f, 0.1f, { slow })
 
-    public override fun onDisable() {
-        mc.timer.tickLength = 50.0f
-    }
-
     init {
         onDisable {
             mc.timer.tickLength = 50.0f

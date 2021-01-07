@@ -18,11 +18,11 @@ object CustomChat : Module(
     showOnArray = false,
     modulePriority = 200
 ) {
-    private val textMode = setting("Message", TextMode.JAPANESE)
-    private val decoMode = setting("Separator", DecoMode.NONE)
-    private val commands = setting("Commands", false)
-    private val spammer = setting("Spammer", false)
-    private val customText = setting("CustomText", "unchanged")
+    private val textMode by setting("Message", TextMode.JAPANESE)
+    private val decoMode by setting("Separator", DecoMode.NONE)
+    private val commands by setting("Commands", false)
+    private val spammer by setting("Spammer", false)
+    private val customText by setting("CustomText", "Default")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE
@@ -70,7 +70,7 @@ object CustomChat : Module(
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (timer.tick(5L) && textMode == TextMode.CUSTOM && customText.equals("unchanged", ignoreCase = true)) {
+            if (timer.tick(5L) && textMode == TextMode.CUSTOM && customText.equals("Default", ignoreCase = true)) {
                 MessageSendHelper.sendWarningMessage("$chatName Warning: In order to use the custom $name, please change the CustomText setting in ClickGUI")
             }
         }

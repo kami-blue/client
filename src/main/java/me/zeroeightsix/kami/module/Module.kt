@@ -44,7 +44,7 @@ open class Module(
     /* End of properties */
 
     internal fun postInit() {
-        enabled.value = annotation.enabledByDefault || annotation.alwaysEnabled
+        enabled.value = enabledByDefault || alwaysEnabled
         if (alwaysListening) KamiEventBus.subscribe(this)
     }
 
