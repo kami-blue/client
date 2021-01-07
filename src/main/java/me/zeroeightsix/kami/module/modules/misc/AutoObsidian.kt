@@ -368,8 +368,8 @@ object AutoObsidian : Module() {
      * @return The id of a shulker found in the hotbar, else returns -1
      */
     private fun getShulkerInHotbar(): Int {
-        for (shulkerId in 219..234) {
-            if (InventoryUtils.getSlotsHotbar(shulkerId) != null) return shulkerId
+        for (shulkerID in 219..234) {
+            if (InventoryUtils.getSlotsHotbar(shulkerID) != null) return shulkerID
         }
         return -1
     }
@@ -378,8 +378,8 @@ object AutoObsidian : Module() {
      * @return the id of a shulker found in a non-hotbar slot, else returns -1
      */
     private fun getShulkerInInventory(): Int {
-        for (shulkerId in 219..234) {
-            if (InventoryUtils.getSlotsNoHotbar(shulkerId) != null) return shulkerId
+        for (shulkerID in 219..234) {
+            if (InventoryUtils.getSlotsNoHotbar(shulkerID) != null) return shulkerID
         }
         return -1
     }
