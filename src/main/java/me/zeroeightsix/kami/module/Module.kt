@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
-import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.DisplayEnum
@@ -41,11 +40,6 @@ open class Module(
     val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
     /* End of properties */
-
-    internal fun postInit() {
-        enabled.value = enabledByDefault || alwaysEnabled
-        if (alwaysListening) KamiEventBus.subscribe(this)
-    }
 
     fun toggle() {
         enabled.value = !enabled.value

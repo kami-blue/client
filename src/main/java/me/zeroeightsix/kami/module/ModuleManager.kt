@@ -42,7 +42,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
 
     internal fun register(module: Module) {
         moduleSet.add(module)
-        module.postInit()
+        if (module.enabledByDefault || module.alwaysEnabled) module.enable()
         if (module.alwaysListening) KamiEventBus.subscribe(module)
     }
 
