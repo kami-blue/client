@@ -35,7 +35,7 @@ fun runSafe(block: SafeClientEvent.() -> Unit) {
     ClientEvent().toSafe()?.let { block(it) }
 }
 
-fun <R> runSafe(block: SafeClientEvent.() -> R): R? {
+fun <R> runSafeR(block: SafeClientEvent.() -> R): R? {
     return ClientEvent().toSafe()?.let { block(it) }
 }
 

@@ -8,18 +8,17 @@ import net.minecraft.network.play.client.CPacketUpdateSign
 import net.minecraft.tileentity.TileEntitySign
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object ConsoleSpam : Module(
     name = "ConsoleSpam",
     description = "Spams Spigot consoles by sending invalid UpdateSign packets",
-    category = Module.Category.MISC
-)
-object ConsoleSpam : Module() {
-    override fun onEnable() {
-        MessageSendHelper.sendChatMessage("$chatName Every time you right click a sign, a warning will appear in console.")
-        MessageSendHelper.sendChatMessage("$chatName Use an auto clicker to automate this process.")
-    }
-
+    category = Category.MISC
+) {
     init {
+        onEnable {
+            MessageSendHelper.sendChatMessage("$chatName Every time you right click a sign, a warning will appear in console.")
+            MessageSendHelper.sendChatMessage("$chatName Use an auto clicker to automate this process.")
+        }
+
         listener<PacketEvent.Send> {
             if (it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
             mc.player.connection.sendPacket(CPacketUpdateSign(it.packet.pos, TileEntitySign().signText))

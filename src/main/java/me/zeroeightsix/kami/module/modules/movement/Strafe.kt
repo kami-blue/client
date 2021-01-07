@@ -14,35 +14,34 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
-        name = "Strafe",
-        category = Module.Category.MOVEMENT,
-        description = "Improves control in air"
-)
-object Strafe : Module() {
-    private val airSpeedBoost = setting("AirSpeedBoost", true)
-    private val timerBoost = setting("TimerBoost", false)
-    private val autoJump = setting("AutoJump", false)
-    private val onHolding = setting("OnHoldingSprint", false)
+object Strafe : Module(
+    name = "Strafe",
+    category = Category.MOVEMENT,
+    description = "Improves control in air"
+) {
+    private val airSpeedBoost by setting("AirSpeedBoost", true)
+    private val timerBoost by setting("TimerBoost", true)
+    private val autoJump by setting("AutoJump", true)
+    private val onHolding by setting("OnHoldingSprint", false)
 
     private var jumpTicks = 0
 
-    override fun onDisable() {
-        reset()
-    }
-
     /* If you skid this you omega gay */
     init {
+        onDisable {
+            reset()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (!shouldStrafe()) {
                 reset()
                 return@safeListener
             }
             MovementUtils.setSpeed(player.speed)
-            if (airSpeedBoost.value) player.jumpMovementFactor = 0.029f
-            if (timerBoost.value) mc.timer.tickLength = 45.87155914306640625f
+            if (airSpeedBoost) player.jumpMovementFactor = 0.029f
+            if (timerBoost) mc.timer.tickLength = 45.87155914306640625f
 
-            if (autoJump.value && player.onGround && jumpTicks <= 0) {
+            if (autoJump && player.onGround && jumpTicks <= 0) {
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
                 player.motionY = 0.41
                 if (player.isSprinting) {
@@ -60,11 +59,11 @@ object Strafe : Module() {
     private fun SafeClientEvent.shouldStrafe() = !BaritoneUtils.isPathing
             && !player.capabilities.isFlying
             && !player.isElytraFlying
-            && (mc.gameSettings.keyBindSprint.isKeyDown || !onHolding.value)
+            && (mc.gameSettings.keyBindSprint.isKeyDown || !onHolding)
             && (player.moveForward != 0f || player.moveStrafing != 0f)
 
     private fun reset() {
-        mc.player.jumpMovementFactor = 0.02F
+        mc.player?.jumpMovementFactor = 0.02F
         mc.timer.tickLength = 50F
         jumpTicks = 0
     }

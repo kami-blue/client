@@ -12,6 +12,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
@@ -23,45 +24,42 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "HoleMiner",
-        category = Module.Category.COMBAT,
-        description = "Mines your opponent's hole",
-        modulePriority = 100
-)
-object HoleMiner : Module() {
-    private val range = setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
+object HoleMiner : Module(
+    name = "HoleMiner",
+    category = Category.COMBAT,
+    description = "Mines your opponent's hole",
+    modulePriority = 100
+) {
+    private val range by setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
 
     private var miningPos: BlockPos? = null
     private var start = true
 
     override fun getHudInfo() = CombatManager.target?.name ?: ""
 
-    override fun onDisable() {
-        miningPos = null
-        start = true
-    }
-
-    override fun onEnable() {
-        if (mc.player == null) {
-            disable()
-            return
-        }
-        val target = CombatManager.target
-        if (target != null) {
-            if (SurroundUtils.checkHole(target) != SurroundUtils.HoleType.OBBY) {
-                MessageSendHelper.sendChatMessage("$chatName Target is not in a valid hole, disabling")
-                disable()
-            } else {
-                miningPos = findHoleBlock(target)
-            }
-        } else {
-            MessageSendHelper.sendChatMessage("$chatName No target found, disabling")
-            disable()
-        }
-    }
-
     init {
+        onEnable {
+            runSafeR {
+                val target = CombatManager.target
+                if (target != null) {
+                    if (SurroundUtils.checkHole(target) != SurroundUtils.HoleType.OBBY) {
+                        MessageSendHelper.sendChatMessage("$chatName Target is not in a valid hole, disabling")
+                        disable()
+                    } else {
+                        miningPos = findHoleBlock(target)
+                    }
+                } else {
+                    MessageSendHelper.sendChatMessage("$chatName No target found, disabling")
+                    disable()
+                }
+            } ?: disable()
+        }
+
+        onDisable {
+            miningPos = null
+            start = true
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (!CombatManager.isOnTopPriority(HoleMiner)) return@safeListener
             if (player.heldItemMainhand.item != Items.DIAMOND_PICKAXE) {
@@ -103,7 +101,7 @@ object HoleMiner : Module() {
         for (facing in EnumFacing.HORIZONTALS) {
             val offsetPos = pos.offset(facing)
             val dist = mc.player.distanceTo(offsetPos)
-            if (dist > range.value || dist > closestPos.first) continue
+            if (dist > range || dist > closestPos.first) continue
             if (mc.world.getBlockState(offsetPos).block == Blocks.BEDROCK) continue
             if (!checkPos(offsetPos, facing)) continue
             closestPos = dist to offsetPos

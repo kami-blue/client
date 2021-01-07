@@ -8,90 +8,91 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketCloseWindow
 import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
+object Flight : Module(
     name = "Flight",
-    category = Module.Category.MOVEMENT,
+    category = Category.MOVEMENT,
     description = "Makes the player fly",
     modulePriority = 500
-)
-object Flight : Module() {
-    private val mode = setting("Mode", FlightMode.VANILLA)
-    private val speed = setting("Speed", 1.0f, 0.0f..10.0f, 0.1f)
-    private val glideSpeed = setting("GlideSpeed", 0.05, 0.0..0.3, 0.001)
+) {
+    private val mode by setting("Mode", FlightMode.VANILLA)
+    private val speed by setting("Speed", 1.0f, 0.0f..10.0f, 0.1f)
+    private val glideSpeed by setting("GlideSpeed", 0.05, 0.0..0.3, 0.001)
 
     private enum class FlightMode {
         VANILLA, STATIC, PACKET
     }
 
-    override fun onDisable() {
-        mc.player?.capabilities?.apply {
-            isFlying = false
-            flySpeed = 0.05f
-        }
-    }
-
     init {
-        listener<PlayerTravelEvent> {
-            if (mc.player == null) return@listener
+        onDisable {
+            runSafe {
+                player.capabilities?.apply {
+                    isFlying = false
+                    flySpeed = 0.05f
+                }
+            }
+        }
 
-            when (mode.value) {
+        safeListener<PlayerTravelEvent> {
+            when (mode) {
                 FlightMode.STATIC -> {
-                    mc.player.capabilities.isFlying = true
-                    mc.player.capabilities.flySpeed = speed.value
+                    player.capabilities.isFlying = true
+                    player.capabilities.flySpeed = speed
 
-                    mc.player.motionX = 0.0
-                    mc.player.motionY = -glideSpeed.value
-                    mc.player.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionY = -glideSpeed
+                    player.motionZ = 0.0
 
-                    if (mc.gameSettings.keyBindJump.isKeyDown) mc.player.motionY += speed.value / 2.0f
-                    if (mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY -= speed.value / 2.0f
+                    if (mc.gameSettings.keyBindJump.isKeyDown) player.motionY += speed / 2.0f
+                    if (mc.gameSettings.keyBindSneak.isKeyDown) player.motionY -= speed / 2.0f
                 }
                 FlightMode.VANILLA -> {
-                    mc.player.capabilities.isFlying = true
-                    mc.player.capabilities.flySpeed = speed.value / 11.11f
+                    player.capabilities.isFlying = true
+                    player.capabilities.flySpeed = speed / 11.11f
 
-                    if (glideSpeed.value != 0.0
+                    if (glideSpeed != 0.0
                         && !mc.gameSettings.keyBindJump.isKeyDown
-                        && !mc.gameSettings.keyBindSneak.isKeyDown) mc.player.motionY = -glideSpeed.value
+                        && !mc.gameSettings.keyBindSneak.isKeyDown) player.motionY = -glideSpeed
                 }
                 FlightMode.PACKET -> {
                     it.cancel()
 
-                    mc.player.motionY = if (mc.gameSettings.keyBindJump.isKeyDown xor mc.gameSettings.keyBindSneak.isKeyDown) {
+                    player.motionY = if (mc.gameSettings.keyBindJump.isKeyDown xor mc.gameSettings.keyBindSneak.isKeyDown) {
                         if (mc.gameSettings.keyBindJump.isKeyDown) 0.0622
                         else -0.0622
                     } else {
                         if (MovementUtils.isInputting) {
                             val yaw = MovementUtils.calcMoveYaw()
-                            mc.player.motionX = -sin(yaw) * 0.2f
-                            mc.player.motionZ = cos(yaw) * 0.2f
+                            player.motionX = -sin(yaw) * 0.2f
+                            player.motionZ = cos(yaw) * 0.2f
                         }
-                        -glideSpeed.value
+                        -glideSpeed
                     }
 
-                    val posX = mc.player.posX + mc.player.motionX
-                    val posY = mc.player.posY + mc.player.motionY
-                    val posZ = mc.player.posZ + mc.player.motionZ
+                    val posX = player.posX + player.motionX
+                    val posY = player.posY + player.motionY
+                    val posZ = player.posZ + player.motionZ
 
-                    mc.connection?.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, mc.player.rotationYaw, mc.player.rotationPitch, false))
-                    mc.connection?.sendPacket(CPacketPlayer.Position(posX, mc.player.posY - 42069, posZ, true))
+                    connection.sendPacket(CPacketPlayer.PositionRotation(posX, posY, posZ, player.rotationYaw, player.rotationPitch, false))
+                    connection.sendPacket(CPacketPlayer.Position(posX, player.posY - 42069, posZ, true))
                 }
             }
         }
 
         listener<OnUpdateWalkingPlayerEvent> {
-            if (mode.value != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
+            if (mode != FlightMode.PACKET || it.phase != Phase.PRE) return@listener
             PlayerPacketManager.addPacket(this, PlayerPacketManager.PlayerPacket(moving = false, rotating = false))
         }
 
         listener<PacketEvent.Receive> {
-            if (mode.value == FlightMode.PACKET && it.packet is SPacketCloseWindow) it.cancel()
+            if (mode == FlightMode.PACKET && it.packet is SPacketCloseWindow) it.cancel()
         }
     }
 }

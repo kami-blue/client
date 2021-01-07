@@ -9,14 +9,13 @@ import org.kamiblue.event.listener.listener
 /**
  * Created by Dewy on the 21st of April, 2020
  */
-@Module.Info(
+object Baritone : Module(
     name = "Baritone",
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     description = "Configures Baritone settings",
     showOnArray = false,
     alwaysEnabled = true
-)
-object Baritone : Module() {
+) {
     private val allowBreak = setting("AllowBreak", true)
     private val allowSprint = setting("AllowSprint", true)
     private val allowPlace = setting("AllowPlace", true)

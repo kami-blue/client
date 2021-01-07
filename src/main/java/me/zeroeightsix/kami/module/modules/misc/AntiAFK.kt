@@ -25,21 +25,20 @@ import kotlin.random.Random
  * TODO: Path finding to stay inside 1 chunk
  * TODO: Render which chunk is selected
  */
-@Module.Info(
+object AntiAFK : Module(
     name = "AntiAFK",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Prevents being kicked for AFK"
-)
-object AntiAFK : Module() {
-    private val delay = setting("ActionDelay", 50, 5..100, 5)
-    private val variation = setting("Variation", 25, 0..50, 5)
-    private val autoReply = setting("AutoReply", true)
+) {
+    private val delay by setting("ActionDelay", 50, 5..100, 5)
+    private val variation by setting("Variation", 25, 0..50, 5)
+    private val autoReply by setting("AutoReply", true)
     private val swing = setting("Swing", true)
     private val jump = setting("Jump", true)
     private val turn = setting("Turn", true)
     private val walk = setting("Walk", true)
-    private val radius = setting("Radius", 64, 8..128, 8)
-    private val inputTimeout = setting("InputTimeout(m)", 0, 0..15, 1)
+    private val radius by setting("Radius", 64, 8..128, 8)
+    private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
 
     private var startPos: BlockPos? = null
     private var squareStep = 0
@@ -49,22 +48,22 @@ object AntiAFK : Module() {
     private var nextActionDelay = 0
 
     override fun getHudInfo(): String {
-        return if (inputTimeout.value == 0) ""
+        return if (inputTimeout == 0) ""
         else ((System.currentTimeMillis() - inputTimer.time) / 1000L).toString()
     }
 
-    override fun onDisable() {
-        startPos = null
-        BaritoneUtils.settings?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
-        BaritoneUtils.cancelEverything()
-    }
-
-    override fun onEnable() {
-        inputTimer.reset()
-        baritoneDisconnectOnArrival()
-    }
-
     init {
+        onEnable {
+            inputTimer.reset()
+            baritoneDisconnectOnArrival()
+        }
+
+        onDisable {
+            startPos = null
+            BaritoneUtils.settings?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
+            BaritoneUtils.cancelEverything()
+        }
+
         listener<BaritoneSettingsInitEvent> {
             baritoneDisconnectOnArrival()
         }
@@ -79,20 +78,20 @@ object AntiAFK : Module() {
 
     init {
         listener<PacketEvent.Receive> {
-            if (!autoReply.value || it.packet !is SPacketChat) return@listener
+            if (!autoReply || it.packet !is SPacketChat) return@listener
             if (MessageDetection.Direct.RECEIVE detect it.packet.chatComponent.unformattedText) {
                 sendServerMessage("/r I am currently AFK and using KAMI Blue!")
             }
         }
 
         listener<InputEvent.MouseInputEvent> {
-            if (inputTimeout.value != 0 && isInputting()) {
+            if (inputTimeout != 0 && isInputting()) {
                 inputTimer.reset()
             }
         }
 
         listener<InputEvent.KeyInputEvent> {
-            if (inputTimeout.value != 0 && isInputting()) {
+            if (inputTimeout != 0 && isInputting()) {
                 inputTimer.reset()
             }
         }
@@ -110,18 +109,18 @@ object AntiAFK : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (inputTimeout.value != 0) {
+            if (inputTimeout != 0) {
                 if (BaritoneUtils.isActive) {
                     inputTimer.reset()
-                } else if (!inputTimer.tick(inputTimeout.value.toLong(), false)) {
+                } else if (!inputTimer.tick(inputTimeout.toLong(), false)) {
                     startPos = null
                     return@safeListener
                 }
             }
 
             if (actionTimer.tick(nextActionDelay.toLong())) {
-                val random = if (variation.value > 0) (0..variation.value).random() else 0
-                nextActionDelay = delay.value + random
+                val random = if (variation > 0) (0..variation).random() else 0
+                nextActionDelay = delay + random
 
                 when ((getAction())) {
                     Action.SWING -> player.swingArm(EnumHand.MAIN_HAND)
@@ -147,9 +146,9 @@ object AntiAFK : Module() {
 
         startPos?.let {
             when (squareStep) {
-                0 -> baritoneGotoXZ(it.x, it.z + radius.value)
-                1 -> baritoneGotoXZ(it.x + radius.value, it.z + radius.value)
-                2 -> baritoneGotoXZ(it.x + radius.value, it.z)
+                0 -> baritoneGotoXZ(it.x, it.z + radius)
+                1 -> baritoneGotoXZ(it.x + radius, it.z + radius)
+                2 -> baritoneGotoXZ(it.x + radius, it.z)
                 3 -> baritoneGotoXZ(it.x, it.z)
             }
         }

@@ -19,12 +19,11 @@ import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@Module.Info(
+object BookCrash : Module(
     name = "BookCrash",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Crashes servers by sending large packets"
-)
-object BookCrash : Module() {
+) {
     private val mode = setting("Mode", Mode.RAION)
     private val fillMode = setting("FillMode", FillMode.RANDOM)
     private val uses = setting("Uses", 2, 1..10, 1)

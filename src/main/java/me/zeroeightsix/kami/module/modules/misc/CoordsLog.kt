@@ -12,12 +12,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
+object CoordsLog : Module(
     name = "CoordsLog",
     description = "Automatically logs your coords, based on actions",
-    category = Module.Category.MISC
-)
-object CoordsLog : Module() {
+    category = Category.MISC
+) {
     private val saveOnDeath = setting("SaveOnDeath", true)
     private val autoLog = setting("AutoLog", false)
     private val delay = setting("Delay", 15, 1..60, 1)

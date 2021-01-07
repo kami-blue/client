@@ -29,12 +29,11 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-@Module.Info(
-        name = "Trajectories",
-        category = Module.Category.RENDER,
-        description = "Draws lines to where trajectories are going to fall"
-)
-object Trajectories : Module() {
+object Trajectories : Module(
+    name = "Trajectories",
+    category = Category.RENDER,
+    description = "Draws lines to where trajectories are going to fall"
+) {
     private val showEntity = setting("ShowEntity", true)
     private val showBlock = setting("ShowBlock", false)
     private val r = setting("Red", 255, 0..255, 1)

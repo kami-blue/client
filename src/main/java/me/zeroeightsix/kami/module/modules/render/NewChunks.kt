@@ -26,13 +26,13 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
-@Module.Info(
-        name = "NewChunks",
-        description = "Highlights newly generated chunks",
-        category = Module.Category.RENDER
-)
-object NewChunks : Module() {
+object NewChunks : Module(
+    name = "NewChunks",
+    description = "Highlights newly generated chunks",
+    category = Category.RENDER
+) {
     private val relative = setting("Relative", true)
     private val autoClear = setting("AutoClear", true)
     private val saveNewChunks = setting("SaveNewChunks", false)
@@ -54,19 +54,19 @@ object NewChunks : Module() {
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
     private val timer = TickTimer(TimeUnit.MINUTES)
-    val chunks = HashSet<Chunk>()
-
-    override fun onDisable() {
-        logWriterClose()
-        chunks.clear()
-        MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
-    }
-
-    override fun onEnable() {
-        timer.reset()
-    }
+    private val chunks = LinkedHashSet<Chunk>()
 
     init {
+        onEnable {
+            timer.reset()
+        }
+
+        onDisable {
+            logWriterClose()
+            chunks.clear()
+            MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && autoClear.value && timer.tick(10L)) {
                 chunks.clear()

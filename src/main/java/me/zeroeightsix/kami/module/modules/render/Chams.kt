@@ -11,6 +11,7 @@ import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.player.EntityPlayer
@@ -20,12 +21,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 
-@Module.Info(
-        name = "Chams",
-        category = Module.Category.RENDER,
-        description = "Modify entity rendering"
-)
-object Chams : Module() {
+object Chams : Module(
+    name = "Chams",
+    category = Category.RENDER,
+    description = "Modify entity rendering"
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
@@ -35,6 +35,7 @@ object Chams : Module() {
     private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val items = setting("Items", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val crystals = setting("Crystals", false, { page.value == Page.ENTITY_TYPE && !all.value })
     private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE && !all.value })
     private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
     private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
@@ -104,6 +105,7 @@ object Chams : Module() {
                 || arrows.value && entity is EntityArrow
                 || throwable.value && entity is EntityThrowable
                 || items.value && entity is EntityItem
+                || crystals.value && entity is EntityEnderCrystal
                 || players.value && entity is EntityPlayer && EntityUtils.playerTypeCheck(entity, friends.value, sleeping.value)
                 || mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
     }

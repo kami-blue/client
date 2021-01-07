@@ -11,12 +11,11 @@ import net.minecraft.util.text.TextComponentString
 import org.kamiblue.event.listener.listener
 import java.io.IOException
 
-@Module.Info(
+object ColorSign : Module(
     name = "ColorSign",
     description = "Allows ingame coloring of text on signs",
-    category = Module.Category.MISC
-)
-object ColorSign : Module() {
+    category = Category.MISC
+) {
     init {
         listener<GuiEvent.Displayed> { event ->
             if (event.screen !is GuiEditSign) return@listener

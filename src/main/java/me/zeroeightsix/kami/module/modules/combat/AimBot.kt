@@ -10,13 +10,12 @@ import net.minecraft.init.Items
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "AimBot",
-        description = "Automatically aims at entities for you.",
-        category = Module.Category.COMBAT,
-        modulePriority = 20
-)
-object AimBot : Module() {
+object AimBot : Module(
+    name = "AimBot",
+    description = "Automatically aims at entities for you.",
+    category = Category.COMBAT,
+    modulePriority = 20
+) {
     private val bowOnly = setting("BowOnly", true)
     private val autoSwap = setting("AutoSwap", false, { bowOnly.value })
 

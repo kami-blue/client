@@ -13,12 +13,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-@Module.Info(
-        name = "MidClickPearl",
-        category = Module.Category.COMBAT,
-        description = "Throws a pearl automatically when you middle click in air"
-)
-object MidClickPearl : Module() {
+object MidClickPearl : Module(
+    name = "MidClickPearl",
+    category = Category.COMBAT,
+    description = "Throws a pearl automatically when you middle click in air"
+) {
     private var prevSlot = -1
     private var startTime = -1L
 

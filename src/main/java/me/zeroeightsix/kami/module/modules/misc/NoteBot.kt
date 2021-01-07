@@ -9,6 +9,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.SoundEvents
@@ -31,12 +32,11 @@ import kotlin.collections.HashSet
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
-@Module.Info(
-    name = "Notebot",
-    category = Module.Category.MISC,
+object NoteBot : Module(
+    name = "NoteBot",
+    category = Category.MISC,
     description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
-)
-object NoteBot : Module() {
+) {
 
     private val togglePlay = setting("TogglePlay", false)
     private val reloadSong = setting("ReloadSong", false)
@@ -79,20 +79,19 @@ object NoteBot : Module() {
         channel13, channel14, channel15, channel16
     )
 
-    override fun onEnable() {
-        if (mc.world == null || mc.player == null) {
-            disable()
-            return
-        }
+    init {
+        onEnable {
+            runSafeR {
+                if (player.isCreative) {
+                    MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
+                    disable()
+                    return@runSafeR
+                }
 
-        if (mc.player.isCreative) {
-            MessageSendHelper.sendChatMessage("You are in creative mode and cannot play music.")
-            disable()
-            return
+                loadSong()
+                scanNoteBlocks()
+            } ?: disable()
         }
-
-        loadSong()
-        scanNoteBlocks()
     }
 
     private fun loadSong() {

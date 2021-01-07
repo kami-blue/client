@@ -13,13 +13,12 @@ import net.minecraft.client.multiplayer.ServerData
 import org.kamiblue.event.listener.listener
 import kotlin.math.max
 
-@Module.Info(
+object AutoReconnect : Module(
     name = "AutoReconnect",
     description = "Automatically reconnects after being disconnected",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     alwaysListening = true
-)
-object AutoReconnect : Module() {
+) {
     private val delay = setting("Delay", 5.0f, 0.5f..100.0f, 0.5f)
 
     private var prevServerDate: ServerData? = null

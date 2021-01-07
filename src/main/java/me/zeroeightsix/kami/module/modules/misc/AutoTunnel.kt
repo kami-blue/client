@@ -14,12 +14,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.round
 
-@Module.Info(
+object AutoTunnel : Module(
     name = "AutoTunnel",
     description = "Automatically tunnels forward, at a given size",
-    category = Module.Category.MISC
-)
-object AutoTunnel : Module() {
+    category = Category.MISC
+) {
     private val backFill = setting("BackFill", false)
     private val height = setting("Height", 2, 1..10, 1)
     private val width = setting("Width", 1, 1..10, 1)
@@ -33,11 +32,11 @@ object AutoTunnel : Module() {
             || BaritoneUtils.primary?.builderProcess?.isActive == true)
     }
 
-    override fun onDisable() {
-        if (mc.player != null) BaritoneUtils.cancelEverything()
-    }
-
     init {
+        onDisable {
+            BaritoneUtils.cancelEverything()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (!isActive()) sendTunnel()
         }

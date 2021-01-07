@@ -37,14 +37,13 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 
-@Module.Info(
-        name = "CombatSetting",
-        description = "Settings for combat module targeting",
-        category = Module.Category.COMBAT,
-        showOnArray = false,
-        alwaysEnabled = true
-)
-object CombatSetting : Module() {
+object CombatSetting : Module(
+    name = "CombatSetting",
+    description = "Settings for combat module targeting",
+    category = Category.COMBAT,
+    showOnArray = false,
+    alwaysEnabled = true
+) {
     private val page = setting("Page", Page.TARGETING)
 
     /* Targeting */
@@ -208,8 +207,7 @@ object CombatSetting : Module() {
     private fun getTargetList(): LinkedList<EntityLivingBase> {
         val targetList = LinkedList<EntityLivingBase>()
         for (entity in getCacheList()) {
-            if (AntiBot.isEnabled
-                && AntiBot.botSet.contains((entity))) continue
+            if (AntiBot.isBot(entity)) continue
 
             if (!tamed.value
                 && (entity is EntityTameable && entity.isTamed

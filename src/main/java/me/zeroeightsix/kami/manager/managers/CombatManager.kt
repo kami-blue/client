@@ -46,7 +46,7 @@ object CombatManager : Manager {
     init {
         val cacheList = ArrayList<Module>()
         val annotationClass = CombatModule::class.java
-        for (module in ModuleManager.getModules()) {
+        for (module in ModuleManager.modules) {
             if (module.category != Module.Category.COMBAT) continue
             if (!module.javaClass.isAnnotationPresent(annotationClass)) continue
             cacheList.add(module)

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 
@@ -12,7 +13,7 @@ object MemoryUsage : LabelHud(
     private val showAllocated = setting("ShowAllocated", false)
     private val showMax = setting("ShowMax", false)
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         val memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L
         displayText.add(memory.toString(), primaryColor)
         if (showAllocated.value) {

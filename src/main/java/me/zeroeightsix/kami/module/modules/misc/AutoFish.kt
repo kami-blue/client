@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
 import me.zeroeightsix.kami.module.Module
@@ -10,7 +11,6 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 import java.lang.Math.random
 import kotlin.math.abs
 
@@ -20,12 +20,11 @@ import kotlin.math.abs
  * Updated by l1ving on 26/05/20
  * Updated by Xiaro on 22/08/20
  */
-@Module.Info(
+object AutoFish : Module(
     name = "AutoFish",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Automatically catch fish"
-)
-object AutoFish : Module() {
+) {
     private val mode = setting("Mode", Mode.BOUNCE)
     private val autoCast = setting("AutoCast", true)
     private val castDelay = setting("AutoCastDelay(s)", 5, 1..20, 1, { autoCast.value })
@@ -43,9 +42,9 @@ object AutoFish : Module() {
     private val timer = TickTimer()
 
     init {
-        listener<PacketEvent.Receive> {
-            if (mc.player == null || mc.player.fishEntity == null || !isStabled()) return@listener
-            if (mode.value == Mode.BOUNCE || it.packet !is SPacketSoundEffect) return@listener
+        safeListener<PacketEvent.Receive> {
+            if (player.fishEntity == null || !isStabled()) return@safeListener
+            if (mode.value == Mode.BOUNCE || it.packet !is SPacketSoundEffect) return@safeListener
             if (isSplash(it.packet)) catch()
         }
 
@@ -81,25 +80,25 @@ object AutoFish : Module() {
                 reset()
             }
         }
+
+        onToggle {
+            reset()
+        }
     }
 
-    override fun onToggle() {
-        reset()
+    private fun SafeClientEvent.isStabled(): Boolean {
+        if (player.fishEntity?.isAirBorne != false || recasting) return false
+        return abs(player.fishEntity!!.motionX) + abs(player.fishEntity!!.motionZ) < 0.01
     }
 
-    private fun isStabled(): Boolean {
-        if (mc.player.fishEntity == null || mc.player.fishEntity!!.isAirBorne || recasting) return false
-        return abs(mc.player.fishEntity!!.motionX) + abs(mc.player.fishEntity!!.motionZ) < 0.01
-    }
-
-    private fun isOnWater(): Boolean {
-        if (mc.player.fishEntity == null || mc.player.fishEntity!!.isAirBorne) return false
-        val pos = mc.player.fishEntity!!.position
+    private fun SafeClientEvent.isOnWater(): Boolean {
+        if (player.fishEntity?.isAirBorne != false) return false
+        val pos = player.fishEntity!!.position
         return isWater(pos) || isWater(pos.down())
     }
 
-    private fun isSplash(packet: SPacketSoundEffect): Boolean {
-        if (mode.value == Mode.SPLASH && mc.player.fishEntity!!.getDistance(packet.x, packet.y, packet.z) > 2) return false
+    private fun SafeClientEvent.isSplash(packet: SPacketSoundEffect): Boolean {
+        if (mode.value == Mode.SPLASH && (player.fishEntity?.getDistance(packet.x, packet.y, packet.z) ?: 69420.0) > 2) return false
         val soundName = packet.sound.soundName.toString().toLowerCase()
         return (mode.value != Mode.SPLASH && isAnySplash(soundName)) || soundName.contains("entity.bobber.splash")
     }
@@ -110,9 +109,9 @@ object AutoFish : Module() {
             || soundName.contains("entity.player.splash")
     }
 
-    private fun isBouncing(): Boolean {
-        if (mc.player.fishEntity == null || !isOnWater()) return false
-        return mc.player.fishEntity!!.motionY !in -0.05..0.05
+    private fun SafeClientEvent.isBouncing(): Boolean {
+        if (player.fishEntity == null || !isOnWater()) return false
+        return (player.fishEntity?.motionY ?: 911.0)!in -0.05..0.05
     }
 
     private fun catch() {

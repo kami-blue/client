@@ -12,13 +12,12 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-@Module.Info(
+object MidClickFriends : Module(
     name = "MidClickFriends",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Middle click players to friend or unfriend them",
     showOnArray = false
-)
-object MidClickFriends : Module() {
+) {
     private val timer = TickTimer()
     private var lastPlayer: EntityOtherPlayerMP? = null
 

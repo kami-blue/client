@@ -18,12 +18,11 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Module.Info(
-        name = "TotemPopCounter",
-        description = "Counts how many times players pop",
-        category = Module.Category.COMBAT
-)
-object TotemPopCounter : Module() {
+object TotemPopCounter : Module(
+    name = "TotemPopCounter",
+    description = "Counts how many times players pop",
+    category = Category.COMBAT
+) {
     private val countFriends = setting("CountFriends", true)
     private val countSelf = setting("CountSelf", false)
     private val resetOnDeath = setting("ResetOnDeath", true)
@@ -36,13 +35,17 @@ object TotemPopCounter : Module() {
         CLIENT, EVERYONE
     }
 
-    private val playerList = HashMap<EntityPlayer, Int>()
+    private val playerList = Collections.synchronizedMap(HashMap<EntityPlayer, Int>())
     private var wasDead = false
 
     init {
-        listener<PacketEvent.Receive> {
-            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || mc.player == null || mc.player.isDead) return@listener
-            val player = (it.packet.getEntity(mc.world) as? EntityPlayer) ?: return@listener
+        onDisable {
+            playerList.clear()
+        }
+
+        safeListener<PacketEvent.Receive> {
+            if (it.packet !is SPacketEntityStatus || it.packet.opCode.toInt() != 35 || player.isDead) return@safeListener
+            val player = (it.packet.getEntity(world) as? EntityPlayer) ?: return@safeListener
 
             if (friendCheck(player) || selfCheck(player)) {
                 val count = playerList.getOrDefault(player, 0) + 1
@@ -76,10 +79,6 @@ object TotemPopCounter : Module() {
 
             wasDead = player.isDead
         }
-    }
-
-    override fun onDisable() {
-        playerList.clear()
     }
 
     private fun friendCheck(player: EntityPlayer) = FriendManager.isFriend(player.name) && countFriends.value

@@ -13,7 +13,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.VAlign
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
@@ -49,7 +49,7 @@ object ModuleList : HudElement(
         CATEGORY("Category", compareBy { it.category.ordinal })
     }
 
-    override val maxWidth: Float
+    override val hudWidth: Float
         get() = sortedModuleList.maxOfOrNull {
             if (toggleMap[it]?.value == true) it.textLine.getWidth() + 4.0f
             else 20.0f
@@ -57,20 +57,20 @@ object ModuleList : HudElement(
             max(it, 20.0f)
         } ?: 20.0f
 
-    override val maxHeight: Float
+    override val hudHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
-    private var sortedModuleList = ModuleManager.getModules()
+    private var sortedModuleList : Collection<Module> = ModuleManager.modules
     private val textLineMap = HashMap<Module, TextComponent.TextLine>()
-    private val toggleMap = ModuleManager.getModules()
+    private val toggleMap = ModuleManager.modules
         .associateWith { TimedFlag(false) }
         .toMutableMap()
 
     init {
-        safeAsyncListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
+        safeListener<TickEvent.ClientTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@safeListener
 
-            val moduleSet = ModuleManager.getModules().toSet()
+            val moduleSet = ModuleManager.modules.toSet()
 
             for (module in moduleSet) {
                 toggleMap.computeIfAbsent(module) { TimedFlag(false) }
@@ -94,9 +94,9 @@ object ModuleList : HudElement(
         super.renderHud(vertexHelper)
         GlStateManager.pushMatrix()
 
-        GlStateManager.translate(renderWidth * dockingH.multiplier, 0.0f, 0.0f)
+        GlStateManager.translate(renderWidth / scale * dockingH.multiplier, 0.0f, 0.0f)
         if (dockingV == VAlign.BOTTOM) {
-            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f) , 0.0f)
+            GlStateManager.translate(0.0f, renderHeight / scale - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
         }
 
         drawModuleList()
@@ -109,7 +109,9 @@ object ModuleList : HudElement(
         val lengthMs = rainbowLength.value * 1000.0f
         val timedHue = System.currentTimeMillis() % lengthMs.toLong() / lengthMs
 
-        for ((index, module) in sortedModuleList.withIndex()) {
+        var index = 0
+
+        for (module in sortedModuleList) {
             val timedFlag = toggleMap[module] ?: continue
             val progress = timedFlag.progress
 
@@ -126,7 +128,7 @@ object ModuleList : HudElement(
             GlStateManager.translate(animationXOffset - stringPosX - margin, 0.0f, 0.0f)
 
             if (rainbow.value) {
-                val hue = timedHue + indexedHue.value * 0.005f * index
+                val hue = timedHue + indexedHue.value * 0.05f * index++
                 val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
 
                 TextComponent.TextLine(" ").run {

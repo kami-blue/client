@@ -27,8 +27,8 @@ object InventoryViewer : HudElement(
     private val containerTexture = ResourceLocation("textures/gui/container/inventory.png")
     private val kamiIcon = ResourceLocation("kamiblue/kami_icon.png")
 
-    override val minWidth: Float = 162.0f
-    override val minHeight: Float = 54.0f
+    override val hudWidth: Float = 162.0f
+    override val hudHeight: Float = 54.0f
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)

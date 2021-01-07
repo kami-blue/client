@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import net.minecraft.util.EnumHand
@@ -15,7 +16,7 @@ object Durability : LabelHud(
     private val showOffhand = setting("ShowOffhand", false)
     private val showPercentage = setting("ShowPercentage", true)
 
-    override fun updateText() {
+    override fun SafeClientEvent.updateText() {
         if (mc.player.heldItemMainhand.isItemStackDamageable) {
             if (showOffhand.value) displayText.add("MainHand:", secondaryColor)
             addDurabilityText(EnumHand.MAIN_HAND)

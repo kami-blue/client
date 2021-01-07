@@ -64,14 +64,19 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
             }
 
             GlStateUtils.rescaleMc()
+            GlStateUtils.depth(true)
         }
     }
 
     private fun renderHudElement(vertexHelper: VertexHelper, window: HudElement) {
         glPushMatrix()
         glTranslatef(window.renderPosX, window.renderPosY, 0.0f)
+
         if (Hud.hudFrame) window.renderFrame(vertexHelper)
+
+        glScalef(window.scale, window.scale, window.scale)
         window.renderHud(vertexHelper)
+
         glPopMatrix()
     }
 

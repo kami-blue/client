@@ -22,13 +22,12 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "AutoTrap",
-        category = Module.Category.COMBAT,
-        description = "Traps your enemies in obsidian",
-        modulePriority = 60
-)
-object AutoTrap : Module() {
+object AutoTrap : Module(
+    name = "AutoTrap",
+    category = Category.COMBAT,
+    description = "Traps your enemies in obsidian",
+    modulePriority = 60
+) {
     private val trapMode = setting("TrapMode", TrapMode.FULL_TRAP)
     private val selfTrap = setting("SelfTrap", false)
     private val bindSelfTrap = setting("BindSelfTrap", Bind())
@@ -41,11 +40,11 @@ object AutoTrap : Module() {
         return isEnabled && job.isActiveOrFalse
     }
 
-    override fun onDisable() {
-        PlayerPacketManager.resetHotbar()
-    }
-
     init {
+        onDisable {
+            PlayerPacketManager.resetHotbar()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (!job.isActiveOrFalse && isPlaceable()) job = runAutoTrap()
 

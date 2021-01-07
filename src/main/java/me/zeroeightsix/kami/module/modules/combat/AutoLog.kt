@@ -23,13 +23,12 @@ import org.kamiblue.commons.utils.MathUtils
 import java.time.LocalTime
 
 
-@Module.Info(
-        name = "AutoLog",
-        description = "Automatically log when in danger or on low health",
-        category = Module.Category.COMBAT,
-        alwaysListening = true
-)
-object AutoLog : Module() {
+object AutoLog : Module(
+    name = "AutoLog",
+    description = "Automatically log when in danger or on low health",
+    category = Category.COMBAT,
+    alwaysListening = true
+) {
     private val disable = setting("Disable", DisableMode.ALWAYS)
     private val health = setting("Health", 10, 6..36, 1)
     private val crystals = setting("Crystals", false)
@@ -78,7 +77,7 @@ object AutoLog : Module() {
     private fun SafeClientEvent.checkPlayers(): Boolean {
         for (entity in world.loadedEntityList) {
             if (entity !is EntityPlayer) continue
-            if (AntiBot.botSet.contains(entity)) continue
+            if (AntiBot.isBot(entity)) continue
             if (entity == player) continue
             if (player.getDistance(entity) > playerDistance.value) continue
             if (!friends.value && FriendManager.isFriend(entity.name)) continue

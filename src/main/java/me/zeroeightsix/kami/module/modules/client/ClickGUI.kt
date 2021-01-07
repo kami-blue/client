@@ -11,14 +11,13 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
-@Module.Info(
+object ClickGUI : Module(
     name = "ClickGUI",
     description = "Opens the Click GUI",
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     showOnArray = false,
     alwaysListening = true
-)
-object ClickGUI : Module() {
+) {
     private val scaleSetting = setting("Scale", 100, 50..400, 5)
     val blur by setting("Blur", 0.0f, 0.0f..1.0f, 0.05f)
     val darkness by setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
@@ -61,21 +60,21 @@ object ClickGUI : Module() {
         return round((scaleSetting.value / 100.0f) / 0.1f) * 0.1f
     }
 
-    override fun onEnable() {
-        if (mc.currentScreen !is KamiClickGui) {
-            HudEditor.disable()
-            mc.displayGuiScreen(KamiClickGui)
-            KamiClickGui.onDisplayed()
-        }
-    }
-
-    override fun onDisable() {
-        if (mc.currentScreen is KamiClickGui) {
-            mc.displayGuiScreen(null)
-        }
-    }
-
     init {
+        onEnable {
+            if (mc.currentScreen !is KamiClickGui) {
+                HudEditor.disable()
+                mc.displayGuiScreen(KamiClickGui)
+                KamiClickGui.onDisplayed()
+            }
+        }
+
+        onDisable {
+            if (mc.currentScreen is KamiClickGui) {
+                mc.displayGuiScreen(null)
+            }
+        }
+
         bind.value.setBind(Keyboard.KEY_Y)
         scaleSetting.listeners.add {
             settingTimer.reset()

@@ -13,12 +13,11 @@ import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "SelectionHighlight",
-        description = "Highlights object you are looking at",
-        category = Module.Category.RENDER
-)
-object SelectionHighlight : Module() {
+object SelectionHighlight : Module(
+    name = "SelectionHighlight",
+    description = "Highlights object you are looking at",
+    category = Category.RENDER
+) {
     val block = setting("Block", true)
     private val entity = setting("Entity", false)
     private val hitSideOnly = setting("HitSideOnly", false)

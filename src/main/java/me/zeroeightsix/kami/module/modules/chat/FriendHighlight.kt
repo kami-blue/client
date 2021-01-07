@@ -12,13 +12,12 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object FriendHighlight : Module(
     name = "FriendHighlight",
     description = "Highlights your friends names in chat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     showOnArray = false
-)
-object FriendHighlight : Module() {
+) {
     private val bold = setting("Bold", true)
     private val color = setting("Color", EnumTextColor.GRAY)
     private val sound = setting("Sound", true)
@@ -26,11 +25,11 @@ object FriendHighlight : Module() {
     private val regex1 = "<(.*?)>".toRegex()
     private val regex2 = "[<>]".toRegex()
 
-    override fun onEnable() {
-        noFriendsCheck()
-    }
-
     init {
+        onEnable {
+            noFriendsCheck()
+        }
+
         listener<ClientChatReceivedEvent>(0) {
             if (noFriendsCheck() || !FriendManager.enabled) return@listener
 

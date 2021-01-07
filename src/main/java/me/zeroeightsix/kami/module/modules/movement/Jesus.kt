@@ -19,22 +19,21 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object Jesus : Module(
     name = "Jesus",
     description = "Allows you to walk on water",
-    category = Module.Category.MOVEMENT
-)
-object Jesus : Module() {
+    category = Category.MOVEMENT
+) {
 
     private val dolphin = setting("Dolphin", false)
 
     private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 
-    override fun onToggle() {
-        BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
-    }
-
     init {
+        onToggle {
+            BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (isInWater(player) && !player.isSneaking) {
                 if (dolphin.value) {

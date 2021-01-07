@@ -25,12 +25,11 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-@Module.Info(
+object WaypointRender : Module(
     name = "WaypointRender",
     description = "Render saved waypoints",
-    category = Module.Category.RENDER
-)
-object WaypointRender : Module() {
+    category = Category.RENDER
+) {
 
     private val page = setting("Page", Page.INFO_BOX)
 
@@ -137,15 +136,15 @@ object WaypointRender : Module() {
         glPopMatrix()
     }
 
-    override fun onEnable() {
-        timer.reset(-10000L) // Update the map immediately and thread safely
-    }
-
-    override fun onDisable() {
-        currentServer = null
-    }
-
     init {
+        onEnable {
+            timer.reset(-10000L) // Update the map immediately and thread safely
+        }
+
+        onDisable {
+            currentServer = null
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()

@@ -31,13 +31,12 @@ import org.lwjgl.input.Keyboard
 import java.util.*
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "CrystalBasePlace",
-        description = "Places obby for placing crystal on",
-        category = Module.Category.COMBAT,
-        modulePriority = 90
-)
-object CrystalBasePlace : Module() {
+object CrystalBasePlace : Module(
+    name = "CrystalBasePlace",
+    description = "Places obby for placing crystal on",
+    category = Category.COMBAT,
+    modulePriority = 90
+) {
     private val manualPlaceBind = setting("BindManualPlace", Bind())
     private val minDamageInc = setting("MinDamageInc", 2.0f, 0.0f..10.0f, 0.25f)
     private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
@@ -49,17 +48,17 @@ object CrystalBasePlace : Module() {
     private var rotationTo: Vec3d? = null
     private var placePacket: CPacketPlayerTryUseItemOnBlock? = null
 
-    override fun onDisable() {
-        inactiveTicks = 0
-        placePacket = null
-        PlayerPacketManager.resetHotbar()
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 3
     }
 
     init {
+        onDisable {
+            inactiveTicks = 0
+            placePacket = null
+            PlayerPacketManager.resetHotbar()
+        }
+
         listener<RenderWorldEvent> {
             val clear = inactiveTicks >= 30
             renderer.render(clear)

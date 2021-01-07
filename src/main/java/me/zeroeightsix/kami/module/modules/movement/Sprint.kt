@@ -9,12 +9,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 /**
  * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
  */
-@Module.Info(
-        name = "Sprint",
-        description = "Automatically makes the player sprint",
-        category = Module.Category.MOVEMENT
-)
-object Sprint : Module() {
+object Sprint : Module(
+    name = "Sprint",
+    description = "Automatically makes the player sprint",
+    category = Category.MOVEMENT
+) {
     private val multiDirection = setting("MultiDirection", false)
     private val onHolding = setting("OnHoldingSprint", false)
 

@@ -10,13 +10,12 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
-@Module.Info(
+object AntiSpam : Module(
     name = "AntiSpam",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Removes spam and advertising from the chat",
     showOnArray = false
-)
-object AntiSpam : Module() {
+) {
     private val mode = setting("Mode", Mode.REPLACE)
     private val replaceMode = setting("ReplaceMode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
     private val page = setting("Page", Page.TYPE)
@@ -77,6 +76,10 @@ object AntiSpam : Module() {
     )
 
     init {
+        onDisable {
+            messageHistory.clear()
+        }
+
         listener<ClientChatReceivedEvent> { event ->
             if (mc.player == null) return@listener
 
@@ -103,10 +106,6 @@ object AntiSpam : Module() {
                 }
             }
         }
-    }
-
-    override fun onDisable() {
-        messageHistory.clear()
     }
 
     private fun sanitize(toClean: String, matcher: String, replacement: String): String {

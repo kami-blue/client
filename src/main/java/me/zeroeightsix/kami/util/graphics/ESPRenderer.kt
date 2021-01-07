@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.GL_LINES
 import org.lwjgl.opengl.GL11.GL_QUADS
 
@@ -19,10 +19,9 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer {
-    private lateinit var camPos: Vec3d
+    private var toRender: MutableList<Triple<AxisAlignedBB, ColorHolder, Int>>? = ArrayList()
+    private val lockObject = Any()
     private val frustumCamera: ICamera = Frustum()
-    private val mc = Minecraft.getMinecraft()
-    private val toRender = HashMap<AxisAlignedBB, Pair<ColorHolder, Int>>()
 
     var aFilled = 0
     var aOutline = 0
@@ -32,9 +31,8 @@ class ESPRenderer {
     var tracerOffset = 50
     var fullOutline = false
 
-    fun getSize(): Int {
-        return toRender.size
-    }
+    val size: Int
+        get() = toRender?.size ?: 0
 
     fun add(entity: Entity, color: ColorHolder) {
         add(entity, color, GeometryMasks.Quad.ALL)
@@ -58,68 +56,96 @@ class ESPRenderer {
     }
 
     fun add(box: AxisAlignedBB, color: ColorHolder, sides: Int) {
-        toRender[box] = Pair(color, sides)
+        add(Triple(box, color, sides))
+    }
+
+    fun add(triple: Triple<AxisAlignedBB, ColorHolder, Int>) {
+        synchronized(lockObject) {
+            getListNotNull().add(triple)
+        }
+    }
+
+    fun replaceAll(list: MutableList<Triple<AxisAlignedBB, ColorHolder, Int>>) {
+        synchronized(lockObject) {
+            toRender = list
+        }
     }
 
     fun clear() {
-        toRender.clear()
+        synchronized(lockObject) {
+            getListNotNull().clear()
+        }
     }
 
-    fun render(clear: Boolean, cull: Boolean = false) {
-        if (toRender.isEmpty() && (aFilled == 0 && aOutline == 0 && aTracer == 0)) return
-        if (through) GlStateManager.disableDepth()
-
-        if (aFilled != 0) drawList(Type.FILLED, cull)
-
-        if (aOutline != 0) drawList(Type.OUTLINE, cull)
-
-        if (aTracer != 0) drawList(Type.TRACER, cull)
-
-        if (clear) clear()
-        GlStateManager.enableDepth()
+    private fun getListNotNull(): MutableList<Triple<AxisAlignedBB, ColorHolder, Int>> {
+        synchronized(lockObject) {
+            return toRender ?: ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>().also { replaceAll(it) }
+        }
     }
 
-    private fun drawList(type: Type, cull: Boolean = false) {
+    fun render(clear: Boolean, cull: Boolean = true) {
+        synchronized(lockObject) {
+            if (aFilled == 0 && aOutline == 0 && aTracer == 0) return
+
+            val list = toRender ?: return
+
+            if (list.isEmpty()) return
+
+            val entity = Wrapper.minecraft.renderViewEntity ?: Wrapper.player ?: return
+            val interpolatedPos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
+            frustumCamera.setPosition(interpolatedPos.x, interpolatedPos.y, interpolatedPos.z)
+
+            if (through) GlStateManager.disableDepth()
+
+            if (aFilled != 0) drawList(list, Type.FILLED, cull)
+            if (aOutline != 0) drawList(list, Type.OUTLINE, cull)
+            if (aTracer != 0) drawList(list, Type.TRACER, cull)
+            if (clear) clear()
+
+            GlStateManager.enableDepth()
+        }
+    }
+
+    private fun drawList(list: List<Triple<AxisAlignedBB, ColorHolder, Int>>, type: Type, cull: Boolean = false) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
-        camPos = KamiTessellator.camPos.add(0.0, (-mc.player.eyeHeight).toDouble(), 0.0) // realign camPos to player eye pos
-        frustumCamera.setPosition(camPos.x, camPos.y, camPos.z)
 
-        for ((box, pair) in toRender) when (type) {
-            Type.FILLED -> drawFilled(cull, box, pair)
-            Type.OUTLINE -> drawOutline(cull, box, pair)
-            Type.TRACER -> drawTracer(box, pair)
+        for ((box, color, sides) in list) {
+            when (type) {
+                Type.FILLED -> drawFilled(cull, box, color, sides)
+                Type.OUTLINE -> drawOutline(cull, box, color, sides)
+                Type.TRACER -> drawTracer(box, color)
+            }
         }
 
         KamiTessellator.render()
     }
 
-    private fun drawFilled(cull: Boolean, box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
-        val a = (aFilled * (pair.first.a / 255f)).toInt()
+    private fun drawFilled(cull: Boolean, box: AxisAlignedBB, color: ColorHolder, sides: Int) {
+        val a = (aFilled * (color.a / 255f)).toInt()
 
         if (!cull || frustumCamera.isBoundingBoxInFrustum(box)) {
-            KamiTessellator.drawBox(box, pair.first, a, pair.second)
+            KamiTessellator.drawBox(box, color, a, sides)
         }
     }
 
-    private fun drawOutline(cull: Boolean, box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
-        val a = (aOutline * (pair.first.a / 255f)).toInt()
-        val side = if (fullOutline) GeometryMasks.Quad.ALL else pair.second
+    private fun drawOutline(cull: Boolean, box: AxisAlignedBB, color: ColorHolder, sides: Int) {
+        val a = (aOutline * (color.a / 255f)).toInt()
+        val side = if (fullOutline) GeometryMasks.Quad.ALL else sides
 
         if (!cull || frustumCamera.isBoundingBoxInFrustum(box)) {
-            KamiTessellator.drawOutline(box, pair.first, a, side, thickness)
+            KamiTessellator.drawOutline(box, color, a, side, thickness)
         }
     }
 
-    private fun drawTracer(box: AxisAlignedBB, pair: Pair<ColorHolder, Int>) {
-        val a = (aTracer * (pair.first.a / 255f)).toInt()
+    private fun drawTracer(box: AxisAlignedBB, color: ColorHolder) {
+        val a = (aTracer * (color.a / 255f)).toInt()
         val offset = (tracerOffset - 50) / 100.0 * (box.maxY - box.minY)
         val offsetBox = box.center.add(0.0, offset, 0.0)
 
-        KamiTessellator.drawLineTo(offsetBox, pair.first, a, thickness)
+        KamiTessellator.drawLineTo(offsetBox, color, a, thickness)
     }
 
     private enum class Type {
         FILLED, OUTLINE, TRACER
     }
-
 }

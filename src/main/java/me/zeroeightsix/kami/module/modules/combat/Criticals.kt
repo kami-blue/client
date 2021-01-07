@@ -13,12 +13,11 @@ import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "Criticals",
-        category = Module.Category.COMBAT,
-        description = "Always do critical attacks"
-)
-object Criticals : Module() {
+object Criticals : Module(
+    name = "Criticals",
+    category = Category.COMBAT,
+    description = "Always do critical attacks"
+) {
     private val mode = setting("Mode", CriticalMode.PACKET)
     private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
 
@@ -32,6 +31,10 @@ object Criticals : Module() {
     private var swingPacket = CPacketAnimation()
 
     init {
+        onDisable {
+            delayTick = 0
+        }
+
         listener<PacketEvent.Send> {
             if (mc.player == null || !(it.packet is CPacketAnimation || it.packet is CPacketUseEntity)) return@listener
             if (mc.player.isInWater || mc.player.isInLava || !mc.player.onGround) return@listener /* Don't run if player is sprinting or weapon is still in cooldown */
@@ -105,9 +108,5 @@ object Criticals : Module() {
                 sendingPacket = false
             }
         }
-    }
-
-    override fun onDisable() {
-        delayTick = 0
     }
 }

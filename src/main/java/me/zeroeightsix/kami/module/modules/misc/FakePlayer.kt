@@ -8,19 +8,20 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import me.zeroeightsix.kami.util.threads.runSafeR
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-@Module.Info(
+object FakePlayer : Module(
     name = "FakePlayer",
     description = "Spawns a client sided fake player",
-    category = Module.Category.MISC
-)
-object FakePlayer : Module() {
-    private val copyInventory = setting("CopyInventory", false)
-    val playerName = setting("PlayerName", "Player", { false })
+    category = Category.MISC
+) {
+    private val copyInventory by setting("CopyInventory", false)
+    val playerName by setting("PlayerName", "Player")
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private const val ENTITY_ID = -7170400
@@ -33,34 +34,30 @@ object FakePlayer : Module() {
         listener<GuiEvent.Displayed> {
             if (it.screen is GuiGameOver) disable()
         }
-    }
 
-    override fun onEnable() {
-        if (mc.world == null || mc.player == null) {
-            disable()
-            return
+        onEnable {
+            runSafeR {
+                if (playerName == "Player") {
+                    MessageSendHelper.sendChatMessage("You can use " +
+                        formatValue("${CommandManager.prefix}set FakePlayer PlayerName <name>") +
+                        " to set a custom name")
+                }
+
+                fakePlayer = EntityOtherPlayerMP(Companion.mc.world, GameProfile(UUID.randomUUID(), playerName)).apply {
+                    copyLocationAndAnglesFrom(Companion.mc.player)
+                    rotationYawHead = Companion.mc.player.rotationYawHead
+                    if (copyInventory) inventory.copyInventory(Companion.mc.player.inventory)
+                }.also {
+                    Companion.mc.world.addEntityToWorld(ENTITY_ID, it)
+                }
+            } ?: disable()
         }
 
-        if (playerName.value == "Player") {
-            MessageSendHelper.sendChatMessage("You can use " +
-                formatValue("${CommandManager.prefix}set FakePlayer PlayerName <name>") +
-                " to set a custom name")
-        }
-
-        fakePlayer = EntityOtherPlayerMP(mc.world, GameProfile(UUID.randomUUID(), playerName.value)).apply {
-            copyLocationAndAnglesFrom(mc.player)
-            rotationYawHead = mc.player.rotationYawHead
-            if (copyInventory.value) inventory.copyInventory(mc.player.inventory)
-        }.also {
-            mc.world.addEntityToWorld(ENTITY_ID, it)
-        }
-    }
-
-    override fun onDisable() {
-        mc.addScheduledTask {
-            if (mc.world == null || mc.player == null) return@addScheduledTask
-            fakePlayer?.setDead()
-            mc.world?.removeEntityFromWorld(-911)
+        onDisable {
+            onMainThreadSafe {
+                fakePlayer?.setDead()
+                world.removeEntityFromWorld(-911)
+            }
         }
     }
 }

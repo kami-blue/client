@@ -17,14 +17,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display
 
-@Module.Info(
+object CommandConfig : Module(
     name = "CommandConfig",
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     description = "Configures client chat related stuff",
     showOnArray = false,
     alwaysEnabled = true
-)
-object CommandConfig : Module() {
+) {
     val prefix = setting("Prefix", ";", { false })
     val toggleMessages = setting("ToggleMessages", false)
     private val customTitle = setting("WindowTitle", true)

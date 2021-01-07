@@ -7,12 +7,11 @@ import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "AutoJump",
-        category = Module.Category.MOVEMENT,
-        description = "Automatically jumps if possible"
-)
-object AutoJump : Module() {
+object AutoJump : Module(
+    name = "AutoJump",
+    category = Category.MOVEMENT,
+    description = "Automatically jumps if possible"
+) {
     private val delay = setting("TickDelay", 10, 0..40, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)

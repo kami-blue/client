@@ -32,7 +32,7 @@ object ConfigUtils {
         success = MacroManager.saveMacros() && success // Macro
         success = WaypointManager.saveWaypoints() && success // Waypoint
         success = FriendManager.saveFriends() && success // Friends
-        success = UUIDManager.load() && success // UUID Cache
+        success = UUIDManager.save() && success // UUID Cache
         success = saveConfig(ModuleConfig) && success // Modules
         success = saveConfig(GuiConfig) && success // GUI
 

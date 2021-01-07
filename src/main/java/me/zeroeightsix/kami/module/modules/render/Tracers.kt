@@ -4,8 +4,9 @@ import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
+import me.zeroeightsix.kami.util.EntityUtils.isNeutral
+import me.zeroeightsix.kami.util.EntityUtils.isPassive
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
@@ -19,12 +20,11 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
-@Module.Info(
-        name = "Tracers",
-        description = "Draws lines to other living entities",
-        category = Module.Category.RENDER
-)
-object Tracers : Module() {
+object Tracers : Module(
+    name = "Tracers",
+    description = "Draws lines to other living entities",
+    category = Category.RENDER
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
@@ -107,8 +107,8 @@ object Tracers : Module() {
         val color = when {
             FriendManager.isFriend(entity.name) -> colorFriend.value
             entity is EntityPlayer -> colorPlayer.value
-            EntityUtils.isPassiveMob(entity) -> colorPassive.value
-            EntityUtils.isCurrentlyNeutral(entity) -> colorNeutral.value
+            entity.isPassive -> colorPassive.value
+            entity.isNeutral -> colorNeutral.value
             else -> colorHostile.value
         }.color
 

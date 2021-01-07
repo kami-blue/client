@@ -18,12 +18,11 @@ import org.kamiblue.event.listener.listener
 /**
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
-@Module.Info(
-        name = "FastUse",
-        category = Module.Category.PLAYER,
-        description = "Use items faster"
-)
-object FastUse : Module() {
+object FastUse : Module(
+    name = "FastUse",
+    category = Category.PLAYER,
+    description = "Use items faster"
+) {
     private val delay = setting("Delay", 0, 0..10, 1)
     private val blocks = setting("Blocks", false)
     private val allItems = setting("AllItems", false)

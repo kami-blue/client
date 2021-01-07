@@ -17,18 +17,13 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
-@Module.Info(
-        name = "HoleSnap",
-        description = "Move you into the hole nearby",
-        category = Module.Category.COMBAT
-)
-object HoleSnap : Module() {
-    private val disableStrafe = setting("DisableStrafe", true)
-    private val range = setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
-
-    override fun onEnable() {
-        if (mc.player == null) disable()
-    }
+object HoleSnap : Module(
+    name = "HoleSnap",
+    description = "Move you into the hole nearby",
+    category = Category.COMBAT
+) {
+    private val disableStrafe by setting("DisableStrafe", true)
+    private val range by setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
@@ -37,7 +32,7 @@ object HoleSnap : Module() {
                 return@safeListener
             }
             findHole()?.toVec3dCenter()?.let {
-                if (disableStrafe.value) Strafe.disable()
+                if (disableStrafe) Strafe.disable()
                 if (player.onGround) {
                     val yawRad = RotationUtils.getRotationTo(player.positionVector, it).x.toDouble().toRadian()
                     val speed = min(0.25, player.positionVector.distanceTo(it) / 4.0)
@@ -51,11 +46,11 @@ object HoleSnap : Module() {
     private fun SafeClientEvent.findHole(): BlockPos? {
         var closestHole = Pair(69.69, BlockPos.ORIGIN)
         val playerPos = player.positionVector.toBlockPos()
-        val ceilRange = (range.value).ceilToInt()
+        val ceilRange = (range).ceilToInt()
         val posList = VectorUtils.getBlockPositionsInArea(playerPos.add(ceilRange, -1, ceilRange), playerPos.add(-ceilRange, -1, -ceilRange))
         for (posXZ in posList) {
             val dist = player.distanceTo(posXZ)
-            if (dist > range.value || dist > closestHole.first) continue
+            if (dist > range || dist > closestHole.first) continue
             for (posY in 0..5) {
                 val pos = posXZ.add(0, -posY, 0)
                 if (!world.isAirBlock(pos.up())) break

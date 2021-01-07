@@ -1,7 +1,10 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.mixin.extension.attackDamage
 import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.Minecraft
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
@@ -18,11 +21,14 @@ import net.minecraft.item.ItemTool
 import net.minecraft.util.CombatRules
 import net.minecraft.util.DamageSource
 import net.minecraft.util.math.MathHelper
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.event.listener.listener
 import kotlin.math.max
 import kotlin.math.round
 
 object CombatUtils {
     private val mc: Minecraft = Minecraft.getMinecraft()
+    private val cachedArmorValues = HashMap<EntityLivingBase, Pair<Float, Float>>()
 
     @JvmStatic
     fun calcDamageFromPlayer(entity: EntityPlayer, assumeCritical: Boolean = false): Float {
@@ -48,23 +54,27 @@ object CombatUtils {
     @JvmStatic
     fun calcDamage(entity: EntityLivingBase, damageIn: Float = 100f, source: DamageSource = DamageSource.GENERIC, roundDamage: Boolean = false): Float {
         if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
-        var damage = CombatRules.getDamageAfterAbsorb(damageIn, entity.totalArmorValue.toFloat(), entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat())
+
+        val pair = cachedArmorValues[entity] ?: return 0.0f
+        var damage = CombatRules.getDamageAfterAbsorb(damageIn, pair.first, pair.second)
 
         if (source != DamageSource.OUT_OF_WORLD) {
             entity.getActivePotionEffect(MobEffects.RESISTANCE)?.let {
                 damage *= max(1f - it.amplifier * 0.2f, 0f)
             }
         }
+
         if (entity is EntityPlayer) {
             damage *= getProtectionModifier(entity, source)
         }
+
         return if (roundDamage) round(damage) else damage
     }
 
     @JvmStatic
     fun getProtectionModifier(entity: EntityPlayer, damageSource: DamageSource): Float {
         var modifier = 0
-        for (armor in entity.armorInventoryList) {
+        for (armor in entity.armorInventoryList.toList()) {
             if (armor.isEmpty) continue // Skip if item stack is empty
             val nbtTagList = armor.enchantmentTagList
             for (i in 0 until nbtTagList.tagCount()) {
@@ -122,6 +132,24 @@ object CombatUtils {
 
     @JvmStatic
     fun getHealthSmart(entity: EntityLivingBase) = entity.health + entity.absorptionAmount * (entity.health / entity.maxHealth)
+
+    init {
+        safeListener<TickEvent.ClientTickEvent> {
+            for (entity in world.loadedEntityList) {
+                if (entity !is EntityLivingBase) continue
+                val armorValue = entity.totalArmorValue.toFloat()
+                val toughness = entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).attributeValue.toFloat()
+
+                cachedArmorValues[entity] = armorValue to toughness
+            }
+        }
+
+        listener<ConnectionEvent.Disconnect> {
+            cachedArmorValues.clear()
+        }
+
+        KamiEventBus.subscribe(this)
+    }
 
     enum class PreferWeapon {
         SWORD, AXE, NONE

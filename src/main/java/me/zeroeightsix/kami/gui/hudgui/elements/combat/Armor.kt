@@ -27,14 +27,14 @@ object Armor : HudElement(
     private val classic = setting("Classic", false)
     private val armorCount = setting("ArmorCount", true)
 
-    override val maxWidth: Float
+    override val hudWidth: Float
         get() = if (classic.value) {
             80.0f
         } else {
             stringWidth
         }
 
-    override val maxHeight: Float
+    override val hudHeight: Float
         get() = if (classic.value) {
             40.0f
         } else {
@@ -58,9 +58,6 @@ object Armor : HudElement(
             for ((index, item) in armorItems.withIndex()) {
                 armorCounts[index] = InventoryUtils.countItemAll(item)
             }
-
-            width = maxWidth
-            height = maxHeight
         }
     }
 
@@ -125,7 +122,7 @@ object Armor : HudElement(
             val width = FontRenderAdapter.getStringWidth(string)
             val height = FontRenderAdapter.getFontHeight()
 
-            FontRenderAdapter.drawString(string, x + 16.0f -width, y + 16.0f - height)
+            FontRenderAdapter.drawString(string, x + 16.0f - width, y + 16.0f - height)
         }
     }
 }

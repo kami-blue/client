@@ -14,13 +14,12 @@ import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "AutoArmor",
-        category = Module.Category.COMBAT,
-        description = "Automatically equips armour",
-        modulePriority = 500
-)
-object AutoArmor : Module() {
+object AutoArmor : Module(
+    name = "AutoArmor",
+    category = Category.COMBAT,
+    description = "Automatically equips armour",
+    modulePriority = 500
+) {
     private val delay = setting("Delay", 5, 1..10, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)

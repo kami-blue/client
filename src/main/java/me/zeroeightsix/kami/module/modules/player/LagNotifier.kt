@@ -23,30 +23,29 @@ import org.lwjgl.opengl.GL11.glColor4f
 /**
  * Thanks Brady and cooker and leij for helping me not be completely retarded
  */
-@Module.Info(
-        name = "LagNotifier",
-        description = "Displays a warning when the server is lagging",
-        category = Module.Category.PLAYER
-)
-object LagNotifier : Module() {
-    private val detectRubberBand = setting("DetectRubberBand", true)
-    private val pauseBaritone = setting("PauseBaritone", true)
-    val pauseTakeoff = setting("PauseElytraTakeoff", true)
-    val pauseAutoWalk = setting("PauseAutoWalk", true)
-    private val feedback = setting("PauseFeedback", true, { pauseBaritone.value })
-    private val timeout = setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
+object LagNotifier : Module(
+    name = "LagNotifier",
+    description = "Displays a warning when the server is lagging",
+    category = Category.PLAYER
+) {
+    private val detectRubberBand by setting("DetectRubberBand", true)
+    private val pauseBaritone by setting("PauseBaritone", true)
+    val pauseTakeoff by setting("PauseElytraTakeoff", true)
+    val pauseAutoWalk by setting("PauseAutoWalk", true)
+    private val feedback by setting("PauseFeedback", true, { pauseBaritone })
+    private val timeout by setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TickTimer(TimeUnit.SECONDS)
     private var lastPacketTimer = TickTimer()
     private var lastRubberBandTimer = TickTimer()
     private var text = ""
-    var paused = false
-
-    override fun onDisable() {
-        unpause()
-    }
+    var paused = false; private set
 
     init {
+        onDisable {
+            unpause()
+        }
+
         listener<RenderOverlayEvent> {
             if (text.isBlank()) return@listener
 
@@ -64,7 +63,7 @@ object LagNotifier : Module() {
                 if (mc.isIntegratedServerRunning) unpause()
                 text = ""
             } else {
-                val timeoutMillis = (timeout.value * 1000.0f).toLong()
+                val timeoutMillis = (timeout * 1000.0f).toLong()
                 when {
                     lastPacketTimer.tick(timeoutMillis, false) -> {
                         if (pingTimer.tick(1L)) WebUtils.update()
@@ -72,7 +71,7 @@ object LagNotifier : Module() {
                         text += timeDifference(lastPacketTimer.time)
                         pause()
                     }
-                    detectRubberBand.value && !lastRubberBandTimer.tick(timeoutMillis, false) -> {
+                    detectRubberBand && !lastRubberBandTimer.tick(timeoutMillis, false) -> {
                         text = "RubberBand Detected! ${timeDifference(lastRubberBandTimer.time)}"
                         pause()
                     }
@@ -84,13 +83,13 @@ object LagNotifier : Module() {
             }
         }
 
-        listener<PacketEvent.Receive>(2000) {
+        safeListener<PacketEvent.Receive>(2000) {
             lastPacketTimer.reset()
 
-            if (!detectRubberBand.value || mc.player == null || it.packet !is SPacketPlayerPosLook) return@listener
+            if (!detectRubberBand || it.packet !is SPacketPlayerPosLook) return@safeListener
 
-            val dist = Vec3d(it.packet.x, it.packet.y, it.packet.z).subtract(mc.player.positionVector).length()
-            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).minus(Vec2f(mc.player)).length()
+            val dist = Vec3d(it.packet.x, it.packet.y, it.packet.z).subtract(player.positionVector).length()
+            val rotationDiff = Vec2f(it.packet.yaw, it.packet.pitch).minus(Vec2f(player)).length()
 
             if (dist in 0.5..64.0 || rotationDiff > 1.0) lastRubberBandTimer.reset()
         }
@@ -102,16 +101,16 @@ object LagNotifier : Module() {
     }
 
     private fun pause() {
-        if (pauseBaritone.value && !paused) {
-            if (feedback.value) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
+        if (pauseBaritone && !paused) {
+            if (feedback) MessageSendHelper.sendBaritoneMessage("Paused due to lag!")
             BaritoneUtils.pause()
         }
-        if (pauseTakeoff.value || pauseAutoWalk.value) paused = true
+        if (pauseTakeoff || pauseAutoWalk) paused = true
     }
 
     private fun unpause() {
         if (BaritoneUtils.paused && paused) {
-            if (feedback.value) MessageSendHelper.sendBaritoneMessage("Unpaused!")
+            if (feedback) MessageSendHelper.sendBaritoneMessage("Unpaused!")
             BaritoneUtils.unpause()
         }
         paused = false

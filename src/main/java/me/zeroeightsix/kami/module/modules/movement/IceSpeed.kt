@@ -7,25 +7,24 @@ import net.minecraft.init.Blocks
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Suppress("DEPRECATION")
-@Module.Info(
-        name = "IceSpeed",
-        description = "Changes how slippery ice is",
-        category = Module.Category.MOVEMENT
-)
-object IceSpeed : Module() {
-    private val slipperiness = setting("Slipperiness", 0.4f, 0.1f..1.0f, 0.01f)
+object IceSpeed : Module(
+    name = "IceSpeed",
+    description = "Changes how slippery ice is",
+    category = Category.MOVEMENT
+) {
+    private val slipperiness by setting("Slipperiness", 0.4f, 0.1f..1.0f, 0.01f)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            Blocks.ICE.slipperiness = slipperiness.value
-            Blocks.PACKED_ICE.slipperiness = slipperiness.value
-            Blocks.FROSTED_ICE.slipperiness = slipperiness.value
+            Blocks.ICE.slipperiness = slipperiness
+            Blocks.PACKED_ICE.slipperiness = slipperiness
+            Blocks.FROSTED_ICE.slipperiness = slipperiness
         }
-    }
 
-    override fun onDisable() {
-        Blocks.ICE.slipperiness = 0.98f
-        Blocks.PACKED_ICE.slipperiness = 0.98f
-        Blocks.FROSTED_ICE.slipperiness = 0.98f
+        onDisable {
+            Blocks.ICE.slipperiness = 0.98f
+            Blocks.PACKED_ICE.slipperiness = 0.98f
+            Blocks.FROSTED_ICE.slipperiness = 0.98f
+        }
     }
 }

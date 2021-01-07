@@ -19,13 +19,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "Surround",
-        category = Module.Category.COMBAT,
-        description = "Surrounds you with obsidian to take less damage",
-        modulePriority = 200
-)
-object Surround : Module() {
+object Surround : Module(
+    name = "Surround",
+    category = Category.COMBAT,
+    description = "Surrounds you with obsidian to take less damage",
+    modulePriority = 200
+) {
     private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
     private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
     private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
@@ -46,21 +45,22 @@ object Surround : Module() {
     private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
-    override fun onEnable() {
-        toggleTimer.reset()
-    }
-
-    override fun onDisable() {
-        PlayerPacketManager.resetHotbar()
-        toggleTimer.reset()
-        holePos = null
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && job.isActiveOrFalse
     }
 
     init {
+        onEnable {
+            toggleTimer.reset()
+        }
+
+        onDisable {
+            PlayerPacketManager.resetHotbar()
+            toggleTimer.reset()
+            holePos = null
+        }
+
+
         safeListener<TickEvent.ClientTickEvent> {
             if (getObby() == -1) return@safeListener
             if (isDisabled) {

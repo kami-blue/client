@@ -20,12 +20,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object NoRender : Module(
     name = "NoRender",
-    category = Module.Category.RENDER,
+    category = Category.RENDER,
     description = "Ignore entity spawn packets"
-)
-object NoRender : Module() {
+) {
 
     private val packets = setting("CancelPackets", true)
     private val page = setting("Page", Page.OTHER)
@@ -81,6 +80,10 @@ object NoRender : Module() {
     var entityList = HashSet<Class<*>>(); private set
 
     init {
+        onEnable {
+            updateList()
+        }
+
         listener<PacketEvent.Receive> {
             if (lightning.value && it.packet is SPacketSpawnGlobalEntity ||
                 explosion.value && it.packet is SPacketExplosion ||
@@ -143,10 +146,6 @@ object NoRender : Module() {
                 }
             }
         }
-    }
-
-    override fun onEnable() {
-        updateList()
     }
 
     private fun updateList() {

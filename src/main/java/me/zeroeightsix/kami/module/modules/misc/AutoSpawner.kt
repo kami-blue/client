@@ -24,20 +24,19 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 /**
  * TODO: Rewrite
  */
-@Module.Info(
+object AutoSpawner : Module(
     name = "AutoSpawner",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Automatically spawns Withers, Iron Golems and Snowmen"
-)
-object AutoSpawner : Module() {
-    private val useMode = setting("UseMode", UseMode.SPAM)
-    private val party = setting("Party", false)
-    private val partyWithers = setting("Withers", false, { party.value })
-    private val entityMode = setting("EntityMode", EntityMode.SNOW, { !party.value })
-    private val placeRange = setting("PlaceRange", 3.5f, 2f..10f, 0.5f)
-    private val delay = setting("Delay", 20, 10..100, 5, { useMode.value == UseMode.SPAM })
-    private val rotate = setting("Rotate", true)
-    private val debug = setting("Info", true)
+) {
+    private val useMode by setting("UseMode", UseMode.SPAM)
+    private val party by setting("Party", false)
+    private val partyWithers by setting("Withers", false, { party })
+    private var entityMode by setting("EntityMode", EntityMode.SNOW, { !party })
+    private val placeRange by setting("PlaceRange", 3.5f, 2f..10f, 0.5f)
+    private val delay by setting("Delay", 20, 10..100, 5, { useMode == UseMode.SPAM })
+    private val rotate by setting("Rotate", true)
+    private val debug by setting("Info", true)
 
     private enum class UseMode {
         SINGLE, SPAM
@@ -61,26 +60,26 @@ object AutoSpawner : Module() {
     }
 
     override fun getHudInfo(): String {
-        return if (party.value) {
-            if (partyWithers.value) "PARTY WITHER"
+        return if (party) {
+            if (partyWithers) "PARTY WITHER"
             else "PARTY"
-        } else entityMode.value.toString()
-    }
-
-    override fun onEnable() {
-        if (mc.player == null) disable()
-    }
-
-    override fun onDisable() {
-        placeTarget = null
-        rotationPlaceableX = false
-        rotationPlaceableZ = false
-        bodySlot = -1
-        isSneaking = false
-        buildStage = Stage.PRE
+        } else entityMode.toString()
     }
 
     init {
+        onEnable {
+            if (mc.player == null) disable()
+        }
+
+        onDisable {
+            placeTarget = null
+            rotationPlaceableX = false
+            rotationPlaceableZ = false
+            bodySlot = -1
+            isSneaking = false
+            buildStage = Stage.PRE
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             when (buildStage) {
                 Stage.PRE -> {
@@ -88,16 +87,16 @@ object AutoSpawner : Module() {
                     rotationPlaceableX = false
                     rotationPlaceableZ = false
 
-                    if (party.value) randomizeEntity()
+                    if (party) randomizeEntity()
 
                     if (!checkBlocksInHotbar()) {
-                        if (!party.value) {
-                            if (debug.value) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode.value}, disabling.")
+                        if (!party) {
+                            if (debug) sendChatMessage("$chatName &c Blocks missing for: &c${entityMode}, disabling.")
                             disable()
                         }
                         return@safeListener
                     }
-                    val blockPosList = VectorUtils.getBlockPosInSphere(player.positionVector, placeRange.value)
+                    val blockPosList = VectorUtils.getBlockPosInSphere(player.positionVector, placeRange)
                     var noPositionInArea = true
 
                     for (pos in blockPosList) {
@@ -109,8 +108,8 @@ object AutoSpawner : Module() {
                     }
 
                     if (noPositionInArea) {
-                        if (useMode.value == UseMode.SINGLE) {
-                            if (debug.value) sendChatMessage("$chatName No valid position, disabling.")
+                        if (useMode == UseMode.SINGLE) {
+                            if (debug) sendChatMessage("$chatName No valid position, disabling.")
                             disable()
                             return@safeListener
                         }
@@ -121,7 +120,7 @@ object AutoSpawner : Module() {
                 Stage.BODY -> {
                     InventoryUtils.swapSlot(bodySlot)
                     for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos))
-                    if (entityMode.value == EntityMode.WITHER || entityMode.value == EntityMode.IRON) {
+                    if (entityMode == EntityMode.WITHER || entityMode == EntityMode.IRON) {
                         if (rotationPlaceableX) {
                             for (pos in BodyParts.ArmsX) {
                                 placeBlock(placeTarget!!.add(pos))
@@ -138,11 +137,11 @@ object AutoSpawner : Module() {
                 Stage.HEAD -> {
                     InventoryUtils.swapSlot(headSlot)
 
-                    if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.SNOW) {
+                    if (entityMode == EntityMode.IRON || entityMode == EntityMode.SNOW) {
                         for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos))
                     }
 
-                    if (entityMode.value == EntityMode.WITHER) {
+                    if (entityMode == EntityMode.WITHER) {
                         if (rotationPlaceableX) {
                             for (pos in BodyParts.headsX) {
                                 placeBlock(placeTarget!!.add(pos))
@@ -159,21 +158,21 @@ object AutoSpawner : Module() {
                         isSneaking = false
                     }
 
-                    if (useMode.value == UseMode.SINGLE) disable()
+                    if (useMode == UseMode.SINGLE) disable()
 
                     buildStage = Stage.DELAY
                     timer.reset()
                 }
                 Stage.DELAY -> {
-                    if (timer.tick(delay.value.toLong())) buildStage = Stage.PRE
+                    if (timer.tick(delay.toLong())) buildStage = Stage.PRE
                 }
             }
         }
     }
 
     private fun randomizeEntity() {
-        entityMode.value = EntityMode.values().random()
-        if (!partyWithers.value && entityMode.value == EntityMode.WITHER) randomizeEntity()
+        entityMode = EntityMode.values().random()
+        if (!partyWithers && entityMode == EntityMode.WITHER) randomizeEntity()
     }
 
     private fun checkBlocksInHotbar(): Boolean {
@@ -183,7 +182,7 @@ object AutoSpawner : Module() {
             val stack = mc.player.inventory.getStackInSlot(slotIndex) ?: continue
             if (stack.isEmpty) continue
 
-            when (entityMode.value) {
+            when (entityMode) {
                 EntityMode.SNOW -> {
                     if (stack.item is ItemBlock) {
                         val block = (stack.item as ItemBlock).block
@@ -239,13 +238,13 @@ object AutoSpawner : Module() {
                 if (placingIsBlocked(it.add(pos))) return false
             }
 
-            if (entityMode.value == EntityMode.SNOW || entityMode.value == EntityMode.IRON) {
+            if (entityMode == EntityMode.SNOW || entityMode == EntityMode.IRON) {
                 for (pos in BodyParts.head) {
                     if (placingIsBlocked(it.add(pos))) return false
                 }
             }
 
-            if (entityMode.value == EntityMode.IRON || entityMode.value == EntityMode.WITHER) {
+            if (entityMode == EntityMode.IRON || entityMode == EntityMode.WITHER) {
                 for (pos in BodyParts.ArmsX) {
                     if (placingIsBlocked(it.add(pos))) rotationPlaceableX = false
                 }
@@ -254,7 +253,7 @@ object AutoSpawner : Module() {
                 }
             }
 
-            if (entityMode.value == EntityMode.WITHER) {
+            if (entityMode == EntityMode.WITHER) {
                 for (pos in BodyParts.headsX) {
                     if (placingIsBlocked(it.add(pos))) rotationPlaceableX = false
                 }

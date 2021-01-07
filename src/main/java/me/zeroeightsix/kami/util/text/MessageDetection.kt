@@ -21,7 +21,7 @@ object MessageDetection {
         },
         ANY {
             override val prefixes: Array<out CharSequence>
-                get() = arrayOf(*ANY_EXCEPT_DELIMITER.prefixes, ChatEncryption.delimiter.value)
+                get() = arrayOf(*ANY_EXCEPT_DELIMITER.prefixes, ChatEncryption.delimiter)
         }
     }
 

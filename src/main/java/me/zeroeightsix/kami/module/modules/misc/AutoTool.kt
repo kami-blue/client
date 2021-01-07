@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
@@ -16,12 +17,11 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
 
-@Module.Info(
+object AutoTool : Module(
     name = "AutoTool",
     description = "Automatically switch to the best tools when mining or attacking",
-    category = Module.Category.MISC
-)
-object AutoTool : Module() {
+    category = Category.MISC
+) {
     private val switchBack = setting("SwitchBack", true)
     private val timeout = setting("Timeout", 20, 1..100, 5, { switchBack.value })
     private val swapWeapon = setting("SwitchWeapon", false)
@@ -57,7 +57,7 @@ object AutoTool : Module() {
         }
     }
 
-    private fun equipBestTool(blockState: IBlockState) {
+    fun equipBestTool(blockState: IBlockState) {
         var bestSlot = -1
         var max = 0.0
 
@@ -75,12 +75,7 @@ object AutoTool : Module() {
                 }
             }
         }
-        if (bestSlot != -1) equip(bestSlot)
-    }
-
-    private fun equip(slot: Int) {
-        mc.player.inventory.currentItem = slot
-        mc.playerController.syncCurrentPlayItem()
+        if (bestSlot != -1) InventoryUtils.swapSlot(bestSlot)
     }
 
     init {

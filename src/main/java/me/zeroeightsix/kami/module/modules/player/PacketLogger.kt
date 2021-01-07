@@ -1,47 +1,55 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.mixin.extension.pitch
+import me.zeroeightsix.kami.mixin.extension.yaw
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.network.play.client.CPacketPlayer
+import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
-import java.io.*
-import java.nio.charset.StandardCharsets
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Module.Info(
-        name = "PacketLogger",
-        description = "Logs sent packets to a file",
-        category = Module.Category.PLAYER
-)
-object PacketLogger : Module() {
-    private val append = setting("Append", false)
+object PacketLogger : Module(
+    name = "PacketLogger",
+    description = "Logs sent packets to a file",
+    category = Category.PLAYER
+) {
+    private val append by setting("Append", false)
     private val clear = setting("Clear", false)
 
-    private const val filename = "KAMIBluePackets.txt"
-    private val lines = ArrayList<String>()
+    private val file = File("${KamiMod.DIRECTORY}packet_logger.txt")
+    private val lines = Collections.synchronizedList(ArrayList<String>())
     private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
-    override fun onEnable() {
-        if (mc.player == null) disable() else if (append.value) readToList()
-    }
-
-    override fun onDisable() {
-        if (mc.player != null) write()
-    }
-
     init {
-        listener<PacketEvent.Send> {
-            if (mc.player == null) {
-                disable()
-                return@listener
-            }
+        onEnable {
+            if (append) read()
+        }
 
-            lines.add("${sdf.format(Date())}\n${it.packet.javaClass.simpleName}\n${it.packet.javaClass}\n${it.packet}\n\n")
+        onDisable {
+            write()
+        }
+
+        safeListener<PacketEvent.Send> {
+            lines.add("${sdf.format(Date())}\n${it.packet.javaClass.simpleName}\n${it.packet.javaClass}\n${it.packet}")
+            when (it.packet) {
+                is CPacketPlayerDigging -> {
+                    lines.add("\nMining - ${it.packet.position}@${it.packet.facing} - ${it.packet.action}")
+                }
+                is CPacketPlayer -> {
+                    lines.add("\nRotation - Pitch: ${it.packet.pitch} Yaw: ${it.packet.yaw}")
+                }
+            }
+            lines.add("\n\n")
         }
 
         safeListener<TickEvent.ClientTickEvent> {
@@ -50,43 +58,42 @@ object PacketLogger : Module() {
     }
 
     private fun write() {
-        try {
-            FileWriter(filename).also {
-                for (line in lines) it.write(line)
-                it.close()
+        defaultScope.launch(Dispatchers.IO) {
+            try {
+                file.bufferedWriter().use {
+                    lines.forEach(it::write)
+                }
+            } catch (e: Exception) {
+                KamiMod.LOG.error("$chatName Error saving!", e)
             }
-        } catch (e: IOException) {
-            KamiMod.LOG.error("$chatName Error saving!")
-            e.printStackTrace()
+
+            lines.clear()
         }
-        lines.clear()
     }
 
-    private fun readToList() {
-        val bufferedReader: BufferedReader
+    private fun read() {
+        defaultScope.launch(Dispatchers.IO) {
+            lines.clear()
 
-        try {
-            bufferedReader = BufferedReader(InputStreamReader(FileInputStream(filename), StandardCharsets.UTF_8))
-            var line: String
-            lines.clear()
-            while (bufferedReader.readLine().also { line = it } != null) {
-                lines.add(line)
+            try {
+                file.bufferedReader().forEachLine {
+                    lines.add(it)
+                }
+            } catch (e: Exception) {
+                KamiMod.LOG.error("$chatName Error loading!", e)
             }
-            bufferedReader.close()
-        } catch (ignored: Exception) {
-            // this is fine, just don't load a file
-            KamiMod.LOG.error("$chatName Error loading!")
-            lines.clear()
         }
     }
 
     init {
-        clear.listeners.add {
-            if (clear.value) {
+        clear.consumers.add{ _, input ->
+            if (input) {
                 lines.clear()
                 write()
                 MessageSendHelper.sendChatMessage("$chatName Packet log cleared!")
-                clear.value = false
+                false
+            } else {
+                input
             }
         }
     }

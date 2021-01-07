@@ -14,15 +14,14 @@ import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.FileReader
 
-@Module.Info(
+object LoginMessage : Module(
     name = "LoginMessage",
     description = "Sends a given message to public chat on login.",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     showOnArray = false,
     modulePriority = 150
-)
-object LoginMessage : Module() {
-    private val sendAfterMoving = setting("SendAfterMoving", false)
+) {
+    private val sendAfterMoving by setting("SendAfterMoving", false)
 
     private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
     private var loginMessage: String? = null
@@ -30,6 +29,27 @@ object LoginMessage : Module() {
     private var moved = false
 
     init {
+        onEnable {
+            if (file.exists()) {
+                val fileReader = FileReader(file)
+                try {
+                    fileReader.readLines().getOrNull(0)?.let {
+                        if (it.isNotBlank()) loginMessage = it.trim()
+                    }
+                    MessageSendHelper.sendChatMessage("$chatName Loaded login message!")
+                } catch (e: Exception) {
+                    MessageSendHelper.sendErrorMessage("$chatName Failed loading login message, $e")
+                    disable()
+                }
+                fileReader.close()
+            } else {
+                file.createNewFile()
+                MessageSendHelper.sendErrorMessage("$chatName Login Message file is empty!" +
+                    ", please add them in the &7loginmsg.txt&f under the &7.minecraft/kamiblue&f directory.")
+                disable()
+            }
+        }
+
         listener<ConnectionEvent.Disconnect> {
             sent = false
             moved = false
@@ -38,7 +58,7 @@ object LoginMessage : Module() {
         safeListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeListener
 
-            if (!sent && (!sendAfterMoving.value || moved)) {
+            if (!sent && (!sendAfterMoving || moved)) {
                 loginMessage?.let {
                     if (MessageDetection.Command.KAMI_BLUE detect it) {
                         MessageSendHelper.sendKamiCommand(it)
@@ -51,27 +71,5 @@ object LoginMessage : Module() {
 
             if (!moved) moved = player.isMoving
         }
-    }
-
-    override fun onEnable() {
-        if (file.exists()) {
-            val fileReader = FileReader(file)
-            try {
-                fileReader.readLines().getOrNull(0)?.let {
-                    if (it.isNotBlank()) loginMessage = it.trim()
-                }
-                MessageSendHelper.sendChatMessage("$chatName Loaded login message!")
-            } catch (e: Exception) {
-                MessageSendHelper.sendErrorMessage("$chatName Failed loading login message, $e")
-                disable()
-            }
-            fileReader.close()
-        } else {
-            file.createNewFile()
-            MessageSendHelper.sendErrorMessage("$chatName Login Message file is empty!" +
-                ", please add them in the &7loginmsg.txt&f under the &7.minecraft/kamiblue&f directory.")
-            disable()
-        }
-
     }
 }

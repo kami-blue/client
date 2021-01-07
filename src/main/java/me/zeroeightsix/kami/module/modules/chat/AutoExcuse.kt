@@ -8,18 +8,17 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketUpdateHealth
-import org.kamiblue.event.listener.listener
 import java.io.File
 
-@Module.Info(
+object AutoExcuse : Module(
     name = "AutoExcuse",
     description = "Makes an excuse for you when you die",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     modulePriority = 500
-)
-object AutoExcuse : Module() {
-    private val mode = setting("Mode", Mode.INTERNAL)
+) {
+    private val mode by setting("Mode", Mode.INTERNAL)
 
     private enum class Mode {
         INTERNAL, EXTERNAL
@@ -65,33 +64,33 @@ object AutoExcuse : Module() {
     private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
-        listener<PacketEvent.Receive> {
-            if (mc.player == null || loadedExcuses.isEmpty() || it.packet !is SPacketUpdateHealth) return@listener
+        safeListener<PacketEvent.Receive> {
+            if (loadedExcuses.isEmpty() || it.packet !is SPacketUpdateHealth) return@safeListener
             if (it.packet.health <= 0f && timer.tick(3L)) {
                 sendServerMessage(getExcuse())
             }
         }
-    }
 
-    override fun onEnable() {
-        loadedExcuses = if (mode.value == Mode.EXTERNAL) {
-            if (file.exists()) {
-                val cacheList = ArrayList<String>()
-                try {
-                    file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
-                    MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
-                } catch (e: Exception) {
-                    KamiMod.LOG.error("Failed loading excuses", e)
+        onEnable {
+            loadedExcuses = if (mode == Mode.EXTERNAL) {
+                if (file.exists()) {
+                    val cacheList = ArrayList<String>()
+                    try {
+                        file.forEachLine { if (it.isNotBlank()) cacheList.add(it.trim()) }
+                        MessageSendHelper.sendChatMessage("$chatName Loaded spammer messages!")
+                    } catch (e: Exception) {
+                        KamiMod.LOG.error("Failed loading excuses", e)
+                    }
+                    cacheList.toTypedArray()
+                } else {
+                    file.createNewFile()
+                    MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!" +
+                        ", please add them in the &7excuses.txt&f under the &7.minecraft/kamiblue&f directory.")
+                    defaultExcuses
                 }
-                cacheList.toTypedArray()
             } else {
-                file.createNewFile()
-                MessageSendHelper.sendErrorMessage("$chatName Excuses file is empty!" +
-                    ", please add them in the &7excuses.txt&f under the &7.minecraft/kamiblue&f directory.")
                 defaultExcuses
             }
-        } else {
-            defaultExcuses
         }
     }
 

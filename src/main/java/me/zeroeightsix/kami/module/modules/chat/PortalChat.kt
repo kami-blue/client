@@ -6,10 +6,9 @@ import me.zeroeightsix.kami.module.Module
 /**
  * @see MixinEntityPlayerSP
  */
-@Module.Info(
+object PortalChat : Module(
     name = "PortalChat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Allows you to open GUIs in portals",
     showOnArray = false
 )
-object PortalChat : Module()

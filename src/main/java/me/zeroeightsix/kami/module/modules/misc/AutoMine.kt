@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.command.CommandManager
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.mixin.extension.sendClickBlockToController
@@ -9,38 +10,39 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoMine : Module(
     name = "AutoMine",
     description = "Automatically mines chosen ores",
-    category = Module.Category.MISC
-)
-object AutoMine : Module() {
+    category = Category.MISC
+) {
 
-    private val manual = setting("Manual", false)
+    private val manual by setting("Manual", false)
     private val iron = setting("Iron", false)
     private val diamond = setting("Diamond", false)
     private val gold = setting("Gold", false)
     private val coal = setting("Coal", false)
     private val log = setting("Logs", false)
 
-    override fun onEnable() {
-        if (mc.player == null) {
-            disable()
-        } else {
-            run()
+    init {
+        onEnable {
+            runSafeR {
+                run()
+            } ?: disable()
+        }
+
+        onDisable {
+            BaritoneUtils.cancelEverything()
         }
     }
 
-    override fun onDisable() {
-        BaritoneUtils.cancelEverything()
-    }
-
-    private fun run() {
-        if (mc.player == null || isDisabled || manual.value) return
+    private fun SafeClientEvent.run() {
+        if (isDisabled || manual) return
 
         val blocks = ArrayList<String>()
 
@@ -65,7 +67,7 @@ object AutoMine : Module() {
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (manual.value) {
+            if (manual) {
                 mc.sendClickBlockToController(true)
             }
         }
@@ -80,7 +82,7 @@ object AutoMine : Module() {
             }
         }
 
-        with({ run() }) {
+        with({ runSafe { run() } }) {
             iron.listeners.add(this)
             diamond.listeners.add(this)
             gold.listeners.add(this)

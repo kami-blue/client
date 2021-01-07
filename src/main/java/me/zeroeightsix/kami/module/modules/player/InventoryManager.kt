@@ -13,12 +13,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object InventoryManager : Module(
     name = "InventoryManager",
-    category = Module.Category.PLAYER,
+    category = Category.PLAYER,
     description = "Manages your inventory automatically"
-)
-object InventoryManager : Module() {
+) {
     private val defaultEjectList = linkedSetOf(
         "minecraft:grass",
         "minecraft:dirt",
@@ -53,12 +52,12 @@ object InventoryManager : Module() {
         return isEnabled && currentState != State.IDLE
     }
 
-    override fun onToggle() {
-        paused = false
-        BaritoneUtils.unpause()
-    }
-
     init {
+        onToggle {
+            paused = false
+            BaritoneUtils.unpause()
+        }
+
         listener<PlayerTravelEvent> {
             if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
             mc.player.setVelocity(0.0, mc.player.motionY, 0.0)

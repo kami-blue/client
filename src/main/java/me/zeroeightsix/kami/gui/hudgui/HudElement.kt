@@ -5,13 +5,16 @@ import me.zeroeightsix.kami.gui.rgui.windows.BasicWindow
 import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.module.modules.client.Hud
 import me.zeroeightsix.kami.setting.GuiConfig
+import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.lwjgl.opengl.GL11.glScalef
 
 open class HudElement(
     name: String,
@@ -22,7 +25,18 @@ open class HudElement(
     enabledByDefault: Boolean = false
 ) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
+    val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
+
     override val resizable = false
+
+    final override val minWidth: Float get() = FontRenderAdapter.getFontHeight() * scale * 2.0f
+    final override val minHeight: Float get() = FontRenderAdapter.getFontHeight() * scale
+
+    final override val maxWidth: Float get() = hudWidth * scale
+    final override val maxHeight: Float get() = hudHeight * scale
+
+    open val hudWidth: Float get() = 20f
+    open val hudHeight: Float get() = 10f
 
     val settingList get() = GuiConfig.getGroupOrPut(SettingGroup.HUD_GUI.groupName).getGroupOrPut(originalName).getSettings()
 
@@ -50,6 +64,7 @@ open class HudElement(
 
     final override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         renderFrame(vertexHelper)
+        glScalef(scale, scale, scale)
         renderHud(vertexHelper)
     }
 
