@@ -24,7 +24,7 @@ internal object ModuleConfig : AbstractConfig<Module>(
 
     override fun save() {
         super.save()
-        for (module in ModuleManager.getModules()) module.destroy()
+        for (module in ModuleManager.modules) module.destroy()
     }
 
 }

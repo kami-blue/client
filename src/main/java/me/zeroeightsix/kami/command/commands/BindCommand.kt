@@ -16,7 +16,7 @@ object BindCommand : ClientCommand(
     init {
         literal("list") {
             execute("List used module binds") {
-                val modules = ModuleManager.getModules().filter { it.bind.value.key > 0 }.sortedBy { it.bind.toString() }
+                val modules = ModuleManager.modules.filter { it.bind.value.key > 0 }.sortedBy { it.bind.toString() }
 
                 MessageSendHelper.sendChatMessage("Used binds: ${formatValue(modules.size)}")
                 modules.forEach {

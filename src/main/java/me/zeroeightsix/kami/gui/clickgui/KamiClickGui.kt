@@ -17,7 +17,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
     private val moduleWindows = ArrayList<ListWindow>()
 
     init {
-        val allButtons = ModuleManager.getModules()
+        val allButtons = ModuleManager.modules
             .groupBy { it.category.displayName }
             .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
 
@@ -36,7 +36,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
     }
 
     override fun onDisplayed() {
-        val allButtons = ModuleManager.getModules()
+        val allButtons = ModuleManager.modules
             .groupBy { it.category.displayName }
             .mapValues { (_, modules) -> modules.map { ModuleButton(it) } }
 
