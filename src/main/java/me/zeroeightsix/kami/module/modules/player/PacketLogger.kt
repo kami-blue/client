@@ -26,7 +26,7 @@ object PacketLogger : Module(
     private val append by setting("Append", false)
     private val clear = setting("Clear", false)
 
-    private val file = File("packet_logger.txt")
+    private val file = File("${KamiMod.DIRECTORY}packet_logger.txt")
     private val lines = Collections.synchronizedList(ArrayList<String>())
     private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
