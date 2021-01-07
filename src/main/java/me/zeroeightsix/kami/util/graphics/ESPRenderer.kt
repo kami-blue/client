@@ -2,14 +2,12 @@ package me.zeroeightsix.kami.util.graphics
 
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
 import me.zeroeightsix.kami.util.color.ColorHolder
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11.GL_LINES
 import org.lwjgl.opengl.GL11.GL_QUADS
 
@@ -19,9 +17,7 @@ import org.lwjgl.opengl.GL11.GL_QUADS
  * Created by Xiaro on 30/07/20
  */
 class ESPRenderer {
-    private lateinit var camPos: Vec3d
     private val frustumCamera: ICamera = Frustum()
-    private val mc = Minecraft.getMinecraft()
     private var toRender: MutableList<Triple<AxisAlignedBB, ColorHolder, Int>> = ArrayList()
 
     var aFilled = 0
@@ -89,13 +85,13 @@ class ESPRenderer {
 
     private fun drawList(type: Type, cull: Boolean = false) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
-        camPos = KamiTessellator.camPos.add(0.0, (-mc.player.eyeHeight).toDouble(), 0.0) // realign camPos to player eye pos
+        val camPos = KamiTessellator.camPos
         frustumCamera.setPosition(camPos.x, camPos.y, camPos.z)
 
         for ((box, color, sides) in toRender) when (type) {
             Type.FILLED -> drawFilled(cull, box, color, sides)
             Type.OUTLINE -> drawOutline(cull, box, color, sides)
-            Type.TRACER -> drawTracer(box, color, sides)
+            Type.TRACER -> drawTracer(box, color)
         }
 
         KamiTessellator.render()
@@ -118,7 +114,7 @@ class ESPRenderer {
         }
     }
 
-    private fun drawTracer(box: AxisAlignedBB, color: ColorHolder, sides: Int) {
+    private fun drawTracer(box: AxisAlignedBB, color: ColorHolder) {
         val a = (aTracer * (color.a / 255f)).toInt()
         val offset = (tracerOffset - 50) / 100.0 * (box.maxY - box.minY)
         val offsetBox = box.center.add(0.0, offset, 0.0)
