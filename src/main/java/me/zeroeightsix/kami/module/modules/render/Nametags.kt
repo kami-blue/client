@@ -35,12 +35,11 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 //TODO: Impl Totem pops
-@Module.Info(
-        name = "Nametags",
-        description = "Draws descriptive nametags above entities",
-        category = Module.Category.RENDER
-)
-object Nametags : Module() {
+object Nametags : Module(
+    name = "Nametags",
+    description = "Draws descriptive nametags above entities",
+    category = Category.RENDER
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */

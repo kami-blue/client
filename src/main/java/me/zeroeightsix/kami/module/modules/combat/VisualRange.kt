@@ -13,13 +13,12 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "VisualRange",
-        description = "Shows players who enter and leave range in chat",
-        category = Module.Category.COMBAT,
-        alwaysListening = true
-)
-object VisualRange : Module() {
+object VisualRange : Module(
+    name = "VisualRange",
+    description = "Shows players who enter and leave range in chat",
+    category = Category.COMBAT,
+    alwaysListening = true
+) {
     private val playSound = setting("PlaySound", false)
     private val leaving = setting("CountLeaving", false)
     private val friends = setting("Friends", true)

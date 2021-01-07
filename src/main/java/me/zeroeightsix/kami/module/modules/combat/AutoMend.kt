@@ -13,12 +13,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.reverseNumber
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AutoMend",
-        category = Module.Category.COMBAT,
-        description = "Automatically mends armour"
-)
-object AutoMend : Module() {
+object AutoMend : Module(
+    name = "AutoMend",
+    category = Category.COMBAT,
+    description = "Automatically mends armour"
+) {
     private val autoThrow by setting("AutoThrow", true)
     private val autoSwitch by setting("AutoSwitch", true)
     private val autoDisable by setting("AutoDisable", false, { autoSwitch })

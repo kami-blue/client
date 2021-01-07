@@ -21,13 +21,12 @@ import java.util.*
 import kotlin.collections.HashMap
 
 // TODO: Add proper RSA encryption
-@Module.Info(
+object ChatEncryption : Module(
     name = "ChatEncryption",
     description = "Encrypts and decrypts chat messages",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     modulePriority = -69420
-)
-object ChatEncryption : Module() {
+) {
     private val commands by setting("Commands", false)
     private val self by setting("DecryptOwn", true)
     private var keySetting by setting("KeySetting", "DefaultKey")

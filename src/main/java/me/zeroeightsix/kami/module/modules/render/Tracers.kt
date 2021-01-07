@@ -20,12 +20,11 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
-@Module.Info(
-        name = "Tracers",
-        description = "Draws lines to other living entities",
-        category = Module.Category.RENDER
-)
-object Tracers : Module() {
+object Tracers : Module(
+    name = "Tracers",
+    description = "Draws lines to other living entities",
+    category = Category.RENDER
+) {
     private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */

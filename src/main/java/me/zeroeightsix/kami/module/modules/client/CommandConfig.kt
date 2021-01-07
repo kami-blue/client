@@ -14,17 +14,16 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display
 
-@Module.Info(
+object CommandConfig : Module(
     name = "CommandConfig",
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     description = "Configures client chat related stuff",
     showOnArray = false,
     alwaysEnabled = true
-)
-object CommandConfig : Module() {
+) {
     val prefix = setting("Prefix", ";", { false })
     val toggleMessages = setting("ToggleMessages", false)
-    val customTitle = setting("WindowTitle", true)
+    private val customTitle = setting("WindowTitle", true)
     private val autoSaving = setting("AutoSavingSettings", true)
     private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
     private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })

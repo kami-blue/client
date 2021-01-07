@@ -11,13 +11,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Module.Info(
+object AutoQMain : Module(
     name = "AutoQMain",
     description = "Automatically does '/queue 2b2t-lobby'",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     showOnArray = false
-)
-object AutoQMain : Module() {
+) {
     private val showWarns = setting("ShowWarnings", true)
     private val dimensionWarning = setting("DimensionWarning", true)
     private val delay = setting("Delay", 30, 5..120, 5)

@@ -1,15 +1,11 @@
 package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
-import me.zeroeightsix.kami.util.BaritoneUtils
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.TimeUnit
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.threads.runSafeR
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.util.math.BlockPos
@@ -24,17 +20,19 @@ import kotlin.streams.toList
 
 class ModuleArg(
     override val name: String
-) : AbstractArg<Module>(), AutoComplete by StaticPrefixMatch(allAlias) {
+) : AbstractArg<Module>(), AutoComplete by DynamicPrefixMatch(::allAlias) {
 
     override suspend fun convertToType(string: String?): Module? {
         return ModuleManager.getModuleOrNull(string)
     }
 
     private companion object {
-        val allAlias = ModuleManager.getModules().stream()
-            .flatMap { Arrays.stream(it.alias) }
-            .sorted()
-            .toList()
+        val allAlias by CachedValue(5L, TimeUnit.SECONDS) {
+            ModuleManager.modules.stream()
+                .flatMap { Arrays.stream(arrayOf(it.name, *it.alias)) }
+                .sorted()
+                .toList()
+        }
     }
 
 }
@@ -117,22 +115,11 @@ class SchematicArg(
     }
 
     private companion object {
-        val timer = TickTimer(TimeUnit.SECONDS)
         val schematicFolder = File("schematics")
-        var cachedFiles = emptyList<String>()
 
-        val schematicFiles: Collection<String>
-            get() {
-                if (timer.tick(2L) && schematicFolder.isDirectory) {
-                    defaultScope.launch(Dispatchers.IO) {
-                        schematicFolder.listFiles()?.map { it.name }?.let {
-                            cachedFiles = it
-                        }
-                    }
-                }
-
-                return cachedFiles
-            }
+        val schematicFiles by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
+            schematicFolder.listFiles()?.map { it.name } ?: emptyList<String>()
+        }
     }
 }
 
@@ -161,19 +148,23 @@ class PlayerArg(
     override val name: String
 ) : AbstractArg<PlayerProfile>(), AutoComplete by DynamicPrefixMatch(::playerInfoMap) {
 
+    override suspend fun checkType(string: String?): Boolean {
+        return !string.isNullOrBlank()
+    }
+
     override suspend fun convertToType(string: String?): PlayerProfile? {
         return UUIDManager.getByString(string)
     }
 
     private companion object {
-        val playerInfoMap: Collection<String>?
-            get() {
-                val playerInfoMap = Wrapper.minecraft.connection?.playerInfoMap ?: return null
-                return playerInfoMap.stream()
+        val playerInfoMap by CachedValue(3L, TimeUnit.SECONDS) {
+            runSafeR {
+                connection.playerInfoMap.stream()
                     .map { it.gameProfile.name }
                     .sorted()
                     .toList()
             }
+        }
     }
 
 }

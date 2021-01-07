@@ -32,12 +32,11 @@ import kotlin.collections.HashSet
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
-@Module.Info(
+object Notebot : Module(
     name = "Notebot",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
-)
-object NoteBot : Module() {
+) {
 
     private val togglePlay = setting("TogglePlay", false)
     private val reloadSong = setting("ReloadSong", false)

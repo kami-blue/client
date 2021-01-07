@@ -17,12 +17,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object LogoutLogger : Module(
     name = "LogoutLogger",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Logs when a player leaves the game"
-)
-object LogoutLogger : Module() {
+) {
     private val saveToFile = setting("SaveToFile", true)
     private val print = setting("PrintToChat", true)
 

@@ -60,9 +60,9 @@ object ModuleList : HudElement(
     override val maxHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
-    private var sortedModuleList = ModuleManager.getModules()
+    private var sortedModuleList : Collection<Module> = ModuleManager.modules
     private val textLineMap = HashMap<Module, TextComponent.TextLine>()
-    private val toggleMap = ModuleManager.getModules()
+    private val toggleMap = ModuleManager.modules
         .associateWith { TimedFlag(false) }
         .toMutableMap()
 
@@ -70,7 +70,7 @@ object ModuleList : HudElement(
         safeAsyncListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
 
-            val moduleSet = ModuleManager.getModules().toSet()
+            val moduleSet = ModuleManager.modules.toSet()
 
             for (module in moduleSet) {
                 toggleMap.computeIfAbsent(module) { TimedFlag(false) }

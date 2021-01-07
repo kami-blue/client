@@ -10,62 +10,34 @@ import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.client.Minecraft
+import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.DisplayEnum
+import org.kamiblue.commons.interfaces.Nameable
 
-open class Module {
-    /* Annotations */
-    private val annotation =
-        javaClass.annotations.firstOrNull { it is Info } as? Info
-            ?: throw IllegalStateException("No Annotation on class " + this.javaClass.canonicalName + "!")
-
-    val name = annotation.name
-    val alias = arrayOf(name, *annotation.alias)
-    val category = annotation.category
-    val description = annotation.description
-    val modulePriority = annotation.modulePriority
-    var alwaysListening = annotation.alwaysListening
-
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class Info(
-        val name: String,
-        val alias: Array<String> = [],
-        val description: String,
-        val category: Category,
-        val modulePriority: Int = -1,
-        val alwaysListening: Boolean = false,
-        val showOnArray: Boolean = true,
-        val alwaysEnabled: Boolean = false,
-        val enabledByDefault: Boolean = false
-    )
-
-    /**
-     * @see me.zeroeightsix.kami.command.commands.GenerateWebsiteCommand
-     */
-    enum class Category(override val displayName: String) : DisplayEnum {
-        CHAT("Chat"),
-        CLIENT("Client"),
-        COMBAT("Combat"),
-        MISC("Misc"),
-        MOVEMENT("Movement"),
-        PLAYER("Player"),
-        RENDER("Render");
-
-        override fun toString() = displayName
-    }
-    /* End of annotations */
+open class Module(
+    override val name: String,
+    override val alias: Array<String> = emptyArray(),
+    val category: Category,
+    val description: String,
+    val modulePriority: Int = -1,
+    var alwaysListening: Boolean = false,
+    val showOnArray: Boolean = true,
+    val alwaysEnabled: Boolean = false,
+    val enabledByDefault: Boolean = false
+) : Nameable, Alias {
 
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name).getSettings()
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
 
-    val bind = setting("Bind", Bind(), { !annotation.alwaysEnabled })
+    val bind = setting("Bind", Bind(), { !alwaysEnabled })
     private val enabled = setting("Enabled", false, { false })
-    private val visible = setting("Visible", annotation.showOnArray)
+    private val visible = setting("Visible", showOnArray)
     private val default = setting("Default", false, { settingList.isNotEmpty() })
     /* End of settings */
 
     /* Properties */
-    val isEnabled: Boolean get() = enabled.value || annotation.alwaysEnabled
+    val isEnabled: Boolean get() = enabled.value || alwaysEnabled
     val isDisabled: Boolean get() = !isEnabled
     val chatName: String get() = "[${name}]"
     val isVisible: Boolean get() = visible.value
@@ -128,9 +100,9 @@ open class Module {
 
     init {
         enabled.consumers.add { prev, input ->
-            val enabled = annotation.alwaysEnabled || input
+            val enabled = alwaysEnabled || input
 
-            if (prev != input && !annotation.alwaysEnabled) {
+            if (prev != input && !alwaysEnabled) {
                 sendToggleMessage()
             }
 
@@ -150,6 +122,18 @@ open class Module {
                 MessageSendHelper.sendChatMessage("$chatName Set to defaults!")
             }
         }
+    }
+
+    enum class Category(override val displayName: String) : DisplayEnum {
+        CHAT("Chat"),
+        CLIENT("Client"),
+        COMBAT("Combat"),
+        MISC("Misc"),
+        MOVEMENT("Movement"),
+        PLAYER("Player"),
+        RENDER("Render");
+
+        override fun toString() = displayName
     }
 
     protected companion object {

@@ -11,12 +11,11 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-@Module.Info(
+object EntityTools : Module(
     name = "EntityTools",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Right click entities to perform actions on them"
-)
-object EntityTools : Module() {
+) {
     private val mode = setting("Mode", Mode.INFO)
 
     private enum class Mode {

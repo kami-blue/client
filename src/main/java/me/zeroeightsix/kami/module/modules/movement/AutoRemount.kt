@@ -12,12 +12,11 @@ import net.minecraft.entity.passive.*
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "AutoRemount",
-        description = "Automatically remounts your horse",
-        category = Module.Category.MOVEMENT
-)
-object AutoRemount : Module() {
+object AutoRemount : Module(
+    name = "AutoRemount",
+    description = "Automatically remounts your horse",
+    category = Category.MOVEMENT
+) {
     private val boat = setting("Boats", true)
     private val horse = setting("Horse", true)
     private val skeletonHorse = setting("SkeletonHorse", true)

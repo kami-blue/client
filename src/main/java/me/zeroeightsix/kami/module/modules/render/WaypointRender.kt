@@ -25,12 +25,11 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-@Module.Info(
+object WaypointRender : Module(
     name = "WaypointRender",
     description = "Render saved waypoints",
-    category = Module.Category.RENDER
-)
-object WaypointRender : Module() {
+    category = Category.RENDER
+) {
 
     private val page = setting("Page", Page.INFO_BOX)
 

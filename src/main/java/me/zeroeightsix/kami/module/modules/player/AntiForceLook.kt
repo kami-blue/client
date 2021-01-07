@@ -7,13 +7,11 @@ import me.zeroeightsix.kami.module.Module
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AntiForceLook",
-        category = Module.Category.PLAYER,
-        description = "Stops server packets from turning your head"
-)
-
-object AntiForceLook : Module() {
+object AntiForceLook : Module(
+    name = "AntiForceLook",
+    category = Category.PLAYER,
+    description = "Stops server packets from turning your head"
+) {
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketPlayerPosLook || mc.player == null) return@listener

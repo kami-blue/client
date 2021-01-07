@@ -21,12 +21,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @see MixinBlockSoulSand
  * @see MixinBlockWeb
  */
-@Module.Info(
+object NoSlowDown : Module(
     name = "NoSlowDown",
-    category = Module.Category.MOVEMENT,
+    category = Category.MOVEMENT,
     description = "Prevents being slowed down when using an item or going through cobwebs"
-)
-object NoSlowDown : Module() {
+) {
     private val ncpStrict by setting("NCPStrict", true)
     private val sneak by setting("Sneak", true)
     val soulSand by setting("SoulSand", true)

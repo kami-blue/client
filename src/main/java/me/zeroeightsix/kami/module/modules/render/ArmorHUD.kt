@@ -12,13 +12,12 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "ArmourHUD",
-        category = Module.Category.RENDER,
-        description = "Displays your armor and it's durability on screen",
-        showOnArray = false
-)
-object ArmorHUD : Module() {
+object ArmourHUD : Module(
+    name = "ArmourHUD",
+    category = Category.RENDER,
+    description = "Displays your armor and it's durability on screen",
+    showOnArray = false
+) {
     private val damage = setting("Damage", false)
     private val scale = setting("Scale", 1.0f, 0.25f..2.0f, 0.05f)
 

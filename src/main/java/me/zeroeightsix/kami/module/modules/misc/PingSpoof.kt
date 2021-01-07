@@ -8,12 +8,11 @@ import net.minecraft.network.play.server.SPacketKeepAlive
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-@Module.Info(
+object PingSpoof : Module(
     name = "PingSpoof",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Cancels or adds delay to your ping packets"
-)
-object PingSpoof : Module() {
+) {
     private val cancel = setting("Cancel", false) // most servers will kick/time you out for this
     private val delay = setting("Delay", 100, 0..2000, 25, { !cancel.value })
 

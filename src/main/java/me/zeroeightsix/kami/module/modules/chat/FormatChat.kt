@@ -4,13 +4,12 @@ import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
-@Module.Info(
+object FormatChat : Module(
     name = "FormatChat",
     description = "Add color and linebreak support to upstream chat packets",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     modulePriority = 300
-)
-object FormatChat : Module() {
+) {
     private val modifier = newMessageModifier {
         it.packet.message
             .replace('&', '§')

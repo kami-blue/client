@@ -8,12 +8,11 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.world.GameType
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
+object FakeGameMode : Module(
     name = "FakeGameMode",
     description = "Fakes your current gamemode client side",
-    category = Module.Category.MISC
-)
-object FakeGameMode : Module() {
+    category = Category.MISC
+) {
     private val gamemode by setting("Mode", GameMode.CREATIVE)
 
     @Suppress("UNUSED")

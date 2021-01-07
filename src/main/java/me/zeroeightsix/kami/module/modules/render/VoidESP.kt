@@ -13,12 +13,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "VoidESP",
-        description = "Highlights holes leading to the void",
-        category = Module.Category.RENDER
-)
-object VoidESP : Module() {
+object VoidESP : Module(
+    name = "VoidESP",
+    description = "Highlights holes leading to the void",
+    category = Category.RENDER
+) {
     private val renderDistance = setting("RenderDistance", 6, 4..32, 1)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)

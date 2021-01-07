@@ -8,12 +8,11 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
+object AntiChainPop : Module(
     name = "AntiChainPop",
     description = "Enables Surround when popping a totem",
-    category = Module.Category.COMBAT
-)
-object AntiChainPop : Module() {
+    category = Category.COMBAT
+) {
     private val mode by setting("Mode", Mode.PACKET)
 
     private enum class Mode {

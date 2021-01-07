@@ -19,12 +19,11 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object Jesus : Module(
     name = "Jesus",
     description = "Allows you to walk on water",
-    category = Module.Category.MOVEMENT
-)
-object Jesus : Module() {
+    category = Category.MOVEMENT
+) {
 
     private val dolphin = setting("Dolphin", false)
 

@@ -7,12 +7,11 @@ import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.SoundCategory
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object NoSoundLag : Module(
     name = "NoSoundLag",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Prevents lag caused by sound machines"
-)
-object NoSoundLag : Module() {
+) {
     init {
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketSoundEffect) return@listener

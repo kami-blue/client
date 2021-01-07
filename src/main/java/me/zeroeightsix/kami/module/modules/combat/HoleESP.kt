@@ -11,12 +11,11 @@ import me.zeroeightsix.kami.util.graphics.GeometryMasks
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "HoleESP",
-        category = Module.Category.COMBAT,
-        description = "Show safe holes for crystal pvp"
-)
-object HoleESP : Module() {
+object HoleESP : Module(
+    name = "HoleESP",
+    category = Category.COMBAT,
+    description = "Show safe holes for crystal pvp"
+) {
     private val range = setting("RenderDistance", 8, 4..16, 1)
     private val filled = setting("Filled", true)
     private val outline = setting("Outline", true)

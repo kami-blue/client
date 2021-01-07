@@ -14,12 +14,11 @@ import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "ElytraReplace",
-        description = "Automatically swap and replace your chestplate and elytra.",
-        category = Module.Category.MOVEMENT
-)
-object ElytraReplace : Module() {
+object ElytraReplace : Module(
+    name = "ElytraReplace",
+    description = "Automatically swap and replace your chestplate and elytra.",
+    category = Category.MOVEMENT
+) {
     private val inventoryMode = setting("Inventory", false)
     private val autoChest = setting("AutoChest", false)
     private val elytraFlightCheck = setting("ElytraFlightCheck", true)

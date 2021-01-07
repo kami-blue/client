@@ -18,12 +18,11 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Module.Info(
+object PacketLogger : Module(
     name = "PacketLogger",
     description = "Logs sent packets to a file",
-    category = Module.Category.PLAYER
-)
-object PacketLogger : Module() {
+    category = Category.PLAYER
+) {
     private val append by setting("Append", false)
     private val clear = setting("Clear", false)
 

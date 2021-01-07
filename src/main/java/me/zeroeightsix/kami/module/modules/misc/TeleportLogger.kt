@@ -9,12 +9,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 
-@Module.Info(
+object TeleportLogger : Module(
     name = "TeleportLogger",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Logs when a player teleports somewhere"
-)
-object TeleportLogger : Module() {
+) {
     private val saveToFile = setting("SaveToFile", true)
     private val remove = setting("RemoveInRange", true)
     private val printAdd = setting("PrintAdd", true)

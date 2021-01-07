@@ -28,13 +28,12 @@ import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
 // TODO: Rewrite
-@Module.Info(
+object ElytraFlight : Module(
     name = "ElytraFlight",
     description = "Allows infinite and way easier Elytra flying",
-    category = Module.Category.MOVEMENT,
+    category = Category.MOVEMENT,
     modulePriority = 1000
-)
-object ElytraFlight : Module() {
+) {
     private val mode = setting("Mode", ElytraFlightMode.CONTROL)
     private val page by setting("Page", Page.GENERIC_SETTINGS)
     private val durabilityWarning by setting("DurabilityWarning", true, { page == Page.GENERIC_SETTINGS })

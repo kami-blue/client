@@ -14,13 +14,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 
-@Module.Info(
-        name = "AntiBot",
-        description = "Avoid attacking fake players",
-        category = Module.Category.COMBAT,
-        alwaysListening = true
-)
-object AntiBot : Module() {
+object AntiBot : Module(
+    name = "AntiBot",
+    description = "Avoid attacking fake players",
+    category = Category.COMBAT,
+    alwaysListening = true
+) {
     private val tabList = setting("TabList", true)
     private val ping = setting("Ping", true)
     private val hp = setting("HP", true)

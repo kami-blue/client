@@ -6,10 +6,9 @@ import me.zeroeightsix.kami.module.Module
 /**
  * @see MixinEntityRenderer.rayTraceBlocks
  */
-@Module.Info(
-        name = "CameraClip",
-        category = Module.Category.RENDER,
-        description = "Allows your 3rd person camera to pass through blocks",
-        showOnArray = false
+object CameraClip : Module(
+    name = "CameraClip",
+    category = Category.RENDER,
+    description = "Allows your 3rd person camera to pass through blocks",
+    showOnArray = false
 )
-object CameraClip : Module()

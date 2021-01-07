@@ -7,14 +7,13 @@ import me.zeroeightsix.kami.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
-@Module.Info(
+object FancyChat : Module(
     name = "FancyChat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Makes messages you send fancy",
     showOnArray = false,
     modulePriority = 100
-)
-object FancyChat : Module() {
+) {
     private val uwu = setting("uwu", true)
     private val leet = setting("1337", false)
     private val mock = setting("mOcK", false)

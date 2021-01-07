@@ -6,9 +6,8 @@ import me.zeroeightsix.kami.module.Module
 /**
  * @see MixinBlockLiquid
  */
-@Module.Info(
-        name = "LiquidInteract",
-        category = Module.Category.PLAYER,
-        description = "Place blocks on liquid!"
+object LiquidInteract : Module(
+    name = "LiquidInteract",
+    category = Category.PLAYER,
+    description = "Place blocks on liquid!"
 )
-object LiquidInteract : Module()

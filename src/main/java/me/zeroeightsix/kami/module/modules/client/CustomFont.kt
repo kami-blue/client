@@ -4,14 +4,13 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 
-@Module.Info(
+object CustomFont : Module(
     name = "CustomFont",
     description = "Use the better font instead of the stupid Minecraft font",
     showOnArray = false,
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     enabledByDefault = true
-)
-object CustomFont : Module() {
+) {
     private const val DEFAULT_FONT_NAME = "Source Sans Pro"
 
     val fontName = setting("FontName",

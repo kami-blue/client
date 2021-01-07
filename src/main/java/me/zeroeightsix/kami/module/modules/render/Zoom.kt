@@ -3,13 +3,12 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
-@Module.Info(
-        name = "Zoom",
-        category = Module.Category.RENDER,
-        description = "Configures FOV",
-        showOnArray = false
-)
-object Zoom : Module() {
+object Zoom : Module(
+    name = "Zoom",
+    category = Category.RENDER,
+    description = "Configures FOV",
+    showOnArray = false
+) {
     private var fov = 0f
     private var sensi = 0f
 

@@ -19,7 +19,7 @@ object GenerateWebsiteCommand : ClientCommand(
 
     init {
         executeAsync {
-            val modulesList = ModuleManager.getModules()
+            val modulesList = ModuleManager.modules
             val moduleMap = TreeMap<Module.Category, MutableList<Module>>()
             modulesList.groupByTo(moduleMap) { it.category }
 

@@ -13,12 +13,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object InventoryManager : Module(
     name = "InventoryManager",
-    category = Module.Category.PLAYER,
+    category = Category.PLAYER,
     description = "Manages your inventory automatically"
-)
-object InventoryManager : Module() {
+) {
     private val defaultEjectList = linkedSetOf(
         "minecraft:grass",
         "minecraft:dirt",

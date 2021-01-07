@@ -20,12 +20,11 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
-        name = "EntitySpeed",
-        category = Module.Category.MOVEMENT,
-        description = "Abuse client-sided movement to shape sound barrier breaking rideables"
-)
-object EntitySpeed : Module() {
+object EntitySpeed : Module(
+    name = "EntitySpeed",
+    category = Category.MOVEMENT,
+    description = "Abuse client-sided movement to shape sound barrier breaking rideables"
+) {
     private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
     private val antiStuck = setting("AntiStuck", true)
     private val flight = setting("Flight", false)

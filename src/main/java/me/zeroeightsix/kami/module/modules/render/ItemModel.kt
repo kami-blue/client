@@ -3,12 +3,11 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
-@Module.Info(
+object ItemModel : Module(
     name = "ItemModel",
     description = "Modify hand item rendering in first person",
-    category = Module.Category.RENDER
-)
-object ItemModel : Module() {
+    category = Category.RENDER
+) {
     val posX by setting("PosX", 0.0f, -5.0f..5.0f, 0.025f)
     val posY by setting("PosY", 0.0f, -5.0f..5.0f, 0.025f)
     val posZ by setting("PosZ", 0.0f, -5.0f..5.0f, 0.025f)

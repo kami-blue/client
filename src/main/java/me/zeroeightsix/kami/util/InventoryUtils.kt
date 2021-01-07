@@ -240,8 +240,27 @@ object InventoryUtils {
             }
         }
 
-        moveToSlot(slotFrom, slotTo)
+        moveToHotbarSlot(slotFrom, slotTo - 36)
         return slotTo
+    }
+
+    /**
+     * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+     */
+    fun moveToHotbarSlot(slotFrom: Int, slotTo: Int): ShortArray {
+        return moveToHotbarSlot(0, slotFrom, slotTo)
+    }
+
+    /**
+     * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+     */
+    fun moveToHotbarSlot(windowId: Int, slotFrom: Int, slotTo: Int): ShortArray {
+        return shortArrayOf(
+            /* CPacketClickWindow spaghetti code moment: mouseButton is actually the hotbar
+               slot (0..9) for ClickType.SWAP
+             */
+            inventoryClick(windowId, slotFrom, slotTo, type = ClickType.SWAP)
+        )
     }
 
     /**

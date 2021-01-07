@@ -20,12 +20,11 @@ import kotlin.math.abs
  * Updated by l1ving on 26/05/20
  * Updated by Xiaro on 22/08/20
  */
-@Module.Info(
+object AutoFish : Module(
     name = "AutoFish",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Automatically catch fish"
-)
-object AutoFish : Module() {
+) {
     private val mode = setting("Mode", Mode.BOUNCE)
     private val autoCast = setting("AutoCast", true)
     private val castDelay = setting("AutoCastDelay(s)", 5, 1..20, 1, { autoCast.value })

@@ -15,14 +15,13 @@ import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-@Module.Info(
+object FakePlayer : Module(
     name = "FakePlayer",
     description = "Spawns a client sided fake player",
-    category = Module.Category.MISC
-)
-object FakePlayer : Module() {
+    category = Category.MISC
+) {
     private val copyInventory by setting("CopyInventory", false)
-    val playerName by setting("PlayerName", "Player", { false })
+    val playerName by setting("PlayerName", "Player")
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private const val ENTITY_ID = -7170400

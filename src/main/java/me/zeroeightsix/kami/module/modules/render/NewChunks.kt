@@ -28,12 +28,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-@Module.Info(
-        name = "NewChunks",
-        description = "Highlights newly generated chunks",
-        category = Module.Category.RENDER
-)
-object NewChunks : Module() {
+object NewChunks : Module(
+    name = "NewChunks",
+    description = "Highlights newly generated chunks",
+    category = Category.RENDER
+) {
     private val relative = setting("Relative", true)
     private val autoClear = setting("AutoClear", true)
     private val saveNewChunks = setting("SaveNewChunks", false)

@@ -11,19 +11,18 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
-@Module.Info(
+object CustomChat : Module(
     name = "CustomChat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Add a custom ending to your message!",
     showOnArray = false,
     modulePriority = 200
-)
-object CustomChat : Module() {
-    private val textMode by setting("Message", TextMode.JAPANESE)
-    private val decoMode by setting("Separator", DecoMode.NONE)
-    private val commands by setting("Commands", false)
-    private val spammer by setting("Spammer", false)
-    private val customText by setting("CustomText", "unchanged")
+) {
+    private val textMode = setting("Message", TextMode.JAPANESE)
+    private val decoMode = setting("Separator", DecoMode.NONE)
+    private val commands = setting("Commands", false)
+    private val spammer = setting("Spammer", false)
+    private val customText = setting("CustomText", "unchanged")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE

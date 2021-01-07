@@ -22,12 +22,11 @@ import java.awt.Color
 /**
  * @see MixinGuiScreen.renderToolTip
  */
-@Module.Info(
+object MapPreview : Module(
     name = "MapPreview",
-    category = Module.Category.RENDER,
+    category = Category.RENDER,
     description = "Previews maps when hovering over them"
-)
-object MapPreview : Module() {
+) {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
     private val showName = setting("ShowName", false)

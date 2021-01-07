@@ -26,12 +26,11 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object NoFall : Module(
     name = "NoFall",
-    category = Module.Category.PLAYER,
+    category = Category.PLAYER,
     description = "Prevents fall damage"
-)
-object NoFall : Module() {
+) {
     private val distance = setting("Distance", 3, 1..10, 1)
     private val mode = setting("Mode", Mode.CATCH)
     private val fallModeSetting = setting("Fall", FallMode.PACKET, { mode.value == Mode.FALL })

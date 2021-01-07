@@ -10,12 +10,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+object AutoRespawn : Module(
     name = "AutoRespawn",
     description = "Automatically respawn after dying",
-    category = Module.Category.MISC
-)
-object AutoRespawn : Module() {
+    category = Category.MISC
+) {
     private val respawn = setting("Respawn", true)
     private val deathCoords = setting("SaveDeathCoords", true)
     private val antiGlitchScreen = setting("AntiGlitchScreen", true)

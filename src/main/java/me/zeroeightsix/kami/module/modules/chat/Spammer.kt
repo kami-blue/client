@@ -18,15 +18,14 @@ import java.net.URL
 import java.util.*
 import kotlin.random.Random
 
-@Module.Info(
+object Spammer : Module(
     name = "Spammer",
     description = "Spams text from a file on a set delay into the chat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     modulePriority = 100
-)
-object Spammer : Module() {
+) {
     private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
-    private val delay = setting("Delay(s)", 10,1..100, 1)
+    private val delay = setting("Delay(s)", 10, 1..100, 1)
     private val loadRemote = setting("LoadFromURL", false)
     private val remoteURL = setting("RemoteURL", "Unchanged")
 

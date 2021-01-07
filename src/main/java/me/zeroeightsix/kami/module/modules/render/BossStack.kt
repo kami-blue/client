@@ -17,12 +17,11 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-@Module.Info(
-        name = "BossStack",
-        description = "Modify the boss health GUI to take up less space",
-        category = Module.Category.RENDER
-)
-object BossStack : Module() {
+object BossStack : Module(
+    name = "BossStack",
+    description = "Modify the boss health GUI to take up less space",
+    category = Category.RENDER
+) {
     private val mode = setting("Mode", BossStackMode.STACK)
     private val scale = setting("Scale", 1.0f, 0.1f..5.0f, 0.25f)
     private val censor = setting("Censor", false)

@@ -31,14 +31,13 @@ import kotlin.collections.HashMap
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
+object Capes : Module(
     name = "Capes",
-    category = Module.Category.CLIENT,
+    category = Category.CLIENT,
     description = "Controls the display of KAMI Blue capes",
     showOnArray = false,
     enabledByDefault = true
-)
-object Capes : Module() {
+) {
     private val capeUsers = Collections.synchronizedMap(HashMap<UUID, Cape>())
     var isPremium = false; private set
 

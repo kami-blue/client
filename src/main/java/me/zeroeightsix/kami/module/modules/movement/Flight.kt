@@ -16,13 +16,12 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Module.Info(
+object Flight : Module(
     name = "Flight",
-    category = Module.Category.MOVEMENT,
+    category = Category.MOVEMENT,
     description = "Makes the player fly",
     modulePriority = 500
-)
-object Flight : Module() {
+) {
     private val mode by setting("Mode", FlightMode.VANILLA)
     private val speed by setting("Speed", 1.0f, 0.0f..10.0f, 0.1f)
     private val glideSpeed by setting("GlideSpeed", 0.05, 0.0..0.3, 0.001)
