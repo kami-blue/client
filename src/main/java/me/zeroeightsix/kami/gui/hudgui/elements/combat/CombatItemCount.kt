@@ -44,7 +44,7 @@ object CombatItemCount : LabelHud(
         ItemStack(Items.CHORUS_FRUIT, -1)
     )
 
-    override val maxWidth: Float
+    override val hudWidth: Float
         get() = if (showIcon) {
             if (horizontal) 20.0f * itemSettings.keys.count { it.value }
             else 20.0f
@@ -52,7 +52,7 @@ object CombatItemCount : LabelHud(
             displayText.getWidth()
         }
 
-    override val maxHeight: Float
+    override val hudHeight: Float
         get() = if (showIcon) {
             if (horizontal) 20.0f
             else 20.0f * itemSettings.keys.count { it.value }

@@ -9,20 +9,19 @@ import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11.*
-import kotlin.math.roundToInt
 
 object PlayerModel : HudElement(
     name = "PlayerModel",
     category = Category.PLAYER,
     description = "Your player icon, or players you attacked"
 ) {
-    private val scale by setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val resetDelay by setting("ResetDelay", 100, 0..200, 5)
     private val emulatePitch by setting("EmulatePitch", true)
     private val emulateYaw by setting("EmulateYaw", false)
 
-    override val minWidth: Float get() = adjust(114.0f)
-    override val minHeight: Float get() = adjust(204.0f)
+    override val hudWidth: Float get() = 114.0f
+    override val hudHeight: Float get() = 204.0f
+
     override val resizable: Boolean = true
 
     override fun renderHud(vertexHelper: VertexHelper) {
@@ -40,9 +39,9 @@ object PlayerModel : HudElement(
         val pitch = if (emulatePitch) interpolateAndWrap(entity.prevRotationPitch, entity.rotationPitch) else 0.0f
 
         glPushMatrix()
-        glTranslatef(width / 2, height - adjust(7.5f), 0f)
+        glTranslatef(width / 2, height - 7.5f, 0f)
         GlStateUtils.depth(true)
-        GuiInventory.drawEntityOnScreen(0, 0, (scale * 35.0f).roundToInt(), -yaw, -pitch, entity)
+        GuiInventory.drawEntityOnScreen(0, 0, 35, -yaw, -pitch, entity)
         GlStateUtils.depth(false)
         GlStateUtils.texture2d(true)
         GlStateUtils.blend(true)
@@ -53,6 +52,4 @@ object PlayerModel : HudElement(
     private fun interpolateAndWrap(prev: Float, current: Float): Float {
         return MathHelper.wrapDegrees(prev + (current - prev) * KamiTessellator.pTicks())
     }
-
-    private fun adjust(value: Float) = value * scale * 0.35f
 }

@@ -12,9 +12,6 @@ object BaritoneProcess : LabelHud(
     description = "Shows what Baritone is doing"
 ) {
 
-    override val minWidth = 10f
-    override val minHeight = 10f
-
     override fun SafeClientEvent.updateText() {
         val process = BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl() ?: return
         if (!process.isPresent) return

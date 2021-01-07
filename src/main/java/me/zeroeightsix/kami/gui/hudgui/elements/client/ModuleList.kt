@@ -49,7 +49,7 @@ object ModuleList : HudElement(
         CATEGORY("Category", compareBy { it.category.ordinal })
     }
 
-    override val maxWidth: Float
+    override val hudWidth: Float
         get() = sortedModuleList.maxOfOrNull {
             if (toggleMap[it]?.value == true) it.textLine.getWidth() + 4.0f
             else 20.0f
@@ -57,7 +57,7 @@ object ModuleList : HudElement(
             max(it, 20.0f)
         } ?: 20.0f
 
-    override val maxHeight: Float
+    override val hudHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
     private var sortedModuleList : Collection<Module> = ModuleManager.modules
@@ -94,9 +94,9 @@ object ModuleList : HudElement(
         super.renderHud(vertexHelper)
         GlStateManager.pushMatrix()
 
-        GlStateManager.translate(renderWidth * dockingH.multiplier, 0.0f, 0.0f)
+        GlStateManager.translate(renderWidth / scale * dockingH.multiplier, 0.0f, 0.0f)
         if (dockingV == VAlign.BOTTOM) {
-            GlStateManager.translate(0.0f, renderHeight - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
+            GlStateManager.translate(0.0f, renderHeight / scale - (FontRenderAdapter.getFontHeight() + 2.0f), 0.0f)
         }
 
         drawModuleList()
