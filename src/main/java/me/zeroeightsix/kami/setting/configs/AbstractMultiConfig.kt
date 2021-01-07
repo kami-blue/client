@@ -1,7 +1,6 @@
-package me.zeroeightsix.kami.setting.config
+package me.zeroeightsix.kami.setting.configs
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.IFinalGroup
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import java.io.File
 
@@ -9,7 +8,7 @@ abstract class AbstractMultiConfig<T>(
         name: String,
         protected val directoryPath: String,
         vararg groupNames: String
-) : AbstractConfig<T>(name, directoryPath), IFinalGroup<T> {
+) : AbstractConfig<T>(name, directoryPath), IConfig<T> {
 
     override val file: File get() = File("$directoryPath$name")
 

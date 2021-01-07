@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.GuiConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
-import me.zeroeightsix.kami.setting.config.AbstractConfig
+import me.zeroeightsix.kami.setting.configs.AbstractConfig
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
