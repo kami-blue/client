@@ -71,7 +71,7 @@ class ESPRenderer {
         toRender.clear()
     }
 
-    fun render(clear: Boolean, cull: Boolean = false) {
+    fun render(clear: Boolean, cull: Boolean = true) {
         if (toRender.isEmpty() && (aFilled == 0 && aOutline == 0 && aTracer == 0)) return
 
         val entity = Wrapper.minecraft.renderViewEntity ?: Wrapper.player ?: return

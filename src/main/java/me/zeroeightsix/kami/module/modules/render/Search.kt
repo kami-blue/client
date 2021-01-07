@@ -43,7 +43,6 @@ object Search : Module(
     private val filled by setting("Filled", true)
     private val outline by setting("Outline", true)
     private val tracer by setting("Tracer", true)
-    private val culling by setting("Culling", true)
     private val customColors by setting("CustomColors", false)
     private val r by setting("Red", 155, 0..255, 1, { customColors })
     private val g by setting("Green", 144, 0..255, 1, { customColors })
@@ -74,7 +73,7 @@ object Search : Module(
 
     init {
         safeListener<RenderWorldEvent> {
-            renderer.render(false, culling)
+            renderer.render(false)
 
             if (updateTimer.tick(updateDelay.toLong())) {
                 updateRenderer()

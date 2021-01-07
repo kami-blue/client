@@ -53,7 +53,6 @@ object StorageESP : Module(
     private val filled by setting("Filled", true, { page == Page.RENDER })
     private val outline by setting("Outline", true, { page == Page.RENDER })
     private val tracer by setting("Tracer", false, { page == Page.RENDER })
-    private val culling by setting("Culling", true, { page == Page.RENDER })
     private val aFilled by setting("FilledAlpha", 31, 0..255, 1, { page == Page.RENDER && filled })
     private val aOutline by setting("OutlineAlpha", 127, 0..255, 1, { page == Page.RENDER && outline })
     private val aTracer by setting("TracerAlpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
@@ -72,7 +71,7 @@ object StorageESP : Module(
 
     init {
         listener<RenderWorldEvent> {
-            renderer.render(false, culling)
+            renderer.render(false)
         }
 
         safeAsyncListener<TickEvent.ClientTickEvent> {
