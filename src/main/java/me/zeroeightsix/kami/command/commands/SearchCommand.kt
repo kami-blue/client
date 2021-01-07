@@ -86,7 +86,7 @@ object SearchCommand : ClientCommand(
 
         literal("override") {
             execute("Override the Intel Integrated GPU check") {
-                Search.overrideWarning.value = true
+                Search.overrideWarning = true
                 MessageSendHelper.sendWarningMessage("Override for Intel Integrated GPUs enabled!")
             }
         }

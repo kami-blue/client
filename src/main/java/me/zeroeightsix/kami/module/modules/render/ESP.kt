@@ -135,13 +135,13 @@ object ESP : Module(
 
             when (mode.value) {
                 ESPMode.BOX -> {
-                    val colour = ColorHolder(r, g, b)
+                    val color = ColorHolder(r, g, b)
                     val renderer = ESPRenderer()
                     renderer.aFilled = if (filled) aFilled else 0
                     renderer.aOutline = if (outline) aOutline else 0
                     renderer.thickness = width
                     for (entity in entityList) {
-                        renderer.add(entity, colour)
+                        renderer.add(entity, color)
                     }
                     renderer.render(true)
                 }

@@ -15,7 +15,7 @@ object ModuleManager : AsyncLoader<List<Class<out Module>>> {
 
     private val moduleSet = AliasSet<Module>()
     val modules by AsyncCachedValue(5L, TimeUnit.SECONDS) {
-        moduleSet.distinct()
+        moduleSet.distinct().sortedBy { it.name }
     }
 
     override fun preLoad0(): List<Class<out Module>> {

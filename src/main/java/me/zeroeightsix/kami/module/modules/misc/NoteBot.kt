@@ -32,8 +32,8 @@ import kotlin.collections.HashSet
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
-object Notebot : Module(
-    name = "Notebot",
+object NoteBot : Module(
+    name = "NoteBot",
     category = Category.MISC,
     description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"
 ) {
