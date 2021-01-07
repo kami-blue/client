@@ -1,6 +1,8 @@
 package me.zeroeightsix.kami.util.graphics
 
+import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedAmount
+import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.color.ColorHolder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
@@ -71,6 +73,11 @@ class ESPRenderer {
 
     fun render(clear: Boolean, cull: Boolean = false) {
         if (toRender.isEmpty() && (aFilled == 0 && aOutline == 0 && aTracer == 0)) return
+
+        val entity = Wrapper.minecraft.renderViewEntity ?: Wrapper.player ?: return
+        val interpolatedPos = EntityUtils.getInterpolatedPos(entity, KamiTessellator.pTicks())
+        frustumCamera.setPosition(interpolatedPos.x, interpolatedPos.y, interpolatedPos.z)
+
         if (through) GlStateManager.disableDepth()
 
         if (aFilled != 0) drawList(Type.FILLED, cull)
@@ -85,8 +92,6 @@ class ESPRenderer {
 
     private fun drawList(type: Type, cull: Boolean = false) {
         KamiTessellator.begin(if (type == Type.FILLED) GL_QUADS else GL_LINES)
-        val camPos = KamiTessellator.camPos
-        frustumCamera.setPosition(camPos.x, camPos.y, camPos.z)
 
         for ((box, color, sides) in toRender) when (type) {
             Type.FILLED -> drawFilled(cull, box, color, sides)
