@@ -13,7 +13,7 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.graphics.font.VAlign
-import me.zeroeightsix.kami.util.threads.safeAsyncListener
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.sumByFloat
@@ -67,8 +67,8 @@ object ModuleList : HudElement(
         .toMutableMap()
 
     init {
-        safeAsyncListener<TickEvent.ClientTickEvent> { event ->
-            if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
+        safeListener<TickEvent.ClientTickEvent> { event ->
+            if (event.phase != TickEvent.Phase.END) return@safeListener
 
             val moduleSet = ModuleManager.modules.toSet()
 

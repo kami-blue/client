@@ -76,6 +76,8 @@ object StorageESP : Module(
         }
 
         safeAsyncListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeAsyncListener
+
             cycler++
             renderer.clear()
             val cached = ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>()
