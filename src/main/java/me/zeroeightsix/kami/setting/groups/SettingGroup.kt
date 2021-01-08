@@ -56,12 +56,14 @@ open class SettingGroup(
      * @param jsonObject [JsonObject] to read from
      */
     open fun read(jsonObject: JsonObject?) {
-        if (subSetting.isNotEmpty()) (jsonObject?.get("settings") as? JsonObject)?.also {
-            for (setting in subSetting.values) {
-                try {
-                    setting.read(it.get(setting.name))
-                } catch (e: Exception) {
-                    KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
+        if (subSetting.isNotEmpty()) {
+            (jsonObject?.get("settings") as? JsonObject)?.also {
+                for (setting in subSetting.values) {
+                    try {
+                        setting.read(it.get(setting.name))
+                    } catch (e: Exception) {
+                        KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
+                    }
                 }
             }
         }
