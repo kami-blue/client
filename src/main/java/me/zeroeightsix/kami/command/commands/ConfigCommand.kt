@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.util.ConfigUtils
@@ -51,16 +52,16 @@ object ConfigCommand : ClientCommand(
                         val prevPath = ModuleConfig.currentPath
 
                         try {
-                            ConfigUtils.saveConfig(ModuleConfig)
+                            ConfigManager.save(ModuleConfig)
                             ModuleConfig.currentPath = newPath
-                            ConfigUtils.saveConfig(GenericConfig)
+                            ConfigManager.save(GenericConfig)
                             ConfigUtils.loadAll()
                             MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
                         } catch (e: IOException) {
                             MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                             KamiMod.LOG.warn("Couldn't set path!", e)
                             ModuleConfig.currentPath = prevPath
-                            ConfigUtils.saveConfig(ModuleConfig)
+                            ConfigManager.save(ModuleConfig)
                         }
                     }
                 }

@@ -1,13 +1,12 @@
 package me.zeroeightsix.kami.setting.configs
 
+import org.kamiblue.commons.interfaces.Nameable
 import java.io.File
 
 /**
  * Setting group that can be saved to a .json file
- *
- * @param T Type to have extension function for registering setting
  */
-interface IConfig {
+interface IConfig : Nameable {
 
     /** Main file of the config */
     val file: File
