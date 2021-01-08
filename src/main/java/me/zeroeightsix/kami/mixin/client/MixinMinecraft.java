@@ -72,12 +72,12 @@ public class MixinMinecraft {
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
     public void displayCrashReport(CallbackInfo info) {
-        save();
+        Wrapper.saveAndShutdown();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
-        save();
+        Wrapper.saveAndShutdown();
     }
 
     @Inject(method = "init", at = @At("TAIL"))
@@ -85,15 +85,6 @@ public class MixinMinecraft {
         if (KamiGuiUpdateNotification.Companion.getLatest() != null && !KamiGuiUpdateNotification.Companion.isLatest()) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification());
         }
-    }
-
-    private void save() {
-        if (!KamiMod.isReady()) return;
-
-        ShutdownEvent.INSTANCE.post();
-        System.out.println("Shutting down: saving KAMI configuration");
-        ConfigUtils.INSTANCE.saveAll();
-        System.out.println("Configuration saved.");
     }
 
 }

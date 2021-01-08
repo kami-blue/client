@@ -237,6 +237,11 @@ object CrystalAura : Module(
         }
     }
 
+    @JvmStatic
+    fun processRightClick() {
+
+    }
+
     private fun updateYawSpeed() {
         val yawDiff = abs(RotationUtils.normalizeAngle(PlayerPacketManager.prevServerSideRotation.x - PlayerPacketManager.serverSideRotation.x))
         yawDiffList[yawDiffIndex] = yawDiff

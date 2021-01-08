@@ -19,6 +19,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.MovementInput
 import net.minecraft.util.MovementInputFromOptions
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
@@ -29,10 +31,7 @@ import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 object Freecam : Module(
     name = "Freecam",
@@ -125,6 +124,11 @@ object Freecam : Module(
             }
         }
     }
+
+    @JvmStatic
+    val renderChunkOffset get() = BlockPos(floor(mc.player.posX / 16.0) * 16,
+        floor(mc.player.posY / 16.0) * 16,
+        floor(mc.player.posZ / 16.0) * 16)
 
     @JvmStatic
     fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {

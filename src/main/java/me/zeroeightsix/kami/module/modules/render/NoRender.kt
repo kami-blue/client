@@ -6,19 +6,24 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.Wrapper.minecraft
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.item.*
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.IAnimals
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.*
 import net.minecraft.tileentity.*
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
+import org.lwjgl.opengl.GL11
 
 object NoRender : Module(
     name = "NoRender",
@@ -60,6 +65,8 @@ object NoRender : Module(
     private enum class Page {
         OTHER, ENTITIES
     }
+
+    private val kamiMap = ResourceLocation("kamiblue/kamimap.png")
 
     private val settingMap = mapOf(
         player to EntityOtherPlayerMP::class.java,
@@ -146,6 +153,20 @@ object NoRender : Module(
                 }
             }
         }
+    }
+
+    fun renderFakeMap() {
+        val tessellator = Tessellator.getInstance()
+        val bufBuilder = tessellator.buffer
+        minecraft.textureManager.bindTexture(kamiMap)
+
+        bufBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        bufBuilder.pos(0.0, 128.0, -0.009999999776482582).tex(0.0, 1.0).endVertex()
+        bufBuilder.pos(128.0, 128.0, -0.009999999776482582).tex(1.0, 1.0).endVertex()
+        bufBuilder.pos(128.0, 0.0, -0.009999999776482582).tex(1.0, 0.0).endVertex()
+        bufBuilder.pos(0.0, 0.0, -0.009999999776482582).tex(0.0, 0.0).endVertex()
+
+        tessellator.draw()
     }
 
     private fun updateList() {

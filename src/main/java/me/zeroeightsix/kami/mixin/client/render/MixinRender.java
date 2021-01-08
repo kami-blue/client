@@ -51,8 +51,8 @@ abstract class MixinRender<T extends Entity> {
 
     @Inject(method = "renderLivingLabel", at = @At("RETURN"))
     protected void renderNamePost(T entityIn, String str, double x, double y, double z, int maxDistance, CallbackInfo ci) {
-        if (ESP.INSTANCE.isEnabled() && ESP.INSTANCE.getDrawingOutline()) {
-            if (ESP.INSTANCE.getFrameBuffer() != null) ESP.INSTANCE.getFrameBuffer().bindFramebuffer(false);
+        if (ESP.INSTANCE.isEnabled() && ESP.INSTANCE.getDrawingOutline() && ESP.INSTANCE.getFrameBuffer() != null) {
+            ESP.INSTANCE.getFrameBuffer().bindFramebuffer(false);
         }
 
         if (colorLock) {
