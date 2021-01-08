@@ -20,6 +20,7 @@ object CombatItemCount : LabelHud(
     private val arrow = setting("Arrow", true)
     private val crystal = setting("Crystal", true)
     private val gapple = setting("Gapple", true)
+    private val totem = setting("Totem", true)
     private val xpBottle = setting("XpBottle", true)
     private val pearl = setting("Pearl", false)
     private val chorusFruit = setting("ChorusFruit", false)
@@ -30,6 +31,7 @@ object CombatItemCount : LabelHud(
         arrow to arrayOf(Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW),
         crystal to arrayOf(Items.END_CRYSTAL),
         gapple to arrayOf(Items.GOLDEN_APPLE),
+        totem to arrayOf(Items.TOTEM_OF_UNDYING),
         xpBottle to arrayOf(Items.EXPERIENCE_BOTTLE),
         pearl to arrayOf(Items.ENDER_PEARL),
         chorusFruit to arrayOf(Items.CHORUS_FRUIT)
@@ -39,6 +41,7 @@ object CombatItemCount : LabelHud(
         ItemStack(Items.ARROW, -1),
         ItemStack(Items.END_CRYSTAL, -1),
         ItemStack(Items.GOLDEN_APPLE, -1, 1),
+        ItemStack(Items.TOTEM_OF_UNDYING, -1),
         ItemStack(Items.EXPERIENCE_BOTTLE, -1),
         ItemStack(Items.ENDER_PEARL, -1),
         ItemStack(Items.CHORUS_FRUIT, -1)

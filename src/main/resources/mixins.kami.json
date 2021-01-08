@@ -34,6 +34,7 @@
     "entity.MixinEntityPig",
     "gui.MixinGuiChat",
     "gui.MixinGuiContainer",
+    "gui.MixinGuiIngameForge",
     "gui.MixinGuiIngameMenu",
     "gui.MixinGuiInventory",
     "gui.MixinGuiNewChat",

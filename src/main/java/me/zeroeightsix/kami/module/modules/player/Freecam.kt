@@ -86,7 +86,6 @@ internal object Freecam : Module(
         }
 
         safeListener<InputEvent.KeyInputEvent> {
-            if (mc.world == null || mc.player == null) return@safeListener
             // Force it to stay in first person lol
             if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
         }
@@ -103,9 +102,12 @@ internal object Freecam : Module(
         }
 
         safeListener<InputUpdateEvent>(9999) {
-            if (it.movementInput !is MovementInputFromOptions || BaritoneUtils.isPathing || BaritoneUtils.isActive) return@safeListener
+            if (it.movementInput !is MovementInputFromOptions || BaritoneUtils.isPathing) return@safeListener
 
             resetMovementInput(it.movementInput)
+
+            if (BaritoneUtils.isActive) return@safeListener
+
             if (autoRotate.value) updatePlayerRotation()
             if (arrowKeyMove.value) updatePlayerMovement()
         }

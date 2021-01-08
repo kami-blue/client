@@ -30,7 +30,6 @@ object CombatUtils {
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val cachedArmorValues = HashMap<EntityLivingBase, Pair<Float, Float>>()
 
-    @JvmStatic
     fun calcDamageFromPlayer(entity: EntityPlayer, assumeCritical: Boolean = false): Float {
         val itemStack = entity.heldItemMainhand
         var damage = when (val item = itemStack.item) {
@@ -44,14 +43,12 @@ object CombatUtils {
         return damage
     }
 
-    @JvmStatic
     fun calcDamageFromMob(entity: EntityMob): Float {
         var damage = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).attributeValue.toFloat()
         damage += EnchantmentHelper.getModifierForCreature(entity.heldItemMainhand, mc.player.creatureAttribute)
         return calcDamage(mc.player, damage)
     }
 
-    @JvmStatic
     fun calcDamage(entity: EntityLivingBase, damageIn: Float = 100f, source: DamageSource = DamageSource.GENERIC, roundDamage: Boolean = false): Float {
         if (entity is EntityPlayer && entity.isCreative) return 0.0f // Return 0 directly if entity is a player and in creative mode
 
@@ -71,7 +68,6 @@ object CombatUtils {
         return if (roundDamage) round(damage) else damage
     }
 
-    @JvmStatic
     fun getProtectionModifier(entity: EntityPlayer, damageSource: DamageSource): Float {
         var modifier = 0
         for (armor in entity.armorInventoryList.toList()) {
@@ -87,7 +83,6 @@ object CombatUtils {
         return (1.0f - modifier / 25.0f)
     }
 
-    @JvmStatic
     fun getEnchantmentLevel(itemStack: ItemStack, enchantmentId: Int): Int {
         for (i in 0 until itemStack.enchantmentTagList.tagCount()) {
             val id = itemStack.enchantmentTagList.getCompoundTagAt(i).getShort("id").toInt()
@@ -97,7 +92,6 @@ object CombatUtils {
         return 0
     }
 
-    @JvmStatic
     fun equipBestWeapon(hitMode: PreferWeapon = PreferWeapon.NONE) {
         var bestSlot = -1
         var maxDamage = 0.0
@@ -113,13 +107,7 @@ object CombatUtils {
                     maxDamage = damage
                     bestSlot = i
                 }
-            } else if (stack.item is ItemAxe && (hitMode == PreferWeapon.AXE || hitMode == PreferWeapon.NONE)) {
-                val damage = (stack.item as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
-                if (damage > maxDamage) {
-                    maxDamage = damage
-                    bestSlot = i
-                }
-            } else if (stack.item is ItemTool) {
+            } else if ((stack.item is ItemAxe && (hitMode == PreferWeapon.AXE || hitMode == PreferWeapon.NONE)) || stack.item is ItemTool) {
                 val damage = (stack.item as ItemTool).attackDamage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED).toDouble()
                 if (damage > maxDamage) {
                     maxDamage = damage
@@ -130,7 +118,6 @@ object CombatUtils {
         if (bestSlot != -1) InventoryUtils.swapSlot(bestSlot)
     }
 
-    @JvmStatic
     fun getHealthSmart(entity: EntityLivingBase) = entity.health + entity.absorptionAmount * (entity.health / entity.maxHealth)
 
     init {

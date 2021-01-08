@@ -75,7 +75,6 @@ object RotationUtils {
         return Vec2f(yaw, pitch)
     }
 
-    @JvmStatic
     fun normalizeAngle(angleIn: Double): Double {
         var angle = angleIn
         angle %= 360.0
@@ -88,7 +87,6 @@ object RotationUtils {
         return angle
     }
 
-    @JvmStatic
     fun normalizeAngle(angleIn: Float): Float {
         var angle = angleIn
         angle %= 360f

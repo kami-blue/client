@@ -108,7 +108,7 @@ internal object StorageESP : Module(
         for (tileEntity in world.loadedTileEntityList.toList()) {
             if (!checkTileEntityType(tileEntity)) continue
 
-            val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos)
+            val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos) ?: continue
             val color = getTileEntityColor(tileEntity) ?: continue
             var side = GeometryMasks.Quad.ALL
 
@@ -151,7 +151,7 @@ internal object StorageESP : Module(
         for (entity in world.loadedEntityList.toList()) {
             if (!checkEntityType(entity)) continue
 
-            val box = entity.renderBoundingBox
+            val box = entity.renderBoundingBox ?: continue
             val color = getEntityColor(entity) ?: continue
 
             list.add(Triple(box, color, GeometryMasks.Quad.ALL))

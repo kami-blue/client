@@ -59,7 +59,6 @@ object EntityUtils {
         }
     }
 
-    @JvmStatic
     fun mobTypeSettings(entity: Entity, mobs: Boolean, passive: Boolean, neutral: Boolean, hostile: Boolean): Boolean {
         return mobs && (passive && entity.isPassive || neutral && entity.isNeutral || hostile && entity.isHostile)
     }
@@ -67,7 +66,6 @@ object EntityUtils {
     /**
      * Find the entities interpolated position
      */
-    @JvmStatic
     fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d = entity.prevPosVector.add(getInterpolatedAmount(entity, ticks))
 
     /**
@@ -112,7 +110,6 @@ object EntityUtils {
         return entityList
     }
 
-    @JvmStatic
     fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name))
             && (sleeping || !player.isPlayerSleeping)
 

@@ -31,12 +31,10 @@ object GlStateUtils {
     var colorLock = false
         private set
 
-    @JvmStatic
     fun useVbo(): Boolean {
         return mc.gameSettings.useVbo
     }
 
-    @JvmStatic
     fun alpha(state: Boolean) {
         if (state) {
             GlStateManager.enableAlpha()
@@ -45,7 +43,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun blend(state: Boolean) {
         if (state) {
             GlStateManager.enableBlend()
@@ -54,7 +51,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun smooth(state: Boolean) {
         if (state) {
             GlStateManager.shadeModel(GL_SMOOTH)
@@ -63,7 +59,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun lineSmooth(state: Boolean) {
         if (state) {
             glEnable(GL_LINE_SMOOTH)
@@ -73,7 +68,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun depth(state: Boolean) {
         if (state) {
             GlStateManager.enableDepth()
@@ -82,7 +76,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun texture2d(state: Boolean) {
         if (state) {
             GlStateManager.enableTexture2D()
@@ -91,7 +84,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun cull(state: Boolean) {
         if (state) {
             GlStateManager.enableCull()
@@ -100,7 +92,6 @@ object GlStateUtils {
         }
     }
 
-    @JvmStatic
     fun lighting(state: Boolean) {
         if (state) {
             GlStateManager.enableLighting()
@@ -126,24 +117,20 @@ object GlStateUtils {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, -1000)
     }
 
-    @JvmStatic
     fun rescaleActual() {
         rescale(Wrapper.minecraft.displayWidth.toDouble(), Wrapper.minecraft.displayHeight.toDouble())
     }
 
-    @JvmStatic
     fun rescaleKami() {
         val scale = ClickGUI.getScaleFactor()
         rescale(Wrapper.minecraft.displayWidth / scale, Wrapper.minecraft.displayHeight / scale)
     }
 
-    @JvmStatic
     fun rescaleMc() {
         val resolution = ScaledResolution(Wrapper.minecraft)
         rescale(resolution.scaledWidth_double, resolution.scaledHeight_double)
     }
 
-    @JvmStatic
     fun rescale(width: Double, height: Double) {
         GlStateManager.clear(256)
         GlStateManager.viewport(0, 0, mc.displayWidth, mc.displayHeight)

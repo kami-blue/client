@@ -149,7 +149,6 @@ object InventoryUtils {
      *
      * @return Number of item with given [itemId] in inventory
      */
-    @JvmStatic
     fun countItemAll(itemId: Int): Int {
         return countItem(0, 45, itemId)
     }
@@ -159,7 +158,6 @@ object InventoryUtils {
      *
      * @return Number of [item] in inventory
      */
-    @JvmStatic
     fun countItemAll(item: Item): Int {
         return countItem(0, 45, item)
     }

@@ -116,6 +116,8 @@ object Armor : HudElement(
     }
 
     private fun drawItem(itemStack: ItemStack, index: Int, x: Int, y: Int) {
+        if (itemStack.isEmpty) return
+
         RenderUtils2D.drawItem(itemStack, x, y, drawOverlay = false)
         if (armorCount.value) {
             val string = armorCounts[index].toString()

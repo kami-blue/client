@@ -31,7 +31,6 @@ enum class Direction(
 
     companion object {
 
-        @JvmStatic
         fun fromEntity(entity: Entity?) = entity?.let {
             fromYaw(it.rotationYaw)
         } ?: NORTH

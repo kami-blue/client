@@ -33,7 +33,6 @@ object RenderUtils2D {
         GlStateUtils.texture2d(true)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawRoundedRectOutline(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, segments: Int = 0, lineWidth: Float, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
@@ -50,7 +49,6 @@ object RenderUtils2D {
         drawLine(vertexHelper, pos4.plus(radius, 0.0), posEnd.minus(radius, 0.0), lineWidth, color) // Bottom
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawRoundedRectFilled(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, radius: Double, segments: Int = 0, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
@@ -66,33 +64,28 @@ object RenderUtils2D {
         drawRectFilled(vertexHelper, pos4.plus(radius, -radius), posEnd.minus(radius, 0.0), color) // Bottom
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawCircleOutline(vertexHelper: VertexHelper, center: Vec2d = Vec2d(0.0, 0.0), radius: Double, segments: Int = 0, lineWidth: Float = 1f, color: ColorHolder) {
         drawArcOutline(vertexHelper, center, radius, Pair(0f, 360f), segments, lineWidth, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawCircleFilled(vertexHelper: VertexHelper, center: Vec2d = Vec2d(0.0, 0.0), radius: Double, segments: Int = 0, color: ColorHolder) {
         drawArcFilled(vertexHelper, center, radius, Pair(0f, 360f), segments, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawArcOutline(vertexHelper: VertexHelper, center: Vec2d = Vec2d(0.0, 0.0), radius: Double, angleRange: Pair<Float, Float>, segments: Int = 0, lineWidth: Float = 1f, color: ColorHolder) {
         val arcVertices = getArcVertices(center, radius, angleRange, segments)
         drawLineStrip(vertexHelper, arcVertices, lineWidth, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawArcFilled(vertexHelper: VertexHelper, center: Vec2d = Vec2d(0.0, 0.0), radius: Double, angleRange: Pair<Float, Float>, segments: Int = 0, color: ColorHolder) {
         val arcVertices = getArcVertices(center, radius, angleRange, segments)
         drawTriangleFan(vertexHelper, center, arcVertices, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawRectOutline(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, lineWidth: Float = 1f, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
@@ -101,7 +94,6 @@ object RenderUtils2D {
         drawLineLoop(vertexHelper, vertices, lineWidth, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawRectFilled(vertexHelper: VertexHelper, posBegin: Vec2d = Vec2d(0.0, 0.0), posEnd: Vec2d, color: ColorHolder) {
         val pos2 = Vec2d(posEnd.x, posBegin.y) // Top right
@@ -109,20 +101,17 @@ object RenderUtils2D {
         drawQuad(vertexHelper, posBegin, pos2, posEnd, pos4, color)
     }
 
-    @JvmStatic
     fun drawQuad(vertexHelper: VertexHelper, pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, pos4: Vec2d, color: ColorHolder) {
         val vertices = arrayOf(pos1, pos2, pos4, pos3)
         drawTriangleStrip(vertexHelper, vertices, color)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawTriangleOutline(vertexHelper: VertexHelper, pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, lineWidth: Float = 1f, color: ColorHolder) {
         val vertices = arrayOf(pos1, pos2, pos3)
         drawLineLoop(vertexHelper, vertices, lineWidth, color)
     }
 
-    @JvmStatic
     fun drawTriangleFilled(vertexHelper: VertexHelper, pos1: Vec2d, pos2: Vec2d, pos3: Vec2d, color: ColorHolder) {
         prepareGl()
 
@@ -135,7 +124,6 @@ object RenderUtils2D {
         releaseGl()
     }
 
-    @JvmStatic
     fun drawTriangleFan(vertexHelper: VertexHelper, center: Vec2d, vertices: Array<Vec2d>, color: ColorHolder) {
         prepareGl()
 
@@ -149,7 +137,6 @@ object RenderUtils2D {
         releaseGl()
     }
 
-    @JvmStatic
     fun drawTriangleStrip(vertexHelper: VertexHelper, vertices: Array<Vec2d>, color: ColorHolder) {
         prepareGl()
 
@@ -162,7 +149,6 @@ object RenderUtils2D {
         releaseGl()
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawLineLoop(vertexHelper: VertexHelper, vertices: Array<Vec2d>, lineWidth: Float = 1f, color: ColorHolder) {
         prepareGl()
@@ -179,7 +165,6 @@ object RenderUtils2D {
         glLineWidth(1f)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawLineStrip(vertexHelper: VertexHelper, vertices: Array<Vec2d>, lineWidth: Float = 1f, color: ColorHolder) {
         prepareGl()
@@ -196,7 +181,6 @@ object RenderUtils2D {
         glLineWidth(1f)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun drawLine(vertexHelper: VertexHelper, posBegin: Vec2d, posEnd: Vec2d, lineWidth: Float = 1f, color: ColorHolder) {
         prepareGl()
@@ -211,7 +195,6 @@ object RenderUtils2D {
         glLineWidth(1f)
     }
 
-    @JvmStatic
     private fun getArcVertices(center: Vec2d, radius: Double, angleRange: Pair<Float, Float>, segments: Int): Array<Vec2d> {
         val range = max(angleRange.first, angleRange.second) - min(angleRange.first, angleRange.second)
         val seg = calcSegments(segments, radius, range)
@@ -224,7 +207,6 @@ object RenderUtils2D {
         }
     }
 
-    @JvmStatic
     private fun calcSegments(segmentsIn: Int, radius: Double, range: Float): Int {
         if (segmentsIn != -0) return segmentsIn
         val segments = radius * 0.5 * PI * (range / 360.0)

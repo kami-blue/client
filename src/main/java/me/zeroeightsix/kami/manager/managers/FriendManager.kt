@@ -47,7 +47,6 @@ object FriendManager : Manager {
     /**
      * Reads friends from KAMIBlueFriends.json into the friends ArrayList
      */
-    @JvmStatic
     fun loadFriends(): Boolean {
         ConfigUtils.fixEmptyJson(file)
 
@@ -66,7 +65,6 @@ object FriendManager : Manager {
     /**
      * Saves friends from the friends ArrayList into KAMIBlueFriends.json
      */
-    @JvmStatic
     fun saveFriends(): Boolean {
         return try {
             FileWriter(file, false).buffered().use {
