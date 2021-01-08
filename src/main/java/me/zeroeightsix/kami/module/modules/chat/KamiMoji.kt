@@ -47,9 +47,9 @@ object KamiMoji : Module(
         for (possible in text.split(":")) {
             if (isEmoji(possible)) {
                 val emojiText = ":$possible:"
-                val emojiTextWidth = emojiText.chars().map { mc.fontRenderer.getCharWidth(it.toChar()) }.sum()
+                val emojiTextWidth = emojiText.sumBy { mc.fontRenderer.getCharWidth(it) }
                 reducedWidth -= emojiTextWidth
-                text = text.replaceFirst(emojiText.toRegex(), getReplacement(fontHeight))
+                text = text.replaceFirst(emojiText, getReplacement(fontHeight))
             }
         }
 
@@ -58,8 +58,7 @@ object KamiMoji : Module(
 
     private fun getReplacement(fontHeight: Int): String {
         val emojiWidth = (fontHeight / mc.fontRenderer.getCharWidth(' ').toDouble()).ceilToInt()
-        val spaces = CharArray(emojiWidth)
-        Arrays.fill(spaces, ' ')
+        val spaces = CharArray(emojiWidth) { ' ' }
         return String(spaces)
     }
 

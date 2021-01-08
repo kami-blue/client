@@ -25,6 +25,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
@@ -127,15 +128,16 @@ object Freecam : Module(
     @JvmStatic
     val renderChunkOffset
         get() = BlockPos(
-            floor(mc.player.posX / 16.0) * 16,
-            floor(mc.player.posY / 16.0) * 16,
-            floor(mc.player.posZ / 16.0) * 16
+            (mc.player.posX / 16).floorToInt() * 16,
+            (mc.player.posY / 16).floorToInt() * 16,
+            (mc.player.posZ / 16).floorToInt() * 16
         )
 
     @JvmStatic
     fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
-        return if (isEnabled && mc.player != null) {
-            mc.player
+        val player = mc.player
+        return if (isEnabled && player != null) {
+            player
         } else {
             renderViewEntity
         }
