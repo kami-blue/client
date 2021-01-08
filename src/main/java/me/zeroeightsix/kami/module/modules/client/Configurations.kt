@@ -127,13 +127,11 @@ internal object Configurations : AbstractModule(
         MODULES("Modules", ModuleConfig, modulePresetSetting);
 
         override val serverPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
-            getJsons(config.filePath)
-            { it.nameWithoutExtension.startsWith("server-") }
+            getJsons(config.filePath) { it.nameWithoutExtension.startsWith("server-") }
         }
 
         override val allPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
-            getJsons(config.filePath)
-            { true }
+            getJsons(config.filePath) { true }
         }
 
         private companion object {
@@ -143,7 +141,7 @@ internal object Configurations : AbstractModule(
 
                 val files = dir.listFiles() ?: return emptySet()
                 val jsonFiles = files.filter {
-                    it.isFile && it.extension == ".json" && it.length() > 8L && filter(it)
+                    it.isFile && it.extension == "json" && it.length() > 8L && filter(it)
                 }
 
                 return LinkedHashSet<String>().apply {
@@ -156,7 +154,7 @@ internal object Configurations : AbstractModule(
     }
 
     interface IConfigType : DisplayEnum {
-        val config: IConfig
+        val config: AbstractConfig<out Any>
         val setting: StringSetting
         val serverPresets: Set<String>
         val allPresets: Set<String>
@@ -188,7 +186,7 @@ internal object Configurations : AbstractModule(
         }
 
         fun printCurrentPreset() {
-            val path = Paths.get("${setting.value}.json").toAbsolutePath()
+            val path = Paths.get("${config.filePath}/${setting.value}.json").toAbsolutePath()
             MessageSendHelper.sendChatMessage("Path to config: ${formatValue(path)}")
         }
 
@@ -196,10 +194,10 @@ internal object Configurations : AbstractModule(
             if (allPresets.isEmpty()) {
                 MessageSendHelper.sendChatMessage("No preset for ${formatValue(displayName)} config!")
             } else {
-                MessageSendHelper.sendChatMessage("List of presets: ${formatValue(serverPresets.size)}")
+                MessageSendHelper.sendChatMessage("List of presets: ${formatValue(allPresets.size)}")
 
                 allPresets.forEach {
-                    val path = Paths.get("${it}.json").toAbsolutePath()
+                    val path = Paths.get("${config.filePath}/${it}.json").toAbsolutePath()
                     MessageSendHelper.sendRawChatMessage(formatValue(path))
                 }
             }
@@ -234,7 +232,7 @@ internal object Configurations : AbstractModule(
                 MessageSendHelper.sendChatMessage("List of server presets for ${formatValue(displayName)} config: ${formatValue(serverPresets.size)}")
 
                 serverPresets.forEach {
-                    val path = Paths.get("${it}.json").toAbsolutePath()
+                    val path = Paths.get("${config.filePath}/${it}.json").toAbsolutePath()
                     MessageSendHelper.sendRawChatMessage(formatValue(path))
                 }
             }
