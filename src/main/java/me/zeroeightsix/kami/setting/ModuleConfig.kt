@@ -7,7 +7,7 @@ import java.io.File
 
 internal object ModuleConfig : NameableConfig<AbstractModule>(
         "modules",
-        "${KamiMod.DIRECTORY}modules",
+    "${KamiMod.DIRECTORY}config/modules",
 ) {
     private val pathSetting = GenericConfig.run { this@ModuleConfig.setting("CurrentPath", "default") }
     var currentPath by pathSetting

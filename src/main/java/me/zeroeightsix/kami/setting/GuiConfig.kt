@@ -4,15 +4,12 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.setting.configs.AbstractMultiConfig
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
-import java.io.File
 
 internal object GuiConfig : AbstractMultiConfig<Component>(
-        "gui",
-        KamiMod.DIRECTORY,
-        "click_gui", "hud_gui"
+    "gui",
+    "${KamiMod.DIRECTORY}config/gui",
+    "click_gui", "hud_gui"
 ) {
-    override val file: File get() = File("$directoryPath$name")
-
     override fun <S : AbstractSetting<*>> Component.setting(setting: S): S {
         val groupName = settingGroup.groupName
         if (groupName.isNotEmpty()) {
@@ -20,5 +17,4 @@ internal object GuiConfig : AbstractMultiConfig<Component>(
         }
         return setting
     }
-
 }
