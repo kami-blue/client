@@ -99,7 +99,6 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         MessageManager.INSTANCE.setLastPlayerMessage(message);
     }
 
-    // TODO: Clean this up into proper utils.
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     private void onUpdateWalkingPlayerPre(CallbackInfo ci) {
         // Setup flags

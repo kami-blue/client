@@ -23,12 +23,4 @@ object ColorConverter {
         val b = hexColor and 255
         return ColorHolder(r, g, b)
     }
-
-    fun hexToRgba(hexColor: Int): ColorHolder {
-        val a = hexColor shr 24 and 255
-        val r = hexColor shr 16 and 255
-        val g = hexColor shr 8 and 255
-        val b = hexColor and 255
-        return ColorHolder(r, g, b, a)
-    }
 }

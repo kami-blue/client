@@ -104,9 +104,6 @@ object ShulkerPreview : Module(
     }
 
     private fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
-        val start = ColorConverter.hexToRgba(startColor)
-        val end = ColorConverter.hexToRgba(endColor)
-
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableAlpha()
@@ -122,10 +119,10 @@ object ShulkerPreview : Module(
         val bufBuilder = tessellator.buffer
 
         bufBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        bufBuilder.colorVertex(right, top, start)
-        bufBuilder.colorVertex(left, top, start)
-        bufBuilder.colorVertex(left, bottom, end)
-        bufBuilder.colorVertex(right, bottom, end)
+        bufBuilder.colorVertex(right, top, startColor)
+        bufBuilder.colorVertex(left, top, startColor)
+        bufBuilder.colorVertex(left, bottom, endColor)
+        bufBuilder.colorVertex(right, bottom, endColor)
         tessellator.draw()
 
         GlStateManager.shadeModel(7424)
@@ -134,9 +131,14 @@ object ShulkerPreview : Module(
         GlStateManager.enableTexture2D()
     }
 
-    private fun BufferBuilder.colorVertex(x: Int, y: Int, color: ColorHolder) {
+    private fun BufferBuilder.colorVertex(x: Int, y: Int, color: Int) {
         this.pos(x.toDouble(), y.toDouble(), 300.0)
-            .color(color.r, color.b, color.g, color.a)
+            .color(
+                (color shr 16 and 255) / 255f,
+                (color shr 8 and 255) / 255f,
+                (color and 255) / 255f,
+                (color shr 24 and 255) / 255f
+            )
             .endVertex()
     }
 
