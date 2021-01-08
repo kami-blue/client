@@ -126,6 +126,15 @@ object Freecam : Module(
         }
     }
 
+    @JvmStatic
+    fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
+        return if (isEnabled && mc.player != null) {
+            mc.player
+        } else {
+            renderViewEntity
+        }
+    }
+
     private fun resetMovementInput(movementInput: MovementInput?) {
         if (movementInput !is MovementInputFromOptions) return
         movementInput.apply {

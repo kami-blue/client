@@ -1,11 +1,16 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.gui.mc.KamiGuiStealButton
+import me.zeroeightsix.kami.mixin.client.gui.MixinGuiContainer
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.player.ChestStealer.canSteal
+import me.zeroeightsix.kami.module.modules.player.ChestStealer.stealing
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
@@ -61,6 +66,25 @@ object ChestStealer : Module(
                 && mc.currentScreen !is GuiCrafting
                 && mc.currentScreen !is GuiContainerCreative
                 && mc.currentScreen !is GuiInventory
+    }
+
+    @JvmStatic
+    fun updateButton(button: GuiButton, left: Int, size: Int, top: Int) {
+        if (isEnabled && isContainerOpen()) {
+            val str = if (stealing) {
+                "Stop"
+            } else {
+                "Steal"
+            }
+
+            button.x = left + size + 2
+            button.y = top + 2
+            button.enabled = canSteal()
+            button.visible = true
+            button.displayString = str
+        } else {
+            button.visible = false
+        }
     }
 
     private fun steal(slot: Int?): Boolean {

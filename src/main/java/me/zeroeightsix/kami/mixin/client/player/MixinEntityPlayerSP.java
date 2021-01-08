@@ -70,11 +70,9 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
     @Inject(method = "displayGUIChest", at = @At("HEAD"), cancellable = true)
     public void onDisplayGUIChest(IInventory chestInventory, CallbackInfo ci) {
         if (BeaconSelector.INSTANCE.isEnabled()) {
-            if (chestInventory instanceof IInteractionObject) {
-                if ("minecraft:beacon".equals(((IInteractionObject) chestInventory).getGuiID())) {
-                    Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
-                    ci.cancel();
-                }
+            if (chestInventory instanceof IInteractionObject && "minecraft:beacon".equals(((IInteractionObject) chestInventory).getGuiID())) {
+                Minecraft.getMinecraft().displayGuiScreen(new KamiGuiBeacon(this.inventory, chestInventory));
+                ci.cancel();
             }
         }
     }
@@ -101,6 +99,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         MessageManager.INSTANCE.setLastPlayerMessage(message);
     }
 
+    // TODO: Clean this up into proper utils.
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     private void onUpdateWalkingPlayerPre(CallbackInfo ci) {
         // Setup flags

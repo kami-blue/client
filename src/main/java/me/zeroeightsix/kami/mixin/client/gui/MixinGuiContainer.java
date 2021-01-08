@@ -26,7 +26,7 @@ public class MixinGuiContainer extends GuiScreen {
     public void initGui(CallbackInfo ci) {
         if (ChestStealer.INSTANCE.isValidGui()) {
             this.buttonList.add(stealButton);
-            updateButton();
+            ChestStealer.updateButton(stealButton, this.guiLeft, this.xSize, this.guiTop);
         }
     }
 
@@ -41,24 +41,7 @@ public class MixinGuiContainer extends GuiScreen {
 
     @Inject(method = "updateScreen", at = @At("HEAD"))
     public void updateScreen(CallbackInfo ci) {
-        updateButton();
+        ChestStealer.updateButton(stealButton, this.guiLeft, this.xSize, this.guiTop);
     }
 
-    private void updateButton() {
-        if (ChestStealer.INSTANCE.isEnabled() && ChestStealer.INSTANCE.isContainerOpen()) {
-            String str = "";
-            if (ChestStealer.INSTANCE.getStealing()) {
-                str = "Stop";
-            } else {
-                str = "Steal";
-            }
-            stealButton.x = this.guiLeft + this.xSize + 2;
-            stealButton.y = this.guiTop + 2;
-            stealButton.enabled = ChestStealer.INSTANCE.canSteal();
-            stealButton.visible = true;
-            stealButton.displayString = str;
-        } else {
-            stealButton.visible = false;
-        }
-    }
 }

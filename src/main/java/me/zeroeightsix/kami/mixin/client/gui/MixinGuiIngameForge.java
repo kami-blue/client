@@ -12,31 +12,21 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class MixinGuiIngameForge {
     @ModifyVariable(method = "renderAir", at = @At(value = "STORE", ordinal = 0))
     private EntityPlayer renderAir$getRenderViewEntity(EntityPlayer renderViewEntity) {
-        return gerRenderViewEntity(renderViewEntity);
+        return Freecam.getRenderViewEntity(renderViewEntity);
     }
 
     @ModifyVariable(method = "renderHealth", at = @At(value = "STORE", ordinal = 0))
     private EntityPlayer renderHealth$getRenderViewEntity(EntityPlayer renderViewEntity) {
-        return gerRenderViewEntity(renderViewEntity);
+        return Freecam.getRenderViewEntity(renderViewEntity);
     }
 
     @ModifyVariable(method = "renderFood", at = @At(value = "STORE", ordinal = 0))
     private EntityPlayer renderFood$getRenderViewEntity(EntityPlayer renderViewEntity) {
-        return gerRenderViewEntity(renderViewEntity);
+        return Freecam.getRenderViewEntity(renderViewEntity);
     }
 
     @ModifyVariable(method = "renderHealthMount", at = @At(value = "STORE", ordinal = 0))
     private EntityPlayer renderHealthMount$getRenderViewEntity(EntityPlayer renderViewEntity) {
-        return gerRenderViewEntity(renderViewEntity);
-    }
-
-    private EntityPlayer gerRenderViewEntity(EntityPlayer renderViewEntity) {
-        EntityPlayer player = Wrapper.getPlayer();
-
-        if (Freecam.INSTANCE.isEnabled() && player != null) {
-            return player;
-        } else {
-            return renderViewEntity;
-        }
+        return Freecam.getRenderViewEntity(renderViewEntity);
     }
 }
