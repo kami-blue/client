@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EnchantmentUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorGradient
@@ -35,7 +35,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 //TODO: Impl Totem pops
-object Nametags : Module(
+internal object Nametags : Module(
     name = "Nametags",
     description = "Draws descriptive nametags above entities",
     category = Category.RENDER

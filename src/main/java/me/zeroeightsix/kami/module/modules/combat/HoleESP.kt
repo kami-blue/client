@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.SurroundUtils
@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 
-object HoleESP : Module(
+internal object HoleESP : Module(
     name = "HoleESP",
     category = Category.COMBAT,
     description = "Show safe holes for crystal pvp"

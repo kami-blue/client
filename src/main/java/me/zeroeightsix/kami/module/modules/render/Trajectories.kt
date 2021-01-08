@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.FastUse
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
@@ -29,7 +29,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-object Trajectories : Module(
+internal object Trajectories : Module(
     name = "Trajectories",
     category = Category.RENDER,
     description = "Draws lines to where trajectories are going to fall"

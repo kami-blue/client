@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
 
-object CustomFont : Module(
+internal object CustomFont : Module(
     name = "CustomFont",
     description = "Use the better font instead of the stupid Minecraft font",
     showOnArray = false,

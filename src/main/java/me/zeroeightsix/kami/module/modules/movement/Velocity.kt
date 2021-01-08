@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.mixin.client.world.MixinBlockLiquid
 import me.zeroeightsix.kami.mixin.extension.packetMotionX
 import me.zeroeightsix.kami.mixin.extension.packetMotionY
 import me.zeroeightsix.kami.mixin.extension.packetMotionZ
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.server.SPacketEntityVelocity
 import net.minecraft.network.play.server.SPacketExplosion
 import org.kamiblue.event.listener.listener
@@ -15,7 +15,7 @@ import org.kamiblue.event.listener.listener
 /**
  * @see MixinBlockLiquid.modifyAcceleration
  */
-object Velocity : Module(
+internal object Velocity : Module(
     name = "Velocity",
     description = "Modify knock back impact",
     category = Category.MOVEMENT

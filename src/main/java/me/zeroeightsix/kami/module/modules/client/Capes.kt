@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.client
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.misc.DiscordRPC
 import me.zeroeightsix.kami.util.EntityUtils
@@ -31,7 +32,7 @@ import kotlin.collections.HashMap
 import kotlin.math.cos
 import kotlin.math.sin
 
-object Capes : Module(
+internal object Capes : Module(
     name = "Capes",
     category = Category.CLIENT,
     description = "Controls the display of KAMI Blue capes",

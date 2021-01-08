@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.entity.Entity
@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-object EntityTools : Module(
+internal object EntityTools : Module(
     name = "EntityTools",
     category = Category.MISC,
     description = "Right click entities to perform actions on them"

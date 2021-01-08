@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.world.GameType
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object FakeGameMode : Module(
+internal object FakeGameMode : Module(
     name = "FakeGameMode",
     description = "Fakes your current gamemode client side",
     category = Category.MISC

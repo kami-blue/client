@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils
@@ -31,7 +31,7 @@ import org.lwjgl.input.Keyboard
 import java.util.*
 
 @CombatManager.CombatModule
-object CrystalBasePlace : Module(
+internal object CrystalBasePlace : Module(
     name = "CrystalBasePlace",
     description = "Places obby for placing crystal on",
     category = Category.COMBAT,

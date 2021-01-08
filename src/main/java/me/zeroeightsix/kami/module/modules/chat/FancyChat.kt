@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
-object FancyChat : Module(
+internal object FancyChat : Module(
     name = "FancyChat",
     category = Category.CHAT,
     description = "Makes messages you send fancy",

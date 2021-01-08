@@ -2,15 +2,15 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
-object AutoRespawn : Module(
+internal object AutoRespawn : Module(
     name = "AutoRespawn",
     description = "Automatically respawn after dying",
     category = Category.MISC

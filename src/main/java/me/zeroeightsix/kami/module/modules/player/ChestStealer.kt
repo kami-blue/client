@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
@@ -13,7 +13,7 @@ import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object ChestStealer : Module(
+internal object ChestStealer : Module(
     name = "ChestStealer",
     category = Category.PLAYER,
     description = "Automatically steal items from containers"

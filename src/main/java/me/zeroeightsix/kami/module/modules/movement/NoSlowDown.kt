@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockSoulSand
 import me.zeroeightsix.kami.mixin.client.world.MixinBlockWeb
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @see MixinBlockSoulSand
  * @see MixinBlockWeb
  */
-object NoSlowDown : Module(
+internal object NoSlowDown : Module(
     name = "NoSlowDown",
     category = Category.MOVEMENT,
     description = "Prevents being slowed down when using an item or going through cobwebs"

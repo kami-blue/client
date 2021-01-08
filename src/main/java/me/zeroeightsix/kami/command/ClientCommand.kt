@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.command
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.ClientExecuteEvent
 import me.zeroeightsix.kami.event.SafeExecuteEvent
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.threads.defaultScope
@@ -29,7 +29,7 @@ abstract class ClientCommand(
     @CommandBuilder
     protected fun AbstractArg<*>.module(
         name: String,
-        block: BuilderBlock<Module>
+        block: BuilderBlock<AbstractModule>
     ) {
         arg(ModuleArg(name), block)
     }

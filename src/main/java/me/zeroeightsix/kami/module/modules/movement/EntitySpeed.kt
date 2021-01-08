@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -20,7 +20,7 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.cos
 import kotlin.math.sin
 
-object EntitySpeed : Module(
+internal object EntitySpeed : Module(
     name = "EntitySpeed",
     category = Category.MOVEMENT,
     description = "Abuse client-sided movement to shape sound barrier breaking rideables"

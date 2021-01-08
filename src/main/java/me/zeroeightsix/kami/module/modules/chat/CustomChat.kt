@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
@@ -11,7 +11,7 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.min
 
-object CustomChat : Module(
+internal object CustomChat : Module(
     name = "CustomChat",
     category = Category.CHAT,
     description = "Add a custom ending to your message!",

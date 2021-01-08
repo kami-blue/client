@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.*
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.ClickType
@@ -59,7 +59,7 @@ object PlayerInventoryManager : Manager {
      *
      * @return [TaskState] representing the state of this task
      */
-    fun Module.addInventoryTask(vararg clickInfo: ClickInfo) =
+    fun AbstractModule.addInventoryTask(vararg clickInfo: ClickInfo) =
         InventoryTask(currentId++, modulePriority, clickInfo).let {
             actionQueue.add(it)
             it.taskState

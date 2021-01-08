@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import org.kamiblue.event.listener.listener
 
 /**
  * Created by Dewy on the 21st of April, 2020
  */
-object Baritone : Module(
+internal object Baritone : Module(
     name = "Baritone",
     category = Category.CLIENT,
     description = "Configures Baritone settings",

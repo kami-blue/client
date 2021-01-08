@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object VisualRange : Module(
+internal object VisualRange : Module(
     name = "VisualRange",
     description = "Shows players who enter and leave range in chat",
     category = Category.COMBAT,

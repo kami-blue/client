@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.mixin.extension.editLine
 import me.zeroeightsix.kami.mixin.extension.tileSign
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.inventory.GuiEditSign
@@ -11,7 +12,7 @@ import net.minecraft.util.text.TextComponentString
 import org.kamiblue.event.listener.listener
 import java.io.IOException
 
-object ColorSign : Module(
+internal object ColorSign : Module(
     name = "ColorSign",
     description = "Allows ingame coloring of text on signs",
     category = Category.MISC

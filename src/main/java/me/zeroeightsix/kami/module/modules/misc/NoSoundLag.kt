@@ -1,13 +1,14 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import net.minecraft.init.SoundEvents
 import net.minecraft.network.play.server.SPacketSoundEffect
 import net.minecraft.util.SoundCategory
 import org.kamiblue.event.listener.listener
 
-object NoSoundLag : Module(
+internal object NoSoundLag : Module(
     name = "NoSoundLag",
     category = Category.MISC,
     description = "Prevents lag caused by sound machines"

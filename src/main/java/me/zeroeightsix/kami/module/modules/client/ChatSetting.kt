@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
-object ChatSetting : Module(
+internal object ChatSetting : Module(
     name = "ChatSetting",
     category = Category.CLIENT,
     description = "Configures chat message manager",

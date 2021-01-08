@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
@@ -32,7 +32,7 @@ import kotlin.collections.HashSet
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
-object NoteBot : Module(
+internal object NoteBot : Module(
     name = "NoteBot",
     category = Category.MISC,
     description = "Plays music with note blocks; put songs as .mid files in .minecraft/kamiblue/songs"

@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object CoordsLog : Module(
+internal object CoordsLog : Module(
     name = "CoordsLog",
     description = "Automatically logs your coords, based on actions",
     category = Category.MISC

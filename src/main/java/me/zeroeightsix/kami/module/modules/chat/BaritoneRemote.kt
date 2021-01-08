@@ -4,14 +4,14 @@ import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
-object BaritoneRemote : Module(
+internal object BaritoneRemote : Module(
     name = "BaritoneRemote",
     description = "Remotely control Baritone with /msg",
     category = Category.CHAT

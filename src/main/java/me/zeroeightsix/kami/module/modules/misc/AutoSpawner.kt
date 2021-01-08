@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 /**
  * TODO: Rewrite
  */
-object AutoSpawner : Module(
+internal object AutoSpawner : Module(
     name = "AutoSpawner",
     category = Category.MISC,
     description = "Automatically spawns Withers, Iron Golems and Snowmen"

@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils.isMoving
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -14,7 +14,7 @@ import org.kamiblue.event.listener.listener
 import java.io.File
 import java.io.FileReader
 
-object LoginMessage : Module(
+internal object LoginMessage : Module(
     name = "LoginMessage",
     description = "Sends a given message to public chat on login.",
     category = Category.CHAT,

@@ -10,8 +10,8 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.id
 import me.zeroeightsix.kami.mixin.extension.packetAction
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils
@@ -54,7 +54,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @CombatManager.CombatModule
-object CrystalAura : Module(
+internal object CrystalAura : Module(
     name = "CrystalAura",
     alias = arrayOf("CA", "AC", "AutoCrystal"),
     description = "Places End Crystals to kill enemies",

@@ -6,13 +6,14 @@ import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.groups.SettingGroup
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
+import me.zeroeightsix.kami.setting.settings.SettingRegister
 import me.zeroeightsix.kami.util.ConfigUtils
 import java.io.File
 
-abstract class AbstractConfig<T>(
+abstract class AbstractConfig<T : Any>(
         name: String,
         protected val filePath: String
-) : SettingMultiGroup(name), IConfig<T> {
+) : SettingMultiGroup(name), IConfig, SettingRegister<T> {
 
     override val file get() = File("$filePath$name.json")
     override val backup get() =  File("$filePath$name.bak")

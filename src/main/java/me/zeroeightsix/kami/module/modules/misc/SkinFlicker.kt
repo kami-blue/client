@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.RenderEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EnumPlayerModelParts
 
-object SkinFlicker : Module(
+internal object SkinFlicker : Module(
     name = "SkinFlicker",
     description = "Toggle your skin layers rapidly for a cool skin effect",
     category = Category.MISC

@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
-object GuiColors : Module(
+internal object GuiColors : Module(
     name = "GuiColors",
     description = "Opens the Click GUI",
     showOnArray = false,

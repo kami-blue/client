@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.y
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.Bind
@@ -22,7 +22,7 @@ import org.lwjgl.input.Keyboard
  * The packet mode code is licensed under MIT and can be found here:
  * https://github.com/fr1kin/ForgeHax/blob/2011740/src/main/java/com/matt/forgehax/mods/StepMod.java
  */
-object Step : Module(
+internal object Step : Module(
     name = "Step",
     description = "Changes the vanilla behavior for stepping up blocks",
     category = Category.MOVEMENT,

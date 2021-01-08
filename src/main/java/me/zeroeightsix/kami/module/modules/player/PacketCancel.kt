@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.*
 import org.kamiblue.event.listener.listener
 
-object PacketCancel : Module(
+internal object PacketCancel : Module(
     name = "PacketCancel",
     description = "Cancels specific packets used for various actions",
     category = Category.PLAYER

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TimeUtils
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.format
@@ -9,7 +9,7 @@ import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 
-object ChatTimestamp : Module(
+internal object ChatTimestamp : Module(
     name = "ChatTimestamp",
     category = Category.CHAT,
     description = "Shows the time a message was sent beside the message",

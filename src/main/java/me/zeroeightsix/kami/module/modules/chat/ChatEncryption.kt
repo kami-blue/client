@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.MessageManager
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
 import me.zeroeightsix.kami.mixin.extension.textComponent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
@@ -21,7 +21,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 // TODO: Add proper RSA encryption
-object ChatEncryption : Module(
+internal object ChatEncryption : Module(
     name = "ChatEncryption",
     description = "Encrypts and decrypts chat messages",
     category = Category.CHAT,

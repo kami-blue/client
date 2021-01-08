@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
-object Zoom : Module(
+internal object Zoom : Module(
     name = "Zoom",
     category = Category.RENDER,
     description = "Configures FOV",

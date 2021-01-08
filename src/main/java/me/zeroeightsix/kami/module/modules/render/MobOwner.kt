@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.manager.managers.UUIDManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.passive.AbstractHorse
@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.pow
 
-object MobOwner : Module(
+internal object MobOwner : Module(
     name = "MobOwner",
     description = "Displays the owner of tamed mobs",
     category = Category.RENDER

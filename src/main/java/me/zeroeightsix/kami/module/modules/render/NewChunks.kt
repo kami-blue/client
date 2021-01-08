@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-object NewChunks : Module(
+internal object NewChunks : Module(
     name = "NewChunks",
     description = "Highlights newly generated chunks",
     category = Category.RENDER

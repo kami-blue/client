@@ -4,8 +4,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.InventoryUtils
@@ -22,7 +22,7 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
 @CombatManager.CombatModule
-object AutoTrap : Module(
+internal object AutoTrap : Module(
     name = "AutoTrap",
     category = Category.COMBAT,
     description = "Traps your enemies in obsidian",

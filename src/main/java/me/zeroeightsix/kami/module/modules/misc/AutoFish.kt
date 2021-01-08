@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.misc
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickMouse
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.WorldUtils.isWater
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -20,7 +20,7 @@ import kotlin.math.abs
  * Updated by l1ving on 26/05/20
  * Updated by Xiaro on 22/08/20
  */
-object AutoFish : Module(
+internal object AutoFish : Module(
     name = "AutoFish",
     category = Category.MISC,
     description = "Automatically catch fish"

@@ -2,10 +2,11 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.event.events.ShutdownEvent
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import org.kamiblue.event.listener.listener
 
-object HudEditor : Module(
+internal object HudEditor : Module(
     name = "HudEditor",
     description = "Edits the Hud",
     category = Category.CLIENT,

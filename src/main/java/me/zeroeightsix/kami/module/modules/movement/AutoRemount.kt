@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -12,7 +12,7 @@ import net.minecraft.entity.passive.*
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object AutoRemount : Module(
+internal object AutoRemount : Module(
     name = "AutoRemount",
     description = "Automatically remounts your horse",
     category = Category.MOVEMENT

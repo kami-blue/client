@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.misc
 import com.mojang.authlib.GameProfile
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object LogoutLogger : Module(
+internal object LogoutLogger : Module(
     name = "LogoutLogger",
     category = Category.MISC,
     description = "Logs when a player leaves the game"

@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.format
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 
-object TabFriends : Module(
+internal object TabFriends : Module(
     name = "TabFriends",
     description = "Highlights friends in the tab menu",
     category = Category.RENDER,

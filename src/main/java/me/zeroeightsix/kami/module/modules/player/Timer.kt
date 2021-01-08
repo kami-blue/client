@@ -2,12 +2,12 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object Timer : Module(
+internal object Timer : Module(
     name = "Timer",
     category = Category.PLAYER,
     description = "Changes your client tick speed"

@@ -5,14 +5,14 @@ import me.zeroeightsix.kami.gui.clickgui.component.ModuleButton
 import me.zeroeightsix.kami.gui.clickgui.window.ModuleSettingWindow
 import me.zeroeightsix.kami.gui.rgui.Component
 import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
-object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
+object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
 
     private val moduleWindows = ArrayList<ListWindow>()
 
@@ -53,7 +53,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
         setModuleVisibility { true }
     }
 
-    override fun newSettingWindow(element: Module, mousePos: Vec2f): ModuleSettingWindow {
+    override fun newSettingWindow(element: AbstractModule, mousePos: Vec2f): ModuleSettingWindow {
         return ModuleSettingWindow(element, mousePos.x, mousePos.y)
     }
 

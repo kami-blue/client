@@ -11,7 +11,12 @@ import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.color.ColorHolder
 
-interface SettingRegister<T> {
+/**
+ * Setting register overloading
+ *
+ * @param T Type to have extension function for registering setting
+ */
+interface SettingRegister<T : Any> {
 
     /** Integer Setting */
     fun T.setting(

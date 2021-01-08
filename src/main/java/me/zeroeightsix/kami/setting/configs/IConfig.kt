@@ -1,6 +1,5 @@
 package me.zeroeightsix.kami.setting.configs
 
-import me.zeroeightsix.kami.setting.settings.SettingRegister
 import java.io.File
 
 /**
@@ -8,7 +7,7 @@ import java.io.File
  *
  * @param T Type to have extension function for registering setting
  */
-interface IConfig<T> : SettingRegister<T> {
+interface IConfig {
 
     /** Main file of the config */
     val file: File
