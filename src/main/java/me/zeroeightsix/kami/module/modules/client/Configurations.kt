@@ -58,8 +58,8 @@ internal object Configurations : AbstractModule(
             if (mc.isIntegratedServerRunning) return@safeListener
 
             if (serverPreset) {
-                ConfigType.GUI.serverPreset(ip)
-                ConfigType.MODULES.serverPreset(ip)
+                ConfigType.GUI.setServerPreset(ip)
+                ConfigType.MODULES.setServerPreset(ip)
             }
         }
     }
@@ -99,7 +99,7 @@ internal object Configurations : AbstractModule(
     }
 
     init {
-        with({ prev : String, input: String ->
+        with({ prev: String, input: String ->
             if (verifyPresetName(input)) {
                 input
             } else {
@@ -173,9 +173,51 @@ internal object Configurations : AbstractModule(
             }
         }
 
-        fun preset(name: String) {
+        fun setPreset(name: String) {
             defaultScope.launch(Dispatchers.IO) {
                 updatePreset(setting, name, config)
+            }
+        }
+
+        fun copyPreset(name: String) {
+            defaultScope.launch(Dispatchers.IO) {
+                if (name == setting.value) {
+                    MessageSendHelper.sendErrorMessage("Destination preset name ${formatValue(name)} is same as current preset")
+                }
+
+                ConfigManager.save(config)
+
+                try {
+                    val fileFrom = File("${config.filePath}/${setting.value}.json")
+                    val fileTo = File("${config.filePath}/${name}.json")
+
+                    fileFrom.copyTo(fileTo, true)
+                } catch (e: Exception) {
+                    MessageSendHelper.sendErrorMessage("Failed to copy preset, ${e.message}")
+                    KamiMod.LOG.error("Failed to copy preset", e)
+                }
+            }
+        }
+
+        fun deletePreset(name: String) {
+            defaultScope.launch(Dispatchers.IO) {
+                if (!allPresets.contains(name)) {
+                    MessageSendHelper.sendChatMessage("${formatValue(name)} is not a valid preset for ${formatValue(displayName)} config")
+                    return@launch
+                }
+
+                try {
+                    val file = File("${config.filePath}/${name}.json")
+                    val fileBak = File("${config.filePath}/${name}.bak")
+
+                    file.delete()
+                    fileBak.delete()
+
+                    MessageSendHelper.sendChatMessage("Deleted preset $name for ${formatValue(displayName)} config")
+                } catch (e: Exception) {
+                    MessageSendHelper.sendErrorMessage("Failed to delete preset, ${e.message}")
+                    KamiMod.LOG.error("Failed to delete preset", e)
+                }
             }
         }
 
@@ -200,21 +242,25 @@ internal object Configurations : AbstractModule(
         fun newServerPreset(ip: String) {
             if (!serverPresetDisabledMessage()) return
 
-            preset(convertIpToPresetName(ip))
+            setPreset(convertIpToPresetName(ip))
         }
 
-        fun serverPreset(ip: String) {
+        fun setServerPreset(ip: String) {
             if (!serverPresetDisabledMessage()) return
 
             val presetName = convertIpToPresetName(ip)
 
             if (serverPresets.contains(presetName)) {
                 MessageSendHelper.sendChatMessage("Changing preset to ${formatValue(presetName)} for ${formatValue(displayName)} config")
-                preset(presetName)
+                setPreset(presetName)
             } else {
                 MessageSendHelper.sendChatMessage("No server preset found for ${formatValue(displayName)} config, using ${formatValue(defaultPreset)} preset...")
-                preset(defaultPreset)
+                setPreset(defaultPreset)
             }
+        }
+
+        fun deleteServerPreset(ip: String) {
+            deletePreset(convertIpToPresetName(ip))
         }
 
         fun printAllServerPreset() {
@@ -234,7 +280,6 @@ internal object Configurations : AbstractModule(
 
         private fun convertIpToPresetName(ip: String) = "server-" +
             ip.replace('.', '_').replace(':', '_')
-
 
         private fun serverPresetDisabledMessage() = if (!serverPreset) {
             MessageSendHelper.sendChatMessage("Server preset is not enabled, enable it in Configurations in ClickGUI")
