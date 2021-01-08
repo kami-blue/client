@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
@@ -16,17 +17,17 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
 object VoidESP : Module(
-    name = "VoidESP",
-    description = "Highlights holes leading to the void",
+    name = KamiLang.get("module.modules.render.VoidESP.Voidesp"),
+    description = KamiLang.get("module.modules.render.VoidESP.HighlightsHolesLeadingTo"),
     category = Category.RENDER
 ) {
-    private val filled by setting("Filled", true)
-    private val outline by setting("Outline", true)
-    private val color by setting("Color", ColorHolder(148, 161, 255), false)
-    private val aFilled by setting("FilledAlpha", 127, 0..255, 1)
-    private val aOutline by setting("OutlineAlpha", 255, 0..255, 1)
-    private val renderMode by setting("Mode", Mode.BLOCK_HOLE)
-    private val range by setting("Range", 8, 4..32, 1)
+    private val filled by setting(KamiLang.get("module.modules.render.VoidESP.Filled"), true)
+    private val outline by setting(KamiLang.get("module.modules.render.VoidESP.Outline"), true)
+    private val color by setting(KamiLang.get("module.modules.render.VoidESP.Color"), ColorHolder(148, 161, 255), false)
+    private val aFilled by setting(KamiLang.get("module.modules.render.VoidESP.Filledalpha"), 127, 0..255, 1)
+    private val aOutline by setting(KamiLang.get("module.modules.render.VoidESP.Outlinealpha"), 255, 0..255, 1)
+    private val renderMode by setting(KamiLang.get("module.modules.render.VoidESP.Mode"), Mode.BLOCK_HOLE)
+    private val range by setting(KamiLang.get("module.modules.render.VoidESP.Range"), 8, 4..32, 1)
 
     @Suppress("UNUSED")
     private enum class Mode {

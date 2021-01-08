@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
@@ -21,39 +22,39 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
 object Tracers : Module(
-    name = "Tracers",
-    description = "Draws lines to other living entities",
+    name = KamiLang.get("module.modules.render.Tracers.Tracers"),
+    description = KamiLang.get("module.modules.render.Tracers.DrawsLinesToOther"),
     category = Category.RENDER
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page = setting(KamiLang.get("module.modules.render.Tracers.Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..256, 8, { page.value == Page.ENTITY_TYPE })
+    private val players = setting(KamiLang.get("module.modules.render.Tracers.Players"), true, { page.value == Page.ENTITY_TYPE })
+    private val friends = setting(KamiLang.get("module.modules.render.Tracers.Friends"), false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val sleeping = setting(KamiLang.get("module.modules.render.Tracers.Sleeping"), false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val mobs = setting(KamiLang.get("module.modules.render.Tracers.Mobs"), true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting(KamiLang.get("module.modules.render.Tracers.Passivemobs"), false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting(KamiLang.get("module.modules.render.Tracers.Neutralmobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting(KamiLang.get("module.modules.render.Tracers.Hostilemobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting(KamiLang.get("module.modules.render.Tracers.Invisible"), true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting(KamiLang.get("module.modules.render.Tracers.Range"), 64, 8..256, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Color settings */
-    private val colorPlayer = setting("PlayerColor", DyeColors.KAMI, { page.value == Page.COLOR })
-    private val colorFriend = setting("FriendColor", DyeColors.RAINBOW, { page.value == Page.COLOR })
-    private val colorPassive = setting("PassiveMobColor", DyeColors.GREEN, { page.value == Page.COLOR })
-    private val colorNeutral = setting("NeutralMobColor", DyeColors.YELLOW, { page.value == Page.COLOR })
-    private val colorHostile = setting("HostileMobColor", DyeColors.RED, { page.value == Page.COLOR })
+    private val colorPlayer = setting(KamiLang.get("module.modules.render.Tracers.Playercolor"), DyeColors.KAMI, { page.value == Page.COLOR })
+    private val colorFriend = setting(KamiLang.get("module.modules.render.Tracers.Friendcolor"), DyeColors.RAINBOW, { page.value == Page.COLOR })
+    private val colorPassive = setting(KamiLang.get("module.modules.render.Tracers.Passivemobcolor"), DyeColors.GREEN, { page.value == Page.COLOR })
+    private val colorNeutral = setting(KamiLang.get("module.modules.render.Tracers.Neutralmobcolor"), DyeColors.YELLOW, { page.value == Page.COLOR })
+    private val colorHostile = setting(KamiLang.get("module.modules.render.Tracers.Hostilemobcolor"), DyeColors.RED, { page.value == Page.COLOR })
 
     /* General rendering settings */
-    private val rangedColor = setting("RangedColor", true, { page.value == Page.RENDERING })
-    private val colorChangeRange = setting("ColorChangeRange", 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
-    private val playerOnly = setting("PlayerOnly", true, { page.value == Page.RENDERING && rangedColor.value })
-    private val colorFar = setting("FarColor", DyeColors.WHITE, { page.value == Page.COLOR })
-    private val aFar = setting("FarAlpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
-    private val a = setting("TracerAlpha", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val yOffset = setting("yOffsetPercentage", 0, 0..100, 5, { page.value == Page.RENDERING })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val rangedColor = setting(KamiLang.get("module.modules.render.Tracers.Rangedcolor"), true, { page.value == Page.RENDERING })
+    private val colorChangeRange = setting(KamiLang.get("module.modules.render.Tracers.Colorchangerange"), 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
+    private val playerOnly = setting(KamiLang.get("module.modules.render.Tracers.Playeronly"), true, { page.value == Page.RENDERING && rangedColor.value })
+    private val colorFar = setting(KamiLang.get("module.modules.render.Tracers.Farcolor"), DyeColors.WHITE, { page.value == Page.COLOR })
+    private val aFar = setting(KamiLang.get("module.modules.render.Tracers.Faralpha"), 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
+    private val a = setting(KamiLang.get("module.modules.render.Tracers.Traceralpha"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val yOffset = setting(KamiLang.get("module.modules.render.Tracers.Yoffsetpercentage"), 0, 0..100, 5, { page.value == Page.RENDERING })
+    private val thickness = setting(KamiLang.get("module.modules.render.Tracers.Linethickness"), 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, COLOR, RENDERING

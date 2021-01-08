@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.module.Module
 
 object NoHurtCam : Module(
-    name = "NoHurtCam",
+    name = KamiLang.get("module.modules.render.NoHurtCam.Nohurtcam"),
     category = Category.RENDER,
-    description = "Disables the 'hurt' camera effect"
+    description = KamiLang.get("module.modules.render.NoHurtCam.DisablesThe'hurt'Camera")
 )

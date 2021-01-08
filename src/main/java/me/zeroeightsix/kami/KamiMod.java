@@ -50,8 +50,6 @@ public class KamiMod {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        KamiLang.INSTANCE.load(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode());
-
 
         final File directory = new File(DIRECTORY);
         if (!directory.exists()) directory.mkdir();
@@ -63,7 +61,7 @@ public class KamiMod {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         LOG.info("Initializing " + NAME + " " + VERSION);
-
+        KamiLang.INSTANCE.load(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode());
         LoaderWrapper.loadAll();
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 

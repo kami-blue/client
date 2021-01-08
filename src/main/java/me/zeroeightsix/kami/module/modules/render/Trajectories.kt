@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
@@ -30,18 +31,18 @@ import kotlin.math.pow
 import kotlin.math.sin
 
 object Trajectories : Module(
-    name = "Trajectories",
+    name = KamiLang.get("module.modules.render.Trajectories.Trajectories"),
     category = Category.RENDER,
-    description = "Draws lines to where trajectories are going to fall"
+    description = KamiLang.get("module.modules.render.Trajectories.DrawsLinesToWhere")
 ) {
-    private val showEntity = setting("ShowEntity", true)
-    private val showBlock = setting("ShowBlock", false)
-    private val r = setting("Red", 255, 0..255, 1)
-    private val g = setting("Green", 255, 0..255, 1)
-    private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 127, 0..255, 1)
-    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1)
-    private val thickness = setting("Thickness", 2f, 0.25f..5f, 0.25f)
+    private val showEntity = setting(KamiLang.get("module.modules.render.Trajectories.Showentity"), true)
+    private val showBlock = setting(KamiLang.get("module.modules.render.Trajectories.Showblock"), false)
+    private val r = setting(KamiLang.get("module.modules.render.Trajectories.Red"), 255, 0..255, 1)
+    private val g = setting(KamiLang.get("module.modules.render.Trajectories.Green"), 255, 0..255, 1)
+    private val b = setting(KamiLang.get("module.modules.render.Trajectories.Blue"), 255, 0..255, 1)
+    private val aFilled = setting(KamiLang.get("module.modules.render.Trajectories.Filledalpha"), 127, 0..255, 1)
+    private val aOutline = setting(KamiLang.get("module.modules.render.Trajectories.Outlinealpha"), 255, 0..255, 1)
+    private val thickness = setting(KamiLang.get("module.modules.render.Trajectories.Thickness"), 2f, 0.25f..5f, 0.25f)
 
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var prevItemUseCount = 0

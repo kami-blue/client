@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,29 +32,29 @@ import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 object Search : Module(
-    name = "Search",
-    description = "Highlights blocks in the world",
+    name = KamiLang.get("module.modules.render.Search.Search"),
+    description = KamiLang.get("module.modules.render.Search.HighlightsBlocksInThe"),
     category = Category.RENDER
 ) {
     private val defaultSearchList = linkedSetOf("minecraft:portal", "minecraft:end_portal_frame", "minecraft:bed")
 
-    private val updateDelay by setting("UpdateDelay", 1000, 500..3000, 50)
-    private val range by setting("SearchRange", 128, 0..256, 8)
-    private val maximumBlocks by setting("MaximumBlocks", 256, 16..4096, 128)
-    private val filled by setting("Filled", true)
-    private val outline by setting("Outline", true)
-    private val tracer by setting("Tracer", true)
-    private val customColors by setting("CustomColors", false)
-    private val r by setting("Red", 155, 0..255, 1, { customColors })
-    private val g by setting("Green", 144, 0..255, 1, { customColors })
-    private val b by setting("Blue", 255, 0..255, 1, { customColors })
-    private val aFilled by setting("FilledAlpha", 31, 0..255, 1, { filled })
-    private val aOutline by setting("OutlineAlpha", 127, 0..255, 1, { outline })
-    private val aTracer by setting("TracerAlpha", 200, 0..255, 1, { tracer })
-    private val thickness by setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    private val updateDelay by setting(KamiLang.get("module.modules.render.Search.Updatedelay"), 1000, 500..3000, 50)
+    private val range by setting(KamiLang.get("module.modules.render.Search.Searchrange"), 128, 0..256, 8)
+    private val maximumBlocks by setting(KamiLang.get("module.modules.render.Search.Maximumblocks"), 256, 16..4096, 128)
+    private val filled by setting(KamiLang.get("module.modules.render.Search.Filled"), true)
+    private val outline by setting(KamiLang.get("module.modules.render.Search.Outline"), true)
+    private val tracer by setting(KamiLang.get("module.modules.render.Search.Tracer"), true)
+    private val customColors by setting(KamiLang.get("module.modules.render.Search.Customcolors"), false)
+    private val r by setting(KamiLang.get("module.modules.render.Search.Red"), 155, 0..255, 1, { customColors })
+    private val g by setting(KamiLang.get("module.modules.render.Search.Green"), 144, 0..255, 1, { customColors })
+    private val b by setting(KamiLang.get("module.modules.render.Search.Blue"), 255, 0..255, 1, { customColors })
+    private val aFilled by setting(KamiLang.get("module.modules.render.Search.Filledalpha"), 31, 0..255, 1, { filled })
+    private val aOutline by setting(KamiLang.get("module.modules.render.Search.Outlinealpha"), 127, 0..255, 1, { outline })
+    private val aTracer by setting(KamiLang.get("module.modules.render.Search.Traceralpha"), 200, 0..255, 1, { tracer })
+    private val thickness by setting(KamiLang.get("module.modules.render.Search.Linethickness"), 2.0f, 0.25f..5.0f, 0.25f)
 
-    var overrideWarning by setting("OverrideWarning", false, { false })
-    val searchList = setting(CollectionSetting("SearchList", defaultSearchList, { false }))
+    var overrideWarning by setting(KamiLang.get("module.modules.render.Search.Overridewarning"), false, { false })
+    val searchList = setting(CollectionSetting(KamiLang.get("module.modules.render.Search.Searchlist"), defaultSearchList, { false }))
 
     private val renderer = ESPRenderer()
     private val updateTimer = TickTimer()
@@ -65,8 +66,8 @@ object Search : Module(
     init {
         onEnable {
             if (!overrideWarning && ShaderHelper.isIntegratedGraphics) {
-                MessageSendHelper.sendErrorMessage("$chatName Warning: Running Search with an Intel Integrated GPU is not recommended, as it has a &llarge&r impact on performance.")
-                MessageSendHelper.sendWarningMessage("$chatName If you're sure you want to try, run the ${formatValue("${CommandManager.prefix}search override")} command")
+                MessageSendHelper.sendErrorMessage(KamiLang.get("module.modules.render.Search.ChatnameWarning:RunningSearch", chatName))
+                MessageSendHelper.sendWarningMessage(KamiLang.get("module.modules.render.Search.ChatnameIfYou'reSure", chatName, "${CommandManager.prefix}search override"))
                 disable()
                 return@onEnable
             }

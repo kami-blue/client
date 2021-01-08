@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.mixin.extension.mapBossInfos
 import me.zeroeightsix.kami.mixin.extension.render
 import me.zeroeightsix.kami.module.Module
@@ -18,13 +19,13 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 object BossStack : Module(
-    name = "BossStack",
-    description = "Modify the boss health GUI to take up less space",
+    name = KamiLang.get("module.modules.render.BossStack.Bossstack"),
+    description = KamiLang.get("module.modules.render.BossStack.ModifyTheBossHealth"),
     category = Category.RENDER
 ) {
-    private val mode = setting("Mode", BossStackMode.STACK)
-    private val scale = setting("Scale", 1.0f, 0.1f..5.0f, 0.25f)
-    private val censor = setting("Censor", false)
+    private val mode = setting(KamiLang.get("module.modules.render.BossStack.Mode"), BossStackMode.STACK)
+    private val scale = setting(KamiLang.get("module.modules.render.BossStack.Scale"), 1.0f, 0.1f..5.0f, 0.25f)
+    private val censor = setting(KamiLang.get("module.modules.render.BossStack.Censor"), false)
 
     @Suppress("unused")
     private enum class BossStackMode {
@@ -59,7 +60,7 @@ object BossStack : Module(
                 val cacheMap = HashMap<String, ArrayList<BossInfoClient>>()
 
                 for (bossInfo in bossInfoList) {
-                    val list = cacheMap.getOrPut(if (censor.value) "Boss" else bossInfo.name.formattedText) { ArrayList() }
+                    val list = cacheMap.getOrPut(if (censor.value) KamiLang.get("module.modules.render.BossStack.Boss") else bossInfo.name.formattedText) { ArrayList() }
                     list.add(bossInfo)
                 }
 
@@ -105,7 +106,7 @@ object BossStack : Module(
             }
 
     private fun drawHealthBar() {
-        mc.profiler.startSection("bossHealth")
+        mc.profiler.startSection(KamiLang.get("module.modules.render.BossStack.Bosshealth"))
 
         val width = ScaledResolution(mc).scaledWidth
         var posY = 12
@@ -116,7 +117,7 @@ object BossStack : Module(
 
         if (bossInfoMap.isNotEmpty()) for ((bossInfo, count) in bossInfoMap) {
             val posX = (width / scale.value / 2.0f - 91.0f).roundToInt()
-            val text = (if (censor.value) "Boss" else bossInfo.name.formattedText) + if (count != -1) " x$count" else ""
+            val text = (if (censor.value) KamiLang.get("module.modules.render.BossStack.Boss") else bossInfo.name.formattedText) + if (count != -1) KamiLang.get("module.modules.render.BossStack.Xcount", count) else ""
             val textPosX = width / scale.value / 2.0f - mc.fontRenderer.getStringWidth(text) / 2.0f
             val textPosY = posY - 9.0f
 

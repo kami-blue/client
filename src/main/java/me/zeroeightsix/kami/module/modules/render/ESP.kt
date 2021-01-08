@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
@@ -29,40 +30,40 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object ESP : Module(
-    name = "ESP",
+    name = KamiLang.get("module.modules.render.ESP.Esp"),
     category = Category.RENDER,
-    description = "Highlights entities"
+    description = KamiLang.get("module.modules.render.ESP.HighlightsEntities")
 ) {
-    private val page by setting("Page", Page.ENTITY_TYPE)
+    private val page by setting(KamiLang.get("module.modules.render.ESP.Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val all by setting("AllEntity", false, { page == Page.ENTITY_TYPE })
-    private val experience by setting("Experience", false, { page == Page.ENTITY_TYPE && !all })
-    private val arrows by setting("Arrows", false, { page == Page.ENTITY_TYPE && !all })
-    private val throwable by setting("Throwable", false, { page == Page.ENTITY_TYPE && !all })
-    private val items by setting("Items", true, { page == Page.ENTITY_TYPE && !all })
-    private val players by setting("Players", true, { page == Page.ENTITY_TYPE && !all })
-    private val friends by setting("Friends", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val sleeping by setting("Sleeping", false, { page == Page.ENTITY_TYPE && !all && players })
-    private val mobs by setting("Mobs", true, { page == Page.ENTITY_TYPE && !all })
-    private val passive by setting("PassiveMobs", false, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val neutral by setting("NeutralMobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val hostile by setting("HostileMobs", true, { page == Page.ENTITY_TYPE && !all && mobs })
-    private val invisible by setting("Invisible", true, { page == Page.ENTITY_TYPE && !all })
-    private val range by setting("Range", 32.0f, 8.0f..64.0f, 0.5f, { page == Page.ENTITY_TYPE })
+    private val all by setting(KamiLang.get("module.modules.render.ESP.Allentity"), false, { page == Page.ENTITY_TYPE })
+    private val experience by setting(KamiLang.get("module.modules.render.ESP.Experience"), false, { page == Page.ENTITY_TYPE && !all })
+    private val arrows by setting(KamiLang.get("module.modules.render.ESP.Arrows"), false, { page == Page.ENTITY_TYPE && !all })
+    private val throwable by setting(KamiLang.get("module.modules.render.ESP.Throwable"), false, { page == Page.ENTITY_TYPE && !all })
+    private val items by setting(KamiLang.get("module.modules.render.ESP.Items"), true, { page == Page.ENTITY_TYPE && !all })
+    private val players by setting(KamiLang.get("module.modules.render.ESP.Players"), true, { page == Page.ENTITY_TYPE && !all })
+    private val friends by setting(KamiLang.get("module.modules.render.ESP.Friends"), false, { page == Page.ENTITY_TYPE && !all && players })
+    private val sleeping by setting(KamiLang.get("module.modules.render.ESP.Sleeping"), false, { page == Page.ENTITY_TYPE && !all && players })
+    private val mobs by setting(KamiLang.get("module.modules.render.ESP.Mobs"), true, { page == Page.ENTITY_TYPE && !all })
+    private val passive by setting(KamiLang.get("module.modules.render.ESP.Passivemobs"), false, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val neutral by setting(KamiLang.get("module.modules.render.ESP.Neutralmobs"), true, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val hostile by setting(KamiLang.get("module.modules.render.ESP.Hostilemobs"), true, { page == Page.ENTITY_TYPE && !all && mobs })
+    private val invisible by setting(KamiLang.get("module.modules.render.ESP.Invisible"), true, { page == Page.ENTITY_TYPE && !all })
+    private val range by setting(KamiLang.get("module.modules.render.ESP.Range"), 32.0f, 8.0f..64.0f, 0.5f, { page == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val mode = setting("Mode", ESPMode.SHADER, { page == Page.RENDERING })
-    private val hideOriginal by setting("HideOriginal", false, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val filled by setting("Filled", false, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val outline by setting("Outline", true, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val r by setting("Red", 155, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val g by setting("Green", 144, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val b by setting("Blue", 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aFilled by setting("FilledAlpha", 63, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val aOutline by setting("OutlineAlpha", 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
-    private val blurRadius by setting("BlurRadius", 0f, 0f..16f, 0.5f, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
-    private val width by setting("Width", 2f, 1f..8f, 0.25f, { page == Page.RENDERING })
+    private val mode = setting(KamiLang.get("module.modules.render.ESP.Mode"), ESPMode.SHADER, { page == Page.RENDERING })
+    private val hideOriginal by setting(KamiLang.get("module.modules.render.ESP.Hideoriginal"), false, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
+    private val filled by setting(KamiLang.get("module.modules.render.ESP.Filled"), false, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val outline by setting(KamiLang.get("module.modules.render.ESP.Outline"), true, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val r by setting(KamiLang.get("module.modules.render.ESP.Red"), 155, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val g by setting(KamiLang.get("module.modules.render.ESP.Green"), 144, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val b by setting(KamiLang.get("module.modules.render.ESP.Blue"), 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val aFilled by setting(KamiLang.get("module.modules.render.ESP.Filledalpha"), 63, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val aOutline by setting(KamiLang.get("module.modules.render.ESP.Outlinealpha"), 255, 0..255, 1, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
+    private val blurRadius by setting(KamiLang.get("module.modules.render.ESP.Blurradius"), 0f, 0f..16f, 0.5f, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
+    private val width by setting(KamiLang.get("module.modules.render.ESP.Width"), 2f, 1f..8f, 0.25f, { page == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING

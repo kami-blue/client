@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
@@ -29,27 +30,27 @@ import java.util.*
 import kotlin.collections.LinkedHashSet
 
 object NewChunks : Module(
-    name = "NewChunks",
-    description = "Highlights newly generated chunks",
+    name = KamiLang.get("module.modules.render.NewChunks.Newchunks"),
+    description = KamiLang.get("module.modules.render.NewChunks.HighlightsNewlyGeneratedChunks"),
     category = Category.RENDER
 ) {
-    private val relative = setting("Relative", true)
-    private val autoClear = setting("AutoClear", true)
-    private val saveNewChunks = setting("SaveNewChunks", false)
-    private val saveOption = setting("SaveOption", SaveOption.EXTRA_FOLDER, { saveNewChunks.value })
-    private val saveInRegionFolder = setting("InRegion", false, { saveNewChunks.value })
-    private val alsoSaveNormalCoords = setting("SaveNormalCoords", false, { saveNewChunks.value })
-    private val closeFile = setting("CloseFile", false, { saveNewChunks.value })
-    private val renderMode = setting("RenderMode", RenderMode.BOTH)
-    private val yOffset = setting("YOffset", 0, -256..256, 4, { isWorldMode })
-    private val customColor = setting("CustomColor", false, { isWorldMode })
-    private val red = setting("Red", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val green = setting("Green", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val blue = setting("Blue", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val range = setting("RenderRange", 256, 64..1024, 64)
-    val radarScale = setting("RadarScale", 2.0,1.0..10.0, 0.1, { isRadarMode })
-    private val removeMode = setting("RemoveMode", RemoveMode.MAX_NUM)
-    private val maxNum = setting("MaxNum", 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
+    private val relative = setting(KamiLang.get("module.modules.render.NewChunks.Relative"), true)
+    private val autoClear = setting(KamiLang.get("module.modules.render.NewChunks.Autoclear"), true)
+    private val saveNewChunks = setting(KamiLang.get("module.modules.render.NewChunks.Savenewchunks"), false)
+    private val saveOption = setting(KamiLang.get("module.modules.render.NewChunks.Saveoption"), SaveOption.EXTRA_FOLDER, { saveNewChunks.value })
+    private val saveInRegionFolder = setting(KamiLang.get("module.modules.render.NewChunks.Inregion"), false, { saveNewChunks.value })
+    private val alsoSaveNormalCoords = setting(KamiLang.get("module.modules.render.NewChunks.Savenormalcoords"), false, { saveNewChunks.value })
+    private val closeFile = setting(KamiLang.get("module.modules.render.NewChunks.Closefile"), false, { saveNewChunks.value })
+    private val renderMode = setting(KamiLang.get("module.modules.render.NewChunks.Rendermode"), RenderMode.BOTH)
+    private val yOffset = setting(KamiLang.get("module.modules.render.NewChunks.Yoffset"), 0, -256..256, 4, { isWorldMode })
+    private val customColor = setting(KamiLang.get("module.modules.render.NewChunks.Customcolor"), false, { isWorldMode })
+    private val red = setting(KamiLang.get("module.modules.render.NewChunks.Red"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val green = setting(KamiLang.get("module.modules.render.NewChunks.Green"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val blue = setting(KamiLang.get("module.modules.render.NewChunks.Blue"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val range = setting(KamiLang.get("module.modules.render.NewChunks.Renderrange"), 256, 64..1024, 64)
+    val radarScale = setting(KamiLang.get("module.modules.render.NewChunks.Radarscale"), 2.0,1.0..10.0, 0.1, { isRadarMode })
+    private val removeMode = setting(KamiLang.get("module.modules.render.NewChunks.Removemode"), RemoveMode.MAX_NUM)
+    private val maxNum = setting(KamiLang.get("module.modules.render.NewChunks.Maxnum"), 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
@@ -64,13 +65,13 @@ object NewChunks : Module(
         onDisable {
             logWriterClose()
             chunks.clear()
-            MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
+            MessageSendHelper.sendChatMessage(KamiLang.get("module.modules.render.NewChunks.ChatnameSavedAndCleared", chatName))
         }
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && autoClear.value && timer.tick(10L)) {
                 chunks.clear()
-                MessageSendHelper.sendChatMessage("$chatName Cleared chunks!")
+                MessageSendHelper.sendChatMessage(KamiLang.get("module.modules.render.NewChunks.ChatnameClearedChunks!", chatName))
             }
         }
 
@@ -157,8 +158,8 @@ object NewChunks : Module(
             logWriter!!.println(head)
         } catch (e: Exception) {
             e.printStackTrace()
-            KamiMod.LOG.error(chatName + " some exception happened when trying to start the logging -> " + e.message)
-            MessageSendHelper.sendErrorMessage(chatName + " onLogStart: " + e.message)
+            KamiMod.LOG.error(chatName + KamiLang.get("module.modules.render.NewChunks.SomeExceptionHappened") + e.message)
+            MessageSendHelper.sendErrorMessage(chatName + KamiLang.get("module.modules.render.NewChunks.Onlogstart:") + e.message)
         }
     }
 
@@ -175,8 +176,8 @@ object NewChunks : Module(
                     file = mc.integratedServer?.getWorld(dimension)?.chunkSaveLocation
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KamiMod.LOG.error("some exception happened when getting canonicalFile -> " + e.message)
-                    MessageSendHelper.sendErrorMessage(chatName + " onGetPath: " + e.message)
+                    KamiMod.LOG.error(KamiLang.get("module.modules.render.NewChunks.SomeExceptionHappenedWhen") + e.message)
+                    MessageSendHelper.sendErrorMessage(chatName + KamiLang.get("module.modules.render.NewChunks.Ongetpath:") + e.message)
                 }
 
                 // Gets the "depth" of this directory relative the the game's run directory, 2 is the location of the world
@@ -208,8 +209,8 @@ object NewChunks : Module(
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                KamiMod.LOG.error("some exception happened when trying to make the file -> " + e.message)
-                MessageSendHelper.sendErrorMessage(chatName + " onCreateFile: " + e.message)
+                KamiMod.LOG.error(KamiLang.get("module.modules.render.NewChunks.SomeExceptionHappenedWhen") + e.message)
+                MessageSendHelper.sendErrorMessage(chatName + KamiLang.get("module.modules.render.NewChunks.Oncreatefile:") + e.message)
             }
             return rV
         }
@@ -231,8 +232,8 @@ object NewChunks : Module(
 
                 // extra because name might be different
                 if (!rV.exists()) {
-                    MessageSendHelper.sendWarningMessage("$chatName nhack wdl directory doesnt exist: $folderName")
-                    MessageSendHelper.sendWarningMessage("$chatName creating the directory now. It is recommended to update the ip")
+                    MessageSendHelper.sendWarningMessage(KamiLang.get("module.modules.render.NewChunks.ChatnameNhackWdlDirectory", chatName, folderName))
+                    MessageSendHelper.sendWarningMessage(KamiLang.get("module.modules.render.NewChunks.ChatnameCreatingTheDirectory", chatName))
                 }
             }
             else -> {
@@ -327,7 +328,7 @@ object NewChunks : Module(
         closeFile.valueListeners.add { _, it ->
             if (it) {
                 logWriterClose()
-                MessageSendHelper.sendChatMessage("$chatName Saved file!")
+                MessageSendHelper.sendChatMessage(KamiLang.get("module.modules.render.NewChunks.ChatnameSavedFile!", chatName))
                 closeFile.value = false
             }
         }

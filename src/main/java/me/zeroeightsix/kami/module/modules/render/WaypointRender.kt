@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
@@ -26,35 +27,35 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object WaypointRender : Module(
-    name = "WaypointRender",
-    description = "Render saved waypoints",
+    name = KamiLang.get("module.modules.render.WaypointRender.Waypointrender"),
+    description = KamiLang.get("module.modules.render.WaypointRender.RenderSavedWaypoints"),
     category = Category.RENDER
 ) {
 
-    private val page = setting("Page", Page.INFO_BOX)
+    private val page = setting(KamiLang.get("module.modules.render.WaypointRender.Page"), Page.INFO_BOX)
 
     /* Page one */
-    private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
-    private val showName = setting("ShowName", true, { page.value == Page.INFO_BOX })
-    private val showDate = setting("ShowDate", false, { page.value == Page.INFO_BOX })
-    private val showCoords = setting("ShowCoords", true, { page.value == Page.INFO_BOX })
-    private val showDist = setting("ShowDistance", true, { page.value == Page.INFO_BOX })
-    private val textScale = setting("TextScale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
-    private val infoBoxRange = setting("InfoBoxRange", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
+    private val dimension = setting(KamiLang.get("module.modules.render.WaypointRender.Dimension"), Dimension.CURRENT, { page.value == Page.INFO_BOX })
+    private val showName = setting(KamiLang.get("module.modules.render.WaypointRender.Showname"), true, { page.value == Page.INFO_BOX })
+    private val showDate = setting(KamiLang.get("module.modules.render.WaypointRender.Showdate"), false, { page.value == Page.INFO_BOX })
+    private val showCoords = setting(KamiLang.get("module.modules.render.WaypointRender.Showcoords"), true, { page.value == Page.INFO_BOX })
+    private val showDist = setting(KamiLang.get("module.modules.render.WaypointRender.Showdistance"), true, { page.value == Page.INFO_BOX })
+    private val textScale = setting(KamiLang.get("module.modules.render.WaypointRender.Textscale"), 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
+    private val infoBoxRange = setting(KamiLang.get("module.modules.render.WaypointRender.Infoboxrange"), 512, 128..2048, 64, { page.value == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = setting("RenderRange", true, { page.value == Page.ESP })
-    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
-    private val filled = setting("Filled", true, { page.value == Page.ESP })
-    private val outline = setting("Outline", true, { page.value == Page.ESP })
-    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
-    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting("Green",200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting("Blue",63, 0..255, 1, { page.value == Page.ESP })
-    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting("OutlineAlpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val espRangeLimit = setting(KamiLang.get("module.modules.render.WaypointRender.Renderrange"), true, { page.value == Page.ESP })
+    private val espRange = setting(KamiLang.get("module.modules.render.WaypointRender.Range"), 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
+    private val filled = setting(KamiLang.get("module.modules.render.WaypointRender.Filled"), true, { page.value == Page.ESP })
+    private val outline = setting(KamiLang.get("module.modules.render.WaypointRender.Outline"), true, { page.value == Page.ESP })
+    private val tracer = setting(KamiLang.get("module.modules.render.WaypointRender.Tracer"), true, { page.value == Page.ESP })
+    private val r = setting(KamiLang.get("module.modules.render.WaypointRender.Red"), 31, 0..255, 1, { page.value == Page.ESP })
+    private val g = setting(KamiLang.get("module.modules.render.WaypointRender.Green"),200, 0..255, 1, { page.value == Page.ESP })
+    private val b = setting(KamiLang.get("module.modules.render.WaypointRender.Blue"),63, 0..255, 1, { page.value == Page.ESP })
+    private val aFilled = setting(KamiLang.get("module.modules.render.WaypointRender.Filledalpha"), 63, 0..255, 1, { page.value == Page.ESP && filled.value })
+    private val aOutline = setting(KamiLang.get("module.modules.render.WaypointRender.Outlinealpha"), 160, 0..255, 1, { page.value == Page.ESP && outline.value })
+    private val aTracer = setting(KamiLang.get("module.modules.render.WaypointRender.Traceralpha"), 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
+    private val thickness = setting(KamiLang.get("module.modules.render.WaypointRender.Linethickness"), 2.0f, 0.25f..8.0f, 0.25f)
 
     private enum class Dimension {
         CURRENT, ANY
@@ -122,7 +123,7 @@ object WaypointRender : Module(
         glTranslatef(screenPos.x.toFloat(), screenPos.y.toFloat(), 0f)
         glScalef(textScale.value * 2f, textScale.value * 2f, 0f)
 
-        val textComponent = TextComponent(textComponentIn).apply { if (showDist.value) add("$distance m") }
+        val textComponent = TextComponent(textComponentIn).apply { if (showDist.value) add(KamiLang.get("module.modules.render.WaypointRender.DistanceM", distance)) }
         val stringWidth = textComponent.getWidth()
         val stringHeight = textComponent.getHeight(2)
         val vertexHelper = VertexHelper(GlStateUtils.useVbo())

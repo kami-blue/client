@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
 import me.zeroeightsix.kami.module.Module
@@ -22,38 +23,38 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.*
 
 object Chams : Module(
-    name = "Chams",
+    name = KamiLang.get("module.modules.render.Chams.Chams"),
     category = Category.RENDER,
-    description = "Modify entity rendering"
+    description = KamiLang.get("module.modules.render.Chams.ModifyEntityRendering")
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page = setting(KamiLang.get("module.modules.render.Chams.Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val all = setting("AllEntity", false, { page.value == Page.ENTITY_TYPE })
-    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val items = setting("Items", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val crystals = setting("Crystals", false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val self = setting(KamiLang.get("module.modules.render.Chams.Self"), false, { page.value == Page.ENTITY_TYPE })
+    private val all = setting(KamiLang.get("module.modules.render.Chams.Allentity"), false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting(KamiLang.get("module.modules.render.Chams.Experience"), false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val arrows = setting(KamiLang.get("module.modules.render.Chams.Arrows"), false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val throwable = setting(KamiLang.get("module.modules.render.Chams.Throwable"), false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val items = setting(KamiLang.get("module.modules.render.Chams.Items"), false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val crystals = setting(KamiLang.get("module.modules.render.Chams.Crystals"), false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val players = setting(KamiLang.get("module.modules.render.Chams.Players"), true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val friends = setting(KamiLang.get("module.modules.render.Chams.Friends"), false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val sleeping = setting(KamiLang.get("module.modules.render.Chams.Sleeping"), false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val mobs = setting(KamiLang.get("module.modules.render.Chams.Mobs"), true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val passive = setting(KamiLang.get("module.modules.render.Chams.Passivemobs"), false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val neutral = setting(KamiLang.get("module.modules.render.Chams.Neutralmobs"), true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val hostile = setting(KamiLang.get("module.modules.render.Chams.Hostilemobs"), true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
 
     /* Rendering settings */
-    private val throughWall = setting("ThroughWall", true, { page.value == Page.RENDERING })
-    private val texture = setting("Texture", false, { page.value == Page.RENDERING })
-    private val lightning = setting("Lightning", false, { page.value == Page.RENDERING })
-    private val customColor = setting("CustomColor", false, { page.value == Page.RENDERING })
-    private val rainbow = setting("Rainbow", false, { page.value == Page.RENDERING && customColor.value })
-    private val r = setting("Red", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val g = setting("Green", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val a = setting("Alpha", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value })
+    private val throughWall = setting(KamiLang.get("module.modules.render.Chams.Throughwall"), true, { page.value == Page.RENDERING })
+    private val texture = setting(KamiLang.get("module.modules.render.Chams.Texture"), false, { page.value == Page.RENDERING })
+    private val lightning = setting(KamiLang.get("module.modules.render.Chams.Lightning"), false, { page.value == Page.RENDERING })
+    private val customColor = setting(KamiLang.get("module.modules.render.Chams.Customcolor"), false, { page.value == Page.RENDERING })
+    private val rainbow = setting(KamiLang.get("module.modules.render.Chams.Rainbow"), false, { page.value == Page.RENDERING && customColor.value })
+    private val r = setting(KamiLang.get("module.modules.render.Chams.Red"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val g = setting(KamiLang.get("module.modules.render.Chams.Green"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val b = setting(KamiLang.get("module.modules.render.Chams.Blue"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val a = setting(KamiLang.get("module.modules.render.Chams.Alpha"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
@@ -23,22 +24,22 @@ import kotlin.math.max
 import kotlin.math.min
 
 object Breadcrumbs : Module(
-    name = "Breadcrumbs",
-    description = "Draws a tail behind as you move",
+    name = KamiLang.get("module.modules.render.Breadcrumbs.Breadcrumbs"),
+    description = KamiLang.get("module.modules.render.Breadcrumbs.DrawsATailBehind"),
     category = Category.RENDER,
     alwaysListening = true
 ) {
-    private val clear = setting("Clear", false)
-    private val whileDisabled = setting("WhileDisabled", false)
-    private val smoothFactor = setting("SmoothFactor", 5.0f, 0.0f..10.0f, 0.25f)
-    private val maxDistance = setting("MaxDistance", 4096, 1024..16384, 1024)
-    private val yOffset = setting("YOffset", 0.5f, 0.0f..1.0f, 0.05f)
-    private val throughBlocks = setting("ThroughBlocks", true)
-    private val r = setting("Red", 255, 0..255, 1)
-    private val g = setting("Green", 166, 0..255, 1)
-    private val b = setting("Blue", 188, 0..255, 1)
-    private val a = setting("Alpha", 200, 0..255, 1)
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
+    private val clear = setting(KamiLang.get("module.modules.render.Breadcrumbs.Clear"), false)
+    private val whileDisabled = setting(KamiLang.get("module.modules.render.Breadcrumbs.Whiledisabled"), false)
+    private val smoothFactor = setting(KamiLang.get("module.modules.render.Breadcrumbs.Smoothfactor"), 5.0f, 0.0f..10.0f, 0.25f)
+    private val maxDistance = setting(KamiLang.get("module.modules.render.Breadcrumbs.Maxdistance"), 4096, 1024..16384, 1024)
+    private val yOffset = setting(KamiLang.get("module.modules.render.Breadcrumbs.Yoffset"), 0.5f, 0.0f..1.0f, 0.05f)
+    private val throughBlocks = setting(KamiLang.get("module.modules.render.Breadcrumbs.Throughblocks"), true)
+    private val r = setting(KamiLang.get("module.modules.render.Breadcrumbs.Red"), 255, 0..255, 1)
+    private val g = setting(KamiLang.get("module.modules.render.Breadcrumbs.Green"), 166, 0..255, 1)
+    private val b = setting(KamiLang.get("module.modules.render.Breadcrumbs.Blue"), 188, 0..255, 1)
+    private val a = setting(KamiLang.get("module.modules.render.Breadcrumbs.Alpha"), 200, 0..255, 1)
+    private val thickness = setting(KamiLang.get("module.modules.render.Breadcrumbs.Linethickness"), 2.0f, 0.25f..8.0f, 0.25f)
 
     private val mainList = ConcurrentHashMap<String, HashMap<Int, ArrayDeque<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
     private var prevDimension = -2
@@ -156,7 +157,7 @@ object Breadcrumbs : Module(
         clear.listeners.add {
             if (clear.value) {
                 mainList.clear()
-                sendChatMessage("$chatName Cleared!")
+                sendChatMessage(KamiLang.get("module.modules.render.Breadcrumbs.ChatnameCleared!", chatName))
                 clear.value = false
             }
         }

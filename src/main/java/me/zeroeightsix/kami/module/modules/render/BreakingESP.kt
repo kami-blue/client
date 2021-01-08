@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
@@ -21,29 +22,29 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object BreakingESP : Module(
-    name = "BreakingESP",
-    description = "Highlights blocks being broken near you",
+    name = KamiLang.get("module.modules.render.BreakingESP.Breakingesp"),
+    description = KamiLang.get("module.modules.render.BreakingESP.HighlightsBlocksBeingBroken"),
     category = Category.RENDER
 ) {
-    private val espSelf = setting("ESPSelf", true)
-    private val warnSelf = setting("WarnSelf", false)
-    private val obsidianOnly = setting("ObsidianOnly", false)
-    private val warning = setting("Warn", false)
-    private val warningProgress = setting("WarnProgress", 4, 0..10, 1)
-    private val chatWarn = setting("ChatWarning", false)
-    private val screenWarn = setting("HUDWarning", true)
-    private val soundWarn = setting("SoundWarning", false)
-    private val range = setting("Range", 16.0f, 2.0f..32.0f, 2.0f)
-    private val filled = setting("Filled", true)
-    private val outline = setting("Outline", true)
-    private val tracer = setting("Tracer", false)
-    private val r = setting("Red", 255, 0..255, 1)
-    private val g = setting("Green", 255, 0..255, 1)
-    private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 200, 0..255, 1, { outline.value })
-    private val aTracer = setting("TracerAlpha", 255, 0..255, 1, { outline.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    private val espSelf = setting(KamiLang.get("module.modules.render.BreakingESP.Espself"), true)
+    private val warnSelf = setting(KamiLang.get("module.modules.render.BreakingESP.Warnself"), false)
+    private val obsidianOnly = setting(KamiLang.get("module.modules.render.BreakingESP.Obsidianonly"), false)
+    private val warning = setting(KamiLang.get("module.modules.render.BreakingESP.Warn"), false)
+    private val warningProgress = setting(KamiLang.get("module.modules.render.BreakingESP.Warnprogress"), 4, 0..10, 1)
+    private val chatWarn = setting(KamiLang.get("module.modules.render.BreakingESP.Chatwarning"), false)
+    private val screenWarn = setting(KamiLang.get("module.modules.render.BreakingESP.Hudwarning"), true)
+    private val soundWarn = setting(KamiLang.get("module.modules.render.BreakingESP.Soundwarning"), false)
+    private val range = setting(KamiLang.get("module.modules.render.BreakingESP.Range"), 16.0f, 2.0f..32.0f, 2.0f)
+    private val filled = setting(KamiLang.get("module.modules.render.BreakingESP.Filled"), true)
+    private val outline = setting(KamiLang.get("module.modules.render.BreakingESP.Outline"), true)
+    private val tracer = setting(KamiLang.get("module.modules.render.BreakingESP.Tracer"), false)
+    private val r = setting(KamiLang.get("module.modules.render.BreakingESP.Red"), 255, 0..255, 1)
+    private val g = setting(KamiLang.get("module.modules.render.BreakingESP.Green"), 255, 0..255, 1)
+    private val b = setting(KamiLang.get("module.modules.render.BreakingESP.Blue"), 255, 0..255, 1)
+    private val aFilled = setting(KamiLang.get("module.modules.render.BreakingESP.Filledalpha"), 31, 0..255, 1, { filled.value })
+    private val aOutline = setting(KamiLang.get("module.modules.render.BreakingESP.Outlinealpha"), 200, 0..255, 1, { outline.value })
+    private val aTracer = setting(KamiLang.get("module.modules.render.BreakingESP.Traceralpha"), 255, 0..255, 1, { outline.value })
+    private val thickness = setting(KamiLang.get("module.modules.render.BreakingESP.Linethickness"), 2.0f, 0.25f..5.0f, 0.25f)
 
     private val breakingBlockList = LinkedHashMap<Int, Triple<BlockPos, Int, Pair<Boolean, Boolean>>>() /* <BreakerID, <Position, Progress, <Warned, Render>> */
     private var warn = false
@@ -102,7 +103,7 @@ object BreakingESP : Module(
                 if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakId]!!.third.first
                         && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
                     if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                    warningText = "${breaker.name} is breaking near you!"
+                    warningText = KamiLang.get("module.modules.render.BreakingESP.{breaker.name}IsBreakingNear", breaker.name)
                     if (chatWarn.value) sendChatMessage(warningText)
                     delay = 0
                     warn = true

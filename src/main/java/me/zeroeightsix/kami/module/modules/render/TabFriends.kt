@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -9,12 +10,12 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 
 object TabFriends : Module(
-    name = "TabFriends",
-    description = "Highlights friends in the tab menu",
+    name = KamiLang.get("module.modules.render.TabFriends.Tabfriends"),
+    description = KamiLang.get("module.modules.render.TabFriends.HighlightsFriendsInThe"),
     category = Category.RENDER,
     showOnArray = false
 ) {
-    private val color = setting("Color", EnumTextColor.GREEN)
+    private val color = setting(KamiLang.get("module.modules.render.TabFriends.Color"), EnumTextColor.GREEN)
 
     @JvmStatic
     fun getPlayerName(info: NetworkPlayerInfo): String {

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -36,73 +37,73 @@ import kotlin.math.roundToInt
 
 //TODO: Impl Totem pops
 object Nametags : Module(
-    name = "Nametags",
-    description = "Draws descriptive nametags above entities",
+    name = KamiLang.get("module.modules.render.Nametags.Nametags"),
+    description = KamiLang.get("module.modules.render.Nametags.DrawsDescriptiveNametagsAbove"),
     category = Category.RENDER
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page = setting(KamiLang.get("module.modules.render.Nametags.Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE })
-    private val items = setting("Items", true, { page.value == Page.ENTITY_TYPE })
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 0..128, 4, { page.value == Page.ENTITY_TYPE })
+    private val self = setting(KamiLang.get("module.modules.render.Nametags.Self"), false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting(KamiLang.get("module.modules.render.Nametags.Experience"), false, { page.value == Page.ENTITY_TYPE })
+    private val items = setting(KamiLang.get("module.modules.render.Nametags.Items"), true, { page.value == Page.ENTITY_TYPE })
+    private val players = setting(KamiLang.get("module.modules.render.Nametags.Players"), true, { page.value == Page.ENTITY_TYPE })
+    private val mobs = setting(KamiLang.get("module.modules.render.Nametags.Mobs"), true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting(KamiLang.get("module.modules.render.Nametags.Passivemobs"), false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting(KamiLang.get("module.modules.render.Nametags.Neutralmobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting(KamiLang.get("module.modules.render.Nametags.Hostilemobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting(KamiLang.get("module.modules.render.Nametags.Invisible"), true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting(KamiLang.get("module.modules.render.Nametags.Range"), 64, 0..128, 4, { page.value == Page.ENTITY_TYPE })
 
     /* Content */
-    private val line1left = setting("Line1Left", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line1center = setting("Line1Center", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line1right = setting("Line1Right", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line2left = setting("Line2Left", ContentType.NAME, { page.value == Page.CONTENT })
-    private val line2center = setting("Line2Center", ContentType.PING, { page.value == Page.CONTENT })
-    private val line2right = setting("Line2Right", ContentType.TOTAL_HP, { page.value == Page.CONTENT })
-    private val dropItemCount = setting("DropItemCount", true, { page.value == Page.CONTENT && items.value })
-    private val maxDropItems = setting("MaxDropItems", 5, 2..16, 1, { page.value == Page.CONTENT && items.value })
+    private val line1left = setting(KamiLang.get("module.modules.render.Nametags.Line1left"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1center = setting(KamiLang.get("module.modules.render.Nametags.Line1center"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1right = setting(KamiLang.get("module.modules.render.Nametags.Line1right"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line2left = setting(KamiLang.get("module.modules.render.Nametags.Line2left"), ContentType.NAME, { page.value == Page.CONTENT })
+    private val line2center = setting(KamiLang.get("module.modules.render.Nametags.Line2center"), ContentType.PING, { page.value == Page.CONTENT })
+    private val line2right = setting(KamiLang.get("module.modules.render.Nametags.Line2right"), ContentType.TOTAL_HP, { page.value == Page.CONTENT })
+    private val dropItemCount = setting(KamiLang.get("module.modules.render.Nametags.Dropitemcount"), true, { page.value == Page.CONTENT && items.value })
+    private val maxDropItems = setting(KamiLang.get("module.modules.render.Nametags.Maxdropitems"), 5, 2..16, 1, { page.value == Page.CONTENT && items.value })
 
     /* Item */
-    private val mainHand = setting("MainHand", true, { page.value == Page.ITEM })
-    private val offhand = setting("OffHand", true, { page.value == Page.ITEM })
-    private val invertHand = setting("InvertHand", false, { page.value == Page.ITEM && (mainHand.value || offhand.value) })
-    private val armor = setting("Armor", true, { page.value == Page.ITEM })
-    private val count = setting("Count", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val dura = setting("Dura", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val enchantment = setting("Enchantment", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val itemScale = setting("ItemScale", 1f, 0.25f..2f, 0.25f, { page.value == Page.ITEM })
+    private val mainHand = setting(KamiLang.get("module.modules.render.Nametags.Mainhand"), true, { page.value == Page.ITEM })
+    private val offhand = setting(KamiLang.get("module.modules.render.Nametags.Offhand"), true, { page.value == Page.ITEM })
+    private val invertHand = setting(KamiLang.get("module.modules.render.Nametags.Inverthand"), false, { page.value == Page.ITEM && (mainHand.value || offhand.value) })
+    private val armor = setting(KamiLang.get("module.modules.render.Nametags.Armor"), true, { page.value == Page.ITEM })
+    private val count = setting(KamiLang.get("module.modules.render.Nametags.Count"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val dura = setting(KamiLang.get("module.modules.render.Nametags.Dura"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val enchantment = setting(KamiLang.get("module.modules.render.Nametags.Enchantment"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val itemScale = setting(KamiLang.get("module.modules.render.Nametags.Itemscale"), 1f, 0.25f..2f, 0.25f, { page.value == Page.ITEM })
 
     /* Frame */
-    private val nameFrame = setting("NameFrame", true, { page.value == Page.FRAME })
-    private val itemFrame = setting("ItemFrame", false, { page.value == Page.FRAME })
-    private val dropItemFrame = setting("DropItemFrame", true, { page.value == Page.FRAME })
-    private val filled = setting("Filled", true, { page.value == Page.FRAME })
-    private val rFilled = setting("FilledRed", 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val gFilled = setting("FilledGreen", 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val bFilled = setting("FilledBlue", 64, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val aFilled = setting("FilledAlpha", 169, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val outline = setting("Outline", true, { page.value == Page.FRAME })
-    private val rOutline = setting("OutlineRed", 155, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val gOutline = setting("OutlineGreen", 144, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val bOutline = setting("OutlineBlue", 255, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val aOutline = setting("OutlineAlpha", 240, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val outlineWidth = setting("OutlineWidth", 2.0f, 0.0f..5.0f, 0.1f, { page.value == Page.FRAME && outline.value })
-    private val margins = setting("Margins", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
-    private val cornerRadius = setting("CornerRadius", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
+    private val nameFrame = setting(KamiLang.get("module.modules.render.Nametags.Nameframe"), true, { page.value == Page.FRAME })
+    private val itemFrame = setting(KamiLang.get("module.modules.render.Nametags.Itemframe"), false, { page.value == Page.FRAME })
+    private val dropItemFrame = setting(KamiLang.get("module.modules.render.Nametags.Dropitemframe"), true, { page.value == Page.FRAME })
+    private val filled = setting(KamiLang.get("module.modules.render.Nametags.Filled"), true, { page.value == Page.FRAME })
+    private val rFilled = setting(KamiLang.get("module.modules.render.Nametags.Filledred"), 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val gFilled = setting(KamiLang.get("module.modules.render.Nametags.Filledgreen"), 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val bFilled = setting(KamiLang.get("module.modules.render.Nametags.Filledblue"), 64, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val aFilled = setting(KamiLang.get("module.modules.render.Nametags.Filledalpha"), 169, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val outline = setting(KamiLang.get("module.modules.render.Nametags.Outline"), true, { page.value == Page.FRAME })
+    private val rOutline = setting(KamiLang.get("module.modules.render.Nametags.Outlinered"), 155, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val gOutline = setting(KamiLang.get("module.modules.render.Nametags.Outlinegreen"), 144, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val bOutline = setting(KamiLang.get("module.modules.render.Nametags.Outlineblue"), 255, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val aOutline = setting(KamiLang.get("module.modules.render.Nametags.Outlinealpha"), 240, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val outlineWidth = setting(KamiLang.get("module.modules.render.Nametags.Outlinewidth"), 2.0f, 0.0f..5.0f, 0.1f, { page.value == Page.FRAME && outline.value })
+    private val margins = setting(KamiLang.get("module.modules.render.Nametags.Margins"), 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
+    private val cornerRadius = setting(KamiLang.get("module.modules.render.Nametags.Cornerradius"), 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
 
     /* Rendering settings */
-    private val rText = setting("TextRed", 232, 0..255, 1, { page.value == Page.RENDERING })
-    private val gText = setting("TextGreen", 229, 0..255, 1, { page.value == Page.RENDERING })
-    private val bText = setting("TextBlue", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val aText = setting("TextAlpha", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val customFont = setting("CustomFont", true, { page.value == Page.RENDERING })
-    private val textShadow = setting("TextShadow", true, { page.value == Page.RENDERING })
-    private val yOffset = setting("YOffset", 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
-    private val scale = setting("Scale", 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
-    private val distScaleFactor = setting("DistanceScaleFactor", 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
-    private val minDistScale = setting("MinDistanceScale", 0.35f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
+    private val rText = setting(KamiLang.get("module.modules.render.Nametags.Textred"), 232, 0..255, 1, { page.value == Page.RENDERING })
+    private val gText = setting(KamiLang.get("module.modules.render.Nametags.Textgreen"), 229, 0..255, 1, { page.value == Page.RENDERING })
+    private val bText = setting(KamiLang.get("module.modules.render.Nametags.Textblue"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val aText = setting(KamiLang.get("module.modules.render.Nametags.Textalpha"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val customFont = setting(KamiLang.get("module.modules.render.Nametags.Customfont"), true, { page.value == Page.RENDERING })
+    private val textShadow = setting(KamiLang.get("module.modules.render.Nametags.Textshadow"), true, { page.value == Page.RENDERING })
+    private val yOffset = setting(KamiLang.get("module.modules.render.Nametags.Yoffset"), 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
+    private val scale = setting(KamiLang.get("module.modules.render.Nametags.Scale"), 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
+    private val distScaleFactor = setting(KamiLang.get("module.modules.render.Nametags.Distancescalefactor"), 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
+    private val minDistScale = setting(KamiLang.get("module.modules.render.Nametags.Mindistancescale"), 0.35f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, CONTENT, ITEM, FRAME, RENDERING
@@ -346,7 +347,7 @@ object Nametags : Module(
                 textComponent.clear()
                 if (entity is EntityXPOrb) {
                     textComponent.add(entity.name)
-                    textComponent.add(" x${entity.xpValue}")
+                    textComponent.add(KamiLang.get("module.modules.render.Nametags.X{entity.xpvalue}", entity.xpValue))
                 } else {
                     var isLine1Empty = true
                     for (contentType in line1Settings) {
@@ -406,12 +407,12 @@ object Nametags : Module(
                 null
             } else {
                 val ping = mc.connection?.getPlayerInfo(entity.uniqueID)?.responseTime ?: 0
-                TextComponent.TextElement("${ping}ms", pingColorGradient.get(ping.toFloat()).apply { a = aText.value })
+                TextComponent.TextElement(KamiLang.get("module.modules.render.Nametags.{ping}ms", ping), pingColorGradient.get(ping.toFloat()).apply { a = aText.value })
             }
         }
         ContentType.DISTANCE -> {
             val dist = MathUtils.round(mc.player.getDistance(entity), 1).toString()
-            TextComponent.TextElement("${dist}m", getTextColor())
+            TextComponent.TextElement(KamiLang.get("module.modules.render.Nametags.{dist}m", dist), getTextColor())
         }
 //        ContentType.TOTEM_POPS -> {
 //            TODO
@@ -508,17 +509,17 @@ object Nametags : Module(
                 val itemStack = entityItem.item
                 val originalName = itemStack.originalName
                 val displayName = itemStack.displayName
-                val finalName = if (displayName == originalName) originalName else "$displayName ($originalName)"
+                val finalName = if (displayName == originalName) originalName else KamiLang.get("module.modules.render.Nametags.Displayname(originalname)", displayName, originalName)
                 val count = itemCountMap.getOrDefault(finalName, 0) + itemStack.count
                 itemCountMap[finalName] = count
             }
             textComponent.clear()
             for ((index, entry) in itemCountMap.entries.sortedByDescending { it.value }.withIndex()) {
-                val text = if (dropItemCount.value) "${entry.key} x${entry.value}" else entry.key
+                val text = if (dropItemCount.value) KamiLang.get("module.modules.render.Nametags.{entry.key}X{entry.value}", entry.key, entry.value) else entry.key
                 textComponent.addLine(text, getTextColor())
                 if (index + 1 >= maxDropItems.value) {
                     val remaining = itemCountMap.size - index - 1
-                    if (remaining > 0) textComponent.addLine("...and $remaining more", getTextColor())
+                    if (remaining > 0) textComponent.addLine(KamiLang.get("module.modules.render.Nametags....andRemainingMore", remaining), getTextColor())
                     break
                 }
             }

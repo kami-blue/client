@@ -1,21 +1,22 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 object Zoom : Module(
-    name = "Zoom",
+    name = KamiLang.get("module.modules.render.Zoom.Zoom"),
     category = Category.RENDER,
-    description = "Configures FOV",
+    description = KamiLang.get("module.modules.render.Zoom.ConfiguresFov"),
     showOnArray = false
 ) {
     private var fov = 0f
     private var sensi = 0f
 
-    private val fovChange = setting("FOV", 40.0f, 1.0f..180.0f, 0.5f)
-    private val modifySensitivity = setting("ModifySensitivity", true)
-    private val sensitivityMultiplier = setting("SensitivityMultiplier", 1.0f, 0.25f..2.0f, 0.25f, { modifySensitivity.value })
-    private val smoothCamera = setting("CinematicCamera", false)
+    private val fovChange = setting(KamiLang.get("module.modules.render.Zoom.Fov"), 40.0f, 1.0f..180.0f, 0.5f)
+    private val modifySensitivity = setting(KamiLang.get("module.modules.render.Zoom.Modifysensitivity"), true)
+    private val sensitivityMultiplier = setting(KamiLang.get("module.modules.render.Zoom.Sensitivitymultiplier"), 1.0f, 0.25f..2.0f, 0.25f, { modifySensitivity.value })
+    private val smoothCamera = setting(KamiLang.get("module.modules.render.Zoom.Cinematiccamera"), false)
 
     init {
         onEnable {

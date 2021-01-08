@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
@@ -9,14 +10,14 @@ import kotlin.math.max
 import kotlin.math.min
 
 object FullBright : Module(
-    name = "FullBright",
-    description = "Makes everything brighter!",
+    name = KamiLang.get("module.modules.render.FullBright.Fullbright"),
+    description = KamiLang.get("module.modules.render.FullBright.MakesEverythingBrighter!"),
     category = Category.RENDER,
     alwaysListening = true
 ) {
-    private val gamma by setting("Gamma", 12.0f, 5.0f..15.0f, 0.5f)
-    private val transitionLength by setting("TransitionLength", 3.0f, 0.0f..10.0f, 0.5f)
-    private var oldValue by setting("OldValue", 1.0f, 0.0f..1.0f, 0.1f, { false })
+    private val gamma by setting(KamiLang.get("module.modules.render.FullBright.Gamma"), 12.0f, 5.0f..15.0f, 0.5f)
+    private val transitionLength by setting(KamiLang.get("module.modules.render.FullBright.Transitionlength"), 3.0f, 0.0f..10.0f, 0.5f)
+    private var oldValue by setting(KamiLang.get("module.modules.render.FullBright.Oldvalue"), 1.0f, 0.0f..1.0f, 0.1f, { false })
 
     private var gammaSetting: Float
         get() = mc.gameSettings.gammaSetting

@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -20,29 +21,29 @@ import org.lwjgl.opengl.GL11.GL_LINES
 import kotlin.math.min
 
 object EyeFinder : Module(
-    name = "EyeFinder",
-    description = "Draw lines from entity's heads to where they are looking",
+    name = KamiLang.get("module.modules.render.EyeFinder.Eyefinder"),
+    description = KamiLang.get("module.modules.render.EyeFinder.DrawLinesFromEntity's"),
     category = Category.RENDER
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page = setting(KamiLang.get("module.modules.render.EyeFinder.Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
+    private val players = setting(KamiLang.get("module.modules.render.EyeFinder.Players"), true, { page.value == Page.ENTITY_TYPE })
+    private val friends = setting(KamiLang.get("module.modules.render.EyeFinder.Friends"), false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val sleeping = setting(KamiLang.get("module.modules.render.EyeFinder.Sleeping"), false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val mobs = setting(KamiLang.get("module.modules.render.EyeFinder.Mobs"), true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting(KamiLang.get("module.modules.render.EyeFinder.Passivemobs"), false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting(KamiLang.get("module.modules.render.EyeFinder.Neutralmobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting(KamiLang.get("module.modules.render.EyeFinder.Hostilemobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting(KamiLang.get("module.modules.render.EyeFinder.Invisible"), true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting(KamiLang.get("module.modules.render.EyeFinder.Range"), 64, 8..128, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.RENDERING })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.RENDERING })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val a = setting("Alpha", 200, 0..255, 1, { page.value == Page.RENDERING })
-    private val thickness = setting("Thickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val r = setting(KamiLang.get("module.modules.render.EyeFinder.Red"), 155, 0..255, 1, { page.value == Page.RENDERING })
+    private val g = setting(KamiLang.get("module.modules.render.EyeFinder.Green"), 144, 0..255, 1, { page.value == Page.RENDERING })
+    private val b = setting(KamiLang.get("module.modules.render.EyeFinder.Blue"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val a = setting(KamiLang.get("module.modules.render.EyeFinder.Alpha"), 200, 0..255, 1, { page.value == Page.RENDERING })
+    private val thickness = setting(KamiLang.get("module.modules.render.EyeFinder.Thickness"), 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
 
 
     private enum class Page {

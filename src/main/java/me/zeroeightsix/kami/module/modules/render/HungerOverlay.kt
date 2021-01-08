@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.foodValue
@@ -20,13 +21,13 @@ import kotlin.math.floor
 import kotlin.math.min
 
 object HungerOverlay : Module(
-    name = "HungerOverlay",
-    description = "Displays a helpful overlay over your hunger bar.",
+    name = KamiLang.get("module.modules.render.HungerOverlay.Hungeroverlay"),
+    description = KamiLang.get("module.modules.render.HungerOverlay.DisplaysAHelpfulOverlay"),
     category = Category.RENDER
 ) {
-    private val saturationOverlay = setting("SaturationOverlay", true)
-    private val foodHungerOverlay = setting("FoodHungerOverlay", true)
-    private val foodSaturationOverlay = setting("FoodSaturationOverlay", true)
+    private val saturationOverlay = setting(KamiLang.get("module.modules.render.HungerOverlay.Saturationoverlay"), true)
+    private val foodHungerOverlay = setting(KamiLang.get("module.modules.render.HungerOverlay.Foodhungeroverlay"), true)
+    private val foodSaturationOverlay = setting(KamiLang.get("module.modules.render.HungerOverlay.Foodsaturationoverlay"), true)
 
     private val icons = ResourceLocation("kamiblue/textures/hungeroverlay.png")
 

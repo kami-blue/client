@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.mixin.client.gui.MixinGuiScreen
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.client.GuiColors
@@ -23,15 +24,15 @@ import java.awt.Color
  * @see MixinGuiScreen.renderToolTip
  */
 object MapPreview : Module(
-    name = "MapPreview",
+    name = KamiLang.get("module.modules.render.MapPreview.Mappreview"),
     category = Category.RENDER,
-    description = "Previews maps when hovering over them"
+    description = KamiLang.get("module.modules.render.MapPreview.PreviewsMapsWhenHovering")
 ) {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
-    private val showName = setting("ShowName", false)
-    private val frame = setting("ShowFrame", false)
-    val scale = setting("Scale", 5.0, 0.0..10.0, 0.1)
+    private val showName = setting(KamiLang.get("module.modules.render.MapPreview.Showname"), false)
+    private val frame = setting(KamiLang.get("module.modules.render.MapPreview.Showframe"), false)
+    val scale = setting(KamiLang.get("module.modules.render.MapPreview.Scale"), 5.0, 0.0..10.0, 0.1)
 
     @JvmStatic
     fun getMapData(itemStack: ItemStack): MapData? {

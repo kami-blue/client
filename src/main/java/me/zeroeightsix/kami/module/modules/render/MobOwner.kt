@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.manager.managers.UUIDManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -12,15 +13,15 @@ import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.pow
 
 object MobOwner : Module(
-    name = "MobOwner",
-    description = "Displays the owner of tamed mobs",
+    name = KamiLang.get("module.modules.render.MobOwner.Mobowner"),
+    description = KamiLang.get("module.modules.render.MobOwner.DisplaysTheOwnerOf"),
     category = Category.RENDER
 ) {
-    private val speed = setting("Speed", true)
-    private val jump = setting("Jump", true)
-    private val hp = setting("Health", true)
+    private val speed = setting(KamiLang.get("module.modules.render.MobOwner.Speed"), true)
+    private val jump = setting(KamiLang.get("module.modules.render.MobOwner.Jump"), true)
+    private val hp = setting(KamiLang.get("module.modules.render.MobOwner.Health"), true)
 
-    private const val invalidText = "Offline or invalid UUID!"
+    private val invalidText = KamiLang.get("module.modules.render.MobOwner.OfflineOrInvalidUuid!")
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
@@ -31,7 +32,7 @@ object MobOwner : Module(
                     if (!entity.isTamed || owner == null) continue
 
                     entity.alwaysRenderNameTag = true
-                    entity.customNameTag = "Owner: " + owner.displayName.formattedText + getHealth(entity)
+                    entity.customNameTag = KamiLang.get("module.modules.render.MobOwner.Owner:") + owner.displayName.formattedText + getHealth(entity)
                 }
 
                 if (entity is AbstractHorse) {
@@ -40,7 +41,7 @@ object MobOwner : Module(
 
                     val ownerName = UUIDManager.getByUUID(ownerUUID)?.name ?: invalidText
                     entity.alwaysRenderNameTag = true
-                    entity.customNameTag = "Owner: " + ownerName + getSpeed(entity) + getJump(entity) + getHealth(entity)
+                    entity.customNameTag = KamiLang.get("module.modules.render.MobOwner.Owner:") + ownerName + getSpeed(entity) + getJump(entity) + getHealth(entity)
                 }
             }
         }
@@ -61,18 +62,18 @@ object MobOwner : Module(
     }
 
     private fun getSpeed(horse: AbstractHorse): String {
-        return if (!speed.value) "" else " S: " + round(43.17 * horse.aiMoveSpeed, 2)
+        return if (!speed.value) "" else KamiLang.get("module.modules.render.MobOwner.speedChar") + round(43.17 * horse.aiMoveSpeed, 2)
     }
 
     private fun getJump(horse: AbstractHorse): String {
-        return if (!jump.value) "" else " J: " + round(-0.1817584952 * horse.horseJumpStrength.pow(3.0) + 3.689713992 * horse.horseJumpStrength.pow(2.0) + 2.128599134 * horse.horseJumpStrength - 0.343930367, 2)
+        return if (!jump.value) "" else KamiLang.get("module.modules.render.MobOwner.jumpChar") + round(-0.1817584952 * horse.horseJumpStrength.pow(3.0) + 3.689713992 * horse.horseJumpStrength.pow(2.0) + 2.128599134 * horse.horseJumpStrength - 0.343930367, 2)
     }
 
     private fun getHealth(horse: AbstractHorse): String {
-        return if (!hp.value) "" else " HP: " + round(horse.health, 2)
+        return if (!hp.value) "" else KamiLang.get("module.modules.render.MobOwner.HitpointsChar") + round(horse.health, 2)
     }
 
     private fun getHealth(tameable: EntityTameable): String {
-        return if (!hp.value) "" else " HP: " + round(tameable.health, 2)
+        return if (!hp.value) "" else KamiLang.get("module.modules.render.MobOwner.HitpointsChar") + round(tameable.health, 2)
     }
 }

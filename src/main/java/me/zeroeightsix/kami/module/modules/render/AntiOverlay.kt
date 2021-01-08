@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -12,21 +13,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object AntiOverlay : Module(
-    name = "AntiOverlay",
-    description = "Prevents rendering of fire, water and block texture overlays.",
+    name = KamiLang.get("module.modules.render.AntiOverlay.Antioverlay"),
+    description = KamiLang.get("module.modules.render.AntiOverlay.PreventsRenderingOfFire,"),
     category = Category.RENDER
 ) {
-    private val fire = setting("Fire", true)
-    private val water = setting("Water", true)
-    private val blocks = setting("Blocks", true)
-    private val portals = setting("Portals", true)
-    private val blindness = setting("Blindness", true)
-    private val nausea = setting("Nausea", true)
-    val totems = setting("Totems", true)
-    private val vignette = setting("Vignette", true)
-    private val helmet = setting("Helmet", true)
-    private val tutorial = setting("Tutorial", true)
-    private val potionIcons = setting("PotionIcons", false)
+    private val fire = setting(KamiLang.get("module.modules.render.AntiOverlay.Fire"), true)
+    private val water = setting(KamiLang.get("module.modules.render.AntiOverlay.Water"), true)
+    private val blocks = setting(KamiLang.get("module.modules.render.AntiOverlay.Blocks"), true)
+    private val portals = setting(KamiLang.get("module.modules.render.AntiOverlay.Portals"), true)
+    private val blindness = setting(KamiLang.get("module.modules.render.AntiOverlay.Blindness"), true)
+    private val nausea = setting(KamiLang.get("module.modules.render.AntiOverlay.Nausea"), true)
+    val totems = setting(KamiLang.get("module.modules.render.AntiOverlay.Totems"), true)
+    private val vignette = setting(KamiLang.get("module.modules.render.AntiOverlay.Vignette"), true)
+    private val helmet = setting(KamiLang.get("module.modules.render.AntiOverlay.Helmet"), true)
+    private val tutorial = setting(KamiLang.get("module.modules.render.AntiOverlay.Tutorial"), true)
+    private val potionIcons = setting(KamiLang.get("module.modules.render.AntiOverlay.Potionicons"), false)
 
     init {
         listener<RenderBlockOverlayEvent> {

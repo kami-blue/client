@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -22,41 +23,41 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object StorageESP : Module(
-    name = "StorageESP",
-    description = "Draws an ESP on top of storage units",
+    name = KamiLang.get("module.modules.render.StorageESP.Storageesp"),
+    description = KamiLang.get("module.modules.render.StorageESP.DrawsAnEspOn"),
     category = Category.RENDER
 ) {
-    private val page by setting("Page", Page.TYPE)
+    private val page by setting(KamiLang.get("module.modules.render.StorageESP.Page"), Page.TYPE)
 
     /* Type settings */
-    private val chest by setting("Chest", true, { page == Page.TYPE })
-    private val shulker by setting("Shulker", true, { page == Page.TYPE })
-    private val enderChest by setting("EnderChest", true, { page == Page.TYPE })
-    private val frame by setting("ItemFrame", true, { page == Page.TYPE })
-    private val withShulkerOnly by setting("WithShulkerOnly", true, { page == Page.TYPE && frame })
-    private val furnace by setting("Furnace", false, { page == Page.TYPE })
-    private val dispenser by setting("Dispenser", false, { page == Page.TYPE })
-    private val hopper by setting("Hopper", false, { page == Page.TYPE })
-    private val cart by setting("Minecart", false, { page == Page.TYPE })
+    private val chest by setting(KamiLang.get("module.modules.render.StorageESP.Chest"), true, { page == Page.TYPE })
+    private val shulker by setting(KamiLang.get("module.modules.render.StorageESP.Shulker"), true, { page == Page.TYPE })
+    private val enderChest by setting(KamiLang.get("module.modules.render.StorageESP.Enderchest"), true, { page == Page.TYPE })
+    private val frame by setting(KamiLang.get("module.modules.render.StorageESP.Itemframe"), true, { page == Page.TYPE })
+    private val withShulkerOnly by setting(KamiLang.get("module.modules.render.StorageESP.Withshulkeronly"), true, { page == Page.TYPE && frame })
+    private val furnace by setting(KamiLang.get("module.modules.render.StorageESP.Furnace"), false, { page == Page.TYPE })
+    private val dispenser by setting(KamiLang.get("module.modules.render.StorageESP.Dispenser"), false, { page == Page.TYPE })
+    private val hopper by setting(KamiLang.get("module.modules.render.StorageESP.Hopper"), false, { page == Page.TYPE })
+    private val cart by setting(KamiLang.get("module.modules.render.StorageESP.Minecart"), false, { page == Page.TYPE })
 
     /* Color settings */
-    private val colorChest by setting("ChestColor", DyeColors.ORANGE, { page == Page.COLOR })
-    private val colorDispenser by setting("DispenserColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorShulker by setting("ShulkerColor", DyeColors.MAGENTA, { page == Page.COLOR })
-    private val colorEnderChest by setting("EnderChestColor", DyeColors.PURPLE, { page == Page.COLOR })
-    private val colorFurnace by setting("FurnaceColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorHopper by setting("HopperColor", DyeColors.GRAY, { page == Page.COLOR })
-    private val colorCart by setting("CartColor", DyeColors.GREEN, { page == Page.COLOR })
-    private val colorFrame by setting("FrameColor", DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorChest by setting(KamiLang.get("module.modules.render.StorageESP.Chestcolor"), DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorDispenser by setting(KamiLang.get("module.modules.render.StorageESP.Dispensercolor"), DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorShulker by setting(KamiLang.get("module.modules.render.StorageESP.Shulkercolor"), DyeColors.MAGENTA, { page == Page.COLOR })
+    private val colorEnderChest by setting(KamiLang.get("module.modules.render.StorageESP.Enderchestcolor"), DyeColors.PURPLE, { page == Page.COLOR })
+    private val colorFurnace by setting(KamiLang.get("module.modules.render.StorageESP.Furnacecolor"), DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorHopper by setting(KamiLang.get("module.modules.render.StorageESP.Hoppercolor"), DyeColors.GRAY, { page == Page.COLOR })
+    private val colorCart by setting(KamiLang.get("module.modules.render.StorageESP.Cartcolor"), DyeColors.GREEN, { page == Page.COLOR })
+    private val colorFrame by setting(KamiLang.get("module.modules.render.StorageESP.Framecolor"), DyeColors.ORANGE, { page == Page.COLOR })
 
     /* Render settings */
-    private val filled by setting("Filled", true, { page == Page.RENDER })
-    private val outline by setting("Outline", true, { page == Page.RENDER })
-    private val tracer by setting("Tracer", false, { page == Page.RENDER })
-    private val aFilled by setting("FilledAlpha", 31, 0..255, 1, { page == Page.RENDER && filled })
-    private val aOutline by setting("OutlineAlpha", 127, 0..255, 1, { page == Page.RENDER && outline })
-    private val aTracer by setting("TracerAlpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
-    private val thickness by setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
+    private val filled by setting(KamiLang.get("module.modules.render.StorageESP.Filled"), true, { page == Page.RENDER })
+    private val outline by setting(KamiLang.get("module.modules.render.StorageESP.Outline"), true, { page == Page.RENDER })
+    private val tracer by setting(KamiLang.get("module.modules.render.StorageESP.Tracer"), false, { page == Page.RENDER })
+    private val aFilled by setting(KamiLang.get("module.modules.render.StorageESP.Filledalpha"), 31, 0..255, 1, { page == Page.RENDER && filled })
+    private val aOutline by setting(KamiLang.get("module.modules.render.StorageESP.Outlinealpha"), 127, 0..255, 1, { page == Page.RENDER && outline })
+    private val aTracer by setting(KamiLang.get("module.modules.render.StorageESP.Traceralpha"), 200, 0..255, 1, { page == Page.RENDER && tracer })
+    private val thickness by setting(KamiLang.get("module.modules.render.StorageESP.Linethickness"), 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
 
     private enum class Page {
         TYPE, COLOR, RENDER

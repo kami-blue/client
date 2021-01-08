@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
@@ -14,22 +15,22 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object SelectionHighlight : Module(
-    name = "SelectionHighlight",
-    description = "Highlights object you are looking at",
+    name = KamiLang.get("module.modules.render.SelectionHighlight.Selectionhighlight"),
+    description = KamiLang.get("module.modules.render.SelectionHighlight.HighlightsObjectYouAre"),
     category = Category.RENDER
 ) {
-    val block = setting("Block", true)
-    private val entity = setting("Entity", false)
-    private val hitSideOnly = setting("HitSideOnly", false)
-    private val throughBlocks = setting("ThroughBlocks", false)
-    private val filled = setting("Filled", true)
-    private val outline = setting("Outline", true)
-    private val r = setting("Red", 155, 0..255, 1)
-    private val g = setting("Green", 144, 0..255, 1)
-    private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 200, 0..255, 1, { outline.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    val block = setting(KamiLang.get("module.modules.render.SelectionHighlight.Block"), true)
+    private val entity = setting(KamiLang.get("module.modules.render.SelectionHighlight.Entity"), false)
+    private val hitSideOnly = setting(KamiLang.get("module.modules.render.SelectionHighlight.Hitsideonly"), false)
+    private val throughBlocks = setting(KamiLang.get("module.modules.render.SelectionHighlight.Throughblocks"), false)
+    private val filled = setting(KamiLang.get("module.modules.render.SelectionHighlight.Filled"), true)
+    private val outline = setting(KamiLang.get("module.modules.render.SelectionHighlight.Outline"), true)
+    private val r = setting(KamiLang.get("module.modules.render.SelectionHighlight.Red"), 155, 0..255, 1)
+    private val g = setting(KamiLang.get("module.modules.render.SelectionHighlight.Green"), 144, 0..255, 1)
+    private val b = setting(KamiLang.get("module.modules.render.SelectionHighlight.Blue"), 255, 0..255, 1)
+    private val aFilled = setting(KamiLang.get("module.modules.render.SelectionHighlight.Filledalpha"), 63, 0..255, 1, { filled.value })
+    private val aOutline = setting(KamiLang.get("module.modules.render.SelectionHighlight.Outlinealpha"), 200, 0..255, 1, { outline.value })
+    private val thickness = setting(KamiLang.get("module.modules.render.SelectionHighlight.Linethickness"), 2.0f, 0.25f..5.0f, 0.25f)
 
     private val renderer = ESPRenderer()
 

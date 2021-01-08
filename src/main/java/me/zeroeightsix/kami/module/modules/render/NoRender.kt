@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.util.KamiLang 
 import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -21,41 +22,41 @@ import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
 
 object NoRender : Module(
-    name = "NoRender",
+    name = KamiLang.get("module.modules.render.NoRender.Norender"),
     category = Category.RENDER,
-    description = "Ignore entity spawn packets"
+    description = KamiLang.get("module.modules.render.NoRender.IgnoreEntitySpawnPackets")
 ) {
 
-    private val packets = setting("CancelPackets", true)
-    private val page = setting("Page", Page.OTHER)
+    private val packets = setting(KamiLang.get("module.modules.render.NoRender.Cancelpackets"), true)
+    private val page = setting(KamiLang.get("module.modules.render.NoRender.Page"), Page.OTHER)
 
     // Entities
-    private val paint = setting("Paintings", false, { page.value == Page.ENTITIES })
-    private val animals = setting("Animals", false, { page.value == Page.ENTITIES })
-    private val mobs = setting("Mobs", false, { page.value == Page.ENTITIES })
-    private val player = setting("Players", false, { page.value == Page.ENTITIES })
-    private val sign = setting("Signs", false, { page.value == Page.ENTITIES })
-    private val skull = setting("Heads", false, { page.value == Page.ENTITIES })
-    private val armorStand = setting("ArmorStands", false, { page.value == Page.ENTITIES })
-    private val endPortal = setting("EndPortals", false, { page.value == Page.ENTITIES })
-    private val banner = setting("Banners", false, { page.value == Page.ENTITIES })
-    private val itemFrame = setting("ItemFrames", false, { page.value == Page.ENTITIES })
-    private val xp = setting("XP", false, { page.value == Page.ENTITIES })
-    private val items = setting("Items", false, { page.value == Page.ENTITIES })
-    private val crystal = setting("Crystals", false, { page.value == Page.ENTITIES })
+    private val paint = setting(KamiLang.get("module.modules.render.NoRender.Paintings"), false, { page.value == Page.ENTITIES })
+    private val animals = setting(KamiLang.get("module.modules.render.NoRender.Animals"), false, { page.value == Page.ENTITIES })
+    private val mobs = setting(KamiLang.get("module.modules.render.NoRender.Mobs"), false, { page.value == Page.ENTITIES })
+    private val player = setting(KamiLang.get("module.modules.render.NoRender.Players"), false, { page.value == Page.ENTITIES })
+    private val sign = setting(KamiLang.get("module.modules.render.NoRender.Signs"), false, { page.value == Page.ENTITIES })
+    private val skull = setting(KamiLang.get("module.modules.render.NoRender.Heads"), false, { page.value == Page.ENTITIES })
+    private val armorStand = setting(KamiLang.get("module.modules.render.NoRender.Armorstands"), false, { page.value == Page.ENTITIES })
+    private val endPortal = setting(KamiLang.get("module.modules.render.NoRender.Endportals"), false, { page.value == Page.ENTITIES })
+    private val banner = setting(KamiLang.get("module.modules.render.NoRender.Banners"), false, { page.value == Page.ENTITIES })
+    private val itemFrame = setting(KamiLang.get("module.modules.render.NoRender.Itemframes"), false, { page.value == Page.ENTITIES })
+    private val xp = setting(KamiLang.get("module.modules.render.NoRender.Xp"), false, { page.value == Page.ENTITIES })
+    private val items = setting(KamiLang.get("module.modules.render.NoRender.Items"), false, { page.value == Page.ENTITIES })
+    private val crystal = setting(KamiLang.get("module.modules.render.NoRender.Crystals"), false, { page.value == Page.ENTITIES })
 
     // Others
-    val map = setting("Maps", false, { page.value == Page.OTHER })
-    private val explosion = setting("Explosions", true, { page.value == Page.OTHER })
-    val signText = setting("SignText", false, { page.value == Page.OTHER })
-    val particles = setting("Particles", true, { page.value == Page.OTHER })
-    private val falling = setting("FallingBlocks", true, { page.value == Page.OTHER })
-    val beacon = setting("BeaconBeams", true, { page.value == Page.OTHER })
-    val skylight = setting("SkyLightUpdates", true, { page.value == Page.OTHER })
-    private val enchantingTable = setting("EnchantingBooks", true, { page.value == Page.OTHER })
-    private val enchantingTableSnow = setting("EnchantTableSnow", false, { page.value == Page.OTHER })
-    private val projectiles = setting("Projectiles", false, { page.value == Page.OTHER })
-    private val lightning = setting("Lightning", true, { page.value == Page.OTHER })
+    val map = setting(KamiLang.get("module.modules.render.NoRender.Maps"), false, { page.value == Page.OTHER })
+    private val explosion = setting(KamiLang.get("module.modules.render.NoRender.Explosions"), true, { page.value == Page.OTHER })
+    val signText = setting(KamiLang.get("module.modules.render.NoRender.Signtext"), false, { page.value == Page.OTHER })
+    val particles = setting(KamiLang.get("module.modules.render.NoRender.Particles"), true, { page.value == Page.OTHER })
+    private val falling = setting(KamiLang.get("module.modules.render.NoRender.Fallingblocks"), true, { page.value == Page.OTHER })
+    val beacon = setting(KamiLang.get("module.modules.render.NoRender.Beaconbeams"), true, { page.value == Page.OTHER })
+    val skylight = setting(KamiLang.get("module.modules.render.NoRender.Skylightupdates"), true, { page.value == Page.OTHER })
+    private val enchantingTable = setting(KamiLang.get("module.modules.render.NoRender.Enchantingbooks"), true, { page.value == Page.OTHER })
+    private val enchantingTableSnow = setting(KamiLang.get("module.modules.render.NoRender.Enchanttablesnow"), false, { page.value == Page.OTHER })
+    private val projectiles = setting(KamiLang.get("module.modules.render.NoRender.Projectiles"), false, { page.value == Page.OTHER })
+    private val lightning = setting(KamiLang.get("module.modules.render.NoRender.Lightning"), true, { page.value == Page.OTHER })
 
     private enum class Page {
         OTHER, ENTITIES
