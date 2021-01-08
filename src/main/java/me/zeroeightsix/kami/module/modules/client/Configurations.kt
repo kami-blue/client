@@ -127,7 +127,7 @@ internal object Configurations : AbstractModule(
         MODULES("Modules", ModuleConfig, modulePresetSetting);
 
         override val serverPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
-            getJsons(config.filePath) { it.nameWithoutExtension.startsWith("server-") }
+            getJsons(config.filePath) { it.name.startsWith("server-") }
         }
 
         override val allPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
@@ -227,7 +227,7 @@ internal object Configurations : AbstractModule(
             if (!serverPresetDisabledMessage()) return
 
             if (serverPresets.isEmpty()) {
-                MessageSendHelper.sendChatMessage(" No server preset for ${formatValue(displayName)} config!")
+                MessageSendHelper.sendChatMessage("No server preset for ${formatValue(displayName)} config!")
             } else {
                 MessageSendHelper.sendChatMessage("List of server presets for ${formatValue(displayName)} config: ${formatValue(serverPresets.size)}")
 
