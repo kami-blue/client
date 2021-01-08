@@ -21,11 +21,11 @@ abstract class AbstractModule(
     override val alias: Array<String> = emptyArray(),
     val category: Category,
     val description: String,
-    val modulePriority: Int,
-    var alwaysListening: Boolean,
-    val showOnArray: Boolean,
-    val alwaysEnabled: Boolean,
-    val enabledByDefault: Boolean,
+    val modulePriority: Int = -1,
+    var alwaysListening: Boolean = false,
+    val showOnArray: Boolean = true,
+    val alwaysEnabled: Boolean = false,
+    val enabledByDefault: Boolean = false,
     private val config: NameableConfig<out Nameable>
 ) : Nameable, Alias, SettingRegister<Nameable> by config as NameableConfig<Nameable> {
 

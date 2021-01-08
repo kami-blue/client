@@ -1,15 +1,9 @@
 package me.zeroeightsix.kami.setting
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.configs.AbstractConfig
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import me.zeroeightsix.kami.setting.configs.NameableConfig
 
-internal object GenericConfig : AbstractConfig<Any>(
+internal object GenericConfig : NameableConfig<GenericConfigClass>(
     "generic",
     "${KamiMod.DIRECTORY}config/"
-) {
-    override fun <S : AbstractSetting<*>> Any.setting(setting: S): S {
-        getGroupOrPut(this::class.simpleName!!).addSetting(setting)
-        return setting
-    }
-}
+)

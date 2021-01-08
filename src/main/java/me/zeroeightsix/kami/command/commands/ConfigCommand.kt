@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.command.commands
 import kotlinx.coroutines.*
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
+import me.zeroeightsix.kami.module.modules.client.Configurations
 import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
@@ -49,18 +50,18 @@ object ConfigCommand : ClientCommand(
                             MessageSendHelper.sendChatMessage("&b$newPath&r is not a valid path")
                             return@launch
                         }
-                        val prevPath = ModuleConfig.currentPath
+                        val prevPath = Configurations.modulePreset
 
                         try {
                             ConfigManager.save(ModuleConfig)
-                            ModuleConfig.currentPath = newPath
+                            Configurations.modulePreset = newPath
                             ConfigManager.save(GenericConfig)
                             ConfigUtils.loadAll()
                             MessageSendHelper.sendChatMessage("Configuration path set to &b$newPath&r!")
                         } catch (e: IOException) {
                             MessageSendHelper.sendChatMessage("Couldn't set path: " + e.message)
                             KamiMod.LOG.warn("Couldn't set path!", e)
-                            ModuleConfig.currentPath = prevPath
+                            Configurations.modulePreset = prevPath
                             ConfigManager.save(ModuleConfig)
                         }
                     }
@@ -69,7 +70,7 @@ object ConfigCommand : ClientCommand(
 
             execute("Print current config files") {
                 defaultScope.launch(Dispatchers.IO) {
-                    val path = Paths.get(ModuleConfig.currentPath).toAbsolutePath()
+                    val path = Paths.get(Configurations.modulePreset).toAbsolutePath()
                     MessageSendHelper.sendChatMessage("Path to configuration: ${formatValue(path)}")
                 }
             }
