@@ -13,9 +13,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.configs.AbstractConfig
 import me.zeroeightsix.kami.setting.configs.IConfig
 import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
-import me.zeroeightsix.kami.util.AsyncCachedValue
 import me.zeroeightsix.kami.util.ConfigUtils
-import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
@@ -126,13 +124,9 @@ internal object Configurations : AbstractModule(
         GUI("GUI", GuiConfig, guiPresetSetting),
         MODULES("Modules", ModuleConfig, modulePresetSetting);
 
-        override val serverPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
-            getJsons(config.filePath) { it.name.startsWith("server-") }
-        }
+        override val serverPresets get() = getJsons(config.filePath) { it.name.startsWith("server-") }
 
-        override val allPresets by AsyncCachedValue(5L, TimeUnit.SECONDS, Dispatchers.IO) {
-            getJsons(config.filePath) { true }
-        }
+        override val allPresets get() = getJsons(config.filePath) { true }
 
         private companion object {
             fun getJsons(path: String, filter: (File) -> Boolean): Set<String> {
