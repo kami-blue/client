@@ -20,7 +20,6 @@ import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.MovementInput
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
@@ -126,9 +125,12 @@ object Freecam : Module(
     }
 
     @JvmStatic
-    val renderChunkOffset get() = BlockPos(floor(mc.player.posX / 16.0) * 16,
-        floor(mc.player.posY / 16.0) * 16,
-        floor(mc.player.posZ / 16.0) * 16)
+    val renderChunkOffset
+        get() = BlockPos(
+            floor(mc.player.posX / 16.0) * 16,
+            floor(mc.player.posY / 16.0) * 16,
+            floor(mc.player.posZ / 16.0) * 16
+        )
 
     @JvmStatic
     fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
