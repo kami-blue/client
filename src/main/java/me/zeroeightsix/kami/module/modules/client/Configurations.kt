@@ -11,9 +11,9 @@ internal object Configurations : AbstractModule(
     alwaysEnabled = true,
     config = GenericConfig
 ) {
-    private val guiPresetSetting = GenericConfig.run { this@Configurations.setting("GuiPreset", "default") }
+    val guiPresetSetting = GenericConfig.run { this@Configurations.setting("GuiPreset", "default") }
     var guiPreset by guiPresetSetting
 
-    private val modulePresetSetting = GenericConfig.run { this@Configurations.setting("ModulePreset", "default") }
+    val modulePresetSetting = GenericConfig.run { this@Configurations.setting("ModulePreset", "default") }
     var modulePreset by modulePresetSetting
 }

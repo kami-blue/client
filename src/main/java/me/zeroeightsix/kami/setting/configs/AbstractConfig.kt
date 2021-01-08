@@ -12,7 +12,7 @@ import java.io.File
 
 abstract class AbstractConfig<T : Any>(
         name: String,
-        protected val filePath: String
+        val filePath: String
 ) : SettingMultiGroup(name), IConfig, SettingRegister<T> {
 
     override val file get() = File("$filePath$name.json")
