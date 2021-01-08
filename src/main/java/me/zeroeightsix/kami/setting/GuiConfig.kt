@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.setting.settings.AbstractSetting
 
 internal object GuiConfig : AbstractMultiConfig<Component>(
     "gui",
-    "${KamiMod.DIRECTORY}config/gui",
+    "${KamiMod.DIRECTORY}config/",
     "click_gui", "hud_gui"
 ) {
     override fun <S : AbstractSetting<*>> Component.setting(setting: S): S {
