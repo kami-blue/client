@@ -26,6 +26,7 @@ object Armor : HudElement(
 
     private val classic = setting("Classic", false)
     private val armorCount = setting("ArmorCount", true)
+    private val countElytras = setting("CountElytras", false, { armorCount.value })
 
     override val hudWidth: Float
         get() = if (classic.value) {
@@ -43,7 +44,6 @@ object Armor : HudElement(
 
     private var stringWidth = 120.0f
 
-    private val armorItems = arrayOf(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS)
     private val armorCounts = IntArray(4)
     private val duraColorGradient = ColorGradient(
         0f to ColorHolder(180, 20, 20),
@@ -55,9 +55,13 @@ object Armor : HudElement(
         safeAsyncListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
 
-            for ((index, item) in armorItems.withIndex()) {
-                armorCounts[index] = InventoryUtils.countItemAll(item)
-            }
+            armorCounts[0] = InventoryUtils.countItemAll(Items.DIAMOND_HELMET)
+            armorCounts[1] = InventoryUtils.countItemAll(
+                if (countElytras.value && mc.player.inventory.getStackInSlot(38).item == Items.ELYTRA) Items.ELYTRA
+                else Items.DIAMOND_CHESTPLATE
+            )
+            armorCounts[2] = InventoryUtils.countItemAll(Items.DIAMOND_LEGGINGS)
+            armorCounts[3] = InventoryUtils.countItemAll(Items.DIAMOND_BOOTS)
         }
     }
 
