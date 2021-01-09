@@ -73,7 +73,7 @@ internal object CrystalAura : Module(
     /* Force place */
     private val bindForcePlace by setting("BindForcePlace", Bind(), { page == Page.FORCE_PLACE })
     private val forcePlaceHealth by setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 10, 0..50, 1, { page == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 5, 0..50, 1, { page == Page.FORCE_PLACE })
     private val minDamageForcePlace by setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
 
     /* Place page one */
@@ -104,7 +104,7 @@ internal object CrystalAura : Module(
     /* Explode page two */
     private val minDamageE by setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
     private val maxSelfDamageE by setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val swapDelay by setting("SwapDelay", 10, 1..50, 2, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("SwapDelay", 10, 1..50, 1, { page == Page.EXPLODE_TWO })
     private val hitDelay by setting("HitDelay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
     private val hitAttempts by setting("HitAttempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
     private val explodeRange by setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
@@ -262,15 +262,15 @@ internal object CrystalAura : Module(
     }
 
     private fun SafeClientEvent.place() {
-        if (autoSwap && getHand() == null) {
-            InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
-                if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
-                else InventoryUtils.swapSlot(it)
-            }
-        }
-
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
+                if (autoSwap && getHand() == null) {
+                    InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
+                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
+                        else InventoryUtils.swapSlot(it)
+                    }
+                }
+
                 placeTimer = 0
                 inactiveTicks = 0
                 lastLookAt = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
@@ -330,9 +330,9 @@ internal object CrystalAura : Module(
     }
 
     private fun SafeClientEvent.explode() {
-        if (!preExplode()) return
-
         getExplodingCrystal()?.let {
+            if (!preExplode()) return
+
             if (hitAttempts != 0 && it == lastCrystal) {
                 hitCount++
                 if (hitCount >= hitAttempts) ignoredList.add(it)
@@ -372,13 +372,11 @@ internal object CrystalAura : Module(
     /* End of main functions */
 
     /* Placing */
-    private fun SafeClientEvent.canPlace(): Boolean {
-        return doPlace
+    private fun SafeClientEvent.canPlace() =
+        doPlace
             && placeTimer > placeDelay
             && InventoryUtils.countItemAll(426) > 0
-            && getPlacingPos() != null
             && countValidCrystal() < maxCrystal
-    }
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
     private fun SafeClientEvent.getPlacingPos(): BlockPos? {
@@ -421,36 +419,36 @@ internal object CrystalAura : Module(
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float) =
-        (shouldFacePlace(damage) || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
+        (shouldFacePlace(damage)  || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
     /* End of placing */
 
     /* Exploding */
-    private fun SafeClientEvent.canExplode() =
-        doExplode
-            && hitTimer > hitDelay
-            && getExplodingCrystal() != null
+    private fun canExplode() = doExplode && hitTimer > hitDelay
 
-    private fun SafeClientEvent.getExplodingCrystal() =
-        (crystalMap.entries.firstOrNull { (crystal, triple) ->
+    private fun SafeClientEvent.getExplodingCrystal(): EntityEnderCrystal? {
+        val filteredCrystal = crystalMap.entries.filter { (crystal, triple) ->
             !ignoredList.contains(crystal)
                 && !crystal.isDead
-                && triple.third <= explodeRange
                 && checkDamageExplode(triple.first, triple.second)
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        }
+
+        return (filteredCrystal.firstOrNull { (crystal, triple) ->
+                triple.third <= explodeRange
                 && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
-                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-        } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
-            !ignoredList.contains(crystal)
-                && !crystal.isDead
-                && triple.third <= wallExplodeRange
-                && checkDamageExplode(triple.first, triple.second)
-                && EntityUtils.canEntityHitboxBeSeen(crystal) != null
-                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        } ?: filteredCrystal.firstOrNull { (_, triple) ->
+                triple.third <= wallExplodeRange
         })?.key
+    }
 
 
-    private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
+    private fun checkDamageExplode(damage: Float, selfDamage: Float) =
+        (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
 
-    private fun shouldForceExplode() = autoForceExplode && placeMap.isNotEmpty() && placeMap.values.first().second > minDamageE
+    private fun shouldForceExplode() = autoForceExplode
+        && placeMap.values.any {
+            it.first > minDamage && it.second <= maxSelfDamage && it.third <= placeRange
+        }
     /* End of exploding */
 
     /* General */

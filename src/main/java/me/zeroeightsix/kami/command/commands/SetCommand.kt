@@ -7,8 +7,6 @@ import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.text.formatValue
-import me.zeroeightsix.kami.util.threads.onMainThread
-import me.zeroeightsix.kami.util.threads.onMainThreadW
 import net.minecraft.util.text.TextFormatting
 
 object SetCommand : ClientCommand(
@@ -20,27 +18,23 @@ object SetCommand : ClientCommand(
         module("module") { moduleArg ->
             string("setting") { settingArg ->
                 literal("toggle") {
-                    executeAsync {
+                    execute {
                         val module = moduleArg.value
                         val settingName = settingArg.value
                         val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
-                            return@executeAsync
+                            return@execute
                         }
 
                         when (setting) {
                             is BooleanSetting -> {
-                                onMainThread {
-                                    setting.value = !setting.value
-                                }
+                                setting.value = !setting.value
                             }
 
                             is EnumSetting -> {
-                                onMainThread {
-                                    setting.nextValue()
-                                }
+                                setting.nextValue()
                             }
 
                             else -> {
@@ -53,23 +47,21 @@ object SetCommand : ClientCommand(
                 }
 
                 greedy("value") { valueArg ->
-                    executeAsync("Set the value of a module's setting") {
+                    execute("Set the value of a module's setting") {
                         val module = moduleArg.value
                         val settingName = settingArg.value
                         val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
                         if (setting == null) {
                             sendUnknownSettingMessage(module.name, settingName)
-                            return@executeAsync
+                            return@execute
                         }
 
                         try {
                             val value = valueArg.value
 
-                            onMainThreadW {
-                                setting.setValue(value)
-                                MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
-                            }
+                            setting.setValue(value)
+                            MessageSendHelper.sendChatMessage("Set ${formatValue(setting.name)} to ${formatValue(value)}.")
                         } catch (e: Exception) {
                             MessageSendHelper.sendChatMessage("Unable to set value! ${TextFormatting.RED format e.message.toString()}")
                             KamiMod.LOG.info("Unable to set value!", e)
@@ -77,14 +69,14 @@ object SetCommand : ClientCommand(
                     }
                 }
 
-                executeAsync("Show the value of a setting") {
+                execute("Show the value of a setting") {
                     val module = moduleArg.value
                     val settingName = settingArg.value
                     val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
 
                     if (setting == null) {
                         sendUnknownSettingMessage(module.name, settingName)
-                        return@executeAsync
+                        return@execute
                     }
 
                     MessageSendHelper.sendChatMessage("${formatValue(settingName)} is a " +
@@ -94,7 +86,7 @@ object SetCommand : ClientCommand(
                 }
             }
 
-            executeAsync("List settings for a module") {
+            execute("List settings for a module") {
                 val module = moduleArg.value
                 val settingList = module.fullSettingList
 

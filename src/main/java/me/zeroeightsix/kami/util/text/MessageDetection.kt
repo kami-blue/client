@@ -65,7 +65,7 @@ object MessageDetection {
             "^(\\w+?) whispers( to you)?: ".toRegex(),
             "^\\[?(\\w+?)( )?->( )?\\w+?]?( )?:? ".toRegex(),
             "^From (\\w+?): ".toRegex(RegexOption.IGNORE_CASE),
-            ". (\\w+?) » \\w+? » ".toRegex()
+            "^. (\\w+?) » \\w+? » ".toRegex()
         ),
         ANY(*SENT.regexes, *RECEIVE.regexes);
 

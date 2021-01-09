@@ -10,17 +10,16 @@ object DiscordNotifsCommand : ClientCommand(
     name = "discordnotifs",
     alias = arrayOf("webhook")
 ) {
-    private val urlRegex = Regex("^https://.*discord\\.com/api/webhooks/([0-9])+/.{68}$2")
+    private val urlRegex = Regex("^https://.*discord\\.com/api/webhooks/\\d+/.{68}$")
 
     init {
         literal("id") {
             long("discord user id") { idArg ->
                 execute("Set the ID of the user to be pinged") {
-                    DiscordNotifs.pingID.value = idArg.value.toString()
+                    DiscordNotifs.pingID.value = idArg.value.toString() 
                     MessageSendHelper.sendChatMessage("Set Discord User ID to ${formatValue(idArg.value.toString())}!")
                 }
             }
-
         }
 
         literal("avatar") {
@@ -39,6 +38,7 @@ object DiscordNotifsCommand : ClientCommand(
                         formatValue(urlArg.value) +
                         " does not match the valid webhook format!"
                     )
+
                     return@execute
                 }
 
