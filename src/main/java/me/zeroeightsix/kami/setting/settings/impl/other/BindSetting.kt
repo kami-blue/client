@@ -4,13 +4,15 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.setting.settings.ImmutableSetting
 import me.zeroeightsix.kami.util.Bind
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import org.lwjgl.input.Keyboard
 
 class BindSetting(
-        name: String,
-        value: Bind,
-        visibility: () -> Boolean = { true },
-        description: String = ""
+    name: TranslationKey,
+    value: Bind,
+    visibility: () -> Boolean = { true },
+    description: TranslationKey = TranslationKeyBlank()
 ) : ImmutableSetting<Bind>(name, value, visibility, { _, input -> input }, description) {
 
     override val defaultValue: Bind = Bind(value.ctrl, value.alt, value.shift, value.key)

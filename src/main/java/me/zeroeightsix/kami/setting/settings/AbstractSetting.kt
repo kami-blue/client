@@ -4,16 +4,19 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import me.zeroeightsix.kami.util.translation.TranslationKey
 import org.kamiblue.commons.interfaces.Nameable
 import kotlin.reflect.KProperty
 
-abstract class AbstractSetting<T : Any> : Nameable {
+abstract class AbstractSetting<T : Any> {
+
+    abstract val name: TranslationKey
 
     abstract val value: T
     abstract val defaultValue: T
     abstract val valueClass: Class<T>
     abstract val visibility: () -> Boolean
-    abstract val description: String
+    abstract val description: TranslationKey
 
     val listeners = ArrayList<() -> Unit>()
     val valueListeners = ArrayList<(prev: T, input: T) -> Unit>()
@@ -35,7 +38,7 @@ abstract class AbstractSetting<T : Any> : Nameable {
     override fun equals(other: Any?) = this === other
         || (other is AbstractSetting<*>
         && this.valueClass == other.valueClass
-        && this.name == other.name
+        && this.name.value == other.name.value
         && this.value == other.value)
 
     override fun hashCode() = valueClass.hashCode() * 31 +

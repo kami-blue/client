@@ -1,15 +1,17 @@
 package me.zeroeightsix.kami.setting.settings.impl.number
 
 import com.google.gson.JsonElement
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 class FloatSetting(
-        name: String,
+        name: TranslationKey,
         value: Float,
         range: ClosedFloatingPointRange<Float>,
         step: Float,
         visibility: () -> Boolean = { true },
         consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
-        description: String = ""
+        description: TranslationKey = TranslationKeyBlank()
 ) : NumberSetting<Float>(name, value, range, step, visibility, consumer, description) {
 
     init {

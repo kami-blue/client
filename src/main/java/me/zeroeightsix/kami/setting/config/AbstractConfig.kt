@@ -18,6 +18,8 @@ import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import java.io.File
 
 abstract class AbstractConfig<T>(
@@ -28,79 +30,79 @@ abstract class AbstractConfig<T>(
     /* Setting registering */
     /** Integer Setting */
     fun T.setting(
-            name: String,
-            value: Int,
-            range: IntRange,
-            step: Int,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
-            description: String = ""
+        name: TranslationKey,
+        value: Int,
+        range: IntRange,
+        step: Int,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
+        description: TranslationKey = TranslationKeyBlank()
     ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
 
     /** Double Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: Double,
             range: ClosedFloatingPointRange<Double>,
             step: Double,
             visibility: () -> Boolean = { true },
             consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
 
     /** Float Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: Float,
             range: ClosedFloatingPointRange<Float>,
             step: Float,
             visibility: () -> Boolean = { true },
             consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
 
     /** Bind Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: Bind,
             visibility: () -> Boolean = { true },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(BindSetting(name, value, visibility, description))
 
     /** Color Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: ColorHolder,
             hasAlpha: Boolean = true,
             visibility: () -> Boolean = { true },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
 
     /** Boolean Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: Boolean,
             visibility: () -> Boolean = { true },
             consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(BooleanSetting(name, value, visibility, consumer, description))
 
     /** Enum Setting */
     fun <E : Enum<E>> T.setting(
-            name: String,
+            name: TranslationKey,
             value: E,
             visibility: () -> Boolean = { true },
             consumer: (prev: E, input: E) -> E = { _, input -> input },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(EnumSetting(name, value, visibility, consumer, description))
 
     /** Boolean Setting */
     fun T.setting(
-            name: String,
+            name: TranslationKey,
             value: String,
             visibility: () -> Boolean = { true },
             consumer: (prev: String, input: String) -> String = { _, input -> input },
-            description: String = ""
+            description: TranslationKey = TranslationKeyBlank()
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
 

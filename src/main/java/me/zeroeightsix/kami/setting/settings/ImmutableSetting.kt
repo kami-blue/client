@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.setting.settings
 
+import me.zeroeightsix.kami.util.translation.TranslationKey
+
 /**
  * Basic ImmutableSetting class
  *
@@ -10,11 +12,11 @@ package me.zeroeightsix.kami.setting.settings
  * @param description Description of this setting
  */
 abstract class ImmutableSetting<T : Any>(
-    override val name: String,
+    override val name: TranslationKey,
     valueIn: T,
     override val visibility: () -> Boolean,
     val consumer: (prev: T, input: T) -> T,
-    override val description: String
+    override val description: TranslationKey
 ) : AbstractSetting<T>() {
     override val value: T = valueIn
     override val valueClass: Class<T> = valueIn.javaClass

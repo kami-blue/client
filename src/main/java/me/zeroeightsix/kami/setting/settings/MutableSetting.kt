@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.setting.settings
 
 import com.google.gson.JsonElement
+import me.zeroeightsix.kami.util.translation.TranslationKey
 import kotlin.reflect.KProperty
 
 /**
@@ -13,11 +14,11 @@ import kotlin.reflect.KProperty
  * @param description Description of this setting
  */
 open class MutableSetting<T : Any>(
-    override val name: String,
+    override val name: TranslationKey,
     valueIn: T,
     override val visibility: () -> Boolean,
     consumer: (prev: T, input: T) -> T,
-    override val description: String
+    override val description: TranslationKey
 ) : AbstractSetting<T>() {
 
     override val defaultValue = valueIn

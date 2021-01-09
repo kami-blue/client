@@ -3,15 +3,17 @@ package me.zeroeightsix.kami.setting.settings.impl.primitive
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.setting.settings.MutableSetting
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import org.kamiblue.commons.extension.next
 import java.util.*
 
 class EnumSetting<T : Enum<T>>(
-        name: String,
+        name: TranslationKey,
         value: T,
         visibility: () -> Boolean = { true },
         consumer: (prev: T, input: T) -> T = { _, input -> input },
-        description: String = ""
+        description: TranslationKey = TranslationKeyBlank()
 ) : MutableSetting<T>(name, value, visibility, consumer, description) {
 
     val enumClass: Class<T> = value.declaringClass

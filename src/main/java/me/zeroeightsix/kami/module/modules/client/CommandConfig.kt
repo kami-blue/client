@@ -15,19 +15,17 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.Display
 
 object CommandConfig : Module(
-    name = "CommandConfig",
     category = Category.CLIENT,
-    description = "Configures client chat related stuff",
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    val prefix = setting("Prefix", ";", { false })
-    val toggleMessages = setting("ToggleMessages", false)
-    private val customTitle = setting("WindowTitle", true)
-    private val autoSaving = setting("AutoSavingSettings", true)
-    private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
-    private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
-    val modifierEnabled = setting("ModifierEnabled", false, { false })
+    val prefix = setting(getTranslationKey("Prefix"), ";", { false })
+    val toggleMessages = setting(getTranslationKey("ToggleMessages"), false)
+    private val customTitle = setting(getTranslationKey("WindowTitle"), true)
+    private val autoSaving = setting(getTranslationKey("AutoSavingSettings"), true)
+    private val savingFeedBack = setting(getTranslationKey("SavingFeedBack"), false, { autoSaving.value })
+    private val savingInterval = setting(getTranslationKey("Interval(m)"), 3, 1..10, 1, { autoSaving.value })
+    val modifierEnabled = setting(getTranslationKey("ModifierEnabled"), false, { false })
 
     private val timer = TickTimer(TimeUnit.MINUTES)
     private val prevTitle = Display.getTitle()
