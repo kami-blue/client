@@ -19,12 +19,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object PacketLogger : Module(
-    name = "PacketLogger",
-    description = "Logs sent packets to a file",
     category = Category.PLAYER
 ) {
     private val append by setting("Append", false)
-    private val clear = setting("Clear", false)
+    private val clear = setting(getTranslationKey("Clear"), false)
 
     private val file = File("${KamiMod.DIRECTORY}packet_logger.txt")
     private val lines = Collections.synchronizedList(ArrayList<String>())

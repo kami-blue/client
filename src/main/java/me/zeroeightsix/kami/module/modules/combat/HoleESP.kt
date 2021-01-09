@@ -17,24 +17,22 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.AxisAlignedBB
 
 object HoleESP : Module(
-    name = "HoleESP",
     category = Category.COMBAT,
-    description = "Show safe holes for crystal pvp"
 ) {
-    private val range = setting("RenderDistance", 8, 4..32, 1)
-    private val filled = setting("Filled", true)
-    private val outline = setting("Outline", true)
-    private val hideOwn = setting("HideOwn", true)
-    private val r1 = setting("Red(Obby)", 208, 0..255, 1, { shouldAddObsidian() })
-    private val g1 = setting("Green(Obby)", 144, 0..255, 1, { shouldAddObsidian() })
-    private val b1 = setting("Blue(Obby)", 255, 0..255, 1, { shouldAddObsidian() })
-    private val r2 = setting("Red(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val g2 = setting("Green(Bedrock)", 144, 0..255, 1, { shouldAddBedrock() })
-    private val b2 = setting("Blue(Bedrock)", 255, 0..255, 1, { shouldAddBedrock() })
-    private val aFilled = setting("FilledAlpha", 31, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { outline.value })
-    private val renderMode = setting("Mode", Mode.BLOCK_HOLE)
-    private val holeType = setting("HoleType", HoleType.BOTH)
+    private val range = setting(getTranslationKey("RenderDistance"), 8, 4..32, 1)
+    private val filled = setting(getTranslationKey("Filled"), true)
+    private val outline = setting(getTranslationKey("Outline"), true)
+    private val hideOwn = setting(getTranslationKey("HideOwn"), true)
+    private val r1 = setting(getTranslationKey("Red(Obby)"), 208, 0..255, 1, { shouldAddObsidian() })
+    private val g1 = setting(getTranslationKey("Green(Obby)"), 144, 0..255, 1, { shouldAddObsidian() })
+    private val b1 = setting(getTranslationKey("Blue(Obby)"), 255, 0..255, 1, { shouldAddObsidian() })
+    private val r2 = setting(getTranslationKey("Red(Bedrock)"), 144, 0..255, 1, { shouldAddBedrock() })
+    private val g2 = setting(getTranslationKey("Green(Bedrock)"), 144, 0..255, 1, { shouldAddBedrock() })
+    private val b2 = setting(getTranslationKey("Blue(Bedrock)"), 255, 0..255, 1, { shouldAddBedrock() })
+    private val aFilled = setting(getTranslationKey("FilledAlpha"), 31, 0..255, 1, { filled.value })
+    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 127, 0..255, 1, { outline.value })
+    private val renderMode = setting(getTranslationKey("Mode"), Mode.BLOCK_HOLE)
+    private val holeType = setting(getTranslationKey("HoleType"), HoleType.BOTH)
 
     private enum class Mode {
         BLOCK_HOLE, BLOCK_FLOOR, FLAT

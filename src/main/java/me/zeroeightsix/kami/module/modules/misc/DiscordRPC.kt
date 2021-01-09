@@ -23,9 +23,7 @@ import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
 object DiscordRPC : Module(
-    name = "DiscordRPC",
     category = Category.MISC,
-    description = "Discord Rich Presence",
     enabledByDefault = true
 ) {
     private val line1Left by setting("Line1Left", LineInfo.VERSION) // details left

@@ -14,12 +14,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object Criticals : Module(
-    name = "Criticals",
     category = Category.COMBAT,
-    description = "Always do critical attacks"
 ) {
-    private val mode = setting("Mode", CriticalMode.PACKET)
-    private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
+    private val mode = setting(getTranslationKey("Mode"), CriticalMode.PACKET)
+    private val miniJump = setting(getTranslationKey("MiniJump"), true, { mode.value == CriticalMode.DELAY })
 
     private enum class CriticalMode {
         PACKET, DELAY

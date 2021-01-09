@@ -8,9 +8,7 @@ import net.minecraft.network.play.client.CPacketConfirmTeleport
 import org.kamiblue.event.listener.listener
 
 object PortalGodMode : Module(
-    name = "PortalGodMode",
     category = Category.PLAYER,
-    description = "Don't take damage in portals"
 ) {
     private val instantTeleport by setting("InstantTeleport", true)
 

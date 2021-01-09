@@ -23,16 +23,14 @@ import org.lwjgl.input.Keyboard
 
 @CombatManager.CombatModule
 object AutoTrap : Module(
-    name = "AutoTrap",
     category = Category.COMBAT,
-    description = "Traps your enemies in obsidian",
     modulePriority = 60
 ) {
-    private val trapMode = setting("TrapMode", TrapMode.FULL_TRAP)
-    private val selfTrap = setting("SelfTrap", false)
-    private val bindSelfTrap = setting("BindSelfTrap", Bind())
-    private val autoDisable = setting("AutoDisable", true)
-    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
+    private val trapMode = setting(getTranslationKey("TrapMode"), TrapMode.FULL_TRAP)
+    private val selfTrap = setting(getTranslationKey("SelfTrap"), false)
+    private val bindSelfTrap = setting(getTranslationKey("BindSelfTrap"), Bind())
+    private val autoDisable = setting(getTranslationKey("AutoDisable"), true)
+    private val placeSpeed = setting(getTranslationKey("PlacesPerTick"), 4f, 0.25f..5f, 0.25f)
 
     private var job: Job? = null
 

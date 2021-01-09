@@ -14,16 +14,14 @@ import net.minecraft.init.SoundEvents
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object VisualRange : Module(
-    name = "VisualRange",
-    description = "Shows players who enter and leave range in chat",
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val playSound = setting("PlaySound", false)
-    private val leaving = setting("CountLeaving", false)
-    private val friends = setting("Friends", true)
-    private val uwuAura = setting("UwUAura", false)
-    private val logToFile = setting("LogToFile", false)
+    private val playSound = setting(getTranslationKey("PlaySound"), false)
+    private val leaving = setting(getTranslationKey("CountLeaving"), false)
+    private val friends = setting(getTranslationKey("Friends"), true)
+    private val uwuAura = setting(getTranslationKey("UwUAura"), false)
+    private val logToFile = setting(getTranslationKey("LogToFile"), false)
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
 

@@ -23,14 +23,12 @@ import org.lwjgl.input.Keyboard
  * https://github.com/fr1kin/ForgeHax/blob/2011740/src/main/java/com/matt/forgehax/mods/StepMod.java
  */
 object Step : Module(
-    name = "Step",
-    description = "Changes the vanilla behavior for stepping up blocks",
     category = Category.MOVEMENT,
     modulePriority = 200
 ) {
     private val mode by setting("Mode", Mode.PACKET)
-    private val upStep = setting("UpStep", true)
-    private val downStep = setting("DownStep", false)
+    private val upStep = setting(getTranslationKey("UpStep"), true)
+    private val downStep = setting(getTranslationKey("DownStep"), false)
     private val entityStep by setting("Entities", true)
     private val height by setting("Height", 1.0f, 0.25f..2.0f, 0.25f)
     private val downSpeed by setting("DownSpeed", 0.2f, 0.0f..1.0f, 0.05f)

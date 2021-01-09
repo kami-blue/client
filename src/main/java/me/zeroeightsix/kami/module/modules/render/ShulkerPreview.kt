@@ -18,9 +18,7 @@ import net.minecraft.util.NonNullList
  * @see MixinGuiScreen.renderToolTip
  */
 object ShulkerPreview : Module(
-    name = "ShulkerPreview",
     category = Category.RENDER,
-    description = "Previews shulkers in the game GUI"
 ) {
 
     private val itemRenderer = Minecraft.getMinecraft().renderItem

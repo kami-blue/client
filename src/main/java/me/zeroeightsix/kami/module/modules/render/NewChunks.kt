@@ -29,27 +29,25 @@ import java.util.*
 import kotlin.collections.LinkedHashSet
 
 object NewChunks : Module(
-    name = "NewChunks",
-    description = "Highlights newly generated chunks",
     category = Category.RENDER
 ) {
-    private val relative = setting("Relative", true)
-    private val autoClear = setting("AutoClear", true)
-    private val saveNewChunks = setting("SaveNewChunks", false)
-    private val saveOption = setting("SaveOption", SaveOption.EXTRA_FOLDER, { saveNewChunks.value })
-    private val saveInRegionFolder = setting("InRegion", false, { saveNewChunks.value })
-    private val alsoSaveNormalCoords = setting("SaveNormalCoords", false, { saveNewChunks.value })
-    private val closeFile = setting("CloseFile", false, { saveNewChunks.value })
-    private val renderMode = setting("RenderMode", RenderMode.BOTH)
-    private val yOffset = setting("YOffset", 0, -256..256, 4, { isWorldMode })
-    private val customColor = setting("CustomColor", false, { isWorldMode })
-    private val red = setting("Red", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val green = setting("Green", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val blue = setting("Blue", 255, 0..255, 1, { customColor.value && isWorldMode })
-    private val range = setting("RenderRange", 256, 64..1024, 64)
-    val radarScale = setting("RadarScale", 2.0, 1.0..10.0, 0.1, { isRadarMode })
-    private val removeMode = setting("RemoveMode", RemoveMode.MAX_NUM)
-    private val maxNum = setting("MaxNum", 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
+    private val relative = setting(getTranslationKey("Relative"), true)
+    private val autoClear = setting(getTranslationKey("AutoClear"), true)
+    private val saveNewChunks = setting(getTranslationKey("SaveNewChunks"), false)
+    private val saveOption = setting(getTranslationKey("SaveOption"), SaveOption.EXTRA_FOLDER, { saveNewChunks.value })
+    private val saveInRegionFolder = setting(getTranslationKey("InRegion"), false, { saveNewChunks.value })
+    private val alsoSaveNormalCoords = setting(getTranslationKey("SaveNormalCoords"), false, { saveNewChunks.value })
+    private val closeFile = setting(getTranslationKey("CloseFile"), false, { saveNewChunks.value })
+    private val renderMode = setting(getTranslationKey("RenderMode"), RenderMode.BOTH)
+    private val yOffset = setting(getTranslationKey("YOffset"), 0, -256..256, 4, { isWorldMode })
+    private val customColor = setting(getTranslationKey("CustomColor"), false, { isWorldMode })
+    private val red = setting(getTranslationKey("Red"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val green = setting(getTranslationKey("Green"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val blue = setting(getTranslationKey("Blue"), 255, 0..255, 1, { customColor.value && isWorldMode })
+    private val range = setting(getTranslationKey("RenderRange"), 256, 64..1024, 64)
+    val radarScale = setting(getTranslationKey("RadarScale"), 2.0, 1.0..10.0, 0.1, { isRadarMode })
+    private val removeMode = setting(getTranslationKey("RemoveMode"), RemoveMode.MAX_NUM)
+    private val maxNum = setting(getTranslationKey("MaxNum"), 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null

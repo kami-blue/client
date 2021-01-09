@@ -9,8 +9,6 @@ import net.minecraft.world.GameType
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object FakeGameMode : Module(
-    name = "FakeGameMode",
-    description = "Fakes your current gamemode client side",
     category = Category.MISC
 ) {
     private val gamemode by setting("Mode", GameMode.CREATIVE)

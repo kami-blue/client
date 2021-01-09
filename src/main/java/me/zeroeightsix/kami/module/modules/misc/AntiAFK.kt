@@ -26,17 +26,15 @@ import kotlin.random.Random
  * TODO: Render which chunk is selected
  */
 object AntiAFK : Module(
-    name = "AntiAFK",
     category = Category.MISC,
-    description = "Prevents being kicked for AFK"
 ) {
     private val delay by setting("ActionDelay", 50, 5..100, 5)
     private val variation by setting("Variation", 25, 0..50, 5)
     private val autoReply by setting("AutoReply", true)
-    private val swing = setting("Swing", true)
-    private val jump = setting("Jump", true)
-    private val turn = setting("Turn", true)
-    private val walk = setting("Walk", true)
+    private val swing = setting(getTranslationKey("Swing"), true)
+    private val jump = setting(getTranslationKey("Jump"), true)
+    private val turn = setting(getTranslationKey("Turn"), true)
+    private val walk = setting(getTranslationKey("Walk"), true)
     private val radius by setting("Radius", 64, 8..128, 8)
     private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
 

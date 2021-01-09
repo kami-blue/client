@@ -8,11 +8,9 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AutoJump : Module(
-    name = "AutoJump",
     category = Category.MOVEMENT,
-    description = "Automatically jumps if possible"
 ) {
-    private val delay = setting("TickDelay", 10, 0..40, 1)
+    private val delay = setting(getTranslationKey("TickDelay"), 10, 0..40, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)
 

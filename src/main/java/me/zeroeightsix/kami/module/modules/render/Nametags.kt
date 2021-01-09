@@ -36,73 +36,71 @@ import kotlin.math.roundToInt
 
 //TODO: Impl Totem pops
 object Nametags : Module(
-    name = "Nametags",
-    description = "Draws descriptive nametags above entities",
     category = Category.RENDER
 ) {
-    private val page = setting("Page", Page.ENTITY_TYPE)
+    private val page = setting(getTranslationKey("Page"), Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
-    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE })
-    private val items = setting("Items", true, { page.value == Page.ENTITY_TYPE })
-    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
-    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting("Range", 64, 0..128, 4, { page.value == Page.ENTITY_TYPE })
+    private val self = setting(getTranslationKey("Self"), false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting(getTranslationKey("Experience"), false, { page.value == Page.ENTITY_TYPE })
+    private val items = setting(getTranslationKey("Items"), true, { page.value == Page.ENTITY_TYPE })
+    private val players = setting(getTranslationKey("Players"), true, { page.value == Page.ENTITY_TYPE })
+    private val mobs = setting(getTranslationKey("Mobs"), true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting(getTranslationKey("PassiveMobs"), false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting(getTranslationKey("NeutralMobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting(getTranslationKey("HostileMobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting(getTranslationKey("Invisible"), true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting(getTranslationKey("Range"), 64, 0..128, 4, { page.value == Page.ENTITY_TYPE })
 
     /* Content */
-    private val line1left = setting("Line1Left", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line1center = setting("Line1Center", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line1right = setting("Line1Right", ContentType.NONE, { page.value == Page.CONTENT })
-    private val line2left = setting("Line2Left", ContentType.NAME, { page.value == Page.CONTENT })
-    private val line2center = setting("Line2Center", ContentType.PING, { page.value == Page.CONTENT })
-    private val line2right = setting("Line2Right", ContentType.TOTAL_HP, { page.value == Page.CONTENT })
-    private val dropItemCount = setting("DropItemCount", true, { page.value == Page.CONTENT && items.value })
-    private val maxDropItems = setting("MaxDropItems", 5, 2..16, 1, { page.value == Page.CONTENT && items.value })
+    private val line1left = setting(getTranslationKey("Line1Left"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1center = setting(getTranslationKey("Line1Center"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line1right = setting(getTranslationKey("Line1Right"), ContentType.NONE, { page.value == Page.CONTENT })
+    private val line2left = setting(getTranslationKey("Line2Left"), ContentType.NAME, { page.value == Page.CONTENT })
+    private val line2center = setting(getTranslationKey("Line2Center"), ContentType.PING, { page.value == Page.CONTENT })
+    private val line2right = setting(getTranslationKey("Line2Right"), ContentType.TOTAL_HP, { page.value == Page.CONTENT })
+    private val dropItemCount = setting(getTranslationKey("DropItemCount"), true, { page.value == Page.CONTENT && items.value })
+    private val maxDropItems = setting(getTranslationKey("MaxDropItems"), 5, 2..16, 1, { page.value == Page.CONTENT && items.value })
 
     /* Item */
-    private val mainHand = setting("MainHand", true, { page.value == Page.ITEM })
-    private val offhand = setting("OffHand", true, { page.value == Page.ITEM })
-    private val invertHand = setting("InvertHand", false, { page.value == Page.ITEM && (mainHand.value || offhand.value) })
-    private val armor = setting("Armor", true, { page.value == Page.ITEM })
-    private val count = setting("Count", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val dura = setting("Dura", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val enchantment = setting("Enchantment", true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
-    private val itemScale = setting("ItemScale", 1f, 0.25f..2f, 0.25f, { page.value == Page.ITEM })
+    private val mainHand = setting(getTranslationKey("MainHand"), true, { page.value == Page.ITEM })
+    private val offhand = setting(getTranslationKey("OffHand"), true, { page.value == Page.ITEM })
+    private val invertHand = setting(getTranslationKey("InvertHand"), false, { page.value == Page.ITEM && (mainHand.value || offhand.value) })
+    private val armor = setting(getTranslationKey("Armor"), true, { page.value == Page.ITEM })
+    private val count = setting(getTranslationKey("Count"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val dura = setting(getTranslationKey("Dura"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val enchantment = setting(getTranslationKey("Enchantment"), true, { page.value == Page.ITEM && (mainHand.value || offhand.value || armor.value) })
+    private val itemScale = setting(getTranslationKey("ItemScale"), 1f, 0.25f..2f, 0.25f, { page.value == Page.ITEM })
 
     /* Frame */
-    private val nameFrame = setting("NameFrame", true, { page.value == Page.FRAME })
-    private val itemFrame = setting("ItemFrame", false, { page.value == Page.FRAME })
-    private val dropItemFrame = setting("DropItemFrame", true, { page.value == Page.FRAME })
-    private val filled = setting("Filled", true, { page.value == Page.FRAME })
-    private val rFilled = setting("FilledRed", 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val gFilled = setting("FilledGreen", 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val bFilled = setting("FilledBlue", 64, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val aFilled = setting("FilledAlpha", 169, 0..255, 1, { page.value == Page.FRAME && filled.value })
-    private val outline = setting("Outline", true, { page.value == Page.FRAME })
-    private val rOutline = setting("OutlineRed", 155, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val gOutline = setting("OutlineGreen", 144, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val bOutline = setting("OutlineBlue", 255, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val aOutline = setting("OutlineAlpha", 240, 0..255, 1, { page.value == Page.FRAME && outline.value })
-    private val outlineWidth = setting("OutlineWidth", 2.0f, 0.0f..5.0f, 0.1f, { page.value == Page.FRAME && outline.value })
-    private val margins = setting("Margins", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
-    private val cornerRadius = setting("CornerRadius", 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
+    private val nameFrame = setting(getTranslationKey("NameFrame"), true, { page.value == Page.FRAME })
+    private val itemFrame = setting(getTranslationKey("ItemFrame"), false, { page.value == Page.FRAME })
+    private val dropItemFrame = setting(getTranslationKey("DropItemFrame"), true, { page.value == Page.FRAME })
+    private val filled = setting(getTranslationKey("Filled"), true, { page.value == Page.FRAME })
+    private val rFilled = setting(getTranslationKey("FilledRed"), 39, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val gFilled = setting(getTranslationKey("FilledGreen"), 36, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val bFilled = setting(getTranslationKey("FilledBlue"), 64, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val aFilled = setting(getTranslationKey("FilledAlpha"), 169, 0..255, 1, { page.value == Page.FRAME && filled.value })
+    private val outline = setting(getTranslationKey("Outline"), true, { page.value == Page.FRAME })
+    private val rOutline = setting(getTranslationKey("OutlineRed"), 155, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val gOutline = setting(getTranslationKey("OutlineGreen"), 144, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val bOutline = setting(getTranslationKey("OutlineBlue"), 255, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 240, 0..255, 1, { page.value == Page.FRAME && outline.value })
+    private val outlineWidth = setting(getTranslationKey("OutlineWidth"), 2.0f, 0.0f..5.0f, 0.1f, { page.value == Page.FRAME && outline.value })
+    private val margins = setting(getTranslationKey("Margins"), 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
+    private val cornerRadius = setting(getTranslationKey("CornerRadius"), 2.0f, 0.0f..10.0f, 0.1f, { page.value == Page.FRAME })
 
     /* Rendering settings */
-    private val rText = setting("TextRed", 232, 0..255, 1, { page.value == Page.RENDERING })
-    private val gText = setting("TextGreen", 229, 0..255, 1, { page.value == Page.RENDERING })
-    private val bText = setting("TextBlue", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val aText = setting("TextAlpha", 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val customFont = setting("CustomFont", true, { page.value == Page.RENDERING })
-    private val textShadow = setting("TextShadow", true, { page.value == Page.RENDERING })
-    private val yOffset = setting("YOffset", 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
-    private val scale = setting("Scale", 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
-    private val distScaleFactor = setting("DistanceScaleFactor", 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
-    private val minDistScale = setting("MinDistanceScale", 0.35f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
+    private val rText = setting(getTranslationKey("TextRed"), 232, 0..255, 1, { page.value == Page.RENDERING })
+    private val gText = setting(getTranslationKey("TextGreen"), 229, 0..255, 1, { page.value == Page.RENDERING })
+    private val bText = setting(getTranslationKey("TextBlue"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val aText = setting(getTranslationKey("TextAlpha"), 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val customFont = setting(getTranslationKey("CustomFont"), true, { page.value == Page.RENDERING })
+    private val textShadow = setting(getTranslationKey("TextShadow"), true, { page.value == Page.RENDERING })
+    private val yOffset = setting(getTranslationKey("YOffset"), 0.5f, -2.5f..2.5f, 0.05f, { page.value == Page.RENDERING })
+    private val scale = setting(getTranslationKey("Scale"), 1f, 0.25f..5f, 0.25f, { page.value == Page.RENDERING })
+    private val distScaleFactor = setting(getTranslationKey("DistanceScaleFactor"), 0.0f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
+    private val minDistScale = setting(getTranslationKey("MinDistanceScale"), 0.35f, 0.0f..1.0f, 0.05f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, CONTENT, ITEM, FRAME, RENDERING
@@ -371,7 +369,6 @@ object Nametags : Module(
             null
         }
         ContentType.NAME -> {
-            val name = entity.displayName.unformattedText
             TextComponent.TextElement(name, getTextColor())
         }
         ContentType.TYPE -> {

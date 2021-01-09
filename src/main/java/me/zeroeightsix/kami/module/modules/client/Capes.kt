@@ -32,9 +32,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Capes : Module(
-    name = "Capes",
     category = Category.CLIENT,
-    description = "Controls the display of KAMI Blue capes",
     showOnArray = false,
     enabledByDefault = true
 ) {

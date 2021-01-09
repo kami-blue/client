@@ -11,21 +11,19 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 
 object ViewLock : Module(
-    name = "ViewLock",
     category = Category.PLAYER,
-    description = "Locks your camera view"
 ) {
 
-    private val yaw = setting("Yaw", true)
-    private val pitch = setting("Pitch", true)
-    private val autoYaw = setting("AutoYaw", true, { yaw.value })
-    private val autoPitch = setting("AutoPitch", true, { pitch.value })
-    private val disableMouseYaw = setting("DisableMouseYaw", true, { yaw.value && yaw.value })
-    private val disableMousePitch = setting("DisableMousePitch", true, { pitch.value && pitch.value })
-    private val specificYaw = setting("SpecificYaw", 180.0f, -180.0f..180.0f, 1.0f, { !autoYaw.value && yaw.value })
-    private val specificPitch = setting("SpecificPitch", 0.0f, -90.0f..90.0f, 1.0f, { !autoPitch.value && pitch.value })
-    private val yawSlice = setting("YawSlice", 8, 2..32, 1, { autoYaw.value && yaw.value })
-    private val pitchSlice = setting("PitchSlice", 5, 2..32, 1, { autoPitch.value && pitch.value })
+    private val yaw = setting(getTranslationKey("Yaw"), true)
+    private val pitch = setting(getTranslationKey("Pitch"), true)
+    private val autoYaw = setting(getTranslationKey("AutoYaw"), true, { yaw.value })
+    private val autoPitch = setting(getTranslationKey("AutoPitch"), true, { pitch.value })
+    private val disableMouseYaw = setting(getTranslationKey("DisableMouseYaw"), true, { yaw.value && yaw.value })
+    private val disableMousePitch = setting(getTranslationKey("DisableMousePitch"), true, { pitch.value && pitch.value })
+    private val specificYaw = setting(getTranslationKey("SpecificYaw"), 180.0f, -180.0f..180.0f, 1.0f, { !autoYaw.value && yaw.value })
+    private val specificPitch = setting(getTranslationKey("SpecificPitch"), 0.0f, -90.0f..90.0f, 1.0f, { !autoPitch.value && pitch.value })
+    private val yawSlice = setting(getTranslationKey("YawSlice"), 8, 2..32, 1, { autoYaw.value && yaw.value })
+    private val pitchSlice = setting(getTranslationKey("PitchSlice"), 5, 2..32, 1, { autoPitch.value && pitch.value })
 
     private var yawSnap = 0
     private var pitchSnap = 0

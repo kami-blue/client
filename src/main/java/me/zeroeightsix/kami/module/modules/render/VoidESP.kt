@@ -16,8 +16,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
 object VoidESP : Module(
-    name = "VoidESP",
-    description = "Highlights holes leading to the void",
     category = Category.RENDER
 ) {
     private val filled by setting("Filled", true)

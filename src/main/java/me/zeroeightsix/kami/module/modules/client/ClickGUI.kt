@@ -12,13 +12,11 @@ import org.lwjgl.input.Keyboard
 import kotlin.math.round
 
 object ClickGUI : Module(
-    name = "ClickGUI",
-    description = "Opens the Click GUI",
     category = Category.CLIENT,
     showOnArray = false,
     alwaysListening = true
 ) {
-    private val scaleSetting = setting("Scale", 100, 50..400, 5)
+    private val scaleSetting = setting(getTranslationKey("Scale"), 100, 50..400, 5)
     val blur by setting("Blur", 0.0f, 0.0f..1.0f, 0.05f)
     val darkness by setting("Darkness", 0.25f, 0.0f..1.0f, 0.05f)
     val fadeInTime by setting("FadeInTime", 0.25f, 0.0f..1.0f, 0.05f)

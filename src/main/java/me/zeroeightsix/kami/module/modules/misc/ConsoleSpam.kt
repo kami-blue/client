@@ -9,8 +9,6 @@ import net.minecraft.tileentity.TileEntitySign
 import org.kamiblue.event.listener.listener
 
 object ConsoleSpam : Module(
-    name = "ConsoleSpam",
-    description = "Spams Spigot consoles by sending invalid UpdateSign packets",
     category = Category.MISC
 ) {
     init {

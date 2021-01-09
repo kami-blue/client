@@ -16,8 +16,6 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 
 object FakePlayer : Module(
-    name = "FakePlayer",
-    description = "Spawns a client sided fake player",
     category = Category.MISC
 ) {
     private val copyInventory by setting("CopyInventory", false)

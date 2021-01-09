@@ -7,8 +7,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
  * Created by 086 on 9/04/2018.
  */
 object AntiFog : Module(
-    name = "AntiFog",
-    description = "Disables or reduces fog",
     category = Category.RENDER
 ) {
     private val mode by setting("Mode", VisionMode.NO_FOG)

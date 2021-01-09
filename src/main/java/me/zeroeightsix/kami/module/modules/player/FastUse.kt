@@ -19,19 +19,17 @@ import org.kamiblue.event.listener.listener
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
 object FastUse : Module(
-    name = "FastUse",
     category = Category.PLAYER,
-    description = "Use items faster"
 ) {
-    private val delay = setting("Delay", 0, 0..10, 1)
-    private val blocks = setting("Blocks", false)
-    private val allItems = setting("AllItems", false)
-    private val expBottles = setting("ExpBottles", true, { !allItems.value })
-    private val endCrystals = setting("EndCrystals", true, { !allItems.value })
-    private val fireworks = setting("Fireworks", false, { !allItems.value })
-    private val bow = setting("Bow", true, { !allItems.value })
-    private val chargeSetting = setting("BowCharge", 3, 0..20, 1, { allItems.value || bow.value })
-    private val chargeVariation = setting("ChargeVariation", 5, 0..20, 1, { allItems.value || bow.value })
+    private val delay = setting(getTranslationKey("Delay"), 0, 0..10, 1)
+    private val blocks = setting(getTranslationKey("Blocks"), false)
+    private val allItems = setting(getTranslationKey("AllItems"), false)
+    private val expBottles = setting(getTranslationKey("ExpBottles"), true, { !allItems.value })
+    private val endCrystals = setting(getTranslationKey("EndCrystals"), true, { !allItems.value })
+    private val fireworks = setting(getTranslationKey("Fireworks"), false, { !allItems.value })
+    private val bow = setting(getTranslationKey("Bow"), true, { !allItems.value })
+    private val chargeSetting = setting(getTranslationKey("BowCharge"), 3, 0..20, 1, { allItems.value || bow.value })
+    private val chargeVariation = setting(getTranslationKey("ChargeVariation"), 5, 0..20, 1, { allItems.value || bow.value })
 
     private var lastUsedHand = EnumHand.MAIN_HAND
     private var randomVariation = 0

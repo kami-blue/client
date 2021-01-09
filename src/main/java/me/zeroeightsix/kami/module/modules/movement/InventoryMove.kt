@@ -12,8 +12,6 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
 object InventoryMove : Module(
-    name = "InventoryMove",
-    description = "Allows you to walk around with GUIs opened",
     category = Category.MOVEMENT
 ) {
     private val rotateSpeed by setting("RotateSpeed", 5, 0..20, 1)

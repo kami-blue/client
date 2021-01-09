@@ -11,13 +11,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 object AimBot : Module(
-    name = "AimBot",
-    description = "Automatically aims at entities for you.",
     category = Category.COMBAT,
     modulePriority = 20
 ) {
-    private val bowOnly = setting("BowOnly", true)
-    private val autoSwap = setting("AutoSwap", false, { bowOnly.value })
+    private val bowOnly = setting(getTranslationKey("BowOnly"), true)
+    private val autoSwap = setting(getTranslationKey("AutoSwap"), false, { bowOnly.value })
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

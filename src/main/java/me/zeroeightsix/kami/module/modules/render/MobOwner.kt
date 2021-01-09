@@ -12,13 +12,11 @@ import org.kamiblue.commons.utils.MathUtils.round
 import kotlin.math.pow
 
 object MobOwner : Module(
-    name = "MobOwner",
-    description = "Displays the owner of tamed mobs",
     category = Category.RENDER
 ) {
-    private val speed = setting("Speed", true)
-    private val jump = setting("Jump", true)
-    private val hp = setting("Health", true)
+    private val speed = setting(getTranslationKey("Speed"), true)
+    private val jump = setting(getTranslationKey("Jump"), true)
+    private val hp = setting(getTranslationKey("Health"), true)
 
     private const val invalidText = "Offline or invalid UUID!"
 

@@ -46,9 +46,7 @@ import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 
 object AutoObsidian : Module(
-    name = "AutoObsidian",
     category = Category.MISC,
-    description = "Breaks down Ender Chests to restock obsidian"
 ) {
     private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
     private val searchShulker by setting("SearchShulker", false)

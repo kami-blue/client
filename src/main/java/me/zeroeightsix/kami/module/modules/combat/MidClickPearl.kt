@@ -14,9 +14,7 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 object MidClickPearl : Module(
-    name = "MidClickPearl",
     category = Category.COMBAT,
-    description = "Throws a pearl automatically when you middle click in air"
 ) {
     private var prevSlot = -1
     private var startTime = -1L

@@ -10,12 +10,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
  */
 object Sprint : Module(
-    name = "Sprint",
-    description = "Automatically makes the player sprint",
     category = Category.MOVEMENT
 ) {
-    private val multiDirection = setting("MultiDirection", false)
-    private val onHolding = setting("OnHoldingSprint", false)
+    private val multiDirection = setting(getTranslationKey("MultiDirection"), false)
+    private val onHolding = setting(getTranslationKey("OnHoldingSprint"), false)
 
     var sprinting = false
 

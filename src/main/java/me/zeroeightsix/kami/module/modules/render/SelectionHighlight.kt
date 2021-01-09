@@ -14,22 +14,20 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object SelectionHighlight : Module(
-    name = "SelectionHighlight",
-    description = "Highlights object you are looking at",
     category = Category.RENDER
 ) {
-    val block = setting("Block", true)
-    private val entity = setting("Entity", false)
-    private val hitSideOnly = setting("HitSideOnly", false)
-    private val throughBlocks = setting("ThroughBlocks", false)
-    private val filled = setting("Filled", true)
-    private val outline = setting("Outline", true)
-    private val r = setting("Red", 155, 0..255, 1)
-    private val g = setting("Green", 144, 0..255, 1)
-    private val b = setting("Blue", 255, 0..255, 1)
-    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { filled.value })
-    private val aOutline = setting("OutlineAlpha", 200, 0..255, 1, { outline.value })
-    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
+    val block = setting(getTranslationKey("Block"), true)
+    private val entity = setting(getTranslationKey("Entity"), false)
+    private val hitSideOnly = setting(getTranslationKey("HitSideOnly"), false)
+    private val throughBlocks = setting(getTranslationKey("ThroughBlocks"), false)
+    private val filled = setting(getTranslationKey("Filled"), true)
+    private val outline = setting(getTranslationKey("Outline"), true)
+    private val r = setting(getTranslationKey("Red"), 155, 0..255, 1)
+    private val g = setting(getTranslationKey("Green"), 144, 0..255, 1)
+    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1)
+    private val aFilled = setting(getTranslationKey("FilledAlpha"), 63, 0..255, 1, { filled.value })
+    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 200, 0..255, 1, { outline.value })
+    private val thickness = setting(getTranslationKey("LineThickness"), 2.0f, 0.25f..5.0f, 0.25f)
 
     private val renderer = ESPRenderer()
 

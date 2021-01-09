@@ -9,8 +9,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 object FullBright : Module(
-    name = "FullBright",
-    description = "Makes everything brighter!",
     category = Category.RENDER,
     alwaysListening = true
 ) {

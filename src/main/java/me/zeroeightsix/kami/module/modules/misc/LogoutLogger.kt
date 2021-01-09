@@ -18,12 +18,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object LogoutLogger : Module(
-    name = "LogoutLogger",
     category = Category.MISC,
-    description = "Logs when a player leaves the game"
 ) {
-    private val saveToFile = setting("SaveToFile", true)
-    private val print = setting("PrintToChat", true)
+    private val saveToFile = setting(getTranslationKey("SaveToFile"), true)
+    private val print = setting(getTranslationKey("PrintToChat"), true)
 
     private val loggedPlayers = HashMap<GameProfile, BlockPos>()
     private val timer = TickTimer(TimeUnit.SECONDS)

@@ -32,35 +32,33 @@ import kotlin.math.min
 import kotlin.math.sin
 
 object CrystalESP : Module(
-    name = "CrystalESP",
-    description = "Renders ESP for End Crystals",
     category = Category.COMBAT
 ) {
-    private val page = setting("Page", Page.DAMAGE_ESP)
+    private val page = setting(getTranslationKey("Page"), Page.DAMAGE_ESP)
 
-    private val damageESP = setting("DamageESP", false, { page.value == Page.DAMAGE_ESP })
-    private val minAlpha = setting("MinAlpha", 0, 0..255, 1, { page.value == Page.DAMAGE_ESP })
-    private val maxAlpha = setting("MaxAlpha", 63, 0..255, 1, { page.value == Page.DAMAGE_ESP })
-    private val damageRange = setting("DamageESPRange", 4.0f, 0.0f..8.0f, 0.5f, { page.value == Page.DAMAGE_ESP })
+    private val damageESP = setting(getTranslationKey("DamageESP"), false, { page.value == Page.DAMAGE_ESP })
+    private val minAlpha = setting(getTranslationKey("MinAlpha"), 0, 0..255, 1, { page.value == Page.DAMAGE_ESP })
+    private val maxAlpha = setting(getTranslationKey("MaxAlpha"), 63, 0..255, 1, { page.value == Page.DAMAGE_ESP })
+    private val damageRange = setting(getTranslationKey("DamageESPRange"), 4.0f, 0.0f..8.0f, 0.5f, { page.value == Page.DAMAGE_ESP })
 
-    private val crystalESP = setting("CrystalESP", true, { page.value == Page.CRYSTAL_ESP })
-    private val onlyOwn = setting("OnlyOwn", false, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val filled = setting("Filled", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val outline = setting("Outline", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val tracer = setting("Tracer", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val showDamage = setting("Damage", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val showSelfDamage = setting("SelfDamage", true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val textScale = setting("TextScale", 1.0f, 0.0f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val animationScale = setting("AnimationScale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
-    private val crystalRange = setting("CrystalESPRange", 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
+    private val crystalESP = setting(getTranslationKey("CrystalESP"), true, { page.value == Page.CRYSTAL_ESP })
+    private val onlyOwn = setting(getTranslationKey("OnlyOwn"), false, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val filled = setting(getTranslationKey("Filled"), true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val outline = setting(getTranslationKey("Outline"), true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val tracer = setting(getTranslationKey("Tracer"), true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val showDamage = setting(getTranslationKey("Damage"), true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val showSelfDamage = setting(getTranslationKey("SelfDamage"), true, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val textScale = setting(getTranslationKey("TextScale"), 1.0f, 0.0f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val animationScale = setting(getTranslationKey("AnimationScale"), 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.CRYSTAL_ESP && crystalESP.value })
+    private val crystalRange = setting(getTranslationKey("CrystalESPRange"), 16.0f, 0.0f..16.0f, 0.5f, { page.value == Page.CRYSTAL_ESP })
 
-    private val r = setting("Red", 155, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val g = setting("Green", 144, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
-    private val aFilled = setting("FilledAlpha", 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
-    private val aOutline = setting("OutlineAlpha", 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
-    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
-    private val thickness = setting("Thickness", 2.0f, 0.25f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && (outline.value || tracer.value) })
+    private val r = setting(getTranslationKey("Red"), 155, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val g = setting(getTranslationKey("Green"), 144, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value })
+    private val aFilled = setting(getTranslationKey("FilledAlpha"), 47, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && filled.value })
+    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 127, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && outline.value })
+    private val aTracer = setting(getTranslationKey("TracerAlpha"), 200, 0..255, 1, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && tracer.value })
+    private val thickness = setting(getTranslationKey("Thickness"), 2.0f, 0.25f..4.0f, 0.25f, { page.value == Page.CRYSTAL_ESP_COLOR && crystalESP.value && (outline.value || tracer.value) })
 
     private enum class Page {
         DAMAGE_ESP, CRYSTAL_ESP, CRYSTAL_ESP_COLOR

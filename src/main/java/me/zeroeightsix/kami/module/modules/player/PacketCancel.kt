@@ -7,8 +7,6 @@ import net.minecraft.network.play.client.*
 import org.kamiblue.event.listener.listener
 
 object PacketCancel : Module(
-    name = "PacketCancel",
-    description = "Cancels specific packets used for various actions",
     category = Category.PLAYER
 ) {
     private val all by setting("All", false)

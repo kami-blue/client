@@ -22,8 +22,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object StorageESP : Module(
-    name = "StorageESP",
-    description = "Draws an ESP on top of storage units",
     category = Category.RENDER
 ) {
     private val page by setting("Page", Page.TYPE)

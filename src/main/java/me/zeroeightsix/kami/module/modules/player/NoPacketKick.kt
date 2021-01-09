@@ -8,9 +8,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage
  * @see MixinNetworkManager
  */
 object NoPacketKick : Module(
-    name = "NoPacketKick",
     category = Category.PLAYER,
-    description = "Suppress network exceptions and prevent getting kicked",
     showOnArray = false
 ) {
     @JvmStatic

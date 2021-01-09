@@ -35,9 +35,7 @@ import kotlin.math.roundToInt
  * @see MixinEntity.isSneaking
  */
 object Scaffold : Module(
-    name = "Scaffold",
     category = Category.PLAYER,
-    description = "Places blocks under you",
     modulePriority = 500
 ) {
     private val tower by setting("Tower", true)

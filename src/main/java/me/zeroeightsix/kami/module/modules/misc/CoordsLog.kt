@@ -13,13 +13,11 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object CoordsLog : Module(
-    name = "CoordsLog",
-    description = "Automatically logs your coords, based on actions",
     category = Category.MISC
 ) {
-    private val saveOnDeath = setting("SaveOnDeath", true)
-    private val autoLog = setting("AutoLog", false)
-    private val delay = setting("Delay", 15, 1..60, 1)
+    private val saveOnDeath = setting(getTranslationKey("SaveOnDeath"), true)
+    private val autoLog = setting(getTranslationKey("AutoLog"), false)
+    private val delay = setting(getTranslationKey("Delay"), 15, 1..60, 1)
 
     private var previousCoord: String? = null
     private var savedDeath = false

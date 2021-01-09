@@ -8,9 +8,7 @@ import net.minecraft.util.SoundCategory
 import org.kamiblue.event.listener.listener
 
 object NoSoundLag : Module(
-    name = "NoSoundLag",
     category = Category.MISC,
-    description = "Prevents lag caused by sound machines"
 ) {
     init {
         listener<PacketEvent.Receive> {

@@ -10,15 +10,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 
 object TeleportLogger : Module(
-    name = "TeleportLogger",
     category = Category.MISC,
-    description = "Logs when a player teleports somewhere"
 ) {
-    private val saveToFile = setting("SaveToFile", true)
-    private val remove = setting("RemoveInRange", true)
-    private val printAdd = setting("PrintAdd", true)
-    private val printRemove = setting("PrintRemove", true, { remove.value })
-    private val minimumDistance = setting("MinimumDistance", 512, 128..2048, 128)
+    private val saveToFile = setting(getTranslationKey("SaveToFile"), true)
+    private val remove = setting(getTranslationKey("RemoveInRange"), true)
+    private val printAdd = setting(getTranslationKey("PrintAdd"), true)
+    private val printRemove = setting(getTranslationKey("PrintRemove"), true, { remove.value })
+    private val minimumDistance = setting(getTranslationKey("MinimumDistance"), 512, 128..2048, 128)
 
     private val teleportedPlayers = HashMap<String, BlockPos>()
 

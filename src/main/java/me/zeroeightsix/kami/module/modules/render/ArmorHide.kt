@@ -9,9 +9,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.EntityEquipmentSlot
 
 object ArmorHide : Module(
-    name = "ArmorHide",
     category = Category.RENDER,
-    description = "Hides the armor on selected entities",
     showOnArray = false
 ) {
     private val player by setting("Players", false)

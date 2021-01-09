@@ -22,9 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @see MixinBlockWeb
  */
 object NoSlowDown : Module(
-    name = "NoSlowDown",
     category = Category.MOVEMENT,
-    description = "Prevents being slowed down when using an item or going through cobwebs"
 ) {
     private val ncpStrict by setting("NCPStrict", true)
     private val sneak by setting("Sneak", true)

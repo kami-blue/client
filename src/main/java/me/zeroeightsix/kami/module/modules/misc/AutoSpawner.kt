@@ -25,9 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * TODO: Rewrite
  */
 object AutoSpawner : Module(
-    name = "AutoSpawner",
     category = Category.MISC,
-    description = "Automatically spawns Withers, Iron Golems and Snowmen"
 ) {
     private val useMode by setting("UseMode", UseMode.SPAM)
     private val party by setting("Party", false)

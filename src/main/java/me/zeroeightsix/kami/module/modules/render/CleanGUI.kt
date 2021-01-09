@@ -4,11 +4,9 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 object CleanGUI : Module(
-    name = "CleanGUI",
     category = Category.RENDER,
     showOnArray = false,
-    description = "Modifies parts of the GUI to be transparent"
 ) {
-    val inventoryGlobal = setting("Inventory", true)
-    val chatGlobal = setting("Chat", false)
+    val inventoryGlobal = setting(getTranslationKey("Inventory"), true)
+    val chatGlobal = setting(getTranslationKey("Chat"), false)
 }

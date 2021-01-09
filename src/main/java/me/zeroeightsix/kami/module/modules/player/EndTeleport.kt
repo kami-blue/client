@@ -10,9 +10,7 @@ import net.minecraft.network.play.server.SPacketRespawn
 import net.minecraft.util.text.TextComponentString
 
 object EndTeleport : Module(
-    name = "EndTeleport",
     category = Category.PLAYER,
-    description = "Allows for teleportation when going through end portals"
 ) {
     private val confirmed by setting("Confirm", false)
 

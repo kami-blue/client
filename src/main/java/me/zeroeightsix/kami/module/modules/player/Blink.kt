@@ -17,9 +17,7 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 
 object Blink : Module(
-    name = "Blink",
     category = Category.PLAYER,
-    description = "Cancels server side packets"
 ) {
     private val cancelPacket by setting("CancelPackets", false)
     private val autoReset by setting("AutoReset", true)

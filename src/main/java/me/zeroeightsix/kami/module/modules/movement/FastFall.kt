@@ -9,13 +9,11 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object FastFall : Module(
-    name = "FastFall",
     category = Category.MOVEMENT,
-    description = "Makes you fall faster"
 ) {
-    private val mode = setting("Mode", Mode.MOTION)
-    private val fallSpeed = setting("FallSpeed", 6.0, 0.1..10.0, 0.1)
-    private val fallDistance = setting("MaxFallDistance", 2, 0..10, 1)
+    private val mode = setting(getTranslationKey("Mode"), Mode.MOTION)
+    private val fallSpeed = setting(getTranslationKey("FallSpeed"), 6.0, 0.1..10.0, 0.1)
+    private val fallDistance = setting(getTranslationKey("MaxFallDistance"), 2, 0..10, 1)
 
     private var timering = false
     private var motioning = false

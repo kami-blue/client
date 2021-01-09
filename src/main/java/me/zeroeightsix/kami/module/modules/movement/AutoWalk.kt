@@ -19,11 +19,9 @@ import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
 object AutoWalk : Module(
-    name = "AutoWalk",
     category = Category.MOVEMENT,
-    description = "Automatically walks somewhere"
 ) {
-    val mode = setting("Direction", AutoWalkMode.BARITONE)
+    val mode = setting(getTranslationKey("Direction"), AutoWalkMode.BARITONE)
     private val disableOnDisconnect by setting("DisableOnDisconnect", true)
 
     enum class AutoWalkMode {

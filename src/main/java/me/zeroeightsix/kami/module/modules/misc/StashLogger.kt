@@ -25,9 +25,7 @@ import kotlin.collections.LinkedHashMap
 import kotlin.math.roundToInt
 
 object StashLogger : Module(
-    name = "StashLogger",
     category = Category.MISC,
-    description = "Logs storage units in render distance."
 ) {
     private val saveToFile by setting("SaveToFile", true)
     private val logToChat by setting("LogToChat", true)

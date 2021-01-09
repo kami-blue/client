@@ -15,17 +15,15 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ElytraReplace : Module(
-    name = "ElytraReplace",
-    description = "Automatically swap and replace your chestplate and elytra.",
     category = Category.MOVEMENT
 ) {
-    private val inventoryMode = setting("Inventory", false)
-    private val autoChest = setting("AutoChest", false)
-    private val elytraFlightCheck = setting("ElytraFlightCheck", true)
-    private val logToChat = setting("MissingWarning", false)
-    private val playSound = setting("PlaySound", false, { logToChat.value })
-    private val logThreshold = setting("WarningThreshold", 2, 1..10, 1, { logToChat.value })
-    private val threshold = setting("DamageThreshold", 7, 1..50, 1)
+    private val inventoryMode = setting(getTranslationKey("Inventory"), false)
+    private val autoChest = setting(getTranslationKey("AutoChest"), false)
+    private val elytraFlightCheck = setting(getTranslationKey("ElytraFlightCheck"), true)
+    private val logToChat = setting(getTranslationKey("MissingWarning"), false)
+    private val playSound = setting(getTranslationKey("PlaySound"), false, { logToChat.value })
+    private val logThreshold = setting(getTranslationKey("WarningThreshold"), 2, 1..10, 1, { logToChat.value })
+    private val threshold = setting(getTranslationKey("DamageThreshold"), 7, 1..50, 1)
 
     private var elytraCount = 0
     private var chestPlateCount = 0

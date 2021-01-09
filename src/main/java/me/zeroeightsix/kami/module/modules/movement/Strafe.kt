@@ -15,9 +15,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Strafe : Module(
-    name = "Strafe",
     category = Category.MOVEMENT,
-    description = "Improves control in air"
 ) {
     private val airSpeedBoost by setting("AirSpeedBoost", true)
     private val timerBoost by setting("TimerBoost", true)

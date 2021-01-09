@@ -11,9 +11,7 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 object BlockData : Module(
-    name = "BlockData",
     category = Category.MISC,
-    description = "Right click blocks to display their data"
 ) {
     private val timer = TickTimer()
     private var lastPos = BlockPos.ORIGIN

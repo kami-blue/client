@@ -12,11 +12,9 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 object EntityTools : Module(
-    name = "EntityTools",
     category = Category.MISC,
-    description = "Right click entities to perform actions on them"
 ) {
-    private val mode = setting("Mode", Mode.INFO)
+    private val mode = setting(getTranslationKey("Mode"), Mode.INFO)
 
     private enum class Mode {
         DELETE, INFO

@@ -19,17 +19,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 object TotemPopCounter : Module(
-    name = "TotemPopCounter",
-    description = "Counts how many times players pop",
     category = Category.COMBAT
 ) {
-    private val countFriends = setting("CountFriends", true)
-    private val countSelf = setting("CountSelf", false)
-    private val resetOnDeath = setting("ResetOnDeath", true)
-    private val announceSetting = setting("Announce", Announce.CLIENT)
-    private val thanksTo = setting("ThanksTo", false)
-    private val colorName = setting("ColorName", EnumTextColor.DARK_PURPLE)
-    private val colorNumber = setting("ColorNumber", EnumTextColor.LIGHT_PURPLE)
+    private val countFriends = setting(getTranslationKey("CountFriends"), true)
+    private val countSelf = setting(getTranslationKey("CountSelf"), false)
+    private val resetOnDeath = setting(getTranslationKey("ResetOnDeath"), true)
+    private val announceSetting = setting(getTranslationKey("Announce"), Announce.CLIENT)
+    private val thanksTo = setting(getTranslationKey("ThanksTo"), false)
+    private val colorName = setting(getTranslationKey("ColorName"), EnumTextColor.DARK_PURPLE)
+    private val colorNumber = setting(getTranslationKey("ColorNumber"), EnumTextColor.LIGHT_PURPLE)
 
     private enum class Announce {
         CLIENT, EVERYONE
@@ -86,7 +84,6 @@ object TotemPopCounter : Module(
     private fun selfCheck(player: EntityPlayer) = player == mc.player && countSelf.value
 
     private fun formatName(player: EntityPlayer): String {
-        val name = when {
             player == mc.player -> "I"
             FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
             else -> player.name

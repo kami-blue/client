@@ -8,9 +8,7 @@ import net.minecraft.network.play.client.CPacketCustomPayload
 import org.kamiblue.event.listener.listener
 
 object BeaconSelector : Module(
-    name = "BeaconSelector",
     category = Category.MISC,
-    description = "Choose any of the 5 beacon effects regardless of beacon base height"
 ) {
     private var doCancelPacket = true
     var effect = -1

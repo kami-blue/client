@@ -29,12 +29,10 @@ import kotlin.math.*
 
 // TODO: Rewrite
 object ElytraFlight : Module(
-    name = "ElytraFlight",
-    description = "Allows infinite and way easier Elytra flying",
     category = Category.MOVEMENT,
     modulePriority = 1000
 ) {
-    private val mode = setting("Mode", ElytraFlightMode.CONTROL)
+    private val mode = setting(getTranslationKey("Mode"), ElytraFlightMode.CONTROL)
     private val page by setting("Page", Page.GENERIC_SETTINGS)
     private val durabilityWarning by setting("DurabilityWarning", true, { page == Page.GENERIC_SETTINGS })
     private val threshold by setting("Broken%", 5, 1..50, 1, { durabilityWarning && page == Page.GENERIC_SETTINGS })

@@ -8,9 +8,7 @@ import net.minecraft.network.play.server.SPacketPlayerPosLook
 import org.kamiblue.event.listener.listener
 
 object AntiForceLook : Module(
-    name = "AntiForceLook",
     category = Category.PLAYER,
-    description = "Stops server packets from turning your head"
 ) {
     init {
         listener<PacketEvent.Receive> {

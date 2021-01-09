@@ -15,17 +15,15 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.abs
 
 object AntiBot : Module(
-    name = "AntiBot",
-    description = "Avoid attacking fake players",
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val tabList = setting("TabList", true)
-    private val ping = setting("Ping", true)
-    private val hp = setting("HP", true)
-    private val sleeping = setting("Sleeping", false)
-    private val hoverOnTop = setting("HoverOnTop", true)
-    private val ticksExists = setting("TicksExists", 200, 0..500, 10)
+    private val tabList = setting(getTranslationKey("TabList"), true)
+    private val ping = setting(getTranslationKey("Ping"), true)
+    private val hp = setting(getTranslationKey("HP"), true)
+    private val sleeping = setting(getTranslationKey("Sleeping"), false)
+    private val hoverOnTop = setting(getTranslationKey("HoverOnTop"), true)
+    private val ticksExists = setting(getTranslationKey("TicksExists"), 200, 0..500, 10)
 
     private val botSet = HashSet<EntityPlayer>()
 
@@ -53,8 +51,6 @@ object AntiBot : Module(
 
     fun isBot(entity: Entity) = isEnabled && entity is EntityPlayer && botSet.contains(entity)
 
-    private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
-        || entity.name == FakePlayer.playerName
         || tabList.value && connection.getPlayerInfo(entity.name) == null
         || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
         || hp.value && entity.health !in 0f..20f

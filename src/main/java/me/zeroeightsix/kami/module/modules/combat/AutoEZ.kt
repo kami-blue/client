@@ -14,13 +14,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object AutoEZ : Module(
-    name = "AutoEZ",
     category = Category.COMBAT,
-    description = "Sends an insult in chat after killing someone"
 ) {
-    private val detectMode = setting("DetectMode", DetectMode.HEALTH)
-    private val messageMode = setting("MessageMode", MessageMode.ONTOP)
-    private val customText = setting("CustomText", "unchanged")
+    private val detectMode = setting(getTranslationKey("DetectMode"), DetectMode.HEALTH)
+    private val messageMode = setting(getTranslationKey("MessageMode"), MessageMode.ONTOP)
+    private val customText = setting(getTranslationKey("CustomText"), "unchanged")
 
     private enum class DetectMode {
         BROADCAST, HEALTH

@@ -5,11 +5,9 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 
 object SafeWalk : Module(
-    name = "SafeWalk",
     category = Category.MOVEMENT,
-    description = "Keeps you from walking off edges"
 ) {
-    private val baritoneCompat = setting("BaritoneCompatibility", true)
+    private val baritoneCompat = setting(getTranslationKey("BaritoneCompatibility"), true)
 
     fun shouldSafewalk(): Boolean {
         return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess?.goal == null || !baritoneCompat.value)

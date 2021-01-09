@@ -13,9 +13,7 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
 object MidClickFriends : Module(
-    name = "MidClickFriends",
     category = Category.MISC,
-    description = "Middle click players to friend or unfriend them",
     showOnArray = false
 ) {
     private val timer = TickTimer()

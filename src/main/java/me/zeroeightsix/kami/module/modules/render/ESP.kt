@@ -29,9 +29,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object ESP : Module(
-    name = "ESP",
     category = Category.RENDER,
-    description = "Highlights entities"
 ) {
     private val page by setting("Page", Page.ENTITY_TYPE)
 
@@ -52,7 +50,7 @@ object ESP : Module(
     private val range by setting("Range", 32.0f, 8.0f..64.0f, 0.5f, { page == Page.ENTITY_TYPE })
 
     /* Rendering settings */
-    private val mode = setting("Mode", ESPMode.SHADER, { page == Page.RENDERING })
+    private val mode = setting(getTranslationKey("Mode"), ESPMode.SHADER, { page == Page.RENDERING })
     private val hideOriginal by setting("HideOriginal", false, { page == Page.RENDERING && mode.value == ESPMode.SHADER })
     private val filled by setting("Filled", false, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })
     private val outline by setting("Outline", true, { page == Page.RENDERING && (mode.value == ESPMode.BOX || mode.value == ESPMode.SHADER) })

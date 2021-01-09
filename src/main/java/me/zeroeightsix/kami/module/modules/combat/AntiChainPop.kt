@@ -9,8 +9,6 @@ import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AntiChainPop : Module(
-    name = "AntiChainPop",
-    description = "Enables Surround when popping a totem",
     category = Category.COMBAT
 ) {
     private val mode by setting("Mode", Mode.PACKET)

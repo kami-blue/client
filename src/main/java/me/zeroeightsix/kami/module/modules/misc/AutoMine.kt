@@ -17,17 +17,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object AutoMine : Module(
-    name = "AutoMine",
-    description = "Automatically mines chosen ores",
     category = Category.MISC
 ) {
 
     private val manual by setting("Manual", false)
-    private val iron = setting("Iron", false)
-    private val diamond = setting("Diamond", false)
-    private val gold = setting("Gold", false)
-    private val coal = setting("Coal", false)
-    private val log = setting("Logs", false)
+    private val iron = setting(getTranslationKey("Iron"), false)
+    private val diamond = setting(getTranslationKey("Diamond"), false)
+    private val gold = setting(getTranslationKey("Gold"), false)
+    private val coal = setting(getTranslationKey("Coal"), false)
+    private val log = setting(getTranslationKey("Logs"), false)
 
     init {
         onEnable {

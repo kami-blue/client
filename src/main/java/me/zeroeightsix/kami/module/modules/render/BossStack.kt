@@ -18,13 +18,11 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 object BossStack : Module(
-    name = "BossStack",
-    description = "Modify the boss health GUI to take up less space",
     category = Category.RENDER
 ) {
-    private val mode = setting("Mode", BossStackMode.STACK)
-    private val scale = setting("Scale", 1.0f, 0.1f..5.0f, 0.25f)
-    private val censor = setting("Censor", false)
+    private val mode = setting(getTranslationKey("Mode"), BossStackMode.STACK)
+    private val scale = setting(getTranslationKey("Scale"), 1.0f, 0.1f..5.0f, 0.25f)
+    private val censor = setting(getTranslationKey("Censor"), false)
 
     @Suppress("unused")
     private enum class BossStackMode {

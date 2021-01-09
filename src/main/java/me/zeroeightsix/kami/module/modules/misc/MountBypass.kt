@@ -7,9 +7,7 @@ import net.minecraft.network.play.client.CPacketUseEntity
 import org.kamiblue.event.listener.listener
 
 object MountBypass : Module(
-    name = "MountBypass",
     category = Category.MISC,
-    description = "Might allow you to mount chested animals on servers that block it"
 ) {
     init {
         listener<PacketEvent.Send> {

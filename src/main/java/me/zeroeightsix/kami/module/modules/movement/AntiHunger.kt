@@ -13,11 +13,9 @@ import org.kamiblue.event.listener.listener
  * https://github.com/seppukudevelopment/seppuku/blob/005e2da/src/main/java/me/rigamortis/seppuku/impl/module/player/NoHungerModule.java
  */
 object AntiHunger : Module(
-    name = "AntiHunger",
     category = Category.MOVEMENT,
-    description = "Reduces hunger lost when moving around"
 ) {
-    private val cancelMovementState = setting("CancelMovementState", true)
+    private val cancelMovementState = setting(getTranslationKey("CancelMovementState"), true)
 
     init {
         listener<PacketEvent.Send> {

@@ -8,9 +8,7 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Timer : Module(
-    name = "Timer",
     category = Category.PLAYER,
-    description = "Changes your client tick speed"
 ) {
     private val slow by setting("SlowMode", false)
     private val tickNormal by setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow })

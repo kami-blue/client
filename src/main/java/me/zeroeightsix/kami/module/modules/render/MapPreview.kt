@@ -25,15 +25,13 @@ import java.awt.Color
  * @see MixinGuiScreen.renderToolTip
  */
 object MapPreview : Module(
-    name = "MapPreview",
     category = Category.RENDER,
-    description = "Previews maps when hovering over them"
 ) {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
-    private val showName = setting("ShowName", true)
-    private val frame = setting("ShowFrame", true)
-    val scale = setting("Scale", 5.0, 0.0..10.0, 0.1)
+    private val showName = setting(getTranslationKey("ShowName"), true)
+    private val frame = setting(getTranslationKey("ShowFrame"), true)
+    val scale = setting(getTranslationKey("Scale"), 5.0, 0.0..10.0, 0.1)
 
     @JvmStatic
     fun getMapData(itemStack: ItemStack): MapData? {

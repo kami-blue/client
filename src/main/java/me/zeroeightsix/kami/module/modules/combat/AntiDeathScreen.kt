@@ -6,8 +6,6 @@ import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
 object AntiDeathScreen : Module(
-    name = "AntiDeathScreen",
-    description = "Fixes random death screen glitches",
     category = Category.COMBAT
 ) {
     init {

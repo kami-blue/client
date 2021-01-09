@@ -17,9 +17,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Flight : Module(
-    name = "Flight",
     category = Category.MOVEMENT,
-    description = "Makes the player fly",
     modulePriority = 500
 ) {
     private val mode by setting("Mode", FlightMode.VANILLA)

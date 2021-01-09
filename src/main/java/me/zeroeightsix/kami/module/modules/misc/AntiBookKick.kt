@@ -15,9 +15,7 @@ import org.kamiblue.event.listener.listener
  * https://discordapp.com/channels/573954110454366214/634010802403409931/693919755647844352
  */
 object AntiBookKick : Module(
-    name = "AntiBookKick",
     category = Category.MISC,
-    description = "Prevents being kicked by clicking on books",
     showOnArray = false
 ) {
     init {

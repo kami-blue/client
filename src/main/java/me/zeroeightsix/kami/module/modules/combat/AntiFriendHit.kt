@@ -8,8 +8,6 @@ import net.minecraft.network.play.client.CPacketUseEntity
 import org.kamiblue.event.listener.listener
 
 object AntiFriendHit : Module(
-    name = "AntiFriendHit",
-    description = "Don't hit your friends",
     category = Category.COMBAT
 ) {
     init {

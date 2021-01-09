@@ -9,8 +9,6 @@ import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 
 object ItemModel : Module(
-    name = "ItemModel",
-    description = "Modify hand item rendering in first person",
     category = Category.RENDER
 ) {
     private val posX by setting("PosX", 0.0f, -5.0f..5.0f, 0.025f)

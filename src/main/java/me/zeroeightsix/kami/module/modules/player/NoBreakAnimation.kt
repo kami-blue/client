@@ -13,9 +13,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object NoBreakAnimation : Module(
-    name = "NoBreakAnimation",
     category = Category.PLAYER,
-    description = "Prevents block break animation server side"
 ) {
     private var isMining = false
     private var lastPos: BlockPos? = null

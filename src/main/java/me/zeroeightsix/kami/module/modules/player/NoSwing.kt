@@ -9,11 +9,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object NoSwing : Module(
-    name = "NoSwing",
     category = Category.PLAYER,
-    description = "Cancels server or client swing animation"
 ) {
-    private val mode = setting("Mode", Mode.CLIENT)
+    private val mode = setting(getTranslationKey("Mode"), Mode.CLIENT)
 
     private enum class Mode {
         CLIENT, SERVER

@@ -24,8 +24,6 @@ import org.lwjgl.opengl.GL11.glColor4f
  * Thanks Brady and cooker and leij for helping me not be completely retarded
  */
 object LagNotifier : Module(
-    name = "LagNotifier",
-    description = "Displays a warning when the server is lagging",
     category = Category.PLAYER
 ) {
     private val detectRubberBand by setting("DetectRubberBand", true)

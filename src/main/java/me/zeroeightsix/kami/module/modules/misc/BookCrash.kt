@@ -20,15 +20,13 @@ import java.util.stream.Collectors
 import java.util.stream.IntStream
 
 object BookCrash : Module(
-    name = "BookCrash",
     category = Category.MISC,
-    description = "Crashes servers by sending large packets"
 ) {
-    private val mode = setting("Mode", Mode.RAION)
-    private val fillMode = setting("FillMode", FillMode.RANDOM)
-    private val uses = setting("Uses", 2, 1..10, 1)
-    private val delay = setting("Delay", 0, 0..40, 1)
-    private val pages = setting("Pages", 50, 1..100, 5)
+    private val mode = setting(getTranslationKey("Mode"), Mode.RAION)
+    private val fillMode = setting(getTranslationKey("FillMode"), FillMode.RANDOM)
+    private val uses = setting(getTranslationKey("Uses"), 2, 1..10, 1)
+    private val delay = setting(getTranslationKey("Delay"), 0, 0..40, 1)
+    private val pages = setting(getTranslationKey("Pages"), 50, 1..100, 5)
 
     private enum class Mode {
         JESSICA, RAION

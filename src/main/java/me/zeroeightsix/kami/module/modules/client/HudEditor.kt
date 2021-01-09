@@ -6,8 +6,6 @@ import me.zeroeightsix.kami.module.Module
 import org.kamiblue.event.listener.listener
 
 object HudEditor : Module(
-    name = "HudEditor",
-    description = "Edits the Hud",
     category = Category.CLIENT,
     showOnArray = false
 ) {

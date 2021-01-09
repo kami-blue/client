@@ -31,8 +31,6 @@ import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 object Search : Module(
-    name = "Search",
-    description = "Highlights blocks in the world",
     category = Category.RENDER
 ) {
     private val defaultSearchList = linkedSetOf("minecraft:portal", "minecraft:end_portal_frame", "minecraft:bed")
@@ -53,7 +51,7 @@ object Search : Module(
     private val thickness by setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f)
 
     var overrideWarning by setting("OverrideWarning", false, { false })
-    val searchList = setting(CollectionSetting("SearchList", defaultSearchList, { false }))
+    val searchList = setting(CollectionSetting(getTranslationKey("SearchList"), defaultSearchList, { false }))
 
     private val renderer = ESPRenderer()
     private val updateTimer = TickTimer()

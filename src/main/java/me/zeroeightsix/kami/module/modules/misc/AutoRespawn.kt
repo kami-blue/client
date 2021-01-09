@@ -11,13 +11,11 @@ import net.minecraft.client.gui.GuiGameOver
 import org.kamiblue.event.listener.listener
 
 object AutoRespawn : Module(
-    name = "AutoRespawn",
-    description = "Automatically respawn after dying",
     category = Category.MISC
 ) {
-    private val respawn = setting("Respawn", true)
-    private val deathCoords = setting("SaveDeathCoords", true)
-    private val antiGlitchScreen = setting("AntiGlitchScreen", true)
+    private val respawn = setting(getTranslationKey("Respawn"), true)
+    private val deathCoords = setting(getTranslationKey("SaveDeathCoords"), true)
+    private val antiGlitchScreen = setting(getTranslationKey("AntiGlitchScreen"), true)
 
     init {
         listener<GuiEvent.Displayed> {

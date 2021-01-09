@@ -25,9 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
 object HoleMiner : Module(
-    name = "HoleMiner",
     category = Category.COMBAT,
-    description = "Mines your opponent's hole",
     modulePriority = 100
 ) {
     private val range by setting("Range", 5.0f, 1.0f..8.0f, 0.25f)

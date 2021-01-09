@@ -13,19 +13,17 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AutoRemount : Module(
-    name = "AutoRemount",
-    description = "Automatically remounts your horse",
     category = Category.MOVEMENT
 ) {
-    private val boat = setting("Boats", true)
-    private val horse = setting("Horse", true)
-    private val skeletonHorse = setting("SkeletonHorse", true)
-    private val donkey = setting("Donkey", true)
-    private val mule = setting("Mule", true)
-    private val pig = setting("Pig", true)
-    private val llama = setting("Llama", true)
-    private val range = setting("Range", 2.0f, 1.0f..5.0f, 0.5f)
-    private val remountDelay = setting("RemountDelay", 5, 0..10, 1)
+    private val boat = setting(getTranslationKey("Boats"), true)
+    private val horse = setting(getTranslationKey("Horse"), true)
+    private val skeletonHorse = setting(getTranslationKey("SkeletonHorse"), true)
+    private val donkey = setting(getTranslationKey("Donkey"), true)
+    private val mule = setting(getTranslationKey("Mule"), true)
+    private val pig = setting(getTranslationKey("Pig"), true)
+    private val llama = setting(getTranslationKey("Llama"), true)
+    private val range = setting(getTranslationKey("Range"), 2.0f, 1.0f..5.0f, 0.5f)
+    private val remountDelay = setting(getTranslationKey("RemountDelay"), 5, 0..10, 1)
 
     private var remountTimer = TickTimer(TimeUnit.TICKS)
 

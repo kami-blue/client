@@ -8,8 +8,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @Suppress("DEPRECATION")
 object IceSpeed : Module(
-    name = "IceSpeed",
-    description = "Changes how slippery ice is",
     category = Category.MOVEMENT
 ) {
     private val slipperiness by setting("Slipperiness", 0.4f, 0.1f..1.0f, 0.01f)

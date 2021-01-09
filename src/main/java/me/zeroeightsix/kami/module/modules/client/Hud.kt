@@ -5,8 +5,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
 object Hud : Module(
-    name = "Hud",
-    description = "Toggles Hud displaying and settings",
     category = Category.CLIENT,
     showOnArray = false,
     enabledByDefault = true

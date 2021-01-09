@@ -8,8 +8,6 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.player.EnumPlayerModelParts
 
 object SkinFlicker : Module(
-    name = "SkinFlicker",
-    description = "Toggle your skin layers rapidly for a cool skin effect",
     category = Category.MISC
 ) {
     private val mode by setting("Mode", FlickerMode.HORIZONTAL)

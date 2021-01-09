@@ -18,8 +18,6 @@ import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
 object HoleSnap : Module(
-    name = "HoleSnap",
-    description = "Move you into the hole nearby",
     category = Category.COMBAT
 ) {
     private val disableStrafe by setting("DisableStrafe", true)

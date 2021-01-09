@@ -14,12 +14,10 @@ import org.kamiblue.event.listener.listener
 import kotlin.math.max
 
 object AutoReconnect : Module(
-    name = "AutoReconnect",
-    description = "Automatically reconnects after being disconnected",
     category = Category.MISC,
     alwaysListening = true
 ) {
-    private val delay = setting("Delay", 5.0f, 0.5f..100.0f, 0.5f)
+    private val delay = setting(getTranslationKey("Delay"), 5.0f, 0.5f..100.0f, 0.5f)
 
     private var prevServerDate: ServerData? = null
 
