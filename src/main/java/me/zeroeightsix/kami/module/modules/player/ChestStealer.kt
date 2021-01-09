@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
@@ -50,17 +51,36 @@ internal object ChestStealer : Module(
 
     fun isContainerOpen(): Boolean {
         return mc.player.openContainer != null
-                && isValidGui()
+            && isValidGui()
     }
 
     fun isValidGui(): Boolean {
         return mc.currentScreen !is GuiEnchantment
-                && mc.currentScreen !is GuiMerchant
-                && mc.currentScreen !is GuiRepair
-                && mc.currentScreen !is GuiBeacon
-                && mc.currentScreen !is GuiCrafting
-                && mc.currentScreen !is GuiContainerCreative
-                && mc.currentScreen !is GuiInventory
+            && mc.currentScreen !is GuiMerchant
+            && mc.currentScreen !is GuiRepair
+            && mc.currentScreen !is GuiBeacon
+            && mc.currentScreen !is GuiCrafting
+            && mc.currentScreen !is GuiContainerCreative
+            && mc.currentScreen !is GuiInventory
+    }
+
+    @JvmStatic
+    fun updateButton(button: GuiButton, left: Int, size: Int, top: Int) {
+        if (isEnabled && isContainerOpen()) {
+            val str = if (stealing) {
+                "Stop"
+            } else {
+                "Steal"
+            }
+
+            button.x = left + size + 2
+            button.y = top + 2
+            button.enabled = canSteal()
+            button.visible = true
+            button.displayString = str
+        } else {
+            button.visible = false
+        }
     }
 
     private fun steal(slot: Int?): Boolean {

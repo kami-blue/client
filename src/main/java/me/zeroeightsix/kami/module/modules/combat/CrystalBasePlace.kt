@@ -178,5 +178,5 @@ internal object CrystalBasePlace : Module(
     }
 
     private fun checkDamage(damage: Float, selfDamage: Float, maxCurrentDamage: Float) =
-            selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
+        selfDamage < CrystalAura.maxSelfDamage && damage > CrystalAura.minDamage && (maxCurrentDamage < CrystalAura.minDamage || damage - maxCurrentDamage >= minDamageInc.value)
 }

@@ -57,10 +57,10 @@ internal object Strafe : Module(
     }
 
     private fun SafeClientEvent.shouldStrafe() = !BaritoneUtils.isPathing
-            && !player.capabilities.isFlying
-            && !player.isElytraFlying
-            && (mc.gameSettings.keyBindSprint.isKeyDown || !onHolding)
-            && (player.moveForward != 0f || player.moveStrafing != 0f)
+        && !player.capabilities.isFlying
+        && !player.isElytraFlying
+        && (mc.gameSettings.keyBindSprint.isKeyDown || !onHolding)
+        && (player.moveForward != 0f || player.moveStrafing != 0f)
 
     private fun reset() {
         mc.player?.jumpMovementFactor = 0.02F

@@ -61,8 +61,8 @@ internal object ViewLock : Module(
         changeDirection(yawChange, pitchChange)
 
         return Vec2f(
-                if (yaw.value && disableMouseYaw.value) 0.0f else deltaX,
-                if (pitch.value && disableMousePitch.value) 0.0f else deltaY
+            if (yaw.value && disableMouseYaw.value) 0.0f else deltaX,
+            if (pitch.value && disableMousePitch.value) 0.0f else deltaY
         )
     }
 
@@ -120,7 +120,7 @@ internal object ViewLock : Module(
             if (isEnabled && autoPitch.value) snapToNext()
         }
 
-        with( {_: Boolean ,it: Boolean -> if (isEnabled && it) snapToNext()}) {
+        with({ _: Boolean, it: Boolean -> if (isEnabled && it) snapToNext() }) {
             autoPitch.valueListeners.add(this)
             autoYaw.valueListeners.add(this)
         }

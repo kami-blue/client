@@ -53,8 +53,10 @@ internal object AutoLog : Module(
                 player.health < health.value -> log(HEALTH)
                 totem.value && totemAmount.value > InventoryUtils.countItemAll(449) -> log(TOTEM)
                 crystals.value && checkCrystals() -> log(END_CRYSTAL)
-                creeper.value && checkCreeper() -> { /* checkCreeper() does log() */ }
-                players.value && checkPlayers() -> { /* checkPlayer() does log() */ }
+                creeper.value && checkCreeper() -> { /* checkCreeper() does log() */
+                }
+                players.value && checkPlayers() -> { /* checkPlayer() does log() */
+                }
             }
         }
     }

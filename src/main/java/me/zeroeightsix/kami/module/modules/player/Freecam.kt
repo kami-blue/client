@@ -19,20 +19,19 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.MovementInput
 import net.minecraft.util.MovementInputFromOptions
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 internal object Freecam : Module(
     name = "Freecam",
@@ -123,6 +122,24 @@ internal object Freecam : Module(
                 BaritoneUtils.cancelEverything()
                 BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.hitVec.toBlockPos()))
             }
+        }
+    }
+
+    @JvmStatic
+    val renderChunkOffset
+        get() = BlockPos(
+            (mc.player.posX / 16).floorToInt() * 16,
+            (mc.player.posY / 16).floorToInt() * 16,
+            (mc.player.posZ / 16).floorToInt() * 16
+        )
+
+    @JvmStatic
+    fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
+        val player = mc.player
+        return if (isEnabled && player != null) {
+            player
+        } else {
+            renderViewEntity
         }
     }
 

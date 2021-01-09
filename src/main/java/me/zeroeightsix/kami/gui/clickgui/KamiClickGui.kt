@@ -85,7 +85,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
                     val string = typedString.replace(" ", "")
                     setModuleVisibility { moduleButton ->
                         moduleButton.module.name.contains(string, true)
-                        || moduleButton.module.alias.any { it.contains(string, true) }
+                            || moduleButton.module.alias.any { it.contains(string, true) }
                     }
                 }
             }

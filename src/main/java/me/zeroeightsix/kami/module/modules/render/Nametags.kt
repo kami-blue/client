@@ -113,17 +113,17 @@ internal object Nametags : Module(
     }
 
     private val pingColorGradient = ColorGradient(
-            0f to ColorHolder(101, 101, 101),
-            0.1f to ColorHolder(20, 232, 20),
-            20f to ColorHolder(20, 232, 20),
-            150f to ColorHolder(20, 232, 20),
-            300f to ColorHolder(150, 0, 0)
+        0f to ColorHolder(101, 101, 101),
+        0.1f to ColorHolder(20, 232, 20),
+        20f to ColorHolder(20, 232, 20),
+        150f to ColorHolder(20, 232, 20),
+        300f to ColorHolder(150, 0, 0)
     )
 
     private val healthColorGradient = ColorGradient(
-            0f to ColorHolder(180, 20, 20),
-            50f to ColorHolder(240, 220, 20),
-            100f to ColorHolder(20, 232, 20)
+        0f to ColorHolder(180, 20, 20),
+        50f to ColorHolder(240, 220, 20),
+        100f to ColorHolder(20, 232, 20)
     )
 
     private val line1Settings = arrayOf(line1left, line1center, line1right)
@@ -271,9 +271,9 @@ internal object Nametags : Module(
     }
 
     private fun getEnumHand(enumHandSide: EnumHandSide) =
-            if (mc.gameSettings.mainHand == enumHandSide && mainHand.value) EnumHand.MAIN_HAND
-            else if (mc.gameSettings.mainHand != enumHandSide && offhand.value) EnumHand.OFF_HAND
-            else null
+        if (mc.gameSettings.mainHand == enumHandSide && mainHand.value) EnumHand.MAIN_HAND
+        else if (mc.gameSettings.mainHand != enumHandSide && offhand.value) EnumHand.OFF_HAND
+        else null
 
     private fun drawFrame(vertexHelper: VertexHelper, posBegin: Vec2d, posEnd: Vec2d) {
         if (cornerRadius.value == 0f) {
@@ -421,18 +421,18 @@ internal object Nametags : Module(
     private fun getTextColor() = ColorHolder(rText.value, gText.value, bText.value, aText.value)
 
     private fun getEntityType(entity: Entity) = entity.javaClass.simpleName.replace("Entity", "")
-            .replace("Other", "")
-            .replace("MP", "")
-            .replace("SP", "")
-            .replace(" ", "")
+        .replace("Other", "")
+        .replace("MP", "")
+        .replace("SP", "")
+        .replace(" ", "")
 
     private fun getHpColor(entity: EntityLivingBase) = healthColorGradient.get((entity.health / entity.maxHealth) * 100f).apply { a = aText.value }
 
     fun checkEntityType(entity: Entity) = (self.value || entity != mc.renderViewEntity)
-            && (!entity.isInvisible || invisible.value)
-            && (entity is EntityXPOrb && experience.value
-            || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, friend = true, sleeping = true)
-            || EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
+        && (!entity.isInvisible || invisible.value)
+        && (entity is EntityXPOrb && experience.value
+        || entity is EntityPlayer && players.value && EntityUtils.playerTypeCheck(entity, friend = true, sleeping = true)
+        || EntityUtils.mobTypeSettings(entity, mobs.value, passive.value, neutral.value, hostile.value))
 
     private class ItemGroup {
         private val itemSet = HashSet<EntityItem>()

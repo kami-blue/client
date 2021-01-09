@@ -110,7 +110,7 @@ internal object BedAura : Module(
 
     private fun canRefill(): Boolean {
         return InventoryUtils.getSlotsHotbar(0) != null
-                && InventoryUtils.getSlotsNoHotbar(355) != null
+            && InventoryUtils.getSlotsNoHotbar(355) != null
     }
 
     private fun SafeClientEvent.updatePlaceMap() {
@@ -140,10 +140,10 @@ internal object BedAura : Module(
         val bedPos1 = pos.up()
         val bedPos2 = getSecondBedPos(bedPos1)
         return (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2.down()).isSideSolid(world, bedPos2.down(), EnumFacing.UP))
-                && !isFire(bedPos1)
-                && !isFire(bedPos2)
-                && world.getBlockState(bedPos1).material.isReplaceable
-                && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
+            && !isFire(bedPos1)
+            && !isFire(bedPos2)
+            && world.getBlockState(bedPos1).material.isReplaceable
+            && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
     }
 
     private fun SafeClientEvent.isFire(pos: BlockPos): Boolean {

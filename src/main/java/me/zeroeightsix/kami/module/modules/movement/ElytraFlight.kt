@@ -105,7 +105,7 @@ internal object ElytraFlight : Module(
     private var elytraDurability = 0
     private var outOfDurability = false
     private var wasInLiquid = false
-    var isFlying = false
+    private var isFlying = false
     private var isPacketFlying = false
     private var isStandingStillH = false
     private var isStandingStill = false
@@ -281,20 +281,24 @@ internal object ElytraFlight : Module(
         val timerSpeed = if (highPingOptimize) 400.0f else 200.0f
         val height = if (highPingOptimize) 0.0f else minTakeoffHeight
         val closeToGround = player.posY <= getGroundPos().y + height && !wasInLiquid && !mc.isSingleplayer
+
         if (!easyTakeOff || (LagNotifier.paused && LagNotifier.pauseTakeoff) || player.onGround) {
             if (LagNotifier.paused && LagNotifier.pauseTakeoff && player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(player.onGround)
             return
         }
+
         if (player.motionY < 0 && !highPingOptimize || player.motionY < -0.02) {
             if (closeToGround) {
                 mc.timer.tickLength = 25.0f
                 return
             }
+
             if (!highPingOptimize && !wasInLiquid && !mc.isSingleplayer) { /* Cringe moment when you use elytra flight in single player world */
                 event.cancel()
                 player.setVelocity(0.0, -0.02, 0.0)
             }
+
             if (timerControl && !mc.isSingleplayer) mc.timer.tickLength = timerSpeed * 2.0f
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = player.posY + 0.2

@@ -91,9 +91,9 @@ internal object DiscordNotifs : Module(
     }
 
     private fun timeout(message: String) = !timeout.value
-            || restart.value && MessageDetection.Server.RESTART detect message
-            || direct.value && MessageDetection.Direct.ANY detect message
-            || timer.tick(timeoutTime.value.toLong())
+        || restart.value && MessageDetection.Server.RESTART detect message
+        || direct.value && MessageDetection.Direct.ANY detect message
+        || timer.tick(timeoutTime.value.toLong())
 
     /* Text formatting and misc methods */
     private fun getPingID(message: String) = if (message == "KamiBlueMessageType1"

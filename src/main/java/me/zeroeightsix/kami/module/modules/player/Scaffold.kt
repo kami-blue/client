@@ -85,6 +85,7 @@ internal object Scaffold : Module(
     private val SafeClientEvent.shouldTower: Boolean
         get() = !player.onGround
             && player.posY - floor(player.posY) <= 0.1
+
     init {
         safeListener<OnUpdateWalkingPlayerEvent> { event ->
             if (event.phase != Phase.PRE) return@safeListener

@@ -48,5 +48,5 @@ object ModuleManager : AsyncLoader<List<Class<out AbstractModule>>> {
         }
     }
 
-    fun getModuleOrNull(moduleName: String?) = moduleName?.let{ moduleSet[it] }
+    fun getModuleOrNull(moduleName: String?) = moduleName?.let { moduleSet[it] }
 }

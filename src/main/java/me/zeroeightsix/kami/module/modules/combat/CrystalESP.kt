@@ -80,9 +80,9 @@ internal object CrystalESP : Module(
     }
 
     private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
-            && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() == Items.END_CRYSTAL
-            || packet.hand == EnumHand.OFF_HAND
-            && mc.player.heldItemOffhand.getItem() == Items.END_CRYSTAL
+        && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item == Items.END_CRYSTAL
+        || packet.hand == EnumHand.OFF_HAND
+        && mc.player.heldItemOffhand.item == Items.END_CRYSTAL
 
     init {
         safeListener<TickEvent.ClientTickEvent> { event ->
@@ -117,7 +117,7 @@ internal object CrystalESP : Module(
             }
 
             for (pos in pendingPlacing.keys) {
-                val damage = placeMap[pos]?: continue
+                val damage = placeMap[pos] ?: continue
                 cacheMap[pos] = Quad(damage.first, damage.second, 0.0f, 0.0f)
             }
 

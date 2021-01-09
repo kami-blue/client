@@ -78,7 +78,6 @@ internal object StorageESP : Module(
             if (it.phase != TickEvent.Phase.START) return@safeAsyncListener
 
             cycler++
-            renderer.clear()
             val cached = ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>()
 
             coroutineScope {
@@ -120,7 +119,9 @@ internal object StorageESP : Module(
                 if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
             }
 
-            list.add(Triple(box, color, side))
+            synchronized(list) {
+                list.add(Triple(box, color, side))
+            }
         }
     }
 
@@ -154,12 +155,14 @@ internal object StorageESP : Module(
             val box = entity.renderBoundingBox ?: continue
             val color = getEntityColor(entity) ?: continue
 
-            list.add(Triple(box, color, GeometryMasks.Quad.ALL))
+            synchronized(list) {
+                list.add(Triple(box, color, GeometryMasks.Quad.ALL))
+            }
         }
     }
 
     private fun checkEntityType(entity: Entity) =
-        entity is EntityItemFrame && frameShulkerOrAny(entity)
+        entity is EntityItemFrame && frame && (!withShulkerOnly || entity.displayedItem.item is ItemShulkerBox)
             || (entity is EntityMinecartChest || entity is EntityMinecartHopper || entity is EntityMinecartFurnace) && cart
 
     private fun getEntityColor(entity: Entity): ColorHolder? {
@@ -173,6 +176,4 @@ internal object StorageESP : Module(
         } else color
     }
 
-    private fun frameShulkerOrAny(entity: EntityItemFrame) =
-        frame && (!withShulkerOnly || entity.displayedItem.item is ItemShulkerBox)
 }

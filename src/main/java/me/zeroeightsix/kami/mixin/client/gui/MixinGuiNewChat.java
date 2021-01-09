@@ -32,19 +32,12 @@ public abstract class MixinGuiNewChat {
 
     @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 0, remap = false))
     public <E> int drawnChatLinesSize(List<E> list) {
-        return getModifiedSize(list);
+        return ExtraChatHistory.getModifiedSize(list);
     }
 
     @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 2, remap = false))
     public <E> int chatLinesSize(List<E> list) {
-        return getModifiedSize(list);
+        return ExtraChatHistory.getModifiedSize(list);
     }
 
-    public <E> int getModifiedSize(List<E> list) {
-        if (ExtraChatHistory.INSTANCE.isEnabled()) {
-            return list.size() - ExtraChatHistory.INSTANCE.getMaxMessages().getValue() - 100;
-        } else {
-            return list.size();
-        }
-    }
 }

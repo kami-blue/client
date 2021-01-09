@@ -25,11 +25,12 @@ object EntityUtils {
     val Entity.flooredPosition get() = BlockPos(floor(posX).toInt(), floor(posY).toInt(), floor(posZ).toInt())
     val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
 
-    val Entity.isPassive get() = this is EntityAnimal
-        || this is EntityAgeable
-        || this is EntityTameable
-        || this is EntityAmbientCreature
-        || this is EntitySquid
+    val Entity.isPassive
+        get() = this is EntityAnimal
+            || this is EntityAgeable
+            || this is EntityTameable
+            || this is EntityAmbientCreature
+            || this is EntitySquid
 
     val Entity.isNeutral get() = isNeutralMob(this) && !isMobAggressive(this)
 
@@ -111,7 +112,7 @@ object EntityUtils {
     }
 
     fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name))
-            && (sleeping || !player.isPlayerSleeping)
+        && (sleeping || !player.isPlayerSleeping)
 
     /**
      * Ray tracing the 8 vertex of the entity bounding box

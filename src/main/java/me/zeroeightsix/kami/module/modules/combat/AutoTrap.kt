@@ -102,26 +102,26 @@ internal object AutoTrap : Module(
     @Suppress("UNUSED")
     private enum class TrapMode(val offset: Array<BlockPos>) {
         FULL_TRAP(arrayOf(
-                BlockPos(1, 0, 0),
-                BlockPos(-1, 0, 0),
-                BlockPos(0, 0, 1),
-                BlockPos(0, 0, -1),
-                BlockPos(1, 1, 0),
-                BlockPos(-1, 1, 0),
-                BlockPos(0, 1, 1),
-                BlockPos(0, 1, -1),
-                BlockPos(0, 2, 0)
+            BlockPos(1, 0, 0),
+            BlockPos(-1, 0, 0),
+            BlockPos(0, 0, 1),
+            BlockPos(0, 0, -1),
+            BlockPos(1, 1, 0),
+            BlockPos(-1, 1, 0),
+            BlockPos(0, 1, 1),
+            BlockPos(0, 1, -1),
+            BlockPos(0, 2, 0)
         )),
         CRYSTAL_TRAP(arrayOf(
-                BlockPos(1, 1, 1),
-                BlockPos(1, 1, 0),
-                BlockPos(1, 1, -1),
-                BlockPos(0, 1, -1),
-                BlockPos(-1, 1, -1),
-                BlockPos(-1, 1, 0),
-                BlockPos(-1, 1, 1),
-                BlockPos(0, 1, 1),
-                BlockPos(0, 2, 0)
+            BlockPos(1, 1, 1),
+            BlockPos(1, 1, 0),
+            BlockPos(1, 1, -1),
+            BlockPos(0, 1, -1),
+            BlockPos(-1, 1, -1),
+            BlockPos(-1, 1, 0),
+            BlockPos(-1, 1, 1),
+            BlockPos(0, 1, 1),
+            BlockPos(0, 2, 0)
         ))
     }
 }
