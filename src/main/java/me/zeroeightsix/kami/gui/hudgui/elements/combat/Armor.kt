@@ -57,7 +57,7 @@ object Armor : HudElement(
 
             armorCounts[0] = InventoryUtils.countItemAll(Items.DIAMOND_HELMET)
             armorCounts[1] = InventoryUtils.countItemAll(
-                if (countElytras.value && mc.player.inventory.getStackInSlot(38).item == Items.ELYTRA) Items.ELYTRA
+                if (countElytras.value && player.inventory.getStackInSlot(38).item == Items.ELYTRA) Items.ELYTRA
                 else Items.DIAMOND_CHESTPLATE
             )
             armorCounts[2] = InventoryUtils.countItemAll(Items.DIAMOND_LEGGINGS)
