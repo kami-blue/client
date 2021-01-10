@@ -1,10 +1,15 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import net.minecraft.client.Minecraft
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
+import net.minecraft.inventory.Container
+import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketClickWindow
 
 object InventoryUtils {
@@ -292,8 +297,6 @@ object InventoryUtils {
 
     /**
      * Quick move (Shift + Click) the item in [slotFrom] in player inventory
-     *
-     * @return Transaction id
      */
     fun quickMoveSlot(slotFrom: Int): Short {
         return quickMoveSlot(0, slotFrom)
@@ -346,4 +349,285 @@ object InventoryUtils {
         return transactionID
     }
     /* End of inventory management */
+}
+
+/**
+ * Try to swap selected hotbar slot to [I] that matches with [predicate]
+ */
+inline fun <reified I : Item> SafeClientEvent.swapToItem(predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to [item] that matches with [predicate]
+ */
+fun SafeClientEvent.swapToItem(item: Item, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstItem(item, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to item with [itemID]
+ * and matches with [predicate]
+ */
+fun SafeClientEvent.swapToItem(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstID(itemID, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Swap the selected hotbar slot to [hotbarSlot]
+ */
+fun SafeClientEvent.swapToSlot(hotbarSlot: HotbarSlot) {
+    swapToSlot(hotbarSlot.hotbarSlot)
+}
+
+/**
+ * Swap the selected hotbar slot to [slot]
+ */
+fun SafeClientEvent.swapToSlot(slot: Int) {
+    player.inventory.currentItem = slot
+    playerController.updateController()
+}
+
+/**
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ */
+fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
+    return moveToHotbar(0, slotFrom, slotTo)
+}
+
+/**
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ */
+fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Slot, slotTo: HotbarSlot): Short {
+    return moveToHotbar(windowId, slotFrom.slotNumber, slotTo.slotNumber)
+}
+
+/**
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ */
+fun SafeClientEvent.moveToHotbar(slotFrom: Int, slotTo: Int): Short {
+    return moveToHotbar(0, slotFrom, slotTo)
+}
+
+/**
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ */
+fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, slotTo: Int): Short {
+    // mouseButton is actually the hotbar
+    return clickSlot(windowId, slotFrom, slotTo, type = ClickType.SWAP)
+}
+
+/**
+ * Move the item in [slotFrom]  to [slotTo] in player inventory,
+ * if [slotTo] contains an item, then move it to [slotFrom]
+ */
+fun SafeClientEvent.moveToSlot(slotFrom: Int, slotTo: Int): ShortArray {
+    return moveToSlot(0, slotFrom, slotTo)
+}
+
+/**
+ * Move the item in [slotFrom] to [slotTo] in [windowId],
+ * if [slotTo] contains an item, then move it to [slotFrom]
+ */
+fun SafeClientEvent.moveToSlot(windowId: Int, slotFrom: Int, slotTo: Int): ShortArray {
+    return shortArrayOf(
+        clickSlot(windowId, slotFrom, type = ClickType.PICKUP),
+        clickSlot(windowId, slotTo, type = ClickType.PICKUP),
+        clickSlot(windowId, slotFrom, type = ClickType.PICKUP)
+    )
+}
+
+/**
+ * Move all the item that equals to the item in [slotTo] to [slotTo] in player inventory
+ * Note: Not working
+ */
+fun SafeClientEvent.moveAllToSlot(slotTo: Int): ShortArray {
+    return shortArrayOf(
+        clickSlot(slot = slotTo, type = ClickType.PICKUP_ALL),
+        clickSlot(slot = slotTo, type = ClickType.PICKUP)
+    )
+}
+
+/**
+ * Quick move (Shift + Click) the item in [slot] in player inventory
+ */
+fun SafeClientEvent.quickMoveSlot(slot: Int): Short {
+    return quickMoveSlot(0, slot)
+}
+
+/**
+ * Quick move (Shift + Click) the item in [slot] in specified [windowId]
+ */
+fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Int): Short {
+    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
+}
+
+/**
+ * Quick move (Shift + Click) the item in [slot] in player inventory
+ */
+fun SafeClientEvent.quickMoveSlot(slot: Slot): Short {
+    return quickMoveSlot(0, slot)
+}
+
+/**
+ * Quick move (Shift + Click) the item in [slot] in specified [windowId]
+ */
+fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Slot): Short {
+    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
+}
+
+
+/**
+ * Throw all the item in [slot] in player inventory
+ */
+fun SafeClientEvent.throwAllInSlot(slot: Int): Short {
+    return throwAllInSlot(0, slot)
+}
+
+/**
+ * Throw all the item in [slot] in specified [windowId]
+ */
+fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Int): Short {
+    return clickSlot(windowId, slot, 1, ClickType.THROW)
+}
+
+/**
+ * Throw all the item in [slot] in player inventory
+ */
+fun SafeClientEvent.throwAllInSlot(slot: Slot): Short {
+    return throwAllInSlot(0, slot)
+}
+
+/**
+ * Throw all the item in [slot] in specified [windowId]
+ */
+fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Slot): Short {
+    return clickSlot(windowId, slot, 1, ClickType.THROW)
+}
+
+
+/**
+ * Put the item currently holding by mouse to somewhere or throw it
+ */
+fun SafeClientEvent.removeHoldingItem() {
+    if (player.inventory.itemStack.isEmpty) return
+
+    val slot = player.inventoryContainer.getSlots(9..45).firstItem(Items.AIR)?.slotNumber // Get empty slots in inventory and offhand
+        ?: player.craftingSlots.firstItem(Items.AIR)?.slotNumber // Get empty slots in crafting slot
+        ?: -999 // Throw on the ground
+
+    clickSlot(slot = slot, type = ClickType.PICKUP)
+}
+
+
+/**
+ * Performs inventory clicking in specific window, slot, mouseButton, and click type
+ *
+ * @return Transaction id
+ */
+fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Slot, mouseButton: Int = 0, type: ClickType): Short {
+    return clickSlot(windowId, slot.slotNumber, mouseButton, type)
+}
+
+
+/**
+ * Performs inventory clicking in specific window, slot, mouseButton, and click type
+ *
+ * @return Transaction id
+ */
+fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
+    val container = if (windowId == 0) player.inventoryContainer else player.openContainer
+    container ?: return -32768
+
+    val playerInventory = player.inventory ?: return -32768
+    val transactionID = container.getNextTransactionID(playerInventory)
+    val itemStack = container.slotClick(slot, mouseButton, type, player)
+
+    connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+
+    return transactionID
+}
+
+
+val EntityPlayer.armorSlots: List<Slot>
+    get() = inventoryContainer.getSlots(5..8)
+
+val EntityPlayer.offhandSlot: Slot
+    get() = inventoryContainer.inventorySlots[45]
+
+val EntityPlayer.craftingSlots: List<Slot>
+    get() = inventoryContainer.getSlots(1..4)
+
+val EntityPlayer.inventorySlots: List<Slot>
+    get() = inventoryContainer.getSlots(0..44)
+
+val EntityPlayer.storageSlots: List<Slot>
+    get() = inventoryContainer.getSlots(9..35)
+
+val EntityPlayer.hotbarSlots: List<HotbarSlot>
+    get() = ArrayList<HotbarSlot>().apply {
+        for (slot in 36..44) {
+            add(HotbarSlot(inventoryContainer.inventorySlots[slot]))
+        }
+    }
+
+fun Container.getSlots(range: IntRange): List<Slot> =
+    inventorySlots.subList(range.first, range.last + 1)
+
+
+inline fun <reified I : Item> Container.firstItem(predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.firstItem<I, Slot>(predicate)
+
+fun Container.firstItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.firstItem(item, predicate)
+
+fun Container.firstID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.firstID(itemID, predicate)
+
+
+inline fun <reified I : Item> Container.forItem(predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.forItem<I, Slot>(predicate)
+
+fun Container.forItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.forItem(item, predicate)
+
+fun Container.forID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    inventorySlots.forID(itemID, predicate)
+
+
+inline fun <reified I : Item, T : Slot> Iterable<T>.firstItem(predicate: (ItemStack) -> Boolean = { true }) =
+    firstOrNull { slot -> slot.stack.let { it.item is I && predicate(it) } }
+
+fun <T : Slot> Iterable<T>.firstItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    firstOrNull { slot -> slot.stack.let { it.item == item && predicate(it) } }
+
+fun <T : Slot> Iterable<T>.firstID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    firstOrNull { slot -> slot.stack.let { it.item.id == itemID && predicate(it) } }
+
+
+inline fun <reified I : Item, T : Slot> Iterable<T>.forItem(predicate: (ItemStack) -> Boolean = { true }) =
+    filter { slot -> slot.stack.let { it.item is I && predicate(it) } }
+
+fun <T : Slot> Iterable<T>.forItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    filter { slot -> slot.stack.let { it.item == item && predicate(it) } }
+
+fun <T : Slot> Iterable<T>.forID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    filter { slot -> slot.stack.let { it.item.id == itemID && predicate(it) } }
+
+
+class HotbarSlot(slot: Slot) : Slot(slot.inventory, slot.slotIndex, slot.xPos, slot.yPos) {
+    init {
+        slotNumber = slot.slotNumber
+    }
+
+    val hotbarSlot = slot.slotNumber - 36
 }
