@@ -2,6 +2,8 @@ package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
+import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -9,6 +11,7 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
+import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketClickWindow
 
@@ -408,18 +411,18 @@ fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
  * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Slot, slotTo: HotbarSlot): Short {
-    return moveToHotbar(windowId, slotFrom.slotNumber, slotTo.slotNumber)
+    return moveToHotbar(windowId, slotFrom.slotNumber, slotTo.hotbarSlot)
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..8) [slotTo] in player inventory.
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Int, slotTo: Int): Short {
     return moveToHotbar(0, slotFrom, slotTo)
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the item in the hotbar slot (0..8) [slotTo] in player inventory.
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, slotTo: Int): Short {
     // mouseButton is actually the hotbar
@@ -553,6 +556,7 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0
     val itemStack = container.slotClick(slot, mouseButton, type, player)
 
     connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+    onMainThreadSafe { playerController.updateController() }
 
     return transactionID
 }
@@ -584,44 +588,90 @@ fun Container.getSlots(range: IntRange): List<Slot> =
     inventorySlots.subList(range.first, range.last + 1)
 
 
-inline fun <reified I : Item> Container.firstItem(predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.firstItem<I, Slot>(predicate)
+inline fun <reified B : Block, T : Slot> Iterable<T>.countBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+    count { itemStack ->
+        itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
+    }
 
-fun Container.firstItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.firstItem(item, predicate)
+fun <T : Slot> Iterable<T>.countBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }) =
+    count { itemStack ->
+        itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
+    }
 
-fun Container.firstID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.firstID(itemID, predicate)
+inline fun <reified I : Item, T : Slot> Iterable<T>.countItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+    count { it.item is I && predicate(it) }
+
+fun <T : Slot> Iterable<T>.countItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    count { it.item == item && predicate(it) }
+
+fun <T : Slot> Iterable<T>.countID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    count { it.item.id == itemID && predicate(it) }
 
 
-inline fun <reified I : Item> Container.forItem(predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.forItem<I, Slot>(predicate)
+fun <T : Slot> Iterable<T>.count(predicate: (ItemStack) -> Boolean = { true }) =
+    sumBy { slot ->
+        slot.stack.let { if (predicate(it)) it.count else 0 }
+    }
 
-fun Container.forItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.forItem(item, predicate)
 
-fun Container.forID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    inventorySlots.forID(itemID, predicate)
+inline fun <reified B : Block, T : Slot> Iterable<T>.firstBlock(predicate: (ItemStack) -> Boolean = { true }) =
+    firstOrNull { slot ->
+        slot.stack.let { itemStack ->
+            itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
+        }
+    }
 
+fun <T : Slot> Iterable<T>.firstBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }) =
+    firstOrNull { slot ->
+        slot.stack.let { itemStack ->
+            itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
+        }
+    }
 
 inline fun <reified I : Item, T : Slot> Iterable<T>.firstItem(predicate: (ItemStack) -> Boolean = { true }) =
-    firstOrNull { slot -> slot.stack.let { it.item is I && predicate(it) } }
+    firstOrNull { slot ->
+        slot.stack.let { it.item is I && predicate(it) }
+    }
 
 fun <T : Slot> Iterable<T>.firstItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
-    firstOrNull { slot -> slot.stack.let { it.item == item && predicate(it) } }
+    firstOrNull { slot ->
+        slot.stack.let { it.item == item && predicate(it) }
+    }
 
 fun <T : Slot> Iterable<T>.firstID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    firstOrNull { slot -> slot.stack.let { it.item.id == itemID && predicate(it) } }
+    firstOrNull { slot ->
+        slot.stack.let { it.item.id == itemID && predicate(it) }
+    }
 
+
+inline fun <reified B : Block, T : Slot> Iterable<T>.forBlock(predicate: (ItemStack) -> Boolean = { true }) =
+    filter { slot ->
+        slot.stack.let { itemStack ->
+            itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
+        }
+    }
+
+fun <T : Slot> Iterable<T>.forBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }) =
+    filter { slot ->
+        slot.stack.let { itemStack ->
+            itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
+        }
+    }
 
 inline fun <reified I : Item, T : Slot> Iterable<T>.forItem(predicate: (ItemStack) -> Boolean = { true }) =
-    filter { slot -> slot.stack.let { it.item is I && predicate(it) } }
+    filter { slot ->
+        slot.stack.let { it.item is I && predicate(it) }
+    }
 
 fun <T : Slot> Iterable<T>.forItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
-    filter { slot -> slot.stack.let { it.item == item && predicate(it) } }
+    filter { slot ->
+        slot.stack.let { it.item == item && predicate(it) }
+    }
 
 fun <T : Slot> Iterable<T>.forID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    filter { slot -> slot.stack.let { it.item.id == itemID && predicate(it) } }
+    filter { slot ->
+        slot.stack.let { it.item.id == itemID && predicate(it) }
+    }
 
 
 class HotbarSlot(slot: Slot) : Slot(slot.inventory, slot.slotIndex, slot.xPos, slot.yPos) {
