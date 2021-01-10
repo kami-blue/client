@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.mixin.extension.attackDamage
-import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.swapToSlot
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
@@ -120,7 +120,7 @@ object CombatUtils {
 
         }
 
-        if (bestSlot != -1) InventoryUtils.swapSlot(bestSlot)
+        if (bestSlot != -1) swapToSlot(bestSlot)
     }
 
     fun getHealthSmart(entity: EntityLivingBase) = entity.health + entity.absorptionAmount * (entity.health / entity.maxHealth)

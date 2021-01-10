@@ -15,7 +15,6 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
-import me.zeroeightsix.kami.util.combat.CrystalUtils
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
 import me.zeroeightsix.kami.util.combat.CrystalUtils.getCrystalBB
@@ -147,7 +146,10 @@ object CrystalAura : Module(
     val minDamage get() = max(minDamageP, minDamageE)
     val maxSelfDamage get() = min(maxSelfDamageP, maxSelfDamageE)
 
-    override fun isActive() = isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 20
+    override fun isActive() =
+        isEnabled
+            && (mc.player?.allSlots?.countItem(Items.END_CRYSTAL) ?: 0) > 0
+            && inactiveTicks <= 20
 
     init {
         onEnable {
@@ -270,9 +272,9 @@ object CrystalAura : Module(
         getPlacingPos()?.let { pos ->
             getHand()?.let { hand ->
                 if (autoSwap && getHand() == null) {
-                    InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
-                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
-                        else InventoryUtils.swapSlot(it)
+                    player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
+                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it.slotNumber)
+                        else swapToSlot(it)
                     }
                 }
 
@@ -284,7 +286,7 @@ object CrystalAura : Module(
                 if (placeSwing) sendOrQueuePacket(CPacketAnimation(hand))
 
                 val crystalPos = pos.up()
-                placedBBMap[crystalPos] = CrystalUtils.getCrystalBB(crystalPos) to System.currentTimeMillis()
+                placedBBMap[crystalPos] = getCrystalBB(crystalPos) to System.currentTimeMillis()
 
                 if (predictExplode) {
                     defaultScope.launch {
@@ -380,7 +382,7 @@ object CrystalAura : Module(
     private fun SafeClientEvent.canPlace() =
         doPlace
             && placeTimer > placeDelay
-            && InventoryUtils.countItemAll(426) > 0
+            && player.allSlots.countItem(Items.END_CRYSTAL) > 0
             && countValidCrystal() < maxCrystal
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return

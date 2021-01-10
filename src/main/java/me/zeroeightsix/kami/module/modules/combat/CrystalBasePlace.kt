@@ -17,6 +17,7 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
+import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
@@ -80,7 +81,7 @@ object CrystalBasePlace : Module(
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
-                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot)
+                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.slotNumber)
                     player.swingArm(EnumHand.MAIN_HAND)
                     connection.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
@@ -101,18 +102,22 @@ object CrystalBasePlace : Module(
         }
     }
 
-    private val SafeClientEvent.isHoldingObby get() = isObby(player.heldItemMainhand) || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+    private val SafeClientEvent.isHoldingObby get() =
+        isObby(player.heldItemMainhand)
+            || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
-    private fun getObby(): Int? {
-        val slots = InventoryUtils.getSlotsHotbar(49)
-        if (slots == null) { // Obsidian check
+    private fun SafeClientEvent.getObby(): Slot? {
+        val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
+
+        if (slot == null) { // Obsidian check
             MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
             disable()
             return null
         }
-        return slots[0]
+
+        return slot
     }
 
     private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {

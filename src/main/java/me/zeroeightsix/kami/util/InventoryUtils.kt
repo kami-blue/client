@@ -355,6 +355,129 @@ object InventoryUtils {
 }
 
 /**
+ * Try to swap selected hotbar slot to [I] that matches with [predicateItem]
+ *
+ * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
+ * or slot 0 if none
+ */
+inline fun <reified I : Block> SafeClientEvent.swapToBlockOrMove(
+    predicateItem: (ItemStack) -> Boolean = { true },
+    noinline predicateSlot: (ItemStack) -> Boolean = { true }
+): Boolean {
+    return if (swapToBlock<I>(predicateItem)) {
+        true
+    } else {
+        player.storageSlots.firstBlock<I, Slot>(predicateItem)?.let {
+            moveToHotbar(it, predicateSlot)
+            true
+        } ?: false
+    }
+}
+
+/**
+ * Try to swap selected hotbar slot to [block] that matches with [predicateItem]
+ *
+ * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
+ * or slot 0 if none
+ */
+fun SafeClientEvent.swapToBlockOrMove(
+    block: Block,
+    predicateItem: (ItemStack) -> Boolean = { true },
+    predicateSlot: (ItemStack) -> Boolean = { true }
+): Boolean {
+    return if (swapToBlock(block, predicateItem)) {
+        true
+    } else {
+        player.storageSlots.firstBlock(block, predicateItem)?.let {
+            moveToHotbar(it, predicateSlot)
+            true
+        } ?: false
+    }
+}
+
+/**
+ * Try to swap selected hotbar slot to [I] that matches with [predicateItem]
+ *
+ * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
+ * or slot 0 if none
+ */
+inline fun <reified I : Item> SafeClientEvent.swapToItemOrMove(
+    predicateItem: (ItemStack) -> Boolean = { true },
+    noinline predicateSlot: (ItemStack) -> Boolean = { true }
+): Boolean {
+    return if (swapToItem<I>(predicateItem)) {
+        true
+    } else {
+        player.storageSlots.firstItem<I, Slot>(predicateItem)?.let {
+            moveToHotbar(it, predicateSlot)
+            true
+        } ?: false
+    }
+}
+
+/**
+ * Try to swap selected hotbar slot to [item] that matches with [predicateItem]
+ *
+ * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
+ * or slot 0 if none
+ */
+fun SafeClientEvent.swapToItemOrMove(
+    item: Item,
+    predicateItem: (ItemStack) -> Boolean = { true },
+    predicateSlot: (ItemStack) -> Boolean = { true }
+): Boolean {
+    return if (swapToItem(item, predicateItem)) {
+        true
+    } else {
+        player.storageSlots.firstItem(item, predicateItem)?.let {
+            moveToHotbar(it, predicateSlot)
+            true
+        } ?: false
+    }
+}
+
+/**
+ * Try to swap selected hotbar slot to item with [itemID] that matches with [predicateItem]
+ *
+ * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
+ * or slot 0 if none
+ */
+fun SafeClientEvent.swapToItemOrMove(
+    itemID: Int,
+    predicateItem: (ItemStack) -> Boolean = { true },
+    predicateSlot: (ItemStack) -> Boolean = { true }
+): Boolean {
+    return if (swapToID(itemID, predicateItem)) {
+        true
+    } else {
+        player.storageSlots.firstID(itemID, predicateItem)?.let {
+            moveToHotbar(it, predicateSlot)
+            true
+        } ?: false
+    }
+}
+
+/**
+ * Try to swap selected hotbar slot to [I] that matches with [predicate]
+ */
+inline fun <reified I : Block> SafeClientEvent.swapToBlock(predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to [block] that matches with [predicate]
+ */
+fun SafeClientEvent.swapToBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstBlock(block, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
  * Try to swap selected hotbar slot to [I] that matches with [predicate]
  */
 inline fun <reified I : Item> SafeClientEvent.swapToItem(predicate: (ItemStack) -> Boolean = { true }): Boolean {
@@ -375,10 +498,9 @@ fun SafeClientEvent.swapToItem(item: Item, predicate: (ItemStack) -> Boolean = {
 }
 
 /**
- * Try to swap selected hotbar slot to item with [itemID]
- * and matches with [predicate]
+ * Try to swap selected hotbar slot to item with [itemID] that matches with [predicate]
  */
-fun SafeClientEvent.swapToItem(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+fun SafeClientEvent.swapToID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
     return player.hotbarSlots.firstID(itemID, predicate)?.let {
         swapToSlot(it)
         true
@@ -401,31 +523,52 @@ fun SafeClientEvent.swapToSlot(slot: Int) {
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the first empty hotbar slot
+ * or matches with [predicate] or slot 0 if none of those found
+ */
+fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boolean): Short {
+    return moveToHotbar(slotFrom.slotNumber, predicate)
+}
+
+/**
+ * Swaps the item in [slotFrom] with the first empty hotbar slot
+ * or matches with [predicate] or slot 0 if none of those found
+ */
+fun SafeClientEvent.moveToHotbar(slotFrom: Int, predicate: (ItemStack) -> Boolean): Short {
+    val hotbarSlots = player.hotbarSlots
+    val slotTo = hotbarSlots.firstItem(Items.AIR)?.hotbarSlot
+        ?: hotbarSlots.firstByStack(predicate)?.hotbarSlot ?: 0
+
+    return moveToHotbar(slotFrom, slotTo)
+}
+
+/**
+ * Swaps the item in [slotFrom] with the hotbar slot [slotTo].
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
     return moveToHotbar(0, slotFrom, slotTo)
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..9) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the hotbar slot [slotTo].
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Slot, slotTo: HotbarSlot): Short {
     return moveToHotbar(windowId, slotFrom.slotNumber, slotTo.hotbarSlot)
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..8) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the hotbar slot [slotTo].
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Int, slotTo: Int): Short {
     return moveToHotbar(0, slotFrom, slotTo)
 }
 
 /**
- * Swaps the item in [slotFrom] with the item in the hotbar slot (0..8) [slotTo] in player inventory.
+ * Swaps the item in [slotFrom] with the hotbar slot [slotTo].
  */
 fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, slotTo: Int): Short {
     // mouseButton is actually the hotbar
+    swapToSlot(slotTo)
     return clickSlot(windowId, slotFrom, slotTo, type = ClickType.SWAP)
 }
 
@@ -562,6 +705,9 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0
 }
 
 
+val EntityPlayer.allSlots: List<Slot>
+    get() = inventoryContainer.getSlots(1..45)
+
 val EntityPlayer.armorSlots: List<Slot>
     get() = inventoryContainer.getSlots(5..8)
 
@@ -572,7 +718,7 @@ val EntityPlayer.craftingSlots: List<Slot>
     get() = inventoryContainer.getSlots(1..4)
 
 val EntityPlayer.inventorySlots: List<Slot>
-    get() = inventoryContainer.getSlots(0..44)
+    get() = inventoryContainer.getSlots(9..44)
 
 val EntityPlayer.storageSlots: List<Slot>
     get() = inventoryContainer.getSlots(9..35)
@@ -587,32 +733,40 @@ val EntityPlayer.hotbarSlots: List<HotbarSlot>
 fun Container.getSlots(range: IntRange): List<Slot> =
     inventorySlots.subList(range.first, range.last + 1)
 
+fun <T : Slot> Iterable<T>.firstByStack(predicate: (ItemStack) -> Boolean) : T? =
+    firstOrNull { predicate(it.stack) }
 
-inline fun <reified B : Block, T : Slot> Iterable<T>.countBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
-    count { itemStack ->
+
+fun Iterable<Slot>.countEmpty() =
+    count { it.stack.isEmpty }
+
+inline fun <reified B : Block> Iterable<Slot>.countBlock(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+    countByStack { itemStack ->
         itemStack.item.let { it is ItemBlock && it.block is B } && predicate(itemStack)
     }
 
-fun <T : Slot> Iterable<T>.countBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }) =
-    count { itemStack ->
+fun  Iterable<Slot>.countBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }) =
+    countByStack { itemStack ->
         itemStack.item.let { it is ItemBlock && it.block == block } && predicate(itemStack)
     }
 
-inline fun <reified I : Item, T : Slot> Iterable<T>.countItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
-    count { it.item is I && predicate(it) }
+inline fun <reified I : Item> Iterable<Slot>.countItem(crossinline predicate: (ItemStack) -> Boolean = { true }) =
+    countByStack { it.item is I && predicate(it) }
 
-fun <T : Slot> Iterable<T>.countItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
-    count { it.item == item && predicate(it) }
+fun Iterable<Slot>.countItem(item: Item, predicate: (ItemStack) -> Boolean = { true }) =
+    countByStack { it.item == item && predicate(it) }
 
-fun <T : Slot> Iterable<T>.countID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
-    count { it.item.id == itemID && predicate(it) }
+fun Iterable<Slot>.countID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }) =
+    countByStack { it.item.id == itemID && predicate(it) }
 
-
-fun <T : Slot> Iterable<T>.count(predicate: (ItemStack) -> Boolean = { true }) =
+fun Iterable<Slot>.countByStack(predicate: (ItemStack) -> Boolean = { true }) =
     sumBy { slot ->
         slot.stack.let { if (predicate(it)) it.count else 0 }
     }
 
+
+fun <T : Slot> Iterable<T>.firstEmpty() =
+    firstOrNull { it.stack.isEmpty }
 
 inline fun <reified B : Block, T : Slot> Iterable<T>.firstBlock(predicate: (ItemStack) -> Boolean = { true }) =
     firstOrNull { slot ->

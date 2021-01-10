@@ -17,12 +17,13 @@ import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.MobEffects
+import net.minecraft.inventory.Slot
 import net.minecraft.item.*
 import net.minecraft.network.play.server.SPacketConfirmTransaction
 import net.minecraft.potion.PotionUtils
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
+import org.kamiblue.commons.extension.next
 import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
 import kotlin.math.max
@@ -82,7 +83,7 @@ object AutoOffhand : Module(
     private var maxDamage = 0f
 
     init {
-        listener<InputEvent.KeyInputEvent> {
+        safeListener<InputEvent.KeyInputEvent> {
             val key = Keyboard.getEventKey()
             when {
                 bindTotem.value.isDown(key) -> switchToType(Type.TOTEM)
@@ -92,103 +93,119 @@ object AutoOffhand : Module(
             }
         }
 
-        listener<PacketEvent.Receive> {
-            if (mc.player == null || it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@listener
+        safeListener<PacketEvent.Receive> {
+            if ( it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@safeListener
+
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
-            if (!transactionLog.containsValue(false)) movingTimer.reset(-175L) // If all the click packets were accepted then we reset the timer for next moving
+            if (!transactionLog.containsValue(false)) {
+                movingTimer.reset(-175L) // If all the click packets were accepted then we reset the timer for next moving
+            }
         }
 
         safeListener<TickEvent.ClientTickEvent>(1100) {
             if (player.isDead || !movingTimer.tick(200L, false)) return@safeListener // Delays 4 ticks by default
+
             if (!player.inventory.itemStack.isEmpty) { // If player is holding an in inventory
                 if (mc.currentScreen is GuiContainer) {// If inventory is open (playing moving item)
                     movingTimer.reset() // delay for 5 ticks
                 } else { // If inventory is not open (ex. inventory desync)
-                    InventoryUtils.removeHoldingItem()
+                    removeHoldingItem()
                 }
             } else { // If player is not holding an item in inventory
                 switchToType(getType(), true)
             }
+
             updateDamage()
         }
     }
 
-    private fun getType() = when {
+    private fun SafeClientEvent.getType() = when {
         checkTotem() -> Type.TOTEM
         checkStrength() -> Type.STRENGTH
         checkGapple() -> Type.GAPPLE
         checkCrystal() -> Type.CRYSTAL
-        mc.player.heldItemOffhand.isEmpty -> Type.TOTEM
+        player.heldItemOffhand.isEmpty -> Type.TOTEM
         else -> null
     }
 
-    private fun switchToType(type1: Type?, alternativeType: Boolean = false) {
-        // First check for whether player is holding the right item already or not
-        if (type1 != null && !checkOffhandItem(type1)) getItemSlot(type1)?.let { (slot, type2) ->
-            // Second check is for case of when player ran out of the original type of item
-            if ((!alternativeType && type2 != type1) || slot == 45 || checkOffhandItem(type2)) return@let
-            transactionLog.clear()
-            transactionLog.putAll(InventoryUtils.moveToSlot(0, slot, 45).associate { it to false })
-            mc.playerController.updateController()
-            movingTimer.reset()
-            if (switchMessage.value) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${type2.toString().toLowerCase()}")
-        }
-    }
+    private fun SafeClientEvent.checkTotem() = CombatUtils.getHealthSmart(player) < hpThreshold.value
+        || (checkDamage.value && CombatUtils.getHealthSmart(player) - maxDamage < hpThreshold.value)
 
-    private fun checkTotem() = CombatUtils.getHealthSmart(mc.player) < hpThreshold.value
-        || (checkDamage.value && CombatUtils.getHealthSmart(mc.player) - maxDamage < hpThreshold.value)
-
-    private fun checkGapple() = offhandGapple.value
+    private fun SafeClientEvent.checkGapple() = offhandGapple.value
         && (checkAuraS.value && CombatManager.isActiveAndTopPriority(KillAura)
-        || checkWeaponG.value && mc.player.heldItemMainhand.item.isWeapon
+        || checkWeaponG.value && player.heldItemMainhand.item.isWeapon
         || (checkCAGapple.value && !offhandCrystal.value) && CombatManager.isOnTopPriority(CrystalAura))
 
     private fun checkCrystal() = offhandCrystal.value
         && checkCACrystal.value && CrystalAura.isEnabled && CombatManager.isOnTopPriority(CrystalAura)
 
-    private fun checkStrength() = offhandStrength.value
-        && !mc.player.isPotionActive(MobEffects.STRENGTH)
+    private fun SafeClientEvent.checkStrength() = offhandStrength.value
+        && !player.isPotionActive(MobEffects.STRENGTH)
         && (checkAuraG.value && CombatManager.isActiveAndTopPriority(KillAura)
-        || checkWeaponS.value && mc.player.heldItemMainhand.item.isWeapon)
+        || checkWeaponS.value && player.heldItemMainhand.item.isWeapon)
 
-    private fun checkOffhandItem(type: Type) = type.filter(mc.player.heldItemOffhand)
+    private fun SafeClientEvent.switchToType(typeOriginal: Type?, alternativeType: Boolean = false) {
+        // First check for whether player is holding the right item already or not
+        if (typeOriginal != null && !checkOffhandItem(typeOriginal)) {
+            getItemSlot(typeOriginal)?.let { (slot, typeAlt) ->
+                // Second check is for case of when player ran out of the original type of item
+                if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return@let
 
-    private fun getItemSlot(type: Type, loopTime: Int = 1): Pair<Int, Type>? = getSlot(type)?.to(type)
-        ?: if (loopTime <= 3) getItemSlot(getNextType(type), loopTime + 1)
-        else null
+                transactionLog.clear()
+                transactionLog.putAll(moveToSlot(slot.slotNumber, 45).associate { it to false })
 
-    private fun getSlot(type: Type): Int? {
-        val sublist = mc.player.inventoryContainer.inventory.subList(9, 46)
+                playerController.updateController()
+                movingTimer.reset()
 
-        // 9 - 35 are main inventory, 36 - 44 are hotbar. So finding last one will result in prioritize hotbar
-        val slot = if (priority.value == Priority.HOTBAR) sublist.indexOfLast(type.filter)
-        else sublist.indexOfFirst(type.filter)
-
-        // Add 9 to it because it is the sub list's index
-        return if (slot != -1) slot + 9 else null
+                if (switchMessage.value) MessageSendHelper.sendChatMessage("$chatName Offhand now has a ${typeAlt.toString().toLowerCase()}")
+            }
+        }
     }
 
-    private fun getNextType(type: Type) = with(Type.values()) { this[(type.ordinal + 1) % this.size] }
+    private fun SafeClientEvent.checkOffhandItem(type: Type) = type.filter(player.heldItemOffhand)
+
+    private fun SafeClientEvent.getItemSlot(type: Type, loopTime: Int = 1): Pair<Slot, Type>? =
+        getSlot(type)?.to(type)
+        ?: if (loopTime <= 3) {
+            getItemSlot(type.next(), loopTime + 1)
+        } else {
+            null
+        }
+
+    private fun SafeClientEvent.getSlot(type: Type): Slot? {
+        val slots = player.inventorySlots
+
+        return if (priority.value == Priority.HOTBAR) {
+            slots.lastOrNull { type.filter(it.stack) }
+        } else {
+            slots.firstOrNull { type.filter(it.stack) }
+        }
+    }
 
     private fun SafeClientEvent.updateDamage() {
         maxDamage = 0f
         if (!checkDamage.value) return
-        for (entity in mc.world.loadedEntityList) {
-            if (entity.name == mc.player.name) continue
+
+        for (entity in world.loadedEntityList) {
+            if (entity.name == player.name) continue
             if (entity !is EntityMob && entity !is EntityPlayer && entity !is EntityEnderCrystal) continue
-            if (mc.player.getDistance(entity) > 10f) continue
+            if (player.getDistance(entity) > 10f) continue
+
             if (mob.value && entity is EntityMob) {
                 maxDamage = max(calcDamageFromMob(entity), maxDamage)
             }
+
             if (this@AutoOffhand.player.value && entity is EntityPlayer) {
                 maxDamage = max(calcDamageFromPlayer(entity, true), maxDamage)
             }
+
             if (crystal.value && entity is EntityEnderCrystal) {
-                maxDamage = max(calcCrystalDamage(entity, mc.player), maxDamage)
+                maxDamage = max(calcCrystalDamage(entity, player), maxDamage)
             }
         }
+
         if (falling.value && nextFallDist > 3.0f) maxDamage = max(ceil(nextFallDist - 3.0f), maxDamage)
     }
 
-    private val nextFallDist get() = mc.player.fallDistance - mc.player.motionY.toFloat()
+    private val SafeClientEvent.nextFallDist get() = player.fallDistance - player.motionY.toFloat()
 }

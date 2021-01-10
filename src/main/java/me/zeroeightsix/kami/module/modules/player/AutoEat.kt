@@ -68,15 +68,10 @@ object AutoEat : Module(
                 isValid(it)
             } ?: return false
 
-            val slotTo = player.hotbarSlots.let { list ->
-                list.firstItem(Items.AIR)
-                    ?: list.firstOrNull {
-                        val item = it.stack.item
-                        item !is ItemTool && item !is ItemBlock
-                    }
-            } ?: return false
-
-            moveToHotbar(slotFrom, slotTo)
+            moveToHotbar(slotFrom) {
+                val item = it.item
+                item !is ItemTool && item !is ItemBlock
+            }
 
             return false
         }

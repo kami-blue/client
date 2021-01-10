@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
@@ -16,6 +15,8 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemBed
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.tileentity.TileEntityBed
@@ -57,6 +58,10 @@ object BedAura : Module(
         NONE, PLACE, EXPLODE
     }
 
+    override fun getHudInfo(): String {
+        return (mc.player?.inventorySlots?.countItem<ItemBed>() ?: 0).toString()
+    }
+
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5
     }
@@ -88,9 +93,8 @@ object BedAura : Module(
 
             inactiveTicks++
             if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
-                InventoryUtils.getSlotsFullInvNoHotbar(355)?.let {
-                    InventoryUtils.quickMoveSlot(it[0])
-                    playerController.syncCurrentPlayItem()
+                player.storageSlots.firstItem<ItemBed, Slot>()?.let {
+                    quickMoveSlot(it)
                 }
             }
 
@@ -108,9 +112,9 @@ object BedAura : Module(
         }
     }
 
-    private fun canRefill(): Boolean {
-        return InventoryUtils.getSlotsHotbar(0) != null
-            && InventoryUtils.getSlotsNoHotbar(355) != null
+    private fun SafeClientEvent.canRefill(): Boolean {
+        return player.hotbarSlots.firstEmpty() != null
+            && player.storageSlots.firstItem<ItemBed, Slot>() != null
     }
 
     private fun SafeClientEvent.updatePlaceMap() {
@@ -169,9 +173,10 @@ object BedAura : Module(
 
     private fun getPlacePos() = placeMap.values.firstOrNull()
 
-    private fun prePlace(pos: BlockPos) {
-        if (getExplodePos() != null || InventoryUtils.countItemAll(355) == 0) return
-        if (getBedHand() == null) InventoryUtils.swapSlotToItem(355)
+    private fun SafeClientEvent.prePlace(pos: BlockPos) {
+        if (getExplodePos() != null || player.allSlots.countItem<ItemBed>() == 0) return
+        if (getBedHand() == null) swapToItem<ItemBed>()
+
         preClick(pos, Vec3d(0.5, 1.0, 0.5))
         state = State.PLACE
     }
