@@ -4,8 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Category
+import me.zeroeightsix.kami.module.modules.client.CommandConfig.setting
 import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.GenericConfig
 import me.zeroeightsix.kami.setting.GuiConfig
@@ -14,8 +16,11 @@ import me.zeroeightsix.kami.setting.configs.AbstractConfig
 import me.zeroeightsix.kami.setting.configs.IConfig
 import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.ConfigUtils
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
+import me.zeroeightsix.kami.util.threads.BackgroundScope
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -34,17 +39,28 @@ internal object Configurations : AbstractModule(
 ) {
     private const val defaultPreset = "default"
 
+    private val autoSaving by setting("AutoSaving", true)
+    private val savingFeedBack by setting("SavingFeedBack", false, { autoSaving })
+    private val savingInterval by setting("Interval(m)", 10, 1..30, 1, { autoSaving })
     val serverPreset by setting("ServerPreset", false)
-
     private val guiPresetSetting = setting("GuiPreset", defaultPreset)
-    val guiPreset by guiPresetSetting
-
     private val modulePresetSetting = setting("ModulePreset", defaultPreset)
+
+    val guiPreset by guiPresetSetting
     val modulePreset by modulePresetSetting
 
+    private val timer = TickTimer(TimeUnit.MINUTES)
     private var connected = false
 
     init {
+        BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
+            if (autoSaving && mc.currentScreen !is AbstractKamiGui<*, *> && timer.tick(savingInterval.toLong())) {
+                if (savingFeedBack) MessageSendHelper.sendChatMessage("Auto saving settings...")
+                else KamiMod.LOG.info("Auto saving settings...")
+                ConfigUtils.saveAll()
+            }
+        }
+
         listener<ConnectionEvent.Connect> {
             connected = true
         }
