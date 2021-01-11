@@ -27,7 +27,6 @@ internal object CommandConfig : Module(
     val toggleMessages = setting("ToggleMessages", false)
     private val customTitle = setting("WindowTitle", true)
     private val autoSaving = setting("AutoSavingSettings", true)
-    private val savingFeedBack = setting("SavingFeedBack", false, { autoSaving.value })
     private val savingInterval = setting("Interval(m)", 3, 1..10, 1, { autoSaving.value })
     val modifierEnabled = setting("ModifierEnabled", false, { false })
 
@@ -42,7 +41,7 @@ internal object CommandConfig : Module(
 
         BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
             if (autoSaving.value && mc.currentScreen !is KamiClickGui && mc.currentScreen !is KamiHudGui && timer.tick(savingInterval.value.toLong())) {
-                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving all settings...")
+                KamiMod.LOG.debug("Auto saving all settings...")
                 ConfigUtils.saveAll()
             }
         }
