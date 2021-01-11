@@ -1,5 +1,4 @@
-
-You are free to clone, modify KAMI Blue and make pull requests as you wish. 
+You are free to clone, modify KAMI Blue and make pull requests as you wish.
 
 Before contributing please see the [Code of Conduct](https://blue.bella.wtf/codeofconduct)
 

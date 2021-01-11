@@ -4,9 +4,7 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.combat.CombatUtils

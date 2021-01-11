@@ -6,9 +6,9 @@ import me.zeroeightsix.kami.setting.settings.SettingRegister
 import java.io.File
 
 abstract class AbstractMultiConfig<T : Any>(
-        name: String,
-        protected val directoryPath: String,
-        vararg groupNames: String
+    name: String,
+    protected val directoryPath: String,
+    vararg groupNames: String
 ) : AbstractConfig<T>(name, directoryPath), IConfig, SettingRegister<T> {
 
     override val file: File get() = File("$directoryPath$name")
@@ -48,6 +48,6 @@ abstract class AbstractMultiConfig<T : Any>(
      * @return Pair of this group's main file to its backup file
      */
     private fun getFiles(group: SettingMultiGroup) =
-            File("${file.path}/${group.name}.json") to File("${file.path}/${group.name}.bak")
+        File("${file.path}/${group.name}.json") to File("${file.path}/${group.name}.bak")
 
 }

@@ -5,9 +5,6 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.combat.CrystalUtils
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlace
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceOn
 import me.zeroeightsix.kami.util.combat.SurroundUtils

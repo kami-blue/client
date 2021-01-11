@@ -109,7 +109,7 @@ object ConfigCommand : ClientCommand(
 
                 literal("delete", "del", "remove") {
                     executeSafe("Delete the current server preset") {
-                        val ip = getIpOrNull()?: return@executeSafe
+                        val ip = getIpOrNull() ?: return@executeSafe
                         val configType = configTypeArg.value
 
                         if (!configType.serverPresets.contains(ip)) {
@@ -147,7 +147,7 @@ object ConfigCommand : ClientCommand(
         }
     }
 
-    private fun confirm(name: String) : Boolean {
+    private fun confirm(name: String): Boolean {
         return if (name != lastName || confirmTimer.tick(8L, false)) {
             MessageSendHelper.sendWarningMessage("This can't be undone, run this command again to confirm!")
             lastName = name

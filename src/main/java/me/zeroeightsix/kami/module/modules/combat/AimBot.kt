@@ -3,8 +3,6 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.items.swapToItem
 import me.zeroeightsix.kami.util.math.RotationUtils.faceEntityClosest
 import me.zeroeightsix.kami.util.threads.safeListener

@@ -7,7 +7,6 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 

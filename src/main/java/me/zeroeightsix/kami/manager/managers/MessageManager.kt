@@ -96,7 +96,7 @@ object MessageManager : Manager {
     }
 
     fun AbstractModule.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
-            MessageModifier(modifierId++, modulePriority, filter, modifier)
+        MessageModifier(modifierId++, modulePriority, filter, modifier)
 
     class MessageModifier(
         private val id: Int,

@@ -11,12 +11,12 @@ import me.zeroeightsix.kami.util.ConfigUtils
 import java.io.File
 
 abstract class AbstractConfig<T : Any>(
-        name: String,
-        val filePath: String
+    name: String,
+    val filePath: String
 ) : SettingMultiGroup(name), IConfig, SettingRegister<T> {
 
     override val file get() = File("$filePath$name.json")
-    override val backup get() =  File("$filePath$name.bak")
+    override val backup get() = File("$filePath$name.bak")
 
     override fun save() {
         File(filePath).run {

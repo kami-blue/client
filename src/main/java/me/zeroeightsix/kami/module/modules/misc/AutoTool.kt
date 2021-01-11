@@ -4,8 +4,6 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.items.swapToSlot

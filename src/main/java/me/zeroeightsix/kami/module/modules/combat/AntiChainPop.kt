@@ -3,10 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.items.allSlots
 import me.zeroeightsix.kami.util.items.countItem
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketEntityStatus

@@ -4,7 +4,6 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*

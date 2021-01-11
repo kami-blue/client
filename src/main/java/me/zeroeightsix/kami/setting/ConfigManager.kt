@@ -12,7 +12,7 @@ internal object ConfigManager {
         register(ModuleConfig)
     }
 
-    fun loadAll() : Boolean {
+    fun loadAll(): Boolean {
         var success = load(GenericConfig) // Generic config must be loaded first
 
         configSet.forEach {
@@ -33,7 +33,7 @@ internal object ConfigManager {
         }
     }
 
-    fun saveAll() : Boolean {
+    fun saveAll(): Boolean {
         var success = save(GenericConfig) // Generic config must be loaded first
 
         configSet.forEach {

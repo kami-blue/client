@@ -1,11 +1,8 @@
 package me.zeroeightsix.kami.module.modules.player
 
-import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.threads.runSafe
