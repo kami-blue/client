@@ -2,10 +2,12 @@ package me.zeroeightsix.kami.module.modules.client
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.clickgui.KamiClickGui
+import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ConfigManager
 import me.zeroeightsix.kami.setting.ModuleConfig
+import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -39,9 +41,9 @@ internal object CommandConfig : Module(
         }
 
         BackgroundScope.launchLooping("Config Auto Saving", 60000L) {
-            if (autoSaving.value && mc.currentScreen !is KamiClickGui && timer.tick(savingInterval.value.toLong())) {
-                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving settings...")
-                ConfigManager.save(ModuleConfig)
+            if (autoSaving.value && mc.currentScreen !is KamiClickGui && mc.currentScreen !is KamiHudGui && timer.tick(savingInterval.value.toLong())) {
+                if (savingFeedBack.value) MessageSendHelper.sendChatMessage("Auto saving all settings...")
+                ConfigUtils.saveAll()
             }
         }
     }
