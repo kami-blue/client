@@ -16,6 +16,7 @@ object TabFriends : Module(
 
     @JvmStatic
     fun getPlayerName(info: NetworkPlayerInfo): String {
+        val name = info.displayName?.formattedText
             ?: ScorePlayerTeam.formatPlayerName(info.playerTeam, info.gameProfile.name)
 
         return if (FriendManager.isFriend(name)) {

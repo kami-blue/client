@@ -2,12 +2,11 @@ package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CrystalDamage
 import me.zeroeightsix.kami.util.InfoCalculator
 
 object Ping : LabelHud(
-    name = "Ping",
-    category = Category.MISC,
-    description = "Delay between client and server"
+    category = Category.MISC
 ) {
 
     override fun SafeClientEvent.updateText() {

@@ -4,12 +4,14 @@ import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 /**
  * Window with rectangle and title rendering
  */
 open class TitledWindow(
-    name: String,
+    name: TranslationKey = TranslationKeyBlank(),
     posX: Float,
     posY: Float,
     width: Float,
@@ -22,6 +24,6 @@ open class TitledWindow(
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
-        FontRenderAdapter.drawString(name, 3.0f, 3.0f, color = GuiColors.text)
+        FontRenderAdapter.drawString(name.value, 3.0f, 3.0f, color = GuiColors.text)
     }
 }

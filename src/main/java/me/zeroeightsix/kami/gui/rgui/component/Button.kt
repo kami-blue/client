@@ -1,11 +1,13 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 class Button(
-    name: String,
+    name: TranslationKey,
     private val action: (Button) -> Unit,
-    descriptionIn: String
+    descriptionIn: TranslationKey = TranslationKeyBlank()
 ) : BooleanSlider(name, 0.0, descriptionIn) {
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)

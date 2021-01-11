@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.modules.combat.AntiBot
 import me.zeroeightsix.kami.setting.GuiConfig.setting
@@ -13,17 +14,15 @@ import net.minecraft.init.MobEffects
 import org.kamiblue.commons.utils.MathUtils
 
 object TextRadar : LabelHud(
-    name = "TextRadar",
-    category = Category.WORLD,
-    description = "List of players nearby"
+    category = Category.WORLD
 ) {
 
-    private val health by setting("Health", true)
-    private val ping by setting("Ping", false)
-    private val combatPotion by setting("CombatPotion", true)
-    private val distance by setting("Distance", true)
-    private val friend by setting("Friend", true)
-    private val range by setting("Range", 32.0f, 16.0f..64.0f, 0.5f)
+    private val health by setting(getTranslationKey("Health"), true)
+    private val ping by setting(getTranslationKey("Ping"), false)
+    private val combatPotion by setting(getTranslationKey("CombatPotion"), true)
+    private val distance by setting(getTranslationKey("Distance"), true)
+    private val friend by setting(getTranslationKey("Friend"), true)
+    private val range by setting(getTranslationKey("Range"), 32.0f, 16.0f..64.0f, 0.5f)
 
     private val healthColorGradient = ColorGradient(
         0.0f to ColorHolder(180, 20, 20),

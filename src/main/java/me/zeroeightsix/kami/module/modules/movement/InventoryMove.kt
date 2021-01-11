@@ -14,8 +14,8 @@ import org.lwjgl.input.Keyboard
 object InventoryMove : Module(
     category = Category.MOVEMENT
 ) {
-    private val rotateSpeed by setting("RotateSpeed", 5, 0..20, 1)
-    val sneak by setting("Sneak", false)
+    private val rotateSpeed by setting(getTranslationKey("RotateSpeed"), 5, 0..20, 1)
+    val sneak by setting(getTranslationKey("Sneak"), false)
 
     private var hasSent = false
 

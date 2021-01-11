@@ -11,13 +11,11 @@ import java.io.*
 import java.util.*
 
 object ChatFilter : Module(
-    name = "ChatFilter",
-    description = "Filters custom words or phrases from the chat",
     category = Category.CHAT
 ) {
-    private val filterOwn by setting("FilterOwn", false)
-    private val filterDMs by setting("FilterDMs", false)
-    private var hasRunInfo by setting("Info", false, { false })
+    private val filterOwn by setting(getTranslationKey("FilterOwn"), false)
+    private val filterDMs by setting(getTranslationKey("FilterDMs"), false)
+    private var hasRunInfo by setting(getTranslationKey("Info"), false, { false })
 
     private val chatFilter = ArrayList<Regex>()
 

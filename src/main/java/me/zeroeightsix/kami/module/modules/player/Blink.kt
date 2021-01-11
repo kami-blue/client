@@ -19,9 +19,9 @@ import java.util.*
 object Blink : Module(
     category = Category.PLAYER,
 ) {
-    private val cancelPacket by setting("CancelPackets", false)
-    private val autoReset by setting("AutoReset", true)
-    private val resetThreshold by setting("ResetThreshold", 20, 1..100, 5, { autoReset })
+    private val cancelPacket by setting(getTranslationKey("CancelPackets"), false)
+    private val autoReset by setting(getTranslationKey("AutoReset"), true)
+    private val resetThreshold by setting(getTranslationKey("ResetThreshold"), 20, 1..100, 5, { autoReset })
 
     private const val ENTITY_ID = -114514
     private val packets = ArrayDeque<CPacketPlayer>()

@@ -106,7 +106,6 @@ abstract class AbstractConfig<T>(
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
 
-
     override val file get() = File("$filePath$name.json")
     override val backup get() =  File("$filePath$name.bak")
 

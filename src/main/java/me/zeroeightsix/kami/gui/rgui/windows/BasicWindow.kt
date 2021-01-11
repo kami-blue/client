@@ -5,12 +5,14 @@ import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 /**
  * Window with rectangle rendering
  */
 open class BasicWindow(
-    name: String,
+    name: TranslationKey = TranslationKeyBlank(),
     posX: Float,
     posY: Float,
     width: Float,

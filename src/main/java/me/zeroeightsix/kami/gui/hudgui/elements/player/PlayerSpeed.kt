@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -11,13 +12,11 @@ import org.kamiblue.commons.utils.MathUtils
 import java.util.*
 
 object PlayerSpeed : LabelHud(
-    name = "PlayerSpeed",
-    category = Category.PLAYER,
-    description = "Player movement speed"
+    category = Category.PLAYER
 ) {
 
-    private val speedUnit by setting("SpeedUnit", SpeedUnit.MPS)
-    private val averageSpeedTime by setting("AverageSpeedTime", 1.0f, 0.25f..5.0f, 0.25f)
+    private val speedUnit by setting(getTranslationKey("SpeedUnit"), SpeedUnit.MPS)
+    private val averageSpeedTime by setting(getTranslationKey("AverageSpeedTime"), 1.0f, 0.25f..5.0f, 0.25f)
 
     @Suppress("UNUSED")
     private enum class SpeedUnit(override val displayName: String, val multiplier: Double) : DisplayEnum {

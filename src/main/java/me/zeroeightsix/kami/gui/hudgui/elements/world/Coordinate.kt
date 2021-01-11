@@ -2,22 +2,21 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.utils.MathUtils
 
 object Coordinate : LabelHud(
-    name = "Coordinate",
-    category = Category.WORLD,
-    description = "Display the current coordinate"
+    category = Category.WORLD
 ) {
 
-    private val showX = setting("ShowX", true)
-    private val showY = setting("ShowY", true)
-    private val showZ = setting("ShowZ", true)
-    private val showNetherOverworld = setting("ShowNether/Overworld", true)
-    private val decimalPlaces = setting("DecimalPlaces", 1, 0..4, 1)
+    private val showX = setting(getTranslationKey("ShowX"), true)
+    private val showY = setting(getTranslationKey("ShowY"), true)
+    private val showZ = setting(getTranslationKey("ShowZ"), true)
+    private val showNetherOverworld = setting(getTranslationKey("ShowNether/Overworld"), true)
+    private val decimalPlaces = setting(getTranslationKey("DecimalPlaces"), 1, 0..4, 1)
 
     override fun SafeClientEvent.updateText() {
         val entity = mc.renderViewEntity ?: mc.player ?: return

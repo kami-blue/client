@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.isHostile
 import me.zeroeightsix.kami.util.EntityUtils.isNeutral
@@ -18,16 +19,14 @@ import net.minecraft.entity.projectile.EntityWitherSkull
 import java.util.*
 
 object EntityList : LabelHud(
-    name = "EntityList",
-    category = Category.WORLD,
-    description = "List of entities nearby"
+    category = Category.WORLD
 ) {
 
-    private val item by setting("Items", true)
-    private val passive by setting("Passive Mobs", true)
-    private val neutral by setting("Neutral Mobs", true)
-    private val hostile by setting("Hostile Mobs", true)
-    private val range by setting("Range", 24.0f, 8.0f..64.0f, 0.5f)
+    private val item by setting(getTranslationKey("Items"), true)
+    private val passive by setting(getTranslationKey("Passive Mobs"), true)
+    private val neutral by setting(getTranslationKey("Neutral Mobs"), true)
+    private val hostile by setting(getTranslationKey("Hostile Mobs"), true)
+    private val range by setting(getTranslationKey("Range"), 24.0f, 8.0f..64.0f, 0.5f)
 
     private var cacheMap: Map<String, Int> = emptyMap()
 

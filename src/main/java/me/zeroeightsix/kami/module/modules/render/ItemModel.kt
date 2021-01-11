@@ -11,14 +11,14 @@ import net.minecraft.util.EnumHandSide
 object ItemModel : Module(
     category = Category.RENDER
 ) {
-    private val posX by setting("PosX", 0.0f, -5.0f..5.0f, 0.025f)
-    private val posY by setting("PosY", 0.0f, -5.0f..5.0f, 0.025f)
-    private val posZ by setting("PosZ", 0.0f, -5.0f..5.0f, 0.025f)
-    private val rotateX by setting("RotateX", 0.0f, -180.0f..180.0f, 1.0f)
-    private val rotateY by setting("RotateY", 0.0f, -180.0f..180.0f, 1.0f)
-    private val rotateZ by setting("RotateZ", 0.0f, -180.0f..180.0f, 1.0f)
-    val scale by setting("Scale", 1.0f, 0.1f..3.0f, 0.025f)
-    private val modifyHand by setting("ModifyHand", false)
+    private val posX by setting(getTranslationKey("PosX"), 0.0f, -5.0f..5.0f, 0.025f)
+    private val posY by setting(getTranslationKey("PosY"), 0.0f, -5.0f..5.0f, 0.025f)
+    private val posZ by setting(getTranslationKey("PosZ"), 0.0f, -5.0f..5.0f, 0.025f)
+    private val rotateX by setting(getTranslationKey("RotateX"), 0.0f, -180.0f..180.0f, 1.0f)
+    private val rotateY by setting(getTranslationKey("RotateY"), 0.0f, -180.0f..180.0f, 1.0f)
+    private val rotateZ by setting(getTranslationKey("RotateZ"), 0.0f, -180.0f..180.0f, 1.0f)
+    val scale by setting(getTranslationKey("Scale"), 1.0f, 0.1f..3.0f, 0.025f)
+    private val modifyHand by setting(getTranslationKey("ModifyHand"), false)
 
     @JvmStatic
     fun getTranslation(stack: ItemStack, hand: EnumHand, player: AbstractClientPlayer): Vec3f? {

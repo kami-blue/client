@@ -4,9 +4,7 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 
 object Biome : LabelHud(
-    name = "Biome",
-    category = Category.WORLD,
-    description = "Display the current biome you are in"
+    category = Category.WORLD
 ) {
 
     override fun SafeClientEvent.updateText() {

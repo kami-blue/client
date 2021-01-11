@@ -369,7 +369,7 @@ object Nametags : Module(
             null
         }
         ContentType.NAME -> {
-            TextComponent.TextElement(name, getTextColor())
+            TextComponent.TextElement(name.value, getTextColor())
         }
         ContentType.TYPE -> {
             TextComponent.TextElement(getEntityType(entity), getTextColor())

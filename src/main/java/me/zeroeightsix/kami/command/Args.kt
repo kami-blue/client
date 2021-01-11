@@ -29,7 +29,7 @@ class ModuleArg(
     private companion object {
         val allAlias by CachedValue(5L, TimeUnit.SECONDS) {
             ModuleManager.modules.stream()
-                .flatMap { Arrays.stream(arrayOf(it.name, *it.alias)) }
+                .flatMap { Arrays.stream(arrayOf(it.name.value, *it.alias)) }
                 .sorted()
                 .toList()
         }

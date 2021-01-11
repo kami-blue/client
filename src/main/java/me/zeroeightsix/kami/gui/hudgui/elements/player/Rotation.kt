@@ -6,9 +6,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import org.kamiblue.commons.utils.MathUtils
 
 object Rotation : LabelHud(
-    name = "Rotation",
-    category = Category.PLAYER,
-    description = "Player rotation"
+    category = Category.PLAYER
 ) {
 
     override fun SafeClientEvent.updateText() {

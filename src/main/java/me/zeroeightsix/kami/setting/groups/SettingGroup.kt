@@ -30,7 +30,7 @@ open class SettingGroup(
      * @return [setting]
      */
     open fun <S: AbstractSetting<*>> addSetting(setting: S): S {
-        subSetting[setting.name.toLowerCase()] = setting
+        subSetting[setting.name.value.toLowerCase()] = setting
         return setting
     }
 
@@ -45,7 +45,7 @@ open class SettingGroup(
 
         if (subSetting.isNotEmpty()) add("settings", JsonObject().apply {
             for (setting in subSetting.values) {
-                add(setting.name, setting.write())
+                add(setting.name.defaultValue, setting.write())
             }
         })
     }
@@ -59,7 +59,7 @@ open class SettingGroup(
         if (subSetting.isNotEmpty()) (jsonObject?.get("settings") as? JsonObject)?.also {
             for (setting in subSetting.values) {
                 try {
-                    setting.read(it.get(setting.name))
+                    setting.read(it.get(setting.name.defaultValue))
                 } catch (e: Exception) {
                     KamiMod.LOG.warn("Failed loading setting ${setting.name} at $name", e)
                 }

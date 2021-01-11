@@ -3,12 +3,14 @@ package me.zeroeightsix.kami.setting.settings.impl.collection
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.setting.settings.ImmutableSetting
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 class MapSetting<K : Any, V : Any, T : MutableMap<K, V>>(
-    name: String,
+    name: TranslationKey,
     override val value: T,
     visibility: () -> Boolean = { true },
-    description: String = ""
+    description: TranslationKey = TranslationKeyBlank()
 ) : ImmutableSetting<T>(name, value, visibility, { _, input -> input }, description) {
 
     override val defaultValue: T = valueClass.newInstance()

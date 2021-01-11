@@ -11,15 +11,13 @@ import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 
 object ChatTimestamp : Module(
-    name = "ChatTimestamp",
     category = Category.CHAT,
-    description = "Shows the time a message was sent beside the message",
     showOnArray = false
 ) {
-    private val color by setting("Color", EnumTextColor.GRAY)
-    private val separator by setting("Separator", Separator.ARROWS)
-    private val timeFormat by setting("TimeFormat", TimeUtils.TimeFormat.HHMM)
-    private val timeUnit by setting("TimeUnit", TimeUtils.TimeUnit.H12)
+    private val color by setting(getTranslationKey("Color"), EnumTextColor.GRAY)
+    private val separator by setting(getTranslationKey("Separator"), Separator.ARROWS)
+    private val timeFormat by setting(getTranslationKey("TimeFormat"), TimeUtils.TimeFormat.HHMM)
+    private val timeUnit by setting(getTranslationKey("TimeUnit"), TimeUtils.TimeUnit.H12)
 
     init {
         listener<ClientChatReceivedEvent> {

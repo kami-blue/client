@@ -13,14 +13,12 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 
 object FriendHighlight : Module(
-    name = "FriendHighlight",
-    description = "Highlights your friends names in chat",
     category = Category.CHAT,
     showOnArray = false
 ) {
-    private val bold = setting("Bold", true)
-    private val color = setting("Color", EnumTextColor.GRAY)
-    private val sound = setting("Sound", true)
+    private val bold = setting(getTranslationKey("Bold"), true)
+    private val color = setting(getTranslationKey("Color"), EnumTextColor.GRAY)
+    private val sound = setting(getTranslationKey("Sound"), true)
 
     private val regex1 = "<(.*?)>".toRegex()
     private val regex2 = "[<>]".toRegex()

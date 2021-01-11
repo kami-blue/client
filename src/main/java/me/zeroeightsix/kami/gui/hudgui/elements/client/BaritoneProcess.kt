@@ -2,14 +2,13 @@ package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.misc.TPS
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.process.TemporaryPauseProcess
 import me.zeroeightsix.kami.util.BaritoneUtils
 
 object BaritoneProcess : LabelHud(
-    name = "BaritoneProcess",
-    category = Category.CLIENT,
-    description = "Shows what Baritone is doing"
+    category = Category.CLIENT
 ) {
 
     override fun SafeClientEvent.updateText() {

@@ -29,6 +29,7 @@ object TotemPopCounter : Module(
     private val colorName = setting(getTranslationKey("ColorName"), EnumTextColor.DARK_PURPLE)
     private val colorNumber = setting(getTranslationKey("ColorNumber"), EnumTextColor.LIGHT_PURPLE)
 
+
     private enum class Announce {
         CLIENT, EVERYONE
     }
@@ -84,6 +85,7 @@ object TotemPopCounter : Module(
     private fun selfCheck(player: EntityPlayer) = player == mc.player && countSelf.value
 
     private fun formatName(player: EntityPlayer): String {
+        val name = when {
             player == mc.player -> "I"
             FriendManager.isFriend(player.name) -> if (isPublic) "My friend, " else "Your friend, "
             else -> player.name

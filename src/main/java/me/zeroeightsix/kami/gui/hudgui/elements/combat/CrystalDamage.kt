@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.misc.TPS
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.combat.CrystalUtils
@@ -10,9 +11,7 @@ import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
 object CrystalDamage : LabelHud(
-    name = "CrystalDamage",
-    category = HudElement.Category.COMBAT,
-    description = "Display the max potential damage and the current damage to you and target"
+    category = HudElement.Category.COMBAT
 ) {
 
     private var prevDamages = Quad(0.0f, 0.0f, 0.0f, 0.0f)

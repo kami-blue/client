@@ -16,7 +16,8 @@ internal object GuiConfig : AbstractMultiConfig<Component>(
     override fun <S : AbstractSetting<*>> Component.setting(setting: S): S {
         val groupName = settingGroup.groupName
         if (groupName.isNotEmpty()) {
-            getGroupOrPut(groupName).getGroupOrPut(originalName).addSetting(setting)
+            //TODO re-instate this.
+//            getGroupOrPut(groupName).getGroupOrPut(originalName.defaultValue).addSetting(setting)
         }
         return setting
     }

@@ -16,11 +16,11 @@ import org.kamiblue.event.listener.listener
 object AutoMend : Module(
     category = Category.COMBAT,
 ) {
-    private val autoThrow by setting("AutoThrow", true)
-    private val autoSwitch by setting("AutoSwitch", true)
-    private val autoDisable by setting("AutoDisable", false, { autoSwitch })
-    private val threshold by setting("Repair%", 75, 1..100, 1)
-    private val gui by setting("RunInGUIs", false)
+    private val autoThrow by setting(getTranslationKey("AutoThrow"), true)
+    private val autoSwitch by setting(getTranslationKey("AutoSwitch"), true)
+    private val autoDisable by setting(getTranslationKey("AutoDisable"), false, { autoSwitch })
+    private val threshold by setting(getTranslationKey("Repair%"), 75, 1..100, 1)
+    private val gui by setting(getTranslationKey("RunInGUIs"), false)
 
     private var initHotbarSlot = -1
     private var isGuiOpened = false

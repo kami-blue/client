@@ -14,11 +14,12 @@ import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, SettingGroup.NONE) {
+object ColorPicker : TitledWindow( name = TranslationKeyBlank(), 0.0f, 0.0f, 200.0f, 200.0f, SettingGroup.NONE) {
 
     override val resizable: Boolean get() = false
     override val minimizable: Boolean get() = false
@@ -50,18 +51,18 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     private var prevBrightness = 1.0f
 
     // Sliders
-    private val r = setting("Red", 255, 0..255, 1, description = "")
-    private val g = setting("Green", 255, 0..255, 1, description = "")
-    private val b = setting("Blue", 255, 0..255, 1, description = "")
-    private val a = setting("Alpha", 255, 0..255, 1, { setting?.hasAlpha ?: true }, description = "")
+    private val r = setting(getTranslationKey("Red"), 255, 0..255, 1)
+    private val g = setting(getTranslationKey("Green"), 255, 0..255, 1)
+    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1)
+    private val a = setting(getTranslationKey("Alpha"), 255, 0..255, 1, { setting?.hasAlpha ?: true })
     private val sliderR = SettingSlider(r)
     private val sliderG = SettingSlider(g)
     private val sliderB = SettingSlider(b)
     private val sliderA = SettingSlider(a)
 
     // Buttons
-    private val buttonOkay = Button("Okay", { actionOk() }, "")
-    private val buttonCancel = Button("Cancel", { actionCancel() }, "")
+    private val buttonOkay = Button(getTranslationKey("Okay"), { actionOk() })
+    private val buttonCancel = Button(getTranslationKey("Cancel"), { actionCancel() })
 
     private val components = arrayOf(sliderR, sliderG, sliderB, sliderA, buttonOkay, buttonCancel)
 

@@ -12,20 +12,22 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.glScalef
 
 open class HudElement(
-    name: String,
     val alias: Array<String> = emptyArray(),
     val category: Category,
-    val description: String,
     val alwaysListening: Boolean = false,
     enabledByDefault: Boolean = false
-) : BasicWindow(name, 20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
+) : BasicWindow(name = TranslationKeyBlank(),20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
-    val scale by setting("Scale", 1.0f, 0.1f..4.0f, 0.05f)
+    val scale by setting(TranslationKey("gui.hudgui.HudElement.Scale"), 1.0f, 0.1f..4.0f, 0.05f)
+
+    val description: TranslationKey = getTranslationKey("HudElementDescription")
 
     override val resizable = false
 
@@ -37,8 +39,8 @@ open class HudElement(
 
     open val hudWidth: Float get() = 20f
     open val hudHeight: Float get() = 10f
-
-    val settingList get() = GuiConfig.getGroupOrPut(SettingGroup.HUD_GUI.groupName).getGroupOrPut(originalName).getSettings()
+    //TODO look at this, I don't quite know what this should be.
+    val settingList get() = GuiConfig.getGroupOrPut(SettingGroup.HUD_GUI.groupName).getGroupOrPut(originalName.defaultValue).getSettings()
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
@@ -88,12 +90,12 @@ open class HudElement(
         if (!enabledByDefault) visible = false
     }
 
-    enum class Category(override val displayName: String) : DisplayEnum {
-        CLIENT("Client"),
-        COMBAT("Combat"),
-        PLAYER("Player"),
-        WORLD("World"),
-        MISC("Misc")
+    enum class Category(val displayName: TranslationKey){
+        CLIENT(TranslationKey("HudElement.Category.Client")),
+        COMBAT(TranslationKey("HudElement.Category.Combat")),
+        PLAYER(TranslationKey("HudElement.Category.Player")),
+        WORLD(TranslationKey("HudElement.Category.World")),
+        MISC(TranslationKey("HudElement.Category.Misc"))
     }
 
     protected companion object {

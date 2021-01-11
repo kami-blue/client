@@ -10,9 +10,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object Timer : Module(
     category = Category.PLAYER,
 ) {
-    private val slow by setting("SlowMode", false)
-    private val tickNormal by setting("TickN", 2.0f, 1f..10f, 0.1f, { !slow })
-    private val tickSlow by setting("TickS", 8f, 1f..10f, 0.1f, { slow })
+    private val slow by setting(getTranslationKey("SlowMode"), false)
+    private val tickNormal by setting(getTranslationKey("TickN"), 2.0f, 1f..10f, 0.1f, { !slow })
+    private val tickSlow by setting(getTranslationKey("TickS"), 8f, 1f..10f, 0.1f, { slow })
 
     init {
         onDisable {

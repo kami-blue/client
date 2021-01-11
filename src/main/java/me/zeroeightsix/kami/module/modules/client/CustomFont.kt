@@ -11,7 +11,7 @@ object CustomFont : Module(
 ) {
     private const val DEFAULT_FONT_NAME = "Source Sans Pro"
 
-    val fontName = setting(getTranslationKey("FontName",)
+    val fontName = setting(getTranslationKey("FontName"),
         DEFAULT_FONT_NAME,
         consumer = { prev: String, value: String -> getMatchingFontName(value) ?: prev })
 

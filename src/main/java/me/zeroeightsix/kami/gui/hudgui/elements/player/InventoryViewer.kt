@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.Armor
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
@@ -14,15 +15,13 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 
 object InventoryViewer : HudElement(
-    name = "InventoryViewer",
-    category = Category.PLAYER,
-    description = "Items in Inventory"
+    category = Category.PLAYER
 ) {
-    private val mcTexture = setting("MinecraftTexture", false)
-    private val showIcon = setting("ShowIcon", false, { !mcTexture.value })
-    private val iconScale = setting("IconScale", 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture.value && showIcon.value })
-    private val coloredBackground = setting("ColoredBackground", true, { !mcTexture.value })
-    private val color = setting("Background", ColorHolder(155, 144, 255, 64), true, { coloredBackground.value && !mcTexture.value })
+    private val mcTexture = setting(getTranslationKey("MinecraftTexture"), false)
+    private val showIcon = setting(getTranslationKey("ShowIcon"), false, { !mcTexture.value })
+    private val iconScale = setting(getTranslationKey("IconScale"), 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture.value && showIcon.value })
+    private val coloredBackground = setting(getTranslationKey("ColoredBackground"), true, { !mcTexture.value })
+    private val color = setting(getTranslationKey("Background"), ColorHolder(155, 144, 255, 64), true, { coloredBackground.value && !mcTexture.value })
 
     private val containerTexture = ResourceLocation("textures/gui/container/inventory.png")
     private val kamiIcon = ResourceLocation("kamiblue/kami_icon.png")

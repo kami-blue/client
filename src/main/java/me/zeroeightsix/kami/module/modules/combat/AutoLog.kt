@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.gui.mc.KamiGuiDisconnected
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.combat.AntiBot.isBot
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InventoryUtils

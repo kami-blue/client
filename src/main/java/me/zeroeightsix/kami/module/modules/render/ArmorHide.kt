@@ -12,13 +12,13 @@ object ArmorHide : Module(
     category = Category.RENDER,
     showOnArray = false
 ) {
-    private val player by setting("Players", false)
-    private val armorStands by setting("ArmourStands", true)
-    private val mobs by setting("Mobs", true)
-    private val helmet by setting("Helmet", false)
-    private val chestplate by setting("Chestplate", false)
-    private val leggings by setting("Leggings", false)
-    private val boots by setting("Boots", false)
+    private val player by setting(getTranslationKey("Players"), false)
+    private val armorStands by setting(getTranslationKey("ArmourStands"), true)
+    private val mobs by setting(getTranslationKey("Mobs"), true)
+    private val helmet by setting(getTranslationKey("Helmet"), false)
+    private val chestplate by setting(getTranslationKey("Chestplate"), false)
+    private val leggings by setting(getTranslationKey("Leggings"), false)
+    private val boots by setting(getTranslationKey("Boots"), false)
 
     @JvmStatic
     fun shouldHide(slotIn: EntityEquipmentSlot, entity: EntityLivingBase): Boolean {

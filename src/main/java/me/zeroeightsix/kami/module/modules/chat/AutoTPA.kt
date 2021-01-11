@@ -10,12 +10,10 @@ import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
 object AutoTPA : Module(
-    name = "AutoTPA",
-    description = "Automatically accept or decline /TPAs",
     category = Category.CHAT
 ) {
-    private val friends = setting("AlwaysAcceptFriends", true)
-    private val mode = setting("Response", Mode.DENY)
+    private val friends = setting(getTranslationKey("AlwaysAcceptFriends"), true)
+    private val mode = setting(getTranslationKey("Response"), Mode.DENY)
 
     private enum class Mode {
         ACCEPT, DENY

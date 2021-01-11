@@ -23,10 +23,10 @@ object SetCommand : ClientCommand(
                     executeAsync {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                        val setting = module.fullSettingList.find { it.name.value.equals(settingName, true) }
 
                         if (setting == null) {
-                            sendUnknownSettingMessage(module.name, settingName)
+                            sendUnknownSettingMessage(module.name.value, settingName)
                             return@executeAsync
                         }
 
@@ -56,10 +56,10 @@ object SetCommand : ClientCommand(
                     executeAsync("Set the value of a module's setting") {
                         val module = moduleArg.value
                         val settingName = settingArg.value
-                        val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                        val setting = module.fullSettingList.find { it.name.value.equals(settingName, true) }
 
                         if (setting == null) {
-                            sendUnknownSettingMessage(module.name, settingName)
+                            sendUnknownSettingMessage(module.name.value, settingName)
                             return@executeAsync
                         }
 
@@ -80,10 +80,10 @@ object SetCommand : ClientCommand(
                 executeAsync("Show the value of a setting") {
                     val module = moduleArg.value
                     val settingName = settingArg.value
-                    val setting = module.fullSettingList.find { it.name.equals(settingName, true) }
+                    val setting = module.fullSettingList.find { it.name.value.equals(settingName, true) }
 
                     if (setting == null) {
-                        sendUnknownSettingMessage(module.name, settingName)
+                        sendUnknownSettingMessage(module.name.value, settingName)
                         return@executeAsync
                     }
 
@@ -101,7 +101,7 @@ object SetCommand : ClientCommand(
                 MessageSendHelper.sendChatMessage("List of settings for ${formatValue(module.name)}: " +
                     formatValue(settingList.size)
                 )
-                MessageSendHelper.sendRawChatMessage(settingList.joinToString { it.name })
+                MessageSendHelper.sendRawChatMessage(settingList.joinToString { it.name.value })
             }
         }
     }

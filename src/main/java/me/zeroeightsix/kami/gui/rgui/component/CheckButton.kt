@@ -1,11 +1,12 @@
 package me.zeroeightsix.kami.gui.rgui.component
 
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
 
 class CheckButton(
-    name: String,
+    name: TranslationKey,
     stateIn: Boolean,
-    descriptionIn: String
+    descriptionIn: TranslationKey
 ) : BooleanSlider(name, 0.0, descriptionIn) {
     init {
         value = if (stateIn) 1.0 else 0.0

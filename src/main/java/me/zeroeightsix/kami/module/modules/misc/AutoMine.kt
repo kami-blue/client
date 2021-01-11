@@ -20,7 +20,7 @@ object AutoMine : Module(
     category = Category.MISC
 ) {
 
-    private val manual by setting("Manual", false)
+    private val manual by setting(getTranslationKey("Manual"), false)
     private val iron = setting(getTranslationKey("Iron"), false)
     private val diamond = setting(getTranslationKey("Diamond"), false)
     private val gold = setting(getTranslationKey("Gold"), false)

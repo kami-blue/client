@@ -5,9 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.util.math.Direction
 
 object Direction : LabelHud(
-    name = "Direction",
-    category = Category.PLAYER,
-    description = "Direction of player facing to"
+    category = Category.PLAYER
 ) {
 
     override fun SafeClientEvent.updateText() {

@@ -12,14 +12,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object AutoQMain : Module(
-    name = "AutoQMain",
-    description = "Automatically does '/queue 2b2t-lobby'",
     category = Category.CHAT,
     showOnArray = false
 ) {
-    private val showWarns = setting("ShowWarnings", true)
-    private val dimensionWarning = setting("DimensionWarning", true)
-    private val delay = setting("Delay", 30, 5..120, 5)
+    private val showWarns = setting(getTranslationKey("ShowWarnings"), true)
+    private val dimensionWarning = setting(getTranslationKey("DimensionWarning"), true)
+    private val delay = setting(getTranslationKey("Delay"), 30, 5..120, 5)
 
     private val timer = TickTimer(TimeUnit.SECONDS)
 

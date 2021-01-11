@@ -5,8 +5,6 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 
 object FormatChat : Module(
-    name = "FormatChat",
-    description = "Add color and linebreak support to upstream chat packets",
     category = Category.CHAT,
     modulePriority = 300
 ) {

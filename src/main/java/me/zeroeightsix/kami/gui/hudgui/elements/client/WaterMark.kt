@@ -3,14 +3,13 @@ package me.zeroeightsix.kami.gui.hudgui.elements.client
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.misc.TPS
 import me.zeroeightsix.kami.module.modules.client.Capes
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import org.lwjgl.opengl.GL11.glScalef
 
 object WaterMark : LabelHud(
-    name = "Watermark",
     category = Category.CLIENT,
-    description = "KAMI Blue watermark",
     enabledByDefault = true
 ) {
 

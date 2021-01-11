@@ -11,34 +11,32 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
 object AntiSpam : Module(
-    name = "AntiSpam",
     category = Category.CHAT,
-    description = "Removes spam and advertising from the chat",
     showOnArray = false
 ) {
-    private val mode = setting("Mode", Mode.REPLACE)
-    private val replaceMode = setting("ReplaceMode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
-    private val page = setting("Page", Page.TYPE)
+    private val mode = setting(getTranslationKey("Mode"), Mode.REPLACE)
+    private val replaceMode = setting(getTranslationKey("ReplaceMode"), ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
+    private val page = setting(getTranslationKey("Page"), Page.TYPE)
 
     /* Page One */
-    private val discordLinks = setting("Discord", true, { page.value == Page.TYPE })
-    private val slurs = setting("Slurs", true, { page.value == Page.TYPE })
-    private val swears = setting("Swears", false, { page.value == Page.TYPE })
-    private val automated = setting("Automated", true, { page.value == Page.TYPE })
-    private val ips = setting("ServerIps", true, { page.value == Page.TYPE })
-    private val specialCharEnding = setting("SpecialEnding", true, { page.value == Page.TYPE })
-    private val specialCharBegin = setting("SpecialBegin", true, { page.value == Page.TYPE })
-    private val greenText = setting("GreenText", false, { page.value == Page.TYPE })
-    private val fancyChat = setting("FancyChat", false, { page.value == Page.TYPE })
+    private val discordLinks = setting(getTranslationKey("Discord"), true, { page.value == Page.TYPE })
+    private val slurs = setting(getTranslationKey("Slurs"), true, { page.value == Page.TYPE })
+    private val swears = setting(getTranslationKey("Swears"), false, { page.value == Page.TYPE })
+    private val automated = setting(getTranslationKey("Automated"), true, { page.value == Page.TYPE })
+    private val ips = setting(getTranslationKey("ServerIps"), true, { page.value == Page.TYPE })
+    private val specialCharEnding = setting(getTranslationKey("SpecialEnding"), true, { page.value == Page.TYPE })
+    private val specialCharBegin = setting(getTranslationKey("SpecialBegin"), true, { page.value == Page.TYPE })
+    private val greenText = setting(getTranslationKey("GreenText"), false, { page.value == Page.TYPE })
+    private val fancyChat = setting(getTranslationKey("FancyChat"), false, { page.value == Page.TYPE })
 
     /* Page Two */
-    private val aggressiveFiltering = setting("AggressiveFiltering", true, { page.value == Page.SETTINGS })
-    private val duplicates = setting("Duplicates", true, { page.value == Page.SETTINGS })
-    private val duplicatesTimeout = setting("DuplicatesTimeout", 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
-    private val filterOwn = setting("FilterOwn", false, { page.value == Page.SETTINGS })
-    private val filterDMs = setting("FilterDMs", false, { page.value == Page.SETTINGS })
-    private val filterServer = setting("FilterServer", false, { page.value == Page.SETTINGS })
-    private val showBlocked = setting("ShowBlocked", ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
+    private val aggressiveFiltering = setting(getTranslationKey("AggressiveFiltering"), true, { page.value == Page.SETTINGS })
+    private val duplicates = setting(getTranslationKey("Duplicates"), true, { page.value == Page.SETTINGS })
+    private val duplicatesTimeout = setting(getTranslationKey("DuplicatesTimeout"), 30, 1..600, 5, { duplicates.value && page.value == Page.SETTINGS })
+    private val filterOwn = setting(getTranslationKey("FilterOwn"), false, { page.value == Page.SETTINGS })
+    private val filterDMs = setting(getTranslationKey("FilterDMs"), false, { page.value == Page.SETTINGS })
+    private val filterServer = setting(getTranslationKey("FilterServer"), false, { page.value == Page.SETTINGS })
+    private val showBlocked = setting(getTranslationKey("ShowBlocked"), ShowBlocked.LOG_FILE, { page.value == Page.SETTINGS })
 
     private enum class Mode {
         REPLACE, HIDE
@@ -130,7 +128,7 @@ object AntiSpam : Module(
         for ((key, value) in settingMap) {
             val pattern = findPatterns(value, message)
             if (key.value && pattern != null) {
-                sendResult(key.name, message)
+                sendResult(key.name.value, message)
                 return pattern
             }
         }

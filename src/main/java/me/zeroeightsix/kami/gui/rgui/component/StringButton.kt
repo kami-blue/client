@@ -9,7 +9,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
 
     override fun onClosed() {
         super.onClosed()
-        name = originalName
+        name.value = originalName.value
     }
 
     override fun onDisplayed() {
@@ -20,7 +20,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
         if (!listening) {
-            name = if (mouseState == MouseState.NONE) originalName
+            name.value = if (mouseState == MouseState.NONE) originalName.value
             else setting.value
         }
     }
@@ -28,8 +28,8 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
     override fun onTick() {
         super.onTick()
         if (!listening) {
-            name = if (mouseState != MouseState.NONE) setting.value
-            else originalName
+            name.value = if (mouseState != MouseState.NONE) setting.value
+            else originalName.value
         }
     }
 
@@ -39,7 +39,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
             listening = !listening
 
             value = if (listening) {
-                name = ""
+                name.value = ""
                 0.0
             } else {
                 1.0
@@ -53,16 +53,16 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
         if (keyState) {
             when (keyCode) {
                 Keyboard.KEY_RETURN -> {
-                    setting.setValue(name)
+                    setting.setValue(name.value)
                     listening = false
-                    name = originalName
+                    name.value = originalName.value
                     value = 1.0
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
-                    name = name.substring(0, max(name.length - 1, 0))
+                    name.value = name.value.substring(0, max(name.value.length - 1, 0))
                 }
                 else -> if (typedChar >= ' ') {
-                    name += typedChar
+                    name.value += typedChar
                 }
             }
         }

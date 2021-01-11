@@ -14,12 +14,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object AutoReply : Module(
-    name = "AutoReply",
-    description = "Automatically reply to direct messages",
     category = Category.CHAT
 ) {
-    private val customMessage = setting("CustomMessage", false)
-    private val customText = setting("CustomText", "unchanged", { customMessage.value })
+    private val customMessage = setting(getTranslationKey("CustomMessage"), false)
+    private val customText = setting(getTranslationKey("CustomText"), "unchanged", { customMessage.value })
 
     private val timer = TickTimer(TimeUnit.SECONDS)
 

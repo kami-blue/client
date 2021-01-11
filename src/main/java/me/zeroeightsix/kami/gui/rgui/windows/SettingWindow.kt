@@ -9,10 +9,11 @@ import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
 import org.lwjgl.input.Keyboard
 
 abstract class SettingWindow<T : Any>(
-    name: String,
+    name: TranslationKey,
     val element: T,
     posX: Float,
     posY: Float,

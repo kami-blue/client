@@ -24,37 +24,37 @@ import org.kamiblue.event.listener.listener
 object StorageESP : Module(
     category = Category.RENDER
 ) {
-    private val page by setting("Page", Page.TYPE)
+    private val page by setting(getTranslationKey("Page"), Page.TYPE)
 
     /* Type settings */
-    private val chest by setting("Chest", true, { page == Page.TYPE })
-    private val shulker by setting("Shulker", true, { page == Page.TYPE })
-    private val enderChest by setting("EnderChest", true, { page == Page.TYPE })
-    private val frame by setting("ItemFrame", true, { page == Page.TYPE })
-    private val withShulkerOnly by setting("WithShulkerOnly", true, { page == Page.TYPE && frame })
-    private val furnace by setting("Furnace", false, { page == Page.TYPE })
-    private val dispenser by setting("Dispenser", false, { page == Page.TYPE })
-    private val hopper by setting("Hopper", false, { page == Page.TYPE })
-    private val cart by setting("Minecart", false, { page == Page.TYPE })
+    private val chest by setting(getTranslationKey("Chest"), true, { page == Page.TYPE })
+    private val shulker by setting(getTranslationKey("Shulker"), true, { page == Page.TYPE })
+    private val enderChest by setting(getTranslationKey("EnderChest"), true, { page == Page.TYPE })
+    private val frame by setting(getTranslationKey("ItemFrame"), true, { page == Page.TYPE })
+    private val withShulkerOnly by setting(getTranslationKey("WithShulkerOnly"), true, { page == Page.TYPE && frame })
+    private val furnace by setting(getTranslationKey("Furnace"), false, { page == Page.TYPE })
+    private val dispenser by setting(getTranslationKey("Dispenser"), false, { page == Page.TYPE })
+    private val hopper by setting(getTranslationKey("Hopper"), false, { page == Page.TYPE })
+    private val cart by setting(getTranslationKey("Minecart"), false, { page == Page.TYPE })
 
     /* Color settings */
-    private val colorChest by setting("ChestColor", DyeColors.ORANGE, { page == Page.COLOR })
-    private val colorDispenser by setting("DispenserColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorShulker by setting("ShulkerColor", DyeColors.MAGENTA, { page == Page.COLOR })
-    private val colorEnderChest by setting("EnderChestColor", DyeColors.PURPLE, { page == Page.COLOR })
-    private val colorFurnace by setting("FurnaceColor", DyeColors.LIGHT_GRAY, { page == Page.COLOR })
-    private val colorHopper by setting("HopperColor", DyeColors.GRAY, { page == Page.COLOR })
-    private val colorCart by setting("CartColor", DyeColors.GREEN, { page == Page.COLOR })
-    private val colorFrame by setting("FrameColor", DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorChest by setting(getTranslationKey("ChestColor"), DyeColors.ORANGE, { page == Page.COLOR })
+    private val colorDispenser by setting(getTranslationKey("DispenserColor"), DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorShulker by setting(getTranslationKey("ShulkerColor"), DyeColors.MAGENTA, { page == Page.COLOR })
+    private val colorEnderChest by setting(getTranslationKey("EnderChestColor"), DyeColors.PURPLE, { page == Page.COLOR })
+    private val colorFurnace by setting(getTranslationKey("FurnaceColor"), DyeColors.LIGHT_GRAY, { page == Page.COLOR })
+    private val colorHopper by setting(getTranslationKey("HopperColor"), DyeColors.GRAY, { page == Page.COLOR })
+    private val colorCart by setting(getTranslationKey("CartColor"), DyeColors.GREEN, { page == Page.COLOR })
+    private val colorFrame by setting(getTranslationKey("FrameColor"), DyeColors.ORANGE, { page == Page.COLOR })
 
     /* Render settings */
-    private val filled by setting("Filled", true, { page == Page.RENDER })
-    private val outline by setting("Outline", true, { page == Page.RENDER })
-    private val tracer by setting("Tracer", false, { page == Page.RENDER })
-    private val aFilled by setting("FilledAlpha", 31, 0..255, 1, { page == Page.RENDER && filled })
-    private val aOutline by setting("OutlineAlpha", 127, 0..255, 1, { page == Page.RENDER && outline })
-    private val aTracer by setting("TracerAlpha", 200, 0..255, 1, { page == Page.RENDER && tracer })
-    private val thickness by setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
+    private val filled by setting(getTranslationKey("Filled"), true, { page == Page.RENDER })
+    private val outline by setting(getTranslationKey("Outline"), true, { page == Page.RENDER })
+    private val tracer by setting(getTranslationKey("Tracer"), false, { page == Page.RENDER })
+    private val aFilled by setting(getTranslationKey("FilledAlpha"), 31, 0..255, 1, { page == Page.RENDER && filled })
+    private val aOutline by setting(getTranslationKey("OutlineAlpha"), 127, 0..255, 1, { page == Page.RENDER && outline })
+    private val aTracer by setting(getTranslationKey("TracerAlpha"), 200, 0..255, 1, { page == Page.RENDER && tracer })
+    private val thickness by setting(getTranslationKey("LineThickness"), 2.0f, 0.25f..5.0f, 0.25f, { page == Page.RENDER })
 
     private enum class Page {
         TYPE, COLOR, RENDER

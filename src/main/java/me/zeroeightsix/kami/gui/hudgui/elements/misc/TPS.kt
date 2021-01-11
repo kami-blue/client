@@ -6,9 +6,7 @@ import me.zeroeightsix.kami.util.TpsCalculator
 import org.kamiblue.commons.utils.MathUtils
 
 object TPS : LabelHud(
-    name = "TPS",
-    category = Category.MISC,
-    description = "Server TPS"
+    category = Category.MISC
 ) {
 
     private val tpsList = FloatArray(100) { 20.0f }

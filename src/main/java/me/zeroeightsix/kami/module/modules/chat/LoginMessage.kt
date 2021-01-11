@@ -15,13 +15,11 @@ import java.io.File
 import java.io.FileReader
 
 object LoginMessage : Module(
-    name = "LoginMessage",
-    description = "Sends a given message to public chat on login.",
     category = Category.CHAT,
     showOnArray = false,
     modulePriority = 150
 ) {
-    private val sendAfterMoving by setting("SendAfterMoving", false)
+    private val sendAfterMoving by setting(getTranslationKey("SendAfterMoving"), false)
 
     private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
     private var loginMessage: String? = null

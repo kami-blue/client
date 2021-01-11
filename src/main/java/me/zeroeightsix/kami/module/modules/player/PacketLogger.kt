@@ -21,7 +21,7 @@ import java.util.*
 object PacketLogger : Module(
     category = Category.PLAYER
 ) {
-    private val append by setting("Append", false)
+    private val append by setting(getTranslationKey("Append"), false)
     private val clear = setting(getTranslationKey("Clear"), false)
 
     private val file = File("${KamiMod.DIRECTORY}packet_logger.txt")

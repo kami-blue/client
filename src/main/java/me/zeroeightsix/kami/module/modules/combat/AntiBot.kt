@@ -51,6 +51,8 @@ object AntiBot : Module(
 
     fun isBot(entity: Entity) = isEnabled && entity is EntityPlayer && botSet.contains(entity)
 
+    private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
+        || entity.name == FakePlayer.playerName
         || tabList.value && connection.getPlayerInfo(entity.name) == null
         || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
         || hp.value && entity.health !in 0f..20f

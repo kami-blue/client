@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
 import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.lwjgl.input.Mouse
@@ -16,7 +17,7 @@ import java.util.*
 import kotlin.math.max
 
 open class ListWindow(
-    name: String,
+    name: TranslationKey,
     posX: Float,
     posY: Float,
     width: Float,

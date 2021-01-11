@@ -5,11 +5,13 @@ import me.zeroeightsix.kami.util.graphics.AnimationUtils
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import kotlin.math.max
 import kotlin.math.min
 
 open class WindowComponent(
-    name: String,
+    name: TranslationKey = TranslationKeyBlank(),
     posX: Float,
     posY: Float,
     width: Float,
@@ -18,7 +20,7 @@ open class WindowComponent(
 ) : InteractiveComponent(name, posX, posY, width, height, settingGroup) {
 
     // Basic info
-    private val minimizedSetting = setting("Minimized", false,
+    private val minimizedSetting = setting(getTranslationKey("Minimized"), false,
         { false }, { _, input -> System.currentTimeMillis() - minimizedTime > 300L && input }
     )
     var minimized by minimizedSetting

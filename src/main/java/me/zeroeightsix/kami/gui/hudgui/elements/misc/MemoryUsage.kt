@@ -2,16 +2,15 @@ package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 
 object MemoryUsage : LabelHud(
-    name = "MemoryUsage",
-    category = Category.MISC,
-    description = "Display the used, allocated and max memory"
+    category = Category.MISC
 ) {
 
-    private val showAllocated = setting("ShowAllocated", false)
-    private val showMax = setting("ShowMax", false)
+    private val showAllocated = setting(getTranslationKey("ShowAllocated"), false)
+    private val showMax = setting(getTranslationKey("ShowMax"), false)
 
     override fun SafeClientEvent.updateText() {
         val memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L

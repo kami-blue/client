@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 object AntiFog : Module(
     category = Category.RENDER
 ) {
-    private val mode by setting("Mode", VisionMode.NO_FOG)
+    private val mode by setting(getTranslationKey("Mode"), VisionMode.NO_FOG)
 
     private enum class VisionMode {
         NO_FOG, AIR

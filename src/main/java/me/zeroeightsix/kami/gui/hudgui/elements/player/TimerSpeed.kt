@@ -7,9 +7,7 @@ import me.zeroeightsix.kami.mixin.extension.timer
 import org.kamiblue.commons.utils.MathUtils
 
 object TimerSpeed : LabelHud(
-    name = "TimerSpeed",
-    category = Category.PLAYER,
-    description = "Client side timer speed"
+    category = Category.PLAYER
 ) {
 
     override fun SafeClientEvent.updateText() {

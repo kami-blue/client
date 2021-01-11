@@ -2,11 +2,10 @@ package me.zeroeightsix.kami.gui.hudgui.elements.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CrystalDamage
 
 object ServerBrand : LabelHud(
-    name = "ServerBrand",
-    category = Category.MISC,
-    description = "Brand / type of the server"
+    category = Category.MISC
 ) {
 
     override fun SafeClientEvent.updateText() {

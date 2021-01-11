@@ -10,8 +10,8 @@ import net.minecraft.entity.player.EnumPlayerModelParts
 object SkinFlicker : Module(
     category = Category.MISC
 ) {
-    private val mode by setting("Mode", FlickerMode.HORIZONTAL)
-    private val delay by setting("Delay(ms)", 10, 0..500, 10)
+    private val mode by setting(getTranslationKey("Mode"), FlickerMode.HORIZONTAL)
+    private val delay by setting(getTranslationKey("Delay(ms)"), 10, 0..500, 10)
 
     private enum class FlickerMode {
         HORIZONTAL, VERTICAL, RANDOM

@@ -1,9 +1,11 @@
 package me.zeroeightsix.kami.gui.rgui
 
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 
 open class InteractiveComponent(
-    name: String,
+    name: TranslationKey = TranslationKeyBlank(),
     posX: Float,
     posY: Float,
     width: Float,

@@ -25,19 +25,17 @@ import kotlin.collections.HashMap
 import kotlin.math.max
 
 object ModuleList : HudElement(
-    name = "ModuleList",
     category = Category.CLIENT,
-    description = "List of enabled modules",
     enabledByDefault = true
 ) {
 
-    private val sortingMode by setting("SortingMode", SortingMode.LENGTH)
-    private val showInvisible by setting("ShowInvisible", false)
-    private val rainbow = setting("Rainbow", true)
-    private val rainbowLength = setting("RainbowLength", 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
-    private val indexedHue = setting("IndexedHue", 0.5f, 0.0f..1.0f, 0.05f)
-    private val primary = setting("PrimaryColor", ColorHolder(155, 144, 255), false)
-    private val secondary = setting("SecondaryColor", ColorHolder(255, 255, 255), false)
+    private val sortingMode by setting(getTranslationKey("SortingMode"), SortingMode.LENGTH)
+    private val showInvisible by setting(getTranslationKey("ShowInvisible"), false)
+    private val rainbow = setting(getTranslationKey("Rainbow"), true)
+    private val rainbowLength = setting(getTranslationKey("RainbowLength"), 10.0f, 1.0f..20.0f, 0.5f, { rainbow.value })
+    private val indexedHue = setting(getTranslationKey("IndexedHue"), 0.5f, 0.0f..1.0f, 0.05f)
+    private val primary = setting(getTranslationKey("PrimaryColor"), ColorHolder(155, 144, 255), false)
+    private val secondary = setting(getTranslationKey("SecondaryColor"), ColorHolder(255, 255, 255), false)
 
     @Suppress("UNUSED")
     private enum class SortingMode(
@@ -45,7 +43,7 @@ object ModuleList : HudElement(
         val comparator: Comparator<Module>
     ) : DisplayEnum {
         LENGTH("Length", compareByDescending { it.textLine.getWidth() }),
-        ALPHABET("Alphabet", compareBy { it.name }),
+        ALPHABET("Alphabet", compareBy { it.name.value }),
         CATEGORY("Category", compareBy { it.category.ordinal })
     }
 
@@ -132,7 +130,7 @@ object ModuleList : HudElement(
                 val color = ColorConverter.hexToRgb(Color.HSBtoRGB(hue, primaryHsb[1], primaryHsb[2]))
 
                 TextComponent.TextLine(" ").run {
-                    add(TextComponent.TextElement(module.name, color))
+                    add(TextComponent.TextElement(module.name.value, color))
                     module.getHudInfo().let {
                         if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
                     }
@@ -157,7 +155,7 @@ object ModuleList : HudElement(
 
     private val Module.newTextLine
         get() = TextComponent.TextLine(" ").apply {
-            add(TextComponent.TextElement(name, primary.value))
+            add(TextComponent.TextElement(name.value, primary.value))
             getHudInfo().let {
                 if (it.isNotBlank()) add(TextComponent.TextElement(it, secondary.value))
             }

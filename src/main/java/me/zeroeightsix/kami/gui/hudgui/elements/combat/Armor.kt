@@ -19,13 +19,11 @@ import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
 object Armor : HudElement(
-    name = "Armor",
-    category = Category.COMBAT,
-    description = "Show the dura of armor and the count of them"
+    category = Category.COMBAT
 ) {
 
-    private val classic = setting("Classic", false)
-    private val armorCount = setting("ArmorCount", true)
+    private val classic = setting(getTranslationKey("Classic"), false)
+    private val armorCount = setting(getTranslationKey("ArmorCount"), true)
 
     override val hudWidth: Float
         get() = if (classic.value) {

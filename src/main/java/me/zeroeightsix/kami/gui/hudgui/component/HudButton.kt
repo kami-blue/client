@@ -4,8 +4,9 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.gui.rgui.component.BooleanSlider
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKeySetText
 
-class HudButton(val hudElement: HudElement) : BooleanSlider(hudElement.name, 0.0, hudElement.description) {
+class HudButton(val hudElement: HudElement) : BooleanSlider(TranslationKeySetText(hudElement.name.value), 0.0, hudElement.description) {
     init {
         if (hudElement.visible) value = 1.0
     }

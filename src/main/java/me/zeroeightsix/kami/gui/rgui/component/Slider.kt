@@ -12,13 +12,15 @@ import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.TextComponent
 import me.zeroeightsix.kami.util.math.Vec2d
 import me.zeroeightsix.kami.util.math.Vec2f
+import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import org.lwjgl.opengl.GL11.*
 
 open class Slider(
-    name: String,
+    name: TranslationKey,
     valueIn: Double,
-    private val descriptionIn: String = ""
-) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
+    private val descriptionIn: TranslationKey = TranslationKeyBlank()
+) : InteractiveComponent( name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {
             if (value != field) {
@@ -55,12 +57,12 @@ open class Slider(
 
     private fun setupDescription() {
         description.clear()
-        if (descriptionIn.isNotBlank()) {
+        if (descriptionIn.value.isNotBlank()) {
             val spaceWidth = FontRenderAdapter.getStringWidth(" ")
             var lineWidth = -spaceWidth
             var lineString = ""
 
-            for (string in descriptionIn.split(' ')) {
+            for (string in descriptionIn.value.split(' ')) {
                 lineWidth += FontRenderAdapter.getStringWidth(string) + spaceWidth
                 if (lineWidth > 169) {
                     description.addLine(lineString.trimEnd())
@@ -103,12 +105,12 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        FontRenderAdapter.drawString(name, 2f, 1.0f, color = GuiColors.text)
+        FontRenderAdapter.drawString(name.value, 2f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()
     }
 
     override fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        if (Tooltips.isDisabled || descriptionIn.isBlank()) return
+        if (Tooltips.isDisabled || descriptionIn.value.isBlank()) return
 
         var deltaTime = AnimationUtils.toDeltaTimeFloat(lastStateUpdateTime)
 

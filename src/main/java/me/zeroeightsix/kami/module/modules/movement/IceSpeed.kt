@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object IceSpeed : Module(
     category = Category.MOVEMENT
 ) {
-    private val slipperiness by setting("Slipperiness", 0.4f, 0.1f..1.0f, 0.01f)
+    private val slipperiness by setting(getTranslationKey("Slipperiness"), 0.4f, 0.1f..1.0f, 0.01f)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

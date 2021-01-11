@@ -19,15 +19,13 @@ import java.util.*
 import kotlin.random.Random
 
 object Spammer : Module(
-    name = "Spammer",
-    description = "Spams text from a file on a set delay into the chat",
     category = Category.CHAT,
     modulePriority = 100
 ) {
-    private val modeSetting = setting("Order", Mode.RANDOM_ORDER)
-    private val delay = setting("Delay(s)", 10, 1..100, 1)
-    private val loadRemote = setting("LoadFromURL", false)
-    private val remoteURL = setting("RemoteURL", "Unchanged")
+    private val modeSetting = setting(getTranslationKey("Order"), Mode.RANDOM_ORDER)
+    private val delay = setting(getTranslationKey("Delay(s)"), 10, 1..100, 1)
+    private val loadRemote = setting(getTranslationKey("LoadFromURL"), false)
+    private val remoteURL = setting(getTranslationKey("RemoteURL"), "Unchanged")
 
     private val file = File(KamiMod.DIRECTORY + "spammer.txt")
     private val spammer = Collections.synchronizedList(ArrayList<String>())

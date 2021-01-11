@@ -2,18 +2,17 @@ package me.zeroeightsix.kami.gui.hudgui.elements.world
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
+import me.zeroeightsix.kami.gui.hudgui.elements.combat.CombatItemCount
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.kamiblue.commons.interfaces.DisplayEnum
 
 object WorldTime : LabelHud(
-    name = "WorldTime",
-    category = Category.WORLD,
-    description = "Time in the Minecraft world"
+    category = Category.WORLD
 ) {
 
-    private val displayMode by setting("DisplayMode", DisplayMode.H24)
-    private val fromMidNight by setting("FromMidNight", true, { displayMode == DisplayMode.REAL_TIME || displayMode == DisplayMode.TICKS })
+    private val displayMode by setting(getTranslationKey("DisplayMode"), DisplayMode.H24)
+    private val fromMidNight by setting(getTranslationKey("FromMidNight"), true, { displayMode == DisplayMode.REAL_TIME || displayMode == DisplayMode.TICKS })
 
     private enum class DisplayMode(override val displayName: String) : DisplayEnum {
         H12("12-Hours"),

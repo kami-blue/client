@@ -13,9 +13,9 @@ import org.lwjgl.input.Keyboard
 object ModuleManager : AsyncLoader<List<Class<out Module>>> {
     override var deferred: Deferred<List<Class<out Module>>>? = null
 
-    private val moduleSet = AliasSet<Module>()
+    private val moduleSet = ModuleSet()
     val modules by AsyncCachedValue(5L, TimeUnit.SECONDS) {
-        moduleSet.distinct().sortedBy { it.name }
+        moduleSet.distinct().sortedBy { it.name.defaultValue }
     }
 
     override fun preLoad0(): List<Class<out Module>> {

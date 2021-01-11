@@ -12,20 +12,18 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
 object CombatItemCount : LabelHud(
-    name = "CombatItemCount",
-    category = HudElement.Category.COMBAT,
-    description = "Counts combat items like gapples, crystal, etc"
+    category = HudElement.Category.COMBAT
 ) {
 
-    private val arrow = setting("Arrow", true)
-    private val crystal = setting("Crystal", true)
-    private val gapple = setting("Gapple", true)
-    private val totem = setting("Totem", true)
-    private val xpBottle = setting("XpBottle", true)
-    private val pearl = setting("Pearl", false)
-    private val chorusFruit = setting("ChorusFruit", false)
-    private val showIcon by setting("ShowIcon", true)
-    private val horizontal by setting("Horizontal", true, { showIcon })
+    private val arrow = setting(getTranslationKey("Arrow"), true)
+    private val crystal = setting(getTranslationKey("Crystal"), true)
+    private val gapple = setting(getTranslationKey("Gapple"), true)
+    private val totem = setting(getTranslationKey("Totem"), true)
+    private val xpBottle = setting(getTranslationKey("XpBottle"), true)
+    private val pearl = setting(getTranslationKey("Pearl"), false)
+    private val chorusFruit = setting(getTranslationKey("ChorusFruit"), false)
+    private val showIcon by setting(getTranslationKey("ShowIcon"), true)
+    private val horizontal by setting(getTranslationKey("Horizontal"), true, { showIcon })
 
     private val itemSettings = linkedMapOf(
         arrow to arrayOf(Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW),
@@ -71,7 +69,7 @@ object CombatItemCount : LabelHud(
             if (showIcon) {
                 itemStacks[index].count = count + 1 // Weird way to get around Minecraft item count check
             } else if (count > -1) {
-                displayText.add(entry.key.name, primaryColor)
+                displayText.add(entry.key.name.value, primaryColor)
                 displayText.addLine("x$count", secondaryColor)
             }
         }

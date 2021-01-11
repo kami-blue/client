@@ -18,23 +18,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
 object DiscordNotifs : Module(
-    name = "DiscordNotifs",
     category = Category.CHAT,
-    description = "Sends your chat to a set Discord channel"
 ) {
-    private val timeout = setting("Timeout", true)
-    private val timeoutTime = setting("Seconds", 10, 0..120, 5, { timeout.value })
-    private val time = setting("Timestamp", true)
-    private val importantPings = setting("ImportantPings", false)
-    private val disconnect = setting("DisconnectMsgs", true)
-    private val all = setting("AllMessages", false)
-    private val direct = setting("DMs", true, { !all.value })
-    private val queue = setting("QueuePosition", true, { !all.value })
-    private val restart = setting("RestartMsgs", true, { !all.value })
+    private val timeout = setting(getTranslationKey("Timeout"), true)
+    private val timeoutTime = setting(getTranslationKey("Seconds"), 10, 0..120, 5, { timeout.value })
+    private val time = setting(getTranslationKey("Timestamp"), true)
+    private val importantPings = setting(getTranslationKey("ImportantPings"), false)
+    private val disconnect = setting(getTranslationKey("DisconnectMsgs"), true)
+    private val all = setting(getTranslationKey("AllMessages"), false)
+    private val direct = setting(getTranslationKey("DMs"), true, { !all.value })
+    private val queue = setting(getTranslationKey("QueuePosition"), true, { !all.value })
+    private val restart = setting(getTranslationKey("RestartMsgs"), true, { !all.value })
 
-    val url = setting("URL", "unchanged")
-    val pingID = setting("PingID", "unchanged")
-    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png")
+    val url = setting(getTranslationKey("URL"), "unchanged")
+    val pingID = setting(getTranslationKey("PingID"), "unchanged")
+    val avatar = setting(getTranslationKey("Avatar"), KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png")
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TickTimer(TimeUnit.SECONDS)
