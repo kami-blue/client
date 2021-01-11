@@ -17,7 +17,6 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
-import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.util.EnumFacing
@@ -81,7 +80,7 @@ object CrystalBasePlace : Module(
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
-                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.slotNumber)
+                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
                     player.swingArm(EnumHand.MAIN_HAND)
                     connection.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
@@ -108,7 +107,7 @@ object CrystalBasePlace : Module(
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
-    private fun SafeClientEvent.getObby(): Slot? {
+    private fun SafeClientEvent.getObby(): HotbarSlot? {
         val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
 
         if (slot == null) { // Obsidian check

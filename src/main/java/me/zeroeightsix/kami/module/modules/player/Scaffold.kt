@@ -139,8 +139,8 @@ object Scaffold : Module(
 
     private fun SafeClientEvent.swapAndPlace(pos: BlockPos, side: EnumFacing) {
         getBlockSlot()?.let { slot ->
-            if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot)
-            else InventoryUtils.swapSlot(slot)
+            if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
+            else swapToSlot(slot)
 
             inactiveTicks = 0
 
@@ -164,14 +164,9 @@ object Scaffold : Module(
         }
     }
 
-    private fun SafeClientEvent.getBlockSlot(): Int? {
+    private fun SafeClientEvent.getBlockSlot(): HotbarSlot? {
         playerController.updateController()
-        for (i in 0..8) {
-            val itemStack = player.inventory.mainInventory[i]
-            if (itemStack.isEmpty || itemStack.item !is ItemBlock) continue
-            return i
-        }
-        return null
+        return player.hotbarSlots.firstItem<ItemBlock, HotbarSlot>()
     }
 
 }

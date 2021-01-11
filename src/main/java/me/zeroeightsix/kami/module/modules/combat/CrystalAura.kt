@@ -273,7 +273,7 @@ object CrystalAura : Module(
             getHand()?.let { hand ->
                 if (autoSwap && getHand() == null) {
                     player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
-                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it.slotNumber)
+                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it.hotbarSlot)
                         else swapToSlot(it)
                     }
                 }

@@ -3,13 +3,9 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
-import me.zeroeightsix.kami.util.TickTimer
-import me.zeroeightsix.kami.util.moveToSlot
-import me.zeroeightsix.kami.util.quickMoveSlot
+import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
-import me.zeroeightsix.kami.util.throwAllInSlot
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
@@ -92,13 +88,13 @@ object ChestStealer : Module(
     private fun SafeClientEvent.steal(slot: Int?): Boolean {
         if (slot == null) return false
         val size = getContainerSlotSize()
-        val slotTo = getEmptySlotContainer(size, size + 35) ?: return false
+        val slotTo = player.openContainer.getSlots(size until size + 36).firstEmpty() ?: return false
         val windowID = player.openContainer.windowId
 
         if (timer.tick(delay.value.toLong())) {
             when (movingMode.value) {
                 MovingMode.QUICK_MOVE -> quickMoveSlot(windowID, slot)
-                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo)
+                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo.slotNumber)
                 MovingMode.THROW -> throwAllInSlot(windowID, slot)
             }
         }
