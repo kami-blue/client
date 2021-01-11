@@ -382,7 +382,7 @@ object AutoObsidian : Module(
             swapToSlot(hotbarSlot)
         } else {
             if (!swapToItemOrMove<ItemShulkerBox>()) {
-                MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
+                MessageSendHelper.sendChatMessage("$chatName No shulker box was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 disable()
             }
@@ -396,8 +396,6 @@ object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.placeEnderChest(pos: BlockPos) {
-        val hotbarSlot = player.hotbarSlots.firstBlock(Blocks.ENDER_CHEST)
-
         if (!swapToBlock(Blocks.ENDER_CHEST)) {
             if (!swapToBlockOrMove(Blocks.ENDER_CHEST)) {
                 MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
