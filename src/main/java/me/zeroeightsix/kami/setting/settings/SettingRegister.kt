@@ -86,7 +86,7 @@ interface SettingRegister<T : Any> {
         description: String = ""
     ) = setting(EnumSetting(name, value, visibility, consumer, description))
 
-    /** Boolean Setting */
+    /** String Setting */
     fun T.setting(
         name: String,
         value: String,
