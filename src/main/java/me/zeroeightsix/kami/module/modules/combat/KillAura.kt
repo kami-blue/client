@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
-import me.zeroeightsix.kami.util.isWeapon
+import me.zeroeightsix.kami.util.items.isWeapon
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity

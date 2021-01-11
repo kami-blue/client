@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.safeListener

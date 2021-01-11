@@ -4,7 +4,7 @@ import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.mixin.extension.attackDamage
-import me.zeroeightsix.kami.util.swapToSlot
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper

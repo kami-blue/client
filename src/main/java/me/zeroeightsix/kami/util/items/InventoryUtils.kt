@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.items
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe

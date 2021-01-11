@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.util.items.id
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft

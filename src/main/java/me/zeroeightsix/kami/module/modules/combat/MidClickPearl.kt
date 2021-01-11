@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.firstItem
-import me.zeroeightsix.kami.util.hotbarSlots
-import me.zeroeightsix.kami.util.swapToSlot
+import me.zeroeightsix.kami.util.items.firstItem
+import me.zeroeightsix.kami.util.items.hotbarSlots
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items

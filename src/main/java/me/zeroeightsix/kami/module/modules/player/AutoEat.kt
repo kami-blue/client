@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.BaritoneUtils.pause
 import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.combat.CombatUtils
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items

@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
-import me.zeroeightsix.kami.util.swapToItem
+import me.zeroeightsix.kami.util.items.swapToItem
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener

@@ -2,15 +2,15 @@ package me.zeroeightsix.kami.gui.hudgui.elements.combat
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.allSlots
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.countItem
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
+import me.zeroeightsix.kami.util.items.allSlots
+import me.zeroeightsix.kami.util.items.countItem
 import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items

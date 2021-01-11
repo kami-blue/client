@@ -14,6 +14,10 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
+import me.zeroeightsix.kami.util.items.HotbarSlot
+import me.zeroeightsix.kami.util.items.firstItem
+import me.zeroeightsix.kami.util.items.hotbarSlots
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos

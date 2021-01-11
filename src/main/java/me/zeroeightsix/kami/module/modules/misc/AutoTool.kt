@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
-import me.zeroeightsix.kami.util.swapToSlot
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.EnchantmentHelper

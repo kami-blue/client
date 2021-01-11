@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Slot

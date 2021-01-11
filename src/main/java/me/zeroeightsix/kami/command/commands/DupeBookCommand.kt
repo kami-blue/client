@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.event.SafeExecuteEvent
-import me.zeroeightsix.kami.util.itemPayload
+import me.zeroeightsix.kami.util.items.itemPayload
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWritableBook
 import net.minecraft.nbt.NBTTagList
