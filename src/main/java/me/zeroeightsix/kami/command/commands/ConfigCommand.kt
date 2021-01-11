@@ -8,15 +8,17 @@ import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.defaultScope
+import org.kamiblue.command.IExecuteEvent
 
 object ConfigCommand : ClientCommand(
     name = "config",
     alias = arrayOf("cfg"),
     description = "Change config saving path or manually save and reload your config"
 ) {
-    private var lastName = ""
     private val confirmTimer = TickTimer(TimeUnit.SECONDS)
+    private var lastArgs = emptyArray<String>()
 
     init {
         literal("all") {
@@ -74,7 +76,7 @@ object ConfigCommand : ClientCommand(
                 string("name") { nameArg ->
                     execute("Copy current preset to specific preset") {
                         val name = nameArg.value
-                        if (!confirm(name)) return@execute
+                        if (!confirm()) return@execute
 
                         configTypeArg.value.copyPreset(name)
                     }
@@ -85,7 +87,7 @@ object ConfigCommand : ClientCommand(
                 string("name") { nameArg ->
                     execute("Delete specific preset") {
                         val name = nameArg.value
-                        if (!confirm(name)) return@execute
+                        if (!confirm()) return@execute
 
                         configTypeArg.value.deletePreset(name)
                     }
@@ -117,7 +119,7 @@ object ConfigCommand : ClientCommand(
                             return@executeSafe
                         }
 
-                        if (!confirm(ip)) return@executeSafe
+                        if (!confirm()) return@executeSafe
 
                         configType.deleteServerPreset(ip)
                     }
@@ -147,13 +149,16 @@ object ConfigCommand : ClientCommand(
         }
     }
 
-    private fun confirm(name: String): Boolean {
-        return if (name != lastName || confirmTimer.tick(8L, false)) {
-            MessageSendHelper.sendWarningMessage("This can't be undone, run this command again to confirm!")
-            lastName = name
+    private fun IExecuteEvent.confirm(): Boolean {
+        return if (!args.contentEquals(lastArgs) || confirmTimer.tick(8L, false)) {
+            MessageSendHelper.sendWarningMessage("This can't be undone, run " +
+                "${formatValue("${prefix}${args.joinToString(" ")}")} to confirm!")
+
             confirmTimer.reset()
+            lastArgs = args
             false
         } else {
+            lastArgs = emptyArray()
             true
         }
     }
