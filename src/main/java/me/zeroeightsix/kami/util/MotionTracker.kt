@@ -9,6 +9,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
+import kotlin.collections.ArrayDeque
 
 /**
  * Tracking the motion of an Entity tick by tick
@@ -21,7 +22,7 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
                 field = value
             }
         }
-    private val motionLog = LinkedList<Vec3d>()
+    private val motionLog = ArrayDeque<Vec3d>()
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var motion = Vec3d(0.0, 0.0, 0.0)
     private val lockObject = Any()
@@ -32,7 +33,7 @@ class MotionTracker(targetIn: Entity?, private val trackLength: Int = 20) {
             synchronized(lockObject) {
                 target?.let { target ->
                     motionLog.add(calcActualMotion(target))
-                    while (motionLog.size > trackLength) motionLog.pollFirst()
+                    while (motionLog.size > trackLength) motionLog.removeFirstOrNull()
                     prevMotion = motion
                     motion = calcAverageMotion()
                 }

@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.gui.hudgui.elements.combat
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
@@ -10,6 +9,8 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
+import me.zeroeightsix.kami.util.items.allSlots
+import me.zeroeightsix.kami.util.items.countItem
 import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
@@ -26,6 +27,7 @@ object Armor : HudElement(
 
     private val classic = setting("Classic", false)
     private val armorCount = setting("ArmorCount", true)
+    private val countElytras = setting("CountElytras", false, { armorCount.value })
 
     override val hudWidth: Float
         get() = if (classic.value) {
@@ -43,7 +45,6 @@ object Armor : HudElement(
 
     private var stringWidth = 120.0f
 
-    private val armorItems = arrayOf(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS)
     private val armorCounts = IntArray(4)
     private val duraColorGradient = ColorGradient(
         0f to ColorHolder(180, 20, 20),
@@ -55,9 +56,15 @@ object Armor : HudElement(
         safeAsyncListener<TickEvent.ClientTickEvent> { event ->
             if (event.phase != TickEvent.Phase.END) return@safeAsyncListener
 
-            for ((index, item) in armorItems.withIndex()) {
-                armorCounts[index] = InventoryUtils.countItemAll(item)
-            }
+            val slots = player.allSlots
+
+            armorCounts[0] = slots.countItem(Items.DIAMOND_HELMET)
+            armorCounts[1] = slots.countItem(
+                if (countElytras.value && player.inventory.getStackInSlot(38).item == Items.ELYTRA) Items.ELYTRA
+                else Items.DIAMOND_CHESTPLATE
+            )
+            armorCounts[2] = slots.countItem(Items.DIAMOND_LEGGINGS)
+            armorCounts[3] = slots.countItem(Items.DIAMOND_BOOTS)
         }
     }
 

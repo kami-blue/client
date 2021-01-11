@@ -7,11 +7,11 @@ import org.kamiblue.commons.extension.next
 import java.util.*
 
 class EnumSetting<T : Enum<T>>(
-        name: String,
-        value: T,
-        visibility: () -> Boolean = { true },
-        consumer: (prev: T, input: T) -> T = { _, input -> input },
-        description: String = ""
+    name: String,
+    value: T,
+    visibility: () -> Boolean = { true },
+    consumer: (prev: T, input: T) -> T = { _, input -> input },
+    description: String = ""
 ) : MutableSetting<T>(name, value, visibility, consumer, description) {
 
     val enumClass: Class<T> = value.declaringClass

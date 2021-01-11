@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
+import kotlin.collections.ArrayDeque
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -29,8 +30,8 @@ internal object ViewLock : Module(
 
     private var yawSnap = 0
     private var pitchSnap = 0
-    private val deltaXQueue = LinkedList<Pair<Float, Long>>()
-    private val deltaYQueue = LinkedList<Pair<Float, Long>>()
+    private val deltaXQueue = ArrayDeque<Pair<Float, Long>>()
+    private val deltaYQueue = ArrayDeque<Pair<Float, Long>>()
     private var pitchSliceAngle = 1.0f
     private var yawSliceAngle = 1.0f
 
@@ -66,7 +67,7 @@ internal object ViewLock : Module(
         )
     }
 
-    private fun handleDelta(delta: Float, list: LinkedList<Pair<Float, Long>>, slice: Float): Int {
+    private fun handleDelta(delta: Float, list: ArrayDeque<Pair<Float, Long>>, slice: Float): Int {
         val currentTime = System.currentTimeMillis()
         list.add(Pair(delta * 0.15f, currentTime))
 
@@ -75,8 +76,8 @@ internal object ViewLock : Module(
             list.clear()
             sign(sum).toInt()
         } else {
-            while (list.peek().second < currentTime - 500) {
-                list.remove()
+            while (list.first().second < currentTime - 500) {
+                list.removeFirstOrNull()
             }
             0
         }

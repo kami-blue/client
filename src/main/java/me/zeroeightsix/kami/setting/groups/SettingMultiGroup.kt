@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 
 open class SettingMultiGroup(
-        name: String
+    name: String
 ) : SettingGroup(name) {
 
     protected val subGroup = LinkedHashMap<String, SettingMultiGroup>()

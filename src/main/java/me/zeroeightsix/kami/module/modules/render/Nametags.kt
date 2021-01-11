@@ -9,8 +9,8 @@ import me.zeroeightsix.kami.util.color.ColorGradient
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.graphics.font.*
+import me.zeroeightsix.kami.util.items.originalName
 import me.zeroeightsix.kami.util.math.Vec2d
-import me.zeroeightsix.kami.util.originalName
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.renderer.RenderHelper

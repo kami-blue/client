@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.module.modules.player.InventoryManager
-import me.zeroeightsix.kami.util.block
-import me.zeroeightsix.kami.util.id
+import me.zeroeightsix.kami.util.items.block
+import me.zeroeightsix.kami.util.items.id
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.block.BlockAir
 

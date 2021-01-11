@@ -5,11 +5,11 @@ import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.setting.settings.MutableSetting
 
 class StringSetting(
-        name: String,
-        value: String,
-        visibility: () -> Boolean = { true },
-        consumer: (prev: String, input: String) -> String = { _, input -> input },
-        description: String = ""
+    name: String,
+    value: String,
+    visibility: () -> Boolean = { true },
+    consumer: (prev: String, input: String) -> String = { _, input -> input },
+    description: String = ""
 ) : MutableSetting<String>(name, value, visibility, consumer, description) {
 
     override fun setValue(valueIn: String) {

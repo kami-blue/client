@@ -7,12 +7,11 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
-import java.util.*
 
 object GlStateUtils {
     private val mc = Wrapper.minecraft
     private var lastScissor: Quad<Int, Int, Int, Int>? = null
-    private val scissorList = LinkedList<Quad<Int, Int, Int, Int>>()
+    private val scissorList = ArrayList<Quad<Int, Int, Int, Int>>()
 
     fun scissor(x: Int, y: Int, width: Int, height: Int) {
         lastScissor = Quad(x, y, width, height)
@@ -20,11 +19,15 @@ object GlStateUtils {
     }
 
     fun pushScissor() {
-        lastScissor?.let { scissorList.add(it) }
+        lastScissor?.let {
+            scissorList.add(it)
+        }
     }
 
     fun popScissor() {
-        scissorList.pollLast()?.let { scissor(it.first, it.second, it.third, it.fourth) }
+        scissorList.removeLastOrNull()?.let {
+            scissor(it.first, it.second, it.third, it.fourth)
+        }
     }
 
     @JvmStatic

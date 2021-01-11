@@ -2,19 +2,22 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
-import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.WorldUtils
+import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.HotbarSlot
+import me.zeroeightsix.kami.util.items.firstBlock
+import me.zeroeightsix.kami.util.items.hotbarSlots
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -49,8 +52,9 @@ internal object AutoTrap : Module(
             if (!job.isActiveOrFalse && isPlaceable()) job = runAutoTrap()
 
             if (job.isActiveOrFalse) {
-                val slot = getObby()
-                if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+                getObby()?.let {
+                    PlayerPacketManager.spoofHotbar(it.hotbarSlot)
+                }
                 PlayerPacketManager.addPacket(AutoTrap, PlayerPacketManager.PlayerPacket(rotating = false))
             } else if (CombatManager.isOnTopPriority(AutoTrap)) {
                 PlayerPacketManager.resetHotbar()
@@ -77,14 +81,16 @@ internal object AutoTrap : Module(
         return false
     }
 
-    private fun getObby(): Int {
-        val slots = InventoryUtils.getSlotsHotbar(49)
+    private fun SafeClientEvent.getObby(): HotbarSlot? {
+        val slots = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
+
         if (slots == null) { // Obsidian check
             MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
             disable()
-            return -1
+            return null
         }
-        return slots[0]
+
+        return slots
     }
 
     private fun runAutoTrap() = defaultScope.launch {

@@ -8,8 +8,12 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.items.HotbarSlot
+import me.zeroeightsix.kami.util.items.block
+import me.zeroeightsix.kami.util.items.firstBlock
+import me.zeroeightsix.kami.util.items.hotbarSlots
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
@@ -64,9 +68,9 @@ internal object CrystalBasePlace : Module(
             renderer.render(clear)
         }
 
-        listener<InputEvent.KeyInputEvent> {
-            if (!CombatManager.isOnTopPriority(this) || CombatSetting.pause) return@listener
-            val target = CombatManager.target ?: return@listener
+        safeListener<InputEvent.KeyInputEvent> {
+            if (!CombatManager.isOnTopPriority(this@CrystalBasePlace) || CombatSetting.pause) return@safeListener
+            val target = CombatManager.target ?: return@safeListener
 
             if (manualPlaceBind.value.isDown(Keyboard.getEventKey())) prePlace(target)
         }
@@ -80,7 +84,7 @@ internal object CrystalBasePlace : Module(
 
             placePacket?.let { packet ->
                 if (inactiveTicks > 1) {
-                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot)
+                    if (!isHoldingObby) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
                     player.swingArm(EnumHand.MAIN_HAND)
                     connection.sendPacket(packet)
                     PlayerPacketManager.resetHotbar()
@@ -101,21 +105,26 @@ internal object CrystalBasePlace : Module(
         }
     }
 
-    private val SafeClientEvent.isHoldingObby get() = isObby(player.heldItemMainhand) || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+    private val SafeClientEvent.isHoldingObby
+        get() =
+            isObby(player.heldItemMainhand)
+                || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 
-    private fun getObby(): Int? {
-        val slots = InventoryUtils.getSlotsHotbar(49)
-        if (slots == null) { // Obsidian check
+    private fun SafeClientEvent.getObby(): HotbarSlot? {
+        val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
+
+        if (slot == null) { // Obsidian check
             MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
             disable()
             return null
         }
-        return slots[0]
+
+        return slot
     }
 
-    private fun prePlace(entity: EntityLivingBase) {
+    private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {
         if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return
         val placeInfo = getPlaceInfo(entity)
         if (placeInfo != null) {
@@ -132,7 +141,7 @@ internal object CrystalBasePlace : Module(
         }
     }
 
-    private fun getPlaceInfo(entity: EntityLivingBase): Pair<EnumFacing, BlockPos>? {
+    private fun SafeClientEvent.getPlaceInfo(entity: EntityLivingBase): Pair<EnumFacing, BlockPos>? {
         val cacheMap = TreeMap<Float, BlockPos>(compareByDescending { it })
         val prediction = CombatSetting.getPrediction(entity)
         val eyePos = mc.player.getPositionEyes(1.0f)
@@ -150,7 +159,7 @@ internal object CrystalBasePlace : Module(
             if (!WorldUtils.hasNeighbour(pos)) continue
 
             // Damage check
-            val damage = calcDamage(pos, entity, prediction.first, prediction.second)
+            val damage = calcPlaceDamage(pos, entity, prediction.first, prediction.second)
             if (!checkDamage(damage.first, damage.second, maxCurrentDamage)) continue
 
             cacheMap[damage.first] = pos
@@ -162,17 +171,17 @@ internal object CrystalBasePlace : Module(
         return null
     }
 
-    private fun calcDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d, entityBB: AxisAlignedBB): Pair<Float, Float> {
+    private fun SafeClientEvent.calcPlaceDamage(pos: BlockPos, entity: EntityLivingBase, entityPos: Vec3d, entityBB: AxisAlignedBB): Pair<Float, Float> {
         // Set up a fake obsidian here for proper damage calculation
-        val prevState = mc.world.getBlockState(pos)
-        mc.world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
+        val prevState = world.getBlockState(pos)
+        world.setBlockState(pos, Blocks.OBSIDIAN.defaultState)
 
         // Checks damage
-        val damage = CrystalUtils.calcDamage(pos, entity, entityPos, entityBB)
-        val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+        val damage = calcCrystalDamage(pos, entity, entityPos, entityBB)
+        val selfDamage = calcCrystalDamage(pos, player)
 
         // Revert the block state before return
-        mc.world.setBlockState(pos, prevState)
+        world.setBlockState(pos, prevState)
 
         return damage to selfDamage
     }

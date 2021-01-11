@@ -4,9 +4,10 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.items.allSlots
+import me.zeroeightsix.kami.util.items.countItem
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -64,8 +65,10 @@ object CombatItemCount : LabelHud(
         }
 
     override fun SafeClientEvent.updateText() {
+        val slots = player.allSlots
+
         for ((index, entry) in itemSettings.entries.withIndex()) {
-            val count = if (entry.key.value) entry.value.sumBy { InventoryUtils.countItemAll(it) }
+            val count = if (entry.key.value) entry.value.sumBy { slots.countItem(it) }
             else -1
 
             if (showIcon) {

@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
 object TextureUtils {
-    fun genTextureWithMipmaps(bufferedImage: BufferedImage, level: Int, textureFormat: Int) : DynamicTexture {
+    fun genTextureWithMipmaps(bufferedImage: BufferedImage, level: Int, textureFormat: Int): DynamicTexture {
         val dynamicTexture = DynamicTexture(bufferedImage)
         val textureId = dynamicTexture.glTextureId
 

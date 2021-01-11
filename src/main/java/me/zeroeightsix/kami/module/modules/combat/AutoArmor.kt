@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventory
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.removeHoldingItem
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
@@ -31,7 +32,7 @@ internal object AutoArmor : Module(
 
             if (!player.inventory.itemStack.isEmpty) {
                 if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
-                else InventoryUtils.removeHoldingItem()
+                else removeHoldingItem()
                 return@safeListener
             }
             // store slots and values of best armor pieces, initialize with currently equipped armor

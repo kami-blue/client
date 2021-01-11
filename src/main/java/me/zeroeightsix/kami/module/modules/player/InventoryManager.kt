@@ -1,17 +1,19 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
-import org.kamiblue.event.listener.listener
 
 internal object InventoryManager : Module(
     name = "InventoryManager",
@@ -58,17 +60,20 @@ internal object InventoryManager : Module(
             BaritoneUtils.unpause()
         }
 
-        listener<PlayerTravelEvent> {
-            if (mc.player == null || mc.player.isSpectator || !pauseMovement.value || !paused) return@listener
-            mc.player.setVelocity(0.0, mc.player.motionY, 0.0)
+        safeListener<PlayerTravelEvent> {
+            if (player.isSpectator || !pauseMovement.value || !paused) return@safeListener
+            player.setVelocity(0.0, mc.player.motionY, 0.0)
             it.cancel()
         }
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START || player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
             if (!timer.tick(delay.value.toLong())) return@safeListener
+
             setState()
-            if (currentState == State.IDLE) InventoryUtils.removeHoldingItem()
+
+            if (currentState == State.IDLE) removeHoldingItem()
+
             when (currentState) {
                 State.SAVING_ITEM -> saveItem()
                 State.REFILLING_BUILDING -> refillBuilding()
@@ -78,11 +83,12 @@ internal object InventoryManager : Module(
                     // this is fine, Java meme
                 }
             }
-            playerController.syncCurrentPlayItem()
+
+            playerController.updateController()
         }
     }
 
-    private fun setState() {
+    private fun SafeClientEvent.setState() {
         currentState = when {
             saveItemCheck() -> State.SAVING_ITEM
             refillBuildingCheck() -> State.REFILLING_BUILDING
@@ -101,75 +107,89 @@ internal object InventoryManager : Module(
     }
 
     /* State checks */
-    private fun saveItemCheck(): Boolean {
-        if (!itemSaver.value) return false
-
-        return checkDamage(mc.player.inventory.currentItem) ?: false
+    private fun SafeClientEvent.saveItemCheck(): Boolean {
+        return itemSaver.value && checkDamage(player.heldItemMainhand)
     }
 
-    private fun refillBuildingCheck(): Boolean {
+    private fun SafeClientEvent.refillBuildingCheck(): Boolean {
         if (!autoRefill.value || !buildingMode.value || buildingBlockID.value == 0) return false
 
-        val totalCount = InventoryUtils.countItem(0, 35, buildingBlockID.value)
-        val hotbarCount = InventoryUtils.countItem(0, 8, buildingBlockID.value)
-        return totalCount > refillThreshold.value && (hotbarCount <= refillThreshold.value ||
-            (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING))
+        val totalCount = player.inventorySlots.countID(buildingBlockID.value)
+        val hotbarCount = player.hotbarSlots.countID(buildingBlockID.value)
+
+        return totalCount > refillThreshold.value
+            && (hotbarCount <= refillThreshold.value
+            || (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING))
 
     }
 
-    private fun refillCheck(): Boolean {
+    private fun SafeClientEvent.refillCheck(): Boolean {
         if (!autoRefill.value) return false
 
         return getRefillableSlot() != null
     }
 
-    private fun ejectCheck(): Boolean {
+    private fun SafeClientEvent.ejectCheck(): Boolean {
         if (!autoEject.value || ejectList.isEmpty()) return false
 
-        return getEjectSlot() != null && ((InventoryUtils.getSlots(0, 35, 0) == null && fullOnly.value) || !fullOnly.value)
+        return getEjectSlot() != null && (!fullOnly.value || player.inventorySlots.firstEmpty() == null)
     }
     /* End of state checks */
 
     /* Tasks */
-    private fun saveItem() {
-        val currentSlot = mc.player.inventory.currentItem
-        val currentItemID = mc.player.inventory.getCurrentItem().item.id
+    private fun SafeClientEvent.saveItem() {
+        val currentSlot = player.inventory.currentItem
+        val itemStack = player.heldItemMainhand
 
-        if (autoRefill.value && getUndamagedItem(currentItemID) != null) { /* Replaces item if autoRefill is on and a undamaged (not reached threshold) item found */
-            val targetSlot = getUndamagedItem(currentItemID)!!
-            InventoryUtils.moveToSlot(currentSlot + 36, targetSlot)
-        } else if (InventoryUtils.getSlotsFullInv(9, 44, 0) != null) { /* Moves item to inventory if empty slot found in inventory */
-            InventoryUtils.moveToSlot(currentSlot + 36, InventoryUtils.getSlotsFullInv(9, 44, 0)!![0])
-        } else {
-            var hasAvailableSlot = false
-            for (i in 0..8) {
-                hasAvailableSlot = !(checkDamage(i) ?: false)
+        val undamagedItem = getUndamagedItem(itemStack.item.id)
+        val emptySlot = player.inventorySlots.firstEmpty()
+
+        when {
+            autoRefill.value && undamagedItem != null -> {
+                moveToHotbar(undamagedItem.slotNumber, currentSlot)
             }
-            if (hasAvailableSlot) { /* Swaps to another slot if no empty slot found in hotbar */
-                InventoryUtils.swapSlot((currentSlot + 1) % 9)
-            } else { /* Drops item if all other slots in hotbar contains damaged items */
-                mc.player.dropItem(false)
+            emptySlot != null -> {
+                moveToHotbar(emptySlot.slotNumber, currentSlot)
+            }
+            else -> {
+                player.dropItem(false)
             }
         }
     }
 
-    private fun refillBuilding() {
-        val slots = InventoryUtils.getSlotsFullInvNoHotbar(buildingBlockID.value)
-        InventoryUtils.quickMoveSlot(slots?.get(0) ?: return)
+    private fun SafeClientEvent.refillBuilding() {
+        player.storageSlots.firstID(buildingBlockID.value)?.let {
+            quickMoveSlot(it)
+        }
     }
 
-    private fun refill() {
+    private fun SafeClientEvent.refill() {
         val slotTo = getRefillableSlot() ?: return
-        val stackTo = mc.player.inventoryContainer.inventory[slotTo]
-        val slotFrom = getCompatibleStack(stackTo) ?: return
-        InventoryUtils.moveToSlot(slotFrom, slotTo)
+        val slotFrom = getCompatibleStack(slotTo.stack) ?: return
+
+        moveToSlot(slotFrom, slotTo)
     }
 
-    private fun eject() {
-        val slot = getEjectSlot() ?: return
-        InventoryUtils.throwAllInSlot(slot)
+    private fun SafeClientEvent.eject() {
+        getEjectSlot()?.let {
+            throwAllInSlot(it)
+        }
     }
     /* End of tasks */
+
+    /**
+     * Finds undamaged item with given ID in inventory, and return its slot
+     *
+     * @return Full inventory slot if undamaged item found, else return null
+     */
+    private fun SafeClientEvent.getUndamagedItem(itemID: Int) =
+        player.storageSlots.firstID(itemID) {
+            !checkDamage(it)
+        }
+
+    private fun checkDamage(itemStack: ItemStack) =
+        itemStack.isItemStackDamageable
+            && itemStack.itemDamage > itemStack.maxDamage * (1.0f - duraThreshold.value / 100.0f)
 
     /**
      * Checks damage of item in given slot
@@ -203,64 +223,40 @@ internal object InventoryManager : Module(
         } else null
     }
 
-    /**
-     * Finds undamaged item with given ID in inventory, and return its slot
-     *
-     * @return Full inventory slot if undamaged item found, else return null
-     */
-    private fun getUndamagedItem(ItemID: Int): Int? {
-        val slots = InventoryUtils.getSlotsFullInv(9, 44, ItemID) ?: return null
-        for (slot in slots) {
-            if (checkDamageFullInv(slot) == false) return slot
+    private fun SafeClientEvent.getRefillableSlotBuilding(): Slot? {
+        if (player.storageSlots.firstID(buildingBlockID.value) == null) return null
+
+        return player.hotbarSlots.firstID(buildingBlockID.value) {
+            it.isStackable && it.count < it.maxStackSize
         }
-        return null
     }
 
-    private fun getRefillableSlotBuilding(): Int? {
-        if (InventoryUtils.getSlotsNoHotbar(buildingBlockID.value) == null) return null
-        for (i in 36..45) {
-            val currentStack = mc.player.inventoryContainer.inventory[i]
-            if (currentStack.item.id != buildingBlockID.value) continue
-            if (!currentStack.isStackable || currentStack.count >= currentStack.maxStackSize) continue
-            return i
+    private fun SafeClientEvent.getRefillableSlot(): Slot? {
+        return player.hotbarSlots.firstByStack {
+            !it.isEmpty
+                && (!buildingMode.value || it.item.id != buildingBlockID.value)
+                && (!autoEject.value || !ejectList.contains(it.item.registryName.toString()))
+                && it.isStackable
+                && (it.maxStackSize / 64.0f * refillThreshold.value).ceilToInt() < refillThreshold.value
+                && getCompatibleStack(it) != null
         }
-        return null
     }
 
-    private fun getRefillableSlot(): Int? {
-        for (i in 36..45) {
-            val currentStack = mc.player.inventoryContainer.inventory[i]
-            val stackTarget = (currentStack.maxStackSize / 64.0f * refillThreshold.value).ceilToInt()
-            if (currentStack.isEmpty) continue
-            if (!currentStack.isStackable || currentStack.count > stackTarget) continue
-            if (currentStack.item.id == buildingBlockID.value && buildingMode.value) continue
-            if (ejectList.contains(currentStack.item.registryName.toString()) && autoEject.value) continue
-            if (getCompatibleStack(currentStack) == null) continue
-            return i
+    private fun SafeClientEvent.getCompatibleStack(stack: ItemStack): Slot? {
+        return player.storageSlots.firstID(stack.item.id) {
+            isCompatibleStacks(stack, it)
         }
-        return null
-    }
-
-    private fun getCompatibleStack(stack: ItemStack): Int? {
-        val slots = InventoryUtils.getSlotsFullInvNoHotbar(stack.item.id) ?: return null
-        for (slot in slots) {
-            if (isCompatibleStacks(stack, mc.player.inventoryContainer.inventory[slot])) return slot
-        }
-        return null
     }
 
     private fun isCompatibleStacks(stack1: ItemStack, stack2: ItemStack): Boolean {
         return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack2, stack1)
     }
 
-    private fun getEjectSlot(): Int? {
-        for (slot in 9..44) {
-            val currentStack = mc.player.inventoryContainer.inventory[slot]
-            if (((currentStack.item.id != buildingBlockID.value && buildingMode.value) || !buildingMode.value) && /* Don't throw the building block */
-                ejectList.contains(currentStack.item.registryName.toString())) {
-                return slot
-            }
+    private fun SafeClientEvent.getEjectSlot(): Slot? {
+        return player.inventorySlots.firstByStack {
+            !it.isEmpty
+                && (!buildingMode.value || it.item.id != buildingBlockID.value)
+                && ejectList.contains(it.item.registryName.toString())
         }
-        return null
     }
 }

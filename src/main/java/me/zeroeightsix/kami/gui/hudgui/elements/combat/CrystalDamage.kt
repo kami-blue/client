@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.util.Quad
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.max
 
@@ -24,7 +24,7 @@ object CrystalDamage : LabelHud(
         var potentialTarget = 0.0f
         var potentialSelf = 0.0f
         for ((pos, triple) in placeList) {
-            if (!CrystalUtils.canPlaceCollide(pos)) continue
+            if (!canPlaceCollide(pos)) continue
             potentialTarget = max(triple.first, potentialTarget)
             potentialSelf = max(triple.second, potentialSelf)
         }

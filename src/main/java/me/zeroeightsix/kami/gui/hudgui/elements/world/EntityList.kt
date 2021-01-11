@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.isHostile
 import me.zeroeightsix.kami.util.EntityUtils.isNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassive
-import me.zeroeightsix.kami.util.originalName
+import me.zeroeightsix.kami.util.items.originalName
 import me.zeroeightsix.kami.util.threads.defaultScope
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.*

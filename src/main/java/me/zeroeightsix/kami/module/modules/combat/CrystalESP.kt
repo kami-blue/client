@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -71,9 +71,10 @@ internal object CrystalESP : Module(
     private val pendingPlacing = LinkedHashMap<BlockPos, Long>()
 
     init {
-        listener<PacketEvent.PostSend>(0) {
-            if (mc.player == null || it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
-            if (checkHeldItem(it.packet) && CrystalUtils.canPlaceCollide(it.packet.pos)) {
+        safeListener<PacketEvent.PostSend>(0) {
+            if (it.packet !is CPacketPlayerTryUseItemOnBlock) return@safeListener
+
+            if (checkHeldItem(it.packet) && canPlaceCollide(it.packet.pos)) {
                 pendingPlacing[it.packet.pos] = System.currentTimeMillis()
             }
         }
