@@ -97,6 +97,6 @@ object CrystalUtils {
     }
 
     private fun SafeClientEvent.getDamageSource(damagePos: Vec3d) =
-                DamageSource.causeExplosionDamage(Explosion(world, player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
+        DamageSource.causeExplosionDamage(Explosion(world, player, damagePos.x, damagePos.y, damagePos.z, 6F, false, true))
     /* End of damage calculation */
 }

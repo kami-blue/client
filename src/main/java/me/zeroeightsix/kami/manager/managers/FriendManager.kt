@@ -79,11 +79,11 @@ object FriendManager : Manager {
     }
 
     data class FriendFile(
-            @SerializedName("Enabled")
-            var enabled: Boolean = true,
+        @SerializedName("Enabled")
+        var enabled: Boolean = true,
 
-            @SerializedName("Friends")
-            val friends: MutableSet<PlayerProfile> = Collections.synchronizedSet(LinkedHashSet<PlayerProfile>())
+        @SerializedName("Friends")
+        val friends: MutableSet<PlayerProfile> = Collections.synchronizedSet(LinkedHashSet<PlayerProfile>())
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

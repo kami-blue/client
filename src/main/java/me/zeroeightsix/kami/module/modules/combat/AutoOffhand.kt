@@ -95,7 +95,7 @@ object AutoOffhand : Module(
         }
 
         safeListener<PacketEvent.Receive> {
-            if ( it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@safeListener
+            if (it.packet !is SPacketConfirmTransaction || it.packet.windowId != 0 || !transactionLog.containsKey(it.packet.actionNumber)) return@safeListener
 
             transactionLog[it.packet.actionNumber] = it.packet.wasAccepted()
             if (!transactionLog.containsValue(false)) {
@@ -167,11 +167,11 @@ object AutoOffhand : Module(
 
     private fun SafeClientEvent.getItemSlot(type: Type, loopTime: Int = 1): Pair<Slot, Type>? =
         getSlot(type)?.to(type)
-        ?: if (loopTime <= 3) {
-            getItemSlot(type.next(), loopTime + 1)
-        } else {
-            null
-        }
+            ?: if (loopTime <= 3) {
+                getItemSlot(type.next(), loopTime + 1)
+            } else {
+                null
+            }
 
     private fun SafeClientEvent.getSlot(type: Type): Slot? {
         val slots = player.inventorySlots

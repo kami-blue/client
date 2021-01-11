@@ -57,7 +57,7 @@ object AutoEat : Module(
         }
     }
 
-    private fun SafeClientEvent.swapToFood() : Boolean {
+    private fun SafeClientEvent.swapToFood(): Boolean {
         lastSlot = player.inventory.currentItem
 
         val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }

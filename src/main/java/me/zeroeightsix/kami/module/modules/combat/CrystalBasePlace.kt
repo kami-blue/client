@@ -105,9 +105,10 @@ object CrystalBasePlace : Module(
         }
     }
 
-    private val SafeClientEvent.isHoldingObby get() =
-        isObby(player.heldItemMainhand)
-            || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
+    private val SafeClientEvent.isHoldingObby
+        get() =
+            isObby(player.heldItemMainhand)
+                || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
 

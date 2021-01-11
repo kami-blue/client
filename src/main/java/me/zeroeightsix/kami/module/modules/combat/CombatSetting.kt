@@ -174,7 +174,7 @@ object CombatSetting : Module(
 
     /* Crystal damage calculation */
     private fun SafeClientEvent.updateCrystalList() {
-        if (CrystalAura.isDisabled && CrystalESP.isDisabled && (player.ticksExisted - 2 )% 4 != 0) return
+        if (CrystalAura.isDisabled && CrystalESP.isDisabled && (player.ticksExisted - 2) % 4 != 0) return
 
         val cacheList = ArrayList<Pair<EntityEnderCrystal, Triple<Float, Float, Double>>>()
         val eyePos = player.getPositionEyes(1f)

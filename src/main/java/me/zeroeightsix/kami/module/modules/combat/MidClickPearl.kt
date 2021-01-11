@@ -23,7 +23,7 @@ object MidClickPearl : Module(
 
     init {
         safeListener<InputEvent.MouseInputEvent> {
-            val objectMouseOver = mc.objectMouseOver?: return@safeListener
+            val objectMouseOver = mc.objectMouseOver ?: return@safeListener
             if (objectMouseOver.typeOfHit == Type.BLOCK) return@safeListener
 
             if (startTime == -1L && Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {

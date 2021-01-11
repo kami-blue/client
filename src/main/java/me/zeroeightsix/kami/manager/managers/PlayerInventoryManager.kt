@@ -22,7 +22,7 @@ object PlayerInventoryManager : Manager {
     private var currentTask: InventoryTask? = null
 
     init {
-        safeListener<RenderOverlayEvent> (0) {
+        safeListener<RenderOverlayEvent>(0) {
             if (!timer.tick((1000.0f / TpsCalculator.tickRate).toLong())) return@safeListener
 
             if (!player.inventory.itemStack.isEmpty) {

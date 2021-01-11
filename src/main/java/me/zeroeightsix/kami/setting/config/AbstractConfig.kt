@@ -21,92 +21,92 @@ import me.zeroeightsix.kami.util.color.ColorHolder
 import java.io.File
 
 abstract class AbstractConfig<T>(
-        name: String,
-        protected val filePath: String
+    name: String,
+    protected val filePath: String
 ) : SettingMultiGroup(name), IFinalGroup<T> {
 
     /* Setting registering */
     /** Integer Setting */
     fun T.setting(
-            name: String,
-            value: Int,
-            range: IntRange,
-            step: Int,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: Int,
+        range: IntRange,
+        step: Int,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
+        description: String = ""
     ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
 
     /** Double Setting */
     fun T.setting(
-            name: String,
-            value: Double,
-            range: ClosedFloatingPointRange<Double>,
-            step: Double,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: Double,
+        range: ClosedFloatingPointRange<Double>,
+        step: Double,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
+        description: String = ""
     ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
 
     /** Float Setting */
     fun T.setting(
-            name: String,
-            value: Float,
-            range: ClosedFloatingPointRange<Float>,
-            step: Float,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: Float,
+        range: ClosedFloatingPointRange<Float>,
+        step: Float,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
+        description: String = ""
     ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
 
     /** Bind Setting */
     fun T.setting(
-            name: String,
-            value: Bind,
-            visibility: () -> Boolean = { true },
-            description: String = ""
+        name: String,
+        value: Bind,
+        visibility: () -> Boolean = { true },
+        description: String = ""
     ) = setting(BindSetting(name, value, visibility, description))
 
     /** Color Setting */
     fun T.setting(
-            name: String,
-            value: ColorHolder,
-            hasAlpha: Boolean = true,
-            visibility: () -> Boolean = { true },
-            description: String = ""
+        name: String,
+        value: ColorHolder,
+        hasAlpha: Boolean = true,
+        visibility: () -> Boolean = { true },
+        description: String = ""
     ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
 
     /** Boolean Setting */
     fun T.setting(
-            name: String,
-            value: Boolean,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: Boolean,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
+        description: String = ""
     ) = setting(BooleanSetting(name, value, visibility, consumer, description))
 
     /** Enum Setting */
     fun <E : Enum<E>> T.setting(
-            name: String,
-            value: E,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: E, input: E) -> E = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: E,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: E, input: E) -> E = { _, input -> input },
+        description: String = ""
     ) = setting(EnumSetting(name, value, visibility, consumer, description))
 
     /** String Setting */
     fun T.setting(
-            name: String,
-            value: String,
-            visibility: () -> Boolean = { true },
-            consumer: (prev: String, input: String) -> String = { _, input -> input },
-            description: String = ""
+        name: String,
+        value: String,
+        visibility: () -> Boolean = { true },
+        consumer: (prev: String, input: String) -> String = { _, input -> input },
+        description: String = ""
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
 
 
     override val file get() = File("$filePath$name.json")
-    override val backup get() =  File("$filePath$name.bak")
+    override val backup get() = File("$filePath$name.bak")
 
     override fun save() {
         File(filePath).run {

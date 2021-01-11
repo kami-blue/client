@@ -427,7 +427,7 @@ object CrystalAura : Module(
      * @return True if passed placing damage check
      */
     private fun checkDamagePlace(damage: Float, selfDamage: Float) =
-        (shouldFacePlace(damage)  || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
+        (shouldFacePlace(damage) || damage >= minDamageP) && (selfDamage <= maxSelfDamageP)
     /* End of placing */
 
     /* Exploding */
@@ -442,10 +442,10 @@ object CrystalAura : Module(
         }
 
         return (filteredCrystal.firstOrNull { (crystal, triple) ->
-                triple.third <= explodeRange
+            triple.third <= explodeRange
                 && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
         } ?: filteredCrystal.firstOrNull { (_, triple) ->
-                triple.third <= wallExplodeRange
+            triple.third <= wallExplodeRange
         })?.key
     }
 
@@ -455,8 +455,8 @@ object CrystalAura : Module(
 
     private fun shouldForceExplode() = autoForceExplode
         && placeMap.values.any {
-            it.first > minDamage && it.second <= maxSelfDamage && it.third <= placeRange
-        }
+        it.first > minDamage && it.second <= maxSelfDamage && it.third <= placeRange
+    }
     /* End of exploding */
 
     /* General */

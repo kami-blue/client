@@ -16,7 +16,7 @@ object DiscordNotifsCommand : ClientCommand(
         literal("id") {
             long("discord user id") { idArg ->
                 execute("Set the ID of the user to be pinged") {
-                    DiscordNotifs.pingID.value = idArg.value.toString() 
+                    DiscordNotifs.pingID.value = idArg.value.toString()
                     MessageSendHelper.sendChatMessage("Set Discord User ID to ${formatValue(idArg.value.toString())}!")
                 }
             }
