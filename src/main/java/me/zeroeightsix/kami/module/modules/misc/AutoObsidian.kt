@@ -510,9 +510,9 @@ object AutoObsidian : Module(
                     return
                 }
 
-            val slotTo = player.hotbarSlots.firstEmpty()?.hotbarSlot ?: 0
+            val slotTo = player.hotbarSlots.firstEmpty() ?: player.firstHotbarSlot
 
-            moveToHotbar(slotFrom.slotNumber, slotTo)
+            moveToHotbar(slotFrom, slotTo)
         }
     }
 

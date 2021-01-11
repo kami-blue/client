@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import net.minecraft.block.Block
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
+import net.minecraft.inventory.Container
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -184,17 +185,10 @@ fun SafeClientEvent.swapToSlot(slot: Int) {
  * or matches with [predicate] or slot 0 if none of those found
  */
 fun SafeClientEvent.moveToHotbar(slotFrom: Slot, predicate: (ItemStack) -> Boolean): Short {
-    return moveToHotbar(slotFrom.slotNumber, predicate)
-}
-
-/**
- * Swaps the item in [slotFrom] with the first empty hotbar slot
- * or matches with [predicate] or slot 0 if none of those found
- */
-fun SafeClientEvent.moveToHotbar(slotFrom: Int, predicate: (ItemStack) -> Boolean): Short {
     val hotbarSlots = player.hotbarSlots
-    val slotTo = hotbarSlots.firstItem(Items.AIR)?.hotbarSlot
-        ?: hotbarSlots.firstByStack(predicate)?.hotbarSlot ?: 0
+    val slotTo = hotbarSlots.firstItem(Items.AIR)
+        ?: hotbarSlots.firstByStack(predicate)
+        ?: player.firstHotbarSlot
 
     return moveToHotbar(slotFrom, slotTo)
 }
@@ -209,24 +203,10 @@ fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
 /**
  * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
  */
-fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Slot, hotbarSlotTo: HotbarSlot): Short {
-    return moveToHotbar(windowId, slotFrom.slotNumber, hotbarSlotTo.hotbarSlot)
-}
-
-/**
- * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
- */
-fun SafeClientEvent.moveToHotbar(slotFrom: Int, hotbarSlotTo: Int): Short {
-    return moveToHotbar(0, slotFrom, hotbarSlotTo)
-}
-
-/**
- * Swaps the item in [slotFrom] with the hotbar slot [hotbarSlotTo].
- */
-fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, hotbarSlotTo: Int): Short {
+fun SafeClientEvent.moveToHotbar(windowID: Int, slotFrom: Slot, hotbarSlotTo: HotbarSlot): Short {
     // mouseButton is actually the hotbar
     swapToSlot(hotbarSlotTo)
-    return clickSlot(windowId, slotFrom, hotbarSlotTo, type = ClickType.SWAP)
+    return clickSlot(windowID, slotFrom, hotbarSlotTo.hotbarSlot, type = ClickType.SWAP)
 }
 
 /**
@@ -234,52 +214,29 @@ fun SafeClientEvent.moveToHotbar(windowId: Int, slotFrom: Int, hotbarSlotTo: Int
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
 fun SafeClientEvent.moveToSlot(slotFrom: Slot, slotTo: Slot): ShortArray {
-    return moveToSlot(0, slotFrom.slotNumber, slotTo.slotNumber)
-}
-
-/**
- * Move the item in [slotFrom]  to [slotTo] in player inventory,
- * if [slotTo] contains an item, then move it to [slotFrom]
- */
-fun SafeClientEvent.moveToSlot(slotFrom: Int, slotTo: Int): ShortArray {
     return moveToSlot(0, slotFrom, slotTo)
 }
 
 /**
- * Move the item in [slotFrom] to [slotTo] in [windowId],
+ * Move the item in [slotFrom] to [slotTo] in [windowID],
  * if [slotTo] contains an item, then move it to [slotFrom]
  */
-fun SafeClientEvent.moveToSlot(windowId: Int, slotFrom: Int, slotTo: Int): ShortArray {
+fun SafeClientEvent.moveToSlot(windowID: Int, slotFrom: Slot, slotTo: Slot): ShortArray {
     return shortArrayOf(
-        clickSlot(windowId, slotFrom, type = ClickType.PICKUP),
-        clickSlot(windowId, slotTo, type = ClickType.PICKUP),
-        clickSlot(windowId, slotFrom, type = ClickType.PICKUP)
+        clickSlot(windowID, slotFrom, type = ClickType.PICKUP),
+        clickSlot(windowID, slotTo, type = ClickType.PICKUP),
+        clickSlot(windowID, slotFrom, type = ClickType.PICKUP)
     )
 }
 
 /**
  * Move all the item that equals to the item in [slotTo] to [slotTo] in player inventory
- * Note: Not working
  */
-fun SafeClientEvent.moveAllToSlot(slotTo: Int): ShortArray {
+fun SafeClientEvent.moveAllToSlot(slotTo: Slot): ShortArray {
     return shortArrayOf(
         clickSlot(slot = slotTo, type = ClickType.PICKUP_ALL),
         clickSlot(slot = slotTo, type = ClickType.PICKUP)
     )
-}
-
-/**
- * Quick move (Shift + Click) the item in [slot] in player inventory
- */
-fun SafeClientEvent.quickMoveSlot(slot: Int): Short {
-    return quickMoveSlot(0, slot)
-}
-
-/**
- * Quick move (Shift + Click) the item in [slot] in specified [windowId]
- */
-fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Int): Short {
-    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
 }
 
 /**
@@ -290,26 +247,12 @@ fun SafeClientEvent.quickMoveSlot(slot: Slot): Short {
 }
 
 /**
- * Quick move (Shift + Click) the item in [slot] in specified [windowId]
+ * Quick move (Shift + Click) the item in [slot] in specified [windowID]
  */
-fun SafeClientEvent.quickMoveSlot(windowId: Int, slot: Slot): Short {
-    return clickSlot(windowId, slot, type = ClickType.QUICK_MOVE)
+fun SafeClientEvent.quickMoveSlot(windowID: Int, slot: Slot): Short {
+    return clickSlot(windowID, slot, type = ClickType.QUICK_MOVE)
 }
 
-
-/**
- * Throw all the item in [slot] in player inventory
- */
-fun SafeClientEvent.throwAllInSlot(slot: Int): Short {
-    return throwAllInSlot(0, slot)
-}
-
-/**
- * Throw all the item in [slot] in specified [windowId]
- */
-fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Int): Short {
-    return clickSlot(windowId, slot, 1, ClickType.THROW)
-}
 
 /**
  * Throw all the item in [slot] in player inventory
@@ -319,10 +262,10 @@ fun SafeClientEvent.throwAllInSlot(slot: Slot): Short {
 }
 
 /**
- * Throw all the item in [slot] in specified [windowId]
+ * Throw all the item in [slot] in specified [windowID]
  */
-fun SafeClientEvent.throwAllInSlot(windowId: Int, slot: Slot): Short {
-    return clickSlot(windowId, slot, 1, ClickType.THROW)
+fun SafeClientEvent.throwAllInSlot(windowID: Int, slot: Slot): Short {
+    return clickSlot(windowID, slot, 1, ClickType.THROW)
 }
 
 /**
@@ -344,8 +287,8 @@ fun SafeClientEvent.removeHoldingItem() {
  *
  * @return Transaction id
  */
-fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Slot, mouseButton: Int = 0, type: ClickType): Short {
-    return clickSlot(windowId, slot.slotNumber, mouseButton, type)
+fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Slot, mouseButton: Int = 0, type: ClickType): Short {
+    return clickSlot(windowID, slot.slotNumber, mouseButton, type)
 }
 
 /**
@@ -353,16 +296,19 @@ fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Slot, mouseButton: Int = 
  *
  * @return Transaction id
  */
-fun SafeClientEvent.clickSlot(windowId: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
-    val container = if (windowId == 0) player.inventoryContainer else player.openContainer
-    container ?: return -32768
+fun SafeClientEvent.clickSlot(windowID: Int = 0, slot: Int, mouseButton: Int = 0, type: ClickType): Short {
+    val container = getContainerForID(windowID) ?: return -32768
 
     val playerInventory = player.inventory ?: return -32768
     val transactionID = container.getNextTransactionID(playerInventory)
     val itemStack = container.slotClick(slot, mouseButton, type, player)
 
-    connection.sendPacket(CPacketClickWindow(windowId, slot, mouseButton, type, itemStack, transactionID))
+    connection.sendPacket(CPacketClickWindow(windowID, slot, mouseButton, type, itemStack, transactionID))
     onMainThreadSafe { playerController.updateController() }
 
     return transactionID
 }
+
+fun SafeClientEvent.getContainerForID(windowID: Int): Container? =
+    if (windowID == 0) player.inventoryContainer
+    else player.openContainer

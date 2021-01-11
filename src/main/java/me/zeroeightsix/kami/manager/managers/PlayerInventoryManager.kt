@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.clickSlot
+import me.zeroeightsix.kami.util.items.getContainerForID
 import me.zeroeightsix.kami.util.items.removeHoldingItem
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -32,7 +33,9 @@ object PlayerInventoryManager : Manager {
             }
 
             getTaskOrNext()?.nextInfo()?.let {
-                clickSlot(it.windowId, it.slot, it.mouseButton, it.type)
+                val slot = getContainerForID(it.windowID)?.getSlot(it.slot) ?: return@let
+
+                clickSlot(it.windowID, slot, it.mouseButton, it.type)
                 playerController.updateController()
             }
 
@@ -102,5 +105,5 @@ object PlayerInventoryManager : Manager {
 
     }
 
-    data class ClickInfo(val windowId: Int = 0, val slot: Int, val mouseButton: Int = 0, val type: ClickType)
+    data class ClickInfo(val windowID: Int = 0, val slot: Int, val mouseButton: Int = 0, val type: ClickType)
 }

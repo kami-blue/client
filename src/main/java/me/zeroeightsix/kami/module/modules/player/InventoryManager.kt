@@ -133,7 +133,7 @@ object InventoryManager : Module(
 
     /* Tasks */
     private fun SafeClientEvent.saveItem() {
-        val currentSlot = player.inventory.currentItem
+        val currentSlot = player.currentHotbarSlot
         val itemStack = player.heldItemMainhand
 
         val undamagedItem = getUndamagedItem(itemStack.item.id)
@@ -141,10 +141,10 @@ object InventoryManager : Module(
 
         when {
             autoRefill && undamagedItem != null -> {
-                moveToHotbar(undamagedItem.slotNumber, currentSlot)
+                moveToHotbar(undamagedItem, currentSlot)
             }
             emptySlot != null -> {
-                moveToHotbar(emptySlot.slotNumber, currentSlot)
+                moveToHotbar(emptySlot, currentSlot)
             }
             else -> {
                 player.dropItem(false)

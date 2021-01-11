@@ -14,6 +14,18 @@ val EntityPlayer.allSlots: List<Slot>
 val EntityPlayer.armorSlots: List<Slot>
     get() = inventoryContainer.getSlots(5..8)
 
+val EntityPlayer.headSlot: Slot
+    get() = inventoryContainer.inventorySlots[5]
+
+val EntityPlayer.chestSlot: Slot
+    get() = inventoryContainer.inventorySlots[6]
+
+val EntityPlayer.legsSlot: Slot
+    get() = inventoryContainer.inventorySlots[7]
+
+val EntityPlayer.feetSlot: Slot
+    get() = inventoryContainer.inventorySlots[8]
+
 val EntityPlayer.offhandSlot: Slot
     get() = inventoryContainer.inventorySlots[45]
 
@@ -32,6 +44,12 @@ val EntityPlayer.hotbarSlots: List<HotbarSlot>
             add(HotbarSlot(inventoryContainer.inventorySlots[slot]))
         }
     }
+
+val EntityPlayer.currentHotbarSlot: HotbarSlot
+    get() = HotbarSlot(inventoryContainer.getSlot(inventory.currentItem + 36))
+
+val EntityPlayer.firstHotbarSlot: HotbarSlot
+    get() = HotbarSlot(inventoryContainer.getSlot(36))
 
 fun Container.getSlots(range: IntRange): List<Slot> =
     inventorySlots.subList(range.first, range.last + 1)

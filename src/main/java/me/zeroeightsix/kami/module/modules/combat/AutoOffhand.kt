@@ -153,7 +153,7 @@ object AutoOffhand : Module(
                 if (!alternativeType && typeAlt != typeOriginal || checkOffhandItem(typeAlt)) return@let
 
                 transactionLog.clear()
-                transactionLog.putAll(moveToSlot(slot.slotNumber, 45).associate { it to false })
+                transactionLog.putAll(moveToSlot(slot, player.offhandSlot).associate { it to false })
 
                 playerController.updateController()
                 movingTimer.reset()

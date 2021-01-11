@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
 import net.minecraft.client.gui.inventory.*
 import net.minecraft.init.Items
+import net.minecraft.inventory.Slot
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ChestStealer : Module(
@@ -86,7 +87,7 @@ object ChestStealer : Module(
         }
     }
 
-    private fun SafeClientEvent.steal(slot: Int?): Boolean {
+    private fun SafeClientEvent.steal(slot: Slot?): Boolean {
         if (slot == null) return false
         val size = getContainerSlotSize()
         val slotTo = player.openContainer.getSlots(size until size + 36).firstEmpty() ?: return false
@@ -95,17 +96,18 @@ object ChestStealer : Module(
         if (timer.tick(delay.value.toLong())) {
             when (movingMode.value) {
                 MovingMode.QUICK_MOVE -> quickMoveSlot(windowID, slot)
-                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo.slotNumber)
+                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo)
                 MovingMode.THROW -> throwAllInSlot(windowID, slot)
             }
         }
         return true
     }
 
-    private fun SafeClientEvent.getStealingSlot(): Int? {
-        val container = player.openContainer.inventory
-        for (slot in 0 until getContainerSlotSize()) {
-            val item = container[slot].item
+    private fun SafeClientEvent.getStealingSlot(): Slot? {
+        val container = player.openContainer
+        val slots = container.getSlots(0 until getContainerSlotSize())
+        for (slot in slots) {
+            val item = slot.stack.item
             if (item == Items.AIR) continue
             if (ignoreEjectItem.value && InventoryManager.ejectList.contains(item.registryName.toString())) continue
             return slot
