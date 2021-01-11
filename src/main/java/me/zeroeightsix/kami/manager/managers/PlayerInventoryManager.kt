@@ -24,11 +24,16 @@ object PlayerInventoryManager : Manager {
 
     init {
         safeListener<RenderOverlayEvent>(0) {
-            if (!timer.tick((1000.0f / TpsCalculator.tickRate).toLong())) return@safeListener
+            if (currentTask == null || actionQueue.isEmpty()
+                || !timer.tick((1000.0f / TpsCalculator.tickRate).toLong())) return@safeListener
 
             if (!player.inventory.itemStack.isEmpty) {
-                if (mc.currentScreen is GuiContainer) timer.reset(250L) // Wait for 5 extra ticks if player is moving item
-                else removeHoldingItem()
+                if (mc.currentScreen is GuiContainer) {
+                    timer.reset(250L) // Wait for 5 extra ticks if player is moving item
+                } else {
+                    removeHoldingItem()
+                }
+
                 return@safeListener
             }
 
@@ -49,9 +54,8 @@ object PlayerInventoryManager : Manager {
     }
 
     private fun getTaskOrNext() =
-        currentTask?.let {
-            if (!it.isDone) it
-            else null
+        currentTask?.takeIf {
+            !it.isDone
         } ?: synchronized(lockObject) {
             actionQueue.removeIf { it.isDone }
             actionQueue.firstOrNull()
@@ -70,20 +74,21 @@ object PlayerInventoryManager : Manager {
             it.taskState
         }
 
-    private data class InventoryTask(
+    private class InventoryTask(
         private val id: Int,
         private val priority: Int,
         private val infoArray: Array<out ClickInfo>,
-        val taskState: TaskState = TaskState(),
-        private var index: Int = 0
     ) : Comparable<InventoryTask> {
+
+        val taskState: TaskState = TaskState()
         val isDone get() = taskState.done
+
+        private var index: Int = 0
 
         fun nextInfo() =
             infoArray.getOrNull(index++).also {
                 if (it == null) taskState.done = true
             }
-
 
         override fun compareTo(other: InventoryTask): Int {
             val result = priority - other.priority
@@ -105,5 +110,5 @@ object PlayerInventoryManager : Manager {
 
     }
 
-    data class ClickInfo(val windowID: Int = 0, val slot: Int, val mouseButton: Int = 0, val type: ClickType)
+    class ClickInfo(val windowID: Int = 0, val slot: Int, val mouseButton: Int = 0, val type: ClickType)
 }
