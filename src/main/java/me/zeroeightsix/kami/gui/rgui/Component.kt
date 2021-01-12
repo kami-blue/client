@@ -22,9 +22,9 @@ open class Component(
 ) {
 
     // Basic info
-    var nameKey : TranslationKey = if (nameT is TranslationKeyBlank) getTranslationKey("Name") else nameT
-    var name = setting(getTranslationKey("Name(Lit.)"), nameKey.value, { false })
-    val originalName : TranslationKey= nameKey
+    val originalName : TranslationKey=  if (nameT is TranslationKeyBlank) getTranslationKey("Name") else nameT
+    var name = originalName.value
+
     protected val visibleSetting = setting(getTranslationKey("Visible"), true, { false }, { _, it -> it || !closeable })
     var visible by visibleSetting
 
@@ -60,9 +60,6 @@ open class Component(
         }
 
     init {
-        nameKey.onInvalidate {
-            name.setValue(nameKey.value)
-        }
         dockingHSetting.listeners.add { posX = prevPosX }
         dockingVSetting.listeners.add { posY = prevPosY }
     }

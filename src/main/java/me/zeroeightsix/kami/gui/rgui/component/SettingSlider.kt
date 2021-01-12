@@ -36,7 +36,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
 
     override fun onClosed() {
         super.onClosed()
-        name.value = originalName.value
+        name = originalName.value
     }
 
     override fun onTick() {
@@ -65,10 +65,10 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
             if (!listening) {
                 listening = true
                 value = 0.0
-                name.setValue("0")
+                name = "0"
             } else {
                 listening = false
-                name.setValue(originalName.value)
+                name = originalName.value
             }
         }
     }
@@ -93,17 +93,17 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         if (keyState) {
             when (keyCode) {
                 Keyboard.KEY_RETURN -> {
-                    name.value.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
+                    name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
                     listening = false
-                    name.value = originalName.value
+                    name = originalName.value
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
-                    name.setValue(name.value.substring(0, max(name.value.length - 1, 0)))
-                    if (name.value.isBlank()) name.value = "0"
+                    name = name.substring(0, max(name.length - 1, 0))
+                    if (name.isBlank()) name = "0"
                 }
                 else -> if (typedChar.isDigit() || typedChar == '.' || typedChar.equals('e', true)) {
-                    if (name.value == "0") name.value = ""
-                    name.value += typedChar
+                    if (name == "0") name = ""
+                    name += typedChar
                 }
             }
         }

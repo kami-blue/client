@@ -105,7 +105,7 @@ open class Slider(
                     (renderHeight * ClickGUI.getScaleFactor()).roundToInt()
             )
         }*/
-        FontRenderAdapter.drawString(name.value, 2f, 1.0f, color = GuiColors.text)
+        FontRenderAdapter.drawString(name, 2f, 1.0f, color = GuiColors.text)
         //GlStateUtils.popScissor()
     }
 
