@@ -133,8 +133,8 @@ object WaypointManager : Manager {
 
     fun genServer(): String? {
         return Wrapper.minecraft.currentServerData?.serverIP
-                ?: if (Wrapper.minecraft.isIntegratedServerRunning) "Singleplayer"
-                else null
+            ?: if (Wrapper.minecraft.isIntegratedServerRunning) "Singleplayer"
+            else null
     }
 
     fun genDimension(): Int {
@@ -147,12 +147,12 @@ object WaypointManager : Manager {
     }
 
     class Waypoint(
-            @SerializedName("position")
-            val pos: BlockPos,
-            val name: String,
+        @SerializedName("position")
+        val pos: BlockPos,
+        val name: String,
 
-            @SerializedName(value = "date", alternate = ["time"])
-            val date: String
+        @SerializedName(value = "date", alternate = ["time"])
+        val date: String
     ) {
         val id: Int = genID()
         val server: String? = genServer() /* can be null from old configs */

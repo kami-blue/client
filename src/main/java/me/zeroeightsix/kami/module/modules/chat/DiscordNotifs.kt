@@ -34,7 +34,7 @@ object DiscordNotifs : Module(
 
     val url = setting("URL", "unchanged")
     val pingID = setting("PingID", "unchanged")
-    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "assets/raw/assets/assets/icons/kami.png")
+    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "/assets/raw/assets/assets/icons/kami.png")
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -91,9 +91,9 @@ object DiscordNotifs : Module(
     }
 
     private fun timeout(message: String) = !timeout.value
-            || restart.value && MessageDetection.Server.RESTART detect message
-            || direct.value && MessageDetection.Direct.ANY detect message
-            || timer.tick(timeoutTime.value.toLong())
+        || restart.value && MessageDetection.Server.RESTART detect message
+        || direct.value && MessageDetection.Direct.ANY detect message
+        || timer.tick(timeoutTime.value.toLong())
 
     /* Text formatting and misc methods */
     private fun getPingID(message: String) = if (message == "KamiBlueMessageType1"

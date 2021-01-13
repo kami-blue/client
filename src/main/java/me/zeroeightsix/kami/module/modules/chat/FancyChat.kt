@@ -24,14 +24,14 @@ object FancyChat : Module(
     private val spammer = setting("Spammer", false)
 
     private val modifier = newMessageModifier(
-            filter = {
-                (commands.value || MessageDetection.Command.ANY detectNot it.packet.message)
-                        && (spammer.value || it.source !is Spammer)
-            },
-            modifier = {
-                val message = getText(it.packet.message)
-                message.substring(0, min(256, message.length))
-            }
+        filter = {
+            (commands.value || MessageDetection.Command.ANY detectNot it.packet.message)
+                && (spammer.value || it.source !is Spammer)
+        },
+        modifier = {
+            val message = getText(it.packet.message)
+            message.substring(0, min(256, message.length))
+        }
     )
 
     init {

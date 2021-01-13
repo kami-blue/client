@@ -16,17 +16,14 @@ import java.util.regex.Pattern
 object MessageSendHelper {
     private val mc = Wrapper.minecraft
 
-    @JvmStatic
     fun sendChatMessage(message: String) {
         sendRawChatMessage(coloredName('9') + message)
     }
 
-    @JvmStatic
     fun sendWarningMessage(message: String) {
         sendRawChatMessage(coloredName('6') + message)
     }
 
-    @JvmStatic
     fun sendErrorMessage(message: String) {
         sendRawChatMessage(coloredName('4') + message)
     }

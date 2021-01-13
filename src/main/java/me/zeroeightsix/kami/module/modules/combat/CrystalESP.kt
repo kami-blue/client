@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.color.ColorHolder
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
@@ -71,18 +71,19 @@ object CrystalESP : Module(
     private val pendingPlacing = LinkedHashMap<BlockPos, Long>()
 
     init {
-        listener<PacketEvent.PostSend>(0) {
-            if (mc.player == null || it.packet !is CPacketPlayerTryUseItemOnBlock) return@listener
-            if (checkHeldItem(it.packet) && CrystalUtils.canPlaceCollide(it.packet.pos)) {
+        safeListener<PacketEvent.PostSend>(0) {
+            if (it.packet !is CPacketPlayerTryUseItemOnBlock) return@safeListener
+
+            if (checkHeldItem(it.packet) && canPlaceCollide(it.packet.pos)) {
                 pendingPlacing[it.packet.pos] = System.currentTimeMillis()
             }
         }
     }
 
     private fun checkHeldItem(packet: CPacketPlayerTryUseItemOnBlock) = packet.hand == EnumHand.MAIN_HAND
-            && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).getItem() == Items.END_CRYSTAL
-            || packet.hand == EnumHand.OFF_HAND
-            && mc.player.heldItemOffhand.getItem() == Items.END_CRYSTAL
+        && mc.player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item == Items.END_CRYSTAL
+        || packet.hand == EnumHand.OFF_HAND
+        && mc.player.heldItemOffhand.item == Items.END_CRYSTAL
 
     init {
         safeListener<TickEvent.ClientTickEvent> { event ->
@@ -117,7 +118,7 @@ object CrystalESP : Module(
             }
 
             for (pos in pendingPlacing.keys) {
-                val damage = placeMap[pos]?: continue
+                val damage = placeMap[pos] ?: continue
                 cacheMap[pos] = Quad(damage.first, damage.second, 0.0f, 0.0f)
             }
 

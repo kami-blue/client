@@ -1,12 +1,14 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlace
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceOn
 import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.items.swapToItem
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -62,17 +64,17 @@ object HoleMiner : Module(
 
         safeListener<TickEvent.ClientTickEvent> {
             if (!CombatManager.isOnTopPriority(HoleMiner)) return@safeListener
+
             if (player.heldItemMainhand.item != Items.DIAMOND_PICKAXE) {
-                val slot = InventoryUtils.getSlotsHotbar(278)?.get(0)
-                if (slot == null) {
+                if (!swapToItem(Items.DIAMOND_PICKAXE)) {
                     MessageSendHelper.sendChatMessage("$chatName No pickaxe found, disabling")
                     disable()
                     return@safeListener
-                } else {
-                    InventoryUtils.swapSlot(slot)
                 }
             }
+
             val pos = miningPos
+
             if (pos == null) {
                 MessageSendHelper.sendChatMessage("$chatName No hole block to mine, disabling")
                 disable()
@@ -82,11 +84,13 @@ object HoleMiner : Module(
                     disable()
                     return@safeListener
                 }
+
                 val action = if (start) CPacketPlayerDigging.Action.START_DESTROY_BLOCK else CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK
                 val rotation = RotationUtils.getRotationTo(pos.toVec3dCenter())
                 val diff = player.getPositionEyes(1f).subtract(pos.toVec3dCenter())
                 val normalizedVec = diff.scale(1.0 / diff.length())
                 val facing = EnumFacing.getFacingFromVector(normalizedVec.x.toFloat(), normalizedVec.y.toFloat(), normalizedVec.z.toFloat())
+
                 PlayerPacketManager.addPacket(HoleMiner, PlayerPacketManager.PlayerPacket(rotating = true, rotation = rotation))
                 connection.sendPacket(CPacketPlayerDigging(action, pos, facing))
                 player.swingArm(EnumHand.MAIN_HAND)
@@ -95,27 +99,31 @@ object HoleMiner : Module(
         }
     }
 
-    private fun findHoleBlock(entity: Entity): BlockPos? {
+    private fun SafeClientEvent.findHoleBlock(entity: Entity): BlockPos? {
         val pos = entity.positionVector.toBlockPos()
         var closestPos = 114.514 to BlockPos.ORIGIN
+
         for (facing in EnumFacing.HORIZONTALS) {
             val offsetPos = pos.offset(facing)
-            val dist = mc.player.distanceTo(offsetPos)
+            val dist = player.distanceTo(offsetPos)
             if (dist > range || dist > closestPos.first) continue
-            if (mc.world.getBlockState(offsetPos).block == Blocks.BEDROCK) continue
+            if (world.getBlockState(offsetPos).block == Blocks.BEDROCK) continue
             if (!checkPos(offsetPos, facing)) continue
             closestPos = dist to offsetPos
         }
+
         return if (closestPos.second != BlockPos.ORIGIN) closestPos.second else null
     }
 
-    private fun checkPos(pos: BlockPos, facingIn: EnumFacing): Boolean {
-        if (CrystalUtils.canPlaceOn(pos.down()) && mc.world.isAirBlock(pos.up())) return true
+    private fun SafeClientEvent.checkPos(pos: BlockPos, facingIn: EnumFacing): Boolean {
+        if (canPlaceOn(pos.down()) && world.isAirBlock(pos.up())) return true
+
         for (facing in EnumFacing.HORIZONTALS) {
             if (facing == facingIn.opposite) continue
-            if (!CrystalUtils.canPlace(pos.offset(facing))) continue
+            if (!canPlace(pos.offset(facing))) continue
             return true
         }
+
         return false
     }
 }

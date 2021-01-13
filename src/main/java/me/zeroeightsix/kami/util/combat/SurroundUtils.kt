@@ -20,7 +20,6 @@ import kotlin.math.round
 object SurroundUtils {
     private val mc = Wrapper.minecraft
 
-    @JvmStatic
     val surroundOffset = arrayOf(
         BlockPos(0, -1, 0), // down
         BlockPos(0, 0, -1), // north
@@ -29,7 +28,6 @@ object SurroundUtils {
         BlockPos(-1, 0, 0)  // west
     )
 
-    @JvmStatic
     val surroundOffsetNoFloor = arrayOf(
         BlockPos(0, 0, -1), // north
         BlockPos(1, 0, 0),  // east
@@ -37,7 +35,6 @@ object SurroundUtils {
         BlockPos(-1, 0, 0)  // west
     )
 
-    @JvmStatic
     fun checkHole(entity: Entity): HoleType {
         return checkHole(entity.flooredPosition)
     }
@@ -64,7 +61,6 @@ object SurroundUtils {
         return block == Blocks.BEDROCK || block == Blocks.OBSIDIAN || block == Blocks.ENDER_CHEST || block == Blocks.ANVIL
     }
 
-    @JvmStatic
     fun centerPlayer(tp: Boolean): Boolean {
         val centerDiff = getCenterDiff()
         val centered = isCentered()

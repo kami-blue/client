@@ -13,6 +13,7 @@ import org.kamiblue.commons.extension.floorToInt
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 
 open class ListWindow(
@@ -24,7 +25,7 @@ open class ListWindow(
     saveToConfig: SettingGroup,
     vararg childrenIn: Component
 ) : TitledWindow(name, posX, posY, width, height, saveToConfig) {
-    val children = LinkedList<Component>()
+    val children = ArrayList<Component>()
 
     override val minWidth = 80.0f
     override val minHeight = 200.0f

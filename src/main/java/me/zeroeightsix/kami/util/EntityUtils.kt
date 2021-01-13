@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.util
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.util.items.id
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.Minecraft
@@ -25,11 +26,12 @@ object EntityUtils {
     val Entity.flooredPosition get() = BlockPos(floor(posX).toInt(), floor(posY).toInt(), floor(posZ).toInt())
     val Entity.prevPosVector get() = Vec3d(this.prevPosX, this.prevPosY, this.prevPosZ)
 
-    val Entity.isPassive get() = this is EntityAnimal
-        || this is EntityAgeable
-        || this is EntityTameable
-        || this is EntityAmbientCreature
-        || this is EntitySquid
+    val Entity.isPassive
+        get() = this is EntityAnimal
+            || this is EntityAgeable
+            || this is EntityTameable
+            || this is EntityAmbientCreature
+            || this is EntitySquid
 
     val Entity.isNeutral get() = isNeutralMob(this) && !isMobAggressive(this)
 
@@ -59,7 +61,6 @@ object EntityUtils {
         }
     }
 
-    @JvmStatic
     fun mobTypeSettings(entity: Entity, mobs: Boolean, passive: Boolean, neutral: Boolean, hostile: Boolean): Boolean {
         return mobs && (passive && entity.isPassive || neutral && entity.isNeutral || hostile && entity.isHostile)
     }
@@ -67,7 +68,6 @@ object EntityUtils {
     /**
      * Find the entities interpolated position
      */
-    @JvmStatic
     fun getInterpolatedPos(entity: Entity, ticks: Float): Vec3d = entity.prevPosVector.add(getInterpolatedAmount(entity, ticks))
 
     /**
@@ -112,9 +112,8 @@ object EntityUtils {
         return entityList
     }
 
-    @JvmStatic
     fun playerTypeCheck(player: EntityPlayer, friend: Boolean, sleeping: Boolean) = (friend || !FriendManager.isFriend(player.name))
-            && (sleeping || !player.isPlayerSleeping)
+        && (sleeping || !player.isPlayerSleeping)
 
     /**
      * Ray tracing the 8 vertex of the entity bounding box

@@ -1,14 +1,16 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.gui.AbstractKamiGui
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
-import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 
 object InventoryMove : Module(
@@ -22,22 +24,22 @@ object InventoryMove : Module(
     private var hasSent = false
 
     init {
-        listener<InputUpdateEvent> {
-            if (it.movementInput !is MovementInputFromOptions || checkGui()) return@listener
+        safeListener<InputUpdateEvent> {
+            if (it.movementInput !is MovementInputFromOptions || isInvalidGui(mc.currentScreen)) return@safeListener
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw - rotateSpeed
+                player.rotationYaw = player.rotationYaw - rotateSpeed
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-                mc.player.rotationYaw = mc.player.rotationYaw + rotateSpeed
+                player.rotationYaw = player.rotationYaw + rotateSpeed
             }
 
             // pitch can not exceed 90 degrees nor -90 degrees, otherwise AAC servers will flag this and kick you.
             if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch - rotateSpeed).coerceAtLeast(-90.0f)
+                player.rotationPitch = (player.rotationPitch - rotateSpeed).coerceAtLeast(-90.0f)
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-                mc.player.rotationPitch = (mc.player.rotationPitch + rotateSpeed).coerceAtMost(90.0f)
+                player.rotationPitch = (player.rotationPitch + rotateSpeed).coerceAtMost(90.0f)
             }
 
             it.movementInput.moveStrafe = 0.0f
@@ -81,16 +83,16 @@ object InventoryMove : Module(
                 }
             } catch (e: IndexOutOfBoundsException) {
                 if (!hasSent) {
-                    KamiMod.LOG.error("$chatName Error: Key is bound to a mouse button!")
-                    e.printStackTrace()
+                    KamiMod.LOG.error("$chatName Error: Key is bound to a mouse button!", e)
                     hasSent = true
                 }
             }
         }
     }
 
-    private fun checkGui() = mc.currentScreen == null
-        || mc.currentScreen is GuiChat
-        || mc.currentScreen is GuiEditSign
-        || mc.currentScreen is GuiRepair
+    private fun isInvalidGui(guiScreen: GuiScreen?) = guiScreen == null
+        || guiScreen is GuiChat
+        || guiScreen is GuiEditSign
+        || guiScreen is GuiRepair
+        || guiScreen.let { it is AbstractKamiGui<*, *> && it.searching }
 }

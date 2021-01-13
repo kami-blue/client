@@ -79,10 +79,10 @@ object FastUse : Module(
 
     private fun passItemCheck(item: Item): Boolean {
         return item !is ItemAir
-                && (allItems.value && item !is ItemBlock
-                || blocks.value && item is ItemBlock
-                || expBottles.value && item is ItemExpBottle
-                || endCrystals.value && item is ItemEndCrystal
-                || fireworks.value && item is ItemFirework)
+            && (allItems.value && item !is ItemBlock
+            || blocks.value && item is ItemBlock
+            || expBottles.value && item is ItemExpBottle
+            || endCrystals.value && item is ItemEndCrystal
+            || fireworks.value && item is ItemFirework)
     }
 }

@@ -35,15 +35,40 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
         windowList.addAll(GuiManager.hudElementsMap.values)
     }
 
+    override fun onGuiClosed() {
+        super.onGuiClosed()
+        setHudButtonVisibility { true }
+    }
+
     override fun newSettingWindow(element: HudElement, mousePos: Vec2f): HudSettingWindow {
         return HudSettingWindow(element, mousePos.x, mousePos.y)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == Keyboard.KEY_ESCAPE || HudEditor.bind.value.isDown(keyCode)) {
+        if (keyCode == Keyboard.KEY_ESCAPE || HudEditor.bind.value.isDown(keyCode) && !searching) {
             HudEditor.disable()
         } else {
             super.keyTyped(typedChar, keyCode)
+
+            val string = typedString.replace(" ", "")
+
+            if (string.isNotEmpty()) {
+                setHudButtonVisibility { hudButton ->
+                    hudButton.hudElement.name.contains(string, true)
+                        || hudButton.hudElement.alias.any { it.contains(string, true) }
+                }
+            } else {
+                setHudButtonVisibility { true }
+            }
+        }
+    }
+
+    private fun setHudButtonVisibility(function: (HudButton) -> Boolean) {
+        windowList.filterIsInstance<ListWindow>().forEach {
+            for (child in it.children) {
+                if (child !is HudButton) continue
+                child.visible = function(child)
+            }
         }
     }
 

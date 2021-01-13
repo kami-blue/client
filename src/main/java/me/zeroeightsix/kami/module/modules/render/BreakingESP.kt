@@ -100,7 +100,7 @@ object BreakingESP : Module(
                 breakingBlockList.putIfAbsent(it.breakId, Triple(it.position, it.progress, Pair(false, render)))
                 breakingBlockList.computeIfPresent(it.breakId) { _, triple -> Triple(it.position, it.progress, triple.third) }
                 if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakId]!!.third.first
-                        && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
+                    && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
                     if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     warningText = "${breaker.name} is breaking near you!"
                     if (chatWarn.value) sendChatMessage(warningText)

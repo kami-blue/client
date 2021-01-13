@@ -5,11 +5,11 @@ import com.google.gson.JsonPrimitive
 import me.zeroeightsix.kami.setting.settings.MutableSetting
 
 open class BooleanSetting(
-        name: String,
-        value: Boolean,
-        visibility: () -> Boolean = { true },
-        consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
-        description: String = ""
+    name: String,
+    value: Boolean,
+    visibility: () -> Boolean = { true },
+    consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
+    description: String = ""
 ) : MutableSetting<Boolean>(name, value, visibility, consumer, description) {
 
     override fun write(): JsonElement = JsonPrimitive(value)

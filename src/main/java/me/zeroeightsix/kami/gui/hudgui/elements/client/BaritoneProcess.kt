@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.gui.hudgui.elements.client
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.process.TemporaryPauseProcess
+import me.zeroeightsix.kami.process.PauseProcess
 import me.zeroeightsix.kami.util.BaritoneUtils
 
 object BaritoneProcess : LabelHud(
@@ -13,13 +13,18 @@ object BaritoneProcess : LabelHud(
 ) {
 
     override fun SafeClientEvent.updateText() {
-        val process = BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl() ?: return
-        if (!process.isPresent) return
+        val process = BaritoneUtils.primary?.pathingControlManager?.mostRecentInControl()?.orElse(null) ?: return
 
-        if (process.get() !== TemporaryPauseProcess && AutoWalk.isEnabled && AutoWalk.mode.value == AutoWalk.AutoWalkMode.BARITONE) {
-            displayText.addLine("Process: AutoWalk (${AutoWalk.direction.displayName})")
-        } else {
-            displayText.addLine("Process: ${process.get().displayName()}")
+        when {
+            process == PauseProcess -> {
+                displayText.addLine(process.displayName0())
+            }
+            AutoWalk.baritoneWalk -> {
+                displayText.addLine("AutoWalk (${AutoWalk.direction.displayName})")
+            }
+            else -> {
+                displayText.addLine("Process: ${process.displayName()}")
+            }
         }
     }
 

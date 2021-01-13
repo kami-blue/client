@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.module.Module
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayDeque
+import kotlin.collections.HashMap
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.min
@@ -63,7 +65,7 @@ object Breadcrumbs : Module(
                 return@safeListener
             }
 
-            if (mc.player.dimension != prevDimension) {
+            if (player.dimension != prevDimension) {
                 startTime = 0L
                 alphaMultiplier = 0f
                 prevDimension = player.dimension
@@ -123,12 +125,13 @@ object Breadcrumbs : Module(
         }
     }
 
-    private fun addPos(serverIP: String, dimension: Int, pTicks: Float): LinkedList<Vec3d> {
+    private fun SafeClientEvent.addPos(serverIP: String, dimension: Int, pTicks: Float): LinkedList<Vec3d> {
         var minDist = sin(-0.05f * smoothFactor.value * PI.toFloat()) * 2f + 2.01f
         if (isDisabled) minDist *= 2f
-        var currentPos = getInterpolatedPos(mc.player, pTicks)
-        if (mc.player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
-        val posList = mainList[serverIP]!![dimension]!!
+        var currentPos = getInterpolatedPos(player, pTicks)
+        if (player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
+
+        val posList = mainList.getOrPut(serverIP, ::HashMap).getOrPut(dimension, ::ArrayDeque)
 
         /* Adds position only when the list is empty or the distance between current position and the last position is further than the min distance */
         if (posList.isEmpty() || currentPos.distanceTo(posList.last()) > minDist) {

@@ -1,16 +1,20 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
+import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object VisualRange : Module(
@@ -26,16 +30,20 @@ object VisualRange : Module(
     private val logToFile = setting("LogToFile", false)
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.END || isDisabled && player.ticksExisted % 5 != 0) return@safeListener
+            if (it.phase != TickEvent.Phase.END || !timer.tick(1L)) return@safeListener
 
             val loadedPlayerSet = LinkedHashSet(world.playerEntities)
-            for (player in loadedPlayerSet) {
-                if (player == mc.renderViewEntity || player == player || !friends.value && FriendManager.isFriend(player.name)) continue
-                if (playerSet.add(player) && isEnabled) {
-                    onEnter(player)
+            for (entityPlayer in loadedPlayerSet) {
+                if (entityPlayer == mc.renderViewEntity || entityPlayer == player) continue // Self/Freecam check
+                if (entityPlayer.entityId < 0) continue // Fake entity check
+                if (!friends.value && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
+
+                if (playerSet.add(entityPlayer) && isEnabled) {
+                    onEnter(entityPlayer)
                 }
             }
 
@@ -51,20 +59,22 @@ object VisualRange : Module(
     }
 
     private fun onEnter(player: EntityPlayer) {
-        sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}joined!")
-        if (logToFile.value) WaypointManager.add("${player.name} spotted!")
+        sendNotification("${getColor(player) format player.name} spotted!")
+        if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} spotted!")
         if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
         if (leaving.value) {
-            sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}left!")
-            if (logToFile.value) WaypointManager.add("${player.name} left!")
+            sendNotification("${getColor(player) format player.name} left!")
+            if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} left!")
             if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
         }
     }
 
-    private fun getColor(player: EntityPlayer) = if (FriendManager.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
+    private fun getColor(player: EntityPlayer) =
+        if (FriendManager.isFriend(player.name)) TextFormatting.GREEN
+        else TextFormatting.RED
 
     private fun sendNotification(message: String) {
         if (playSound.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))

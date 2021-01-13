@@ -2,9 +2,9 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.foodValue
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import me.zeroeightsix.kami.util.saturation
+import me.zeroeightsix.kami.util.items.foodValue
+import me.zeroeightsix.kami.util.items.saturation
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.MobEffects

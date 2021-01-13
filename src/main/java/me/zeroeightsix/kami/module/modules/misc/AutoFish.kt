@@ -98,7 +98,8 @@ object AutoFish : Module(
     }
 
     private fun SafeClientEvent.isSplash(packet: SPacketSoundEffect): Boolean {
-        if (mode.value == Mode.SPLASH && (player.fishEntity?.getDistance(packet.x, packet.y, packet.z) ?: 69420.0) > 2) return false
+        if (mode.value == Mode.SPLASH && (player.fishEntity?.getDistance(packet.x, packet.y, packet.z)
+                ?: 69420.0) > 2) return false
         val soundName = packet.sound.soundName.toString().toLowerCase()
         return (mode.value != Mode.SPLASH && isAnySplash(soundName)) || soundName.contains("entity.bobber.splash")
     }
@@ -111,7 +112,7 @@ object AutoFish : Module(
 
     private fun SafeClientEvent.isBouncing(): Boolean {
         if (player.fishEntity == null || !isOnWater()) return false
-        return (player.fishEntity?.motionY ?: 911.0)!in -0.05..0.05
+        return (player.fishEntity?.motionY ?: 911.0) !in -0.05..0.05
     }
 
     private fun catch() {

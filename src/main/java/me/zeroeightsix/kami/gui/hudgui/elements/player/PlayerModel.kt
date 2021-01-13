@@ -52,6 +52,8 @@ object PlayerModel : HudElement(
             GlStateUtils.depth(false)
             GlStateUtils.texture2d(true)
             GlStateUtils.blend(true)
+            GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
             GlStateManager.disableColorMaterial()
             glPopMatrix()
         }

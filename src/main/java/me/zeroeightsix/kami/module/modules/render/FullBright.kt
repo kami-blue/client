@@ -43,7 +43,7 @@ object FullBright : Module(
                 }
 
                 isDisabled && gammaSetting != oldValue
-                        && !disableTimer.tick((transitionLength * 1000.0f).toLong(), false) -> {
+                    && !disableTimer.tick((transitionLength * 1000.0f).toLong(), false) -> {
                     transition(oldValue)
                 }
 

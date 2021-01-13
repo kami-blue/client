@@ -28,12 +28,12 @@ object CoordsLog : Module(
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (autoLog.value && timer.tick(delay.value.toLong())) {
-                    val currentCoord = player.positionVector.toBlockPos().asString()
+                val currentCoord = player.positionVector.toBlockPos().asString()
 
                 if (currentCoord != previousCoord) {
                     WaypointManager.add("autoLogger")
                     previousCoord = currentCoord
-                    }
+                }
             }
 
             if (saveOnDeath.value) {

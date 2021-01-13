@@ -54,13 +54,13 @@ object AntiBot : Module(
     fun isBot(entity: Entity) = isEnabled && entity is EntityPlayer && botSet.contains(entity)
 
     private fun SafeClientEvent.isBot(entity: EntityPlayer) = entity.name == player.name
-            || entity.name == FakePlayer.playerName
-            || tabList.value && connection.getPlayerInfo(entity.name) == null
-            || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
-            || hp.value && entity.health !in 0f..20f
-            || sleeping.value && entity.isPlayerSleeping && !entity.onGround
-            || hoverOnTop.value && hoverCheck(entity)
-            || entity.ticksExisted < ticksExists.value
+        || entity.name == FakePlayer.playerName
+        || tabList.value && connection.getPlayerInfo(entity.name) == null
+        || ping.value && connection.getPlayerInfo(entity.name)?.responseTime ?: -1 <= 0
+        || hp.value && entity.health !in 0f..20f
+        || sleeping.value && entity.isPlayerSleeping && !entity.onGround
+        || hoverOnTop.value && hoverCheck(entity)
+        || entity.ticksExisted < ticksExists.value
 
     private fun SafeClientEvent.hoverCheck(entity: EntityPlayer): Boolean {
         val distXZ = Vec2d(entity.posX, entity.posZ).minus(player.posX, player.posZ).lengthSquared()

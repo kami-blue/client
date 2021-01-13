@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.mixin.client.gui;
 
 import me.zeroeightsix.kami.gui.mc.KamiGuiAntiDisconnect;
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect;
-import me.zeroeightsix.kami.module.modules.movement.AutoWalk;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -21,10 +20,6 @@ public class MixinGuiIngameMenu {
                 Wrapper.getMinecraft().displayGuiScreen(new KamiGuiAntiDisconnect());
 
                 callbackInfo.cancel();
-            }
-
-            if (AntiDisconnect.INSTANCE.isEnabled() && AutoWalk.INSTANCE.isEnabled() && AutoWalk.INSTANCE.getMode().getValue() == AutoWalk.AutoWalkMode.BARITONE) {
-                AutoWalk.INSTANCE.disable();
             }
         }
     }

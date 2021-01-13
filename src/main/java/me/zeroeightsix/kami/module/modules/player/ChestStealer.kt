@@ -1,11 +1,13 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
-import me.zeroeightsix.kami.util.InventoryUtils.getEmptySlotContainer
 import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.items.*
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiEnchantment
 import net.minecraft.client.gui.GuiMerchant
 import net.minecraft.client.gui.GuiRepair
@@ -44,43 +46,64 @@ object ChestStealer : Module(
         }
     }
 
-    fun canSteal(): Boolean {
+    private fun SafeClientEvent.canSteal(): Boolean {
         return getStealingSlot() != null
     }
 
-    fun isContainerOpen(): Boolean {
-        return mc.player.openContainer != null
-                && isValidGui()
+    private fun SafeClientEvent.isContainerOpen(): Boolean {
+        return player.openContainer != null
+            && isValidGui()
     }
 
     fun isValidGui(): Boolean {
         return mc.currentScreen !is GuiEnchantment
-                && mc.currentScreen !is GuiMerchant
-                && mc.currentScreen !is GuiRepair
-                && mc.currentScreen !is GuiBeacon
-                && mc.currentScreen !is GuiCrafting
-                && mc.currentScreen !is GuiContainerCreative
-                && mc.currentScreen !is GuiInventory
+            && mc.currentScreen !is GuiMerchant
+            && mc.currentScreen !is GuiRepair
+            && mc.currentScreen !is GuiBeacon
+            && mc.currentScreen !is GuiCrafting
+            && mc.currentScreen !is GuiContainerCreative
+            && mc.currentScreen !is GuiInventory
     }
 
-    private fun steal(slot: Int?): Boolean {
+    @JvmStatic
+    fun updateButton(button: GuiButton, left: Int, size: Int, top: Int) {
+        runSafe {
+            if (isEnabled && isContainerOpen()) {
+                val str = if (stealing) {
+                    "Stop"
+                } else {
+                    "Steal"
+                }
+
+                button.x = left + size + 2
+                button.y = top + 2
+                button.enabled = canSteal()
+                button.visible = true
+                button.displayString = str
+            } else {
+                button.visible = false
+            }
+        }
+    }
+
+    private fun SafeClientEvent.steal(slot: Int?): Boolean {
         if (slot == null) return false
         val size = getContainerSlotSize()
-        val slotTo = getEmptySlotContainer(size, size + 35) ?: return false
-        val windowID = mc.player.openContainer.windowId
+        val slotTo = player.openContainer.getSlots(size until size + 36).firstEmpty() ?: return false
+        val windowID = player.openContainer.windowId
 
         if (timer.tick(delay.value.toLong())) {
             when (movingMode.value) {
-                MovingMode.QUICK_MOVE -> InventoryUtils.quickMoveSlot(windowID, slot)
-                MovingMode.PICKUP -> InventoryUtils.moveToSlot(windowID, slot, slotTo)
-                MovingMode.THROW -> InventoryUtils.throwAllInSlot(windowID, slot)
+                MovingMode.QUICK_MOVE -> quickMoveSlot(windowID, slot)
+                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo.slotNumber)
+                MovingMode.THROW -> throwAllInSlot(windowID, slot)
             }
         }
         return true
     }
 
-    private fun getStealingSlot(): Int? {
-        val container = mc.player.openContainer.inventory
+    private fun SafeClientEvent.getStealingSlot(): Int? {
+        val container = player.openContainer.inventory
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].item
             if (item == Items.AIR) continue
@@ -90,8 +113,8 @@ object ChestStealer : Module(
         return null
     }
 
-    private fun getContainerSlotSize(): Int {
+    private fun SafeClientEvent.getContainerSlotSize(): Int {
         if (mc.currentScreen !is GuiContainer) return 0
-        return mc.player.openContainer.inventorySlots.size - 36
+        return player.openContainer.inventorySlots.size - 36
     }
 }

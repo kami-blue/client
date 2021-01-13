@@ -1,12 +1,15 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.player
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.items.storageSlots
 import me.zeroeightsix.kami.util.math.Vec2d
+import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -18,11 +21,13 @@ object InventoryViewer : HudElement(
     category = Category.PLAYER,
     description = "Items in Inventory"
 ) {
-    private val mcTexture = setting("MinecraftTexture", false)
-    private val showIcon = setting("ShowIcon", false, { !mcTexture.value })
-    private val iconScale = setting("IconScale", 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture.value && showIcon.value })
-    private val coloredBackground = setting("ColoredBackground", true, { !mcTexture.value })
-    private val color = setting("Background", ColorHolder(155, 144, 255, 64), true, { coloredBackground.value && !mcTexture.value })
+    private val mcTexture by setting("Minecraft Texture", false)
+    private val showIcon by setting("Show Icon", false, { !mcTexture })
+    private val iconScale by setting("Icon Scale", 0.5f, 0.1f..1.0f, 0.1f, { !mcTexture && showIcon })
+    private val border by setting("Border", true, { !mcTexture })
+    private val borderColor by setting("Border Color", ColorHolder(111, 166, 222, 255), true, { !mcTexture && border })
+    private val background by setting("Background", true, { !mcTexture })
+    private val backgroundColor by setting("Background Color", ColorHolder(30, 36, 48, 127), true, { !mcTexture && background })
 
     private val containerTexture = ResourceLocation("textures/gui/container/inventory.png")
     private val kamiIcon = ResourceLocation("kamiblue/kami_icon.png")
@@ -32,15 +37,21 @@ object InventoryViewer : HudElement(
 
     override fun renderHud(vertexHelper: VertexHelper) {
         super.renderHud(vertexHelper)
-        drawFrame()
-        drawFrameTexture()
-        drawItems()
+        runSafe {
+            drawFrame(vertexHelper)
+            drawFrameTexture()
+            drawItems()
+        }
     }
 
-    private fun drawFrame() {
-        if (!mcTexture.value && coloredBackground.value) {
-            val vertexHelper = VertexHelper(GlStateUtils.useVbo())
-            RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(162.0, 54.0), color = color.value)
+    private fun drawFrame(vertexHelper: VertexHelper) {
+        if (!mcTexture) {
+            if (background) {
+                RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(162.0, 54.0), color = backgroundColor)
+            }
+            if (border) {
+                RenderUtils2D.drawRectOutline(vertexHelper, posEnd = Vec2d(162.0, 54.0), lineWidth = 2.0f, color = borderColor)
+            }
         }
     }
 
@@ -49,7 +60,7 @@ object InventoryViewer : HudElement(
         val buffer = tessellator.buffer
         GlStateUtils.texture2d(true)
 
-        if (mcTexture.value) {
+        if (mcTexture) {
             mc.renderEngine.bindTexture(containerTexture)
             buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
             buffer.pos(0.0, 0.0, 0.0).tex(0.02734375, 0.32421875).endVertex() // (7 / 256), (83 / 256)
@@ -57,13 +68,13 @@ object InventoryViewer : HudElement(
             buffer.pos(162.0, 0.0, 0.0).tex(0.65625, 0.32421875).endVertex() // (168 / 256), (83 / 256)
             buffer.pos(162.0, 54.0, 0.0).tex(0.65625, 0.53125).endVertex() // (168 / 256), (136 / 256)
             tessellator.draw()
-        } else if (showIcon.value) {
+        } else if (showIcon) {
             mc.renderEngine.bindTexture(kamiIcon)
             GlStateManager.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 
             val center = Vec2d(81.0, 27.0)
-            val halfWidth = iconScale.value * 54.0
-            val halfHeight = iconScale.value * 27.0
+            val halfWidth = iconScale * 54.0
+            val halfHeight = iconScale * 27.0
 
             buffer.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_TEX)
             buffer.pos(center.x - halfWidth, center.y - halfHeight, 0.0).tex(0.0, 0.0).endVertex()
@@ -76,13 +87,14 @@ object InventoryViewer : HudElement(
         }
     }
 
-    private fun drawItems() {
-        val items = mc.player.inventory.mainInventory.subList(9, 36)
-
-        for ((index, itemStack) in items.withIndex()) {
+    private fun SafeClientEvent.drawItems() {
+        for ((index, slot) in player.storageSlots.withIndex()) {
+            val itemStack = slot.stack
             if (itemStack.isEmpty) continue
+
             val slotX = index % 9 * 18 + 1
             val slotY = index / 9 * 18 + 1
+
             RenderUtils2D.drawItem(itemStack, slotX, slotY)
         }
     }

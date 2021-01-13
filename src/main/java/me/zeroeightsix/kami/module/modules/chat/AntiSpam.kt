@@ -118,8 +118,8 @@ object AntiSpam : Module(
 
     private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
-                || !filterDMs.value && MessageDetection.Direct.ANY detect message
-                || !filterServer.value && MessageDetection.Server.ANY detect message) {
+            || !filterDMs.value && MessageDetection.Direct.ANY detect message
+            || !filterServer.value && MessageDetection.Server.ANY detect message) {
             null
         } else {
             detectSpam(removeUsername(message))

@@ -194,9 +194,9 @@ object ESP : Module(
                 if (entity == player) continue
                 if (player.getDistance(entity) > range) continue
                 if (entity is EntityXPOrb && experience
-                        || entity is EntityArrow && arrows
-                        || entity is EntityThrowable && throwable
-                        || entity is EntityItem && items) {
+                    || entity is EntityArrow && arrows
+                    || entity is EntityThrowable && throwable
+                    || entity is EntityItem && items) {
                     entityList.add(entity)
                 }
             }

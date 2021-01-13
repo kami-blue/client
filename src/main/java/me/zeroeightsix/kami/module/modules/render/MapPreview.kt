@@ -11,6 +11,8 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter.getFontHeight
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter.getStringWidth
 import me.zeroeightsix.kami.util.math.Vec2d
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.item.ItemMap
@@ -29,8 +31,8 @@ object MapPreview : Module(
 ) {
     private val mapBackground = ResourceLocation("textures/map/map_background.png")
 
-    private val showName = setting("ShowName", false)
-    private val frame = setting("ShowFrame", false)
+    private val showName = setting("ShowName", true)
+    private val frame = setting("ShowFrame", true)
     val scale = setting("Scale", 5.0, 0.0..10.0, 0.1)
 
     @JvmStatic
@@ -39,10 +41,26 @@ object MapPreview : Module(
     }
 
     @JvmStatic
-    fun drawMap(stack: ItemStack, mapData: MapData) {
+    fun drawMap(stack: ItemStack, mapData: MapData, originalX: Int, originalY: Int) {
+        val x = originalX + 6.0
+        val y = originalY + 6.0
+        val scale = scale.value / 5.0
+
+        GlStateManager.pushMatrix()
+        GlStateManager.color(1f, 1f, 1f)
+        RenderHelper.enableGUIStandardItemLighting()
+        GlStateManager.disableDepth()
+
+        GlStateManager.translate(x, y, 0.0)
+        GlStateManager.scale(scale, scale, 0.0)
+
         drawMapFrame()
         mc.entityRenderer.mapItemRenderer.renderMap(mapData, false)
         drawMapName(stack)
+
+        GlStateManager.enableDepth()
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.popMatrix()
     }
 
     private fun drawMapFrame() {

@@ -87,7 +87,7 @@ object EyeFinder : Module(
 
     private fun getRaytraceResult(entity: Entity): RayTraceResult? {
         var result = entity.rayTrace(5.0, Minecraft.getMinecraft().renderPartialTicks)
-                ?: return null /* Raytrace for block */
+            ?: return null /* Raytrace for block */
         if (result.typeOfHit == RayTraceResult.Type.MISS) { /* Raytrace for entity */
             val eyePos = entity.getPositionEyes(mc.renderPartialTicks)
             val entityLookVec = entity.getLook(mc.renderPartialTicks).scale(5.0)

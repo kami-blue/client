@@ -15,7 +15,7 @@ val AxisAlignedBB.zLength get() = maxY - minY
 
 val AxisAlignedBB.lengths get() = Vec3d(xLength, yLength, zLength)
 
-fun AxisAlignedBB.corners(scale: Double) : Array<Vec3d> {
+fun AxisAlignedBB.corners(scale: Double): Array<Vec3d> {
     val growSizes = lengths * (scale - 1.0)
     return grow(growSizes.x, growSizes.y, growSizes.z).corners()
 }
@@ -31,7 +31,7 @@ fun AxisAlignedBB.corners() = arrayOf(
     Vec3d(maxX, maxY, maxZ),
 )
 
-fun AxisAlignedBB.side(side: EnumFacing, scale: Double = 0.5) : Vec3d {
+fun AxisAlignedBB.side(side: EnumFacing, scale: Double = 0.5): Vec3d {
     val lengths = lengths
     val sideDirectionVec = side.directionVec.toVec3d()
     return lengths * sideDirectionVec * scale + center

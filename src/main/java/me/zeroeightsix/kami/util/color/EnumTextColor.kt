@@ -19,5 +19,7 @@ enum class EnumTextColor(val textFormatting: TextFormatting) {
     RED(TextFormatting.RED),
     LIGHT_PURPLE(TextFormatting.LIGHT_PURPLE),
     YELLOW(TextFormatting.YELLOW),
-    WHITE(TextFormatting.WHITE)
+    WHITE(TextFormatting.WHITE);
+
+    override fun toString(): String = this.textFormatting.toString()
 }

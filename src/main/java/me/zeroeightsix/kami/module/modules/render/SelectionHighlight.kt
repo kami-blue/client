@@ -45,14 +45,16 @@ object SelectionHighlight : Module(
                 val lookVec = viewEntity.lookVec
                 val sightEnd = eyePos.add(lookVec.scale(6.0))
                 val hitSide = hitObject.entityHit?.entityBoundingBox?.calculateIntercept(eyePos, sightEnd)?.sideHit
-                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide] else GeometryMasks.Quad.ALL)?: return@listener
+                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitSide] else GeometryMasks.Quad.ALL)
+                    ?: return@listener
                 renderer.add(hitObject.entityHit, color, side)
             }
 
             if (block.value && hitObject.typeOfHit == Type.BLOCK) {
                 val blockState = mc.world.getBlockState(hitObject.blockPos)
                 val box = blockState.getSelectedBoundingBox(mc.world, hitObject.blockPos) ?: return@listener
-                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit] else GeometryMasks.Quad.ALL)?: return@listener
+                val side = (if (hitSideOnly.value) GeometryMasks.FACEMAP[hitObject.sideHit] else GeometryMasks.Quad.ALL)
+                    ?: return@listener
                 renderer.add(box.grow(0.002), color, side)
             }
             renderer.render(true)

@@ -4,7 +4,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.modules.movement.AutoWalk
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.CoordinateConverter.asString
@@ -42,6 +44,8 @@ object StashLogger : Module(
     private val dispenserDensity by setting("MinDispensers", 5, 1..20, 1, { logDispensers })
     private val logHoppers by setting("Hoppers", true)
     private val hopperDensity by setting("MinHoppers", 5, 1..20, 1, { logHoppers })
+    private val disableAutoWalk by setting("DisableAutoWalk", false, description = "Disables AutoWalk when a stash is found")
+    private val cancelBaritone by setting("CancelBaritone", false, description = "Cancels Baritone when a stash is found")
 
     private val chunkData = LinkedHashMap<Long, ChunkStats>()
     private val knownPositions = HashSet<BlockPos>()
@@ -55,32 +59,44 @@ object StashLogger : Module(
                 coroutineScope {
                     launch {
                         world.loadedTileEntityList.toList().forEach(::logTileEntity)
-
-                        for (chunkStats in chunkData.values) {
-                            if (!chunkStats.hot) continue
-
-                            chunkStats.hot = false
-                            val center = chunkStats.center()
-                            val string = chunkStats.toString()
-
-                            if (saveToFile) {
-                                WaypointManager.add(center, string)
-                            }
-
-                            if (playSound) {
-                                onMainThread {
-                                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-                                }
-                            }
-
-                            if (logToChat) {
-                                val positionString = center.asString()
-                                MessageSendHelper.sendChatMessage("$chatName $positionString $string")
-                            }
-                        }
+                        notification()
                     }
                 }
             }
+        }
+    }
+
+    private fun notification() {
+        var found = false
+
+        for (chunkStats in chunkData.values) {
+            if (!chunkStats.hot) continue
+
+            chunkStats.hot = false
+            val center = chunkStats.center()
+            val string = chunkStats.toString()
+
+            if (saveToFile) {
+                WaypointManager.add(center, string)
+            }
+
+            if (playSound) {
+                onMainThread {
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                }
+            }
+
+            if (logToChat) {
+                val positionString = center.asString()
+                MessageSendHelper.sendChatMessage("$chatName $positionString $string")
+            }
+
+            found = found || true
+        }
+
+        if (found) {
+            if (disableAutoWalk && AutoWalk.isEnabled) AutoWalk.disable()
+            if (cancelBaritone && (BaritoneUtils.isPathing || BaritoneUtils.isActive)) BaritoneUtils.cancelEverything()
         }
     }
 

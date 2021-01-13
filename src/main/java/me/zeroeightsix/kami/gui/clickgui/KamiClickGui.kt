@@ -8,7 +8,6 @@ import me.zeroeightsix.kami.gui.rgui.windows.ListWindow
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
-import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
 import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 
@@ -50,49 +49,33 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, Module>() {
 
     override fun onGuiClosed() {
         super.onGuiClosed()
-        setModuleVisibility { true }
+        setModuleButtonVisibility { true }
     }
 
     override fun newSettingWindow(element: Module, mousePos: Vec2f): ModuleSettingWindow {
         return ModuleSettingWindow(element, mousePos.x, mousePos.y)
     }
 
-
-    override fun handleKeyboardInput() {
-        super.handleKeyboardInput()
-        val keyCode = Keyboard.getEventKey()
-
-        if (settingWindow?.listeningChild == null && (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE)) {
-            typedString = ""
-            lastTypedTime = 0L
-            stringWidth = 0.0f
-            prevStringWidth = 0.0f
-
-            setModuleVisibility { true }
-        }
-    }
-
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == Keyboard.KEY_ESCAPE || ClickGUI.bind.value.isDown(keyCode)) {
+        if (keyCode == Keyboard.KEY_ESCAPE || keyCode == ClickGUI.bind.value.key && !searching) {
             ClickGUI.disable()
-        } else if (settingWindow?.listeningChild == null) {
-            when {
-                typedChar.isLetter() || typedChar == ' ' -> {
-                    typedString += typedChar
-                    stringWidth = FontRenderAdapter.getStringWidth(typedString, 1.666f)
-                    lastTypedTime = System.currentTimeMillis()
+        } else {
+            super.keyTyped(typedChar, keyCode)
 
-                    val string = typedString.replace(" ", "")
-                    setModuleVisibility { moduleButton ->
-                        moduleButton.module.name.contains(string, true)
+            val string = typedString.replace(" ", "")
+
+            if (string.isNotEmpty()) {
+                setModuleButtonVisibility { moduleButton ->
+                    moduleButton.module.name.contains(string, true)
                         || moduleButton.module.alias.any { it.contains(string, true) }
-                    }
                 }
+            } else {
+                setModuleButtonVisibility { true }
             }
         }
     }
 
-    private fun setModuleVisibility(function: (ModuleButton) -> Boolean) {
+    private fun setModuleButtonVisibility(function: (ModuleButton) -> Boolean) {
         windowList.filterIsInstance<ListWindow>().forEach {
             for (child in it.children) {
                 if (child !is ModuleButton) continue

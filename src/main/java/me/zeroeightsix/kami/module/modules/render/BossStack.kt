@@ -86,23 +86,23 @@ object BossStack : Module(
     }
 
     private fun getClosestBoss(name: String?) =
-            mc.world?.loadedEntityList?.let {
-                var closest = Float.MAX_VALUE
-                var closestBoss: EntityLivingBase? = null
+        mc.world?.loadedEntityList?.let {
+            var closest = Float.MAX_VALUE
+            var closestBoss: EntityLivingBase? = null
 
-                for (entity in it) {
-                    if (entity !is EntityLivingBase) continue
-                    if (entity.isNonBoss) continue
-                    if (name != null && entity.displayName.formattedText != name) continue
+            for (entity in it) {
+                if (entity !is EntityLivingBase) continue
+                if (entity.isNonBoss) continue
+                if (name != null && entity.displayName.formattedText != name) continue
 
-                    val dist = entity.getDistance(mc.player)
-                    if (dist >= closest) continue
+                val dist = entity.getDistance(mc.player)
+                if (dist >= closest) continue
 
-                    closest = dist
-                    closestBoss = entity
-                }
-                closestBoss
+                closest = dist
+                closestBoss = entity
             }
+            closestBoss
+        }
 
     private fun drawHealthBar() {
         mc.profiler.startSection("bossHealth")

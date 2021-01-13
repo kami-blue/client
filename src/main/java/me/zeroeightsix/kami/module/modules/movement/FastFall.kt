@@ -27,12 +27,12 @@ object FastFall : Module(
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (player.onGround
-                    || player.isElytraFlying
-                    || player.isInLava
-                    || player.isInWater
-                    || player.isInWeb
-                    || player.fallDistance < fallDistance.value
-                    || player.capabilities.isFlying) {
+                || player.isElytraFlying
+                || player.isInLava
+                || player.isInWater
+                || player.isInWeb
+                || player.fallDistance < fallDistance.value
+                || player.capabilities.isFlying) {
                 reset()
                 return@safeListener
             }

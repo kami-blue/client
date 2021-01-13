@@ -58,6 +58,8 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         }
     private val renderStringPosX
         get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 250.0f, prevStringWidth, stringWidth)
+    val searching
+        get() = typedString.isNotEmpty()
 
     // Shader
     private val blurShader = ShaderHelper(ResourceLocation("shaders/post/kawase_blur_6.json"), "final")
@@ -231,6 +233,23 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         hoveredWindow?.onKeyInput(keyCode, keyState)
         if (settingWindow != hoveredWindow) settingWindow?.onKeyInput(keyCode, keyState)
     }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (settingWindow?.listeningChild != null) return
+        when {
+            keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE -> {
+                typedString = ""
+                lastTypedTime = 0L
+                stringWidth = 0.0f
+                prevStringWidth = 0.0f
+            }
+            typedChar.isLetter() || typedChar == ' ' -> {
+                typedString += typedChar
+                stringWidth = FontRenderAdapter.getStringWidth(typedString, 2.0f)
+                lastTypedTime = System.currentTimeMillis()
+            }
+        }
+    }
     // End of keyboard input
 
     // Rendering
@@ -299,10 +318,10 @@ abstract class AbstractKamiGui<S : SettingWindow<*>, E : Any> : GuiScreen() {
         if (typedString.isNotBlank() && System.currentTimeMillis() - lastTypedTime <= 5000L) {
             val scaledResolution = ScaledResolution(mc)
             val posX = scaledResolution.scaledWidth / 2.0f - renderStringPosX / 2.0f
-            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(3.0f) / 2.0f
+            val posY = scaledResolution.scaledHeight / 2.0f - FontRenderAdapter.getFontHeight(2.0f) / 2.0f
             val color = GuiColors.text
             color.a = AnimationUtils.halfSineDec(AnimationUtils.toDeltaTimeFloat(lastTypedTime), 5000.0f, 0.0f, 255.0f).toInt()
-            FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 1.666f)
+            FontRenderAdapter.drawString(typedString, posX, posY, color = color, scale = 2.0f)
         }
     }
     // End of rendering

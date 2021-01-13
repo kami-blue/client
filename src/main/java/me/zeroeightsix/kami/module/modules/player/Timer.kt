@@ -22,9 +22,9 @@ object Timer : Module(
         }
 
         safeListener<TickEvent.ClientTickEvent> {
-            mc.timer.tickLength =  50.0f /
-                    if (!slow) tickNormal
-                    else (tickSlow / 10.0f)
+            mc.timer.tickLength = 50.0f /
+                if (!slow) tickNormal
+                else (tickSlow / 10.0f)
         }
     }
 }

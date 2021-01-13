@@ -3,8 +3,10 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
+import me.zeroeightsix.kami.util.items.allSlots
+import me.zeroeightsix.kami.util.items.countItem
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.init.Items
 import net.minecraft.network.play.server.SPacketEntityStatus
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -32,7 +34,7 @@ object AntiChainPop : Module(
         safeListener<TickEvent.ClientTickEvent> {
             if (mode == Mode.ITEMS) return@safeListener
             val old = totems
-            val new = InventoryUtils.countItemAll(449)
+            val new = player.allSlots.countItem(Items.TOTEM_OF_UNDYING)
             if (new < old) Surround.enable()
             totems = new
         }

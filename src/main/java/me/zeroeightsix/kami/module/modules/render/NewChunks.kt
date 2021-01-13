@@ -47,7 +47,7 @@ object NewChunks : Module(
     private val green = setting("Green", 255, 0..255, 1, { customColor.value && isWorldMode })
     private val blue = setting("Blue", 255, 0..255, 1, { customColor.value && isWorldMode })
     private val range = setting("RenderRange", 256, 64..1024, 64)
-    val radarScale = setting("RadarScale", 2.0,1.0..10.0, 0.1, { isRadarMode })
+    val radarScale = setting("RadarScale", 2.0, 1.0..10.0, 0.1, { isRadarMode })
     private val removeMode = setting("RemoveMode", RemoveMode.MAX_NUM)
     private val maxNum = setting("MaxNum", 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
 
@@ -199,7 +199,7 @@ object NewChunks : Module(
             }
             file = File(file, "newChunkLogs")
             val date = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Date())
-            file = File(file, mc.getSession().username + "_" + date + ".csv") // maybe dont safe the name actually. But I also dont want to make another option...
+            file = File(file, mc.session.username + "_" + date + ".csv") // maybe dont safe the name actually. But I also dont want to make another option...
             val rV = file.toPath()
             try {
                 if (!Files.exists(rV)) { // ovsly always...
@@ -308,10 +308,10 @@ object NewChunks : Module(
         fun testChange(): Boolean {
             // these somehow include the test whether its null
             return saveOption.value != lastSaveOption
-                    || saveInRegionFolder.value != lastInRegion
-                    || alsoSaveNormalCoords.value != lastSaveNormal
-                    || dimension != mc.player.dimension
-                    || mc.currentServerData?.serverIP != ip
+                || saveInRegionFolder.value != lastInRegion
+                || alsoSaveNormalCoords.value != lastSaveNormal
+                || dimension != mc.player.dimension
+                || mc.currentServerData?.serverIP != ip
         }
 
         private fun update() {

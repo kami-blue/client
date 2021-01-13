@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.threads.runSafe
@@ -19,20 +20,19 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.MovementInput
 import net.minecraft.util.MovementInputFromOptions
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.InputUpdateEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.commons.extension.toRadian
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 object Freecam : Module(
     name = "Freecam",
@@ -86,7 +86,6 @@ object Freecam : Module(
         }
 
         safeListener<InputEvent.KeyInputEvent> {
-            if (mc.world == null || mc.player == null) return@safeListener
             // Force it to stay in first person lol
             if (mc.gameSettings.keyBindTogglePerspective.isKeyDown) mc.gameSettings.thirdPersonView = 2
         }
@@ -103,9 +102,12 @@ object Freecam : Module(
         }
 
         safeListener<InputUpdateEvent>(9999) {
-            if (it.movementInput !is MovementInputFromOptions || BaritoneUtils.isPathing || BaritoneUtils.isActive) return@safeListener
+            if (it.movementInput !is MovementInputFromOptions || BaritoneUtils.isPathing) return@safeListener
 
             resetMovementInput(it.movementInput)
+
+            if (BaritoneUtils.isActive) return@safeListener
+
             if (autoRotate.value) updatePlayerRotation()
             if (arrowKeyMove.value) updatePlayerMovement()
         }
@@ -121,6 +123,24 @@ object Freecam : Module(
                 BaritoneUtils.cancelEverything()
                 BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalTwoBlocks(result.hitVec.toBlockPos()))
             }
+        }
+    }
+
+    @JvmStatic
+    val renderChunkOffset
+        get() = BlockPos(
+            (mc.player.posX / 16).floorToInt() * 16,
+            (mc.player.posY / 16).floorToInt() * 16,
+            (mc.player.posZ / 16).floorToInt() * 16
+        )
+
+    @JvmStatic
+    fun getRenderViewEntity(renderViewEntity: EntityPlayer): EntityPlayer {
+        val player = mc.player
+        return if (isEnabled && player != null) {
+            player
+        } else {
+            renderViewEntity
         }
     }
 
@@ -175,7 +195,7 @@ object Freecam : Module(
             val movementInput = calcMovementInput(forward, strafe, false to false)
 
             val yawDiff = player.rotationYaw - it.rotationYaw
-            val yawRad = MovementUtils.calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
+            val yawRad = calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
             val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1f)
 
             player.movementInput?.apply {

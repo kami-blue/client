@@ -2,32 +2,32 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
-import me.zeroeightsix.kami.event.events.PrintChatMessageEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.text.*
+import me.zeroeightsix.kami.util.text.MessageDetection
+import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
-object BaritoneRemote : Module(
-    name = "BaritoneRemote",
-    description = "Remotely control Baritone with /msg",
+// TODO: When list settings are added to GUI, refactor the custom setting to be a list of usernames
+// TODO: Removed feedback as it does not work on KAMI Blue command feedback.
+// Perhaps we need to restructure the message sending system, as currently the methods feel ugly.
+object RemoteCommand : Module(
+    name = "RemoteCommand",
+    description = "Allow trusted players to send commands",
     category = Category.CHAT
 ) {
-    private val feedback = setting("SendFeedback", true)
     private val allow = setting("Allow", Allow.FRIENDS)
-    private val custom = setting("Custom", "unchanged")
-
-    private var sendNextMsg = false
-    private var lastController: String? = null
+    private val repeatAll by setting("RepeatAll", false)
+    private val custom by setting("Custom", "unchanged")
 
     init {
-        /* instructions for changing custom setting */
         allow.listeners.add {
             mc.player?.let {
-                if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom.value == "unchanged") {
+                if ((allow.value == Allow.CUSTOM || allow.value == Allow.FRIENDS_AND_CUSTOM) && custom == "unchanged") {
                     MessageSendHelper.sendChatMessage("$chatName Use the ${formatValue("${CommandManager.prefix}set Custom")}"
                         + " command to change the custom users list. For example, "
                         + formatValue("${CommandManager.prefix}set Custom dominika,Dewy,086"))
@@ -35,30 +35,26 @@ object BaritoneRemote : Module(
             }
         }
 
-        /* convert incoming dms into valid baritone commands */
         listener<PacketEvent.Receive> {
             if (it.packet !is SPacketChat) return@listener
-            val message = it.packet.chatComponent.unformattedText
+            var message = it.packet.chatComponent.unformattedText
 
             if (MessageDetection.Direct.RECEIVE detectNot message) return@listener
 
-            val command = MessageDetection.Direct.RECEIVE.removedOrNull(message) ?: return@listener
             val username = MessageDetection.Direct.RECEIVE.playerName(message) ?: return@listener
-
             if (!isValidUser(username)) return@listener
 
-            val baritoneCommand = MessageDetection.Command.BARITONE.removedOrNull(command) ?: return@listener
+            message = MessageDetection.Direct.RECEIVE.removedOrNull(message)?.toString() ?: return@listener
 
-            MessageSendHelper.sendBaritoneCommand(*baritoneCommand.split(' ').toTypedArray())
-            sendNextMsg = true
-            lastController = username
-        }
-
-        /* forward baritone feedback to controller */
-        listener<PrintChatMessageEvent> {
-            lastController?.let { controller ->
-                if (feedback.value && MessageDetection.Other.BARITONE detect it.chatComponent.unformattedText) {
-                    sendServerMessage("/msg $controller " + it.chatComponent.unformattedText)
+            MessageDetection.Command.KAMI_BLUE.removedOrNull(message)?.let { command ->
+                MessageSendHelper.sendKamiCommand(command.toString())
+            } ?: run {
+                MessageDetection.Command.BARITONE.removedOrNull(message)?.let { command ->
+                    MessageSendHelper.sendBaritoneCommand(*command.split(' ').toTypedArray())
+                }
+            } ?: run {
+                if (repeatAll) {
+                    MessageSendHelper.sendServerMessage(message)
                 }
             }
         }
@@ -74,9 +70,9 @@ object BaritoneRemote : Module(
     }
 
     private fun isCustomUser(username: String): Boolean {
-        val customs = custom.value.split(",")
-        for (_custom in customs) {
-            if (_custom == username) return true
+        val customPlayers = custom.split(",")
+        for (player in customPlayers) {
+            if (player == username) return true
         }
         return false
     }

@@ -4,11 +4,11 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
-import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils
@@ -16,6 +16,8 @@ import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemBed
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.tileentity.TileEntityBed
@@ -57,6 +59,10 @@ object BedAura : Module(
         NONE, PLACE, EXPLODE
     }
 
+    override fun getHudInfo(): String {
+        return (mc.player?.inventorySlots?.countItem<ItemBed>() ?: 0).toString()
+    }
+
     override fun isActive(): Boolean {
         return isEnabled && inactiveTicks <= 5
     }
@@ -88,9 +94,8 @@ object BedAura : Module(
 
             inactiveTicks++
             if (canRefill() && refillTimer.tick(refillDelay.value.toLong())) {
-                InventoryUtils.getSlotsFullInvNoHotbar(355)?.let {
-                    InventoryUtils.quickMoveSlot(it[0])
-                    playerController.syncCurrentPlayItem()
+                player.storageSlots.firstItem<ItemBed, Slot>()?.let {
+                    quickMoveSlot(it)
                 }
             }
 
@@ -108,9 +113,9 @@ object BedAura : Module(
         }
     }
 
-    private fun canRefill(): Boolean {
-        return InventoryUtils.getSlotsHotbar(0) != null
-                && InventoryUtils.getSlotsNoHotbar(355) != null
+    private fun SafeClientEvent.canRefill(): Boolean {
+        return player.hotbarSlots.firstEmpty() != null
+            && player.storageSlots.firstItem<ItemBed, Slot>() != null
     }
 
     private fun SafeClientEvent.updatePlaceMap() {
@@ -124,8 +129,8 @@ object BedAura : Module(
                 val rotation = RotationUtils.getRotationTo(topSideVec)
                 val facing = EnumFacing.fromAngle(rotation.x.toDouble())
                 if (!canPlaceBed(pos)) continue
-                val targetDamage = CrystalUtils.calcDamage(pos.offset(facing), it)
-                val selfDamage = CrystalUtils.calcDamage(pos.offset(facing), player)
+                val targetDamage = calcCrystalDamage(pos.offset(facing), it)
+                val selfDamage = calcCrystalDamage(pos.offset(facing), player)
                 if (targetDamage < minDamage.value && (suicideMode.value || selfDamage > maxSelfDamage.value))
                     damagePosMap[Pair(targetDamage, selfDamage)] = pos
             }
@@ -140,10 +145,10 @@ object BedAura : Module(
         val bedPos1 = pos.up()
         val bedPos2 = getSecondBedPos(bedPos1)
         return (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2.down()).isSideSolid(world, bedPos2.down(), EnumFacing.UP))
-                && !isFire(bedPos1)
-                && !isFire(bedPos2)
-                && world.getBlockState(bedPos1).material.isReplaceable
-                && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
+            && !isFire(bedPos1)
+            && !isFire(bedPos2)
+            && world.getBlockState(bedPos1).material.isReplaceable
+            && (!ignoreSecondBaseBlock.value || world.getBlockState(bedPos2).material.isReplaceable)
     }
 
     private fun SafeClientEvent.isFire(pos: BlockPos): Boolean {
@@ -169,9 +174,10 @@ object BedAura : Module(
 
     private fun getPlacePos() = placeMap.values.firstOrNull()
 
-    private fun prePlace(pos: BlockPos) {
-        if (getExplodePos() != null || InventoryUtils.countItemAll(355) == 0) return
-        if (getBedHand() == null) InventoryUtils.swapSlotToItem(355)
+    private fun SafeClientEvent.prePlace(pos: BlockPos) {
+        if (getExplodePos() != null || player.allSlots.countItem<ItemBed>() == 0) return
+        if (getBedHand() == null) swapToItem<ItemBed>()
+
         preClick(pos, Vec3d(0.5, 1.0, 0.5))
         state = State.PLACE
     }

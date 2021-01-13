@@ -14,6 +14,10 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
+import me.zeroeightsix.kami.util.items.HotbarSlot
+import me.zeroeightsix.kami.util.items.firstItem
+import me.zeroeightsix.kami.util.items.hotbarSlots
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -85,6 +89,7 @@ object Scaffold : Module(
     private val SafeClientEvent.shouldTower: Boolean
         get() = !player.onGround
             && player.posY - floor(player.posY) <= 0.1
+
     init {
         safeListener<OnUpdateWalkingPlayerEvent> { event ->
             if (event.phase != Phase.PRE) return@safeListener
@@ -138,8 +143,8 @@ object Scaffold : Module(
 
     private fun SafeClientEvent.swapAndPlace(pos: BlockPos, side: EnumFacing) {
         getBlockSlot()?.let { slot ->
-            if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot)
-            else InventoryUtils.swapSlot(slot)
+            if (spoofHotbar) PlayerPacketManager.spoofHotbar(slot.hotbarSlot)
+            else swapToSlot(slot)
 
             inactiveTicks = 0
 
@@ -163,14 +168,9 @@ object Scaffold : Module(
         }
     }
 
-    private fun SafeClientEvent.getBlockSlot(): Int? {
+    private fun SafeClientEvent.getBlockSlot(): HotbarSlot? {
         playerController.updateController()
-        for (i in 0..8) {
-            val itemStack = player.inventory.mainInventory[i]
-            if (itemStack.isEmpty || itemStack.item !is ItemBlock) continue
-            return i
-        }
-        return null
+        return player.hotbarSlots.firstItem<ItemBlock, HotbarSlot>()
     }
 
 }

@@ -11,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.zeroeightsix.kami.util.text.MessageSendHelper.sendWarningMessage;
-
 @Mixin(NetworkManager.class)
 public class MixinNetworkManager {
 
@@ -49,8 +47,7 @@ public class MixinNetworkManager {
     @Inject(method = "exceptionCaught", at = @At("HEAD"), cancellable = true)
     private void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable, CallbackInfo ci) {
         if (NoPacketKick.INSTANCE.isEnabled()) {
-            sendWarningMessage("[NoPacketKick] Caught exception - \"" + throwable.toString() + "\" check log for more info");
-            throwable.printStackTrace();
+            NoPacketKick.sendWarning(throwable);
             ci.cancel();
         }
     }

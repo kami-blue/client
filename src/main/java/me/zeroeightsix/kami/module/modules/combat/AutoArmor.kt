@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventory
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.removeHoldingItem
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
@@ -31,7 +32,7 @@ object AutoArmor : Module(
 
             if (!player.inventory.itemStack.isEmpty) {
                 if (mc.currentScreen is GuiContainer) timer.reset(150L) // Wait for 3 extra ticks if player is moving item
-                else InventoryUtils.removeHoldingItem()
+                else removeHoldingItem()
                 return@safeListener
             }
             // store slots and values of best armor pieces, initialize with currently equipped armor
@@ -77,13 +78,13 @@ object AutoArmor : Module(
             if (pair.first == -1) continue // Skip if we didn't find a better armor
             lastTask = if (player.inventoryContainer.inventory[8 - index].isEmpty) {
                 addInventoryTask(
-                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE) // Move the new one into armor slot
+                    PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE) // Move the new one into armor slot
                 )
             } else {
                 addInventoryTask(
-                        PlayerInventoryManager.ClickInfo(0, 8 - index, type = ClickType.PICKUP), // Pick up the old armor from armor slot
-                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE), // Move the new one into armor slot
-                        PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
+                    PlayerInventoryManager.ClickInfo(0, 8 - index, type = ClickType.PICKUP), // Pick up the old armor from armor slot
+                    PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.QUICK_MOVE), // Move the new one into armor slot
+                    PlayerInventoryManager.ClickInfo(0, pair.first, type = ClickType.PICKUP) // Put the old one into the empty slot
                 )
             }
             break // Don't move more than one at once

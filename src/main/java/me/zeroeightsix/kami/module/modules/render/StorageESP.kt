@@ -78,7 +78,6 @@ object StorageESP : Module(
             if (it.phase != TickEvent.Phase.START) return@safeAsyncListener
 
             cycler++
-            renderer.clear()
             val cached = ArrayList<Triple<AxisAlignedBB, ColorHolder, Int>>()
 
             coroutineScope {
@@ -108,7 +107,7 @@ object StorageESP : Module(
         for (tileEntity in world.loadedTileEntityList.toList()) {
             if (!checkTileEntityType(tileEntity)) continue
 
-            val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos)
+            val box = world.getBlockState(tileEntity.pos).getSelectedBoundingBox(world, tileEntity.pos) ?: continue
             val color = getTileEntityColor(tileEntity) ?: continue
             var side = GeometryMasks.Quad.ALL
 
@@ -120,7 +119,9 @@ object StorageESP : Module(
                 if (tileEntity.adjacentChestXNeg != null) side = (side and GeometryMasks.Quad.WEST).inv()
             }
 
-            list.add(Triple(box, color, side))
+            synchronized(list) {
+                list.add(Triple(box, color, side))
+            }
         }
     }
 
@@ -151,15 +152,17 @@ object StorageESP : Module(
         for (entity in world.loadedEntityList.toList()) {
             if (!checkEntityType(entity)) continue
 
-            val box = entity.renderBoundingBox
+            val box = entity.renderBoundingBox ?: continue
             val color = getEntityColor(entity) ?: continue
 
-            list.add(Triple(box, color, GeometryMasks.Quad.ALL))
+            synchronized(list) {
+                list.add(Triple(box, color, GeometryMasks.Quad.ALL))
+            }
         }
     }
 
     private fun checkEntityType(entity: Entity) =
-        entity is EntityItemFrame && frameShulkerOrAny(entity)
+        entity is EntityItemFrame && frame && (!withShulkerOnly || entity.displayedItem.item is ItemShulkerBox)
             || (entity is EntityMinecartChest || entity is EntityMinecartHopper || entity is EntityMinecartFurnace) && cart
 
     private fun getEntityColor(entity: Entity): ColorHolder? {
@@ -173,6 +176,4 @@ object StorageESP : Module(
         } else color
     }
 
-    private fun frameShulkerOrAny(entity: EntityItemFrame) =
-        frame && (!withShulkerOnly || entity.displayedItem.item is ItemShulkerBox)
 }

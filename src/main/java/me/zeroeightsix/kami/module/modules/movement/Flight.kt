@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayer
@@ -69,7 +70,7 @@ object Flight : Module(
                         else -0.0622
                     } else {
                         if (MovementUtils.isInputting) {
-                            val yaw = MovementUtils.calcMoveYaw()
+                            val yaw = calcMoveYaw()
                             player.motionX = -sin(yaw) * 0.2f
                             player.motionZ = cos(yaw) * 0.2f
                         }

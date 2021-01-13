@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.event.SafeExecuteEvent
-import me.zeroeightsix.kami.util.itemPayload
+import me.zeroeightsix.kami.util.items.itemPayload
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWritableBook
 import net.minecraft.nbt.NBTTagList
@@ -44,7 +44,7 @@ object DupeBookCommand : ClientCommand(
 
             val joinedPages = characterGenerator
                 .limit(50 * 210)
-                .mapToObj { it.toString() }
+                .mapToObj { it.toChar().toString() } // this has to be turned into a Char first, otherwise you will get the raw Int value
                 .collect(Collectors.joining())
 
             val pages = NBTTagList()

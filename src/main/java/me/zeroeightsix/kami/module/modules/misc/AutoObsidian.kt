@@ -15,6 +15,7 @@ import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.math.RotationUtils.getRotationTo
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
@@ -32,6 +33,8 @@ import net.minecraft.init.Enchantments
 import net.minecraft.init.Items
 import net.minecraft.init.SoundEvents
 import net.minecraft.inventory.ClickType
+import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemShulkerBox
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
@@ -179,7 +182,7 @@ object AutoObsidian : Module(
                     reset()
                 }
             }
-            }
+        }
     }
 
     private fun SafeClientEvent.updateState() {
@@ -238,7 +241,7 @@ object AutoObsidian : Module(
         val passCountCheck = checkObbyCount()
 
         state = when {
-            state == State.DONE && autoRefill && InventoryUtils.countItemAll(Blocks.OBSIDIAN.id) < threshold -> {
+            state == State.DONE && autoRefill && player.allSlots.countBlock(Blocks.OBSIDIAN) < threshold -> {
                 State.SEARCHING
             }
             state == State.COLLECTING && (!canPickUpObby() || getDroppedItem(Blocks.OBSIDIAN.id, 8.0f) == null) -> {
@@ -276,7 +279,7 @@ object AutoObsidian : Module(
      * @return `true` if can still place more ender chest
      */
     private fun SafeClientEvent.checkObbyCount(): Boolean {
-        val inventory = InventoryUtils.countItemAll(Blocks.OBSIDIAN.id)
+        val inventory = player.allSlots.countBlock(Blocks.OBSIDIAN)
         val dropped = EntityUtils.getDroppedItems(Blocks.OBSIDIAN.id, 8.0f).sumBy { it.item.count }
 
         return when (fillMode) {
@@ -303,25 +306,27 @@ object AutoObsidian : Module(
     }
 
     private fun SafeClientEvent.updateSearchingState() {
+        val enderChestCount = player.allSlots.countBlock(Blocks.ENDER_CHEST)
+
         if (state == State.SEARCHING) {
             if (searchingState != SearchingState.DONE) {
                 searchingState = when {
-                    searchingState == SearchingState.PLACING && InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0 -> {
+                    searchingState == SearchingState.PLACING && enderChestCount > 0 -> {
                         SearchingState.DONE
                     }
                     searchingState == SearchingState.COLLECTING && getDroppedItem(shulkerID, 8.0f) == null -> {
                         SearchingState.DONE
                     }
                     searchingState == SearchingState.MINING && world.isAirBlock(placingPos) -> {
-                        if (InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0) {
+                        if (enderChestCount > 0) {
                             SearchingState.COLLECTING
                         } else {
                             // In case if the shulker wasn't placed due to server lag
                             SearchingState.PLACING
                         }
                     }
-                    searchingState == SearchingState.OPENING && (InventoryUtils.countItemAll(Blocks.ENDER_CHEST.id) > 0
-                        || InventoryUtils.getSlots(0, 35, 0) == null) -> {
+                    searchingState == SearchingState.OPENING
+                        && (enderChestCount > 0 || player.inventorySlots.firstEmpty() == null) -> {
                         SearchingState.PRE_MINING
                     }
                     searchingState == SearchingState.PLACING && !world.isAirBlock(placingPos) -> {
@@ -369,66 +374,37 @@ object AutoObsidian : Module(
         }
     }
 
-    /**
-     * @return The id of a shulker found in the hotbar, else returns -1
-     */
-    private fun getShulkerInHotbar(): Int {
-        for (shulkerID in 219..234) {
-            if (InventoryUtils.getSlotsHotbar(shulkerID) != null) return shulkerID
-        }
-        return -1
-    }
-
-    /**
-     * @return the id of a shulker found in a non-hotbar slot, else returns -1
-     */
-    private fun getShulkerInInventory(): Int {
-        for (shulkerID in 219..234) {
-            if (InventoryUtils.getSlotsNoHotbar(shulkerID) != null) return shulkerID
-        }
-        return -1
-    }
-
     private fun SafeClientEvent.placeShulker(pos: BlockPos) {
-        shulkerID = getShulkerInHotbar()
+        val hotbarSlot = player.hotbarSlots.firstItem<ItemShulkerBox, HotbarSlot>()
 
-        val inventoryShulkerID = getShulkerInInventory()
-        if (shulkerID == -1 && inventoryShulkerID != -1) {
-            InventoryUtils.moveToHotbar(inventoryShulkerID, Items.DIAMOND_PICKAXE.id)
-            shulkerID = inventoryShulkerID
-            return
-        } else if (shulkerID == -1) {
-            MessageSendHelper.sendChatMessage("$chatName No shulker box was found in hotbar, disabling.")
-            mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-            disable()
+        if (hotbarSlot != null) {
+            shulkerID = hotbarSlot.stack.item.id
+            swapToSlot(hotbarSlot)
+        } else {
+            if (!swapToItemOrMove<ItemShulkerBox>()) {
+                MessageSendHelper.sendChatMessage("$chatName No shulker box was found in inventory, disabling.")
+                mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                disable()
+            }
+
             return
         }
 
-        InventoryUtils.swapSlotToItem(shulkerID)
         if (world.getBlockState(pos).block !is BlockShulkerBox) {
             placeBlock(pos)
         }
     }
 
     private fun SafeClientEvent.placeEnderChest(pos: BlockPos) {
-        /* Case where we need to move ender chests into the hotbar */
-        if (InventoryUtils.getSlotsHotbar(Blocks.ENDER_CHEST.id) == null && InventoryUtils.getSlotsNoHotbar(Blocks.ENDER_CHEST.id) != null) {
-            InventoryUtils.moveToHotbar(Blocks.ENDER_CHEST.id, Items.DIAMOND_PICKAXE.id)
-            return
-        } else if (InventoryUtils.getSlots(0, 35, Blocks.ENDER_CHEST.id) == null) {
-            /* Case where we are out of ender chests */
-            if (searchShulker) {
-                state = State.SEARCHING
-            } else {
+        if (!swapToBlock(Blocks.ENDER_CHEST)) {
+            if (!swapToBlockOrMove(Blocks.ENDER_CHEST)) {
                 MessageSendHelper.sendChatMessage("$chatName No ender chest was found in inventory, disabling.")
                 mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                 disable()
-                return
             }
-        }
 
-        /* Else, we already have ender chests in the hotbar */
-        InventoryUtils.swapSlotToItem(Blocks.ENDER_CHEST.id)
+            return
+        }
 
         placeBlock(pos)
     }
@@ -436,13 +412,13 @@ object AutoObsidian : Module(
     private fun SafeClientEvent.openShulker(pos: BlockPos) {
         if (mc.currentScreen is GuiShulkerBox) {
             val container = player.openContainer
-            val slot = container.inventory.subList(0, 27).indexOfFirst { it.item.id == Blocks.ENDER_CHEST.id }
+            val slot = container.getSlots(0..27).firstBlock(Blocks.ENDER_CHEST)
 
-            if (slot != -1) {
-                InventoryUtils.inventoryClick(container.windowId, slot, 0, ClickType.QUICK_MOVE)
+            if (slot != null) {
+                clickSlot(container.windowId, slot, 0, ClickType.QUICK_MOVE)
                 player.closeScreen()
             } else if (shulkerOpenTimer.tick(100, false)) { // Wait for maximum of 5 seconds
-                if (leaveEmptyShulkers && container.inventory.subList(0, 27).indexOfFirst { it.item.id != Items.AIR.id } == -1) {
+                if (leaveEmptyShulkers && container.inventory.subList(0, 27).all { it.isEmpty }) {
                     searchingState = SearchingState.PRE_MINING
                     player.closeScreen()
                 } else {
@@ -495,62 +471,6 @@ object AutoObsidian : Module(
         }
     }
 
-    /**
-     * Gets the first hotbar slot of a diamond pickaxe that does not have the silk touch enchantment.
-     * @return The position of the pickaxe. -1 if there is no match.
-     */
-    private fun SafeClientEvent.getHotbarNonSilkTouchPick(): Int {
-        val slotsWithPickaxes = InventoryUtils.getSlotsHotbar(Items.DIAMOND_PICKAXE.id)
-            ?: return -1
-
-        for (slot in slotsWithPickaxes) {
-            if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player.inventory.getStackInSlot(slot)) == 0) {
-                return slot
-            }
-        }
-
-        return -1
-    }
-
-    /**
-     * Gets the first non-hotbar slot of a diamond pickaxe that does not have the silk touch enchantment.
-     * @return The position of the pickaxe. -1 if there is no match.
-     */
-    private fun SafeClientEvent.getInventoryNonSilkTouchPick(): Int {
-        val slotsWithPickaxes = InventoryUtils.getSlotsNoHotbar(Items.DIAMOND_PICKAXE.id)
-            ?: return -1
-
-        for (slot in slotsWithPickaxes) {
-            if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player.inventory.getStackInSlot(slot)) == 0) {
-                return slot
-            }
-        }
-
-        return -1
-    }
-
-    /**
-     * Swaps the active hotbar slot to one which has a valid pickaxe (i.e. non-silk touch). If there is no valid pickaxe,
-     * disable the module.
-     */
-    private fun SafeClientEvent.swapToValidPickaxe() {
-        var hotbarPickaxeSlot = getHotbarNonSilkTouchPick()
-        val inventoryPickaxeSlot = getInventoryNonSilkTouchPick()
-
-        if ((hotbarPickaxeSlot == -1) && (inventoryPickaxeSlot != -1)) {
-            /* Note that slot 36 in windowId 0 is the same as slot 0 in the hotbar */
-            InventoryUtils.moveToSlot(0, inventoryPickaxeSlot, 36)
-            hotbarPickaxeSlot = 0
-        } else if (hotbarPickaxeSlot == -1) {
-            MessageSendHelper.sendChatMessage("No valid pickaxe was found in inventory.")
-            mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
-            disable()
-            return
-        }
-
-        InventoryUtils.swapSlot(hotbarPickaxeSlot)
-    }
-
     private fun SafeClientEvent.mineBlock(pos: BlockPos, pre: Boolean) {
         if (pre) swapToValidPickaxe()
 
@@ -569,6 +489,40 @@ object AutoObsidian : Module(
                 }
                 player.swingArm(EnumHand.MAIN_HAND)
             }
+        }
+    }
+
+    /**
+     * Swaps the active hotbar slot to one which has a valid pickaxe (i.e. non-silk touch). If there is no valid pickaxe,
+     * disable the module.
+     */
+    private fun SafeClientEvent.swapToValidPickaxe() {
+        val swapped = swapToItem(Items.DIAMOND_PICKAXE) {
+            EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, it) == 0
+        }
+
+        if (!swapped) {
+            val slotFrom = getInventoryNonSilkTouchPick()
+                ?: run {
+                    MessageSendHelper.sendChatMessage("No valid pickaxe was found in inventory.")
+                    mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+                    disable()
+                    return
+                }
+
+            val slotTo = player.hotbarSlots.firstEmpty()?.hotbarSlot ?: 0
+
+            moveToHotbar(slotFrom.slotNumber, slotTo)
+        }
+    }
+
+    /**
+     * Gets the first non-hotbar slot of a diamond pickaxe that does not have the silk touch enchantment.
+     * @return The position of the pickaxe. -1 if there is no match.
+     */
+    private fun SafeClientEvent.getInventoryNonSilkTouchPick(): Slot? {
+        return player.storageSlots.firstItem(Items.DIAMOND_PICKAXE) {
+            EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, it) == 0
         }
     }
 

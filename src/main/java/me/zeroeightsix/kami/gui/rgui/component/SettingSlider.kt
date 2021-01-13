@@ -34,21 +34,13 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         else -> range / 20.0
     }
 
-    override fun onClosed() {
-        super.onClosed()
-        name = originalName
-    }
-
-    override fun onTick() {
-        super.onTick()
-        if (mouseState != MouseState.DRAG && !listening) {
-            val min = setting.range.start.toDouble()
-            val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
-            if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
-                value = (setting.value.toDouble() - min) / range
-            }
+    override fun onStopListening(success: Boolean) {
+        if (success) {
+            name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
         }
-        visible = setting.isVisible
+
+        super.onStopListening(success)
+        name = originalName
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
@@ -64,12 +56,13 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         if (buttonId == 1) {
             if (!listening) {
                 listening = true
+                name = setting.value.toString()
                 value = 0.0
-                name = "0"
             } else {
-                listening = false
-                name = originalName
+                onStopListening(false)
             }
+        } else if (buttonId == 0 && listening) {
+            onStopListening(true)
         }
     }
 
@@ -93,20 +86,38 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         if (keyState) {
             when (keyCode) {
                 Keyboard.KEY_RETURN -> {
-                    name.toDoubleOrNull()?.let { setting.setValue(it.toString()) }
-                    listening = false
-                    name = originalName
+                    onStopListening(true)
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
                     name = name.substring(0, max(name.length - 1, 0))
                     if (name.isBlank()) name = "0"
                 }
-                else -> if (typedChar.isDigit() || typedChar == '.' || typedChar.equals('e', true)) {
-                    if (name == "0") name = ""
+                else -> if (isNumber(typedChar)) {
+                    if (name == "0" && (typedChar.isDigit() || typedChar == '-')) {
+                        name = ""
+                    }
                     name += typedChar
                 }
             }
         }
+    }
+
+    private fun isNumber(char: Char) =
+        char.isDigit()
+            || char == '-'
+            || char == '.'
+            || char.equals('e', true)
+
+    override fun onTick() {
+        super.onTick()
+        if (mouseState != MouseState.DRAG && !listening) {
+            val min = setting.range.start.toDouble()
+            val flooredSettingValue = floor((settingValueDouble - min) / stepDouble) * stepDouble
+            if (value * range + min !in (flooredSettingValue - stepDouble)..flooredSettingValue) {
+                value = (setting.value.toDouble() - min) / range
+            }
+        }
+        visible = setting.isVisible
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {

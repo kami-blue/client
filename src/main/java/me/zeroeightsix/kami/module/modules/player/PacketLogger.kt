@@ -86,7 +86,7 @@ object PacketLogger : Module(
     }
 
     init {
-        clear.consumers.add{ _, input ->
+        clear.consumers.add { _, input ->
             if (input) {
                 lines.clear()
                 write()

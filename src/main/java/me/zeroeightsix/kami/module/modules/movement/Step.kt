@@ -94,7 +94,7 @@ object Step : Module(
     private fun SafeClientEvent.setStepHeight() {
         player.stepHeight = if (upStep.value && player.onGround && player.collidedHorizontally) height else defaultHeight
         player.ridingEntity?.let {
-           it.stepHeight = if (entityStep && it.collidedHorizontally) height else 1.0f
+            it.stepHeight = if (entityStep && it.collidedHorizontally) height else 1.0f
         }
     }
 

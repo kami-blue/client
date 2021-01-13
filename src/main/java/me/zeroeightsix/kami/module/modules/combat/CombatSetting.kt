@@ -2,14 +2,18 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
+import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
+import me.zeroeightsix.kami.util.combat.CrystalUtils.getPlacePos
 import me.zeroeightsix.kami.util.graphics.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.Vec2d
@@ -91,10 +95,10 @@ object CombatSetting : Module(
     private var overrideRange = range.value
     private var paused = false
     private val resumeTimer = TickTimer(TimeUnit.SECONDS)
-    private val jobMap = hashMapOf<() -> Unit, Job?>(
-        { updateTarget() } to null,
-        { updatePlacingList() } to null,
-        { updateCrystalList() } to null
+    private val jobMap = hashMapOf<(SafeClientEvent) -> Unit, Job?>(
+        { it: SafeClientEvent -> it.updateTarget() } to null,
+        { it: SafeClientEvent -> it.updatePlacingList() } to null,
+        { it: SafeClientEvent -> it.updateCrystalList() } to null
     )
 
     val pause
@@ -127,20 +131,21 @@ object CombatSetting : Module(
         safeListener<TickEvent.ClientTickEvent>(5000) {
             for ((function, future) in jobMap) {
                 if (future.isActiveOrFalse) continue // Skip if the previous thread isn't done
-                jobMap[function] = defaultScope.launch { function.invoke() }
+                jobMap[function] = defaultScope.launch { function(this@safeListener) }
             }
 
-            if (pauseBaritone.value && !paused && isActive()) {
-                BaritoneUtils.pause()
+            if (isActive() && pauseBaritone.value) {
+                pauseBaritone()
+                resumeTimer.reset()
                 paused = true
-            } else if (paused && resumeTimer.tick(resumeDelay.value.toLong())) {
-                BaritoneUtils.unpause()
+            } else if (resumeTimer.tick(resumeDelay.value.toLong(), false)) {
+                unpauseBaritone()
                 paused = false
             }
         }
     }
 
-    private fun updateTarget() {
+    private fun SafeClientEvent.updateTarget() {
         with(CombatManager.getTopModule()) {
             overrideRange = if (this is KillAura) this.range.value else range.value
         }
@@ -150,47 +155,48 @@ object CombatSetting : Module(
         }
     }
 
-    private fun updatePlacingList() {
-        if (CrystalAura.isDisabled && CrystalBasePlace.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 != 0) return
+    private fun SafeClientEvent.updatePlacingList() {
+        if (CrystalAura.isDisabled && CrystalBasePlace.isDisabled && CrystalESP.isDisabled && player.ticksExisted % 4 != 0) return
 
-        val eyePos = mc.player?.getPositionEyes(1f) ?: Vec3d.ZERO
+        val eyePos = player.getPositionEyes(1f) ?: Vec3d.ZERO
         val cacheList = ArrayList<Pair<BlockPos, Triple<Float, Float, Double>>>()
         val target = CombatManager.target
         val prediction = target?.let { getPrediction(it) }
 
-        for (pos in CrystalUtils.getPlacePos(target, mc.player, 8f)) {
+        for (pos in getPlacePos(target, player, 8f)) {
             val dist = eyePos.distanceTo(pos.toVec3dCenter(0.0, 0.5, 0.0))
-            val damage = target?.let { CrystalUtils.calcDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
-            val selfDamage = CrystalUtils.calcDamage(pos, mc.player)
+            val damage = target?.let { calcCrystalDamage(pos, it, prediction?.first, prediction?.second) } ?: 0.0f
+            val selfDamage = calcCrystalDamage(pos, player)
             cacheList.add(Pair(pos, Triple(damage, selfDamage, dist)))
         }
 
-        CombatManager.placeMap = linkedMapOf(*cacheList.sortedByDescending { triple -> triple.second.first }.toTypedArray())
+        CombatManager.placeMap = LinkedHashMap<BlockPos, Triple<Float, Float, Double>>(cacheList.size).apply {
+            putAll(cacheList.sortedByDescending { triple -> triple.second.first })
+        }
     }
 
     /* Crystal damage calculation */
-    private fun updateCrystalList() {
-        if (CrystalAura.isDisabled && CrystalESP.isDisabled && mc.player.ticksExisted % 4 - 2 != 0) return
+    private fun SafeClientEvent.updateCrystalList() {
+        if (CrystalAura.isDisabled && CrystalESP.isDisabled && (player.ticksExisted - 2) % 4 != 0) return
 
-        val entityList = ArrayList(mc.world.loadedEntityList)
         val cacheList = ArrayList<Pair<EntityEnderCrystal, Triple<Float, Float, Double>>>()
-        val cacheMap = LinkedHashMap<EntityEnderCrystal, Triple<Float, Float, Double>>()
-        val eyePos = mc.player.getPositionEyes(1f)
+        val eyePos = player.getPositionEyes(1f)
         val target = CombatManager.target
         val prediction = target?.let { getPrediction(it) }
 
-        for (entity in entityList) {
+        for (entity in world.loadedEntityList.toList()) {
             if (entity.isDead) continue
             if (entity !is EntityEnderCrystal) continue
             val dist = entity.distanceTo(eyePos)
             if (dist > 16.0f) continue
-            val damage = if (target != null && prediction != null) CrystalUtils.calcDamage(entity, target, prediction.first, prediction.second) else 0.0f
-            val selfDamage = CrystalUtils.calcDamage(entity, mc.player)
+            val damage = if (target != null && prediction != null) calcCrystalDamage(entity, target, prediction.first, prediction.second) else 0.0f
+            val selfDamage = calcCrystalDamage(entity, player)
             cacheList.add(entity to Triple(damage, selfDamage, dist))
         }
 
-        cacheMap.putAll(cacheList.sortedByDescending { pair -> pair.second.first })
-        CombatManager.crystalMap = cacheMap
+        CombatManager.crystalMap = LinkedHashMap<EntityEnderCrystal, Triple<Float, Float, Double>>(cacheList.size).apply {
+            putAll(cacheList.sortedByDescending { pair -> pair.second.first })
+        }
     }
 
     fun getPrediction(entity: Entity) = CombatManager.target?.let {
@@ -204,7 +210,7 @@ object CombatSetting : Module(
     /* End of crystal damage calculation */
 
     /* Targeting */
-    private fun getTargetList(): LinkedList<EntityLivingBase> {
+    private fun SafeClientEvent.getTargetList(): LinkedList<EntityLivingBase> {
         val targetList = LinkedList<EntityLivingBase>()
         for (entity in getCacheList()) {
             if (AntiBot.isBot(entity)) continue
@@ -214,10 +220,10 @@ object CombatSetting : Module(
                     || entity is AbstractHorse && entity.isTame)) continue
 
             if (!teammates.value
-                && mc.player.isOnSameTeam(entity)) continue
+                && player.isOnSameTeam(entity)) continue
 
             if (!shouldIgnoreWall()
-                && mc.player.canEntityBeSeen(entity)
+                && player.canEntityBeSeen(entity)
                 && !EntityUtils.canEntityFeetBeSeen(entity)
                 && EntityUtils.canEntityHitboxBeSeen(entity) == null) continue
 
@@ -227,7 +233,7 @@ object CombatSetting : Module(
         return targetList
     }
 
-    private fun getCacheList(): LinkedList<EntityLivingBase> {
+    private fun SafeClientEvent.getCacheList(): LinkedList<EntityLivingBase> {
         val player = arrayOf(players.value, friends.value, sleeping.value)
         val mob = arrayOf(mobs.value, passive.value, neutral.value, hostile.value)
         val cacheList = LinkedList(EntityUtils.getTargetList(player, mob, invisible.value, overrideRange))
@@ -243,19 +249,19 @@ object CombatSetting : Module(
         else true
     }
 
-    private fun getTarget(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+    private fun SafeClientEvent.getTarget(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         val copiedList = LinkedList(listIn)
         return filterTargetList(copiedList) ?: CombatManager.target?.let { entity ->
             if (!entity.isDead && listIn.contains(entity)) entity else null
         }
     }
 
-    private fun filterTargetList(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+    private fun SafeClientEvent.filterTargetList(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
         return filterByPriority(filterByFilter(listIn))
     }
 
-    private fun filterByFilter(listIn: LinkedList<EntityLivingBase>): LinkedList<EntityLivingBase> {
+    private fun SafeClientEvent.filterByFilter(listIn: LinkedList<EntityLivingBase>): LinkedList<EntityLivingBase> {
         when (filter.value) {
             TargetFilter.FOV -> {
                 listIn.removeIf { RotationUtils.getRelativeRotation(it) > fov.value }
@@ -265,8 +271,8 @@ object CombatSetting : Module(
                 if (!mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown) {
                     return LinkedList()
                 }
-                val eyePos = mc.player.getPositionEyes(KamiTessellator.pTicks())
-                val lookVec = mc.player.lookVec.scale(range.value.toDouble())
+                val eyePos = player.getPositionEyes(KamiTessellator.pTicks())
+                val lookVec = player.lookVec.scale(range.value.toDouble())
                 val sightEndPos = eyePos.add(lookVec)
                 listIn.removeIf { it.entityBoundingBox.calculateIntercept(eyePos, sightEndPos) == null }
             }
@@ -277,7 +283,7 @@ object CombatSetting : Module(
         return listIn
     }
 
-    private fun filterByPriority(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+    private fun SafeClientEvent.filterByPriority(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
 
         if (priority.value == TargetPriority.DAMAGE) filterByDamage(listIn)
@@ -326,9 +332,9 @@ object CombatSetting : Module(
         return listIn.sortedBy { RotationUtils.getRelativeRotation(it) }[0]
     }
 
-    private fun filterByDistance(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
+    private fun SafeClientEvent.filterByDistance(listIn: LinkedList<EntityLivingBase>): EntityLivingBase? {
         if (listIn.isEmpty()) return null
-        return listIn.sortedBy { it.getDistance(mc.player) }[0]
+        return listIn.sortedBy { it.getDistance(player) }[0]
     }
     /* End of targeting */
 }

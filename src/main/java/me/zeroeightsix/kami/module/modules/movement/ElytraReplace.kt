@@ -107,9 +107,9 @@ object ElytraReplace : Module(
             return
         } else { // swap chestplate from inventory with whatever you were wearing, if you're already wearing non-armor in chest slot
             mc.playerController.windowClick(0, 6, 0,
-                    ClickType.QUICK_MOVE, mc.player)
+                ClickType.QUICK_MOVE, mc.player)
             mc.playerController.windowClick(0, slot, 0,
-                    ClickType.QUICK_MOVE, mc.player)
+                ClickType.QUICK_MOVE, mc.player)
             return
         }
     }
@@ -137,9 +137,9 @@ object ElytraReplace : Module(
             true
         } else { // switch non-broken elytra with whatever was previously in the chest slot
             mc.playerController.windowClick(0, 6, 0,
-                    ClickType.QUICK_MOVE, mc.player)
+                ClickType.QUICK_MOVE, mc.player)
             mc.playerController.windowClick(0, slot, 0,
-                    ClickType.QUICK_MOVE, mc.player)
+                ClickType.QUICK_MOVE, mc.player)
             true
         }
     }

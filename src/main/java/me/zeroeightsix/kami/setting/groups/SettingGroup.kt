@@ -29,7 +29,7 @@ open class SettingGroup(
      *
      * @return [setting]
      */
-    open fun <S: AbstractSetting<*>> addSetting(setting: S): S {
+    open fun <S : AbstractSetting<*>> addSetting(setting: S): S {
         subSetting[setting.name.toLowerCase()] = setting
         return setting
     }

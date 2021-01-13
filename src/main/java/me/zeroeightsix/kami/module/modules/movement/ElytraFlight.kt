@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
 import me.zeroeightsix.kami.util.WorldUtils.isLiquidBelow
@@ -105,7 +105,7 @@ object ElytraFlight : Module(
     private var elytraDurability = 0
     private var outOfDurability = false
     private var wasInLiquid = false
-    var isFlying = false
+    private var isFlying = false
     private var isPacketFlying = false
     private var isStandingStillH = false
     private var isStandingStill = false
@@ -281,20 +281,24 @@ object ElytraFlight : Module(
         val timerSpeed = if (highPingOptimize) 400.0f else 200.0f
         val height = if (highPingOptimize) 0.0f else minTakeoffHeight
         val closeToGround = player.posY <= getGroundPos().y + height && !wasInLiquid && !mc.isSingleplayer
+
         if (!easyTakeOff || (LagNotifier.paused && LagNotifier.pauseTakeoff) || player.onGround) {
             if (LagNotifier.paused && LagNotifier.pauseTakeoff && player.posY - getGroundPos().y > 4.0f) holdPlayer(event) /* Holds player in the air if server is lagging and the distance is enough for taking fall damage */
             reset(player.onGround)
             return
         }
+
         if (player.motionY < 0 && !highPingOptimize || player.motionY < -0.02) {
             if (closeToGround) {
                 mc.timer.tickLength = 25.0f
                 return
             }
+
             if (!highPingOptimize && !wasInLiquid && !mc.isSingleplayer) { /* Cringe moment when you use elytra flight in single player world */
                 event.cancel()
                 player.setVelocity(0.0, -0.02, 0.0)
             }
+
             if (timerControl && !mc.isSingleplayer) mc.timer.tickLength = timerSpeed * 2.0f
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
             hoverTarget = player.posY + 0.2
@@ -308,8 +312,8 @@ object ElytraFlight : Module(
      *
      *  @return Yaw in radians based on player rotation yaw and movement input
      */
-    private fun getYaw(): Double {
-        val yawRad = MovementUtils.calcMoveYaw()
+    private fun SafeClientEvent.getYaw(): Double {
+        val yawRad = calcMoveYaw()
         packetYaw = Math.toDegrees(yawRad).toFloat()
         return yawRad
     }

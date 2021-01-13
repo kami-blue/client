@@ -7,10 +7,10 @@ import me.zeroeightsix.kami.util.Bind
 import org.lwjgl.input.Keyboard
 
 class BindSetting(
-        name: String,
-        value: Bind,
-        visibility: () -> Boolean = { true },
-        description: String = ""
+    name: String,
+    value: Bind,
+    visibility: () -> Boolean = { true },
+    description: String = ""
 ) : ImmutableSetting<Bind>(name, value, visibility, { _, input -> input }, description) {
 
     override val defaultValue: Bind = Bind(value.ctrl, value.alt, value.shift, value.key)

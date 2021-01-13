@@ -57,7 +57,8 @@ object Trajectories : Module(
         }
 
         listener<RenderWorldEvent> {
-            val type = getThrowingType(mc.player?.heldItemMainhand) ?: getThrowingType(mc.player?.heldItemOffhand) ?: return@listener
+            val type = getThrowingType(mc.player?.heldItemMainhand) ?: getThrowingType(mc.player?.heldItemOffhand)
+            ?: return@listener
             val path = ArrayList<Vec3d>()
             val flightPath = FlightPath(type)
             path.add(flightPath.position)

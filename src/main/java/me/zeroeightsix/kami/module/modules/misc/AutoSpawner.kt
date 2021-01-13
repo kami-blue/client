@@ -1,8 +1,10 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
+import me.zeroeightsix.kami.util.items.swapToSlot
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -118,7 +120,8 @@ object AutoSpawner : Module(
                     buildStage = Stage.BODY
                 }
                 Stage.BODY -> {
-                    InventoryUtils.swapSlot(bodySlot)
+                    swapToSlot(bodySlot)
+
                     for (pos in BodyParts.bodyBase) placeBlock(placeTarget!!.add(pos))
                     if (entityMode == EntityMode.WITHER || entityMode == EntityMode.IRON) {
                         if (rotationPlaceableX) {
@@ -135,7 +138,7 @@ object AutoSpawner : Module(
                     buildStage = Stage.HEAD
                 }
                 Stage.HEAD -> {
-                    InventoryUtils.swapSlot(headSlot)
+                    swapToSlot(headSlot)
 
                     if (entityMode == EntityMode.IRON || entityMode == EntityMode.SNOW) {
                         for (pos in BodyParts.head) placeBlock(placeTarget!!.add(pos))
@@ -175,17 +178,19 @@ object AutoSpawner : Module(
         if (!partyWithers && entityMode == EntityMode.WITHER) randomizeEntity()
     }
 
-    private fun checkBlocksInHotbar(): Boolean {
+    private fun SafeClientEvent.checkBlocksInHotbar(): Boolean {
         headSlot = -1
         bodySlot = -1
         for (slotIndex in 0..8) {
-            val stack = mc.player.inventory.getStackInSlot(slotIndex) ?: continue
+            val stack = player.inventory.getStackInSlot(slotIndex) ?: continue
             if (stack.isEmpty) continue
+
+            val item = stack.item
 
             when (entityMode) {
                 EntityMode.SNOW -> {
-                    if (stack.item is ItemBlock) {
-                        val block = (stack.item as ItemBlock).block
+                    if (item is ItemBlock) {
+                        val block = item.block
                         if (block == Blocks.LIT_PUMPKIN || block == Blocks.PUMPKIN) {
                             if (checkItemStackSize(stack, 1)) headSlot = slotIndex
                         }
@@ -195,8 +200,8 @@ object AutoSpawner : Module(
                     }
                 }
                 EntityMode.IRON -> {
-                    if (stack.item is ItemBlock) {
-                        val block = (stack.item as ItemBlock).block
+                    if (item is ItemBlock) {
+                        val block = item.block
                         if (block == Blocks.LIT_PUMPKIN || block == Blocks.PUMPKIN) {
                             if (checkItemStackSize(stack, 1)) headSlot = slotIndex
                         }
@@ -206,10 +211,10 @@ object AutoSpawner : Module(
                     }
                 }
                 EntityMode.WITHER -> {
-                    if (stack.item is ItemSkull && stack.itemDamage == 1) {
+                    if (item is ItemSkull && stack.itemDamage == 1) {
                         if (checkItemStackSize(stack, 3)) headSlot = slotIndex
-                    } else if (stack.item is ItemBlock) {
-                        val block = (stack.item as ItemBlock).block
+                    } else if (item is ItemBlock) {
+                        val block = item.block
                         if (block is BlockSoulSand) {
                             if (checkItemStackSize(stack, 4)) bodySlot = slotIndex
                         }
@@ -220,17 +225,17 @@ object AutoSpawner : Module(
         return bodySlot != -1 && headSlot != -1
     }
 
-    private fun checkItemStackSize(stack: ItemStack, target: Int): Boolean {
-        return mc.player.isCreative && stack.count >= 1 || stack.count >= target
+    private fun SafeClientEvent.checkItemStackSize(stack: ItemStack, target: Int): Boolean {
+        return player.isCreative && stack.count >= 1 || stack.count >= target
     }
 
-    private fun testStructure(): Boolean {
+    private fun SafeClientEvent.testStructure(): Boolean {
         placeTarget?.let {
             rotationPlaceableX = true
             rotationPlaceableZ = true
 
             // dont place on grass
-            val block = mc.world.getBlockState(it).block
+            val block = world.getBlockState(it).block
             if (block is BlockTallGrass || block is BlockDeadBush) return false
             if (getPlaceableSide(it) == null) return false
 
@@ -293,31 +298,31 @@ object AutoSpawner : Module(
         )
     }
 
-    private fun placingIsBlocked(pos: BlockPos): Boolean {
-        return !mc.world.isAirBlock(pos) || !mc.world.checkNoEntityCollision(AxisAlignedBB(pos))
+    private fun SafeClientEvent.placingIsBlocked(pos: BlockPos): Boolean {
+        return !world.isAirBlock(pos) || !world.checkNoEntityCollision(AxisAlignedBB(pos))
     }
 
-    private fun placeBlock(pos: BlockPos) {
+    private fun SafeClientEvent.placeBlock(pos: BlockPos) {
         val side = getPlaceableSide(pos) ?: return
         val neighbour = pos.offset(side)
         val opposite = side.opposite
         val hitVec = Vec3d(neighbour).add(0.5, 0.5, 0.5).add(Vec3d(opposite.directionVec).scale(0.5))
-        val neighbourBlock = mc.world.getBlockState(neighbour).block
+        val neighbourBlock = world.getBlockState(neighbour).block
         if (!isSneaking && (WorldUtils.blackList.contains(neighbourBlock) || WorldUtils.shulkerList.contains(neighbourBlock))) {
-            mc.player.connection.sendPacket(CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING))
+            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_SNEAKING))
             isSneaking = true
         }
-        mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND)
-        mc.player.swingArm(EnumHand.MAIN_HAND)
+        playerController.processRightClickBlock(player, world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND)
+        player.swingArm(EnumHand.MAIN_HAND)
     }
 
-    private fun getPlaceableSide(pos: BlockPos): EnumFacing? {
+    private fun SafeClientEvent.getPlaceableSide(pos: BlockPos): EnumFacing? {
         for (side in EnumFacing.values()) {
             val neighbour = pos.offset(side)
-            if (!mc.world.getBlockState(neighbour).block.canCollideCheck(mc.world.getBlockState(neighbour), false)) {
+            if (!world.getBlockState(neighbour).block.canCollideCheck(world.getBlockState(neighbour), false)) {
                 continue
             }
-            val blockState = mc.world.getBlockState(neighbour)
+            val blockState = world.getBlockState(neighbour)
             if (!blockState.material.isReplaceable && blockState.block !is BlockTallGrass && blockState.block !is BlockDeadBush) {
                 return side
             }

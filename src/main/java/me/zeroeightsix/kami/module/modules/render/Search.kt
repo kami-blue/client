@@ -153,7 +153,9 @@ object Search : Module(
             val dist = eyePos.distanceTo(pos)
             if (dist > range) continue
 
-            map[dist] = (pos to blockState)
+            synchronized(map) {
+                map[dist] = (pos to blockState)
+            }
         }
     }
 

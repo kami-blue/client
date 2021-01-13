@@ -21,7 +21,7 @@ public class MixinGuiPlayerTabOverlay {
 
     @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE", target = "Ljava/util/List;subList(II)Ljava/util/List;", remap = false))
     public <E> List<E> subList(List<E> list, int fromIndex, int toIndex) {
-        return list.subList(fromIndex, ExtraTab.INSTANCE.isEnabled() ? Math.min(ExtraTab.INSTANCE.getTabSize().getValue(), list.size()) : toIndex);
+        return ExtraTab.INSTANCE.subList(list, fromIndex, toIndex);
     }
 
     @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)

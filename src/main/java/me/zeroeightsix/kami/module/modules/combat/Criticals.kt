@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.MovementUtils
+import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
@@ -11,7 +12,6 @@ import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.kamiblue.event.listener.listener
 
 object Criticals : Module(
     name = "Criticals",
@@ -35,15 +35,16 @@ object Criticals : Module(
             delayTick = 0
         }
 
-        listener<PacketEvent.Send> {
-            if (mc.player == null || !(it.packet is CPacketAnimation || it.packet is CPacketUseEntity)) return@listener
-            if (mc.player.isInWater || mc.player.isInLava || !mc.player.onGround) return@listener /* Don't run if player is sprinting or weapon is still in cooldown */
+        safeListener<PacketEvent.Send> {
+            if (it.packet !is CPacketAnimation && it.packet !is CPacketUseEntity) return@safeListener
+
+            if (player.isInWater || player.isInLava || !player.onGround) return@safeListener /* Don't run if player is sprinting or weapon is still in cooldown */
 
             if (it.packet is CPacketUseEntity && it.packet.action == CPacketUseEntity.Action.ATTACK) {
-                val target = it.packet.getEntityFromWorld(mc.world)
-                if (target == null || target !is EntityLivingBase) return@listener
-                mc.player.isSprinting = false
-                if (mc.player.speed > 0.2) MovementUtils.setSpeed(0.2)
+                val target = it.packet.getEntityFromWorld(world)
+                if (target == null || target !is EntityLivingBase) return@safeListener
+                player.isSprinting = false
+                if (player.speed > 0.2) setSpeed(0.2)
                 if (mode.value == CriticalMode.PACKET) {
                     packetMode()
                 } else {
@@ -58,7 +59,7 @@ object Criticals : Module(
             /* Sends attack packet and swing packet when falling */
             if (mode.value == CriticalMode.DELAY && delayTick != 0) {
                 player.isSprinting = false
-                if (player.speed > 0.2) MovementUtils.setSpeed(0.2)
+                if (player.speed > 0.2) setSpeed(0.2)
                 if (player.motionY < -0.1 && delayTick in 1..15) {
                     sendingPacket = true
                     connection.sendPacket(attackPacket)
@@ -74,10 +75,10 @@ object Criticals : Module(
         }
     }
 
-    private fun packetMode() {
+    private fun SafeClientEvent.packetMode() {
         /* lol Minecraft checks for criticals if you're not on a block so just say you're not */
-        mc.player.connection.sendPacket(CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.1f, mc.player.posZ, false))
-        mc.player.connection.sendPacket(CPacketPlayer.Position(mc.player.posX, mc.player.posY, mc.player.posZ, false))
+        connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY + 0.1f, player.posZ, false))
+        connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY, player.posZ, false))
     }
 
     private fun delayModeAttack(event: PacketEvent) {
