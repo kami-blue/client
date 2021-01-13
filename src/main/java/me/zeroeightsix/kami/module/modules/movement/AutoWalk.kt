@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import baritone.api.pathing.goals.GoalXZ
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.module.Category
@@ -11,6 +12,7 @@ import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.math.Direction
 import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
@@ -23,12 +25,14 @@ internal object AutoWalk : Module(
     category = Category.MOVEMENT,
     description = "Automatically walks somewhere"
 ) {
-    val mode = setting("Direction", AutoWalkMode.BARITONE)
+    private val mode = setting("Direction", AutoWalkMode.BARITONE)
     private val disableOnDisconnect by setting("DisableOnDisconnect", true)
 
-    enum class AutoWalkMode {
+    private enum class AutoWalkMode {
         FORWARD, BACKWARDS, BARITONE
     }
+
+    val baritoneWalk get() = isEnabled && mode.value == AutoWalkMode.BARITONE
 
     private const val border = 30000000
     private val messageTimer = TickTimer(TimeUnit.SECONDS)
@@ -86,17 +90,15 @@ internal object AutoWalk : Module(
         }
     }
 
-    private fun startPathing() {
-        mc.player?.let {
-            if (!mc.world.isChunkGeneratedAt(it.chunkCoordX, it.chunkCoordZ)) return
+    private fun SafeClientEvent.startPathing() {
+        if (!world.isChunkGeneratedAt(player.chunkCoordX, player.chunkCoordZ)) return
 
-            direction = Direction.fromEntity(it)
-            val x = it.posX.floorToInt() + direction.directionVec.x * border
-            val z = it.posZ.floorToInt() + direction.directionVec.z * border
+        direction = Direction.fromEntity(player)
+        val x = player.posX.floorToInt() + direction.directionVec.x * border
+        val z = player.posZ.floorToInt() + direction.directionVec.z * border
 
-            BaritoneUtils.cancelEverything()
-            BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
-        }
+        BaritoneUtils.cancelEverything()
+        BaritoneUtils.primary?.customGoalProcess?.setGoalAndPath(GoalXZ(x, z))
     }
 
     private fun checkBaritoneElytra() = mc.player?.let {
@@ -111,7 +113,9 @@ internal object AutoWalk : Module(
         mode.listeners.add {
             if (mc.player == null) return@add
             if (mode.value == AutoWalkMode.BARITONE) {
-                if (!checkBaritoneElytra()) startPathing()
+                if (!checkBaritoneElytra()) {
+                    runSafe { startPathing() }
+                }
             } else {
                 BaritoneUtils.cancelEverything()
             }

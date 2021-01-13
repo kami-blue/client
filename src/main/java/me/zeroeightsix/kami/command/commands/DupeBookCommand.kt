@@ -44,7 +44,7 @@ object DupeBookCommand : ClientCommand(
 
             val joinedPages = characterGenerator
                 .limit(50 * 210)
-                .mapToObj { it.toString() }
+                .mapToObj { it.toChar().toString() } // this has to be turned into a Char first, otherwise you will get the raw Int value
                 .collect(Collectors.joining())
 
             val pages = NBTTagList()

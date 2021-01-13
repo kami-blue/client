@@ -7,13 +7,18 @@ import kotlin.math.max
 
 class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0, setting.description) {
 
-    override fun onClosed() {
-        super.onClosed()
-        name = originalName
-    }
-
     override fun onDisplayed() {
         super.onDisplayed()
+        value = 1.0
+    }
+
+    override fun onStopListening(success: Boolean) {
+        if (success) {
+            setting.setValue(name)
+        }
+
+        super.onStopListening(success)
+        name = originalName
         value = 1.0
     }
 
@@ -36,14 +41,15 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         if (buttonId == 1) {
-            listening = !listening
-
-            value = if (listening) {
-                name = ""
-                0.0
+            if (!listening) {
+                listening = true
+                name = setting.value
+                value = 0.0
             } else {
-                1.0
+                onStopListening(false)
             }
+        } else if (buttonId == 0 && listening) {
+            onStopListening(true)
         }
     }
 
@@ -53,10 +59,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
         if (keyState) {
             when (keyCode) {
                 Keyboard.KEY_RETURN -> {
-                    setting.setValue(name)
-                    listening = false
-                    name = originalName
-                    value = 1.0
+                    onStopListening(true)
                 }
                 Keyboard.KEY_BACK, Keyboard.KEY_DELETE -> {
                     name = name.substring(0, max(name.length - 1, 0))

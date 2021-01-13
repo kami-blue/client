@@ -43,7 +43,7 @@ open class Slider(
 
     override fun onClosed() {
         super.onClosed()
-        listening = false
+        onStopListening(false)
     }
 
     override fun onDisplayed() {
@@ -51,6 +51,10 @@ open class Slider(
         prevValue.value = 0.0
         value = 0.0
         setupDescription()
+    }
+
+    open fun onStopListening(success: Boolean) {
+        listening = false
     }
 
     private fun setupDescription() {

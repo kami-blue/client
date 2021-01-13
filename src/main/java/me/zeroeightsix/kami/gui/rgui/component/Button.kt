@@ -19,4 +19,9 @@ class Button(
             action(this)
         }
     }
+
+    override fun onLeave(mousePos: Vec2f) {
+        super.onLeave(mousePos)
+        value = 0.0
+    }
 }

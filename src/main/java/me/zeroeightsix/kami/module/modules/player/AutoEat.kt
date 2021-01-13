@@ -4,11 +4,12 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.CombatSetting
+import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
+import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.BaritoneUtils.pause
-import me.zeroeightsix.kami.util.BaritoneUtils.unpause
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.items.*
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Items
@@ -25,8 +26,8 @@ internal object AutoEat : Module(
     description = "Automatically eat when hungry",
     category = Category.PLAYER
 ) {
-    private val foodLevel by setting("BelowHunger", 15, 1..20, 1)
-    private val healthLevel by setting("BelowHealth", 10, 1..20, 1)
+    private val belowHunger by setting("BelowHunger", 15, 1..20, 1)
+    private val belowHealth by setting("BelowHealth", 10, 1..20, 1)
     private val eatBadFood by setting("EatBadFood", false)
     private val pauseBaritone by setting("PauseBaritone", true)
 
@@ -35,101 +36,90 @@ internal object AutoEat : Module(
 
     init {
         onDisable {
-            unpause()
-            eating = false
+            stopEating()
         }
 
-        safeListener<TickEvent.ClientTickEvent> { event ->
-            if (CombatSetting.isActive()) return@safeListener
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START || CombatSetting.isActive()) return@safeListener
 
-            if (eating) {
-                if (!player.isHandActive && event.phase == TickEvent.Phase.END) stopEating()
-                return@safeListener
-            }
-
-            if (event.phase != TickEvent.Phase.START) return@safeListener
-
-            if (isValid(player.heldItemOffhand)) {
-                startEating(EnumHand.OFF_HAND)
-            } else if (swapToFood()) {
-                startEating(EnumHand.MAIN_HAND)
+            if (shouldEat()) {
+                if (isValid(player.heldItemOffhand)) {
+                    eat(EnumHand.OFF_HAND)
+                } else if (swapToFood()) {
+                    eat(EnumHand.MAIN_HAND)
+                }
+            } else if (eating) {
+                stopEating()
             }
         }
     }
 
-    private fun SafeClientEvent.swapToFood(): Boolean {
-        lastSlot = player.inventory.currentItem
+    private fun SafeClientEvent.shouldEat() =
+        player.foodStats.foodLevel < belowHunger
+            || CombatUtils.getHealthSmart(player) < belowHealth
 
-        val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }
+    private fun SafeClientEvent.eat(hand: EnumHand) {
+        if (pauseBaritone) pauseBaritone()
 
-        if (!hasFoodInSlot) {
-            lastSlot = -1
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
+        playerController.processRightClick(player, world, hand)
 
-            val slotFrom = player.storageSlots.firstItem<ItemFood, Slot> {
-                isValid(it)
-            } ?: return false
-
-            moveToHotbar(slotFrom) {
-                val item = it.item
-                item !is ItemTool && item !is ItemBlock
-            }
-
-            return false
-        }
-
-        return true
+        eating = true
     }
 
-    private fun SafeClientEvent.stopEating() {
-        if (lastSlot != -1) {
-            swapToSlot(lastSlot)
-            lastSlot = -1
+    private fun stopEating() {
+        unpauseBaritone()
+
+        runSafe {
+            if (lastSlot != -1) {
+                swapToSlot(lastSlot)
+                lastSlot = -1
+            }
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
+            playerController.onStoppedUsingItem(player)
         }
 
         eating = false
-        unpause()
 
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
     }
 
-    private fun SafeClientEvent.startEating(hand: EnumHand) {
-        if (pauseBaritone && !eating) {
-            pause()
+    private fun SafeClientEvent.swapToFood(): Boolean {
+        if (isValid(player.heldItemMainhand)) return true
+
+        lastSlot = player.inventory.currentItem
+        val hasFoodInSlot = swapToItem<ItemFood> { isValid(it) }
+
+        return if (!hasFoodInSlot) {
+            lastSlot = -1
+            moveFoodToHotbar()
+            false
+        } else {
+            true
         }
-
-        player.activeHand = hand
-
-        eating = true
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
-        playerController.processRightClick(player, world, hand)
     }
 
-    private fun SafeClientEvent.isValid(stack: ItemStack): Boolean {
-        val item = stack.item
-        if (item !is ItemFood) return false
+    private fun SafeClientEvent.moveFoodToHotbar() {
+        val slotFrom = player.storageSlots.firstItem<ItemFood, Slot> {
+            isValid(it)
+        } ?: return
 
-        return passItemCheck(stack) && (player.foodStats.foodLevel < foodLevel
-            || CombatUtils.getHealthSmart(player) < healthLevel)
-    }
-
-    private fun passItemCheck(stack: ItemStack): Boolean {
-        val item = stack.item
-
-        // Excluded Chorus Fruit since it is mainly used to teleport the player
-        if (item == Items.CHORUS_FRUIT) {
-            return false
+        moveToHotbar(slotFrom) {
+            val item = it.item
+            item !is ItemTool && item !is ItemBlock
         }
-
-        // The player will not auto eat the food below if the EatBadFood setting is disabled
-        if (!eatBadFood && (item == Items.ROTTEN_FLESH
-                || item == Items.SPIDER_EYE
-                || item == Items.POISONOUS_POTATO
-                || (item == Items.FISH && (stack.metadata == 3 || stack.metadata == 2)) // Puffer fish, Clown fish
-                || item == Items.CHORUS_FRUIT)) {
-            return false
-        }
-
-        // If EatBadFood is enabled, just allow them to eat it
-        return true
     }
+
+    private fun isValid(itemStack: ItemStack): Boolean {
+        val item = itemStack.item
+
+        return item is ItemFood
+            && item != Items.CHORUS_FRUIT
+            && (eatBadFood || !isBadFood(itemStack, item))
+    }
+
+    private fun isBadFood(itemStack: ItemStack, item: ItemFood) =
+        item == Items.ROTTEN_FLESH
+            || item == Items.SPIDER_EYE
+            || item == Items.POISONOUS_POTATO
+            || item == Items.FISH && (itemStack.metadata == 3 || itemStack.metadata == 2) // Puffer fish, Clown fish
 }

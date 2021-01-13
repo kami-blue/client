@@ -4,6 +4,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
+import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.*
@@ -29,16 +31,16 @@ internal object InventoryManager : Module(
         "minecraft:cobblestone"
     )
 
-    private val autoRefill = setting("AutoRefill", true)
-    private val buildingMode = setting("BuildingMode", false, { autoRefill.value })
-    val buildingBlockID = setting("BuildingBlockID", 0, 0..1000, 1, { false })
-    private val refillThreshold = setting("RefillThreshold", 16, 1..63, 1, { autoRefill.value })
-    private val itemSaver = setting("ItemSaver", false)
-    private val duraThreshold = setting("DurabilityThreshold", 5, 1..50, 1, { itemSaver.value })
-    val autoEject = setting("AutoEject", false)
-    private val fullOnly = setting("OnlyAtFull", false, { autoEject.value })
-    private val pauseMovement = setting("PauseMovement", true)
-    private val delay = setting("DelayTicks", 1, 0..20, 1)
+    private val autoRefill by setting("AutoRefill", true)
+    private val buildingMode by setting("BuildingMode", false, { autoRefill })
+    var buildingBlockID by setting("BuildingBlockID", 0, 0..1000, 1, { false })
+    private val refillThreshold by setting("RefillThreshold", 16, 1..63, 1, { autoRefill })
+    private val itemSaver by setting("ItemSaver", false)
+    private val duraThreshold by setting("DurabilityThreshold", 5, 1..50, 1, { itemSaver })
+    private val autoEject by setting("AutoEject", false)
+    private val fullOnly by setting("OnlyAtFull", false, { autoEject })
+    private val pauseMovement by setting("PauseMovement", true)
+    private val delay by setting("DelayTicks", 1, 0..20, 1)
     val ejectList = setting(CollectionSetting("EjectList", defaultEjectList))
 
     enum class State {
@@ -54,33 +56,30 @@ internal object InventoryManager : Module(
     }
 
     init {
-        onToggle {
+        onDisable {
             paused = false
-            BaritoneUtils.unpause()
+            unpauseBaritone()
         }
 
         safeListener<PlayerTravelEvent> {
-            if (player.isSpectator || !pauseMovement.value || !paused) return@safeListener
+            if (player.isSpectator || !pauseMovement || !paused) return@safeListener
             player.setVelocity(0.0, mc.player.motionY, 0.0)
             it.cancel()
         }
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START || player.isSpectator || mc.currentScreen is GuiContainer) return@safeListener
-            if (!timer.tick(delay.value.toLong())) return@safeListener
+
+            if (!timer.tick(delay.toLong())) return@safeListener
 
             setState()
-
-            if (currentState == State.IDLE) removeHoldingItem()
 
             when (currentState) {
                 State.SAVING_ITEM -> saveItem()
                 State.REFILLING_BUILDING -> refillBuilding()
                 State.REFILLING -> refill()
                 State.EJECTING -> eject()
-                else -> {
-                    // this is fine, Java meme
-                }
+                State.IDLE -> removeHoldingItem()
             }
 
             playerController.updateController()
@@ -96,42 +95,39 @@ internal object InventoryManager : Module(
             else -> State.IDLE
         }
 
-        if (currentState != State.IDLE && pauseMovement.value && !paused) {
-            BaritoneUtils.pause()
-            paused = true
-        } else if (currentState == State.IDLE && paused) {
-            BaritoneUtils.unpause()
-            paused = false
+        paused = if (currentState != State.IDLE && pauseMovement) {
+            pauseBaritone()
+            true
+        } else {
+            unpauseBaritone()
+            false
         }
     }
 
     /* State checks */
     private fun SafeClientEvent.saveItemCheck(): Boolean {
-        return itemSaver.value && checkDamage(player.heldItemMainhand)
+        return itemSaver && checkDamage(player.heldItemMainhand)
     }
 
     private fun SafeClientEvent.refillBuildingCheck(): Boolean {
-        if (!autoRefill.value || !buildingMode.value || buildingBlockID.value == 0) return false
+        if (!autoRefill || !buildingMode || buildingBlockID == 0) return false
 
-        val totalCount = player.inventorySlots.countID(buildingBlockID.value)
-        val hotbarCount = player.hotbarSlots.countID(buildingBlockID.value)
+        val totalCount = player.inventorySlots.countID(buildingBlockID)
+        val hotbarCount = player.hotbarSlots.countID(buildingBlockID)
 
-        return totalCount > refillThreshold.value
-            && (hotbarCount <= refillThreshold.value
+        return totalCount >= refillThreshold
+            && (hotbarCount < refillThreshold
             || (getRefillableSlotBuilding() != null && currentState == State.REFILLING_BUILDING))
-
     }
 
     private fun SafeClientEvent.refillCheck(): Boolean {
-        if (!autoRefill.value) return false
-
-        return getRefillableSlot() != null
+        return autoRefill && getRefillableSlot() != null
     }
 
     private fun SafeClientEvent.ejectCheck(): Boolean {
-        if (!autoEject.value || ejectList.isEmpty()) return false
-
-        return getEjectSlot() != null && (!fullOnly.value || player.inventorySlots.firstEmpty() == null)
+        return autoEject && ejectList.isNotEmpty()
+            && (!fullOnly || player.inventorySlots.firstEmpty() == null)
+            && getEjectSlot() != null
     }
     /* End of state checks */
 
@@ -144,7 +140,7 @@ internal object InventoryManager : Module(
         val emptySlot = player.inventorySlots.firstEmpty()
 
         when {
-            autoRefill.value && undamagedItem != null -> {
+            autoRefill && undamagedItem != null -> {
                 moveToHotbar(undamagedItem.slotNumber, currentSlot)
             }
             emptySlot != null -> {
@@ -157,7 +153,7 @@ internal object InventoryManager : Module(
     }
 
     private fun SafeClientEvent.refillBuilding() {
-        player.storageSlots.firstID(buildingBlockID.value)?.let {
+        player.storageSlots.firstID(buildingBlockID)?.let {
             quickMoveSlot(it)
         }
     }
@@ -188,44 +184,12 @@ internal object InventoryManager : Module(
 
     private fun checkDamage(itemStack: ItemStack) =
         itemStack.isItemStackDamageable
-            && itemStack.itemDamage > itemStack.maxDamage * (1.0f - duraThreshold.value / 100.0f)
-
-    /**
-     * Checks damage of item in given slot
-     *
-     * @return True if durability is lower than the value of [duraThreshold],
-     * false if not lower than the value of [duraThreshold],
-     * null if item is not damageable
-     */
-    private fun checkDamage(slot: Int): Boolean? {
-        return if (!mc.player.inventory.getStackInSlot(slot).isEmpty) {
-            val item = mc.player.inventory.getStackInSlot(slot)
-            if (item.isItemStackDamageable) {
-                item.itemDamage > item.maxDamage * (1.0f - duraThreshold.value.toFloat() / 100.0f)
-            } else null
-        } else null
-    }
-
-    /**
-     * Same as [checkDamage], but uses full inventory slot
-     *
-     * @return True if durability is lower than the value of [duraThreshold],
-     * false if not lower than the value of [duraThreshold],
-     * null if item is not damageable or slot is empty
-     */
-    private fun checkDamageFullInv(slot: Int): Boolean? {
-        return if (!mc.player.inventoryContainer.inventory[slot].isEmpty) {
-            val item = mc.player.inventoryContainer.inventory[slot]
-            if (item.isItemStackDamageable) {
-                item.itemDamage > item.maxDamage * (1.0f - duraThreshold.value.toFloat() / 100.0f)
-            } else null
-        } else null
-    }
+            && itemStack.itemDamage > itemStack.maxDamage * (1.0f - duraThreshold / 100.0f)
 
     private fun SafeClientEvent.getRefillableSlotBuilding(): Slot? {
-        if (player.storageSlots.firstID(buildingBlockID.value) == null) return null
+        if (player.storageSlots.firstID(buildingBlockID) == null) return null
 
-        return player.hotbarSlots.firstID(buildingBlockID.value) {
+        return player.hotbarSlots.firstID(buildingBlockID) {
             it.isStackable && it.count < it.maxStackSize
         }
     }
@@ -233,28 +197,24 @@ internal object InventoryManager : Module(
     private fun SafeClientEvent.getRefillableSlot(): Slot? {
         return player.hotbarSlots.firstByStack {
             !it.isEmpty
-                && (!buildingMode.value || it.item.id != buildingBlockID.value)
-                && (!autoEject.value || !ejectList.contains(it.item.registryName.toString()))
+                && (!buildingMode || it.item.id != buildingBlockID)
+                && (!autoEject || !ejectList.contains(it.item.registryName.toString()))
                 && it.isStackable
-                && (it.maxStackSize / 64.0f * refillThreshold.value).ceilToInt() < refillThreshold.value
+                && it.count < (it.maxStackSize / 64.0f * refillThreshold).ceilToInt()
                 && getCompatibleStack(it) != null
         }
     }
 
     private fun SafeClientEvent.getCompatibleStack(stack: ItemStack): Slot? {
-        return player.storageSlots.firstID(stack.item.id) {
-            isCompatibleStacks(stack, it)
+        return player.storageSlots.firstByStack {
+            stack.isItemEqual(it) && ItemStack.areItemStackTagsEqual(stack, it)
         }
-    }
-
-    private fun isCompatibleStacks(stack1: ItemStack, stack2: ItemStack): Boolean {
-        return stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack2, stack1)
     }
 
     private fun SafeClientEvent.getEjectSlot(): Slot? {
         return player.inventorySlots.firstByStack {
             !it.isEmpty
-                && (!buildingMode.value || it.item.id != buildingBlockID.value)
+                && (!buildingMode || it.item.id != buildingBlockID)
                 && ejectList.contains(it.item.registryName.toString())
         }
     }

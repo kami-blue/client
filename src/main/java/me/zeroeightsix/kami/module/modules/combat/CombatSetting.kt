@@ -7,6 +7,8 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
+import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CombatUtils
@@ -132,11 +134,12 @@ internal object CombatSetting : Module(
                 jobMap[function] = defaultScope.launch { function(this@safeListener) }
             }
 
-            if (pauseBaritone.value && !paused && isActive()) {
-                BaritoneUtils.pause()
+            if (isActive() && pauseBaritone.value) {
+                pauseBaritone()
+                resumeTimer.reset()
                 paused = true
-            } else if (paused && resumeTimer.tick(resumeDelay.value.toLong())) {
-                BaritoneUtils.unpause()
+            } else if (resumeTimer.tick(resumeDelay.value.toLong(), false)) {
+                unpauseBaritone()
                 paused = false
             }
         }

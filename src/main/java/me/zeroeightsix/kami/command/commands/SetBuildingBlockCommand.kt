@@ -17,11 +17,11 @@ object SetBuildingBlockCommand : ClientCommand(
             val heldItem = player.inventory.getCurrentItem()
             when {
                 heldItem.isEmpty -> {
-                    InventoryManager.buildingBlockID.value = 0
+                    InventoryManager.buildingBlockID = 0
                     MessageSendHelper.sendChatMessage("Building block has been reset")
                 }
                 heldItem.item.block !is BlockAir -> {
-                    InventoryManager.buildingBlockID.value = heldItem.item.id
+                    InventoryManager.buildingBlockID = heldItem.item.id
                     MessageSendHelper.sendChatMessage("Building block has been set to ${heldItem.displayName}")
                 }
                 else -> {

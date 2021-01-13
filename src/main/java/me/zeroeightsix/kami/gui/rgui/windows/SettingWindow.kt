@@ -63,8 +63,10 @@ abstract class SettingWindow<T : Any>(
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         (hoveredChild as? Slider)?.let {
-            listeningChild = if (it.listening) it
-            else null
+            if (it != listeningChild) {
+                listeningChild?.onStopListening(false)
+                listeningChild = it.takeIf { it.listening }
+            }
         }
     }
 

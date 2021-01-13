@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.util
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import kotlin.math.cos
@@ -9,14 +10,16 @@ import kotlin.math.sin
 object MovementUtils {
     private val mc = Minecraft.getMinecraft()
 
-    val isInputting get() = mc.player.movementInput.moveForward != 0f || mc.player.movementInput.moveStrafe != 0f
+    val isInputting get() = mc.player?.movementInput?.let {
+        it.moveForward != 0f || it.moveStrafe != 0f
+    } ?: false
 
     val Entity.isMoving get() = speed > 0.0001
     val Entity.speed get() = hypot(motionX, motionZ)
     val Entity.realSpeed get() = hypot(posX - prevPosX, posZ - prevPosZ)
 
     /* totally not taken from elytrafly */
-    fun calcMoveYaw(yawIn: Float = mc.player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
+    fun SafeClientEvent.calcMoveYaw(yawIn: Float = mc.player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
         var strafe = 90 * moveString
         strafe *= if (moveForward != 0F) moveForward * 0.5F else 1F
 
@@ -35,9 +38,9 @@ object MovementUtils {
         else -> 0f
     }
 
-    fun setSpeed(speed: Double) {
+    fun SafeClientEvent.setSpeed(speed: Double) {
         val yaw = calcMoveYaw()
-        mc.player.motionX = -sin(yaw) * speed
-        mc.player.motionZ = cos(yaw) * speed
+        player.motionX = -sin(yaw) * speed
+        player.motionZ = cos(yaw) * speed
     }
 }
