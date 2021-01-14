@@ -12,6 +12,73 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.CPacketClickWindow
 
 /**
+ * Try to swap selected hotbar slot to [I] that matches with [predicate]
+ */
+inline fun <reified I : Block> SafeClientEvent.swapToBlock(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to [block] that matches with [predicate]
+ */
+fun SafeClientEvent.swapToBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstBlock(block, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to [I] that matches with [predicate]
+ */
+inline fun <reified I : Item> SafeClientEvent.swapToItem(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to [item] that matches with [predicate]
+ */
+fun SafeClientEvent.swapToItem(item: Item, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstItem(item, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Try to swap selected hotbar slot to item with [itemID] that matches with [predicate]
+ */
+fun SafeClientEvent.swapToID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
+    return player.hotbarSlots.firstID(itemID, predicate)?.let {
+        swapToSlot(it)
+        true
+    } ?: false
+}
+
+/**
+ * Swap the selected hotbar slot to [hotbarSlot]
+ */
+fun SafeClientEvent.swapToSlot(hotbarSlot: HotbarSlot) {
+    swapToSlot(hotbarSlot.hotbarSlot)
+}
+
+/**
+ * Swap the selected hotbar slot to [slot]
+ */
+fun SafeClientEvent.swapToSlot(slot: Int) {
+    if (slot !in 0..8) return
+    player.inventory.currentItem = slot
+    playerController.updateController()
+}
+
+
+/**
  * Try to swap selected hotbar slot to [I] that matches with [predicateItem]
  *
  * Or move an item from storage slot to an empty slot or slot that matches [predicateSlot]
@@ -115,72 +182,6 @@ fun SafeClientEvent.swapToItemOrMove(
 }
 
 /**
- * Try to swap selected hotbar slot to [I] that matches with [predicate]
- */
-inline fun <reified I : Block> SafeClientEvent.swapToBlock(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstBlock<I, HotbarSlot>(predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
-}
-
-/**
- * Try to swap selected hotbar slot to [block] that matches with [predicate]
- */
-fun SafeClientEvent.swapToBlock(block: Block, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstBlock(block, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
-}
-
-/**
- * Try to swap selected hotbar slot to [I] that matches with [predicate]
- */
-inline fun <reified I : Item> SafeClientEvent.swapToItem(crossinline predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstItem<I, HotbarSlot>(predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
-}
-
-/**
- * Try to swap selected hotbar slot to [item] that matches with [predicate]
- */
-fun SafeClientEvent.swapToItem(item: Item, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstItem(item, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
-}
-
-/**
- * Try to swap selected hotbar slot to item with [itemID] that matches with [predicate]
- */
-fun SafeClientEvent.swapToID(itemID: Int, predicate: (ItemStack) -> Boolean = { true }): Boolean {
-    return player.hotbarSlots.firstID(itemID, predicate)?.let {
-        swapToSlot(it)
-        true
-    } ?: false
-}
-
-/**
- * Swap the selected hotbar slot to [hotbarSlot]
- */
-fun SafeClientEvent.swapToSlot(hotbarSlot: HotbarSlot) {
-    swapToSlot(hotbarSlot.hotbarSlot)
-}
-
-/**
- * Swap the selected hotbar slot to [slot]
- */
-fun SafeClientEvent.swapToSlot(slot: Int) {
-    if (slot !in 0..8) return
-    player.inventory.currentItem = slot
-    playerController.updateController()
-}
-
-/**
  * Swaps the item in [slotFrom] with the first empty hotbar slot
  * or matches with [predicate] or slot 0 if none of those found
  */
@@ -205,7 +206,6 @@ fun SafeClientEvent.moveToHotbar(slotFrom: Slot, slotTo: HotbarSlot): Short {
  */
 fun SafeClientEvent.moveToHotbar(windowID: Int, slotFrom: Slot, hotbarSlotTo: HotbarSlot): Short {
     // mouseButton is actually the hotbar
-    swapToSlot(hotbarSlotTo)
     return clickSlot(windowID, slotFrom, hotbarSlotTo.hotbarSlot, type = ClickType.SWAP)
 }
 
