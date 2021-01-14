@@ -31,8 +31,8 @@ internal object CommandConfig : Module(
         safeListener<ModuleToggleEvent> {
             if (toggleMessages.value) {
                 MessageSendHelper.sendChatMessage(name +
-                    if (it.module.isEnabled) TextFormatting.GREEN format "enabled"
-                    else TextFormatting.RED format "disabled"
+                    if (it.module.isEnabled) TextFormatting.GREEN format " enabled"
+                    else TextFormatting.RED format " disabled"
                 )
             }
         }
