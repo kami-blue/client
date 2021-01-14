@@ -21,7 +21,7 @@ open class Component(
 
     // Basic info
     val originalName = name
-    var name by setting("Name", name, { false })
+    var componentName by setting("Name", name, { false })
     protected val visibleSetting = setting("Visible", true, { false }, { _, it -> it || !closeable })
     var visible by visibleSetting
 

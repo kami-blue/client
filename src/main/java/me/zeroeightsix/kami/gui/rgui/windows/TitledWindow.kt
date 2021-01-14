@@ -22,6 +22,6 @@ open class TitledWindow(
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
         super.onRender(vertexHelper, absolutePos)
-        FontRenderAdapter.drawString(name, 3.0f, 3.0f, color = GuiColors.text)
+        FontRenderAdapter.drawString(componentName, 3.0f, 3.0f, color = GuiColors.text)
     }
 }

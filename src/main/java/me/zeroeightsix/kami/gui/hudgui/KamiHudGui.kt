@@ -54,7 +54,7 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
             if (string.isNotEmpty()) {
                 setHudButtonVisibility { hudButton ->
-                    hudButton.hudElement.name.contains(string, true)
+                    hudButton.hudElement.componentName.contains(string, true)
                         || hudButton.hudElement.alias.any { it.contains(string, true) }
                 }
             } else {
