@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.network.play.client.CPacketKeepAlive
 import net.minecraft.network.play.server.SPacketKeepAlive
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-object PingSpoof : Module(
+internal object PingSpoof : Module(
     name = "PingSpoof",
     category = Category.MISC,
     description = "Cancels or adds delay to your ping packets"

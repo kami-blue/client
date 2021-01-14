@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlace
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceOn
 import me.zeroeightsix.kami.util.combat.SurroundUtils
@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-object HoleMiner : Module(
+internal object HoleMiner : Module(
     name = "HoleMiner",
     category = Category.COMBAT,
     description = "Mines your opponent's hole",

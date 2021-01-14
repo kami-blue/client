@@ -5,8 +5,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.color.DyeColors
 import me.zeroeightsix.kami.util.color.HueCycler
@@ -21,7 +21,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object StorageESP : Module(
+internal object StorageESP : Module(
     name = "StorageESP",
     description = "Draws an ESP on top of storage units",
     category = Category.RENDER

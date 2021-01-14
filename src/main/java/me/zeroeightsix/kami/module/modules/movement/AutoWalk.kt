@@ -4,9 +4,9 @@ import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
-object AutoWalk : Module(
+internal object AutoWalk : Module(
     name = "AutoWalk",
     category = Category.MOVEMENT,
     description = "Automatically walks somewhere"

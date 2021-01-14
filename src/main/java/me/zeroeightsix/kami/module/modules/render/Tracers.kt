@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getTargetList
 import me.zeroeightsix.kami.util.EntityUtils.isNeutral
 import me.zeroeightsix.kami.util.EntityUtils.isPassive
@@ -20,7 +20,7 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
-object Tracers : Module(
+internal object Tracers : Module(
     name = "Tracers",
     description = "Draws lines to other living entities",
     category = Category.RENDER

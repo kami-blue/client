@@ -2,14 +2,14 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
-object AutoTPA : Module(
+internal object AutoTPA : Module(
     name = "AutoTPA",
     description = "Automatically accept or decline /TPAs",
     category = Category.CHAT

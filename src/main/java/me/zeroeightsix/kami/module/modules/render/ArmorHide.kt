@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.EntityEquipmentSlot
 
-object ArmorHide : Module(
+internal object ArmorHide : Module(
     name = "ArmorHide",
     category = Category.RENDER,
     description = "Hides the armor on selected entities",

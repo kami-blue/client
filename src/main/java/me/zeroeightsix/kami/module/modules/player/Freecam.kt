@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerAttackEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.math.RotationUtils
@@ -34,7 +34,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import kotlin.math.*
 
-object Freecam : Module(
+internal object Freecam : Module(
     name = "Freecam",
     category = Category.PLAYER,
     description = "Leave your body and transcend into the realm of the gods"

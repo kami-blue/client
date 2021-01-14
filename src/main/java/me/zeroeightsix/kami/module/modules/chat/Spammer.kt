@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.chat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageDetection
@@ -18,7 +18,7 @@ import java.net.URL
 import java.util.*
 import kotlin.random.Random
 
-object Spammer : Module(
+internal object Spammer : Module(
     name = "Spammer",
     description = "Spams text from a file on a set delay into the chat",
     category = Category.CHAT,

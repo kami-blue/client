@@ -4,9 +4,8 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.Wrapper.minecraft
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -25,7 +24,7 @@ import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11
 
-object NoRender : Module(
+internal object NoRender : Module(
     name = "NoRender",
     category = Category.RENDER,
     description = "Ignore entity spawn packets"
@@ -158,7 +157,7 @@ object NoRender : Module(
     fun renderFakeMap() {
         val tessellator = Tessellator.getInstance()
         val bufBuilder = tessellator.buffer
-        minecraft.textureManager.bindTexture(kamiMap)
+        mc.textureManager.bindTexture(kamiMap)
 
         bufBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
         bufBuilder.pos(0.0, 128.0, -0.009999999776482582).tex(0.0, 1.0).endVertex()

@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.text.SimpleDateFormat
 import java.util.*
 
-object AutoQMain : Module(
+internal object AutoQMain : Module(
     name = "AutoQMain",
     description = "Automatically does '/queue 2b2t-lobby'",
     category = Category.CHAT,

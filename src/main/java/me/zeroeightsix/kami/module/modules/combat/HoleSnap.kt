@@ -1,9 +1,9 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.SurroundUtils
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
@@ -17,7 +17,7 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
-object HoleSnap : Module(
+internal object HoleSnap : Module(
     name = "HoleSnap",
     description = "Move you into the hole nearby",
     category = Category.COMBAT

@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec3f
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraft.util.EnumHandSide
 
-object ItemModel : Module(
+internal object ItemModel : Module(
     name = "ItemModel",
     description = "Modify hand item rendering in first person",
     category = Category.RENDER

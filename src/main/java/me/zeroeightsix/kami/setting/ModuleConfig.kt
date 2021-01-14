@@ -1,28 +1,15 @@
 package me.zeroeightsix.kami.setting
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.GenericConfig.setting
-import me.zeroeightsix.kami.setting.config.AbstractConfig
-import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import me.zeroeightsix.kami.module.AbstractModule
+import me.zeroeightsix.kami.module.modules.client.Configurations
+import me.zeroeightsix.kami.setting.configs.NameableConfig
 import java.io.File
 
-internal object ModuleConfig : AbstractConfig<Module>(
-        "modules",
-        "${KamiMod.DIRECTORY}modules",
+internal object ModuleConfig : NameableConfig<AbstractModule>(
+    "modules",
+    "${KamiMod.DIRECTORY}config/modules",
 ) {
-    var currentPath by setting("CurrentPath", "default")
-
-    override val file: File get() = File("$filePath/$currentPath.json")
-    override val backup get() =  File("$filePath/$currentPath.bak")
-
-    override fun <S : AbstractSetting<*>> Module.setting(setting: S): S {
-        getGroupOrPut(name).addSetting(setting)
-        return setting
-    }
-
-    override fun save() {
-        super.save()
-    }
-
+    override val file: File get() = File("$filePath/${Configurations.modulePreset}.json")
+    override val backup get() = File("$filePath/${Configurations.modulePreset}.bak")
 }

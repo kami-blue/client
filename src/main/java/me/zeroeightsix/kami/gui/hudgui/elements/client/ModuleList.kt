@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.gui.hudgui.elements.client
 
 import me.zeroeightsix.kami.gui.hudgui.HudElement
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.TimedFlag
@@ -42,7 +42,7 @@ object ModuleList : HudElement(
     @Suppress("UNUSED")
     private enum class SortingMode(
         override val displayName: String,
-        val comparator: Comparator<Module>
+        val comparator: Comparator<AbstractModule>
     ) : DisplayEnum {
         LENGTH("Length", compareByDescending { it.textLine.getWidth() }),
         ALPHABET("Alphabet", compareBy { it.name }),
@@ -60,8 +60,8 @@ object ModuleList : HudElement(
     override val hudHeight: Float
         get() = max(toggleMap.values.sumByFloat { it.displayHeight }, 20.0f)
 
-    private var sortedModuleList: Collection<Module> = ModuleManager.modules
-    private val textLineMap = HashMap<Module, TextComponent.TextLine>()
+    private var sortedModuleList = ModuleManager.modules
+    private val textLineMap = HashMap<AbstractModule, TextComponent.TextLine>()
     private val toggleMap = ModuleManager.modules
         .associateWith { TimedFlag(false) }
         .toMutableMap()
@@ -150,12 +150,12 @@ object ModuleList : HudElement(
         }
     }
 
-    private val Module.textLine
+    private val AbstractModule.textLine
         get() = textLineMap.getOrPut(this) {
             this.newTextLine
         }
 
-    private val Module.newTextLine
+    private val AbstractModule.newTextLine
         get() = TextComponent.TextLine(" ").apply {
             add(TextComponent.TextElement(name, primary.value))
             getHudInfo().let {

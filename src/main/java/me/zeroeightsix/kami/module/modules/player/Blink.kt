@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.x
 import me.zeroeightsix.kami.mixin.extension.y
 import me.zeroeightsix.kami.mixin.extension.z
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-object Blink : Module(
+internal object Blink : Module(
     name = "Blink",
     category = Category.PLAYER,
     description = "Cancels server side packets"

@@ -3,16 +3,16 @@ package me.zeroeightsix.kami.process
 import baritone.api.process.IBaritoneProcess
 import baritone.api.process.PathingCommand
 import baritone.api.process.PathingCommandType
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 
 object PauseProcess : IBaritoneProcess {
 
-    private val pauseModules = HashMap<Module, Long>()
+    private val pauseModules = HashMap<AbstractModule, Long>()
     private val timer = TickTimer(TimeUnit.SECONDS)
-    private var lastPausingModule: Module? = null
+    private var lastPausingModule: AbstractModule? = null
 
     override fun isTemporary(): Boolean {
         return true
@@ -42,7 +42,7 @@ object PauseProcess : IBaritoneProcess {
         return PathingCommand(null, PathingCommandType.REQUEST_PAUSE)
     }
 
-    fun Module.pauseBaritone() {
+    fun AbstractModule.pauseBaritone() {
         if (pauseModules.isEmpty()) {
             BaritoneUtils.primary?.pathingControlManager?.registerProcess(this@PauseProcess)
         }
@@ -52,7 +52,7 @@ object PauseProcess : IBaritoneProcess {
         pauseModules[this] = System.currentTimeMillis()
     }
 
-    fun Module.unpauseBaritone() {
+    fun AbstractModule.unpauseBaritone() {
         pauseModules.remove(this)
     }
 }

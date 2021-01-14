@@ -6,8 +6,8 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -30,7 +30,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 
-object Search : Module(
+internal object Search : Module(
     name = "Search",
     description = "Highlights blocks in the world",
     category = Category.RENDER

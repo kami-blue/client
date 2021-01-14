@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -11,7 +11,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-object ViewLock : Module(
+internal object ViewLock : Module(
     name = "ViewLock",
     category = Category.PLAYER,
     description = "Locks your camera view"

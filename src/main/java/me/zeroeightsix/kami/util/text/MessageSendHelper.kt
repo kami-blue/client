@@ -4,7 +4,7 @@ import baritone.api.event.events.ChatEvent
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.manager.managers.MessageManager
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.Wrapper
@@ -56,7 +56,7 @@ object MessageSendHelper {
 
     fun Any.sendServerMessage(message: String?): TaskState {
         if (message.isNullOrBlank()) return TaskState(true)
-        val priority = if (this is Module) modulePriority else 0
+        val priority = if (this is AbstractModule) modulePriority else 0
         return MessageManager.addMessageToQueue(message, this, priority)
     }
 

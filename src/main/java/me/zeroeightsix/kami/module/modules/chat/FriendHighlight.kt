@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -12,7 +12,7 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 
-object FriendHighlight : Module(
+internal object FriendHighlight : Module(
     name = "FriendHighlight",
     description = "Highlights your friends names in chat",
     category = Category.CHAT,

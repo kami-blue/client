@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.mixin.extension.syncCurrentPlayItem
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
 import me.zeroeightsix.kami.util.items.swapToSlot
@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
 import kotlin.math.pow
 
-object AutoTool : Module(
+internal object AutoTool : Module(
     name = "AutoTool",
     description = "Automatically switch to the best tools when mining or attacking",
     category = Category.MISC
@@ -80,7 +80,6 @@ object AutoTool : Module(
             }
 
         }
-
 
         if (bestSlot != -1) swapToSlot(bestSlot)
     }

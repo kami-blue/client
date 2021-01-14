@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneCommandEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.mixin.extension.sendClickBlockToController
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
@@ -16,7 +16,7 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object AutoMine : Module(
+internal object AutoMine : Module(
     name = "AutoMine",
     description = "Automatically mines chosen ores",
     category = Category.MISC

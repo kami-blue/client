@@ -4,8 +4,8 @@ import baritone.api.pathing.goals.GoalXZ
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.BaritoneSettingsInitEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
@@ -25,7 +25,7 @@ import kotlin.random.Random
  * TODO: Path finding to stay inside 1 chunk
  * TODO: Render which chunk is selected
  */
-object AntiAFK : Module(
+internal object AntiAFK : Module(
     name = "AntiAFK",
     category = Category.MISC,
     description = "Prevents being kicked for AFK"

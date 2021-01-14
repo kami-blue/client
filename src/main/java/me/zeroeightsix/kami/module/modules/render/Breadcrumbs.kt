@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
@@ -24,7 +24,7 @@ import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.min
 
-object Breadcrumbs : Module(
+internal object Breadcrumbs : Module(
     name = "Breadcrumbs",
     description = "Draws a tail behind as you move",
     category = Category.RENDER,

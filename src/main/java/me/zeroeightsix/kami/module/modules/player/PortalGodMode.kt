@@ -1,13 +1,13 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.runSafe
 import net.minecraft.network.play.client.CPacketConfirmTeleport
 import org.kamiblue.event.listener.listener
 
-object PortalGodMode : Module(
+internal object PortalGodMode : Module(
     name = "PortalGodMode",
     category = Category.PLAYER,
     description = "Don't take damage in portals"

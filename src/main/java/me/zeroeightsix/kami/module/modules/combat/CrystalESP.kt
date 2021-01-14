@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.Quad
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
@@ -31,7 +31,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sin
 
-object CrystalESP : Module(
+internal object CrystalESP : Module(
     name = "CrystalESP",
     description = "Renders ESP for End Crystals",
     category = Category.COMBAT

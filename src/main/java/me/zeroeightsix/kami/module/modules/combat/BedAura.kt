@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.items.*
@@ -31,7 +31,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 @CombatManager.CombatModule
-object BedAura : Module(
+internal object BedAura : Module(
     name = "BedAura",
     description = "Place bed and kills enemies",
     category = Category.COMBAT,

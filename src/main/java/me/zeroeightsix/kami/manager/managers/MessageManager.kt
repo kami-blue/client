@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.mixin.extension.packetMessage
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TickTimer
@@ -95,7 +95,7 @@ object MessageManager : Manager {
 
     }
 
-    fun Module.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
+    fun AbstractModule.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
         MessageModifier(modifierId++, modulePriority, filter, modifier)
 
     class MessageModifier(

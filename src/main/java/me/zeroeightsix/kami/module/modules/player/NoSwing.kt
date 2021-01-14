@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketAnimation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object NoSwing : Module(
+internal object NoSwing : Module(
     name = "NoSwing",
     category = Category.PLAYER,
     description = "Cancels server or client swing animation"

@@ -4,7 +4,7 @@
 [![HitCount](http://hits.dwyl.com/kami-blue/client.svg)](http://hits.dwyl.com/kami-blue/client)
 [![Paypal](https://img.shields.io/badge/paypal-donate-red?color=169bd7&logo=paypal)](https://kamiblue.org/donate)
 
-Please consider donating to help continue this project and get a unique cape in game. 
+Please consider donating to help continue this project and get a unique cape in game.
 
 ## Contributing
 
@@ -21,4 +21,5 @@ The [Minecraft Forge team](https://github.com/MinecraftForge) for [forge](https:
 All the [contributors](https://github.com/kami-blue/client/graphs/contributors), including the ones who will be remembered in comments and in our hearts. This has been a huge community effort and I couldn't have done it without them.
 
 ## Star Chart
+
 [![Stargazers over time](https://starchart.cc/kami-blue/client.svg)](https://starchart.cc/kami-blue/client)

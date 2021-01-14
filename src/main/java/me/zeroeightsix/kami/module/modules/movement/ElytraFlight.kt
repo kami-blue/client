@@ -7,9 +7,9 @@ import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.rotationPitch
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
@@ -28,7 +28,7 @@ import org.kamiblue.commons.extension.toRadian
 import kotlin.math.*
 
 // TODO: Rewrite
-object ElytraFlight : Module(
+internal object ElytraFlight : Module(
     name = "ElytraFlight",
     description = "Allows infinite and way easier Elytra flying",
     category = Category.MOVEMENT,

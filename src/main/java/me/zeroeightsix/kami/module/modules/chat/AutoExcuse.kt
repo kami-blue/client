@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -12,7 +12,7 @@ import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketUpdateHealth
 import java.io.File
 
-object AutoExcuse : Module(
+internal object AutoExcuse : Module(
     name = "AutoExcuse",
     description = "Makes an excuse for you when you die",
     category = Category.CHAT,

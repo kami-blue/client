@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.GeometryMasks
@@ -13,7 +13,7 @@ import net.minecraft.util.math.RayTraceResult.Type
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object SelectionHighlight : Module(
+internal object SelectionHighlight : Module(
     name = "SelectionHighlight",
     description = "Highlights object you are looking at",
     category = Category.RENDER

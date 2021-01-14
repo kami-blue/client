@@ -3,9 +3,9 @@ package me.zeroeightsix.kami.module.modules.misc
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.AutoWalk
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -26,7 +26,7 @@ import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
 import kotlin.math.roundToInt
 
-object StashLogger : Module(
+internal object StashLogger : Module(
     name = "StashLogger",
     category = Category.MISC,
     description = "Logs storage units in render distance."

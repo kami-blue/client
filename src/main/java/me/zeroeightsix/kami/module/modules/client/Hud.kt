@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 
-object Hud : Module(
+internal object Hud : Module(
     name = "Hud",
     description = "Toggles Hud displaying and settings",
     category = Category.CLIENT,

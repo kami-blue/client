@@ -6,8 +6,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.pitch
 import me.zeroeightsix.kami.mixin.extension.yaw
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -18,7 +18,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-object PacketLogger : Module(
+internal object PacketLogger : Module(
     name = "PacketLogger",
     description = "Logs sent packets to a file",
     category = Category.PLAYER

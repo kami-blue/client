@@ -4,20 +4,18 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
-import me.zeroeightsix.kami.util.items.HotbarSlot
 import me.zeroeightsix.kami.util.items.block
 import me.zeroeightsix.kami.util.items.firstBlock
 import me.zeroeightsix.kami.util.items.hotbarSlots
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
-import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Blocks
@@ -35,7 +33,7 @@ import org.lwjgl.input.Keyboard
 import java.util.*
 
 @CombatManager.CombatModule
-object CrystalBasePlace : Module(
+internal object CrystalBasePlace : Module(
     name = "CrystalBasePlace",
     description = "Places obby for placing crystal on",
     category = Category.COMBAT,
@@ -78,8 +76,10 @@ object CrystalBasePlace : Module(
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START) return@safeListener
             inactiveTicks++
+
             if (!CombatManager.isOnTopPriority(CrystalBasePlace) || CombatSetting.pause) return@safeListener
-            val slot = getObby() ?: return@safeListener
+
+            val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN) ?: return@safeListener
             val target = CombatManager.target ?: return@safeListener
 
             placePacket?.let { packet ->
@@ -106,23 +106,10 @@ object CrystalBasePlace : Module(
     }
 
     private val SafeClientEvent.isHoldingObby
-        get() =
-            isObby(player.heldItemMainhand)
+        get() = isObby(player.heldItemMainhand)
                 || isObby(player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar))
 
     private fun isObby(itemStack: ItemStack) = itemStack.item.block == Blocks.OBSIDIAN
-
-    private fun SafeClientEvent.getObby(): HotbarSlot? {
-        val slot = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
-
-        if (slot == null) { // Obsidian check
-            MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
-            disable()
-            return null
-        }
-
-        return slot
-    }
 
     private fun SafeClientEvent.prePlace(entity: EntityLivingBase) {
         if (rotationTo != null || !timer.tick((delay.value * 50.0f).toLong(), false)) return

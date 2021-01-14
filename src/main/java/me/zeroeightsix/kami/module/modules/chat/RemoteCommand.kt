@@ -3,19 +3,17 @@ package me.zeroeightsix.kami.module.modules.chat
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
-import me.zeroeightsix.kami.util.text.MessageDetection
-import me.zeroeightsix.kami.util.text.MessageSendHelper
+import me.zeroeightsix.kami.util.text.*
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
-import me.zeroeightsix.kami.util.text.formatValue
 import net.minecraft.network.play.server.SPacketChat
 import org.kamiblue.event.listener.listener
 
 // TODO: When list settings are added to GUI, refactor the custom setting to be a list of usernames
 // TODO: Removed feedback as it does not work on KAMI Blue command feedback.
 // Perhaps we need to restructure the message sending system, as currently the methods feel ugly.
-object RemoteCommand : Module(
+internal object RemoteCommand : Module(
     name = "RemoteCommand",
     description = "Allow trusted players to send commands",
     category = Category.CHAT

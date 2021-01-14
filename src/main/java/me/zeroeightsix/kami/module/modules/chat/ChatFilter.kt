@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
@@ -10,7 +10,7 @@ import org.kamiblue.event.listener.listener
 import java.io.*
 import java.util.*
 
-object ChatFilter : Module(
+internal object ChatFilter : Module(
     name = "ChatFilter",
     description = "Filters custom words or phrases from the chat",
     category = Category.CHAT

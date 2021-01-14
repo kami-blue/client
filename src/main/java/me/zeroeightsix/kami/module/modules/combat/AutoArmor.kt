@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager
 import me.zeroeightsix.kami.manager.managers.PlayerInventoryManager.addInventoryTask
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.removeHoldingItem
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -15,7 +15,7 @@ import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object AutoArmor : Module(
+internal object AutoArmor : Module(
     name = "AutoArmor",
     category = Category.COMBAT,
     description = "Automatically equips armour",

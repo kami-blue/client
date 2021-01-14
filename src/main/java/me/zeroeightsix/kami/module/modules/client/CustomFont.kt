@@ -1,10 +1,11 @@
 package me.zeroeightsix.kami.module.modules.client
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.font.KamiFontRenderer
+import me.zeroeightsix.kami.util.threads.onMainThread
 
-object CustomFont : Module(
+internal object CustomFont : Module(
     name = "CustomFont",
     description = "Use the better font instead of the stupid Minecraft font",
     showOnArray = false,
@@ -13,10 +14,9 @@ object CustomFont : Module(
 ) {
     private const val DEFAULT_FONT_NAME = "Source Sans Pro"
 
-    val fontName = setting("FontName",
-        DEFAULT_FONT_NAME,
-        consumer = { prev: String, value: String -> getMatchingFontName(value) ?: prev })
-
+    val fontName = setting("FontName", DEFAULT_FONT_NAME, consumer = { prev, value ->
+        getMatchingFontName(value) ?: prev
+    })
     private val sizeSetting = setting("Size", 1.0f, 0.5f..2.0f, 0.05f)
     private val gapSetting = setting("Gap", 0.0f, -10f..10f, 0.5f)
     private val lineSpaceSetting = setting("LineSpace", 0.0f, -10f..10f, 0.5f)
@@ -37,7 +37,7 @@ object CustomFont : Module(
 
     init {
         fontName.listeners.add {
-            if (mc.isCallingFromMinecraftThread) KamiFontRenderer.reloadFonts()
+            onMainThread { KamiFontRenderer.reloadFonts() }
         }
     }
 }

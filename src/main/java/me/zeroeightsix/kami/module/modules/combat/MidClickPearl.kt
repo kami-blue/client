@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.combat
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.items.firstItem
 import me.zeroeightsix.kami.util.items.hotbarSlots
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Mouse
 
-object MidClickPearl : Module(
+internal object MidClickPearl : Module(
     name = "MidClickPearl",
     category = Category.COMBAT,
     description = "Throws a pearl automatically when you middle click in air"

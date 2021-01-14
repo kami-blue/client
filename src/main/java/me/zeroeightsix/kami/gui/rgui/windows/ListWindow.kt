@@ -12,8 +12,6 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.max
 
 open class ListWindow(

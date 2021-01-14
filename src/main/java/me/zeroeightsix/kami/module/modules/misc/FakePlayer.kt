@@ -5,8 +5,8 @@ import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.GuiEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
@@ -23,7 +23,7 @@ import net.minecraft.potion.PotionEffect
 import org.kamiblue.event.listener.listener
 import java.util.*
 
-object FakePlayer : Module(
+internal object FakePlayer : Module(
     name = "FakePlayer",
     description = "Spawns a client sided fake player",
     category = Category.MISC

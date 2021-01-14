@@ -3,12 +3,12 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.mixin.extension.isInWeb
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object FastFall : Module(
+internal object FastFall : Module(
     name = "FastFall",
     category = Category.MOVEMENT,
     description = "Makes you fall faster"

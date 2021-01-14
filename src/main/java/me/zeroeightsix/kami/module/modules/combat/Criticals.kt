@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object Criticals : Module(
+internal object Criticals : Module(
     name = "Criticals",
     category = Category.COMBAT,
     description = "Always do critical attacks"

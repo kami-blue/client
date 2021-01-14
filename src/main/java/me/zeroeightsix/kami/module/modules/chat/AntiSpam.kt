@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.*
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -10,7 +10,7 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
-object AntiSpam : Module(
+internal object AntiSpam : Module(
     name = "AntiSpam",
     category = Category.CHAT,
     description = "Removes spam and advertising from the chat",

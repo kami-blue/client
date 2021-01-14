@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -14,7 +14,7 @@ import net.minecraft.item.ItemElytra
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object ElytraReplace : Module(
+internal object ElytraReplace : Module(
     name = "ElytraReplace",
     description = "Automatically swap and replace your chestplate and elytra.",
     category = Category.MOVEMENT

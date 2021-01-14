@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import me.zeroeightsix.kami.util.items.foodValue
 import me.zeroeightsix.kami.util.items.saturation
@@ -19,7 +19,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.min
 
-object HungerOverlay : Module(
+internal object HungerOverlay : Module(
     name = "HungerOverlay",
     description = "Displays a helpful overlay over your hunger bar.",
     category = Category.RENDER

@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.combat.CombatUtils.calcDamageFromMob
@@ -29,7 +29,7 @@ import org.lwjgl.input.Keyboard
 import kotlin.math.ceil
 import kotlin.math.max
 
-object AutoOffhand : Module(
+internal object AutoOffhand : Module(
     name = "AutoOffhand",
     description = "Manages item in your offhand",
     category = Category.COMBAT

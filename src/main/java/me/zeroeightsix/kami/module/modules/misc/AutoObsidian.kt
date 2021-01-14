@@ -7,9 +7,9 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.AutoObsidianProcess
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.getDroppedItem
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
@@ -48,7 +48,7 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.event.listener.listener
 
-object AutoObsidian : Module(
+internal object AutoObsidian : Module(
     name = "AutoObsidian",
     category = Category.MISC,
     description = "Breaks down Ender Chests to restock obsidian"

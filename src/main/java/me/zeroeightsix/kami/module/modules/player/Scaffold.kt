@@ -9,8 +9,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.client.entity.MixinEntity
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.EntityUtils.prevPosVector
 import me.zeroeightsix.kami.util.WorldUtils.placeBlock
@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
 /**
  * @see MixinEntity.isSneaking
  */
-object Scaffold : Module(
+internal object Scaffold : Module(
     name = "Scaffold",
     category = Category.PLAYER,
     description = "Places blocks under you",

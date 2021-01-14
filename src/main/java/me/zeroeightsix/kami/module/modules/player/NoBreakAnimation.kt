@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.EntityLivingBase
@@ -12,7 +13,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object NoBreakAnimation : Module(
+internal object NoBreakAnimation : Module(
     name = "NoBreakAnimation",
     category = Category.PLAYER,
     description = "Prevents block break animation server side"

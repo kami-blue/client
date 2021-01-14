@@ -1,14 +1,14 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 import kotlin.math.min
 
-object FullBright : Module(
+internal object FullBright : Module(
     name = "FullBright",
     description = "Makes everything brighter!",
     category = Category.RENDER,

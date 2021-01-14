@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.render
 
 import me.zeroeightsix.kami.mixin.extension.mapBossInfos
 import me.zeroeightsix.kami.mixin.extension.render
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.graphics.GlStateUtils
 import net.minecraft.client.gui.BossInfoClient
@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-object BossStack : Module(
+internal object BossStack : Module(
     name = "BossStack",
     description = "Modify the boss health GUI to take up less space",
     category = Category.RENDER

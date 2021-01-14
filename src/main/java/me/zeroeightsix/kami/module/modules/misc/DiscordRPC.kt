@@ -4,8 +4,8 @@ import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRichPresence
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ShutdownEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -22,7 +22,7 @@ import org.kamiblue.capeapi.CapeType
 import org.kamiblue.commons.utils.MathUtils
 import org.kamiblue.event.listener.listener
 
-object DiscordRPC : Module(
+internal object DiscordRPC : Module(
     name = "DiscordRPC",
     category = Category.MISC,
     description = "Discord Rich Presence",

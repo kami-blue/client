@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.server.SPacketDisconnect
 import net.minecraft.network.play.server.SPacketRespawn
 import net.minecraft.util.text.TextComponentString
 
-object EndTeleport : Module(
+internal object EndTeleport : Module(
     name = "EndTeleport",
     category = Category.PLAYER,
     description = "Allows for teleportation when going through end portals"

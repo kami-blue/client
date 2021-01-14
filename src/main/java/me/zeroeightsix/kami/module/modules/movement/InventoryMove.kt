@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.gui.AbstractKamiGui
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiRepair
@@ -13,7 +13,7 @@ import net.minecraft.util.MovementInputFromOptions
 import net.minecraftforge.client.event.InputUpdateEvent
 import org.lwjgl.input.Keyboard
 
-object InventoryMove : Module(
+internal object InventoryMove : Module(
     name = "InventoryMove",
     description = "Allows you to walk around with GUIs opened",
     category = Category.MOVEMENT

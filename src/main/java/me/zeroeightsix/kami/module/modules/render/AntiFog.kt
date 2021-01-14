@@ -1,12 +1,12 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 
 /**
  * Created by 086 on 9/04/2018.
  */
-object AntiFog : Module(
+internal object AntiFog : Module(
     name = "AntiFog",
     description = "Disables or reduces fog",
     category = Category.RENDER

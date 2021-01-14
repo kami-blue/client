@@ -2,10 +2,10 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
 import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.setting.settings.impl.collection.CollectionSetting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.items.*
@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.extension.ceilToInt
 
-object InventoryManager : Module(
+internal object InventoryManager : Module(
     name = "InventoryManager",
     category = Category.PLAYER,
     description = "Manages your inventory automatically"

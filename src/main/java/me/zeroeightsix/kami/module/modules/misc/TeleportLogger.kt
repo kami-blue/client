@@ -1,15 +1,15 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 
-object TeleportLogger : Module(
+internal object TeleportLogger : Module(
     name = "TeleportLogger",
     category = Category.MISC,
     description = "Logs when a player teleports somewhere"

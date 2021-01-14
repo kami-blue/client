@@ -18,6 +18,7 @@ class MapSetting<K : Any, V : Any, T : MutableMap<K, V>>(
     init {
         value.toMap(defaultValue)
     }
+
     override fun resetValue() {
         synchronized(lockObject) {
             value.clear()

@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.command
 
 import kotlinx.coroutines.Dispatchers
 import me.zeroeightsix.kami.manager.managers.UUIDManager
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.threads.runSafeR
@@ -20,9 +20,9 @@ import kotlin.streams.toList
 
 class ModuleArg(
     override val name: String
-) : AbstractArg<Module>(), AutoComplete by DynamicPrefixMatch(::allAlias) {
+) : AbstractArg<AbstractModule>(), AutoComplete by DynamicPrefixMatch(::allAlias) {
 
-    override suspend fun convertToType(string: String?): Module? {
+    override suspend fun convertToType(string: String?): AbstractModule? {
         return ModuleManager.getModuleOrNull(string)
     }
 

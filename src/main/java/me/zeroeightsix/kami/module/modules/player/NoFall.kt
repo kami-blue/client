@@ -3,8 +3,9 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.onGround
+import me.zeroeightsix.kami.mixin.extension.rightClickMouse
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.WorldUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -22,7 +23,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-object NoFall : Module(
+internal object NoFall : Module(
     name = "NoFall",
     category = Category.PLAYER,
     description = "Prevents fall damage"

@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
@@ -18,7 +18,7 @@ import org.kamiblue.event.listener.listener
 import java.util.*
 import kotlin.collections.ArrayList
 
-object TotemPopCounter : Module(
+internal object TotemPopCounter : Module(
     name = "TotemPopCounter",
     description = "Counts how many times players pop",
     category = Category.COMBAT

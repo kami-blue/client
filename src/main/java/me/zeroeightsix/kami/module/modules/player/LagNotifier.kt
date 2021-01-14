@@ -3,10 +3,10 @@ package me.zeroeightsix.kami.module.modules.player
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.process.PauseProcess.pauseBaritone
 import me.zeroeightsix.kami.process.PauseProcess.unpauseBaritone
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11.glColor4f
 /**
  * Thanks Brady and cooker and leij for helping me not be completely retarded
  */
-object LagNotifier : Module(
+internal object LagNotifier : Module(
     name = "LagNotifier",
     description = "Displays a warning when the server is lagging",
     category = Category.PLAYER

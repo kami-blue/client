@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.*
@@ -18,7 +18,7 @@ import org.kamiblue.event.listener.listener
 /**
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
-object FastUse : Module(
+internal object FastUse : Module(
     name = "FastUse",
     category = Category.PLAYER,
     description = "Use items faster"

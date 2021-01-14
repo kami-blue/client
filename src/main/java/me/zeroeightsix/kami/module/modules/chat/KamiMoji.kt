@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.KamiMojiManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.graphics.GlStateUtils.resetTexParam
 import net.minecraft.client.renderer.GlStateManager
@@ -12,7 +13,7 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS
 
-object KamiMoji : Module(
+internal object KamiMoji : Module(
     name = "KamiMoji",
     description = "Add emojis to chat using KamiMoji, courtesy of the EmojiAPI.",
     category = Category.CHAT

@@ -1,12 +1,5 @@
-package me.zeroeightsix.kami.setting.config
+package me.zeroeightsix.kami.setting.settings
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
-import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.setting.IFinalGroup
-import me.zeroeightsix.kami.setting.groups.SettingGroup
-import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import me.zeroeightsix.kami.setting.settings.impl.number.DoubleSetting
 import me.zeroeightsix.kami.setting.settings.impl.number.FloatSetting
 import me.zeroeightsix.kami.setting.settings.impl.number.IntegerSetting
@@ -16,16 +9,15 @@ import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.EnumSetting
 import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.Bind
-import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.color.ColorHolder
-import java.io.File
 
-abstract class AbstractConfig<T>(
-    name: String,
-    protected val filePath: String
-) : SettingMultiGroup(name), IFinalGroup<T> {
+/**
+ * Setting register overloading
+ *
+ * @param T Type to have extension function for registering setting
+ */
+interface SettingRegister<T : Any> {
 
-    /* Setting registering */
     /** Integer Setting */
     fun T.setting(
         name: String,
@@ -104,65 +96,13 @@ abstract class AbstractConfig<T>(
     ) = setting(StringSetting(name, value, visibility, consumer, description))
     /* End of setting registering */
 
-
-    override val file get() = File("$filePath$name.json")
-    override val backup get() = File("$filePath$name.bak")
-
-    override fun save() {
-        File(filePath).run {
-            if (!exists()) mkdirs()
-        }
-
-        saveToFile(this, file, backup)
-    }
-
-    override fun load() {
-        try {
-            loadFromFile(this, file)
-        } catch (e: Exception) {
-            KamiMod.LOG.warn("Failed to load latest, loading backup.")
-            loadFromFile(this, backup)
-        }
-    }
-
     /**
-     * Save a group to a file
+     * Register a setting
      *
-     * @param group Group to save
-     * @param file Main file of [group]'s json
-     * @param backup Backup file of [group]'s json
-     */
-    protected fun saveToFile(group: SettingGroup, file: File, backup: File) {
-        ConfigUtils.fixEmptyJson(file)
-        ConfigUtils.fixEmptyJson(backup)
-        if (file.exists()) file.copyTo(backup, true)
-
-        file.bufferedWriter().use {
-            gson.toJson(group.write(), it)
-        }
-    }
-
-    /**
-     * Load settings values of a group
+     * @param S Type of the setting
+     * @param setting Setting to register
      *
-     * @param group Group to load
-     * @param file file of [group]'s json
+     * @return [setting]
      */
-    protected fun loadFromFile(group: SettingGroup, file: File) {
-        ConfigUtils.fixEmptyJson(file)
-
-        val jsonObject = file.bufferedReader().use {
-            parser.parse(it).asJsonObject
-        }
-        group.read(jsonObject)
-    }
-
-    /**
-     * Contains a gson object and a parser object
-     */
-    protected companion object {
-        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-        val parser = JsonParser()
-    }
-
+    fun <S : AbstractSetting<*>> T.setting(setting: S): S
 }

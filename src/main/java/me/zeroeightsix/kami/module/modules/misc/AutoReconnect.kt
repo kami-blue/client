@@ -4,8 +4,8 @@ import me.zeroeightsix.kami.event.events.GuiEvent
 import me.zeroeightsix.kami.mixin.extension.message
 import me.zeroeightsix.kami.mixin.extension.parentScreen
 import me.zeroeightsix.kami.mixin.extension.reason
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.StopTimer
 import net.minecraft.client.gui.GuiDisconnected
 import net.minecraft.client.multiplayer.GuiConnecting
@@ -13,7 +13,7 @@ import net.minecraft.client.multiplayer.ServerData
 import org.kamiblue.event.listener.listener
 import kotlin.math.max
 
-object AutoReconnect : Module(
+internal object AutoReconnect : Module(
     name = "AutoReconnect",
     description = "Automatically reconnects after being disconnected",
     category = Category.MISC,

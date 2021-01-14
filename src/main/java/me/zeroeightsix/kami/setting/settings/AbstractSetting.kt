@@ -25,6 +25,7 @@ abstract class AbstractSetting<T : Any> : Nameable {
     open fun setValue(valueIn: String) {
         read(parser.parse(valueIn))
     }
+
     abstract fun resetValue()
 
     abstract fun write(): JsonElement
