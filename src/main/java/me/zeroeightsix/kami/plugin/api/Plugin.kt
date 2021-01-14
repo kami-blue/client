@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.plugin.PluginInfo
@@ -61,6 +62,13 @@ open class Plugin : Nameable {
     val modules = CloseableList<PluginModule>()
 
     /**
+     * The list of [PluginHudElement] the plugin will add.
+     *
+     * @sample me.zeroeightsix.kami.gui.hudgui.elements.client.ModuleList
+     */
+    val hudElements = CloseableList<PluginHudElement>()
+
+    /**
      * The list of [BackgroundJob] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.module.modules.client.CommandConfig
@@ -75,6 +83,7 @@ open class Plugin : Nameable {
         managers.close()
         commands.close()
         modules.close()
+        hudElements.close()
         bgJobs.close()
 
         ConfigManager.register(config)
@@ -82,6 +91,7 @@ open class Plugin : Nameable {
         managers.forEach(KamiEventBus::subscribe)
         commands.forEach(CommandManager::register)
         modules.forEach(ModuleManager::register)
+        hudElements.forEach(KamiHudGui::register)
         bgJobs.forEach(BackgroundScope::launchLooping)
 
         ConfigManager.load(config)
@@ -105,6 +115,10 @@ open class Plugin : Nameable {
         }
         modules.forEach {
             ModuleManager.unregister(it)
+            ListenerManager.unregister(it)
+        }
+        hudElements.forEach {
+            KamiHudGui.unregister(it)
             ListenerManager.unregister(it)
         }
         bgJobs.forEach(BackgroundScope::cancel)

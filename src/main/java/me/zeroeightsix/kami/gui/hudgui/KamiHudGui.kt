@@ -2,7 +2,6 @@ package me.zeroeightsix.kami.gui.hudgui
 
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.gui.AbstractKamiGui
-import me.zeroeightsix.kami.gui.GuiManager
 import me.zeroeightsix.kami.gui.hudgui.component.HudButton
 import me.zeroeightsix.kami.gui.hudgui.elements.client.WaterMark
 import me.zeroeightsix.kami.gui.hudgui.window.HudSettingWindow
@@ -16,23 +15,32 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
+import java.util.*
 
 object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
 
     override val alwaysTicking = true
+    private val hudWindows = EnumMap<HudElement.Category, ListWindow>(HudElement.Category::class.java)
 
     init {
-        val allButtons = GuiManager.hudElementsMap.values.map { HudButton(it) }
         var posX = 10.0f
 
         for (category in HudElement.Category.values()) {
-            val buttons = allButtons.filter { it.hudElement.category == category }.toTypedArray()
-            if (buttons.isNullOrEmpty()) continue
-            windowList.add(ListWindow(category.displayName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.HUD_GUI, *buttons))
+            val window = ListWindow(category.displayName, posX, 10.0f, 100.0f, 256.0f, Component.SettingGroup.HUD_GUI)
+            windowList.add(window)
+            hudWindows[category] = window
             posX += 110.0f
         }
+    }
 
-        windowList.addAll(GuiManager.hudElementsMap.values)
+    internal fun register(hudElement: HudElement) {
+        hudWindows[hudElement.category]!!.children.add(hudElement)
+        windowList.add(hudElement)
+    }
+
+    internal fun unregister(hudElement: HudElement) {
+        hudWindows[hudElement.category]!!.children.remove(hudElement)
+        windowList.remove(hudElement)
     }
 
     override fun onGuiClosed() {

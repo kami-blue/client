@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.lwjgl.opengl.GL11.glScalef
 
-open class HudElement(
+abstract class HudElement(
     name: String,
     val alias: Array<String> = emptyArray(),
     val category: Category,

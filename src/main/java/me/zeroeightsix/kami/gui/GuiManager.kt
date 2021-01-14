@@ -11,9 +11,8 @@ import me.zeroeightsix.kami.util.StopTimer
 import org.kamiblue.commons.utils.ClassUtils
 import java.lang.reflect.Modifier
 
-object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
+internal object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
     override var deferred: Deferred<List<Class<out HudElement>>>? = null
-    val hudElementsMap = LinkedHashMap<Class<out HudElement>, HudElement>()
 
     override fun preLoad0(): List<Class<out HudElement>> {
         val stopTimer = StopTimer()
@@ -30,7 +29,7 @@ object GuiManager : AsyncLoader<List<Class<out HudElement>>> {
         val stopTimer = StopTimer()
 
         for (clazz in input) {
-            hudElementsMap[clazz] = ClassUtils.getInstance(clazz)
+            KamiHudGui.register(ClassUtils.getInstance(clazz))
         }
 
         val time = stopTimer.stop()
