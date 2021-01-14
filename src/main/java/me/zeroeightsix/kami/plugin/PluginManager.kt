@@ -173,7 +173,10 @@ internal object PluginManager : AsyncLoader<List<PluginLoader>> {
             if (loadedPlugins.remove(plugin)) {
                 plugin.unregister()
                 plugin.onUnload()
-                loadedPluginLoader[plugin.name]?.close()
+                loadedPluginLoader[plugin.name]?.let {
+                    it.close()
+                    loadedPluginLoader.remove(it)
+                }
             }
         }
 
