@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.format
+import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
@@ -27,8 +28,7 @@ internal object CommandConfig : Module(
     private const val title = "${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION_SIMPLE}"
 
     init {
-        listener<ModuleToggleEvent> {
-            if (mc.player == null || it.prevState == it.module.isEnabled) return@listener
+        safeListener<ModuleToggleEvent> {
             if (toggleMessages.value) {
                 MessageSendHelper.sendChatMessage(name +
                     if (it.module.isEnabled) TextFormatting.GREEN format "enabled"

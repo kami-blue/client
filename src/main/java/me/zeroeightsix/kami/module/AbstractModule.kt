@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module
 
 import me.zeroeightsix.kami.event.KamiEventBus
+import me.zeroeightsix.kami.event.events.ModuleToggleEvent
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.configs.NameableConfig
@@ -63,14 +64,6 @@ abstract class AbstractModule(
         enabled.value = false
     }
 
-    private fun sendToggleMessage() {
-        runSafe {
-            if (this@AbstractModule !is ClickGUI && CommandConfig.toggleMessages.value) {
-                MessageSendHelper.sendChatMessage(name + if (enabled.value) " &cdisabled" else " &aenabled")
-            }
-        }
-    }
-
     open fun isActive(): Boolean {
         return isEnabled || alwaysListening
     }
@@ -106,7 +99,7 @@ abstract class AbstractModule(
             val enabled = alwaysEnabled || input
 
             if (prev != input && !alwaysEnabled) {
-                sendToggleMessage()
+                KamiEventBus.post(ModuleToggleEvent(this))
             }
 
             if (enabled || alwaysListening) {
