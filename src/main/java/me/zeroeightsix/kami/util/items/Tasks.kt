@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util.items
 
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.util.TaskState
-import me.zeroeightsix.kami.util.threads.runSafe
+import me.zeroeightsix.kami.util.threads.runSafeR
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
 
@@ -42,15 +42,15 @@ class ClickInfo(
     private val mouseButton: Int = 0,
     private val type: ClickType
 ) {
-    fun runClick() {
-        runSafe {
-            clickSlot(windowID, slot, mouseButton, type)
-            playerController.updateController()
-        }
-    }
+    fun runClick() = runSafeR {
+        val transactionID = clickSlot(windowID, slot, mouseButton, type)
+        playerController.updateController()
+        transactionID
+    } ?: -32768
 
-    fun runClick(event: SafeClientEvent) {
-        event.clickSlot(windowID, slot, mouseButton, type)
+    fun runClick(event: SafeClientEvent): Short {
+        val transactionID = event.clickSlot(windowID, slot, mouseButton, type)
         event.playerController.updateController()
+        return transactionID
     }
 }
