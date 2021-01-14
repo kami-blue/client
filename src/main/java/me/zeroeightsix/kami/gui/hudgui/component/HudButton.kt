@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.gui.hudgui.KamiHudGui
 import me.zeroeightsix.kami.gui.rgui.component.BooleanSlider
 import me.zeroeightsix.kami.util.math.Vec2f
 
-class HudButton(val hudElement: HudElement) : BooleanSlider(hudElement.componentName, 0.0, hudElement.description) {
+class HudButton(val hudElement: HudElement) : BooleanSlider(hudElement.name, 0.0, hudElement.description) {
     init {
         if (hudElement.visible) value = 1.0
     }

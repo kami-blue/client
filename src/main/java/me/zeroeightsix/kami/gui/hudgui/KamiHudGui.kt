@@ -34,12 +34,13 @@ object KamiHudGui : AbstractKamiGui<HudSettingWindow, HudElement>() {
     }
 
     internal fun register(hudElement: HudElement) {
-        hudWindows[hudElement.category]!!.children.add(hudElement)
+        val button = HudButton(hudElement)
+        hudWindows[hudElement.category]!!.children.add(button)
         windowList.add(hudElement)
     }
 
     internal fun unregister(hudElement: HudElement) {
-        hudWindows[hudElement.category]!!.children.remove(hudElement)
+        hudWindows[hudElement.category]!!.children.removeIf { it is HudButton && it.hudElement == hudElement }
         windowList.remove(hudElement)
     }
 
