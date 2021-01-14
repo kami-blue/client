@@ -63,6 +63,7 @@ public class KamiMod {
 
         MinecraftForge.EVENT_BUS.register(ForgeEventProcessor.INSTANCE);
 
+        ConfigUtils.INSTANCE.moveAllLegacyConfigs();
         ConfigUtils.INSTANCE.loadAll();
 
         BackgroundScope.INSTANCE.start();
