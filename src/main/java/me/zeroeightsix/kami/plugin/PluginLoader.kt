@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.plugin
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.plugin.api.Plugin
 import org.kamiblue.commons.interfaces.Nameable
 import org.kamiblue.commons.utils.ClassUtils
 import java.io.File

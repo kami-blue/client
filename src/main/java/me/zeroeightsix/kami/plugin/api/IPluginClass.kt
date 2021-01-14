@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.plugin
+package me.zeroeightsix.kami.plugin.api
 
 import org.kamiblue.commons.interfaces.Nameable
 

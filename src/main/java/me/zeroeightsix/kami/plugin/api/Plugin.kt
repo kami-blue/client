@@ -1,14 +1,14 @@
-package me.zeroeightsix.kami.plugin
+package me.zeroeightsix.kami.plugin.api
 
+import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.Manager
-import me.zeroeightsix.kami.module.AbstractModule
-import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.plugin.PluginInfo
 import me.zeroeightsix.kami.setting.ConfigManager
-import me.zeroeightsix.kami.setting.configs.PluginConfig
+import me.zeroeightsix.kami.setting.configs.NameableConfig
 import me.zeroeightsix.kami.util.threads.BackgroundJob
 import me.zeroeightsix.kami.util.threads.BackgroundScope
 import org.kamiblue.commons.collections.CloseableList
@@ -37,7 +37,7 @@ open class Plugin : Nameable {
     /**
      * Config for the plugin
      */
-    val config by lazy { PluginConfig(name) }
+    val config by lazy { NameableConfig<IPluginClass>(name, "${KamiMod.DIRECTORY}config/plugins/") }
 
     /**
      * The list of [Manager] the plugin will add.
@@ -54,11 +54,11 @@ open class Plugin : Nameable {
     val commands = CloseableList<ClientCommand>()
 
     /**
-     * The list of [AbstractModule] the plugin will add.
+     * The list of [PluginModule] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.module.modules.combat.KillAura
      */
-    val modules = CloseableList<AbstractModule>()
+    val modules = CloseableList<PluginModule>()
 
     /**
      * The list of [BackgroundJob] the plugin will add.

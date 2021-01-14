@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.plugin
 import kotlinx.coroutines.Deferred
 import me.zeroeightsix.kami.AsyncLoader
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.plugin.api.Plugin
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.kamiblue.commons.collections.NameableSet
 import java.io.File

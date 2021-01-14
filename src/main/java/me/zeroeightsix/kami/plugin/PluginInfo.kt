@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.plugin
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import me.zeroeightsix.kami.plugin.api.Plugin
 import org.kamiblue.commons.interfaces.Nameable
 import java.io.InputStream
 

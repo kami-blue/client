@@ -1,10 +1,10 @@
 package me.zeroeightsix.kami.command.commands
 
 import me.zeroeightsix.kami.command.ClientCommand
-import me.zeroeightsix.kami.plugin.Plugin
 import me.zeroeightsix.kami.plugin.PluginError
 import me.zeroeightsix.kami.plugin.PluginLoader
 import me.zeroeightsix.kami.plugin.PluginManager
+import me.zeroeightsix.kami.plugin.api.Plugin
 import me.zeroeightsix.kami.util.ConfigUtils
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.formatValue
