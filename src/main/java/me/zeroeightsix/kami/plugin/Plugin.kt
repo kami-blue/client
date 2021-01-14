@@ -7,6 +7,8 @@ import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
+import me.zeroeightsix.kami.setting.ConfigManager
+import me.zeroeightsix.kami.setting.configs.PluginConfig
 import me.zeroeightsix.kami.util.threads.BackgroundJob
 import me.zeroeightsix.kami.util.threads.BackgroundScope
 import org.kamiblue.commons.collections.CloseableList
@@ -31,6 +33,11 @@ open class Plugin : Nameable {
     val requiredPlugins: Array<String> get() = info.requiredPlugins
     val url: String get() = info.url
     val hotReload: Boolean get() = info.hotReload
+
+    /**
+     * Config for the plugin
+     */
+    val config by lazy { PluginConfig(name) }
 
     /**
      * The list of [Manager] the plugin will add.
@@ -70,12 +77,14 @@ open class Plugin : Nameable {
         modules.close()
         bgJobs.close()
 
+        ConfigManager.register(config)
+
         managers.forEach(KamiEventBus::subscribe)
         commands.forEach(CommandManager::register)
         modules.forEach(ModuleManager::register)
         bgJobs.forEach(BackgroundScope::launchLooping)
 
-        // TODO: Loads config here (After GUI PR)
+        ConfigManager.load(config)
 
         modules.forEach {
             if (it.isEnabled) it.enable()
@@ -83,6 +92,9 @@ open class Plugin : Nameable {
     }
 
     internal fun unregister() {
+        ConfigManager.save(config)
+        ConfigManager.unregister(config)
+
         managers.forEach {
             KamiEventBus.unsubscribe(it)
             ListenerManager.unregister(it)
