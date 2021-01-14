@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.command.ClientCommand
 import me.zeroeightsix.kami.command.CommandManager
 import me.zeroeightsix.kami.event.KamiEventBus
 import me.zeroeightsix.kami.manager.Manager
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.ModuleManager
 import me.zeroeightsix.kami.util.threads.BackgroundJob
@@ -46,11 +47,11 @@ open class Plugin : Nameable {
     val commands = CloseableList<ClientCommand>()
 
     /**
-     * The list of [Module] the plugin will add.
+     * The list of [AbstractModule] the plugin will add.
      *
      * @sample me.zeroeightsix.kami.module.modules.combat.KillAura
      */
-    val modules = CloseableList<Module>()
+    val modules = CloseableList<AbstractModule>()
 
     /**
      * The list of [BackgroundJob] the plugin will add.
