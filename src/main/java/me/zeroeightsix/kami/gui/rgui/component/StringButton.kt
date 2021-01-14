@@ -18,14 +18,14 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
         }
 
         super.onStopListening(success)
-        componentName = originalName
+        componentName = name
         value = 1.0
     }
 
     override fun onMouseInput(mousePos: Vec2f) {
         super.onMouseInput(mousePos)
         if (!listening) {
-            componentName = if (mouseState == MouseState.NONE) originalName
+            componentName = if (mouseState == MouseState.NONE) name
             else setting.value
         }
     }
@@ -34,7 +34,7 @@ class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0
         super.onTick()
         if (!listening) {
             componentName = if (mouseState != MouseState.NONE) setting.value
-            else originalName
+            else name
         }
     }
 

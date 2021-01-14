@@ -8,19 +8,19 @@ import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.HAlign
 import me.zeroeightsix.kami.util.graphics.font.VAlign
 import me.zeroeightsix.kami.util.math.Vec2f
+import org.kamiblue.commons.interfaces.Nameable
 import kotlin.math.max
 
 open class Component(
-    name: String,
+    final override val name: String,
     posXIn: Float,
     posYIn: Float,
     widthIn: Float,
     heightIn: Float,
     val settingGroup: SettingGroup
-) {
+) : Nameable {
 
     // Basic info
-    val originalName = name
     var componentName by setting("Name", name, { false })
     protected val visibleSetting = setting("Visible", true, { false }, { _, it -> it || !closeable })
     var visible by visibleSetting

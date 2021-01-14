@@ -17,7 +17,7 @@ internal object GuiConfig : AbstractConfig<Component>(
     override fun <S : AbstractSetting<*>> Component.setting(setting: S): S {
         val groupName = settingGroup.groupName
         if (groupName.isNotEmpty()) {
-            getGroupOrPut(groupName).getGroupOrPut(originalName).addSetting(setting)
+            getGroupOrPut(groupName).getGroupOrPut(name).addSetting(setting)
         }
 
         return setting

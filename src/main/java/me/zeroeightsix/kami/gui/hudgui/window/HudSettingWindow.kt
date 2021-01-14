@@ -8,7 +8,7 @@ class HudSettingWindow(
     hudElement: HudElement,
     posX: Float,
     posY: Float
-) : SettingWindow<HudElement>(hudElement.originalName, hudElement, posX, posY, SettingGroup.NONE) {
+) : SettingWindow<HudElement>(hudElement.name, hudElement, posX, posY, SettingGroup.NONE) {
 
     override fun getSettingList(): List<AbstractSetting<*>> {
         return element.settingList

@@ -40,7 +40,7 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
         }
 
         super.onStopListening(success)
-        componentName = originalName
+        componentName = name
     }
 
     override fun onClick(mousePos: Vec2f, buttonId: Int) {

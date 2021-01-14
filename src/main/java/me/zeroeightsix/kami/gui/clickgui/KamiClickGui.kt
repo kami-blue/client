@@ -41,7 +41,7 @@ object KamiClickGui : AbstractKamiGui<ModuleSettingWindow, AbstractModule>() {
 
         moduleWindows.forEach { window ->
             window.children.clear()
-            allButtons[window.originalName]?.let { window.children.addAll(it) }
+            allButtons[window.name]?.let { window.children.addAll(it) }
         }
 
         super.onDisplayed()
