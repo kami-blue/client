@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 internal object ChestStealer : Module(
     name = "ChestStealer",
     category = Category.PLAYER,
-    description = "Automatically steal items from containers"
+    description = "Automatically stealOrStore items from containers"
 ) {
     val stealMode = setting("StealMode", StealMode.TOGGLE)
     private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
@@ -33,6 +33,10 @@ internal object ChestStealer : Module(
         QUICK_MOVE, PICKUP, THROW
     }
 
+    private enum class ContainerMode(val offset: Int) {
+        STEAL(36), STORE(0)
+    }
+
     var stealing = false
     var storing = false
     val timer = TickTimer()
@@ -40,13 +44,13 @@ internal object ChestStealer : Module(
     init {
         safeListener<TickEvent.ClientTickEvent> {
             stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
-                steal(getStealingSlot())
+                stealOrStore(getStealingSlot(), ContainerMode.STEAL)
             } else {
                 false
             }
 
             storing = if (isContainerOpen() && (storing || stealMode.value == StealMode.ALWAYS)) {
-                store(getStoringSlot())
+                stealOrStore(getStoringSlot(), ContainerMode.STORE)
             } else {
                 false
             }
@@ -111,10 +115,12 @@ internal object ChestStealer : Module(
         }
     }
 
-    private fun SafeClientEvent.steal(slot: Int?): Boolean {
+    private fun SafeClientEvent.stealOrStore(slot: Int?, containerMode: ContainerMode): Boolean {
         if (slot == null) return false
         val size = getContainerSlotSize()
-        val slotTo = player.openContainer.getSlots(size until size + 36).firstEmpty() ?: return false
+        val rangeStart = if (containerMode == ContainerMode.STEAL) size else 0
+        val slotTo = player.openContainer.getSlots(rangeStart until size + containerMode.offset).firstEmpty()
+            ?: return false
         val windowID = player.openContainer.windowId
 
         if (timer.tick(delay.value.toLong())) {
@@ -124,44 +130,33 @@ internal object ChestStealer : Module(
                 MovingMode.THROW -> throwAllInSlot(windowID, slot)
             }
         }
-        return true
-    }
 
-    private fun SafeClientEvent.store(slot: Int?): Boolean {
-        if (slot == null) return false
-        val size = getContainerSlotSize()
-        val slotTo = player.openContainer.getSlots(0 until size).firstEmpty() ?: return false
-        val windowID = player.openContainer.windowId
-
-        if (timer.tick(delay.value.toLong())) {
-            when (movingMode.value) {
-                MovingMode.QUICK_MOVE -> quickMoveSlot(windowID, slot)
-                MovingMode.PICKUP -> moveToSlot(windowID, slot, slotTo.slotNumber)
-                MovingMode.THROW -> throwAllInSlot(windowID, slot)
-            }
-        }
         return true
     }
 
     private fun SafeClientEvent.getStealingSlot(): Int? {
         val container = player.openContainer.inventory
+
         for (slot in 0 until getContainerSlotSize()) {
             val item = container[slot].item
             if (item == Items.AIR) continue
             if (ignoreEjectItem.value && InventoryManager.ejectList.contains(item.registryName.toString())) continue
             return slot
         }
+
         return null
     }
 
     private fun SafeClientEvent.getStoringSlot(): Int? {
         val container = player.openContainer.inventory
         val size = getContainerSlotSize()
+
         for (slot in size until size + 36) {
             val item = container[slot].item
             if (item == Items.AIR) continue
             return slot
         }
+
         return null
     }
 
