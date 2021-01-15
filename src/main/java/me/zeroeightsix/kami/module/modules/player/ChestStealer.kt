@@ -117,6 +117,7 @@ internal object ChestStealer : Module(
 
     private fun SafeClientEvent.stealOrStore(slot: Int?, containerMode: ContainerMode): Boolean {
         if (slot == null) return false
+
         val size = getContainerSlotSize()
         val rangeStart = if (containerMode == ContainerMode.STEAL) size else 0
         val slotTo = player.openContainer.getSlots(rangeStart until size + containerMode.offset).firstEmpty()
