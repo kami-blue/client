@@ -84,7 +84,7 @@ internal object ElytraFlight2B2T : Module(
             }
 
             /* If we are not wearing an elytra then reset */
-            if (player.inventory.armorInventory[2].item != Items.ELYTRA && started != MovementState.NOT_STARTED) {
+            if (player.chestSlot.stack.item != Items.ELYTRA && started != MovementState.NOT_STARTED) {
                 reset()
                 return@safeListener
             }
