@@ -22,8 +22,8 @@ internal object ChestStealer : Module(
 ) {
     val mode = setting("Mode", Mode.TOGGLE)
     private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
-    private val ignoreEjectItem = setting("IgnoresEjectItem", false)
-    private val delay = setting("Delay(ms)", 250, 0..1000, 25)
+    private val ignoreEjectItem = setting("IgnoresEjectItem", false, description = "Ignore AutoEject items in InventoryManager")
+    private val delay = setting("Delay", 250, 0..1000, 25, description = "Move stack delay in ms")
 
     enum class Mode {
         ALWAYS, TOGGLE, MANUAL
