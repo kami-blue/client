@@ -52,8 +52,8 @@ internal object ElytraFlight2B2T : Module(
     private var isJumpStart = false
 
     /* Emergency teleport packet info */
-    private var teleportPosition = Vec3d(0.0, -1.0, 0.0)
-    private var teleportRotation = Vec2f(0.0F, 0.0F)
+    private var teleportPosition = Vec3d.ZERO
+    private var teleportRotation = Vec2f.ZERO
 
     private enum class MovementState {
         NOT_STARTED, IDLE, MOVING
