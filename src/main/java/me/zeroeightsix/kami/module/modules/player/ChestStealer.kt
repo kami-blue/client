@@ -18,14 +18,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 internal object ChestStealer : Module(
     name = "ChestStealer",
     category = Category.PLAYER,
-    description = "Automatically stealOrStore items from containers"
+    description = "Automatically steal or store items from containers"
 ) {
-    val stealMode = setting("StealMode", StealMode.TOGGLE)
+    val mode = setting("Mode", Mode.TOGGLE)
     private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
     private val ignoreEjectItem = setting("IgnoresEjectItem", false)
     private val delay = setting("Delay(ms)", 250, 0..1000, 25)
 
-    enum class StealMode {
+    enum class Mode {
         ALWAYS, TOGGLE, MANUAL
     }
 
@@ -43,13 +43,13 @@ internal object ChestStealer : Module(
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            stealing = if (isContainerOpen() && (stealing || stealMode.value == StealMode.ALWAYS)) {
+            stealing = if (isContainerOpen() && (stealing || mode.value == Mode.ALWAYS)) {
                 stealOrStore(getStealingSlot(), ContainerMode.STEAL)
             } else {
                 false
             }
 
-            storing = if (isContainerOpen() && (storing || stealMode.value == StealMode.ALWAYS)) {
+            storing = if (isContainerOpen() && (storing || mode.value == Mode.ALWAYS)) {
                 stealOrStore(getStoringSlot(), ContainerMode.STORE)
             } else {
                 false

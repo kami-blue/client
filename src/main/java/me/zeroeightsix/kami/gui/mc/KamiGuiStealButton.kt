@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiButton
 class KamiGuiStealButton(x: Int, y: Int) :
     GuiButton(696969, x, y, 50, 20, "Steal") {
     override fun mouseReleased(mouseX: Int, mouseY: Int) {
-        if (ChestStealer.stealMode.value === ChestStealer.StealMode.MANUAL) {
+        if (ChestStealer.mode.value === ChestStealer.Mode.MANUAL) {
             ChestStealer.stealing = false
             playPressSound(Wrapper.minecraft.soundHandler)
         }
