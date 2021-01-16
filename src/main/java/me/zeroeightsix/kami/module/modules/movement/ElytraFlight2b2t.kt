@@ -1,18 +1,18 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.SafeClientEvent
-import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.PlayerTravelEvent
+import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.MovementUtils.isInputting
 import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
+import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.BackgroundScope
 import me.zeroeightsix.kami.util.threads.onMainThreadSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
@@ -38,10 +38,13 @@ internal object ElytraFlight2b2t : Module(
     private val idleSpeed by setting("IdleSpeed", 1000.00f, 400.0f..10000f, 1f)
     private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
+    private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
     private val showDebug by setting("ShowDebug", false)
 
     private const val TAKEOFF_HEIGHT = 0.50
 
+    // Packets
+    private val packetTimer = TickTimer()
     private var lastPos = Vec3d(0.0, -1.0, 0.0)
     private var rotation = Vec2f(0.0F, 0.0F)
     private var lastRotation = Vec2f(0.0F, 0.0F)
@@ -79,7 +82,6 @@ internal object ElytraFlight2b2t : Module(
 
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START) return@safeListener
-
 
             if (state != MovementState.NOT_STARTED) {
                 /* If we are not wearing an elytra then reset */
@@ -240,22 +242,16 @@ internal object ElytraFlight2b2t : Module(
             }
         }
 
-        BackgroundScope.launchLooping("FlyConnection", 150L) {
-            if (state != MovementState.NOT_STARTED) {
-                onMainThreadSafe {
-                    connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+        safeListener<RenderOverlayEvent> {
+            if (state != MovementState.NOT_STARTED && packetTimer.tick(packetDelay.toLong())) {
+                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
 
-                    rotation = player.pitchYaw
-                    sendForcedPacket(false)
+                rotation = player.pitchYaw
+                sendForcedPacket(false)
 
-                    connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-                    connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-                }
+                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
             }
-        }
-
-        safeListener<ConnectionEvent.Disconnect> {
-            disable()
         }
     }
 
