@@ -33,8 +33,8 @@ internal object ElytraFlight2b2t : Module(
     description = "Allows high speed infinite Elytra flight with no durability usage on 2b2t",
     category = Category.MOVEMENT
 ) {
-    private val accelerateSpeed by setting("AccelerateSpeed", 0.22f, 0.0f..1.0f, 0.01f)
-    private val maxVelocity by setting("MaxVelocity", 9.9f, 1.0f..20.0f, 0.05f)
+    private val accelerateTime by setting("AccelerateTime", 15.0f, 0.5f..30.0f, 0.5f)
+    private val speed by setting("Speed", 2.7f, 1.0f..10.0f, 0.01f)
     private val descendSpeed by setting("DescendSpeed", 0.1, 0.01..1.0, 0.01)
     private val idleSpeed by setting("IdleSpeed", 2.0f, 0.1f..5.0f, 0.1f)
     private val idleRadius by setting("IdleRadius", 0.05f, 0.01f..0.25f, 0.01f)
@@ -52,7 +52,7 @@ internal object ElytraFlight2b2t : Module(
 
     /* Startup variables */
     private var state = MovementState.NOT_STARTED
-    private var accelStart = 0L
+    private var accelerateStart = 0L
 
     /* Emergency teleport packet info */
     private var teleportPosition = Vec3d.ZERO
@@ -120,12 +120,7 @@ internal object ElytraFlight2b2t : Module(
             when (state) {
                 MovementState.NOT_STARTED -> notStarted()
                 MovementState.IDLE -> idle()
-                MovementState.MOVING -> moving(it, yawRad)
-            }
-
-            /* return to IDLE state after moving */
-            if (player.speed < minIdleVelocity && !isInputting && state != MovementState.NOT_STARTED) {
-                setToIdle()
+                MovementState.MOVING -> moving(yawRad)
             }
         }
     }
@@ -147,14 +142,14 @@ internal object ElytraFlight2b2t : Module(
 
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
             player.capabilities.isFlying = true
-            setToIdle()
+            state = MovementState.IDLE
         }
     }
 
     private fun SafeClientEvent.idle() {
         if (isInputting) {
             state = MovementState.MOVING
-            accelStart = System.currentTimeMillis()
+            accelerateStart = System.currentTimeMillis()
         } else {
             val length = idleSpeed * 1000.0f
             val deltaTime = System.currentTimeMillis() % length.toLong()
@@ -165,25 +160,21 @@ internal object ElytraFlight2b2t : Module(
         }
     }
 
-    private fun SafeClientEvent.moving(event: PlayerTravelEvent, yawRad: Double) {
+    private fun SafeClientEvent.moving(yawRad: Double) {
         if (isInputting) {
-            if (player.speed < maxVelocity) {
-                val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
+            val length = accelerateTime * 1000.0f
+            val multiplier = ((System.currentTimeMillis() - accelerateStart) / length).coerceAtMost(1.0f)
+            val multipliedSpeed = speed * multiplier
 
-                player.motionX = -sin(yawRad) * speed
-                player.motionZ = cos(yawRad) * speed
-            } else {
-                event.cancel()
-            }
-
+            player.motionX = -sin(yawRad) * multipliedSpeed
+            player.motionZ = cos(yawRad) * multipliedSpeed
             player.motionY = 0.0
         } else {
-            accelStart = System.currentTimeMillis()
+            accelerateStart = System.currentTimeMillis()
+            if (player.speed < minIdleVelocity) {
+                state = MovementState.IDLE
+            }
         }
-    }
-
-    private fun SafeClientEvent.setToIdle() {
-        state = MovementState.IDLE
     }
 
     init {
@@ -235,7 +226,7 @@ internal object ElytraFlight2b2t : Module(
             if (showDebug) sendChatMessage("$chatName Responding to emergency teleport packet from the server.")
 
             player.setVelocity(0.0, 0.0, 0.0)
-            accelStart = System.currentTimeMillis()
+            accelerateStart = System.currentTimeMillis()
 
             /* This only sets the position and rotation client side since it is not salted with onGround */
             player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.x, teleportRotation.y)
@@ -289,7 +280,7 @@ internal object ElytraFlight2b2t : Module(
         lastRotation = Vec2f.ZERO
 
         state = MovementState.NOT_STARTED
-        accelStart = 0L
+        accelerateStart = 0L
 
         teleportPosition = Vec3d.ZERO
         teleportRotation = Vec2f.ZERO
