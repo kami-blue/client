@@ -119,34 +119,9 @@ internal object ElytraFlight2b2t : Module(
             rotation = Vec2f(yawRad.toDegree().toFloat(), 0.0f)
 
             when (state) {
-                MovementState.NOT_STARTED -> {
-                    calcStartingHeight()
-                }
-                MovementState.IDLE -> {
-                    if (isInputting) {
-                        state = MovementState.MOVING
-                        accelStart = System.currentTimeMillis()
-                    } else {
-                        val targetPos = getNextIdle()
-                        player.setVelocity(targetPos.x, targetPos.y, targetPos.z)
-                    }
-                }
-                MovementState.MOVING -> {
-                    if (isInputting) {
-                        if (player.speed < maxVelocity) {
-                            val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
-
-                            player.motionX = -sin(yawRad) * speed
-                            player.motionZ = cos(yawRad) * speed
-                        } else {
-                            it.cancel()
-                        }
-
-                        player.motionY = 0.0
-                    } else {
-                        accelStart = System.currentTimeMillis()
-                    }
-                }
+                MovementState.NOT_STARTED -> notStarted()
+                MovementState.IDLE -> idle()
+                MovementState.MOVING -> moving(yawRad)
             }
 
             /* return to IDLE state after moving */
@@ -160,7 +135,7 @@ internal object ElytraFlight2b2t : Module(
      * Calculate the starting height. Constantly update the position as we would in vanilla until the correct criteria
      * is met. Should only be called from the state NOT_STARTED.
      */
-    private fun SafeClientEvent.calcStartingHeight() {
+    private fun SafeClientEvent.notStarted() {
         /* We are in the air at least 0.5 above the ground and have an elytra equipped */
         if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
             if (showDebug) sendChatMessage("Takeoff at height: " + player.posY)
@@ -168,18 +143,38 @@ internal object ElytraFlight2b2t : Module(
         }
     }
 
+    private fun SafeClientEvent.idle() {
+        if (isInputting) {
+            state = MovementState.MOVING
+            accelStart = System.currentTimeMillis()
+        } else {
+            val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
+            player.motionX = -sin(idleMoveYaw) * idleRadius
+            player.motionZ = cos(idleMoveYaw) * idleRadius
+        }
+    }
+
+    private fun SafeClientEvent.moving(yawRad: Double) {
+        if (isInputting) {
+            if (player.speed < maxVelocity) {
+                val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
+
+                player.motionX = -sin(yawRad) * speed
+                player.motionZ = cos(yawRad) * speed
+            } else {
+                it.cancel()
+            }
+
+            player.motionY = 0.0
+        } else {
+            accelStart = System.currentTimeMillis()
+        }
+    }
+
     private fun SafeClientEvent.setToIdle() {
         originIdle = player.positionVector
         state = MovementState.IDLE
-        idleStart = System.currentTimeMillis()
-    }
-
-    /**
-     * Calculate the idle position. Some movement is needed so that we do not get kicked for flying. Move in a circle.
-     */
-    private fun getNextIdle(): Vec3d {
-        val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
-        return Vec3d(-sin(idleMoveYaw) * idleRadius, 0.0, cos(idleMoveYaw) * idleRadius)
+        idleStart = 0L
     }
 
     init {
