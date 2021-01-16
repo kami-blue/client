@@ -39,7 +39,7 @@ internal object ElytraFlight2b2t : Module(
     private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
-    private val showDebug by setting("ShowDebug", true)
+    private val showDebug by setting("ShowDebug", false)
 
     private const val TAKEOFF_HEIGHT = 0.50
 
