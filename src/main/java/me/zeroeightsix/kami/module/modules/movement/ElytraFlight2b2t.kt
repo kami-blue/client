@@ -154,7 +154,35 @@ internal object ElytraFlight2b2t : Module(
                 setToIdle()
             }
         }
+    }
 
+    /**
+     * Calculate the starting height. Constantly update the position as we would in vanilla until the correct criteria
+     * is met. Should only be called from the state NOT_STARTED.
+     */
+    private fun SafeClientEvent.calcStartingHeight() {
+        /* We are in the air at least 0.5 above the ground and have an elytra equipped */
+        if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
+            if (showDebug) sendChatMessage("Takeoff at height: " + player.posY)
+            player.capabilities.isFlying = true
+        }
+    }
+
+    private fun SafeClientEvent.setToIdle() {
+        originIdle = player.positionVector
+        state = MovementState.IDLE
+        idleStart = System.currentTimeMillis()
+    }
+
+    /**
+     * Calculate the idle position. Some movement is needed so that we do not get kicked for flying. Move in a circle.
+     */
+    private fun getNextIdle(): Vec3d {
+        val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
+        return Vec3d(-sin(idleMoveYaw) * idleRadius, 0.0, cos(idleMoveYaw) * idleRadius)
+    }
+
+    init {
         safeListener<PacketEvent.Receive> {
             if (state != MovementState.NOT_STARTED) {
                 when (it.packet) {
@@ -246,32 +274,6 @@ internal object ElytraFlight2b2t : Module(
 
         lastRotation = rotation
         lastPos = posVec
-    }
-
-    /**
-     * Calculate the starting height. Constantly update the position as we would in vanilla until the correct criteria
-     * is met. Should only be called from the state NOT_STARTED.
-     */
-    private fun SafeClientEvent.calcStartingHeight() {
-        /* We are in the air at least 0.5 above the ground and have an elytra equipped */
-        if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
-            if (showDebug) sendChatMessage("Takeoff at height: " + player.posY)
-            player.capabilities.isFlying = true
-        }
-    }
-
-    private fun SafeClientEvent.setToIdle() {
-        originIdle = player.positionVector
-        state = MovementState.IDLE
-        idleStart = System.currentTimeMillis()
-    }
-
-    /**
-     * Calculate the idle position. Some movement is needed so that we do not get kicked for flying. Move in a circle.
-     */
-    private fun getNextIdle(): Vec3d {
-        val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
-        return Vec3d(-sin(idleMoveYaw) * idleRadius, 0.0, cos(idleMoveYaw) * idleRadius)
     }
 
     private fun reset() {
