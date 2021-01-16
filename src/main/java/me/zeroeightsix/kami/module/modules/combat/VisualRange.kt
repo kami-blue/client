@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.*
 
 internal object VisualRange : Module(
     name = "VisualRange",
@@ -28,6 +29,8 @@ internal object VisualRange : Module(
     private val friends = setting("Friends", true)
     private val uwuAura = setting("UwUAura", false)
     private val logToFile = setting("LogToFile", false)
+    private val onEnterMessage = setting("onEnterMessage", "%s spotted!")
+    private val onLeaveMessage = setting("onLeaveMessage", "%s left!", { leaving.value })
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -59,15 +62,15 @@ internal object VisualRange : Module(
     }
 
     private fun onEnter(player: EntityPlayer) {
-        sendNotification("${getColor(player) format player.name} spotted!")
-        if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} spotted!")
+        sendNotification(String.format(onEnterMessage.value, getColor(player).format(player.name)))
+        if (logToFile.value) WaypointManager.add(player.flooredPosition, String.format(onEnterMessage.value, player.name))
         if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
         if (leaving.value) {
-            sendNotification("${getColor(player) format player.name} left!")
-            if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} left!")
+            sendNotification(String.format(onEnterMessage.value, getColor(player).format(player.name)))
+            if (logToFile.value) WaypointManager.add(player.flooredPosition, String.format(onLeaveMessage.value, player.name))
             if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
         }
     }
