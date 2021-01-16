@@ -109,7 +109,7 @@ internal object DiscordNotifs : Module(
 
     private fun getTime() =
         if (!time.value) ""
-        else "[${TimeUtils.getTime()}] "
+        else ChatTimestamp.formattedTime
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)

@@ -35,6 +35,7 @@ internal object Configurations : AbstractModule(
     description = "Setting up configurations of the client",
     category = Category.CLIENT,
     alwaysEnabled = true,
+    showOnArray = false,
     config = GenericConfig
 ) {
     private const val defaultPreset = "default"

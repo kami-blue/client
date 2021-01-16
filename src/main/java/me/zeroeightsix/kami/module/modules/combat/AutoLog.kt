@@ -53,7 +53,7 @@ internal object AutoLog : Module(
 
             when {
                 CombatUtils.getHealthSmart(player) < health -> log(HEALTH)
-                totem && player.allSlots.countItem(Items.TOTEM_OF_UNDYING) < minTotems -> log(TOTEM)
+                totem && checkTotems() -> log(TOTEM)
                 crystals && checkCrystals() -> log(END_CRYSTAL)
                 creeper && checkCreeper() -> {
                     /* checkCreeper() does log() */
@@ -63,6 +63,12 @@ internal object AutoLog : Module(
                 }
             }
         }
+    }
+
+    private fun SafeClientEvent.checkTotems() : Boolean {
+        val slots = player.allSlots
+        return slots.any { it.hasStack }
+            && slots.countItem(Items.TOTEM_OF_UNDYING) < minTotems
     }
 
     private fun SafeClientEvent.checkCrystals(): Boolean {

@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
+import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.*
 
 internal object VisualRange : Module(
     name = "VisualRange",
@@ -23,11 +25,15 @@ internal object VisualRange : Module(
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val playSound = setting("PlaySound", false)
-    private val leaving = setting("CountLeaving", false)
-    private val friends = setting("Friends", true)
-    private val uwuAura = setting("UwUAura", false)
-    private val logToFile = setting("LogToFile", false)
+    private const val NAME_FORMAT = "\$NAME"
+
+    private val playSound by setting("PlaySound", false)
+    private val leaving by setting("CountLeaving", false)
+    private val friends by setting("Friends", true)
+    private val uwuAura by setting("UwUAura", false)
+    private val logToFile by setting("LogToFile", false)
+    private val enterMessage by setting("EnterMessage", "$NAME_FORMAT spotted!")
+    private val leaveMessage by setting("LeaveMessage", "$NAME_FORMAT left!", { leaving })
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -38,9 +44,8 @@ internal object VisualRange : Module(
 
             val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (entityPlayer in loadedPlayerSet) {
-                if (entityPlayer == mc.renderViewEntity || entityPlayer == player) continue // Self/Freecam check
-                if (entityPlayer.entityId < 0) continue // Fake entity check
-                if (!friends.value && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
+                if (entityPlayer.isFakeOrSelf) continue // Self / Freecam / FakePlayer check
+                if (!friends && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
 
                 if (playerSet.add(entityPlayer) && isEnabled) {
                     onEnter(entityPlayer)
@@ -59,25 +64,30 @@ internal object VisualRange : Module(
     }
 
     private fun onEnter(player: EntityPlayer) {
-        sendNotification("${getColor(player) format player.name} spotted!")
-        if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} spotted!")
-        if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
+        val message = enterMessage.replaceName(player)
+
+        sendNotification(message)
+        if (logToFile) WaypointManager.add(player.flooredPosition, message)
+        if (uwuAura) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
-        if (leaving.value) {
-            sendNotification("${getColor(player) format player.name} left!")
-            if (logToFile.value) WaypointManager.add(player.flooredPosition, "${player.name} left!")
-            if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
-        }
+        if (!leaving) return
+        val message = leaveMessage.replaceName(player)
+
+        sendNotification(message)
+        if (logToFile) WaypointManager.add(player.flooredPosition, message)
+        if (uwuAura) sendServerMessage("/w ${player.name} bye uwu")
     }
+
+    private fun String.replaceName(player: EntityPlayer) = replace(NAME_FORMAT, getColor(player) format player.name)
 
     private fun getColor(player: EntityPlayer) =
         if (FriendManager.isFriend(player.name)) TextFormatting.GREEN
         else TextFormatting.RED
 
     private fun sendNotification(message: String) {
-        if (playSound.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        if (playSound) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         MessageSendHelper.sendChatMessage(message)
     }
 }
