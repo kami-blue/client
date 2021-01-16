@@ -69,7 +69,6 @@ object PlayerPacketManager : Manager {
                 }
                 if (it.packet.rotating) {
                     serverSideRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                    Wrapper.player?.let { player -> player.rotationYawHead = it.packet.yaw }
                 }
             }
 
@@ -80,9 +79,13 @@ object PlayerPacketManager : Manager {
         }
 
         safeListener<TickEvent.ClientTickEvent>(0x2269420) {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
-            prevServerSidePosition = serverSidePosition
-            prevServerSideRotation = serverSideRotation
+            if (it.phase == TickEvent.Phase.START) {
+                prevServerSidePosition = serverSidePosition
+                prevServerSideRotation = serverSideRotation
+            } else {
+                player.prevRotationYawHead = prevServerSideRotation.x
+                player.rotationYawHead = serverSideRotation.x
+            }
         }
 
         listener<RenderEntityEvent> {
