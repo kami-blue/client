@@ -43,7 +43,7 @@ internal object ElytraFlight2b2t : Module(
 
     private const val TAKEOFF_HEIGHT = 0.50
 
-    // Packets
+    /* Packet information */
     private val packetTimer = TickTimer()
     private var lastPos = Vec3d.ZERO
     private var rotation = Vec2f.ZERO

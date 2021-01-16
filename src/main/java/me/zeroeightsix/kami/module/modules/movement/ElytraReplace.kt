@@ -84,9 +84,8 @@ internal object ElytraReplace : Module(
     // if we should check elytraflight, then we will swap if it is enabled
     // if we don't need to check for elytraflight, then just swap
     private fun shouldAttemptElytraSwap(): Boolean {
-        return !elytraFlightCheck.value || ElytraFlight.isEnabled
+        return !elytraFlightCheck.value || ElytraFlight.isEnabled || ElytraFlight2b2t.isEnabled
     }
-
 
     private fun swapToChest() {
         if (chestPlateCount == 0) {
@@ -152,8 +151,7 @@ internal object ElytraReplace : Module(
         }
     }
 
-
-    // snagged from AutoArmor
+    // TODO: refactor to use item utils
     private fun getSlotOfBestChestPlate(): Int {
         var bestArmorSlot = -1
         var bestArmorValue = -1
