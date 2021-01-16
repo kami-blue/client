@@ -39,7 +39,7 @@ internal object ElytraFlight2b2t : Module(
     private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
-    private val showDebug by setting("ShowDebug", false)
+    private val showDebug by setting("ShowDebug", true)
 
     private const val TAKEOFF_HEIGHT = 0.50
 
@@ -144,7 +144,7 @@ internal object ElytraFlight2b2t : Module(
     private fun SafeClientEvent.notStarted() {
         /* We are in the air at least 0.5 above the ground and have an elytra equipped */
         if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
-            if (showDebug) sendChatMessage("Takeoff at height: " + player.posY)
+            if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
             player.capabilities.isFlying = true
         }
     }
@@ -230,7 +230,7 @@ internal object ElytraFlight2b2t : Module(
          */
         safeListener<PacketEvent.PostSend> {
             if (state == MovementState.NOT_STARTED || it.packet !is CPacketConfirmTeleport) return@safeListener
-            if (showDebug) sendChatMessage("Responding to emergency teleport packet from the server.")
+            if (showDebug) sendChatMessage("$chatName Responding to emergency teleport packet from the server.")
 
             player.setVelocity(0.0, 0.0, 0.0)
             accelStart = System.currentTimeMillis()
