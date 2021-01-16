@@ -84,7 +84,7 @@ internal object ElytraFlight2B2T : Module(
             }
 
             /* If we are not wearing an elytra then reset */
-            if (player.chestSlot.stack.item != Items.ELYTRA && started != MovementState.NOT_STARTED) {
+            if (player.inventory.armorInventory[2].item != Items.ELYTRA && started != MovementState.NOT_STARTED) {
                 reset()
                 return@safeListener
             }
@@ -252,6 +252,10 @@ internal object ElytraFlight2B2T : Module(
         }
     }
 
+    override fun isActive(): Boolean {
+        return started != MovementState.NOT_STARTED
+    }
+
     /**
      * @param forceSendPosRot: If we should force send the position and rotation regardless of if it is our current position/rotation
      *
@@ -329,10 +333,6 @@ internal object ElytraFlight2B2T : Module(
             0.0,
             sin((((System.currentTimeMillis() - idleStart) / idleSpeed.value) % 360).toDouble()) * idleRadius.value,
         )
-    }
-
-    override fun isActive(): Boolean {
-        return started != MovementState.NOT_STARTED
     }
 
     private fun SafeClientEvent.reset() {
