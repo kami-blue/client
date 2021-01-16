@@ -5,6 +5,7 @@ import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
+import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -38,8 +39,7 @@ internal object VisualRange : Module(
 
             val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (entityPlayer in loadedPlayerSet) {
-                if (entityPlayer == mc.renderViewEntity || entityPlayer == player) continue // Self/Freecam check
-                if (entityPlayer.entityId < 0) continue // Fake entity check
+                if (entityPlayer.isFakeOrSelf) continue // Self / Freecam / FakePlayer check
                 if (!friends.value && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
 
                 if (playerSet.add(entityPlayer) && isEnabled) {

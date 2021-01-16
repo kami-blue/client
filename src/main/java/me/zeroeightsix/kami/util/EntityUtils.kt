@@ -37,6 +37,8 @@ object EntityUtils {
 
     val Entity.isHostile get() = isMobAggressive(this)
 
+    val EntityPlayer.isFakeOrSelf get() = this == mc.player || this == mc.renderViewEntity || this.entityId < 0
+
     private fun isNeutralMob(entity: Entity) = entity is EntityPigZombie
         || entity is EntityWolf
         || entity is EntityEnderman
