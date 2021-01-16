@@ -267,12 +267,12 @@ internal object ElytraFlight2b2t : Module(
         val posVec = player.positionVector
 
         /* Determine which packet we need to send: position, rotation, or positionRotation */
-        if (forceSendPosRot || posVec != lastPos && rotation == lastRotation) {
-            /* Position needs to be sent to the server */
-            player.connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY, player.posZ, true))
-        } else {
+        if (forceSendPosRot || posVec != lastPos && rotation != lastRotation) {
             /* Position and rotation need to be sent to the server */
             player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true))
+        } else {
+            /* Position needs to be sent to the server */
+            player.connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY, player.posZ, true))
         }
 
         lastRotation = rotation
