@@ -29,8 +29,8 @@ object MovementUtils {
         return Math.toRadians(yaw.toDouble())
     }
 
-    private val roundedForward get() = getRoundedMovementInput(mc.player.movementInput.moveForward)
-    private val roundedStrafing get() = getRoundedMovementInput(mc.player.movementInput.moveStrafe)
+    private val SafeClientEvent.roundedForward get() = getRoundedMovementInput(player.movementInput.moveForward)
+    private val SafeClientEvent.roundedStrafing get() = getRoundedMovementInput(player.movementInput.moveStrafe)
 
     private fun getRoundedMovementInput(input: Float) = when {
         input > 0f -> 1f

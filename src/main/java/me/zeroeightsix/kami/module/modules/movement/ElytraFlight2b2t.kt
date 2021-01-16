@@ -8,6 +8,7 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.MovementUtils.isInputting
+import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -31,25 +32,25 @@ internal object ElytraFlight2b2t : Module(
     description = "Allows high speed infinite Elytra flight with no durability usage on 2b2t",
     category = Category.MOVEMENT
 ) {
-    private val accelerateSpeed by setting("Accelerate", 0.22f, 0.0f..1.0f, 0.01f)
-    private val maxVelocity by setting("MaxVelocity", 9.90f, 1.0f..10.0f, 0.01f)
+    private val accelerateSpeed by setting("AccelerateSpeed", 0.22f, 0.0f..1.0f, 0.01f)
+    private val maxVelocity by setting("MaxVelocity", 9.9f, 1.0f..20.0f, 0.05f)
     private val descendSpeed by setting("DescendSpeed", 0.1, 0.01..1.0, 0.01)
     private val idleSpeed by setting("IdleSpeed", 1000.00f, 400.0f..10000f, 1f)
     private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val showDebug by setting("ShowDebug", false)
 
+    private const val TAKEOFF_HEIGHT = 0.50
+
     private var lastPos = Vec3d(0.0, -1.0, 0.0)
     private var rotation = Vec2f(0.0F, 0.0F)
     private var lastRotation = Vec2f(0.0F, 0.0F)
 
     /* Startup variables */
-    private var started = MovementState.NOT_STARTED
+    private var state = MovementState.NOT_STARTED
     private var originIdle = Vec3d(0.0, -1.0, 0.0)
     private var idleStart = System.currentTimeMillis()
     private var accelStart = System.currentTimeMillis()
-    private var jumpHeightMin = 0.50
-    private var isJumpStart = false
 
     /* Emergency teleport packet info */
     private var teleportPosition = Vec3d.ZERO
@@ -59,16 +60,18 @@ internal object ElytraFlight2b2t : Module(
         NOT_STARTED, IDLE, MOVING
     }
 
+    override fun isActive(): Boolean {
+        return isEnabled && state != MovementState.NOT_STARTED
+    }
+
     init {
         onEnable {
-            sendChatMessage("$name started.")
             onMainThreadSafe {
                 reset()
             }
         }
 
         onDisable {
-            sendChatMessage("$name stopped.")
             onMainThreadSafe {
                 reset()
             }
@@ -77,19 +80,23 @@ internal object ElytraFlight2b2t : Module(
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.START) return@safeListener
 
-            /* If we are too close to the ground then reset */
-            if ((player.posY - getGroundPos().y < jumpHeightMin) && started != MovementState.NOT_STARTED) {
-                reset()
-                return@safeListener
+
+            if (state != MovementState.NOT_STARTED) {
+                /* If we are not wearing an elytra then reset */
+                if (player.inventory.armorInventory[2].item != Items.ELYTRA) {
+                    reset()
+                    return@safeListener
+                }
+
+                /* If we are too close to the ground then reset */
+                if (player.posY - getGroundPos().y < TAKEOFF_HEIGHT) {
+                    reset()
+                    return@safeListener
+                }
             }
 
-            /* If we are not wearing an elytra then reset */
-            if (player.inventory.armorInventory[2].item != Items.ELYTRA && started != MovementState.NOT_STARTED) {
-                reset()
-                return@safeListener
-            }
 
-            when (started) {
+            when (state) {
                 MovementState.NOT_STARTED -> {
                     calcStartingHeight()
                 }
@@ -97,7 +104,8 @@ internal object ElytraFlight2b2t : Module(
                     val targetPos = getNextIdle()
                     player.setVelocity(targetPos.x, targetPos.y, targetPos.z)
                 }
-                MovementState.MOVING -> {}
+                MovementState.MOVING -> {
+                }
             }
         }
 
@@ -110,8 +118,7 @@ internal object ElytraFlight2b2t : Module(
         safeListener<PlayerTravelEvent> {
             /* If are are pressing the space and not started then we need to start in the jump state */
             if (player.movementInput.jump) {
-                if (started == MovementState.NOT_STARTED) {
-                    isJumpStart = true
+                if (state == MovementState.NOT_STARTED) {
                     return@safeListener
                 } else {
                     /* Don't go up but maintain other velocities if the user tries to fly up */
@@ -121,28 +128,30 @@ internal object ElytraFlight2b2t : Module(
                 }
             }
 
-            if (player.movementInput.sneak && started != MovementState.NOT_STARTED) {
+            if (player.movementInput.sneak && state != MovementState.NOT_STARTED) {
                 player.motionY = -descendSpeed
                 return@safeListener
             }
 
-            when (started) {
-                MovementState.NOT_STARTED -> {}
+            when (state) {
+                MovementState.NOT_STARTED -> {
+                }
                 MovementState.IDLE -> {
                     if (isInputting) {
-                        started = MovementState.MOVING
+                        state = MovementState.MOVING
                         accelStart = System.currentTimeMillis()
                     }
                 }
                 MovementState.MOVING -> {
                     if (isInputting) {
                         if (player.speed < maxVelocity) {
-                            val accelVec = player.lookVec.scale(((System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))).toDouble())
-                            player.setVelocity(accelVec.x, 0.0, accelVec.z)
+                            val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
+                            setSpeed(speed.toDouble())
                         } else {
-                            player.setVelocity(player.motionX, 0.0, player.motionZ)
                             it.cancel()
                         }
+
+                        player.motionY = 0.0
                     } else {
                         accelStart = System.currentTimeMillis()
                     }
@@ -150,18 +159,16 @@ internal object ElytraFlight2b2t : Module(
             }
 
             /* Prevent the player from sprinting */
-            if (player.isSprinting && started != MovementState.NOT_STARTED) player.isSprinting = false
+            if (player.isSprinting && state != MovementState.NOT_STARTED) player.isSprinting = false
 
             /* return to IDLE state after moving */
-            if (player.speed < minIdleVelocity && !isInputting && started != MovementState.NOT_STARTED) {
-                originIdle = player.positionVector
-                started = MovementState.IDLE
-                idleStart = System.currentTimeMillis()
+            if (player.speed < minIdleVelocity && !isInputting && state != MovementState.NOT_STARTED) {
+                setToIdle()
             }
         }
 
         safeListener<PacketEvent.Receive> {
-            if (started != MovementState.NOT_STARTED) {
+            if (state != MovementState.NOT_STARTED) {
                 when (it.packet) {
                     /* Cancels the elytra opening animation */
                     is SPacketEntityMetadata -> {
@@ -183,7 +190,7 @@ internal object ElytraFlight2b2t : Module(
          * onGround == true (which we obviously need to revert before sending to the server)
          */
         safeListener<PacketEvent.Send> {
-            if (started != MovementState.NOT_STARTED) {
+            if (state != MovementState.NOT_STARTED) {
                 when (it.packet) {
                     is CPacketPlayer.Position -> {
                         if (it.packet.onGround) {
@@ -234,7 +241,7 @@ internal object ElytraFlight2b2t : Module(
         }
 
         BackgroundScope.launchLooping("FlyConnection", 150L) {
-            if (started != MovementState.NOT_STARTED) {
+            if (state != MovementState.NOT_STARTED) {
                 onMainThreadSafe {
                     connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
 
@@ -250,10 +257,6 @@ internal object ElytraFlight2b2t : Module(
         safeListener<ConnectionEvent.Disconnect> {
             disable()
         }
-    }
-
-    override fun isActive(): Boolean {
-        return started != MovementState.NOT_STARTED
     }
 
     /**
@@ -302,26 +305,16 @@ internal object ElytraFlight2b2t : Module(
      */
     private fun SafeClientEvent.calcStartingHeight() {
         /* We are in the air at least 0.5 above the ground and have an elytra equipped */
-        if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= jumpHeightMin)) {
-            /* Start at pos X.5 or higher */
-            if (isJumpStart && (player.posY - player.posY.toInt() >= jumpHeightMin)) {
-                /* Jumping start */
-                originIdle = player.positionVector
-                started = MovementState.IDLE
-                idleStart = System.currentTimeMillis()
-                if (showDebug) sendChatMessage("Jump start at height: " + player.posY)
-                player.capabilities.allowFlying = true
-                player.capabilities.isFlying = true
-            } else if (!isJumpStart) {
-                /* Falling start */
-                originIdle = player.positionVector
-                started = MovementState.IDLE
-                idleStart = System.currentTimeMillis()
-                if (showDebug) sendChatMessage("Fall start at height: " + player.posY)
-                player.capabilities.allowFlying = true
-                player.capabilities.isFlying = true
-            }
+        if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
+            if (showDebug) sendChatMessage("Takeoff at height: " + player.posY)
+            player.capabilities.isFlying = true
         }
+    }
+
+    private fun SafeClientEvent.setToIdle() {
+        originIdle = player.positionVector
+        state = MovementState.IDLE
+        idleStart = System.currentTimeMillis()
     }
 
     /**
@@ -336,11 +329,9 @@ internal object ElytraFlight2b2t : Module(
     }
 
     private fun SafeClientEvent.reset() {
-        if (!player.isCreative) player.capabilities.allowFlying = false
         player.capabilities.isFlying = false
         player.onGround = true
-        isJumpStart = false
-        started = MovementState.NOT_STARTED
+        state = MovementState.NOT_STARTED
         rotation = Vec2f(0.0F, 0.0F)
     }
 }
