@@ -24,6 +24,7 @@ import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.toRadian
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -35,8 +36,8 @@ internal object ElytraFlight2b2t : Module(
     private val accelerateSpeed by setting("AccelerateSpeed", 0.22f, 0.0f..1.0f, 0.01f)
     private val maxVelocity by setting("MaxVelocity", 9.9f, 1.0f..20.0f, 0.05f)
     private val descendSpeed by setting("DescendSpeed", 0.1, 0.01..1.0, 0.01)
-    private val idleSpeed by setting("IdleSpeed", 1000.00f, 400.0f..10000f, 1f)
-    private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
+    private val idleSpeed by setting("IdleSpeed", 2.0f, 0.1f..5.0f, 0.1f)
+    private val idleRadius by setting("IdleRadius", 0.05f, 0.01f..0.25f, 0.01f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
     private val showDebug by setting("ShowDebug", false)
@@ -51,8 +52,6 @@ internal object ElytraFlight2b2t : Module(
 
     /* Startup variables */
     private var state = MovementState.NOT_STARTED
-    private var originIdle = Vec3d.ZERO
-    private var idleStart = 0L
     private var accelStart = 0L
 
     /* Emergency teleport packet info */
@@ -157,9 +156,12 @@ internal object ElytraFlight2b2t : Module(
             state = MovementState.MOVING
             accelStart = System.currentTimeMillis()
         } else {
-            val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
-            player.motionX = -sin(idleMoveYaw) * idleRadius
-            player.motionZ = cos(idleMoveYaw) * idleRadius
+            val length = idleSpeed * 1000.0f
+            val deltaTime = System.currentTimeMillis() % length.toLong()
+            val yaw = deltaTime / length * 2.0 * PI
+
+            player.motionX = -sin(yaw) * idleRadius
+            player.motionZ = cos(yaw) * idleRadius
         }
     }
 
@@ -181,9 +183,7 @@ internal object ElytraFlight2b2t : Module(
     }
 
     private fun SafeClientEvent.setToIdle() {
-        originIdle = player.positionVector
         state = MovementState.IDLE
-        idleStart = 0L
     }
 
     init {
@@ -289,8 +289,6 @@ internal object ElytraFlight2b2t : Module(
         lastRotation = Vec2f.ZERO
 
         state = MovementState.NOT_STARTED
-        originIdle = Vec3d.ZERO
-        idleStart = 0L
         accelStart = 0L
 
         teleportPosition = Vec3d.ZERO
