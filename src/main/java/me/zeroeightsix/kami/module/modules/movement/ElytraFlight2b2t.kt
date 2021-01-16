@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawDeg
 import me.zeroeightsix.kami.util.MovementUtils.isInputting
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.TickTimer
@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
-import org.kamiblue.commons.extension.toDegree
+import org.kamiblue.commons.extension.toRadian
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -115,13 +115,12 @@ internal object ElytraFlight2b2t : Module(
                 }
             }
 
-            val yawRad = calcMoveYaw()
-            rotation = Vec2f(yawRad.toDegree().toFloat(), 0.0f)
+            val yawRad = calcYaw()
 
             when (state) {
                 MovementState.NOT_STARTED -> notStarted()
                 MovementState.IDLE -> idle()
-                MovementState.MOVING -> moving(yawRad)
+                MovementState.MOVING -> moving(it, yawRad)
             }
 
             /* return to IDLE state after moving */
@@ -129,6 +128,12 @@ internal object ElytraFlight2b2t : Module(
                 setToIdle()
             }
         }
+    }
+
+    private fun SafeClientEvent.calcYaw(): Double {
+        val yawDeg = calcMoveYawDeg()
+        rotation = Vec2f(yawDeg.toFloat(), 0.0f)
+        return yawDeg.toRadian()
     }
 
     /**
@@ -154,7 +159,7 @@ internal object ElytraFlight2b2t : Module(
         }
     }
 
-    private fun SafeClientEvent.moving(yawRad: Double) {
+    private fun SafeClientEvent.moving(event: PlayerTravelEvent, yawRad: Double) {
         if (isInputting) {
             if (player.speed < maxVelocity) {
                 val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
@@ -162,7 +167,7 @@ internal object ElytraFlight2b2t : Module(
                 player.motionX = -sin(yawRad) * speed
                 player.motionZ = cos(yawRad) * speed
             } else {
-                it.cancel()
+                event.cancel()
             }
 
             player.motionY = 0.0

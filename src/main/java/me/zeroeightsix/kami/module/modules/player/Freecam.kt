@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.event.events.PlayerAttackEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.*
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawRad
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.threads.runSafe
@@ -195,7 +195,7 @@ internal object Freecam : Module(
             val movementInput = calcMovementInput(forward, strafe, false to false)
 
             val yawDiff = player.rotationYaw - it.rotationYaw
-            val yawRad = calcMoveYaw(yawDiff, movementInput.first, movementInput.second).toFloat()
+            val yawRad = calcMoveYawRad(yawDiff, movementInput.first, movementInput.second).toFloat()
             val inputTotal = min(abs(movementInput.first) + abs(movementInput.second), 1f)
 
             player.movementInput?.apply {

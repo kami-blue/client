@@ -6,7 +6,7 @@ import me.zeroeightsix.kami.event.events.PlayerTravelEvent
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawRad
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityBoat
@@ -69,7 +69,7 @@ internal object EntitySpeed : Module(
     }
 
     private fun SafeClientEvent.steerEntity(entity: Entity) {
-        val yawRad = calcMoveYaw()
+        val yawRad = calcMoveYawRad()
 
         val motionX = -sin(yawRad) * speed.value
         val motionZ = cos(yawRad) * speed.value

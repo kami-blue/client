@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.util
 import me.zeroeightsix.kami.event.SafeClientEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
+import org.kamiblue.commons.extension.toRadian
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
@@ -19,14 +20,18 @@ object MovementUtils {
     val Entity.realSpeed get() = hypot(posX - prevPosX, posZ - prevPosZ)
 
     /* totally not taken from elytrafly */
-    fun SafeClientEvent.calcMoveYaw(yawIn: Float = mc.player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
-        var strafe = 90 * moveString
-        strafe *= if (moveForward != 0F) moveForward * 0.5F else 1F
+    fun SafeClientEvent.calcMoveYawRad(yawIn: Float = player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
+        return calcMoveYawDeg(yawIn, moveForward, moveString).toRadian()
+    }
+
+    fun SafeClientEvent.calcMoveYawDeg(yawIn: Float = player.rotationYaw, moveForward: Float = roundedForward, moveString: Float = roundedStrafing): Double {
+        var strafe = 90.0 * moveString
+        strafe *= if (moveForward != 0.0f) moveForward * 0.5 else 1.0
 
         var yaw = yawIn - strafe
-        yaw -= if (moveForward < 0F) 180 else 0
+        yaw -= if (moveForward < 0.0f) 180.0 else 0.0
 
-        return Math.toRadians(yaw.toDouble())
+        return yaw
     }
 
     private val SafeClientEvent.roundedForward get() = getRoundedMovementInput(player.movementInput.moveForward)
@@ -39,7 +44,7 @@ object MovementUtils {
     }
 
     fun SafeClientEvent.setSpeed(speed: Double) {
-        val yaw = calcMoveYaw()
+        val yaw = calcMoveYawRad()
         player.motionX = -sin(yaw) * speed
         player.motionZ = cos(yaw) * speed
     }

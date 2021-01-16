@@ -10,7 +10,7 @@ import me.zeroeightsix.kami.mixin.extension.timer
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.player.LagNotifier
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawDeg
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
 import me.zeroeightsix.kami.util.WorldUtils.isLiquidBelow
@@ -313,9 +313,9 @@ internal object ElytraFlight : Module(
      *  @return Yaw in radians based on player rotation yaw and movement input
      */
     private fun SafeClientEvent.getYaw(): Double {
-        val yawRad = calcMoveYaw()
-        packetYaw = Math.toDegrees(yawRad).toFloat()
-        return yawRad
+        val yawDeg = calcMoveYawDeg()
+        packetYaw = yawDeg.toFloat()
+        return yawDeg.toRadian()
     }
 
     /**

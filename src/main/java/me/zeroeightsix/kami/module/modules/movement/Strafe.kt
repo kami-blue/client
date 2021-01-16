@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.MovementUtils
-import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYawRad
 import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.TickTimer
@@ -74,7 +74,7 @@ internal object Strafe : Module(
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
             player.motionY = 0.41
             if (player.isSprinting) {
-                val yaw = calcMoveYaw()
+                val yaw = calcMoveYawRad()
                 player.motionX -= sin(yaw) * 0.2
                 player.motionZ += cos(yaw) * 0.2
             }
