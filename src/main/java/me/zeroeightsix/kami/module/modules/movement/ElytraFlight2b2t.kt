@@ -85,7 +85,8 @@ internal object ElytraFlight2b2t : Module(
                     return@safeListener
                 } else {
                     /* Don't go up but maintain other velocities if the user tries to fly up */
-                    player.setVelocity(player.motionX, 0.0, player.motionZ)
+                    player.motionY = 0.0
+
                     /* In case they double press space (exits flying mode normally) */
                     player.capabilities.isFlying = true
                 }
@@ -105,7 +106,7 @@ internal object ElytraFlight2b2t : Module(
                 }
 
                 if (player.movementInput.sneak) {
-                    player.motionY = -descendSpeed
+                    player.setVelocity(0.0, -descendSpeed, 0.0)
                     return@safeListener
                 }
 
