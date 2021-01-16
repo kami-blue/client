@@ -44,7 +44,7 @@ internal object VisualRange : Module(
 
             val loadedPlayerSet = LinkedHashSet(world.playerEntities)
             for (entityPlayer in loadedPlayerSet) {
-                if (entityPlayer.isFakeOrSelf) continue // Self/Freecam check
+                if (entityPlayer.isFakeOrSelf) continue // Self / Freecam / FakePlayer check
                 if (!friends && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
 
                 if (playerSet.add(entityPlayer) && isEnabled) {
