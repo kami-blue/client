@@ -92,6 +92,8 @@ internal object ElytraFlight2b2t : Module(
                 }
             }
 
+            val yawRad = calcYaw()
+
             if (state != MovementState.NOT_STARTED) {
                 /* If we are not wearing an elytra then reset */
                 if (player.inventory.armorInventory[2].item != Items.ELYTRA) {
@@ -115,8 +117,6 @@ internal object ElytraFlight2b2t : Module(
                     player.isSprinting = false
                 }
             }
-
-            val yawRad = calcYaw()
 
             when (state) {
                 MovementState.NOT_STARTED -> notStarted()
@@ -145,7 +145,10 @@ internal object ElytraFlight2b2t : Module(
         /* We are in the air at least 0.5 above the ground and have an elytra equipped */
         if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
             if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
+
+            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
             player.capabilities.isFlying = true
+            setToIdle()
         }
     }
 
@@ -185,17 +188,16 @@ internal object ElytraFlight2b2t : Module(
 
     init {
         safeListener<PacketEvent.Receive> {
-            if (state != MovementState.NOT_STARTED) {
-                when (it.packet) {
-                    /* Cancels the elytra opening animation */
-                    is SPacketEntityMetadata -> {
-                        if (it.packet.entityId == player.entityId) it.cancel()
-                    }
-                    /* Set client side to wherever the server wants us to be */
-                    is SPacketPlayerPosLook -> {
-                        teleportRotation = Vec2f(it.packet.yaw, it.packet.pitch)
-                        teleportPosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
-                    }
+            if (state == MovementState.NOT_STARTED) return@safeListener
+            when (it.packet) {
+                /* Cancels the elytra opening animation */
+                is SPacketEntityMetadata -> {
+                    if (it.packet.entityId == player.entityId) it.cancel()
+                }
+                /* Set client side to wherever the server wants us to be */
+                is SPacketPlayerPosLook -> {
+                    teleportRotation = Vec2f(it.packet.yaw, it.packet.pitch)
+                    teleportPosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
                 }
             }
         }
@@ -236,7 +238,7 @@ internal object ElytraFlight2b2t : Module(
             accelStart = System.currentTimeMillis()
 
             /* This only sets the position and rotation client side since it is not salted with onGround */
-            player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.y, teleportRotation.x)
+            player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.x, teleportRotation.y)
 
             /* Force send the packet */
             sendForcedPacket(true)
@@ -281,8 +283,6 @@ internal object ElytraFlight2b2t : Module(
         runSafe {
             player.capabilities.isFlying = false
         }
-
-        state = MovementState.NOT_STARTED
 
         lastPos = Vec3d.ZERO
         rotation = Vec2f.ZERO
