@@ -23,7 +23,6 @@ import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -80,37 +79,6 @@ internal object ElytraFlight2b2t : Module(
             }
         }
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.START) return@safeListener
-
-            if (state != MovementState.NOT_STARTED) {
-                /* If we are not wearing an elytra then reset */
-                if (player.inventory.armorInventory[2].item != Items.ELYTRA) {
-                    reset()
-                    return@safeListener
-                }
-
-                /* If we are too close to the ground then reset */
-                if (player.posY - getGroundPos().y < TAKEOFF_HEIGHT) {
-                    reset()
-                    return@safeListener
-                }
-            }
-
-
-            when (state) {
-                MovementState.NOT_STARTED -> {
-                    calcStartingHeight()
-                }
-                MovementState.IDLE -> {
-                    val targetPos = getNextIdle()
-                    player.setVelocity(targetPos.x, targetPos.y, targetPos.z)
-                }
-                MovementState.MOVING -> {
-                }
-            }
-        }
-
         /**
          * Listen to PlayerTravelEvent in the case where the user is pressing the spacebar and we have not yet started.
          * This allows us to determine if we need to handle a jumping or a falling start.
@@ -130,18 +98,36 @@ internal object ElytraFlight2b2t : Module(
                 }
             }
 
-            if (player.movementInput.sneak && state != MovementState.NOT_STARTED) {
-                player.motionY = -descendSpeed
-                return@safeListener
+            if (state != MovementState.NOT_STARTED) {
+                /* If we are not wearing an elytra then reset */
+                if (player.inventory.armorInventory[2].item != Items.ELYTRA) {
+                    reset()
+                    return@safeListener
+                }
+
+                /* If we are too close to the ground then reset */
+                if (player.posY - getGroundPos().y < TAKEOFF_HEIGHT) {
+                    reset()
+                    return@safeListener
+                }
+
+                if (player.movementInput.sneak) {
+                    player.motionY = -descendSpeed
+                    return@safeListener
+                }
             }
 
             when (state) {
                 MovementState.NOT_STARTED -> {
+                    calcStartingHeight()
                 }
                 MovementState.IDLE -> {
                     if (isInputting) {
                         state = MovementState.MOVING
                         accelStart = System.currentTimeMillis()
+                    } else {
+                        val targetPos = getNextIdle()
+                        player.setVelocity(targetPos.x, targetPos.y, targetPos.z)
                     }
                 }
                 MovementState.MOVING -> {
