@@ -7,13 +7,14 @@ import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.MovementUtils.calcMoveYaw
 import me.zeroeightsix.kami.util.MovementUtils.isInputting
-import me.zeroeightsix.kami.util.MovementUtils.setSpeed
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.WorldUtils.getGroundPos
+import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.onMainThreadSafe
+import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketConfirmTeleport
@@ -21,8 +22,8 @@ import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
-import net.minecraft.util.math.Vec2f
 import net.minecraft.util.math.Vec3d
+import org.kamiblue.commons.extension.toDegree
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -44,15 +45,15 @@ internal object ElytraFlight2b2t : Module(
 
     // Packets
     private val packetTimer = TickTimer()
-    private var lastPos = Vec3d(0.0, -1.0, 0.0)
-    private var rotation = Vec2f(0.0F, 0.0F)
-    private var lastRotation = Vec2f(0.0F, 0.0F)
+    private var lastPos = Vec3d.ZERO
+    private var rotation = Vec2f.ZERO
+    private var lastRotation = Vec2f.ZERO
 
     /* Startup variables */
     private var state = MovementState.NOT_STARTED
-    private var originIdle = Vec3d(0.0, -1.0, 0.0)
-    private var idleStart = System.currentTimeMillis()
-    private var accelStart = System.currentTimeMillis()
+    private var originIdle = Vec3d.ZERO
+    private var idleStart = 0L
+    private var accelStart = 0L
 
     /* Emergency teleport packet info */
     private var teleportPosition = Vec3d.ZERO
@@ -67,16 +68,8 @@ internal object ElytraFlight2b2t : Module(
     }
 
     init {
-        onEnable {
-            onMainThreadSafe {
-                reset()
-            }
-        }
-
         onDisable {
-            onMainThreadSafe {
-                reset()
-            }
+            reset()
         }
 
         /**
@@ -115,7 +108,15 @@ internal object ElytraFlight2b2t : Module(
                     player.motionY = -descendSpeed
                     return@safeListener
                 }
+
+                /* Prevent the player from sprinting */
+                if (player.isSprinting) {
+                    player.isSprinting = false
+                }
             }
+
+            val yawRad = calcMoveYaw()
+            rotation = Vec2f(yawRad.toDegree().toFloat(), 0.0f)
 
             when (state) {
                 MovementState.NOT_STARTED -> {
@@ -134,7 +135,9 @@ internal object ElytraFlight2b2t : Module(
                     if (isInputting) {
                         if (player.speed < maxVelocity) {
                             val speed = (System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))
-                            setSpeed(speed.toDouble())
+
+                            player.motionX = -sin(yawRad) * speed
+                            player.motionZ = cos(yawRad) * speed
                         } else {
                             it.cancel()
                         }
@@ -145,9 +148,6 @@ internal object ElytraFlight2b2t : Module(
                     }
                 }
             }
-
-            /* Prevent the player from sprinting */
-            if (player.isSprinting && state != MovementState.NOT_STARTED) player.isSprinting = false
 
             /* return to IDLE state after moving */
             if (player.speed < minIdleVelocity && !isInputting && state != MovementState.NOT_STARTED) {
@@ -164,7 +164,7 @@ internal object ElytraFlight2b2t : Module(
                     }
                     /* Set client side to wherever the server wants us to be */
                     is SPacketPlayerPosLook -> {
-                        teleportRotation = Vec2f(it.packet.pitch, it.packet.yaw)
+                        teleportRotation = Vec2f(it.packet.yaw, it.packet.pitch)
                         teleportPosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
                     }
                 }
@@ -178,31 +178,20 @@ internal object ElytraFlight2b2t : Module(
          * onGround == true (which we obviously need to revert before sending to the server)
          */
         safeListener<PacketEvent.Send> {
-            if (state != MovementState.NOT_STARTED) {
-                when (it.packet) {
-                    is CPacketPlayer.Position -> {
-                        if (it.packet.onGround) {
-                            if (player.posY - getGroundPos().y > 0.0) {
-                                it.packet.onGround = false
-                            }
-                        } else {
-                            it.cancel()
+            if (state == MovementState.NOT_STARTED || it.packet !is CPacketPlayer) return@safeListener
+
+            when (it.packet) {
+                is CPacketPlayer.Position, is CPacketPlayer.PositionRotation -> {
+                    if (it.packet.onGround) {
+                        if (player.posY > getGroundPos().y) {
+                            it.packet.onGround = false
                         }
-                    }
-                    is CPacketPlayer.PositionRotation -> {
-                        if (it.packet.onGround) {
-                            if (player.posY - getGroundPos().y > 0.0) {
-                                it.packet.onGround = false
-                            }
-                        } else {
-                            rotation = Vec2f(it.packet.pitch, it.packet.yaw)
-                            it.cancel()
-                        }
-                    }
-                    is CPacketPlayer.Rotation -> {
-                        rotation = Vec2f(it.packet.pitch, it.packet.yaw)
+                    } else {
                         it.cancel()
                     }
+                }
+                else -> {
+                    it.cancel()
                 }
             }
         }
@@ -211,33 +200,27 @@ internal object ElytraFlight2b2t : Module(
          * Listen for CPacketConfirmTeleport. We must send a PositionRotation immediately.
          */
         safeListener<PacketEvent.PostSend> {
-            when (it.packet) {
-                is CPacketConfirmTeleport -> {
-                    if (showDebug) sendChatMessage("Responding to emergency teleport packet from the server.")
-                    player.setVelocity(0.0, 0.0, 0.0)
-                    accelStart = System.currentTimeMillis()
-                    /* This only sets the position and rotation client side since it is not salted with onGround */
-                    player.setPositionAndRotation(teleportPosition.x,
-                        teleportPosition.y,
-                        teleportPosition.z,
-                        teleportRotation.y,
-                        teleportRotation.x)
-                    /* Force send the packet */
-                    sendForcedPacket(true)
-                }
-            }
+            if (state == MovementState.NOT_STARTED || it.packet !is CPacketConfirmTeleport) return@safeListener
+            if (showDebug) sendChatMessage("Responding to emergency teleport packet from the server.")
+
+            player.setVelocity(0.0, 0.0, 0.0)
+            accelStart = System.currentTimeMillis()
+
+            /* This only sets the position and rotation client side since it is not salted with onGround */
+            player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.y, teleportRotation.x)
+
+            /* Force send the packet */
+            sendForcedPacket(true)
         }
 
         safeListener<RenderOverlayEvent> {
-            if (state != MovementState.NOT_STARTED && packetTimer.tick(packetDelay.toLong())) {
-                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+            if (state == MovementState.NOT_STARTED || !packetTimer.tick(packetDelay.toLong())) return@safeListener
+            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
 
-                rotation = player.pitchYaw
-                sendForcedPacket(false)
+            sendForcedPacket(false)
 
-                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-            }
+            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
         }
     }
 
@@ -250,35 +233,19 @@ internal object ElytraFlight2b2t : Module(
      * send either the position or both the position and rotation, whichever is appropriate.
      */
     private fun SafeClientEvent.sendForcedPacket(forceSendPosRot: Boolean) {
+        val posVec = player.positionVector
+
         /* Determine which packet we need to send: position, rotation, or positionRotation */
-        if (player.posX != lastPos.x || player.posY != lastPos.y || player.posZ != lastPos.z || forceSendPosRot) {
-            if (rotation.x != lastRotation.x || rotation.y != lastRotation.y || forceSendPosRot) {
-                /* Position and rotation need to be sent to the server */
-                player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX,
-                    player.posY,
-                    player.posZ,
-                    player.pitchYaw.y,
-                    player.pitchYaw.x,
-                    true))
-            } else {
-                /* Position needs to be sent to the server */
-                player.connection.sendPacket(CPacketPlayer.Position(player.posX,
-                    player.posY,
-                    player.posZ,
-                    true))
-            }
+        if (forceSendPosRot || posVec != lastPos && rotation == lastRotation) {
+            /* Position needs to be sent to the server */
+            player.connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY, player.posZ, true))
         } else {
             /* Position and rotation need to be sent to the server */
-            player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX,
-                player.posY,
-                player.posZ,
-                player.pitchYaw.y,
-                player.pitchYaw.x,
-                true))
+            player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true))
         }
 
         lastRotation = rotation
-        lastPos = player.positionVector
+        lastPos = posVec
     }
 
     /**
@@ -303,17 +270,27 @@ internal object ElytraFlight2b2t : Module(
      * Calculate the idle position. Some movement is needed so that we do not get kicked for flying. Move in a circle.
      */
     private fun getNextIdle(): Vec3d {
-        return Vec3d(
-            cos((((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0f).toDouble()) * idleRadius,
-            0.0,
-            sin((((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0f).toDouble()) * idleRadius,
-        )
+        val idleMoveYaw = ((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0
+        return Vec3d(-sin(idleMoveYaw) * idleRadius, 0.0, cos(idleMoveYaw) * idleRadius)
     }
 
-    private fun SafeClientEvent.reset() {
-        player.capabilities.isFlying = false
-        player.onGround = true
+    private fun reset() {
+        runSafe {
+            player.capabilities.isFlying = false
+        }
+
         state = MovementState.NOT_STARTED
-        rotation = Vec2f(0.0F, 0.0F)
+
+        lastPos = Vec3d.ZERO
+        rotation = Vec2f.ZERO
+        lastRotation = Vec2f.ZERO
+
+        state = MovementState.NOT_STARTED
+        originIdle = Vec3d.ZERO
+        idleStart = 0L
+        accelStart = 0L
+
+        teleportPosition = Vec3d.ZERO
+        teleportRotation = Vec2f.ZERO
     }
 }
