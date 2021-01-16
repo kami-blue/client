@@ -26,18 +26,18 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal object ElytraFlight2B2T : Module(
-    name = "ElytraFlight2B2T",
+internal object ElytraFlight2b2t : Module(
+    name = "ElytraFlight2b2t",
     description = "Allows high speed infinite Elytra flight with no durability usage on 2b2t",
     category = Category.MOVEMENT
 ) {
-    private val accelerateSpeed = setting("Accelerate", 0.22f, 0.0f..1.0f, 0.01f)
-    private val maxVelocity = setting("MaxVelocity", 9.90f, 1.0f..10.0f, 0.01f)
-    private val descendSpeed = setting("Descend", 0.1, 0.01..1.0, 0.01)
-    private val idleSpeed = setting("IdleSpeed", 1000.00f, 400.0f..10000f, 1f)
-    private val idleRadius = setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
-    private val minIdleVelocity = setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
-    private val showDebug = setting("ShowDebug", false)
+    private val accelerateSpeed by setting("Accelerate", 0.22f, 0.0f..1.0f, 0.01f)
+    private val maxVelocity by setting("MaxVelocity", 9.90f, 1.0f..10.0f, 0.01f)
+    private val descendSpeed by setting("DescendSpeed", 0.1, 0.01..1.0, 0.01)
+    private val idleSpeed by setting("IdleSpeed", 1000.00f, 400.0f..10000f, 1f)
+    private val idleRadius by setting("IdleRadius", 0.05f, 0.0f..0.25f, 0.001f)
+    private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
+    private val showDebug by setting("ShowDebug", false)
 
     private var lastPos = Vec3d(0.0, -1.0, 0.0)
     private var rotation = Vec2f(0.0F, 0.0F)
@@ -122,7 +122,7 @@ internal object ElytraFlight2B2T : Module(
             }
 
             if (player.movementInput.sneak && started != MovementState.NOT_STARTED) {
-                player.setVelocity(0.0, -descendSpeed.value, 0.0)
+                player.motionY = -descendSpeed
                 return@safeListener
             }
 
@@ -136,8 +136,8 @@ internal object ElytraFlight2B2T : Module(
                 }
                 MovementState.MOVING -> {
                     if (isInputting) {
-                        if (player.speed < maxVelocity.value) {
-                            val accelVec = player.lookVec.scale(((System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed.value * 10000 - 1))).toDouble())
+                        if (player.speed < maxVelocity) {
+                            val accelVec = player.lookVec.scale(((System.currentTimeMillis() - accelStart) / (10000 - (accelerateSpeed * 10000 - 1))).toDouble())
                             player.setVelocity(accelVec.x, 0.0, accelVec.z)
                         } else {
                             player.setVelocity(player.motionX, 0.0, player.motionZ)
@@ -153,7 +153,7 @@ internal object ElytraFlight2B2T : Module(
             if (player.isSprinting && started != MovementState.NOT_STARTED) player.isSprinting = false
 
             /* return to IDLE state after moving */
-            if (player.speed < minIdleVelocity.value && !isInputting && started != MovementState.NOT_STARTED) {
+            if (player.speed < minIdleVelocity && !isInputting && started != MovementState.NOT_STARTED) {
                 originIdle = player.positionVector
                 started = MovementState.IDLE
                 idleStart = System.currentTimeMillis()
@@ -218,7 +218,7 @@ internal object ElytraFlight2B2T : Module(
         safeListener<PacketEvent.PostSend> {
             when (it.packet) {
                 is CPacketConfirmTeleport -> {
-                    if (showDebug.value) sendChatMessage("Responding to emergency teleport packet from the server.")
+                    if (showDebug) sendChatMessage("Responding to emergency teleport packet from the server.")
                     player.setVelocity(0.0, 0.0, 0.0)
                     accelStart = System.currentTimeMillis()
                     /* This only sets the position and rotation client side since it is not salted with onGround */
@@ -309,7 +309,7 @@ internal object ElytraFlight2B2T : Module(
                 originIdle = player.positionVector
                 started = MovementState.IDLE
                 idleStart = System.currentTimeMillis()
-                if (showDebug.value) sendChatMessage("Jump start at height: " + player.posY)
+                if (showDebug) sendChatMessage("Jump start at height: " + player.posY)
                 player.capabilities.allowFlying = true
                 player.capabilities.isFlying = true
             } else if (!isJumpStart) {
@@ -317,7 +317,7 @@ internal object ElytraFlight2B2T : Module(
                 originIdle = player.positionVector
                 started = MovementState.IDLE
                 idleStart = System.currentTimeMillis()
-                if (showDebug.value) sendChatMessage("Fall start at height: " + player.posY)
+                if (showDebug) sendChatMessage("Fall start at height: " + player.posY)
                 player.capabilities.allowFlying = true
                 player.capabilities.isFlying = true
             }
@@ -329,9 +329,9 @@ internal object ElytraFlight2B2T : Module(
      */
     private fun getNextIdle(): Vec3d {
         return Vec3d(
-            cos((((System.currentTimeMillis() - idleStart) / idleSpeed.value) % 360).toDouble()) * idleRadius.value,
+            cos((((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0f).toDouble()) * idleRadius,
             0.0,
-            sin((((System.currentTimeMillis() - idleStart) / idleSpeed.value) % 360).toDouble()) * idleRadius.value,
+            sin((((System.currentTimeMillis() - idleStart) / idleSpeed) % 360.0f).toDouble()) * idleRadius,
         )
     }
 
