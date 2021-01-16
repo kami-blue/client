@@ -23,14 +23,19 @@ internal object AutoMend : Module(
     private val autoThrow by setting("AutoThrow", true)
     private val autoSwitch by setting("AutoSwitch", true)
     private val autoDisable by setting("AutoDisable", false, { autoSwitch })
-    private val pauseNearby by setting("PauseNearby", false)
-    private val pauseNearbyRadius by setting("NearbyRadius", 10, 1..100, 1, { pauseNearby })
+    private val cancelNearby by setting("CancelNearby", NearbyMode.OFF)
+
+    private val pauseNearbyRadius by setting("NearbyRadius", 10, 1..100, 1, { cancelNearby != NearbyMode.OFF })
     private val threshold by setting("Repair%", 75, 1..100, 1)
     private val gui by setting("RunInGUIs", false)
 
     private var initHotbarSlot = -1
     private var isGuiOpened = false
     private var paused = false
+
+    private enum class NearbyMode {
+        OFF, PAUSE, DISABLE
+    }
 
     init {
         onEnable {
@@ -57,10 +62,14 @@ internal object AutoMend : Module(
         safeListener<TickEvent.ClientTickEvent> {
             if (isGuiOpened && !gui) return@safeListener
 
-            if (pauseNearby && playerclose()) {
-                if (!paused)
-                    switchback()
-                paused = true
+            if (cancelNearby!=NearbyMode.OFF && playerclose()) {
+                if(cancelNearby==NearbyMode.DISABLE){
+                    disable()
+                }else{
+                    if (!paused)
+                        switchback()
+                    paused = true
+                }
                 return@safeListener
             }
             paused = false
