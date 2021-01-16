@@ -4,6 +4,7 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.setting.settings.impl.primitive.StringSetting
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -29,8 +30,8 @@ internal object VisualRange : Module(
     private val friends = setting("Friends", true)
     private val uwuAura = setting("UwUAura", false)
     private val logToFile = setting("LogToFile", false)
-    private val onEnterMessage = setting("onEnterMessage", "%s spotted!")
-    private val onLeaveMessage = setting("onLeaveMessage", "%s left!", { leaving.value })
+    private val enterMessage = setting("EnterMessage", "%s spotted!")
+    private val leaveMessage = setting("LeaveMessage", "%s left!", { leaving.value })
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -61,16 +62,18 @@ internal object VisualRange : Module(
         }
     }
 
+    private fun StringSetting.replacedName(player: EntityPlayer) = this.value.replace("%s", getColor(player).format(player.name))
+
     private fun onEnter(player: EntityPlayer) {
-        sendNotification(String.format(onEnterMessage.value, getColor(player).format(player.name)))
-        if (logToFile.value) WaypointManager.add(player.flooredPosition, String.format(onEnterMessage.value, player.name))
+        sendNotification(enterMessage.replacedName(player))
+        if (logToFile.value) WaypointManager.add(player.flooredPosition, enterMessage.replacedName(player))
         if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
         if (leaving.value) {
-            sendNotification(String.format(onEnterMessage.value, getColor(player).format(player.name)))
-            if (logToFile.value) WaypointManager.add(player.flooredPosition, String.format(onLeaveMessage.value, player.name))
+            sendNotification(leaveMessage.replacedName(player))
+            if (logToFile.value) WaypointManager.add(player.flooredPosition, leaveMessage.replacedName(player))
             if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
         }
     }
