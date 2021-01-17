@@ -80,7 +80,6 @@ internal object DiscordNotifs : Module(
             || direct.value && MessageDetection.Direct.ANY detect message
             || restart.value && MessageDetection.Server.RESTART detect message
             || queue.value && MessageDetection.Server.QUEUE detect message
-            || importantPings.value && MessageDetection.Server.QUEUE detect message
     }
 
     private fun getMessageType(message: String, server: String): String {
@@ -109,7 +108,7 @@ internal object DiscordNotifs : Module(
 
     private fun getTime() =
         if (!time.value) ""
-        else ChatTimestamp.formattedTime
+        else ChatTimestamp.time
 
     private fun sendMessage(content: String, avatarUrl: String) {
         val tm = TemmieWebhook(url.value)
