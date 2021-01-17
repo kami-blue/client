@@ -40,7 +40,6 @@ internal object ElytraFlight2b2t : Module(
     private val idleRadius by setting("IdleRadius", 0.05f, 0.01f..0.25f, 0.01f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
-    private val packets by setting("Packets", 3, 1..10, 1)
     private val showDebug by setting("ShowDebug", false)
 
     private const val TAKEOFF_HEIGHT = 0.50
@@ -227,18 +226,14 @@ internal object ElytraFlight2b2t : Module(
             player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.x, teleportRotation.y)
 
             /* Force send the packet */
-            sendForcedPacket(true)
+            sendForcedPacket()
         }
 
         safeListener<RenderOverlayEvent> {
             if (state == MovementState.NOT_STARTED || !packetTimer.tick(packetDelay.toLong())) return@safeListener
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
 
-            sendForcedPacket(false)
-
-            for (i in 1 until packets) {
-                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-            }
+            sendForcedPacket()
         }
     }
 
@@ -250,17 +245,10 @@ internal object ElytraFlight2b2t : Module(
      * By default, send the position and rotation (if this function is called we ALWAYS need to send a packet). If not,
      * send either the position or both the position and rotation, whichever is appropriate.
      */
-    private fun SafeClientEvent.sendForcedPacket(forceSendPosRot: Boolean) {
+    private fun SafeClientEvent.sendForcedPacket() {
         val posVec = player.positionVector
 
-        /* Determine which packet we need to send: position, rotation, or positionRotation */
-        if (forceSendPosRot || posVec != lastPos && rotation != lastRotation) {
-            /* Position and rotation need to be sent to the server */
-            player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true))
-        } else {
-            /* Position needs to be sent to the server */
-            player.connection.sendPacket(CPacketPlayer.Position(player.posX, player.posY, player.posZ, true))
-        }
+        player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true))
 
         lastRotation = rotation
         lastPos = posVec
