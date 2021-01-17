@@ -40,6 +40,7 @@ internal object ElytraFlight2b2t : Module(
     private val idleRadius by setting("IdleRadius", 0.05f, 0.01f..0.25f, 0.01f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..1000, 10)
+    private val packets by setting("Packets", 3, 1..10, 1)
     private val showDebug by setting("ShowDebug", false)
 
     private const val TAKEOFF_HEIGHT = 0.50
@@ -241,8 +242,9 @@ internal object ElytraFlight2b2t : Module(
 
             sendForcedPacket(false)
 
-            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+            for (i in 1 until packets) {
+                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+            }
         }
     }
 
