@@ -25,8 +25,8 @@ open class Module(
     val enabledByDefault: Boolean = false
 ) {
 
-    val name : TranslationKey = TranslationKey(this.javaClass.name+".ModuleName", this.javaClass.simpleName)
-    val description : TranslationKey = TranslationKey(this.javaClass.name+".ModuleDescription")
+    val name : TranslationKey = getTranslationKey("ModuleName", this.javaClass.simpleName)
+    val description : TranslationKey = getTranslationKey("ModuleDescription")
 
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name.defaultValue).getSettings()
@@ -100,8 +100,12 @@ open class Module(
         }
     }
 
-    protected fun getTranslationKey(name: String): TranslationKey{
-        return TranslationKey(this.javaClass.name + ".$name")
+    fun getTranslationKey(name: String): TranslationKey{
+        return TranslationKey(this.javaClass.name.removePrefix("me.zeroeightsix.kami.") + ".$name")
+    }
+
+    protected fun getTranslationKey(name: String, default: String): TranslationKey{
+        return TranslationKey(this.javaClass.name.removePrefix("me.zeroeightsix.kami.") + ".$name", default)
     }
 
     init {
