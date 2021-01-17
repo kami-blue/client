@@ -79,19 +79,6 @@ internal object ElytraFlight2b2t : Module(
          * Also cancel movement that would otherwise cause us to jitter in the -Y direction
          */
         safeListener<PlayerTravelEvent> {
-            /* If are are pressing the space and not started then we need to start in the jump state */
-            if (player.movementInput.jump) {
-                if (state == MovementState.NOT_STARTED) {
-                    return@safeListener
-                } else {
-                    /* Don't go up but maintain other velocities if the user tries to fly up */
-                    player.motionY = 0.0
-
-                    /* In case they double press space (exits flying mode normally) */
-                    player.capabilities.isFlying = true
-                }
-            }
-
             val yawRad = calcYaw()
 
             if (state != MovementState.NOT_STARTED) {
@@ -106,6 +93,9 @@ internal object ElytraFlight2b2t : Module(
                     reset()
                     return@safeListener
                 }
+
+                player.motionY = 0.0
+                player.capabilities.isFlying = true
 
                 if (player.movementInput.sneak) {
                     player.setVelocity(0.0, -descendSpeed, 0.0)
@@ -139,6 +129,7 @@ internal object ElytraFlight2b2t : Module(
     private fun SafeClientEvent.notStarted() {
         /* We are in the air at least 0.5 above the ground and have an elytra equipped */
         if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
+
             if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
 
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
