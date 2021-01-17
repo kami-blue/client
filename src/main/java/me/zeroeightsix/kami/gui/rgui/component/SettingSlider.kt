@@ -14,7 +14,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.round
 
-class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, setting.description) {
+class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
 
     private val range = setting.range.endInclusive.toDouble() - setting.range.start.toDouble()
     private val settingValueDouble get() = setting.value.toDouble()
@@ -117,7 +117,6 @@ class SettingSlider(val setting: NumberSetting<*>) : Slider(setting.name, 0.0, s
                 value = (setting.value.toDouble() - min) / range
             }
         }
-        visible = setting.isVisible
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {

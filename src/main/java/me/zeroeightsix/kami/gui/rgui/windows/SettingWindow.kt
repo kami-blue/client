@@ -37,7 +37,7 @@ abstract class SettingWindow<T : Any>(
                     is BooleanSetting -> SettingButton(setting)
                     is NumberSetting -> SettingSlider(setting)
                     is EnumSetting -> EnumSlider(setting)
-                    is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description)
+                    is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description, setting.visibility)
                     is StringSetting -> StringButton(setting)
                     is BindSetting -> BindButton(setting)
                     else -> null

@@ -26,7 +26,7 @@ internal object AutoMend : Module(
     private val autoSwitch by setting("AutoSwitch", true)
     private val autoDisable by setting("AutoDisable", false, { autoSwitch })
     private val cancelNearby by setting("CancelNearby", NearbyMode.OFF, description = "Don't mend when an enemy is nearby")
-    private val pauseNearbyRadius by setting("NearbyRadius", 10, 1..8, 1, { cancelNearby != NearbyMode.OFF })
+    private val pauseNearbyRadius by setting("NearbyRadius", 8, 1..8, 1, { cancelNearby != NearbyMode.OFF })
     private val threshold by setting("RepairAt", 75, 1..100, 1, description = "Percentage to start repairing any armor piece")
     private val gui by setting("AllowGUI", false, description = "Allow mending when inside a GUI")
 

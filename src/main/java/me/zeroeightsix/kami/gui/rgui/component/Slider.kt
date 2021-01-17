@@ -17,7 +17,8 @@ import org.lwjgl.opengl.GL11.*
 open class Slider(
     name: String,
     valueIn: Double,
-    private val descriptionIn: String = ""
+    private val description: String = "",
+    private val visibility: (() -> Boolean)?
 ) : InteractiveComponent(name, 0.0f, 0.0f, 40.0f, 10.0f, SettingGroup.NONE) {
     protected var value = valueIn
         set(value) {
@@ -35,7 +36,7 @@ open class Slider(
         get() = FontRenderAdapter.getFontHeight() + 3.0f
     protected var protectedWidth = 0.0
 
-    private val description = TextComponent(" ")
+    private val displayDescription = TextComponent(" ")
     private var descriptionPosX = 0.0f
     private var shown = false
 
@@ -58,16 +59,16 @@ open class Slider(
     }
 
     private fun setupDescription() {
-        description.clear()
-        if (descriptionIn.isNotBlank()) {
+        displayDescription.clear()
+        if (description.isNotBlank()) {
             val spaceWidth = FontRenderAdapter.getStringWidth(" ")
             var lineWidth = -spaceWidth
             var lineString = ""
 
-            for (string in descriptionIn.split(' ')) {
+            for (string in description.split(' ')) {
                 lineWidth += FontRenderAdapter.getStringWidth(string) + spaceWidth
                 if (lineWidth > 169) {
-                    description.addLine(lineString.trimEnd())
+                    displayDescription.addLine(lineString.trimEnd())
                     lineWidth = -spaceWidth
                     lineString = ""
                 } else {
@@ -75,13 +76,14 @@ open class Slider(
                 }
             }
 
-            if (lineString.isNotBlank()) description.addLine(lineString)
+            if (lineString.isNotBlank()) displayDescription.addLine(lineString)
         }
     }
 
     override fun onTick() {
         super.onTick()
         height = maxHeight
+        visibility?.let { visible = it.invoke() }
     }
 
     override fun onRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
@@ -112,7 +114,7 @@ open class Slider(
     }
 
     override fun onPostRender(vertexHelper: VertexHelper, absolutePos: Vec2f) {
-        if (Tooltips.isDisabled || descriptionIn.isBlank()) return
+        if (Tooltips.isDisabled || description.isBlank()) return
 
         var deltaTime = AnimationUtils.toDeltaTimeFloat(lastStateUpdateTime)
 
@@ -130,8 +132,8 @@ open class Slider(
 
             val alpha = (if (mouseState == MouseState.HOVER) AnimationUtils.exponentInc(deltaTime, 250.0f, 0.0f, 1.0f)
             else AnimationUtils.exponentDec(deltaTime, 250.0f, 0.0f, 1.0f))
-            val textWidth = description.getWidth().toDouble()
-            val textHeight = description.getHeight(2).toDouble()
+            val textWidth = displayDescription.getWidth().toDouble()
+            val textHeight = displayDescription.getHeight(2).toDouble()
 
             val relativeCorner = Vec2f(mc.displayWidth.toFloat(), mc.displayHeight.toFloat()).div(ClickGUI.getScaleFactorFloat()).minus(absolutePos)
 
@@ -145,7 +147,7 @@ open class Slider(
             RenderUtils2D.drawRectFilled(vertexHelper, posEnd = Vec2d(textWidth, textHeight).plus(4.0), color = GuiColors.backGround.apply { a = (a * alpha).toInt() })
             RenderUtils2D.drawRectOutline(vertexHelper, posEnd = Vec2d(textWidth, textHeight).plus(4.0), lineWidth = 2.0f, color = GuiColors.primary.apply { a = (a * alpha).toInt() })
 
-            description.draw(Vec2d(2.0, 2.0), 2, alpha)
+            displayDescription.draw(Vec2d(2.0, 2.0), 2, alpha)
 
             glEnable(GL_SCISSOR_TEST)
             glPopMatrix()

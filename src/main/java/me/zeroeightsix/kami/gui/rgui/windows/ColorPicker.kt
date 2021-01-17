@@ -60,8 +60,8 @@ object ColorPicker : TitledWindow("Color Picker", 0.0f, 0.0f, 200.0f, 200.0f, Se
     private val sliderA = SettingSlider(a)
 
     // Buttons
-    private val buttonOkay = Button("Okay", { actionOk() }, "")
-    private val buttonCancel = Button("Cancel", { actionCancel() }, "")
+    private val buttonOkay = Button("Okay", { actionOk() })
+    private val buttonCancel = Button("Cancel", { actionCancel() })
 
     private val components = arrayOf(sliderR, sliderG, sliderB, sliderA, buttonOkay, buttonCancel)
 

@@ -5,7 +5,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
-class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0, setting.description) {
+class StringButton(val setting: StringSetting) : BooleanSlider(setting.name, 1.0, setting.description, setting.visibility) {
 
     override fun onDisplayed() {
         super.onDisplayed()

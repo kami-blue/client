@@ -34,7 +34,7 @@ internal object DiscordNotifs : Module(
 
     val url = setting("URL", "unchanged")
     val pingID = setting("PingID", "unchanged")
-    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "/assets/raw/assets/assets/icons/kami.png")
+    val avatar = setting("Avatar", KamiMod.GITHUB_LINK + "/assets/raw/assets/assets/icons/kamiGithub.png")
 
     private val server: String get() = mc.currentServerData?.serverIP ?: "the server"
     private val timer = TickTimer(TimeUnit.SECONDS)

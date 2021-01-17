@@ -5,8 +5,9 @@ import me.zeroeightsix.kami.util.math.Vec2f
 class Button(
     name: String,
     private val action: (Button) -> Unit,
-    descriptionIn: String
-) : BooleanSlider(name, 0.0, descriptionIn) {
+    description: String = "",
+    visibility: (() -> Boolean)? = null
+) : BooleanSlider(name, 0.0, description, visibility) {
     override fun onClick(mousePos: Vec2f, buttonId: Int) {
         super.onClick(mousePos, buttonId)
         value = 1.0

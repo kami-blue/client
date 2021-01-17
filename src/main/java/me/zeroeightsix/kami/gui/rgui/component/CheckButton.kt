@@ -5,8 +5,9 @@ import me.zeroeightsix.kami.util.math.Vec2f
 class CheckButton(
     name: String,
     stateIn: Boolean,
-    descriptionIn: String
-) : BooleanSlider(name, 0.0, descriptionIn) {
+    description: String = "",
+    visibility: (() -> Boolean)? = null
+) : BooleanSlider(name, 0.0, description, visibility) {
     init {
         value = if (stateIn) 1.0 else 0.0
     }

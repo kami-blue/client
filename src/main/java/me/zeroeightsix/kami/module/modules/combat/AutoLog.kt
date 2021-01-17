@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.combat.AutoLog.Reasons.*
+import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
 import me.zeroeightsix.kami.util.combat.CombatUtils
 import me.zeroeightsix.kami.util.items.allSlots
 import me.zeroeightsix.kami.util.items.countItem
@@ -23,7 +24,6 @@ import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 import java.time.LocalTime
-
 
 internal object AutoLog : Module(
     name = "AutoLog",
@@ -90,7 +90,7 @@ internal object AutoLog : Module(
         for (entity in world.loadedEntityList) {
             if (entity !is EntityPlayer) continue
             if (AntiBot.isBot(entity)) continue
-            if (entity == player) continue
+            if (entity.isFakeOrSelf) continue
             if (player.getDistance(entity) > playerDistance) continue
             if (!friends && FriendManager.isFriend(entity.name)) continue
             log(PLAYER, entity.name)
