@@ -25,11 +25,7 @@ internal object UwUChat : Module(
 
     init {
         onEnable {
-            if (mc.currentServerData == null) {
                 modifier.enable()
-            } else {
-                modifier.enable()
-            }
         }
 
         onDisable {
