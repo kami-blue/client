@@ -24,6 +24,8 @@ import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketPlayerPosLook
 import net.minecraft.util.math.Vec3d
 import org.kamiblue.commons.extension.toRadian
+import java.util.*
+import kotlin.collections.HashSet
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -46,9 +48,8 @@ internal object ElytraFlight2b2t : Module(
 
     /* Packet information */
     private val packetTimer = TickTimer()
-    private var lastPos = Vec3d.ZERO
+    private val packetSet = Collections.synchronizedSet(HashSet<CPacketPlayer>())
     private var rotation = Vec2f.ZERO
-    private var lastRotation = Vec2f.ZERO
 
     /* Startup variables */
     private var state = MovementState.NOT_STARTED
@@ -189,26 +190,11 @@ internal object ElytraFlight2b2t : Module(
 
         /**
          * Cancel any packets that are not set directly by this module
-         *
-         * Note that while we are active, all packets should have onGround = false. We salt the desired packets by setting
-         * onGround == true (which we obviously need to revert before sending to the server)
          */
         safeListener<PacketEvent.Send> {
             if (state == MovementState.NOT_STARTED || it.packet !is CPacketPlayer) return@safeListener
-
-            when (it.packet) {
-                is CPacketPlayer.Position, is CPacketPlayer.PositionRotation -> {
-                    if (it.packet.onGround) {
-                        if (player.posY > getGroundPos().y) {
-                            it.packet.onGround = false
-                        }
-                    } else {
-                        it.cancel()
-                    }
-                }
-                else -> {
-                    it.cancel()
-                }
+            if (!packetSet.remove(it.packet)) {
+                it.cancel()
             }
         }
 
@@ -237,21 +223,10 @@ internal object ElytraFlight2b2t : Module(
         }
     }
 
-    /**
-     * @param forceSendPosRot: If we should force send the position and rotation regardless of if it is our current position/rotation
-     *
-     * Sends a packet salted with onGround == true to allow it to be sent in PacketEvent.Send.
-     *
-     * By default, send the position and rotation (if this function is called we ALWAYS need to send a packet). If not,
-     * send either the position or both the position and rotation, whichever is appropriate.
-     */
     private fun SafeClientEvent.sendForcedPacket() {
-        val posVec = player.positionVector
-
-        player.connection.sendPacket(CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true))
-
-        lastRotation = rotation
-        lastPos = posVec
+        val packet = CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, true)
+        packetSet.add(packet)
+        player.connection.sendPacket(packet)
     }
 
     private fun reset() {
@@ -259,9 +234,8 @@ internal object ElytraFlight2b2t : Module(
             player.capabilities.isFlying = false
         }
 
-        lastPos = Vec3d.ZERO
+        packetSet.clear()
         rotation = Vec2f.ZERO
-        lastRotation = Vec2f.ZERO
 
         state = MovementState.NOT_STARTED
         accelerateStart = 0L
