@@ -109,7 +109,7 @@ internal object ElytraFlight2b2t : Module(
             }
 
             when (state) {
-                MovementState.NOT_STARTED -> notStarted()
+                MovementState.NOT_STARTED -> takeoff()
                 MovementState.IDLE -> idle()
                 MovementState.MOVING -> moving(yawRad)
             }
@@ -126,9 +126,12 @@ internal object ElytraFlight2b2t : Module(
      * Calculate the starting height. Constantly update the position as we would in vanilla until the correct criteria
      * is met. Should only be called from the state NOT_STARTED.
      */
-    private fun SafeClientEvent.notStarted() {
-        /* We are in the air at least 0.5 above the ground and have an elytra equipped */
-        if (!player.onGround && player.inventory.armorInventory[2].item == Items.ELYTRA && (player.posY - getGroundPos().y >= TAKEOFF_HEIGHT)) {
+    private fun SafeClientEvent.takeoff() {
+        // In air + falling + elytra equipped + at least 0.5 blocks from the ground
+        if (!player.onGround
+            && player.motionY < -0.02
+            && player.inventory.armorInventory[2].item == Items.ELYTRA
+            && player.posY - getGroundPos().y >= TAKEOFF_HEIGHT) {
 
             if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
 
