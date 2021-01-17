@@ -16,8 +16,8 @@ import org.kamiblue.event.listener.listener
 object Criticals : Module(
     category = Category.COMBAT,
 ) {
-    private val mode = setting(getTranslationKey("Mode"), CriticalMode.PACKET)
-    private val miniJump = setting(getTranslationKey("MiniJump"), true, { mode.value == CriticalMode.DELAY })
+    private val mode = setting("Mode", CriticalMode.PACKET)
+    private val miniJump = setting("MiniJump", true, { mode.value == CriticalMode.DELAY })
 
     private enum class CriticalMode {
         PACKET, DELAY

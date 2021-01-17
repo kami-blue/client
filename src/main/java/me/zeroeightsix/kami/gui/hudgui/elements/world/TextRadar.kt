@@ -17,12 +17,12 @@ object TextRadar : LabelHud(
     category = Category.WORLD
 ) {
 
-    private val health by setting(getTranslationKey("Health"), true)
-    private val ping by setting(getTranslationKey("Ping"), false)
-    private val combatPotion by setting(getTranslationKey("CombatPotion"), true)
-    private val distance by setting(getTranslationKey("Distance"), true)
-    private val friend by setting(getTranslationKey("Friend"), true)
-    private val range by setting(getTranslationKey("Range"), 32.0f, 16.0f..64.0f, 0.5f)
+    private val health by setting("Health", true)
+    private val ping by setting("Ping", false)
+    private val combatPotion by setting("CombatPotion", true)
+    private val distance by setting("Distance", true)
+    private val friend by setting("Friend", true)
+    private val range by setting("Range", 32.0f, 16.0f..64.0f, 0.5f)
 
     private val healthColorGradient = ColorGradient(
         0.0f to ColorHolder(180, 20, 20),

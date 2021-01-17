@@ -20,8 +20,8 @@ import org.kamiblue.event.listener.listener
 object LogoutLogger : Module(
     category = Category.MISC,
 ) {
-    private val saveToFile = setting(getTranslationKey("SaveToFile"), true)
-    private val print = setting(getTranslationKey("PrintToChat"), true)
+    private val saveToFile = setting("SaveToFile", true)
+    private val print = setting("PrintToChat", true)
 
     private val loggedPlayers = HashMap<GameProfile, BlockPos>()
     private val timer = TickTimer(TimeUnit.SECONDS)

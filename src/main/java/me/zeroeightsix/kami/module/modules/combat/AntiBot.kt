@@ -18,12 +18,12 @@ object AntiBot : Module(
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val tabList = setting(getTranslationKey("TabList"), true)
-    private val ping = setting(getTranslationKey("Ping"), true)
-    private val hp = setting(getTranslationKey("HP"), true)
-    private val sleeping = setting(getTranslationKey("Sleeping"), false)
-    private val hoverOnTop = setting(getTranslationKey("HoverOnTop"), true)
-    private val ticksExists = setting(getTranslationKey("TicksExists"), 200, 0..500, 10)
+    private val tabList = setting("TabList", true)
+    private val ping = setting("Ping", true)
+    private val hp = setting("HP", true)
+    private val sleeping = setting("Sleeping", false)
+    private val hoverOnTop = setting("HoverOnTop", true)
+    private val ticksExists = setting("TicksExists", 200, 0..500, 10)
 
     private val botSet = HashSet<EntityPlayer>()
 

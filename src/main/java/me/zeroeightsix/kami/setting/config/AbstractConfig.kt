@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.IFinalGroup
+import me.zeroeightsix.kami.setting.Translatable
 import me.zeroeightsix.kami.setting.groups.SettingGroup
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import me.zeroeightsix.kami.setting.settings.impl.number.DoubleSetting
@@ -22,7 +23,7 @@ import me.zeroeightsix.kami.util.translation.TranslationKey
 import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import java.io.File
 
-abstract class AbstractConfig<T>(
+abstract class AbstractConfig<T: Translatable>(
         name: String,
         protected val filePath: String
 ) : SettingMultiGroup(name), IFinalGroup<T> {
@@ -30,80 +31,80 @@ abstract class AbstractConfig<T>(
     /* Setting registering */
     /** Integer Setting */
     fun T.setting(
-        name: TranslationKey,
+        name: String,
         value: Int,
         range: IntRange,
         step: Int,
         visibility: () -> Boolean = { true },
         consumer: (prev: Int, input: Int) -> Int = { _, input -> input },
         description: TranslationKey = TranslationKeyBlank()
-    ) = setting(IntegerSetting(name, value, range, step, visibility, consumer, description))
+    ) = setting(IntegerSetting(getTranslationKey(name), value, range, step, visibility, consumer, description))
 
     /** Double Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: Double,
             range: ClosedFloatingPointRange<Double>,
             step: Double,
             visibility: () -> Boolean = { true },
             consumer: (prev: Double, input: Double) -> Double = { _, input -> input },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(DoubleSetting(name, value, range, step, visibility, consumer, description))
+    ) = setting(DoubleSetting(getTranslationKey(name), value, range, step, visibility, consumer, description))
 
     /** Float Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: Float,
             range: ClosedFloatingPointRange<Float>,
             step: Float,
             visibility: () -> Boolean = { true },
             consumer: (prev: Float, input: Float) -> Float = { _, input -> input },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(FloatSetting(name, value, range, step, visibility, consumer, description))
+    ) = setting(FloatSetting(getTranslationKey(name), value, range, step, visibility, consumer, description))
 
     /** Bind Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: Bind,
             visibility: () -> Boolean = { true },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(BindSetting(name, value, visibility, description))
+    ) = setting(BindSetting(getTranslationKey(name), value, visibility, description))
 
     /** Color Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: ColorHolder,
             hasAlpha: Boolean = true,
             visibility: () -> Boolean = { true },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(ColorSetting(name, value, hasAlpha, visibility, description))
+    ) = setting(ColorSetting(getTranslationKey(name), value, hasAlpha, visibility, description))
 
     /** Boolean Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: Boolean,
             visibility: () -> Boolean = { true },
             consumer: (prev: Boolean, input: Boolean) -> Boolean = { _, input -> input },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(BooleanSetting(name, value, visibility, consumer, description))
+    ) = setting(BooleanSetting(getTranslationKey(name), value, visibility, consumer, description))
 
     /** Enum Setting */
     fun <E : Enum<E>> T.setting(
-            name: TranslationKey,
+            name: String,
             value: E,
             visibility: () -> Boolean = { true },
             consumer: (prev: E, input: E) -> E = { _, input -> input },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(EnumSetting(name, value, visibility, consumer, description))
+    ) = setting(EnumSetting(getTranslationKey(name), value, visibility, consumer, description))
 
     /** Boolean Setting */
     fun T.setting(
-            name: TranslationKey,
+            name: String,
             value: String,
             visibility: () -> Boolean = { true },
             consumer: (prev: String, input: String) -> String = { _, input -> input },
             description: TranslationKey = TranslationKeyBlank()
-    ) = setting(StringSetting(name, value, visibility, consumer, description))
+    ) = setting(StringSetting(getTranslationKey(name), value, visibility, consumer, description))
     /* End of setting registering */
 
     override val file get() = File("$filePath$name.json")

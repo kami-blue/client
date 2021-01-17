@@ -48,15 +48,15 @@ import org.kamiblue.event.listener.listener
 object AutoObsidian : Module(
     category = Category.MISC,
 ) {
-    private val fillMode by setting(getTranslationKey("FillMode"), FillMode.TARGET_STACKS)
-    private val searchShulker by setting(getTranslationKey("SearchShulker"), false)
-    private val leaveEmptyShulkers by setting(getTranslationKey("LeaveEmptyShulkers"), true, { searchShulker })
-    private val autoRefill by setting(getTranslationKey("AutoRefill"), false, { fillMode != FillMode.INFINITE })
-    private val threshold by setting(getTranslationKey("RefillThreshold"), 8, 1..56, 1, { autoRefill && fillMode != FillMode.INFINITE })
-    private val targetStacks by setting(getTranslationKey("TargetStacks"), 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
-    private val delayTicks by setting(getTranslationKey("DelayTicks"), 5, 0..10, 1)
-    private val rotationMode by setting(getTranslationKey("RotationMode"), RotationMode.SPOOF)
-    private val maxReach by setting(getTranslationKey("MaxReach"), 4.5f, 2.0f..6.0f, 0.1f)
+    private val fillMode by setting("FillMode", FillMode.TARGET_STACKS)
+    private val searchShulker by setting("SearchShulker", false)
+    private val leaveEmptyShulkers by setting("LeaveEmptyShulkers", true, { searchShulker })
+    private val autoRefill by setting("AutoRefill", false, { fillMode != FillMode.INFINITE })
+    private val threshold by setting("RefillThreshold", 8, 1..56, 1, { autoRefill && fillMode != FillMode.INFINITE })
+    private val targetStacks by setting("TargetStacks", 1, 1..20, 1, { fillMode == FillMode.TARGET_STACKS })
+    private val delayTicks by setting("DelayTicks", 5, 0..10, 1)
+    private val rotationMode by setting("RotationMode", RotationMode.SPOOF)
+    private val maxReach by setting("MaxReach", 4.5f, 2.0f..6.0f, 0.1f)
 
     private enum class FillMode(override val displayName: String, val message: String) : DisplayEnum {
         TARGET_STACKS("Target Stacks", "Target stacks reached"),

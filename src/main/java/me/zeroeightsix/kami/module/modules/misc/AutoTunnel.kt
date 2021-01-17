@@ -17,10 +17,10 @@ import kotlin.math.round
 object AutoTunnel : Module(
     category = Category.MISC
 ) {
-    private val backFill = setting(getTranslationKey("BackFill"), false)
-    private val height = setting(getTranslationKey("Height"), 2, 1..10, 1)
-    private val width = setting(getTranslationKey("Width"), 1, 1..10, 1)
-    private val disableOnDisconnect = setting(getTranslationKey("DisableOnDisconnect"), true)
+    private val backFill = setting("BackFill", false)
+    private val height = setting("Height", 2, 1..10, 1)
+    private val width = setting("Width", 1, 1..10, 1)
+    private val disableOnDisconnect = setting("DisableOnDisconnect", true)
 
     private var lastDirection = EnumFacing.NORTH
 

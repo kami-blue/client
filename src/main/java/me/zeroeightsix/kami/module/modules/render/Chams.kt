@@ -24,34 +24,34 @@ import org.lwjgl.opengl.GL11.*
 object Chams : Module(
     category = Category.RENDER,
 ) {
-    private val page = setting(getTranslationKey("Page"), Page.ENTITY_TYPE)
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val self = setting(getTranslationKey("Self"), false, { page.value == Page.ENTITY_TYPE })
-    private val all = setting(getTranslationKey("AllEntity"), false, { page.value == Page.ENTITY_TYPE })
-    private val experience = setting(getTranslationKey("Experience"), false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val arrows = setting(getTranslationKey("Arrows"), false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val throwable = setting(getTranslationKey("Throwable"), false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val items = setting(getTranslationKey("Items"), false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val crystals = setting(getTranslationKey("Crystals"), false, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val players = setting(getTranslationKey("Players"), true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val friends = setting(getTranslationKey("Friends"), false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val sleeping = setting(getTranslationKey("Sleeping"), false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
-    private val mobs = setting(getTranslationKey("Mobs"), true, { page.value == Page.ENTITY_TYPE && !all.value })
-    private val passive = setting(getTranslationKey("PassiveMobs"), false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val neutral = setting(getTranslationKey("NeutralMobs"), true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
-    private val hostile = setting(getTranslationKey("HostileMobs"), true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val self = setting("Self", false, { page.value == Page.ENTITY_TYPE })
+    private val all = setting("AllEntity", false, { page.value == Page.ENTITY_TYPE })
+    private val experience = setting("Experience", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val arrows = setting("Arrows", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val throwable = setting("Throwable", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val items = setting("Items", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val crystals = setting("Crystals", false, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && !all.value && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE && !all.value })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
+    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && !all.value && mobs.value })
 
     /* Rendering settings */
-    private val throughWall = setting(getTranslationKey("ThroughWall"), true, { page.value == Page.RENDERING })
-    private val texture = setting(getTranslationKey("Texture"), false, { page.value == Page.RENDERING })
-    private val lightning = setting(getTranslationKey("Lightning"), false, { page.value == Page.RENDERING })
-    private val customColor = setting(getTranslationKey("CustomColor"), false, { page.value == Page.RENDERING })
-    private val rainbow = setting(getTranslationKey("Rainbow"), false, { page.value == Page.RENDERING && customColor.value })
-    private val r = setting(getTranslationKey("Red"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val g = setting(getTranslationKey("Green"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
-    private val a = setting(getTranslationKey("Alpha"), 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value })
+    private val throughWall = setting("ThroughWall", true, { page.value == Page.RENDERING })
+    private val texture = setting("Texture", false, { page.value == Page.RENDERING })
+    private val lightning = setting("Lightning", false, { page.value == Page.RENDERING })
+    private val customColor = setting("CustomColor", false, { page.value == Page.RENDERING })
+    private val rainbow = setting("Rainbow", false, { page.value == Page.RENDERING && customColor.value })
+    private val r = setting("Red", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val g = setting("Green", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val b = setting("Blue", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value && !rainbow.value })
+    private val a = setting("Alpha", 255, 0..255, 1, { page.value == Page.RENDERING && customColor.value })
 
     private enum class Page {
         ENTITY_TYPE, RENDERING

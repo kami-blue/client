@@ -32,14 +32,14 @@ import kotlin.math.sin
 object Trajectories : Module(
     category = Category.RENDER,
 ) {
-    private val showEntity = setting(getTranslationKey("ShowEntity"), true)
-    private val showBlock = setting(getTranslationKey("ShowBlock"), false)
-    private val r = setting(getTranslationKey("Red"), 255, 0..255, 1)
-    private val g = setting(getTranslationKey("Green"), 255, 0..255, 1)
-    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1)
-    private val aFilled = setting(getTranslationKey("FilledAlpha"), 127, 0..255, 1)
-    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 255, 0..255, 1)
-    private val thickness = setting(getTranslationKey("Thickness"), 2f, 0.25f..5f, 0.25f)
+    private val showEntity = setting("ShowEntity", true)
+    private val showBlock = setting("ShowBlock", false)
+    private val r = setting("Red", 255, 0..255, 1)
+    private val g = setting("Green", 255, 0..255, 1)
+    private val b = setting("Blue", 255, 0..255, 1)
+    private val aFilled = setting("FilledAlpha", 127, 0..255, 1)
+    private val aOutline = setting("OutlineAlpha", 255, 0..255, 1)
+    private val thickness = setting("Thickness", 2f, 0.25f..5f, 0.25f)
 
     private var prevMotion = Vec3d(0.0, 0.0, 0.0)
     private var prevItemUseCount = 0

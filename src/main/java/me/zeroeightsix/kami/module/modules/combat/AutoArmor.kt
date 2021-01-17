@@ -18,7 +18,7 @@ object AutoArmor : Module(
     category = Category.COMBAT,
     modulePriority = 500
 ) {
-    private val delay = setting(getTranslationKey("Delay"), 5, 1..10, 1)
+    private val delay = setting("Delay", 5, 1..10, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)
     private var lastTask = TaskState(true)

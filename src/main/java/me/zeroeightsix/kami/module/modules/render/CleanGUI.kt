@@ -7,6 +7,6 @@ object CleanGUI : Module(
     category = Category.RENDER,
     showOnArray = false,
 ) {
-    val inventoryGlobal = setting(getTranslationKey("Inventory"), true)
-    val chatGlobal = setting(getTranslationKey("Chat"), false)
+    val inventoryGlobal = setting("Inventory", true)
+    val chatGlobal = setting("Chat", false)
 }

@@ -17,10 +17,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object ChestStealer : Module(
     category = Category.PLAYER,
 ) {
-    val stealMode = setting(getTranslationKey("StealMode"), StealMode.TOGGLE)
-    private val movingMode = setting(getTranslationKey("MovingMode"), MovingMode.QUICK_MOVE)
-    private val ignoreEjectItem = setting(getTranslationKey("IgnoresEjectItem"), false)
-    private val delay = setting(getTranslationKey("Delay(ms)"), 250, 0..1000, 25)
+    val stealMode = setting("StealMode", StealMode.TOGGLE)
+    private val movingMode = setting("MovingMode", MovingMode.QUICK_MOVE)
+    private val ignoreEjectItem = setting("IgnoresEjectItem", false)
+    private val delay = setting("Delay(ms)", 250, 0..1000, 25)
 
     enum class StealMode {
         ALWAYS, TOGGLE, MANUAL

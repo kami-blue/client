@@ -6,5 +6,5 @@ import me.zeroeightsix.kami.setting.ModuleConfig.setting
 object AntiDisconnect : Module(
     category = Category.MISC
 ) {
-    val presses = setting(getTranslationKey("ButtonPresses"), 3, 1..20, 1)
+    val presses = setting("ButtonPresses", 3, 1..20, 1)
 }

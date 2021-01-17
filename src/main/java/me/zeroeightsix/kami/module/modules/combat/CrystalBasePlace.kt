@@ -35,10 +35,10 @@ object CrystalBasePlace : Module(
     category = Category.COMBAT,
     modulePriority = 90
 ) {
-    private val manualPlaceBind = setting(getTranslationKey("BindManualPlace"), Bind())
-    private val minDamageInc = setting(getTranslationKey("MinDamageInc"), 2.0f, 0.0f..10.0f, 0.25f)
-    private val range = setting(getTranslationKey("Range"), 4.0f, 0.0f..8.0f, 0.5f)
-    private val delay = setting(getTranslationKey("Delay"), 20, 0..50, 5)
+    private val manualPlaceBind = setting("BindManualPlace", Bind())
+    private val minDamageInc = setting("MinDamageInc", 2.0f, 0.0f..10.0f, 0.25f)
+    private val range = setting("Range", 4.0f, 0.0f..8.0f, 0.5f)
+    private val delay = setting("Delay", 20, 0..50, 5)
 
     private val timer = TickTimer()
     private val renderer = ESPRenderer().apply { aFilled = 33; aOutline = 233 }

@@ -5,11 +5,15 @@ import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.module.modules.client.CommandConfig
 import me.zeroeightsix.kami.setting.ModuleConfig
 import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.setting.Translatable
 import me.zeroeightsix.kami.setting.settings.AbstractSetting
+import me.zeroeightsix.kami.setting.settings.impl.other.BindSetting
+import me.zeroeightsix.kami.setting.settings.impl.primitive.BooleanSetting
 import me.zeroeightsix.kami.util.Bind
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.runSafe
 import me.zeroeightsix.kami.util.translation.TranslationKey
+import me.zeroeightsix.kami.util.translation.TranslationKeyBlank
 import net.minecraft.client.Minecraft
 import org.kamiblue.commons.interfaces.Alias
 import org.kamiblue.commons.interfaces.DisplayEnum
@@ -23,7 +27,7 @@ open class Module(
     val showOnArray: Boolean = true,
     val alwaysEnabled: Boolean = false,
     val enabledByDefault: Boolean = false
-) {
+): Translatable() {
 
     val name : TranslationKey = getTranslationKey("ModuleName", this.javaClass.simpleName)
     val description : TranslationKey = getTranslationKey("ModuleDescription")
@@ -31,11 +35,11 @@ open class Module(
     /* Settings */
     val fullSettingList: List<AbstractSetting<*>> get() = ModuleConfig.getGroupOrPut(name.defaultValue).getSettings()
     val settingList: List<AbstractSetting<*>> get() = fullSettingList.filter { it != bind && it != enabled && it != visible && it != default }
-
-    val bind = setting(TranslationKey("module.Bind"), Bind(), { !alwaysEnabled })
-    private val enabled = setting(TranslationKey("module.Enabled"), false, { false })
-    private val visible = setting(TranslationKey("module.Visible"), showOnArray)
-    private val default = setting(TranslationKey("module.Default"), false, { settingList.isNotEmpty() })
+    //I know that this is horrible, but otherwise they are under every single module in the translation, you don't need to translate these 160 times.
+    val bind = setting(BindSetting(getTranslationKey("Modules.module.Bind", "bind"), Bind(), { !alwaysEnabled }, description = TranslationKeyBlank()))
+    private val enabled = setting(BooleanSetting(getTranslationKey("Modules.module.Enabled", "enabled"), false, { !alwaysEnabled }, description = TranslationKeyBlank()))
+    private val visible = setting(BooleanSetting(getTranslationKey("Modules.module.Visible", "visible"), showOnArray, description = TranslationKeyBlank()))
+    private val default = setting(BooleanSetting(getTranslationKey("Modules.module.Default", "default"), showOnArray, {settingList.isNotEmpty()}, description = TranslationKeyBlank()))
     /* End of settings */
 
     /* Properties */
@@ -98,14 +102,6 @@ open class Module(
         enabled.valueListeners.add { _, input ->
             block(input)
         }
-    }
-
-    fun getTranslationKey(name: String): TranslationKey{
-        return TranslationKey(this.javaClass.name.removePrefix("me.zeroeightsix.kami.") + ".$name")
-    }
-
-    protected fun getTranslationKey(name: String, default: String): TranslationKey{
-        return TranslationKey(this.javaClass.name.removePrefix("me.zeroeightsix.kami.") + ".$name", default)
     }
 
     init {

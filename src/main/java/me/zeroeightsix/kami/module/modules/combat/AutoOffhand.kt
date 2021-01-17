@@ -27,38 +27,38 @@ import kotlin.math.max
 object AutoOffhand : Module(
     category = Category.COMBAT
 ) {
-    private val type = setting(getTranslationKey("Type"), Type.TOTEM)
+    private val type = setting("Type", Type.TOTEM)
 
     // Totem
-    private val hpThreshold = setting(getTranslationKey("HpThreshold"), 5f, 1f..20f, 0.5f, { type.value == Type.TOTEM })
-    private val bindTotem = setting(getTranslationKey("BindTotem"), Bind(), { type.value == Type.TOTEM })
-    private val checkDamage = setting(getTranslationKey("CheckDamage"), true, { type.value == Type.TOTEM })
-    private val mob = setting(getTranslationKey("Mob"), true, { type.value == Type.TOTEM && checkDamage.value })
-    private val player = setting(getTranslationKey("Player"), true, { type.value == Type.TOTEM && checkDamage.value })
-    private val crystal = setting(getTranslationKey("Crystal"), true, { type.value == Type.TOTEM && checkDamage.value })
-    private val falling = setting(getTranslationKey("Falling"), true, { type.value == Type.TOTEM && checkDamage.value })
+    private val hpThreshold = setting("HpThreshold", 5f, 1f..20f, 0.5f, { type.value == Type.TOTEM })
+    private val bindTotem = setting("BindTotem", Bind(), { type.value == Type.TOTEM })
+    private val checkDamage = setting("CheckDamage", true, { type.value == Type.TOTEM })
+    private val mob = setting("Mob", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val player = setting("Player", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val crystal = setting("Crystal", true, { type.value == Type.TOTEM && checkDamage.value })
+    private val falling = setting("Falling", true, { type.value == Type.TOTEM && checkDamage.value })
 
     // Gapple
-    private val offhandGapple = setting(getTranslationKey("OffhandGapple"), false, { type.value == Type.GAPPLE })
-    private val bindGapple = setting(getTranslationKey("BindGapple"), Bind(), { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkAuraG = setting(getTranslationKey("CheckAuraG"), true, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkWeaponG = setting(getTranslationKey("CheckWeaponG"), false, { type.value == Type.GAPPLE && offhandGapple.value })
-    private val checkCAGapple = setting(getTranslationKey("CheckCrystalAuraG"), true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
+    private val offhandGapple = setting("OffhandGapple", false, { type.value == Type.GAPPLE })
+    private val bindGapple = setting("BindGapple", Bind(), { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkAuraG = setting("CheckAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkWeaponG = setting("CheckWeaponG", false, { type.value == Type.GAPPLE && offhandGapple.value })
+    private val checkCAGapple = setting("CheckCrystalAuraG", true, { type.value == Type.GAPPLE && offhandGapple.value && !offhandCrystal.value })
 
     // Strength
-    private val offhandStrength = setting(getTranslationKey("OffhandStrength"), false, { type.value == Type.STRENGTH })
-    private val bindStrength = setting(getTranslationKey("BindStrength"), Bind(), { type.value == Type.STRENGTH && offhandStrength.value })
-    private val checkAuraS = setting(getTranslationKey("CheckAuraS"), true, { type.value == Type.STRENGTH && offhandStrength.value })
-    private val checkWeaponS = setting(getTranslationKey("CheckWeaponS"), false, { type.value == Type.STRENGTH && offhandStrength.value })
+    private val offhandStrength = setting("OffhandStrength", false, { type.value == Type.STRENGTH })
+    private val bindStrength = setting("BindStrength", Bind(), { type.value == Type.STRENGTH && offhandStrength.value })
+    private val checkAuraS = setting("CheckAuraS", true, { type.value == Type.STRENGTH && offhandStrength.value })
+    private val checkWeaponS = setting("CheckWeaponS", false, { type.value == Type.STRENGTH && offhandStrength.value })
 
     // Crystal
-    private val offhandCrystal = setting(getTranslationKey("OffhandCrystal"), false, { type.value == Type.CRYSTAL })
-    private val bindCrystal = setting(getTranslationKey("BindCrystal"), Bind(), { type.value == Type.CRYSTAL && offhandCrystal.value })
-    private val checkCACrystal = setting(getTranslationKey("CheckCrystalAuraC"), false, { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val offhandCrystal = setting("OffhandCrystal", false, { type.value == Type.CRYSTAL })
+    private val bindCrystal = setting("BindCrystal", Bind(), { type.value == Type.CRYSTAL && offhandCrystal.value })
+    private val checkCACrystal = setting("CheckCrystalAuraC", false, { type.value == Type.CRYSTAL && offhandCrystal.value })
 
     // General
-    private val priority = setting(getTranslationKey("Priority"), Priority.HOTBAR)
-    private val switchMessage = setting(getTranslationKey("SwitchMessage"), true)
+    private val priority = setting("Priority", Priority.HOTBAR)
+    private val switchMessage = setting("SwitchMessage", true)
 
     private enum class Type(val filter: (ItemStack) -> Boolean) {
         TOTEM({ it.item.id == 449 }),

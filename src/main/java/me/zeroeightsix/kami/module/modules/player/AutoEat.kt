@@ -25,10 +25,10 @@ import kotlin.math.min
 object AutoEat : Module(
     category = Category.PLAYER
 ) {
-    private val foodLevel = setting(getTranslationKey("BelowHunger"), 15, 1..20, 1)
-    private val healthLevel = setting(getTranslationKey("BelowHealth"), 8, 1..20, 1)
-    private val eatBadFood = setting(getTranslationKey("EatBadFood"), true)
-    private val pauseBaritone = setting(getTranslationKey("PauseBaritone"), true)
+    private val foodLevel = setting("BelowHunger", 15, 1..20, 1)
+    private val healthLevel = setting("BelowHealth", 8, 1..20, 1)
+    private val eatBadFood = setting("EatBadFood", true)
+    private val pauseBaritone = setting("PauseBaritone", true)
 
     private var lastSlot = -1
     var eating = false; private set

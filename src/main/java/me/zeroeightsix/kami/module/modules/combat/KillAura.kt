@@ -21,16 +21,16 @@ object KillAura : Module(
     category = Category.COMBAT,
     modulePriority = 50
 ) {
-    private val delayMode = setting(getTranslationKey("Mode"), WaitMode.DELAY)
-    private val lockView = setting(getTranslationKey("LockView"), false)
-    private val spoofRotation = setting(getTranslationKey("SpoofRotation"), true, { !lockView.value })
-    private val waitTick = setting(getTranslationKey("SpamDelay"), 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
-    val range = setting(getTranslationKey("Range"), 5f, 0f..8f, 0.25f)
-    private val tpsSync = setting(getTranslationKey("TPSSync"), false)
-    private val autoWeapon = setting(getTranslationKey("AutoWeapon"), true)
-    private val weaponOnly = setting(getTranslationKey("WeaponOnly"), true)
-    private val prefer = setting(getTranslationKey("Prefer"), CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
-    private val disableOnDeath = setting(getTranslationKey("DisableOnDeath"), false)
+    private val delayMode = setting("Mode", WaitMode.DELAY)
+    private val lockView = setting("LockView", false)
+    private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })
+    private val waitTick = setting("SpamDelay", 2.0f, 1.0f..40.0f, 0.5f, { delayMode.value == WaitMode.SPAM })
+    val range = setting("Range", 5f, 0f..8f, 0.25f)
+    private val tpsSync = setting("TPSSync", false)
+    private val autoWeapon = setting("AutoWeapon", true)
+    private val weaponOnly = setting("WeaponOnly", true)
+    private val prefer = setting("Prefer", CombatUtils.PreferWeapon.SWORD, { autoWeapon.value })
+    private val disableOnDeath = setting("DisableOnDeath", false)
 
     private var inactiveTicks = 0
     private var tickCount = 0

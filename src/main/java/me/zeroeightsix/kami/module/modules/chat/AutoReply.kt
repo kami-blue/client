@@ -16,8 +16,8 @@ import org.kamiblue.event.listener.listener
 object AutoReply : Module(
     category = Category.CHAT
 ) {
-    private val customMessage = setting(getTranslationKey("CustomMessage"), false)
-    private val customText = setting(getTranslationKey("CustomText"), "unchanged", { customMessage.value })
+    private val customMessage = setting("CustomMessage", false)
+    private val customText = setting("CustomText", "unchanged", { customMessage.value })
 
     private val timer = TickTimer(TimeUnit.SECONDS)
 

@@ -3,6 +3,7 @@ package me.zeroeightsix.kami.gui.rgui
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.module.modules.client.ClickGUI
 import me.zeroeightsix.kami.setting.GuiConfig.setting
+import me.zeroeightsix.kami.setting.Translatable
 import me.zeroeightsix.kami.util.Wrapper
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.HAlign
@@ -19,25 +20,25 @@ open class Component(
     widthIn: Float,
     heightIn: Float,
     val settingGroup: SettingGroup
-) {
+): Translatable() {
 
     // Basic info
     val originalName : TranslationKey=  if (nameT is TranslationKeyBlank) getTranslationKey("Name") else nameT
     var name = originalName.value
 
-    protected val visibleSetting = setting(getTranslationKey("Visible"), true, { false }, { _, it -> it || !closeable })
+    protected val visibleSetting = setting("Visible", true, { false }, { _, it -> it || !closeable })
     var visible by visibleSetting
 
-    protected var relativePosX by setting(getTranslationKey("PosX"), posXIn, -69420.911f..69420.911f, 0.1f, { false },
+    protected var relativePosX by setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
         { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.0f))) else it })
-    protected var relativePosY by setting(getTranslationKey("PosY"), posYIn, -69420.911f..69420.911f, 0.1f, { false },
+    protected var relativePosY by setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
         { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.0f))) else it })
 
-    var width by setting(getTranslationKey("Width"), widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledWidth, minWidth)) })
-    var height by setting(getTranslationKey("Height"), heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
+    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledWidth, minWidth)) })
+    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
 
-    protected val dockingHSetting = setting(getTranslationKey("DockingH"), HAlign.LEFT)
-    protected val dockingVSetting = setting(getTranslationKey("DockingV"), VAlign.TOP)
+    protected val dockingHSetting = setting("DockingH", HAlign.LEFT)
+    protected val dockingVSetting = setting("DockingV", VAlign.TOP)
     var dockingH by dockingHSetting
     var dockingV by dockingVSetting
 
@@ -128,10 +129,6 @@ open class Component(
         NONE(""),
         CLICK_GUI("click_gui"),
         HUD_GUI("hud_gui")
-    }
-
-    protected fun getTranslationKey(name: String): TranslationKey {
-        return TranslationKey(this.javaClass.name + ".$name")
     }
 
 }

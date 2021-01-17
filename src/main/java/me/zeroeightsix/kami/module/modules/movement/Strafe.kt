@@ -17,10 +17,10 @@ import kotlin.math.sin
 object Strafe : Module(
     category = Category.MOVEMENT,
 ) {
-    private val airSpeedBoost by setting(getTranslationKey("AirSpeedBoost"), true)
-    private val timerBoost by setting(getTranslationKey("TimerBoost"), true)
-    private val autoJump by setting(getTranslationKey("AutoJump"), true)
-    private val onHolding by setting(getTranslationKey("OnHoldingSprint"), false)
+    private val airSpeedBoost by setting("AirSpeedBoost", true)
+    private val timerBoost by setting("TimerBoost", true)
+    private val autoJump by setting("AutoJump", true)
+    private val onHolding by setting("OnHoldingSprint", false)
 
     private var jumpTicks = 0
 

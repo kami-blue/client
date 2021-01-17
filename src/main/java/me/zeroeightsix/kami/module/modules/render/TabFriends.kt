@@ -12,7 +12,7 @@ object TabFriends : Module(
     category = Category.RENDER,
     showOnArray = false
 ) {
-    private val color = setting(getTranslationKey("Color"), EnumTextColor.GREEN)
+    private val color = setting("Color", EnumTextColor.GREEN)
 
     @JvmStatic
     fun getPlayerName(info: NetworkPlayerInfo): String {

@@ -26,12 +26,12 @@ import org.lwjgl.opengl.GL11.glColor4f
 object LagNotifier : Module(
     category = Category.PLAYER
 ) {
-    private val detectRubberBand by setting(getTranslationKey("DetectRubberBand"), true)
-    private val pauseBaritone by setting(getTranslationKey("PauseBaritone"), true)
-    val pauseTakeoff by setting(getTranslationKey("PauseElytraTakeoff"), true)
-    val pauseAutoWalk by setting(getTranslationKey("PauseAutoWalk"), true)
-    private val feedback by setting(getTranslationKey("PauseFeedback"), true, { pauseBaritone })
-    private val timeout by setting(getTranslationKey("Timeout"), 3.5f, 0.0f..10.0f, 0.5f)
+    private val detectRubberBand by setting("DetectRubberBand", true)
+    private val pauseBaritone by setting("PauseBaritone", true)
+    val pauseTakeoff by setting("PauseElytraTakeoff", true)
+    val pauseAutoWalk by setting("PauseAutoWalk", true)
+    private val feedback by setting("PauseFeedback", true, { pauseBaritone })
+    private val timeout by setting("Timeout", 3.5f, 0.0f..10.0f, 0.5f)
 
     private val pingTimer = TickTimer(TimeUnit.SECONDS)
     private var lastPacketTimer = TickTimer()

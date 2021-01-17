@@ -18,9 +18,9 @@ import org.kamiblue.event.listener.listener
 object Velocity : Module(
     category = Category.MOVEMENT
 ) {
-    private val noPush = setting(getTranslationKey("NoPush"), true)
-    private val horizontal = setting(getTranslationKey("Horizontal"), 0f, -5f..5f, 0.05f)
-    private val vertical = setting(getTranslationKey("Vertical"), 0f, -5f..5f, 0.05f)
+    private val noPush = setting("NoPush", true)
+    private val horizontal = setting("Horizontal", 0f, -5f..5f, 0.05f)
+    private val vertical = setting("Vertical", 0f, -5f..5f, 0.05f)
 
     init {
         listener<PacketEvent.Receive> {

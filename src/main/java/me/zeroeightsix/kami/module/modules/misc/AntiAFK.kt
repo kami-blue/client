@@ -28,15 +28,15 @@ import kotlin.random.Random
 object AntiAFK : Module(
     category = Category.MISC,
 ) {
-    private val delay by setting(getTranslationKey("ActionDelay"), 50, 5..100, 5)
-    private val variation by setting(getTranslationKey("Variation"), 25, 0..50, 5)
-    private val autoReply by setting(getTranslationKey("AutoReply"), true)
-    private val swing = setting(getTranslationKey("Swing"), true)
-    private val jump = setting(getTranslationKey("Jump"), true)
-    private val turn = setting(getTranslationKey("Turn"), true)
-    private val walk = setting(getTranslationKey("Walk"), true)
-    private val radius by setting(getTranslationKey("Radius"), 64, 8..128, 8)
-    private val inputTimeout by setting(getTranslationKey("InputTimeout(m)"), 0, 0..15, 1)
+    private val delay by setting("ActionDelay", 50, 5..100, 5)
+    private val variation by setting("Variation", 25, 0..50, 5)
+    private val autoReply by setting("AutoReply", true)
+    private val swing = setting("Swing", true)
+    private val jump = setting("Jump", true)
+    private val turn = setting("Turn", true)
+    private val walk = setting("Walk", true)
+    private val radius by setting("Radius", 64, 8..128, 8)
+    private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
 
     private var startPos: BlockPos? = null
     private var squareStep = 0

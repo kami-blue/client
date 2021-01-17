@@ -14,10 +14,10 @@ object ChatTimestamp : Module(
     category = Category.CHAT,
     showOnArray = false
 ) {
-    private val color by setting(getTranslationKey("Color"), EnumTextColor.GRAY)
-    private val separator by setting(getTranslationKey("Separator"), Separator.ARROWS)
-    private val timeFormat by setting(getTranslationKey("TimeFormat"), TimeUtils.TimeFormat.HHMM)
-    private val timeUnit by setting(getTranslationKey("TimeUnit"), TimeUtils.TimeUnit.H12)
+    private val color by setting("Color", EnumTextColor.GRAY)
+    private val separator by setting("Separator", Separator.ARROWS)
+    private val timeFormat by setting("TimeFormat", TimeUtils.TimeFormat.HHMM)
+    private val timeUnit by setting("TimeUnit", TimeUtils.TimeUnit.H12)
 
     init {
         listener<ClientChatReceivedEvent> {

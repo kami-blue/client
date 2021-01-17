@@ -19,7 +19,7 @@ object LoginMessage : Module(
     showOnArray = false,
     modulePriority = 150
 ) {
-    private val sendAfterMoving by setting(getTranslationKey("SendAfterMoving"), false)
+    private val sendAfterMoving by setting("SendAfterMoving", false)
 
     private val file = File(KamiMod.DIRECTORY + "loginmsg.txt")
     private var loginMessage: String? = null

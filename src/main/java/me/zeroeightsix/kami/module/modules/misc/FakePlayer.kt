@@ -18,8 +18,8 @@ import java.util.*
 object FakePlayer : Module(
     category = Category.MISC
 ) {
-    private val copyInventory by setting(getTranslationKey("CopyInventory"), false)
-    val playerName by setting(getTranslationKey("PlayerName"), "Player")
+    private val copyInventory by setting("CopyInventory", false)
+    val playerName by setting("PlayerName", "Player")
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private const val ENTITY_ID = -7170400

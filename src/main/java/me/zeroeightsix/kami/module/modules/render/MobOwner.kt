@@ -14,9 +14,9 @@ import kotlin.math.pow
 object MobOwner : Module(
     category = Category.RENDER
 ) {
-    private val speed = setting(getTranslationKey("Speed"), true)
-    private val jump = setting(getTranslationKey("Jump"), true)
-    private val hp = setting(getTranslationKey("Health"), true)
+    private val speed = setting("Speed", true)
+    private val jump = setting("Jump", true)
+    private val hp = setting("Health", true)
 
     private const val invalidText = "Offline or invalid UUID!"
 

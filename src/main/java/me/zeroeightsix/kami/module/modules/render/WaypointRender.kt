@@ -29,30 +29,30 @@ object WaypointRender : Module(
     category = Category.RENDER
 ) {
 
-    private val page = setting(getTranslationKey("Page"), Page.INFO_BOX)
+    private val page = setting("Page", Page.INFO_BOX)
 
     /* Page one */
-    private val dimension = setting(getTranslationKey("Dimension"), Dimension.CURRENT, { page.value == Page.INFO_BOX })
-    private val showName = setting(getTranslationKey("ShowName"), true, { page.value == Page.INFO_BOX })
-    private val showDate = setting(getTranslationKey("ShowDate"), false, { page.value == Page.INFO_BOX })
-    private val showCoords = setting(getTranslationKey("ShowCoords"), true, { page.value == Page.INFO_BOX })
-    private val showDist = setting(getTranslationKey("ShowDistance"), true, { page.value == Page.INFO_BOX })
-    private val textScale = setting(getTranslationKey("TextScale"), 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
-    private val infoBoxRange = setting(getTranslationKey("InfoBoxRange"), 512, 128..2048, 64, { page.value == Page.INFO_BOX })
+    private val dimension = setting("Dimension", Dimension.CURRENT, { page.value == Page.INFO_BOX })
+    private val showName = setting("ShowName", true, { page.value == Page.INFO_BOX })
+    private val showDate = setting("ShowDate", false, { page.value == Page.INFO_BOX })
+    private val showCoords = setting("ShowCoords", true, { page.value == Page.INFO_BOX })
+    private val showDist = setting("ShowDistance", true, { page.value == Page.INFO_BOX })
+    private val textScale = setting("TextScale", 1.0f, 0.0f..2.0f, 0.1f, { page.value == Page.INFO_BOX })
+    private val infoBoxRange = setting("InfoBoxRange", 512, 128..2048, 64, { page.value == Page.INFO_BOX })
 
     /* Page two */
-    private val espRangeLimit = setting(getTranslationKey("RenderRange"), true, { page.value == Page.ESP })
-    private val espRange = setting(getTranslationKey("Range"), 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
-    private val filled = setting(getTranslationKey("Filled"), true, { page.value == Page.ESP })
-    private val outline = setting(getTranslationKey("Outline"), true, { page.value == Page.ESP })
-    private val tracer = setting(getTranslationKey("Tracer"), true, { page.value == Page.ESP })
-    private val r = setting(getTranslationKey("Red"), 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting(getTranslationKey("Green"), 200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting(getTranslationKey("Blue"), 63, 0..255, 1, { page.value == Page.ESP })
-    private val aFilled = setting(getTranslationKey("FilledAlpha"), 63, 0..255, 1, { page.value == Page.ESP && filled.value })
-    private val aOutline = setting(getTranslationKey("OutlineAlpha"), 160, 0..255, 1, { page.value == Page.ESP && outline.value })
-    private val aTracer = setting(getTranslationKey("TracerAlpha"), 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
-    private val thickness = setting(getTranslationKey("LineThickness"), 2.0f, 0.25f..8.0f, 0.25f)
+    private val espRangeLimit = setting("RenderRange", true, { page.value == Page.ESP })
+    private val espRange = setting("Range", 4096, 1024..16384, 1024, { page.value == Page.ESP && espRangeLimit.value })
+    private val filled = setting("Filled", true, { page.value == Page.ESP })
+    private val outline = setting("Outline", true, { page.value == Page.ESP })
+    private val tracer = setting("Tracer", true, { page.value == Page.ESP })
+    private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
+    private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
+    private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
+    private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
+    private val aOutline = setting("OutlineAlpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
+    private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
 
     private enum class Dimension {
         CURRENT, ANY

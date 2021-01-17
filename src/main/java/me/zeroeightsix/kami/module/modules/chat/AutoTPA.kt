@@ -12,8 +12,8 @@ import org.kamiblue.event.listener.listener
 object AutoTPA : Module(
     category = Category.CHAT
 ) {
-    private val friends = setting(getTranslationKey("AlwaysAcceptFriends"), true)
-    private val mode = setting(getTranslationKey("Response"), Mode.DENY)
+    private val friends = setting("AlwaysAcceptFriends", true)
+    private val mode = setting("Response", Mode.DENY)
 
     private enum class Mode {
         ACCEPT, DENY

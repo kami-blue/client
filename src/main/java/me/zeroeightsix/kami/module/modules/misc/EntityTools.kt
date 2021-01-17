@@ -14,7 +14,7 @@ import org.lwjgl.input.Mouse
 object EntityTools : Module(
     category = Category.MISC,
 ) {
-    private val mode = setting(getTranslationKey("Mode"), Mode.INFO)
+    private val mode = setting("Mode", Mode.INFO)
 
     private enum class Mode {
         DELETE, INFO

@@ -18,9 +18,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AutoNametag : Module(
     category = Category.MISC
 ) {
-    private val modeSetting = setting(getTranslationKey("Mode"), Mode.ANY)
-    private val range = setting(getTranslationKey("Range"), 3.5f, 2.0f..8.0f, 0.5f)
-    private val debug = setting(getTranslationKey("Debug"), false)
+    private val modeSetting = setting("Mode", Mode.ANY)
+    private val range = setting("Range", 3.5f, 2.0f..8.0f, 0.5f)
+    private val debug = setting("Debug", false)
 
     private enum class Mode {
         WITHER, ANY

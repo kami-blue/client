@@ -26,16 +26,16 @@ object InventoryManager : Module(
         "minecraft:cobblestone"
     )
 
-    private val autoRefill = setting(getTranslationKey("AutoRefill"), true)
-    private val buildingMode = setting(getTranslationKey("BuildingMode"), false, { autoRefill.value })
-    val buildingBlockID = setting(getTranslationKey("BuildingBlockID"), 0, 0..1000, 1, { false })
-    private val refillThreshold = setting(getTranslationKey("RefillThreshold"), 16, 1..63, 1, { autoRefill.value })
-    private val itemSaver = setting(getTranslationKey("ItemSaver"), false)
-    private val duraThreshold = setting(getTranslationKey("DurabilityThreshold"), 5, 1..50, 1, { itemSaver.value })
-    val autoEject = setting(getTranslationKey("AutoEject"), false)
-    private val fullOnly = setting(getTranslationKey("OnlyAtFull"), false, { autoEject.value })
-    private val pauseMovement = setting(getTranslationKey("PauseMovement"), true)
-    private val delay = setting(getTranslationKey("DelayTicks"), 1, 0..20, 1)
+    private val autoRefill = setting("AutoRefill", true)
+    private val buildingMode = setting("BuildingMode", false, { autoRefill.value })
+    val buildingBlockID = setting("BuildingBlockID", 0, 0..1000, 1, { false })
+    private val refillThreshold = setting("RefillThreshold", 16, 1..63, 1, { autoRefill.value })
+    private val itemSaver = setting("ItemSaver", false)
+    private val duraThreshold = setting("DurabilityThreshold", 5, 1..50, 1, { itemSaver.value })
+    val autoEject = setting("AutoEject", false)
+    private val fullOnly = setting("OnlyAtFull", false, { autoEject.value })
+    private val pauseMovement = setting("PauseMovement", true)
+    private val delay = setting("DelayTicks", 1, 0..20, 1)
     val ejectList = setting(CollectionSetting(getTranslationKey("EjectList"), defaultEjectList))
 
     enum class State {

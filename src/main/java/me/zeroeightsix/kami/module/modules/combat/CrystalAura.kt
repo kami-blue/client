@@ -60,53 +60,53 @@ object CrystalAura : Module(
     modulePriority = 80
 ) {
     /* Settings */
-    private val page by setting(getTranslationKey("Page"), Page.GENERAL)
+    private val page by setting("Page", Page.GENERAL)
 
     /* General */
-    private val noSuicideThreshold by setting(getTranslationKey("NoSuicide"), 8.0f, 0.0f..20.0f, 0.5f, { page == Page.GENERAL })
-    private val rotationTolerance by setting(getTranslationKey("RotationTolerance"), 10, 5..50, 5, { page == Page.GENERAL })
-    private val maxYawSpeed by setting(getTranslationKey("MaxYawSpeed"), 50, 10..100, 5, { page == Page.GENERAL })
-    private val swingMode by setting(getTranslationKey("SwingMode"), SwingMode.CLIENT, { page == Page.GENERAL })
+    private val noSuicideThreshold by setting("NoSuicide", 8.0f, 0.0f..20.0f, 0.5f, { page == Page.GENERAL })
+    private val rotationTolerance by setting("RotationTolerance", 10, 5..50, 5, { page == Page.GENERAL })
+    private val maxYawSpeed by setting("MaxYawSpeed", 50, 10..100, 5, { page == Page.GENERAL })
+    private val swingMode by setting("SwingMode", SwingMode.CLIENT, { page == Page.GENERAL })
 
     /* Force place */
-    private val bindForcePlace by setting(getTranslationKey("BindForcePlace"), Bind(), { page == Page.FORCE_PLACE })
-    private val forcePlaceHealth by setting(getTranslationKey("ForcePlaceHealth"), 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura by setting(getTranslationKey("ForcePlaceArmorDura"), 10, 0..50, 1, { page == Page.FORCE_PLACE })
-    private val minDamageForcePlace by setting(getTranslationKey("MinDamageForcePlace"), 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
+    private val bindForcePlace by setting("BindForcePlace", Bind(), { page == Page.FORCE_PLACE })
+    private val forcePlaceHealth by setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 10, 0..50, 1, { page == Page.FORCE_PLACE })
+    private val minDamageForcePlace by setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
 
     /* Place page one */
-    private val doPlace by setting(getTranslationKey("Place"), true, { page == Page.PLACE_ONE })
-    private val autoSwap by setting(getTranslationKey("AutoSwap"), true, { page == Page.PLACE_ONE })
-    private val spoofHotbar by setting(getTranslationKey("SpoofHotbar"), false, { page == Page.PLACE_ONE && autoSwap })
-    private val placeSwing by setting(getTranslationKey("PlaceSwing"), true, { page == Page.PLACE_ONE })
-    private val placeSync by setting(getTranslationKey("PlaceSync"), false, { page == Page.PLACE_ONE })
-    private val extraPlacePacket by setting(getTranslationKey("ExtraPlacePacket"), false, { page == Page.PLACE_ONE })
+    private val doPlace by setting("Place", true, { page == Page.PLACE_ONE })
+    private val autoSwap by setting("AutoSwap", true, { page == Page.PLACE_ONE })
+    private val spoofHotbar by setting("SpoofHotbar", false, { page == Page.PLACE_ONE && autoSwap })
+    private val placeSwing by setting("PlaceSwing", true, { page == Page.PLACE_ONE })
+    private val placeSync by setting("PlaceSync", false, { page == Page.PLACE_ONE })
+    private val extraPlacePacket by setting("ExtraPlacePacket", false, { page == Page.PLACE_ONE })
 
     /* Place page two */
-    private val minDamageP by setting(getTranslationKey("MinDamagePlace"), 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val maxSelfDamageP by setting(getTranslationKey("MaxSelfDamagePlace"), 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val placeOffset by setting(getTranslationKey("PlaceOffset"), 1.0f, 0f..1f, 0.05f, { page == Page.PLACE_TWO })
-    private val maxCrystal by setting(getTranslationKey("MaxCrystal"), 2, 1..5, 1, { page == Page.PLACE_TWO })
-    private val placeDelay by setting(getTranslationKey("PlaceDelay"), 1, 1..10, 1, { page == Page.PLACE_TWO })
-    private val placeRange by setting(getTranslationKey("PlaceRange"), 4.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
-    private val wallPlaceRange by setting(getTranslationKey("WallPlaceRange"), 2.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val minDamageP by setting("MinDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val maxSelfDamageP by setting("MaxSelfDamagePlace", 2.0f, 0.0f..10.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val placeOffset by setting("PlaceOffset", 1.0f, 0f..1f, 0.05f, { page == Page.PLACE_TWO })
+    private val maxCrystal by setting("MaxCrystal", 2, 1..5, 1, { page == Page.PLACE_TWO })
+    private val placeDelay by setting("PlaceDelay", 1, 1..10, 1, { page == Page.PLACE_TWO })
+    private val placeRange by setting("PlaceRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
+    private val wallPlaceRange by setting("WallPlaceRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.PLACE_TWO })
 
     /* Explode page one */
-    private val doExplode by setting(getTranslationKey("Explode"), true, { page == Page.EXPLODE_ONE })
-    private val autoForceExplode by setting(getTranslationKey("AutoForceExplode"), true, { page == Page.EXPLODE_ONE })
-    private val antiWeakness by setting(getTranslationKey("AntiWeakness"), true, { page == Page.EXPLODE_ONE })
-    private val packetExplode by setting(getTranslationKey("PacketExplode"), true, { page == Page.EXPLODE_ONE })
-    private val predictExplode by setting(getTranslationKey("PredictExplode"), false, { page == Page.EXPLODE_ONE })
-    private val predictDelay by setting(getTranslationKey("PredictDelay"), 10, 0..200, 1, { page == Page.EXPLODE_ONE && predictExplode })
+    private val doExplode by setting("Explode", true, { page == Page.EXPLODE_ONE })
+    private val autoForceExplode by setting("AutoForceExplode", true, { page == Page.EXPLODE_ONE })
+    private val antiWeakness by setting("AntiWeakness", true, { page == Page.EXPLODE_ONE })
+    private val packetExplode by setting("PacketExplode", true, { page == Page.EXPLODE_ONE })
+    private val predictExplode by setting("PredictExplode", false, { page == Page.EXPLODE_ONE })
+    private val predictDelay by setting("PredictDelay", 10, 0..200, 1, { page == Page.EXPLODE_ONE && predictExplode })
 
     /* Explode page two */
-    private val minDamageE by setting(getTranslationKey("MinDamageExplode"), 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val maxSelfDamageE by setting(getTranslationKey("MaxSelfDamageExplode"), 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val swapDelay by setting(getTranslationKey("SwapDelay"), 10, 1..50, 2, { page == Page.EXPLODE_TWO })
-    private val hitDelay by setting(getTranslationKey("HitDelay"), 1, 1..10, 1, { page == Page.EXPLODE_TWO })
-    private val hitAttempts by setting(getTranslationKey("HitAttempts"), 4, 0..8, 1, { page == Page.EXPLODE_TWO })
-    private val explodeRange by setting(getTranslationKey("ExplodeRange"), 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val wallExplodeRange by setting(getTranslationKey("WallExplodeRange"), 2.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val minDamageE by setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val maxSelfDamageE by setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("SwapDelay", 10, 1..50, 2, { page == Page.EXPLODE_TWO })
+    private val hitDelay by setting("HitDelay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
+    private val hitAttempts by setting("HitAttempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
+    private val explodeRange by setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
+    private val wallExplodeRange by setting("WallExplodeRange", 2.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
     /* End of settings */
 
     private enum class Page {

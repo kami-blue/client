@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AntiChainPop : Module(
     category = Category.COMBAT
 ) {
-    private val mode by setting(getTranslationKey("Mode"), Mode.PACKET)
+    private val mode by setting("Mode", Mode.PACKET)
 
     private enum class Mode {
         ITEMS, PACKET

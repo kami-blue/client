@@ -28,7 +28,7 @@ object HoleMiner : Module(
     category = Category.COMBAT,
     modulePriority = 100
 ) {
-    private val range by setting(getTranslationKey("Range"), 5.0f, 1.0f..8.0f, 0.25f)
+    private val range by setting("Range", 5.0f, 1.0f..8.0f, 0.25f)
 
     private var miningPos: BlockPos? = null
     private var start = true

@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object Sprint : Module(
     category = Category.MOVEMENT
 ) {
-    private val multiDirection = setting(getTranslationKey("MultiDirection"), false)
-    private val onHolding = setting(getTranslationKey("OnHoldingSprint"), false)
+    private val multiDirection = setting("MultiDirection", false)
+    private val onHolding = setting("OnHoldingSprint", false)
 
     var sprinting = false
 

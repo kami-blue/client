@@ -27,8 +27,6 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import javax.sound.midi.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
@@ -36,24 +34,24 @@ object NoteBot : Module(
     category = Category.MISC,
 ) {
 
-    private val togglePlay = setting(getTranslationKey("TogglePlay"), false)
-    private val reloadSong = setting(getTranslationKey("ReloadSong"), false)
-    private val channel1 = setting(getTranslationKey("Channel1"), NoteBlockEvent.Instrument.PIANO)
-    private val channel2 = setting(getTranslationKey("Channel2"), NoteBlockEvent.Instrument.PIANO)
-    private val channel3 = setting(getTranslationKey("Channel3"), NoteBlockEvent.Instrument.PIANO)
-    private val channel4 = setting(getTranslationKey("Channel4"), NoteBlockEvent.Instrument.PIANO)
-    private val channel5 = setting(getTranslationKey("Channel5"), NoteBlockEvent.Instrument.PIANO)
-    private val channel6 = setting(getTranslationKey("Channel6"), NoteBlockEvent.Instrument.PIANO)
-    private val channel7 = setting(getTranslationKey("Channel7"), NoteBlockEvent.Instrument.PIANO)
-    private val channel8 = setting(getTranslationKey("Channel8"), NoteBlockEvent.Instrument.PIANO)
-    private val channel9 = setting(getTranslationKey("Channel9"), NoteBlockEvent.Instrument.PIANO)
-    private val channel11 = setting(getTranslationKey("Channel11"), NoteBlockEvent.Instrument.PIANO)
-    private val channel12 = setting(getTranslationKey("Channel12"), NoteBlockEvent.Instrument.PIANO)
-    private val channel13 = setting(getTranslationKey("Channel13"), NoteBlockEvent.Instrument.PIANO)
-    private val channel14 = setting(getTranslationKey("Channel14"), NoteBlockEvent.Instrument.PIANO)
-    private val channel15 = setting(getTranslationKey("Channel15"), NoteBlockEvent.Instrument.PIANO)
-    private val channel16 = setting(getTranslationKey("Channel16"), NoteBlockEvent.Instrument.PIANO)
-    private val songName = setting(getTranslationKey("SongName"), "Unchanged")
+    private val togglePlay = setting("TogglePlay", false)
+    private val reloadSong = setting("ReloadSong", false)
+    private val channel1 = setting("Channel1", NoteBlockEvent.Instrument.PIANO)
+    private val channel2 = setting("Channel2", NoteBlockEvent.Instrument.PIANO)
+    private val channel3 = setting("Channel3", NoteBlockEvent.Instrument.PIANO)
+    private val channel4 = setting("Channel4", NoteBlockEvent.Instrument.PIANO)
+    private val channel5 = setting("Channel5", NoteBlockEvent.Instrument.PIANO)
+    private val channel6 = setting("Channel6", NoteBlockEvent.Instrument.PIANO)
+    private val channel7 = setting("Channel7", NoteBlockEvent.Instrument.PIANO)
+    private val channel8 = setting("Channel8", NoteBlockEvent.Instrument.PIANO)
+    private val channel9 = setting("Channel9", NoteBlockEvent.Instrument.PIANO)
+    private val channel11 = setting("Channel11", NoteBlockEvent.Instrument.PIANO)
+    private val channel12 = setting("Channel12", NoteBlockEvent.Instrument.PIANO)
+    private val channel13 = setting("Channel13", NoteBlockEvent.Instrument.PIANO)
+    private val channel14 = setting("Channel14", NoteBlockEvent.Instrument.PIANO)
+    private val channel15 = setting("Channel15", NoteBlockEvent.Instrument.PIANO)
+    private val channel16 = setting("Channel16", NoteBlockEvent.Instrument.PIANO)
+    private val songName = setting("SongName", "Unchanged")
 
     private var noteSequence = TreeMap<Long, ArrayList<Note>>()
     private var startTime = 0L

@@ -16,7 +16,7 @@ object AutoExcuse : Module(
     category = Category.CHAT,
     modulePriority = 500
 ) {
-    private val mode by setting(getTranslationKey("Mode"), Mode.INTERNAL)
+    private val mode by setting("Mode", Mode.INTERNAL)
 
     private enum class Mode {
         INTERNAL, EXTERNAL

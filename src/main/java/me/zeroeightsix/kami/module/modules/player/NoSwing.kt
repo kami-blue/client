@@ -11,7 +11,7 @@ import org.kamiblue.event.listener.listener
 object NoSwing : Module(
     category = Category.PLAYER,
 ) {
-    private val mode = setting(getTranslationKey("Mode"), Mode.CLIENT)
+    private val mode = setting("Mode", Mode.CLIENT)
 
     private enum class Mode {
         CLIENT, SERVER

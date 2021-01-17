@@ -22,8 +22,8 @@ object Armor : HudElement(
     category = Category.COMBAT
 ) {
 
-    private val classic = setting(getTranslationKey("Classic"), false)
-    private val armorCount = setting(getTranslationKey("ArmorCount"), true)
+    private val classic = setting("Classic", false)
+    private val armorCount = setting("ArmorCount", true)
 
     override val hudWidth: Float
         get() = if (classic.value) {

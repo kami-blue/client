@@ -21,8 +21,8 @@ import org.kamiblue.event.listener.listener
 object AutoWalk : Module(
     category = Category.MOVEMENT,
 ) {
-    val mode = setting(getTranslationKey("Direction"), AutoWalkMode.BARITONE)
-    private val disableOnDisconnect by setting(getTranslationKey("DisableOnDisconnect"), true)
+    val mode = setting("Direction", AutoWalkMode.BARITONE)
+    private val disableOnDisconnect by setting("DisableOnDisconnect", true)
 
     enum class AutoWalkMode {
         FORWARD, BACKWARDS, BARITONE

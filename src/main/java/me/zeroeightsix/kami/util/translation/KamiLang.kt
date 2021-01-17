@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.util.translation
 
+import java.util.*
+
 object KamiLang {
 
     var toReturn = "Test"

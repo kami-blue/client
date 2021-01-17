@@ -10,10 +10,10 @@ object Zoom : Module(
     private var fov = 0f
     private var sensi = 0f
 
-    private val fovChange = setting(getTranslationKey("FOV"), 40.0f, 1.0f..180.0f, 0.5f)
-    private val modifySensitivity = setting(getTranslationKey("ModifySensitivity"), true)
-    private val sensitivityMultiplier = setting(getTranslationKey("SensitivityMultiplier"), 1.0f, 0.25f..2.0f, 0.25f, { modifySensitivity.value })
-    private val smoothCamera = setting(getTranslationKey("CinematicCamera"), false)
+    private val fovChange = setting("FOV", 40.0f, 1.0f..180.0f, 0.5f)
+    private val modifySensitivity = setting("ModifySensitivity", true)
+    private val sensitivityMultiplier = setting("SensitivityMultiplier", 1.0f, 0.25f..2.0f, 0.25f, { modifySensitivity.value })
+    private val smoothCamera = setting("CinematicCamera", false)
 
     init {
         onEnable {

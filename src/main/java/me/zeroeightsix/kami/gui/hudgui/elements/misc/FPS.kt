@@ -17,9 +17,9 @@ object FPS : LabelHud(
     category = Category.MISC
 ) {
 
-    private val showAverage = setting(getTranslationKey("ShowAverage"), true)
-    private val showMin = setting(getTranslationKey("ShowMin"), false)
-    private val showMax = setting(getTranslationKey("ShowMax"), false)
+    private val showAverage = setting("ShowAverage", true)
+    private val showMin = setting("ShowMin", false)
+    private val showMax = setting("ShowMax", false)
 
     private var fpsCounter = 0
     private val fptList = IntArray(20)

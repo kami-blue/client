@@ -29,13 +29,13 @@ import org.kamiblue.event.listener.listener
 object NoFall : Module(
     category = Category.PLAYER,
 ) {
-    private val distance = setting(getTranslationKey("Distance"), 3, 1..10, 1)
-    private val mode = setting(getTranslationKey("Mode"), Mode.CATCH)
-    private val fallModeSetting = setting(getTranslationKey("Fall"), FallMode.PACKET, { mode.value == Mode.FALL })
-    private val catchModeSetting = setting(getTranslationKey("Catch"), CatchMode.MOTION, { mode.value == Mode.CATCH })
-    private val pickup = setting(getTranslationKey("Pickup"), false, { mode.value == Mode.FALL && fallModeSetting.value == FallMode.BUCKET })
-    private val pickupDelay = setting(getTranslationKey("PickupDelay"), 300, 100..1000, 50, { mode.value == Mode.FALL && fallModeSetting.value == FallMode.BUCKET && pickup.value })
-    private val voidOnly = setting(getTranslationKey("VoidOnly"), false, { mode.value == Mode.CATCH })
+    private val distance = setting("Distance", 3, 1..10, 1)
+    private val mode = setting("Mode", Mode.CATCH)
+    private val fallModeSetting = setting("Fall", FallMode.PACKET, { mode.value == Mode.FALL })
+    private val catchModeSetting = setting("Catch", CatchMode.MOTION, { mode.value == Mode.CATCH })
+    private val pickup = setting("Pickup", false, { mode.value == Mode.FALL && fallModeSetting.value == FallMode.BUCKET })
+    private val pickupDelay = setting("PickupDelay", 300, 100..1000, 50, { mode.value == Mode.FALL && fallModeSetting.value == FallMode.BUCKET && pickup.value })
+    private val voidOnly = setting("VoidOnly", false, { mode.value == Mode.CATCH })
 
     private enum class Mode {
         FALL, CATCH

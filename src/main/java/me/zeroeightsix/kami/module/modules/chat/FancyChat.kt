@@ -12,14 +12,14 @@ object FancyChat : Module(
     showOnArray = false,
     modulePriority = 100
 ) {
-    private val uwu = setting(getTranslationKey("uwu"), true)
-    private val leet = setting(getTranslationKey("1337"), false)
-    private val mock = setting(getTranslationKey("mOcK"), false)
-    private val green = setting(getTranslationKey(">"), false)
-    private val blue = setting(getTranslationKey("`"), false)
-    private val randomSetting = setting(getTranslationKey("RandomCase"), true, { mock.value })
-    private val commands = setting(getTranslationKey("Commands"), false)
-    private val spammer = setting(getTranslationKey("Spammer"), false)
+    private val uwu = setting("uwu", true)
+    private val leet = setting("1337", false)
+    private val mock = setting("mOcK", false)
+    private val green = setting(">", false)
+    private val blue = setting("`", false)
+    private val randomSetting = setting("RandomCase", true, { mock.value })
+    private val commands = setting("Commands", false)
+    private val spammer = setting("Spammer", false)
 
     private val modifier = newMessageModifier(
         filter = {

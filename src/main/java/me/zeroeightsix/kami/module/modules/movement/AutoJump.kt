@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AutoJump : Module(
     category = Category.MOVEMENT,
 ) {
-    private val delay = setting(getTranslationKey("TickDelay"), 10, 0..40, 1)
+    private val delay = setting("TickDelay", 10, 0..40, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)
 

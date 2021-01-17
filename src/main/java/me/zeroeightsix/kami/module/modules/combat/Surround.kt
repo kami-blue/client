@@ -23,13 +23,13 @@ object Surround : Module(
     category = Category.COMBAT,
     modulePriority = 200
 ) {
-    private val autoCenter = setting(getTranslationKey("AutoCenter"), AutoCenterMode.MOTION)
-    private val placeSpeed = setting(getTranslationKey("PlacesPerTick"), 4f, 0.25f..5f, 0.25f)
-    private val autoDisable = setting(getTranslationKey("AutoDisable"), AutoDisableMode.OUT_OF_HOLE)
-    private val outOfHoleTimeout = setting(getTranslationKey("OutOfHoleTimeout(t)"), 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
-    private val enableInHole = setting(getTranslationKey("EnableInHole"), true)
-    private val inHoleTimeout = setting(getTranslationKey("InHoleTimeout(t)"), 50, 1..100, 5, { enableInHole.value })
-    private val disableStrafe = setting(getTranslationKey("DisableStrafe"), true)
+    private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
+    private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
+    private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
+    private val outOfHoleTimeout = setting("OutOfHoleTimeout(t)", 10, 1..50, 5, { autoDisable.value == AutoDisableMode.OUT_OF_HOLE })
+    private val enableInHole = setting("EnableInHole", true)
+    private val inHoleTimeout = setting("InHoleTimeout(t)", 50, 1..100, 5, { enableInHole.value })
+    private val disableStrafe = setting("DisableStrafe", true)
 
     enum class AutoCenterMode {
         OFF, TP, MOTION

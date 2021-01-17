@@ -23,7 +23,7 @@ object Jesus : Module(
     category = Category.MOVEMENT
 ) {
 
-    private val dolphin = setting(getTranslationKey("Dolphin"), false)
+    private val dolphin = setting("Dolphin", false)
 
     private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 

@@ -7,8 +7,8 @@ import net.minecraft.item.ItemPickaxe
 object NoEntityTrace : Module(
     category = Category.PLAYER,
 ) {
-    private val sneakTrigger = setting(getTranslationKey("SneakTrigger"), false)
-    private val pickaxeOnly = setting(getTranslationKey("PickaxeOnly"), true)
+    private val sneakTrigger = setting("SneakTrigger", false)
+    private val pickaxeOnly = setting("PickaxeOnly", true)
 
     fun shouldIgnoreEntity() = isEnabled && (!sneakTrigger.value || mc.player?.isSneaking == true)
         && (!pickaxeOnly.value || mc.player?.heldItemMainhand?.item is ItemPickaxe)

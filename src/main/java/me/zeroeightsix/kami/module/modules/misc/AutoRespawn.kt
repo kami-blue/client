@@ -13,9 +13,9 @@ import org.kamiblue.event.listener.listener
 object AutoRespawn : Module(
     category = Category.MISC
 ) {
-    private val respawn = setting(getTranslationKey("Respawn"), true)
-    private val deathCoords = setting(getTranslationKey("SaveDeathCoords"), true)
-    private val antiGlitchScreen = setting(getTranslationKey("AntiGlitchScreen"), true)
+    private val respawn = setting("Respawn", true)
+    private val deathCoords = setting("SaveDeathCoords", true)
+    private val antiGlitchScreen = setting("AntiGlitchScreen", true)
 
     init {
         listener<GuiEvent.Displayed> {

@@ -27,14 +27,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AutoSpawner : Module(
     category = Category.MISC,
 ) {
-    private val useMode by setting(getTranslationKey("UseMode"), UseMode.SPAM)
-    private val party by setting(getTranslationKey("Party"), false)
-    private val partyWithers by setting(getTranslationKey("Withers"), false, { party })
-    private var entityMode by setting(getTranslationKey("EntityMode"), EntityMode.SNOW, { !party })
-    private val placeRange by setting(getTranslationKey("PlaceRange"), 3.5f, 2f..10f, 0.5f)
-    private val delay by setting(getTranslationKey("Delay"), 20, 10..100, 5, { useMode == UseMode.SPAM })
-    private val rotate by setting(getTranslationKey("Rotate"), true)
-    private val debug by setting(getTranslationKey("Info"), true)
+    private val useMode by setting("UseMode", UseMode.SPAM)
+    private val party by setting("Party", false)
+    private val partyWithers by setting("Withers", false, { party })
+    private var entityMode by setting("EntityMode", EntityMode.SNOW, { !party })
+    private val placeRange by setting("PlaceRange", 3.5f, 2f..10f, 0.5f)
+    private val delay by setting("Delay", 20, 10..100, 5, { useMode == UseMode.SPAM })
+    private val rotate by setting("Rotate", true)
+    private val debug by setting("Info", true)
 
     private enum class UseMode {
         SINGLE, SPAM

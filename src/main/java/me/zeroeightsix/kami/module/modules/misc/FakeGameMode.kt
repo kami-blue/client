@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object FakeGameMode : Module(
     category = Category.MISC
 ) {
-    private val gamemode by setting(getTranslationKey("Mode"), GameMode.CREATIVE)
+    private val gamemode by setting("Mode", GameMode.CREATIVE)
 
     @Suppress("UNUSED")
     private enum class GameMode(val gameType: GameType) {

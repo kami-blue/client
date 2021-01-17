@@ -18,17 +18,16 @@ import net.minecraft.network.play.server.SPacketChat
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.SystemUtils
 import java.util.*
-import kotlin.collections.HashMap
 
 // TODO: Add proper RSA encryption
 object ChatEncryption : Module(
     category = Category.CHAT,
     modulePriority = -69420
 ) {
-    private val commands by setting(getTranslationKey("Commands"), false)
-    private val self by setting(getTranslationKey("DecryptOwn"), true)
-    private var keySetting by setting(getTranslationKey("KeySetting"), "DefaultKey")
-    val delimiter by setting(getTranslationKey("Delimiter"), "%", consumer = { prev: String, value: String ->
+    private val commands by setting("Commands", false)
+    private val self by setting("DecryptOwn", true)
+    private var keySetting by setting("KeySetting", "DefaultKey")
+    val delimiter by setting("Delimiter", "%", consumer = { prev: String, value: String ->
         if (value.length == 1 && !chars.contains(value.first())) value else prev
     })
 

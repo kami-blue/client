@@ -16,9 +16,9 @@ import org.kamiblue.event.listener.listener
 object AutoEZ : Module(
     category = Category.COMBAT,
 ) {
-    private val detectMode = setting(getTranslationKey("DetectMode"), DetectMode.HEALTH)
-    private val messageMode = setting(getTranslationKey("MessageMode"), MessageMode.ONTOP)
-    private val customText = setting(getTranslationKey("CustomText"), "unchanged")
+    private val detectMode = setting("DetectMode", DetectMode.HEALTH)
+    private val messageMode = setting("MessageMode", MessageMode.ONTOP)
+    private val customText = setting("CustomText", "unchanged")
 
     private enum class DetectMode {
         BROADCAST, HEALTH

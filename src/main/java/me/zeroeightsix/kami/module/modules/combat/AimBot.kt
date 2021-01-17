@@ -14,8 +14,8 @@ object AimBot : Module(
     category = Category.COMBAT,
     modulePriority = 20
 ) {
-    private val bowOnly = setting(getTranslationKey("BowOnly"), true)
-    private val autoSwap = setting(getTranslationKey("AutoSwap"), false, { bowOnly.value })
+    private val bowOnly = setting("BowOnly", true)
+    private val autoSwap = setting("AutoSwap", false, { bowOnly.value })
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

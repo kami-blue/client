@@ -15,7 +15,7 @@ import org.kamiblue.event.listener.listener
 object AntiHunger : Module(
     category = Category.MOVEMENT,
 ) {
-    private val cancelMovementState = setting(getTranslationKey("CancelMovementState"), true)
+    private val cancelMovementState = setting("CancelMovementState", true)
 
     init {
         listener<PacketEvent.Send> {

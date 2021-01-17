@@ -36,13 +36,13 @@ import kotlin.math.*
 object Freecam : Module(
     category = Category.PLAYER,
 ) {
-    private val directionMode = setting(getTranslationKey("FlightMode"), FlightMode.CREATIVE)
-    private val horizontalSpeed = setting(getTranslationKey("HorizontalSpeed"), 20f, 1f..50f, 1f)
-    private val verticalSpeed = setting(getTranslationKey("VerticalSpeed"), 20f, 1f..50f, 1f)
-    private val autoRotate = setting(getTranslationKey("AutoRotate"), true)
-    private val arrowKeyMove = setting(getTranslationKey("ArrowKeyMove"), true)
-    private val disableOnDisconnect = setting(getTranslationKey("DisconnectDisable"), true)
-    private val leftClickCome = setting(getTranslationKey("LeftClickCome"), true)
+    private val directionMode = setting("FlightMode", FlightMode.CREATIVE)
+    private val horizontalSpeed = setting("HorizontalSpeed", 20f, 1f..50f, 1f)
+    private val verticalSpeed = setting("VerticalSpeed", 20f, 1f..50f, 1f)
+    private val autoRotate = setting("AutoRotate", true)
+    private val arrowKeyMove = setting("ArrowKeyMove", true)
+    private val disableOnDisconnect = setting("DisconnectDisable", true)
+    private val leftClickCome = setting("LeftClickCome", true)
 
     private enum class FlightMode(override val displayName: String) : DisplayEnum {
         CREATIVE("Creative"),

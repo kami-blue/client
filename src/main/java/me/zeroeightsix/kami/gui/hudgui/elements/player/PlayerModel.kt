@@ -15,9 +15,9 @@ import org.lwjgl.opengl.GL11.*
 object PlayerModel : HudElement(
     category = Category.PLAYER
 ) {
-    private val resetDelay by setting(getTranslationKey("ResetDelay"), 100, 0..200, 5)
-    private val emulatePitch by setting(getTranslationKey("EmulatePitch"), true)
-    private val emulateYaw by setting(getTranslationKey("EmulateYaw"), false)
+    private val resetDelay by setting("ResetDelay", 100, 0..200, 5)
+    private val emulatePitch by setting("EmulatePitch", true)
+    private val emulateYaw by setting("EmulateYaw", false)
 
     override val hudWidth: Float get() = 50.0f
     override val hudHeight: Float get() = 80.0f

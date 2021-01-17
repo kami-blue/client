@@ -42,37 +42,37 @@ object CombatSetting : Module(
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    private val page = setting(getTranslationKey("Page"), Page.TARGETING)
+    private val page = setting("Page", Page.TARGETING)
 
     /* Targeting */
-    private val filter = setting(getTranslationKey("Filter"), TargetFilter.ALL, { page.value == Page.TARGETING })
-    private val fov = setting(getTranslationKey("FOV"), 90.0f, 0.0f..180.0f, 5.0f, { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
-    private val priority = setting(getTranslationKey("Priority"), TargetPriority.DISTANCE, { page.value == Page.TARGETING })
-    private val players = setting(getTranslationKey("Players"), true, { page.value == Page.TARGETING })
-    private val friends = setting(getTranslationKey("Friends"), false, { page.value == Page.TARGETING && players.value })
-    private val teammates = setting(getTranslationKey("Teammates"), false, { page.value == Page.TARGETING && players.value })
-    private val sleeping = setting(getTranslationKey("Sleeping"), false, { page.value == Page.TARGETING && players.value })
-    private val mobs = setting(getTranslationKey("Mobs"), true, { page.value == Page.TARGETING })
-    private val passive = setting(getTranslationKey("PassiveMobs"), false, { page.value == Page.TARGETING && mobs.value })
-    private val neutral = setting(getTranslationKey("NeutralMobs"), false, { page.value == Page.TARGETING && mobs.value })
-    private val hostile = setting(getTranslationKey("HostileMobs"), false, { page.value == Page.TARGETING && mobs.value })
-    private val tamed = setting(getTranslationKey("TamedMobs"), false, { page.value == Page.TARGETING && mobs.value })
-    private val invisible = setting(getTranslationKey("Invisible"), true, { page.value == Page.TARGETING })
-    private val ignoreWalls = setting(getTranslationKey("IgnoreWalls"), false, { page.value == Page.TARGETING })
-    private val range = setting(getTranslationKey("TargetRange"), 16.0f, 2.0f..64.0f, 2.0f, { page.value == Page.TARGETING })
+    private val filter = setting("Filter", TargetFilter.ALL, { page.value == Page.TARGETING })
+    private val fov = setting("FOV", 90.0f, 0.0f..180.0f, 5.0f, { page.value == Page.TARGETING && filter.value == TargetFilter.FOV })
+    private val priority = setting("Priority", TargetPriority.DISTANCE, { page.value == Page.TARGETING })
+    private val players = setting("Players", true, { page.value == Page.TARGETING })
+    private val friends = setting("Friends", false, { page.value == Page.TARGETING && players.value })
+    private val teammates = setting("Teammates", false, { page.value == Page.TARGETING && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.TARGETING && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.TARGETING })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val neutral = setting("NeutralMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val hostile = setting("HostileMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val tamed = setting("TamedMobs", false, { page.value == Page.TARGETING && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.TARGETING })
+    private val ignoreWalls = setting("IgnoreWalls", false, { page.value == Page.TARGETING })
+    private val range = setting("TargetRange", 16.0f, 2.0f..64.0f, 2.0f, { page.value == Page.TARGETING })
 
     /* In Combat */
-    private val pauseForDigging = setting(getTranslationKey("PauseForDigging"), true, { page.value == Page.IN_COMBAT })
-    private val pauseForEating = setting(getTranslationKey("PauseForEating"), true, { page.value == Page.IN_COMBAT })
-    private val ignoreOffhandEating = setting(getTranslationKey("IgnoreOffhandEating"), true, { page.value == Page.IN_COMBAT && pauseForEating.value })
-    private val pauseBaritone = setting(getTranslationKey("PauseBaritone"), true, { page.value == Page.IN_COMBAT })
-    private val resumeDelay = setting(getTranslationKey("ResumeDelay"), 3, 1..10, 1, { page.value == Page.IN_COMBAT && pauseBaritone.value })
-    private val motionPrediction = setting(getTranslationKey("MotionPrediction"), true, { page.value == Page.IN_COMBAT })
-    private val pingSync = setting(getTranslationKey("PingSync"), true, { page.value == Page.IN_COMBAT && motionPrediction.value })
-    private val ticksAhead = setting(getTranslationKey("TicksAhead"), 5, 0..20, 1, { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
+    private val pauseForDigging = setting("PauseForDigging", true, { page.value == Page.IN_COMBAT })
+    private val pauseForEating = setting("PauseForEating", true, { page.value == Page.IN_COMBAT })
+    private val ignoreOffhandEating = setting("IgnoreOffhandEating", true, { page.value == Page.IN_COMBAT && pauseForEating.value })
+    private val pauseBaritone = setting("PauseBaritone", true, { page.value == Page.IN_COMBAT })
+    private val resumeDelay = setting("ResumeDelay", 3, 1..10, 1, { page.value == Page.IN_COMBAT && pauseBaritone.value })
+    private val motionPrediction = setting("MotionPrediction", true, { page.value == Page.IN_COMBAT })
+    private val pingSync = setting("PingSync", true, { page.value == Page.IN_COMBAT && motionPrediction.value })
+    private val ticksAhead = setting("TicksAhead", 5, 0..20, 1, { page.value == Page.IN_COMBAT && motionPrediction.value && !pingSync.value })
 
     /* Render */
-    private val renderPredictedPos = setting(getTranslationKey("RenderPredictedPosition"), false, { page.value == Page.RENDER })
+    private val renderPredictedPos = setting("RenderPredictedPosition", false, { page.value == Page.RENDER })
 
     private enum class Page {
         TARGETING, IN_COMBAT, RENDER

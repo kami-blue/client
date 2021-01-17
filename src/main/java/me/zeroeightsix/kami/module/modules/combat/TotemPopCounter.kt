@@ -21,13 +21,13 @@ import kotlin.collections.ArrayList
 object TotemPopCounter : Module(
     category = Category.COMBAT
 ) {
-    private val countFriends = setting(getTranslationKey("CountFriends"), true)
-    private val countSelf = setting(getTranslationKey("CountSelf"), false)
-    private val resetOnDeath = setting(getTranslationKey("ResetOnDeath"), true)
-    private val announceSetting = setting(getTranslationKey("Announce"), Announce.CLIENT)
-    private val thanksTo = setting(getTranslationKey("ThanksTo"), false)
-    private val colorName = setting(getTranslationKey("ColorName"), EnumTextColor.DARK_PURPLE)
-    private val colorNumber = setting(getTranslationKey("ColorNumber"), EnumTextColor.LIGHT_PURPLE)
+    private val countFriends = setting("CountFriends", true)
+    private val countSelf = setting("CountSelf", false)
+    private val resetOnDeath = setting("ResetOnDeath", true)
+    private val announceSetting = setting("Announce", Announce.CLIENT)
+    private val thanksTo = setting("ThanksTo", false)
+    private val colorName = setting("ColorName", EnumTextColor.DARK_PURPLE)
+    private val colorNumber = setting("ColorNumber", EnumTextColor.LIGHT_PURPLE)
 
 
     private enum class Announce {

@@ -12,11 +12,11 @@ object Coordinate : LabelHud(
     category = Category.WORLD
 ) {
 
-    private val showX = setting(getTranslationKey("ShowX"), true)
-    private val showY = setting(getTranslationKey("ShowY"), true)
-    private val showZ = setting(getTranslationKey("ShowZ"), true)
-    private val showNetherOverworld = setting(getTranslationKey("ShowNether/Overworld"), true)
-    private val decimalPlaces = setting(getTranslationKey("DecimalPlaces"), 1, 0..4, 1)
+    private val showX = setting("ShowX", true)
+    private val showY = setting("ShowY", true)
+    private val showZ = setting("ShowZ", true)
+    private val showNetherOverworld = setting("ShowNether/Overworld", true)
+    private val decimalPlaces = setting("DecimalPlaces", 1, 0..4, 1)
 
     override fun SafeClientEvent.updateText() {
         val entity = mc.renderViewEntity ?: mc.player ?: return

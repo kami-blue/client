@@ -22,11 +22,11 @@ object EntityList : LabelHud(
     category = Category.WORLD
 ) {
 
-    private val item by setting(getTranslationKey("Items"), true)
-    private val passive by setting(getTranslationKey("Passive Mobs"), true)
-    private val neutral by setting(getTranslationKey("Neutral Mobs"), true)
-    private val hostile by setting(getTranslationKey("Hostile Mobs"), true)
-    private val range by setting(getTranslationKey("Range"), 24.0f, 8.0f..64.0f, 0.5f)
+    private val item by setting("Items", true)
+    private val passive by setting("Passive Mobs", true)
+    private val neutral by setting("Neutral Mobs", true)
+    private val hostile by setting("Hostile Mobs", true)
+    private val range by setting("Range", 24.0f, 8.0f..64.0f, 0.5f)
 
     private var cacheMap: Map<String, Int> = emptyMap()
 

@@ -16,11 +16,11 @@ object CustomChat : Module(
     showOnArray = false,
     modulePriority = 200
 ) {
-    private val textMode by setting(getTranslationKey("Message"), TextMode.JAPANESE)
-    private val decoMode by setting(getTranslationKey("Separator"), DecoMode.NONE)
-    private val commands by setting(getTranslationKey("Commands"), false)
-    private val spammer by setting(getTranslationKey("Spammer"), false)
-    private val customText by setting(getTranslationKey("CustomText"), "Default")
+    private val textMode by setting("Message", TextMode.JAPANESE)
+    private val decoMode by setting("Separator", DecoMode.NONE)
+    private val commands by setting("Commands", false)
+    private val spammer by setting("Spammer", false)
+    private val customText by setting("CustomText", "Default")
 
     private enum class DecoMode {
         SEPARATOR, CLASSIC, NONE

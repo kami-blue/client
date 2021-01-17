@@ -23,35 +23,35 @@ import kotlin.math.min
 object Tracers : Module(
     category = Category.RENDER
 ) {
-    private val page = setting(getTranslationKey("Page"), Page.ENTITY_TYPE)
+    private val page = setting("Page", Page.ENTITY_TYPE)
 
     /* Entity type settings */
-    private val players = setting(getTranslationKey("Players"), true, { page.value == Page.ENTITY_TYPE })
-    private val friends = setting(getTranslationKey("Friends"), false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val sleeping = setting(getTranslationKey("Sleeping"), false, { page.value == Page.ENTITY_TYPE && players.value })
-    private val mobs = setting(getTranslationKey("Mobs"), true, { page.value == Page.ENTITY_TYPE })
-    private val passive = setting(getTranslationKey("PassiveMobs"), false, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val neutral = setting(getTranslationKey("NeutralMobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val hostile = setting(getTranslationKey("HostileMobs"), true, { page.value == Page.ENTITY_TYPE && mobs.value })
-    private val invisible = setting(getTranslationKey("Invisible"), true, { page.value == Page.ENTITY_TYPE })
-    private val range = setting(getTranslationKey("Range"), 64, 8..256, 8, { page.value == Page.ENTITY_TYPE })
+    private val players = setting("Players", true, { page.value == Page.ENTITY_TYPE })
+    private val friends = setting("Friends", false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val sleeping = setting("Sleeping", false, { page.value == Page.ENTITY_TYPE && players.value })
+    private val mobs = setting("Mobs", true, { page.value == Page.ENTITY_TYPE })
+    private val passive = setting("PassiveMobs", false, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val neutral = setting("NeutralMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val hostile = setting("HostileMobs", true, { page.value == Page.ENTITY_TYPE && mobs.value })
+    private val invisible = setting("Invisible", true, { page.value == Page.ENTITY_TYPE })
+    private val range = setting("Range", 64, 8..256, 8, { page.value == Page.ENTITY_TYPE })
 
     /* Color settings */
-    private val colorPlayer = setting(getTranslationKey("PlayerColor"), DyeColors.KAMI, { page.value == Page.COLOR })
-    private val colorFriend = setting(getTranslationKey("FriendColor"), DyeColors.RAINBOW, { page.value == Page.COLOR })
-    private val colorPassive = setting(getTranslationKey("PassiveMobColor"), DyeColors.GREEN, { page.value == Page.COLOR })
-    private val colorNeutral = setting(getTranslationKey("NeutralMobColor"), DyeColors.YELLOW, { page.value == Page.COLOR })
-    private val colorHostile = setting(getTranslationKey("HostileMobColor"), DyeColors.RED, { page.value == Page.COLOR })
+    private val colorPlayer = setting("PlayerColor", DyeColors.KAMI, { page.value == Page.COLOR })
+    private val colorFriend = setting("FriendColor", DyeColors.RAINBOW, { page.value == Page.COLOR })
+    private val colorPassive = setting("PassiveMobColor", DyeColors.GREEN, { page.value == Page.COLOR })
+    private val colorNeutral = setting("NeutralMobColor", DyeColors.YELLOW, { page.value == Page.COLOR })
+    private val colorHostile = setting("HostileMobColor", DyeColors.RED, { page.value == Page.COLOR })
 
     /* General rendering settings */
-    private val rangedColor = setting(getTranslationKey("RangedColor"), true, { page.value == Page.RENDERING })
-    private val colorChangeRange = setting(getTranslationKey("ColorChangeRange"), 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
-    private val playerOnly = setting(getTranslationKey("PlayerOnly"), true, { page.value == Page.RENDERING && rangedColor.value })
-    private val colorFar = setting(getTranslationKey("FarColor"), DyeColors.WHITE, { page.value == Page.COLOR })
-    private val aFar = setting(getTranslationKey("FarAlpha"), 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
-    private val a = setting(getTranslationKey("TracerAlpha"), 255, 0..255, 1, { page.value == Page.RENDERING })
-    private val yOffset = setting(getTranslationKey("yOffsetPercentage"), 0, 0..100, 5, { page.value == Page.RENDERING })
-    private val thickness = setting(getTranslationKey("LineThickness"), 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
+    private val rangedColor = setting("RangedColor", true, { page.value == Page.RENDERING })
+    private val colorChangeRange = setting("ColorChangeRange", 16, 8..128, 8, { page.value == Page.RENDERING && rangedColor.value })
+    private val playerOnly = setting("PlayerOnly", true, { page.value == Page.RENDERING && rangedColor.value })
+    private val colorFar = setting("FarColor", DyeColors.WHITE, { page.value == Page.COLOR })
+    private val aFar = setting("FarAlpha", 127, 0..255, 1, { page.value == Page.RENDERING && rangedColor.value })
+    private val a = setting("TracerAlpha", 255, 0..255, 1, { page.value == Page.RENDERING })
+    private val yOffset = setting("yOffsetPercentage", 0, 0..100, 5, { page.value == Page.RENDERING })
+    private val thickness = setting("LineThickness", 2.0f, 0.25f..5.0f, 0.25f, { page.value == Page.RENDERING })
 
     private enum class Page {
         ENTITY_TYPE, COLOR, RENDERING

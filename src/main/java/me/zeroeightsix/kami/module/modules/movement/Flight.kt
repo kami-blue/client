@@ -20,9 +20,9 @@ object Flight : Module(
     category = Category.MOVEMENT,
     modulePriority = 500
 ) {
-    private val mode by setting(getTranslationKey("Mode"), FlightMode.VANILLA)
-    private val speed by setting(getTranslationKey("Speed"), 1.0f, 0.0f..10.0f, 0.1f)
-    private val glideSpeed by setting(getTranslationKey("GlideSpeed"), 0.05, 0.0..0.3, 0.001)
+    private val mode by setting("Mode", FlightMode.VANILLA)
+    private val speed by setting("Speed", 1.0f, 0.0f..10.0f, 0.1f)
+    private val glideSpeed by setting("GlideSpeed", 0.05, 0.0..0.3, 0.001)
 
     private enum class FlightMode {
         VANILLA, STATIC, PACKET

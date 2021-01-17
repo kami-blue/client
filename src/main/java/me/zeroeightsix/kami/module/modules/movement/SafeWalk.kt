@@ -7,7 +7,7 @@ import me.zeroeightsix.kami.util.BaritoneUtils
 object SafeWalk : Module(
     category = Category.MOVEMENT,
 ) {
-    private val baritoneCompat = setting(getTranslationKey("BaritoneCompatibility"), true)
+    private val baritoneCompat = setting("BaritoneCompatibility", true)
 
     fun shouldSafewalk(): Boolean {
         return isEnabled && (baritoneCompat.value && BaritoneUtils.primary?.customGoalProcess?.goal == null || !baritoneCompat.value)

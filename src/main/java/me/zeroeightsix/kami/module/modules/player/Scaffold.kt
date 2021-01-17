@@ -38,12 +38,12 @@ object Scaffold : Module(
     category = Category.PLAYER,
     modulePriority = 500
 ) {
-    private val tower by setting(getTranslationKey("Tower"), true)
-    private val spoofHotbar by setting(getTranslationKey("SpoofHotbar"), true)
-    val safeWalk by setting(getTranslationKey("SafeWalk"), true)
-    private val sneak by setting(getTranslationKey("Sneak"), true)
-    private val delay by setting(getTranslationKey("Delay"), 2, 1..10, 1)
-    private val maxRange by setting(getTranslationKey("MaxRange"), 1, 0..3, 1)
+    private val tower by setting("Tower", true)
+    private val spoofHotbar by setting("SpoofHotbar", true)
+    val safeWalk by setting("SafeWalk", true)
+    private val sneak by setting("Sneak", true)
+    private val delay by setting("Delay", 2, 1..10, 1)
+    private val maxRange by setting("MaxRange", 1, 0..3, 1)
 
     private var lastRotation = Vec2f.ZERO
     private var placeInfo: Pair<EnumFacing, BlockPos>? = null

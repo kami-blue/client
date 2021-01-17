@@ -12,7 +12,7 @@ import net.minecraft.util.text.TextComponentString
 object EndTeleport : Module(
     category = Category.PLAYER,
 ) {
-    private val confirmed by setting(getTranslationKey("Confirm"), false)
+    private val confirmed by setting("Confirm", false)
 
     init {
         onEnable {

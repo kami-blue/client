@@ -12,7 +12,7 @@ internal object ModuleConfig : AbstractConfig<Module>(
         "modules",
         "${KamiMod.DIRECTORY}modules",
 ) {
-    var currentPath by setting(TranslationKey("Modules.moduleConfig.CurrentPath"), "default")
+    var currentPath by setting("CurrentPath", "default")
 
     override val file: File get() = File("$filePath/$currentPath.json")
     override val backup get() =  File("$filePath/$currentPath.bak")

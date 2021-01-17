@@ -10,11 +10,11 @@ object Time : LabelHud(
     category = Category.MISC
 ) {
 
-    private val showDate = setting(getTranslationKey("ShowDate"), true)
-    private val showTime = setting(getTranslationKey("ShowTime"), true)
-    private val dateFormat = setting(getTranslationKey("DateFormat"), TimeUtils.DateFormat.DDMMYY, { showDate.value })
-    private val timeFormat = setting(getTranslationKey("TimeFormat"), TimeUtils.TimeFormat.HHMM, { showTime.value })
-    private val timeUnit = setting(getTranslationKey("TimeUnit"), TimeUtils.TimeUnit.H12, { showTime.value })
+    private val showDate = setting("ShowDate", true)
+    private val showTime = setting("ShowTime", true)
+    private val dateFormat = setting("DateFormat", TimeUtils.DateFormat.DDMMYY, { showDate.value })
+    private val timeFormat = setting("TimeFormat", TimeUtils.TimeFormat.HHMM, { showTime.value })
+    private val timeUnit = setting("TimeUnit", TimeUtils.TimeUnit.H12, { showTime.value })
 
     override fun SafeClientEvent.updateText() {
         if (showDate.value) displayText.addLine(TimeUtils.getDate(dateFormat.value))

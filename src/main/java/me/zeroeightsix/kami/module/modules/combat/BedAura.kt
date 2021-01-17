@@ -33,14 +33,14 @@ object BedAura : Module(
     category = Category.COMBAT,
     modulePriority = 70
 ) {
-    private val ignoreSecondBaseBlock = setting(getTranslationKey("IgnoreSecondBaseBlock"), false)
-    private val suicideMode = setting(getTranslationKey("SuicideMode"), false)
-    private val hitDelay = setting(getTranslationKey("HitDelay"), 5, 1..10, 1)
-    private val refillDelay = setting(getTranslationKey("RefillDelay"), 2, 1..5, 1)
-    private val minDamage = setting(getTranslationKey("MinDamage"), 10f, 1f..20f, 0.25f)
-    private val maxSelfDamage = setting(getTranslationKey("MaxSelfDamage"), 4f, 1f..10f, 0.25f, { !suicideMode.value })
-    private val range = setting(getTranslationKey("Range"), 5f, 1f..5f, 0.25f)
-    private val wallRange = setting(getTranslationKey("WallRange"), 2.5f, 1f..5f, 0.25f)
+    private val ignoreSecondBaseBlock = setting("IgnoreSecondBaseBlock", false)
+    private val suicideMode = setting("SuicideMode", false)
+    private val hitDelay = setting("HitDelay", 5, 1..10, 1)
+    private val refillDelay = setting("RefillDelay", 2, 1..5, 1)
+    private val minDamage = setting("MinDamage", 10f, 1f..20f, 0.25f)
+    private val maxSelfDamage = setting("MaxSelfDamage", 4f, 1f..10f, 0.25f, { !suicideMode.value })
+    private val range = setting("Range", 5f, 1f..5f, 0.25f)
+    private val wallRange = setting("WallRange", 2.5f, 1f..5f, 0.25f)
 
     private val placeMap = TreeMap<Pair<Float, Float>, BlockPos>(compareByDescending { it.first }) // <<TargetDamage, SelfDamage>, BlockPos>
     private val bedMap = TreeMap<Float, BlockPos>(compareBy { it }) // <SquaredDistance, BlockPos>

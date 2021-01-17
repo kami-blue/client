@@ -14,17 +14,17 @@ import org.kamiblue.event.listener.listener
 object AntiOverlay : Module(
     category = Category.RENDER
 ) {
-    private val fire = setting(getTranslationKey("Fire"), true)
-    private val water = setting(getTranslationKey("Water"), true)
-    private val blocks = setting(getTranslationKey("Blocks"), true)
-    private val portals = setting(getTranslationKey("Portals"), true)
-    private val blindness = setting(getTranslationKey("Blindness"), true)
-    private val nausea = setting(getTranslationKey("Nausea"), true)
-    val totems = setting(getTranslationKey("Totems"), true)
-    private val vignette = setting(getTranslationKey("Vignette"), true)
-    private val helmet = setting(getTranslationKey("Helmet"), true)
-    private val tutorial = setting(getTranslationKey("Tutorial"), true)
-    private val potionIcons = setting(getTranslationKey("PotionIcons"), false)
+    private val fire = setting("Fire", true)
+    private val water = setting("Water", true)
+    private val blocks = setting("Blocks", true)
+    private val portals = setting("Portals", true)
+    private val blindness = setting("Blindness", true)
+    private val nausea = setting("Nausea", true)
+    val totems = setting("Totems", true)
+    private val vignette = setting("Vignette", true)
+    private val helmet = setting("Helmet", true)
+    private val tutorial = setting("Tutorial", true)
+    private val potionIcons = setting("PotionIcons", false)
 
     init {
         listener<RenderBlockOverlayEvent> {

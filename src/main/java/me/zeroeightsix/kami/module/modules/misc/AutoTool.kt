@@ -20,10 +20,10 @@ import kotlin.math.pow
 object AutoTool : Module(
     category = Category.MISC
 ) {
-    private val switchBack = setting(getTranslationKey("SwitchBack"), true)
-    private val timeout = setting(getTranslationKey("Timeout"), 20, 1..100, 5, { switchBack.value })
-    private val swapWeapon = setting(getTranslationKey("SwitchWeapon"), false)
-    private val preferWeapon = setting(getTranslationKey("Prefer"), CombatUtils.PreferWeapon.SWORD)
+    private val switchBack = setting("SwitchBack", true)
+    private val timeout = setting("Timeout", 20, 1..100, 5, { switchBack.value })
+    private val swapWeapon = setting("SwitchWeapon", false)
+    private val preferWeapon = setting("Prefer", CombatUtils.PreferWeapon.SWORD)
 
     private var shouldMoveBack = false
     private var lastSlot = 0

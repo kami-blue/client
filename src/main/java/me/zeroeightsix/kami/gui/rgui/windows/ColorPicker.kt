@@ -51,10 +51,10 @@ object ColorPicker : TitledWindow( name = TranslationKeyBlank(), 0.0f, 0.0f, 200
     private var prevBrightness = 1.0f
 
     // Sliders
-    private val r = setting(getTranslationKey("Red"), 255, 0..255, 1)
-    private val g = setting(getTranslationKey("Green"), 255, 0..255, 1)
-    private val b = setting(getTranslationKey("Blue"), 255, 0..255, 1)
-    private val a = setting(getTranslationKey("Alpha"), 255, 0..255, 1, { setting?.hasAlpha ?: true })
+    private val r = setting("Red", 255, 0..255, 1)
+    private val g = setting("Green", 255, 0..255, 1)
+    private val b = setting("Blue", 255, 0..255, 1)
+    private val a = setting("Alpha", 255, 0..255, 1, { setting?.hasAlpha ?: true })
     private val sliderR = SettingSlider(r)
     private val sliderG = SettingSlider(g)
     private val sliderB = SettingSlider(b)

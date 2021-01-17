@@ -18,13 +18,13 @@ import net.minecraft.util.math.BlockPos
 object VoidESP : Module(
     category = Category.RENDER
 ) {
-    private val filled by setting(getTranslationKey("Filled"), true)
-    private val outline by setting(getTranslationKey("Outline"), true)
-    private val color by setting(getTranslationKey("Color"), ColorHolder(148, 161, 255), false)
-    private val aFilled by setting(getTranslationKey("FilledAlpha"), 127, 0..255, 1)
-    private val aOutline by setting(getTranslationKey("OutlineAlpha"), 255, 0..255, 1)
-    private val renderMode by setting(getTranslationKey("Mode"), Mode.BLOCK_HOLE)
-    private val range by setting(getTranslationKey("Range"), 8, 4..32, 1)
+    private val filled by setting("Filled", true)
+    private val outline by setting("Outline", true)
+    private val color by setting("Color", ColorHolder(148, 161, 255), false)
+    private val aFilled by setting("FilledAlpha", 127, 0..255, 1)
+    private val aOutline by setting("OutlineAlpha", 255, 0..255, 1)
+    private val renderMode by setting("Mode", Mode.BLOCK_HOLE)
+    private val range by setting("Range", 8, 4..32, 1)
 
     @Suppress("UNUSED")
     private enum class Mode {

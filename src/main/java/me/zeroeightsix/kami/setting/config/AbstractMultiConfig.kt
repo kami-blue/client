@@ -2,10 +2,11 @@ package me.zeroeightsix.kami.setting.config
 
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.setting.IFinalGroup
+import me.zeroeightsix.kami.setting.Translatable
 import me.zeroeightsix.kami.setting.groups.SettingMultiGroup
 import java.io.File
 
-abstract class AbstractMultiConfig<T>(
+abstract class AbstractMultiConfig<T: Translatable>(
         name: String,
         protected val directoryPath: String,
         vararg groupNames: String

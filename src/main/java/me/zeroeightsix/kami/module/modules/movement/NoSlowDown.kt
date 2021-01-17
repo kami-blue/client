@@ -24,16 +24,16 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object NoSlowDown : Module(
     category = Category.MOVEMENT,
 ) {
-    private val ncpStrict by setting(getTranslationKey("NCPStrict"), true)
-    private val sneak by setting(getTranslationKey("Sneak"), true)
-    val soulSand by setting(getTranslationKey("SoulSand"), true)
-    val cobweb by setting(getTranslationKey("Cobweb"), true)
-    private val slime by setting(getTranslationKey("Slime"), true)
-    private val allItems by setting(getTranslationKey("AllItems"), false)
-    private val food by setting(getTranslationKey("Food"), true, { !allItems })
-    private val bow by setting(getTranslationKey("Bows"), true, { !allItems })
-    private val potion by setting(getTranslationKey("Potions"), true, { !allItems })
-    private val shield by setting(getTranslationKey("Shield"), true, { !allItems })
+    private val ncpStrict by setting("NCPStrict", true)
+    private val sneak by setting("Sneak", true)
+    val soulSand by setting("SoulSand", true)
+    val cobweb by setting("Cobweb", true)
+    private val slime by setting("Slime", true)
+    private val allItems by setting("AllItems", false)
+    private val food by setting("Food", true, { !allItems })
+    private val bow by setting("Bows", true, { !allItems })
+    private val potion by setting("Potions", true, { !allItems })
+    private val shield by setting("Shield", true, { !allItems })
 
     /*
      * InputUpdateEvent is called just before the player is slowed down @see EntityPlayerSP.onLivingUpdate)

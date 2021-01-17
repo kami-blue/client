@@ -14,19 +14,19 @@ object Baritone : Module(
     showOnArray = false,
     alwaysEnabled = true
 ) {
-    private val allowBreak = setting(getTranslationKey("AllowBreak"), true)
-    private val allowSprint = setting(getTranslationKey("AllowSprint"), true)
-    private val allowPlace = setting(getTranslationKey("AllowPlace"), true)
-    val allowInventory = setting(getTranslationKey("AllowInventory"), false)
-    private val freeLook = setting(getTranslationKey("FreeLook"), true)
-    private val allowDownwardTunneling = setting(getTranslationKey("DownwardTunneling"), true)
-    private val allowParkour = setting(getTranslationKey("AllowParkour"), true)
-    private val allowParkourPlace = setting(getTranslationKey("AllowParkourPlace"), true)
-    private val avoidPortals = setting(getTranslationKey("AvoidPortals"), false)
-    private val mapArtMode = setting(getTranslationKey("MapArtMode"), false)
-    private val renderGoal = setting(getTranslationKey("RenderGoals"), true)
-    private val failureTimeout = setting(getTranslationKey("FailTimeout"), 2, 1..20, 1)
-    private val blockReachDistance = setting(getTranslationKey("ReachDistance"), 4.5f, 1.0f..10.0f, 0.5f)
+    private val allowBreak = setting("AllowBreak", true)
+    private val allowSprint = setting("AllowSprint", true)
+    private val allowPlace = setting("AllowPlace", true)
+    val allowInventory = setting("AllowInventory", false)
+    private val freeLook = setting("FreeLook", true)
+    private val allowDownwardTunneling = setting("DownwardTunneling", true)
+    private val allowParkour = setting("AllowParkour", true)
+    private val allowParkourPlace = setting("AllowParkourPlace", true)
+    private val avoidPortals = setting("AvoidPortals", false)
+    private val mapArtMode = setting("MapArtMode", false)
+    private val renderGoal = setting("RenderGoals", true)
+    private val failureTimeout = setting("FailTimeout", 2, 1..20, 1)
+    private val blockReachDistance = setting("ReachDistance", 4.5f, 1.0f..10.0f, 0.5f)
 
     init {
         settingList.forEach {

@@ -23,14 +23,14 @@ import kotlin.math.sin
 object EntitySpeed : Module(
     category = Category.MOVEMENT,
 ) {
-    private val speed = setting(getTranslationKey("Speed"), 1.0f, 0.1f..25.0f, 0.1f)
-    private val antiStuck = setting(getTranslationKey("AntiStuck"), true)
-    private val flight = setting(getTranslationKey("Flight"), false)
-    private val glideSpeed = setting(getTranslationKey("GlideSpeed"), 0.1f, 0.0f..1.0f, 0.01f, { flight.value })
-    private val upSpeed = setting(getTranslationKey("UpSpeed"), 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
-    private val opacity = setting(getTranslationKey("BoatOpacity"), 1.0f, 0.0f..1.0f, 0.01f)
-    private val forceInteract = setting(getTranslationKey("ForceInteract"), false)
-    private val interactTickDelay = setting(getTranslationKey("InteractTickDelay"), 2, 1..20, 1, { forceInteract.value })
+    private val speed = setting("Speed", 1.0f, 0.1f..25.0f, 0.1f)
+    private val antiStuck = setting("AntiStuck", true)
+    private val flight = setting("Flight", false)
+    private val glideSpeed = setting("GlideSpeed", 0.1f, 0.0f..1.0f, 0.01f, { flight.value })
+    private val upSpeed = setting("UpSpeed", 1.0f, 0.0f..5.0f, 0.1f, { flight.value })
+    private val opacity = setting("BoatOpacity", 1.0f, 0.0f..1.0f, 0.01f)
+    private val forceInteract = setting("ForceInteract", false)
+    private val interactTickDelay = setting("InteractTickDelay", 2, 1..20, 1, { forceInteract.value })
 
     init {
         listener<PacketEvent.Send> {

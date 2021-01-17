@@ -28,16 +28,16 @@ object AutoLog : Module(
     category = Category.COMBAT,
     alwaysListening = true
 ) {
-    private val disable = setting(getTranslationKey("Disable"), DisableMode.ALWAYS)
-    private val health = setting(getTranslationKey("Health"), 10, 6..36, 1)
-    private val crystals = setting(getTranslationKey("Crystals"), false)
-    private val creeper = setting(getTranslationKey("Creepers"), true)
-    private val creeperDistance = setting(getTranslationKey("CreeperDistance"), 5, 1..10, 1, { creeper.value })
-    private val totem = setting(getTranslationKey("Totems"), false)
-    private val totemAmount = setting(getTranslationKey("MinTotems"), 2, 1..10, 1, { totem.value })
-    private val players = setting(getTranslationKey("Players"), false)
-    private val playerDistance = setting(getTranslationKey("PlayerDistance"), 128, 64..256, 16, { players.value })
-    private val friends = setting(getTranslationKey("Friends"), false, { players.value })
+    private val disable = setting("Disable", DisableMode.ALWAYS)
+    private val health = setting("Health", 10, 6..36, 1)
+    private val crystals = setting("Crystals", false)
+    private val creeper = setting("Creepers", true)
+    private val creeperDistance = setting("CreeperDistance", 5, 1..10, 1, { creeper.value })
+    private val totem = setting("Totems", false)
+    private val totemAmount = setting("MinTotems", 2, 1..10, 1, { totem.value })
+    private val players = setting("Players", false)
+    private val playerDistance = setting("PlayerDistance", 128, 64..256, 16, { players.value })
+    private val friends = setting("Friends", false, { players.value })
 
     @Suppress("UNUSED")
     private enum class DisableMode {

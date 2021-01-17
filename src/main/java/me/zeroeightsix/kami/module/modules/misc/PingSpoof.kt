@@ -11,8 +11,8 @@ import java.util.*
 object PingSpoof : Module(
     category = Category.MISC,
 ) {
-    private val cancel = setting(getTranslationKey("Cancel"), false) // most servers will kick/time you out for this
-    private val delay = setting(getTranslationKey("Delay"), 100, 0..2000, 25, { !cancel.value })
+    private val cancel = setting("Cancel", false) // most servers will kick/time you out for this
+    private val delay = setting("Delay", 100, 0..2000, 25, { !cancel.value })
 
     init {
         listener<PacketEvent.Receive> {

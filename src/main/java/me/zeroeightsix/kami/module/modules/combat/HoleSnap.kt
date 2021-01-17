@@ -20,8 +20,8 @@ import kotlin.math.*
 object HoleSnap : Module(
     category = Category.COMBAT
 ) {
-    private val disableStrafe by setting(getTranslationKey("DisableStrafe"), true)
-    private val range by setting(getTranslationKey("Range"), 2.5f, 0.5f..4.0f, 0.25f)
+    private val disableStrafe by setting("DisableStrafe", true)
+    private val range by setting("Range", 2.5f, 0.5f..4.0f, 0.25f)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {

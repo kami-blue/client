@@ -9,8 +9,8 @@ object MemoryUsage : LabelHud(
     category = Category.MISC
 ) {
 
-    private val showAllocated = setting(getTranslationKey("ShowAllocated"), false)
-    private val showMax = setting(getTranslationKey("ShowMax"), false)
+    private val showAllocated = setting("ShowAllocated", false)
+    private val showMax = setting("ShowMax", false)
 
     override fun SafeClientEvent.updateText() {
         val memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576L

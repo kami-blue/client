@@ -20,9 +20,9 @@ import kotlin.math.roundToInt
 object BossStack : Module(
     category = Category.RENDER
 ) {
-    private val mode = setting(getTranslationKey("Mode"), BossStackMode.STACK)
-    private val scale = setting(getTranslationKey("Scale"), 1.0f, 0.1f..5.0f, 0.25f)
-    private val censor = setting(getTranslationKey("Censor"), false)
+    private val mode = setting("Mode", BossStackMode.STACK)
+    private val scale = setting("Scale", 1.0f, 0.1f..5.0f, 0.25f)
+    private val censor = setting("Censor", false)
 
     @Suppress("unused")
     private enum class BossStackMode {

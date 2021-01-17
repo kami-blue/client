@@ -8,8 +8,8 @@ object Username : LabelHud(
     category = Category.CLIENT
 ) {
 
-    private val prefix = setting(getTranslationKey("Prefix"), "Welcome")
-    private val suffix = setting(getTranslationKey("Suffix"), "")
+    private val prefix = setting("Prefix", "Welcome")
+    private val suffix = setting("Suffix", "")
 
     override fun SafeClientEvent.updateText() {
         displayText.add(prefix.value, primaryColor)

@@ -10,7 +10,7 @@ import org.kamiblue.event.listener.listener
 object PortalGodMode : Module(
     category = Category.PLAYER,
 ) {
-    private val instantTeleport by setting(getTranslationKey("InstantTeleport"), true)
+    private val instantTeleport by setting("InstantTeleport", true)
 
     private var packet: CPacketConfirmTeleport? = null
 

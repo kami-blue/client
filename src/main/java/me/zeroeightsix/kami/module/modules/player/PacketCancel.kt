@@ -9,12 +9,12 @@ import org.kamiblue.event.listener.listener
 object PacketCancel : Module(
     category = Category.PLAYER
 ) {
-    private val all by setting(getTranslationKey("All"), false)
-    private val packetInput by setting(getTranslationKey("CPacketInput"), true, { !all })
-    private val packetPlayer by setting(getTranslationKey("CPacketPlayer"), true, { !all })
-    private val packetEntityAction by setting(getTranslationKey("CPacketEntityAction"), true, { !all })
-    private val packetUseEntity by setting(getTranslationKey("CPacketUseEntity"), true, { !all })
-    private val packetVehicleMove by setting(getTranslationKey("CPacketVehicleMove"), true, { !all })
+    private val all by setting("All", false)
+    private val packetInput by setting("CPacketInput", true, { !all })
+    private val packetPlayer by setting("CPacketPlayer", true, { !all })
+    private val packetEntityAction by setting("CPacketEntityAction", true, { !all })
+    private val packetUseEntity by setting("CPacketUseEntity", true, { !all })
+    private val packetVehicleMove by setting("CPacketVehicleMove", true, { !all })
 
     private var numPackets = 0
 

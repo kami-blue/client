@@ -15,9 +15,9 @@ import org.kamiblue.event.listener.listener
 object FastBreak : Module(
     category = Category.PLAYER,
 ) {
-    private val delay = setting(getTranslationKey("Delay"), 0, 0..5, 1)
-    private val packetMine = setting(getTranslationKey("PacketMine"), true)
-    private val sneakTrigger = setting(getTranslationKey("SneakTrigger"), true, { packetMine.value })
+    private val delay = setting("Delay", 0, 0..5, 1)
+    private val packetMine = setting("PacketMine", true)
+    private val sneakTrigger = setting("SneakTrigger", true, { packetMine.value })
 
     init {
         listener<PacketEvent.Send> {

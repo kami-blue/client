@@ -6,6 +6,7 @@ import me.zeroeightsix.kami.module.modules.client.GuiColors
 import me.zeroeightsix.kami.module.modules.client.Hud
 import me.zeroeightsix.kami.setting.GuiConfig
 import me.zeroeightsix.kami.setting.GuiConfig.setting
+import me.zeroeightsix.kami.setting.Translatable
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -25,7 +26,7 @@ open class HudElement(
     enabledByDefault: Boolean = false
 ) : BasicWindow(name = TranslationKeyBlank(),20.0f, 20.0f, 100.0f, 50.0f, SettingGroup.HUD_GUI) {
 
-    val scale by setting(TranslationKey("gui.hudgui.HudElement.Scale"), 1.0f, 0.1f..4.0f, 0.05f)
+    val scale by setting("gui.hudgui.HudElement.Scale", 1.0f, 0.1f..4.0f, 0.05f)
 
     val description: TranslationKey = getTranslationKey("HudElementDescription")
 
