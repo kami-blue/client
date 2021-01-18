@@ -3,10 +3,7 @@ package me.zeroeightsix.kami.gui.mc
 import me.zeroeightsix.kami.module.modules.misc.AntiDisconnect
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.text.format
-import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiMainMenu
-import net.minecraft.client.gui.GuiMultiplayer
-import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.*
 import net.minecraft.realms.RealmsBridge
 import net.minecraft.util.text.TextFormatting
 
@@ -34,12 +31,9 @@ class KamiGuiAntiDisconnect : GuiScreen() {
                     button.displayString = buttonText
                 } else {
                     button.enabled = false
-                    mc.world.sendQuittingDisconnectingPacket()
-                    mc.loadWorld(null)
-
                     when {
                         mc.isIntegratedServerRunning -> {
-                            mc.displayGuiScreen(GuiMainMenu())
+                            mc.displayGuiScreen(GuiWorldSelection(GuiMainMenu()))
                         }
                         mc.isConnectedToRealms -> {
                             RealmsBridge().switchToRealms(GuiMainMenu())
@@ -48,6 +42,8 @@ class KamiGuiAntiDisconnect : GuiScreen() {
                             mc.displayGuiScreen(GuiMultiplayer(GuiMainMenu()))
                         }
                     }
+                    mc.world.sendQuittingDisconnectingPacket()
+                    mc.loadWorld(null)
                 }
             }
         }
