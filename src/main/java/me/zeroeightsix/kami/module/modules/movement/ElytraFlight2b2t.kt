@@ -35,13 +35,13 @@ internal object ElytraFlight2b2t : Module(
     description = "Allows high speed infinite Elytra flight with no durability usage on 2b2t",
     category = Category.MOVEMENT
 ) {
-    private val accelerateTime by setting("AccelerateTime", 7.0f, 0.5f..20.0f, 0.1f)
-    private val speed by setting("Speed", 3.25f, 1.0f..10.0f, 0.01f)
+    private val accelerateTime by setting("AccelerateTime", 7.0f, 0.5f..20.0f, 0.01f)
+    private val speed by setting("Speed", 3.28f, 1.0f..3.28f, 0.005f)
     private val descendSpeed by setting("DescendSpeed", 0.2, 0.01..1.0, 0.01)
     private val idleSpeed by setting("IdleSpeed", 3.8f, 0.1f..5.0f, 0.1f)
     private val idleRadius by setting("IdleRadius", 0.08f, 0.01f..0.25f, 0.01f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.1f, 0.001f)
-    private val packetDelay by setting("PacketDelay", 122, 50..500, 1)
+    private val packetDelay by setting("PacketDelay", 122, 50..200, 1)
     private val rubberbandTimeout by setting("RubberbandTimeout", 300, 0..1000, 1)
     private val showDebug by setting("ShowDebug", false)
 
@@ -167,6 +167,7 @@ internal object ElytraFlight2b2t : Module(
 
             player.motionX = -sin(yaw) * idleRadius
             player.motionZ = cos(yaw) * idleRadius
+            player.motionY = 0.0
         }
     }
 
