@@ -133,7 +133,7 @@ internal object ElytraFlight2b2t : Module(
 
     private fun SafeClientEvent.calcYaw(): Double {
         val yawDeg = calcMoveYawDeg()
-        rotation = Vec2f(yawDeg.toFloat(), 0.0f)
+        rotation = Vec2f(yawDeg.toFloat(), player.pitchYaw.x)
         return yawDeg.toRadian()
     }
 
@@ -221,7 +221,7 @@ internal object ElytraFlight2b2t : Module(
             if (state == MovementState.NOT_STARTED || it.packet !is CPacketConfirmTeleport) return@safeListener
             if (showDebug) sendChatMessage("$chatName Responding to emergency teleport packet from the server.")
 
-            player.setVelocity(0.0, 0.0, 0.0)
+//            player.setVelocity(0.0, 0.0, 0.0) Do we really need this? Worked for me without. Still no velo on rubberband
             accelerateStart = System.currentTimeMillis()
 
             /* This only sets the position and rotation client side since it is not salted with onGround */
