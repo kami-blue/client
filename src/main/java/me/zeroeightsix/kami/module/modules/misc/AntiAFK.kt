@@ -39,7 +39,7 @@ internal object AntiAFK : Module(
     private val walk = setting("Walk", true)
     private val radius by setting("Radius", 64, 8..128, 8)
     private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
-    private val allowBreak by setting("AllowBreak", false, { walk.value })
+    private val allowBreak by setting("AllowBreakingBlocks", false, { walk.value })
 
     private var startPos: BlockPos? = null
     private var squareStep = 0
