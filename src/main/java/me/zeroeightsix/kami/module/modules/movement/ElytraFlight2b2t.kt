@@ -212,19 +212,19 @@ internal object ElytraFlight2b2t : Module(
             player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.x, teleportRotation.y)
 
             /* Force send the packet */
-            sendForcedPacket(true)
+            sendForcedPacket()
         }
 
         safeListener<RenderOverlayEvent> {
             if (state == MovementState.NOT_STARTED || !packetTimer.tick(packetDelay.toLong())) return@safeListener
             connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
 
-            sendForcedPacket(false)
+            sendForcedPacket()
         }
     }
 
-    private fun SafeClientEvent.sendForcedPacket(onGround: Boolean) {
-        val packet = CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, onGround)
+    private fun SafeClientEvent.sendForcedPacket() {
+        val packet = CPacketPlayer.PositionRotation(player.posX, player.posY, player.posZ, rotation.x, rotation.y, false)
         packetSet.add(packet)
         player.connection.sendPacket(packet)
     }
