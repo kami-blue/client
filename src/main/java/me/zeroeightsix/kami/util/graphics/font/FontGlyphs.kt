@@ -1,21 +1,15 @@
 package me.zeroeightsix.kami.util.graphics.font
 
 import me.zeroeightsix.kami.KamiMod
-import me.zeroeightsix.kami.util.Wrapper
-import me.zeroeightsix.kami.util.graphics.GlStateUtils
-import net.minecraft.client.renderer.GlStateManager
+import me.zeroeightsix.kami.util.graphics.TextureUtils
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.client.renderer.texture.TextureUtil
 import org.kamiblue.commons.utils.MathUtils
-import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL12.*
-import org.lwjgl.opengl.GL14.*
+import org.lwjgl.opengl.GL11.GL_ALPHA
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
 
@@ -178,40 +172,7 @@ class FontGlyphs(val style: Style, private val font: Font, private val fallbackF
 
     private fun createTexture(bufferedImage: BufferedImage): DynamicTexture? {
         return try {
-            val dynamicTexture = DynamicTexture(bufferedImage)
-            dynamicTexture.loadTexture(Wrapper.minecraft.resourceManager)
-            val textureId = dynamicTexture.glTextureId
-
-            // Tells Gl that our texture isn't a repeating texture (edges are not connecting to each others)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-
-            // Setup texture filters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-            glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST)
-
-            // Setup mipmap parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 4)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4)
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, 0f)
-            GlStateManager.bindTexture(textureId)
-
-            // We only need 4 levels of mipmaps for 64 sized font
-            // 0: 64 x 64, 1: 32 x 32, 2: 16 x 16, 3: 8 x 8, 4: 4 x 4
-            for (mipmapLevel in 0..4) {
-                // GL_ALPHA means that the texture is a grayscale texture (black & white and alpha only)
-                glTexImage2D(GL_TEXTURE_2D, mipmapLevel, GL_ALPHA, bufferedImage.width shr mipmapLevel, bufferedImage.height shr mipmapLevel, 0, GL_ALPHA, GL_UNSIGNED_BYTE, null as ByteBuffer?)
-            }
-
-            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1)
-            TextureUtil.uploadTextureImageSub(textureId, bufferedImage, 0, 0, true, true)
-
-            GlStateUtils.resetTexParam()
-
-            dynamicTexture
+            TextureUtils.genTextureWithMipmaps(bufferedImage, 4, GL_ALPHA)
         } catch (e: Exception) {
             KamiMod.LOG.error("Failed to create font texture.")
             e.printStackTrace()

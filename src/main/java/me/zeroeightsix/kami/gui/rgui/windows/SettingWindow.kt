@@ -37,7 +37,7 @@ abstract class SettingWindow<T : Any>(
                     is BooleanSetting -> SettingButton(setting)
                     is NumberSetting -> SettingSlider(setting)
                     is EnumSetting -> EnumSlider(setting)
-                    is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description)
+                    is ColorSetting -> Button(setting.name, { displayColorPicker(setting) }, setting.description, setting.visibility)
                     is StringSetting -> StringButton(setting)
                     is BindSetting -> BindButton(setting)
                     else -> null
@@ -63,8 +63,10 @@ abstract class SettingWindow<T : Any>(
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)
         (hoveredChild as? Slider)?.let {
-            listeningChild = if (it.listening) it
-            else null
+            if (it != listeningChild) {
+                listeningChild?.onStopListening(false)
+                listeningChild = it.takeIf { it.listening }
+            }
         }
     }
 

@@ -3,17 +3,16 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.mixin.extension.isInWeb
 import me.zeroeightsix.kami.mixin.extension.tickLength
 import me.zeroeightsix.kami.mixin.extension.timer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "FastFall",
-        category = Module.Category.MOVEMENT,
-        description = "Makes you fall faster"
-)
-object FastFall : Module() {
+internal object FastFall : Module(
+    name = "FastFall",
+    category = Category.MOVEMENT,
+    description = "Makes you fall faster"
+) {
     private val mode = setting("Mode", Mode.MOTION)
     private val fallSpeed = setting("FallSpeed", 6.0, 0.1..10.0, 0.1)
     private val fallDistance = setting("MaxFallDistance", 2, 0..10, 1)
@@ -28,12 +27,12 @@ object FastFall : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (player.onGround
-                    || player.isElytraFlying
-                    || player.isInLava
-                    || player.isInWater
-                    || player.isInWeb
-                    || player.fallDistance < fallDistance.value
-                    || player.capabilities.isFlying) {
+                || player.isElytraFlying
+                || player.isInLava
+                || player.isInWater
+                || player.isInWeb
+                || player.fallDistance < fallDistance.value
+                || player.capabilities.isFlying) {
                 reset()
                 return@safeListener
             }

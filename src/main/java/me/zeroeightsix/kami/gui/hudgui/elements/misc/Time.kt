@@ -17,9 +17,6 @@ object Time : LabelHud(
     private val timeFormat = setting("TimeFormat", TimeUtils.TimeFormat.HHMM, { showTime.value })
     private val timeUnit = setting("TimeUnit", TimeUtils.TimeUnit.H12, { showTime.value })
 
-    override val minWidth = 10f
-    override val minHeight = 10f
-
     override fun SafeClientEvent.updateText() {
         if (showDate.value) displayText.addLine(TimeUtils.getDate(dateFormat.value))
         if (showTime.value) displayText.addLine(TimeUtils.getTime(timeFormat.value, timeUnit.value))

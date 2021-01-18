@@ -2,13 +2,11 @@ package me.zeroeightsix.kami.util
 
 import baritone.api.BaritoneAPI
 import com.google.common.collect.ImmutableSet
-import me.zeroeightsix.kami.process.TemporaryPauseProcess
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
 object BaritoneUtils {
     var initialized = false
-    var paused = false; private set
 
     val provider get() = if (initialized) BaritoneAPI.getProvider() else null
     val settings get() = if (initialized) BaritoneAPI.getSettings() else null
@@ -19,17 +17,6 @@ object BaritoneUtils {
     val isActive
         get() = primary?.customGoalProcess?.isActive ?: false
             || primary?.pathingControlManager?.mostRecentInControl()?.orElse(null)?.isActive ?: false
-
-    fun pause() {
-        if (!paused) {
-            paused = true
-            primary?.pathingControlManager?.registerProcess(TemporaryPauseProcess)
-        }
-    }
-
-    fun unpause() {
-        paused = false
-    }
 
     fun cancelEverything() = primary?.pathingBehavior?.cancelEverything()
 

@@ -16,7 +16,7 @@ abstract class AbstractSetting<T : Any> : Nameable {
     abstract val description: String
 
     val listeners = ArrayList<() -> Unit>()
-    val valueListeners = ArrayList<(T, T) -> Unit>()
+    val valueListeners = ArrayList<(prev: T, input: T) -> Unit>()
 
     val isVisible get() = visibility()
 
@@ -25,6 +25,7 @@ abstract class AbstractSetting<T : Any> : Nameable {
     open fun setValue(valueIn: String) {
         read(parser.parse(valueIn))
     }
+
     abstract fun resetValue()
 
     abstract fun write(): JsonElement

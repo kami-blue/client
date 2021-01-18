@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -12,12 +12,11 @@ import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
+internal object CoordsLog : Module(
     name = "CoordsLog",
     description = "Automatically logs your coords, based on actions",
-    category = Module.Category.MISC
-)
-object CoordsLog : Module() {
+    category = Category.MISC
+) {
     private val saveOnDeath = setting("SaveOnDeath", true)
     private val autoLog = setting("AutoLog", false)
     private val delay = setting("Delay", 15, 1..60, 1)
@@ -29,12 +28,12 @@ object CoordsLog : Module() {
     init {
         safeListener<TickEvent.ClientTickEvent> {
             if (autoLog.value && timer.tick(delay.value.toLong())) {
-                    val currentCoord = player.positionVector.toBlockPos().asString()
+                val currentCoord = player.positionVector.toBlockPos().asString()
 
                 if (currentCoord != previousCoord) {
                     WaypointManager.add("autoLogger")
                     previousCoord = currentCoord
-                    }
+                }
             }
 
             if (saveOnDeath.value) {

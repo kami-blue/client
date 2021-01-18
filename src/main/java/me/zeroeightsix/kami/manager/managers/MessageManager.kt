@@ -3,7 +3,7 @@ package me.zeroeightsix.kami.manager.managers
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.mixin.extension.packetMessage
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.module.modules.client.ChatSetting
 import me.zeroeightsix.kami.util.TaskState
 import me.zeroeightsix.kami.util.TickTimer
@@ -33,7 +33,7 @@ object MessageManager : Manager {
             if (it.packet !is CPacketChatMessage || packetSet.remove(it.packet)) return@listener
             it.cancel()
             if (it.packet.message != lastPlayerMessage) addMessageToQueue(it.packet, it)
-            else addMessageToQueue(it.packet, mc.player?: it, Int.MAX_VALUE - 1)
+            else addMessageToQueue(it.packet, mc.player ?: it, Int.MAX_VALUE - 1)
         }
 
         safeListener<TickEvent.ClientTickEvent>(-69420) { event ->
@@ -80,11 +80,11 @@ object MessageManager : Manager {
     }
 
     data class QueuedMessage(
-            private val id: Int,
-            private val priority: Int,
-            val source: Any,
-            val packet: CPacketChatMessage,
-            val state: TaskState = TaskState()
+        private val id: Int,
+        private val priority: Int,
+        val source: Any,
+        val packet: CPacketChatMessage,
+        val state: TaskState = TaskState()
     ) : Comparable<QueuedMessage> {
 
         override fun compareTo(other: QueuedMessage): Int {
@@ -95,15 +95,15 @@ object MessageManager : Manager {
 
     }
 
-    fun Module.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
-            MessageModifier(modifierId++, modulePriority, filter, modifier)
+    fun AbstractModule.newMessageModifier(filter: (QueuedMessage) -> Boolean = { true }, modifier: (QueuedMessage) -> String) =
+        MessageModifier(modifierId++, modulePriority, filter, modifier)
 
     class MessageModifier(
-            private val id: Int,
-            private val priority: Int,
-            private val filter: (QueuedMessage) -> Boolean = {true},
-            private val modifier: (QueuedMessage) -> String
-    ): Comparable<MessageModifier> {
+        private val id: Int,
+        private val priority: Int,
+        private val filter: (QueuedMessage) -> Boolean = { true },
+        private val modifier: (QueuedMessage) -> String
+    ) : Comparable<MessageModifier> {
 
         /**
          * Adds this modifier to the active modifier set [activeModifiers]

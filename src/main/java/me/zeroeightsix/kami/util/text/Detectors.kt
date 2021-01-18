@@ -27,9 +27,9 @@ interface PrefixDetector : Detector, RemovableDetector {
 interface RegexDetector : Detector, RemovableDetector {
     val regexes: Array<out Regex>
 
-    override infix fun detect(input: CharSequence) = regexes.any { it.matches(input) }
+    override infix fun detect(input: CharSequence) = regexes.any { it.containsMatchIn(input) }
 
-    fun matchedRegex(input: CharSequence) = regexes.find { it.matches(input) }
+    fun matchedRegex(input: CharSequence) = regexes.find { it.containsMatchIn(input) }
 
     override fun removedOrNull(input: CharSequence): CharSequence? = matchedRegex(input)?.let { regex ->
         input.replace(regex, "").takeIf { it.isNotBlank() }

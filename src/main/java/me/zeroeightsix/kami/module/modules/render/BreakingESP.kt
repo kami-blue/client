@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.BlockBreakEvent
 import me.zeroeightsix.kami.event.events.RenderOverlayEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.ColorHolder
 import me.zeroeightsix.kami.util.graphics.ESPRenderer
 import me.zeroeightsix.kami.util.graphics.font.FontRenderAdapter
@@ -20,12 +20,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "BreakingESP",
-        description = "Highlights blocks being broken near you",
-        category = Module.Category.RENDER
-)
-object BreakingESP : Module() {
+internal object BreakingESP : Module(
+    name = "BreakingESP",
+    description = "Highlights blocks being broken near you",
+    category = Category.RENDER
+) {
     private val espSelf = setting("ESPSelf", true)
     private val warnSelf = setting("WarnSelf", false)
     private val obsidianOnly = setting("ObsidianOnly", false)
@@ -101,7 +100,7 @@ object BreakingESP : Module() {
                 breakingBlockList.putIfAbsent(it.breakId, Triple(it.position, it.progress, Pair(false, render)))
                 breakingBlockList.computeIfPresent(it.breakId) { _, triple -> Triple(it.position, it.progress, triple.third) }
                 if (warning.value && (mc.player != breaker || warnSelf.value) && it.progress >= warningProgress.value && !breakingBlockList[it.breakId]!!.third.first
-                        && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
+                    && ((obsidianOnly.value && mc.world.getBlockState(it.position).block == Blocks.OBSIDIAN) || !obsidianOnly.value)) {
                     if (soundWarn.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
                     warningText = "${breaker.name} is breaking near you!"
                     if (chatWarn.value) sendChatMessage(warningText)

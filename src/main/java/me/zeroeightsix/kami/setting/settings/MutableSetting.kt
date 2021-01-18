@@ -27,13 +27,12 @@ open class MutableSetting<T : Any>(
                 val prev = field
                 var new = value
 
-                for (index in consumers.size -1 downTo 0) {
+                for (index in consumers.size - 1 downTo 0) {
                     new = consumers[index](prev, new)
                 }
                 field = new
 
                 valueListeners.forEach { it(prev, field) }
-                for (listener in valueListeners) listener(prev, field)
                 listeners.forEach { it() }
             }
         }

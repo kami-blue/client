@@ -8,7 +8,7 @@ import me.zeroeightsix.kami.util.math.Vec2f
 import org.kamiblue.commons.extension.readableName
 import kotlin.math.floor
 
-class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, setting.description) {
+class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
     private val enumValues = setting.enumValues
 
     override fun onTick() {
@@ -19,7 +19,6 @@ class EnumSlider(val setting: EnumSetting<*>) : Slider(setting.name, 0.0, settin
                 value = (settingValue + settingValue / (enumValues.size - 1.0)) / enumValues.size.toDouble()
             }
         }
-        visible = setting.isVisible
     }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {

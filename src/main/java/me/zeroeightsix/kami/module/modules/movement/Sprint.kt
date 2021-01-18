@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -9,12 +9,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 /**
  * @see me.zeroeightsix.kami.mixin.client.player.MixinEntityPlayerSP
  */
-@Module.Info(
-        name = "Sprint",
-        description = "Automatically makes the player sprint",
-        category = Module.Category.MOVEMENT
-)
-object Sprint : Module() {
+internal object Sprint : Module(
+    name = "Sprint",
+    description = "Automatically makes the player sprint",
+    category = Category.MOVEMENT
+) {
     private val multiDirection = setting("MultiDirection", false)
     private val onHolding = setting("OnHoldingSprint", false)
 

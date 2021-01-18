@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.combat
 
 import me.zeroeightsix.kami.event.events.ConnectionEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -13,12 +13,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "AutoEZ",
-        category = Module.Category.COMBAT,
-        description = "Sends an insult in chat after killing someone"
-)
-object AutoEZ : Module() {
+internal object AutoEZ : Module(
+    name = "AutoEZ",
+    category = Category.COMBAT,
+    description = "Sends an insult in chat after killing someone"
+) {
     private val detectMode = setting("DetectMode", DetectMode.HEALTH)
     private val messageMode = setting("MessageMode", MessageMode.ONTOP)
     private val customText = setting("CustomText", "unchanged")
@@ -38,51 +37,51 @@ object AutoEZ : Module() {
     }
 
     private val hypixelCensorMessages = arrayOf(
-            "Hey Helper, how play game?",
-            "Hello everyone! I am an innocent player who loves everything Hypixel.",
-            "Please go easy on me, this is my first game!",
-            "I like long walks on the beach and playing Hypixel",
-            "Anyone else really like Rick Astley?",
-            "Wait... This isn't what I typed!",
-            "Plz give me doggo memes!",
-            "You’re a great person! Do you want to play some Hypixel games with me?",
-            "Welcome to the hypixel zoo!",
-            "If the Minecraft world is infinite, how is the sun spinning around it?",
-            "Your clicks per second are godly. ",
-            "Maybe we can have a rematch?",
-            "Pineapple doesn't go on pizza!",
-            "ILY <3",
-            "I heard you like Minecraft, so I built a computer in Minecraft in your Minecraft so you can Minecraft while you Minecraft",
-            "Why can't the Ender Dragon read a book? Because he always starts at the End.",
-            "I sometimes try to say bad things then this happens ",
-            "Your personality shines brighter than the sun.",
-            "You are very good at the game friend.",
-            "I like pasta, do you prefer nachos?",
-            "In my free time I like to watch cat videos on youtube",
-            "I heard you like minecraft, so I built a computer so you can minecraft, while minecrafting in your minecraft.",
-            "I like pineapple on my pizza",
-            "You're a great person! Do you want to play some Hypixel games with me?",
-            "I had something to say, then I forgot it.",
-            "Hello everyone! I’m an innocent player who loves everything Hypixel.",
-            "I like Minecraft pvp but you are truly better than me!",
-            "Behold, the great and powerful, my magnificent and almighty nemesis!",
-            "When nothing is right, go left.",
-            "Let’s be friends instead of fighting okay?",
-            "Your Clicks per second are godly.",
-            "If the world in Minecraft is infinite how can the sun revolve around it?",
-            "Blue is greenier than purple for sure",
-            "I sometimes try to say bad things and then this happens :(",
-            "I have really enjoyed playing with you! <3",
-            "What can’t the Ender Dragon read a book? Because he always starts at the End.",
-            "You are very good at this game friend.",
-            "I like to eat pasta, do you prefer nachos?",
-            "Sometimes I sing soppy, love songs in the car.",
-            "I love the way your hair glistens in the light",
-            "When I saw the guy with a potion I knew there was trouble brewing.",
-            "I enjoy long walks on the beach and playing Hypixel",
-            "I need help, teach me how to play!",
-            "What happens if I add chocolate milk to macaroni and cheese?",
-            "Can you paint with all the colors of the wind"
+        "Hey Helper, how play game?",
+        "Hello everyone! I am an innocent player who loves everything Hypixel.",
+        "Please go easy on me, this is my first game!",
+        "I like long walks on the beach and playing Hypixel",
+        "Anyone else really like Rick Astley?",
+        "Wait... This isn't what I typed!",
+        "Plz give me doggo memes!",
+        "You’re a great person! Do you want to play some Hypixel games with me?",
+        "Welcome to the hypixel zoo!",
+        "If the Minecraft world is infinite, how is the sun spinning around it?",
+        "Your clicks per second are godly. ",
+        "Maybe we can have a rematch?",
+        "Pineapple doesn't go on pizza!",
+        "ILY <3",
+        "I heard you like Minecraft, so I built a computer in Minecraft in your Minecraft so you can Minecraft while you Minecraft",
+        "Why can't the Ender Dragon read a book? Because he always starts at the End.",
+        "I sometimes try to say bad things then this happens ",
+        "Your personality shines brighter than the sun.",
+        "You are very good at the game friend.",
+        "I like pasta, do you prefer nachos?",
+        "In my free time I like to watch cat videos on youtube",
+        "I heard you like minecraft, so I built a computer so you can minecraft, while minecrafting in your minecraft.",
+        "I like pineapple on my pizza",
+        "You're a great person! Do you want to play some Hypixel games with me?",
+        "I had something to say, then I forgot it.",
+        "Hello everyone! I’m an innocent player who loves everything Hypixel.",
+        "I like Minecraft pvp but you are truly better than me!",
+        "Behold, the great and powerful, my magnificent and almighty nemesis!",
+        "When nothing is right, go left.",
+        "Let’s be friends instead of fighting okay?",
+        "Your Clicks per second are godly.",
+        "If the world in Minecraft is infinite how can the sun revolve around it?",
+        "Blue is greenier than purple for sure",
+        "I sometimes try to say bad things and then this happens :(",
+        "I have really enjoyed playing with you! <3",
+        "What can’t the Ender Dragon read a book? Because he always starts at the End.",
+        "You are very good at this game friend.",
+        "I like to eat pasta, do you prefer nachos?",
+        "Sometimes I sing soppy, love songs in the car.",
+        "I love the way your hair glistens in the light",
+        "When I saw the guy with a potion I knew there was trouble brewing.",
+        "I enjoy long walks on the beach and playing Hypixel",
+        "I need help, teach me how to play!",
+        "What happens if I add chocolate milk to macaroni and cheese?",
+        "Can you paint with all the colors of the wind"
     ) // Got these from the forums, kinda based -humboldt123 
 
     private val timer = TickTimer(TimeUnit.SECONDS)
@@ -92,7 +91,7 @@ object AutoEZ : Module() {
     init {
         listener<ClientChatReceivedEvent> {
             if (detectMode.value != DetectMode.BROADCAST || mc.player == null
-                    || mc.player.isDead || mc.player.health <= 0.0f) return@listener
+                || mc.player.isDead || mc.player.health <= 0.0f) return@listener
 
             val message = it.message.unformattedText
             if (!message.contains(mc.player.name, true)) return@listener
@@ -143,14 +142,14 @@ object AutoEZ : Module() {
     private fun sendHelpMessage() {
         if (messageMode.value == MessageMode.CUSTOM && customText.value == "unchanged" && timer.tick(5L)) { // 5 seconds delay
             MessageSendHelper.sendChatMessage("$chatName In order to use the custom $name, " +
-                    "please change the CustomText setting in ClickGUI, " +
-                    "with '&7\$NAME&f' being the username of the killed player")
+                "please change the CustomText setting in ClickGUI, " +
+                "with '&7\$NAME&f' being the username of the killed player")
         }
     }
 
     private fun sendEzMessage(player: EntityPlayer) {
         val text = (if (messageMode.value == MessageMode.CUSTOM) customText.value else messageMode.value.text)
-                .replace("\$NAME", player.name).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
+            .replace("\$NAME", player.name).replace("\$HYPIXEL_MESSAGE", hypixelCensorMessages.random())
         sendServerMessage(text)
         attackedPlayers.remove(player)
     }

@@ -4,20 +4,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.blockHitDelay
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
-        name = "FastBreak",
-        category = Module.Category.PLAYER,
-        description = "Breaks block faster and nullifies the break delay"
-)
-object FastBreak : Module() {
+internal object FastBreak : Module(
+    name = "FastBreak",
+    category = Category.PLAYER,
+    description = "Breaks block faster and nullifies the break delay"
+) {
     private val delay = setting("Delay", 0, 0..5, 1)
     private val packetMine = setting("PacketMine", true)
     private val sneakTrigger = setting("SneakTrigger", true, { packetMine.value })

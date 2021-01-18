@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.mixin.client.gui;
 
 import me.zeroeightsix.kami.gui.mc.KamiGuiStealButton;
+import me.zeroeightsix.kami.gui.mc.KamiGuiStoreButton;
 import me.zeroeightsix.kami.module.modules.player.ChestStealer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,12 +22,15 @@ public class MixinGuiContainer extends GuiScreen {
     @Shadow protected int xSize;
 
     private final GuiButton stealButton = new KamiGuiStealButton(this.guiLeft + this.xSize + 2, this.guiTop + 2);
+    private final GuiButton storeButton = new KamiGuiStoreButton(this.guiLeft + this.xSize + 2, this.guiTop + 4 + stealButton.height);
 
     @Inject(method = "initGui", at = @At("HEAD"))
     public void initGui(CallbackInfo ci) {
         if (ChestStealer.INSTANCE.isValidGui()) {
             this.buttonList.add(stealButton);
-            updateButton();
+            this.buttonList.add(storeButton);
+            ChestStealer.updateButton(stealButton, this.guiLeft, this.xSize, this.guiTop);
+            ChestStealer.updateButton(storeButton, this.guiLeft, this.xSize, this.guiTop);
         }
     }
 
@@ -34,6 +38,8 @@ public class MixinGuiContainer extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 696969) {
             ChestStealer.INSTANCE.setStealing(!ChestStealer.INSTANCE.getStealing());
+        } else if (button.id == 420420) {
+            ChestStealer.INSTANCE.setStoring(!ChestStealer.INSTANCE.getStoring());
         } else {
             super.actionPerformed(button);
         }
@@ -41,24 +47,8 @@ public class MixinGuiContainer extends GuiScreen {
 
     @Inject(method = "updateScreen", at = @At("HEAD"))
     public void updateScreen(CallbackInfo ci) {
-        updateButton();
+        ChestStealer.updateButton(stealButton, this.guiLeft, this.xSize, this.guiTop);
+        ChestStealer.updateButton(storeButton, this.guiLeft, this.xSize, this.guiTop);
     }
 
-    private void updateButton() {
-        if (ChestStealer.INSTANCE.isEnabled() && ChestStealer.INSTANCE.isContainerOpen()) {
-            String str = "";
-            if (ChestStealer.INSTANCE.getStealing()) {
-                str = "Stop";
-            } else {
-                str = "Steal";
-            }
-            stealButton.x = this.guiLeft + this.xSize + 2;
-            stealButton.y = this.guiTop + 2;
-            stealButton.enabled = ChestStealer.INSTANCE.canSteal();
-            stealButton.visible = true;
-            stealButton.displayString = str;
-        } else {
-            stealButton.visible = false;
-        }
-    }
 }

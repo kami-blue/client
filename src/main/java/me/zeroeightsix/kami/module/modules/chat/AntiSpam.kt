@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.KamiMod
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.*
 import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -10,13 +10,12 @@ import org.kamiblue.event.listener.listener
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
-@Module.Info(
+internal object AntiSpam : Module(
     name = "AntiSpam",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Removes spam and advertising from the chat",
     showOnArray = false
-)
-object AntiSpam : Module() {
+) {
     private val mode = setting("Mode", Mode.REPLACE)
     private val replaceMode = setting("ReplaceMode", ReplaceMode.ASTERISKS, { mode.value == Mode.REPLACE })
     private val page = setting("Page", Page.TYPE)
@@ -77,6 +76,10 @@ object AntiSpam : Module() {
     )
 
     init {
+        onDisable {
+            messageHistory.clear()
+        }
+
         listener<ClientChatReceivedEvent> { event ->
             if (mc.player == null) return@listener
 
@@ -105,10 +108,6 @@ object AntiSpam : Module() {
         }
     }
 
-    override fun onDisable() {
-        messageHistory.clear()
-    }
-
     private fun sanitize(toClean: String, matcher: String, replacement: String): String {
         return if (!aggressiveFiltering.value) {
             toClean.replace("\\b$matcher|$matcher\\b".toRegex(), replacement) // only check for start or end of a word
@@ -119,8 +118,8 @@ object AntiSpam : Module() {
 
     private fun isSpam(message: String): String? {
         return if (!filterOwn.value && isOwn(message)
-                || !filterDMs.value && MessageDetection.Direct.ANY detect message
-                || !filterServer.value && MessageDetection.Server.ANY detect message) {
+            || !filterDMs.value && MessageDetection.Direct.ANY detect message
+            || !filterServer.value && MessageDetection.Server.ANY detect message) {
             null
         } else {
             detectSpam(removeUsername(message))

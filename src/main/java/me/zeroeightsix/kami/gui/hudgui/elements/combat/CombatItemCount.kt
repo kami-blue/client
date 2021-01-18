@@ -4,9 +4,10 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.HudElement
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
-import me.zeroeightsix.kami.util.InventoryUtils
 import me.zeroeightsix.kami.util.graphics.RenderUtils2D
 import me.zeroeightsix.kami.util.graphics.VertexHelper
+import me.zeroeightsix.kami.util.items.allSlots
+import me.zeroeightsix.kami.util.items.countItem
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -20,6 +21,7 @@ object CombatItemCount : LabelHud(
     private val arrow = setting("Arrow", true)
     private val crystal = setting("Crystal", true)
     private val gapple = setting("Gapple", true)
+    private val totem = setting("Totem", true)
     private val xpBottle = setting("XpBottle", true)
     private val pearl = setting("Pearl", false)
     private val chorusFruit = setting("ChorusFruit", false)
@@ -30,6 +32,7 @@ object CombatItemCount : LabelHud(
         arrow to arrayOf(Items.ARROW, Items.SPECTRAL_ARROW, Items.TIPPED_ARROW),
         crystal to arrayOf(Items.END_CRYSTAL),
         gapple to arrayOf(Items.GOLDEN_APPLE),
+        totem to arrayOf(Items.TOTEM_OF_UNDYING),
         xpBottle to arrayOf(Items.EXPERIENCE_BOTTLE),
         pearl to arrayOf(Items.ENDER_PEARL),
         chorusFruit to arrayOf(Items.CHORUS_FRUIT)
@@ -39,12 +42,13 @@ object CombatItemCount : LabelHud(
         ItemStack(Items.ARROW, -1),
         ItemStack(Items.END_CRYSTAL, -1),
         ItemStack(Items.GOLDEN_APPLE, -1, 1),
+        ItemStack(Items.TOTEM_OF_UNDYING, -1),
         ItemStack(Items.EXPERIENCE_BOTTLE, -1),
         ItemStack(Items.ENDER_PEARL, -1),
         ItemStack(Items.CHORUS_FRUIT, -1)
     )
 
-    override val maxWidth: Float
+    override val hudWidth: Float
         get() = if (showIcon) {
             if (horizontal) 20.0f * itemSettings.keys.count { it.value }
             else 20.0f
@@ -52,7 +56,7 @@ object CombatItemCount : LabelHud(
             displayText.getWidth()
         }
 
-    override val maxHeight: Float
+    override val hudHeight: Float
         get() = if (showIcon) {
             if (horizontal) 20.0f
             else 20.0f * itemSettings.keys.count { it.value }
@@ -61,8 +65,10 @@ object CombatItemCount : LabelHud(
         }
 
     override fun SafeClientEvent.updateText() {
+        val slots = player.allSlots
+
         for ((index, entry) in itemSettings.entries.withIndex()) {
-            val count = if (entry.key.value) entry.value.sumBy { InventoryUtils.countItemAll(it) }
+            val count = if (entry.key.value) entry.value.sumBy { slots.countItem(it) }
             else -1
 
             if (showIcon) {

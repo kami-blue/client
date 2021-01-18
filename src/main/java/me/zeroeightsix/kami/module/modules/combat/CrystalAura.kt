@@ -10,11 +10,16 @@ import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
 import me.zeroeightsix.kami.mixin.extension.id
 import me.zeroeightsix.kami.mixin.extension.packetAction
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.combat.CrystalUtils
+import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
+import me.zeroeightsix.kami.util.combat.CrystalUtils.calcCrystalDamage
+import me.zeroeightsix.kami.util.combat.CrystalUtils.canPlaceCollide
+import me.zeroeightsix.kami.util.combat.CrystalUtils.getCrystalBB
+import me.zeroeightsix.kami.util.combat.CrystalUtils.getCrystalList
+import me.zeroeightsix.kami.util.items.*
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
@@ -22,6 +27,7 @@ import me.zeroeightsix.kami.util.math.VectorUtils.toVec3d
 import me.zeroeightsix.kami.util.math.VectorUtils.toVec3dCenter
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
+import me.zeroeightsix.kami.util.threads.runSafeR
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Items
@@ -53,14 +59,13 @@ import kotlin.math.max
 import kotlin.math.min
 
 @CombatManager.CombatModule
-@Module.Info(
+internal object CrystalAura : Module(
     name = "CrystalAura",
-    alias = ["CA", "AC", "AutoCrystal"],
+    alias = arrayOf("CA", "AC", "AutoCrystal"),
     description = "Places End Crystals to kill enemies",
-    category = Module.Category.COMBAT,
+    category = Category.COMBAT,
     modulePriority = 80
-)
-object CrystalAura : Module() {
+) {
     /* Settings */
     private val page by setting("Page", Page.GENERAL)
 
@@ -73,7 +78,7 @@ object CrystalAura : Module() {
     /* Force place */
     private val bindForcePlace by setting("BindForcePlace", Bind(), { page == Page.FORCE_PLACE })
     private val forcePlaceHealth by setting("ForcePlaceHealth", 6.0f, 0.0f..20.0f, 0.5f, { page == Page.FORCE_PLACE })
-    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 10, 0..50, 1, { page == Page.FORCE_PLACE })
+    private val forcePlaceArmorDura by setting("ForcePlaceArmorDura", 5, 0..50, 1, { page == Page.FORCE_PLACE })
     private val minDamageForcePlace by setting("MinDamageForcePlace", 1.5f, 0.0f..10.0f, 0.25f, { page == Page.FORCE_PLACE })
 
     /* Place page one */
@@ -104,7 +109,7 @@ object CrystalAura : Module() {
     /* Explode page two */
     private val minDamageE by setting("MinDamageExplode", 6.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
     private val maxSelfDamageE by setting("MaxSelfDamageExplode", 3.0f, 0.0f..10.0f, 0.25f, { page == Page.EXPLODE_TWO })
-    private val swapDelay by setting("SwapDelay", 10, 1..50, 2, { page == Page.EXPLODE_TWO })
+    private val swapDelay by setting("SwapDelay", 10, 1..50, 1, { page == Page.EXPLODE_TWO })
     private val hitDelay by setting("HitDelay", 1, 1..10, 1, { page == Page.EXPLODE_TWO })
     private val hitAttempts by setting("HitAttempts", 4, 0..8, 1, { page == Page.EXPLODE_TWO })
     private val explodeRange by setting("ExplodeRange", 4.0f, 0.0f..5.0f, 0.25f, { page == Page.EXPLODE_TWO })
@@ -142,24 +147,28 @@ object CrystalAura : Module() {
     val minDamage get() = max(minDamageP, minDamageE)
     val maxSelfDamage get() = min(maxSelfDamageP, maxSelfDamageE)
 
-    override fun isActive() = isEnabled && InventoryUtils.countItemAll(426) > 0 && inactiveTicks <= 20
-
-    override fun onEnable() {
-        if (mc.player == null) disable()
-        else resetRotation()
-    }
-
-    override fun onDisable() {
-        lastCrystal = null
-        forcePlacing = false
-        placeTimer = 0
-        hitTimer = 0
-        hitCount = 0
-        inactiveTicks = 10
-        PlayerPacketManager.resetHotbar()
-    }
+    override fun isActive() =
+        isEnabled
+            && (mc.player?.allSlots?.countItem(Items.END_CRYSTAL) ?: 0) > 0
+            && inactiveTicks <= 20
 
     init {
+        onEnable {
+            runSafeR {
+                resetRotation()
+            } ?: disable()
+        }
+
+        onDisable {
+            lastCrystal = null
+            forcePlacing = false
+            placeTimer = 0
+            hitTimer = 0
+            hitCount = 0
+            inactiveTicks = 10
+            PlayerPacketManager.resetHotbar()
+        }
+
         listener<InputEvent.KeyInputEvent> {
             if (bindForcePlace.isDown(Keyboard.getEventKey())) {
                 forcePlacing = !forcePlacing
@@ -186,7 +195,7 @@ object CrystalAura : Module() {
                 is SPacketSoundEffect -> {
                     // Minecraft sends sounds packets a tick before removing the crystal lol
                     if (event.packet.category == SoundCategory.BLOCKS && event.packet.sound == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                        val crystalList = CrystalUtils.getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 6.0f)
+                        val crystalList = getCrystalList(Vec3d(event.packet.x, event.packet.y, event.packet.z), 6.0f)
 
                         for (crystal in crystalList) {
                             crystal.setDead()
@@ -261,33 +270,37 @@ object CrystalAura : Module() {
     }
 
     private fun SafeClientEvent.place() {
-        if (autoSwap && getHand() == null) {
-            InventoryUtils.getSlotsHotbar(426)?.get(0)?.let {
-                if (spoofHotbar) PlayerPacketManager.spoofHotbar(it)
-                else InventoryUtils.swapSlot(it)
-            }
-        }
-
         getPlacingPos()?.let { pos ->
-            getHand()?.let { hand ->
-                placeTimer = 0
-                inactiveTicks = 0
-                lastLookAt = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
-                sendOrQueuePacket(getPlacePacket(pos, hand))
-                if (extraPlacePacket) sendOrQueuePacket(getPlacePacket(pos, hand))
-                if (placeSwing) sendOrQueuePacket(CPacketAnimation(hand))
+            val hand = getHand()
 
-                val crystalPos = pos.up()
-                placedBBMap[crystalPos] = CrystalUtils.getCrystalBB(crystalPos) to System.currentTimeMillis()
+            if (hand == null) {
+                if (autoSwap) {
+                    player.hotbarSlots.firstItem(Items.END_CRYSTAL)?.let {
+                        if (spoofHotbar) PlayerPacketManager.spoofHotbar(it.hotbarSlot)
+                        else swapToSlot(it)
+                    }
+                }
+                return
+            }
 
-                if (predictExplode) {
-                    defaultScope.launch {
-                        delay(predictDelay.toLong())
+            placeTimer = 0
+            inactiveTicks = 0
+            lastLookAt = Vec3d(pos).add(0.5, placeOffset.toDouble(), 0.5)
 
-                        synchronized(lockObject) {
-                            if (!placedBBMap.containsKey(crystalPos)) return@synchronized
-                            packetExplode(lastEntityID + 1, pos, crystalPos.toVec3d(0.5, 0.0, 0.5))
-                        }
+            sendOrQueuePacket(getPlacePacket(pos, hand))
+            if (extraPlacePacket) sendOrQueuePacket(getPlacePacket(pos, hand))
+            if (placeSwing) sendOrQueuePacket(CPacketAnimation(hand))
+
+            val crystalPos = pos.up()
+            placedBBMap[crystalPos] = getCrystalBB(crystalPos) to System.currentTimeMillis()
+
+            if (predictExplode) {
+                defaultScope.launch {
+                    delay(predictDelay.toLong())
+
+                    synchronized(lockObject) {
+                        if (!placedBBMap.containsKey(crystalPos)) return@synchronized
+                        packetExplode(lastEntityID + 1, pos, crystalPos.toVec3d(0.5, 0.0, 0.5))
                     }
                 }
             }
@@ -296,7 +309,7 @@ object CrystalAura : Module() {
 
     private fun SafeClientEvent.preExplode(): Boolean {
         if (antiWeakness && player.isPotionActive(MobEffects.WEAKNESS) && !isHoldingTool()) {
-            CombatUtils.equipBestWeapon()
+            equipBestWeapon()
             PlayerPacketManager.resetHotbar()
             return false
         }
@@ -329,9 +342,9 @@ object CrystalAura : Module() {
     }
 
     private fun SafeClientEvent.explode() {
-        if (!preExplode()) return
-
         getExplodingCrystal()?.let {
+            if (!preExplode()) return
+
             if (hitAttempts != 0 && it == lastCrystal) {
                 hitCount++
                 if (hitCount >= hitAttempts) ignoredList.add(it)
@@ -371,13 +384,11 @@ object CrystalAura : Module() {
     /* End of main functions */
 
     /* Placing */
-    private fun SafeClientEvent.canPlace(): Boolean {
-        return doPlace
+    private fun SafeClientEvent.canPlace() =
+        doPlace
             && placeTimer > placeDelay
-            && InventoryUtils.countItemAll(426) > 0
-            && getPlacingPos() != null
+            && player.allSlots.countItem(Items.END_CRYSTAL) > 0
             && countValidCrystal() < maxCrystal
-    }
 
     @Suppress("UnconditionalJumpStatementInLoop") // The linter is wrong here, it will continue until it's supposed to return
     private fun SafeClientEvent.getPlacingPos(): BlockPos? {
@@ -399,11 +410,11 @@ object CrystalAura : Module() {
             if (hitBlockPos.distanceTo(pos) > 1.0 && triple.third > wallPlaceRange) continue
 
             // Collide check
-            if (!CrystalUtils.canPlaceCollide(pos)) continue
+            if (!canPlaceCollide(pos)) continue
 
             // Place sync
             if (placeSync) {
-                val bb = CrystalUtils.getCrystalBB(pos.up())
+                val bb = getCrystalBB(pos.up())
                 if (placedBBMap.values.any { it.first.intersects(bb) }) continue
             }
 
@@ -424,37 +435,38 @@ object CrystalAura : Module() {
     /* End of placing */
 
     /* Exploding */
-    private fun SafeClientEvent.canExplode() =
-        doExplode
-            && hitTimer > hitDelay
-            && getExplodingCrystal() != null
+    private fun canExplode() = doExplode && hitTimer > hitDelay
 
-    private fun SafeClientEvent.getExplodingCrystal() =
-        (crystalMap.entries.firstOrNull { (crystal, triple) ->
+    private fun SafeClientEvent.getExplodingCrystal(): EntityEnderCrystal? {
+        val filteredCrystal = crystalMap.entries.filter { (crystal, triple) ->
             !ignoredList.contains(crystal)
                 && !crystal.isDead
-                && triple.third <= explodeRange
                 && checkDamageExplode(triple.first, triple.second)
+                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        }
+
+        return (filteredCrystal.firstOrNull { (crystal, triple) ->
+            triple.third <= explodeRange
                 && (player.canEntityBeSeen(crystal) || EntityUtils.canEntityFeetBeSeen(crystal))
-                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
-        } ?: crystalMap.entries.firstOrNull { (crystal, triple) ->
-            !ignoredList.contains(crystal)
-                && !crystal.isDead
-                && triple.third <= wallExplodeRange
-                && checkDamageExplode(triple.first, triple.second)
-                && EntityUtils.canEntityHitboxBeSeen(crystal) != null
-                && checkYawSpeed(RotationUtils.getRotationToEntity(crystal).x)
+        } ?: filteredCrystal.firstOrNull { (_, triple) ->
+            triple.third <= wallExplodeRange
         })?.key
+    }
 
 
-    private fun checkDamageExplode(damage: Float, selfDamage: Float) = (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
+    private fun checkDamageExplode(damage: Float, selfDamage: Float) =
+        (shouldFacePlace(damage) || shouldForceExplode() || damage >= minDamageE) && selfDamage <= maxSelfDamageE
 
-    private fun shouldForceExplode() = autoForceExplode && placeMap.isNotEmpty() && placeMap.values.first().second > minDamageE
+    private fun shouldForceExplode() = autoForceExplode
+        && placeMap.values.any {
+        it.first > minDamage && it.second <= maxSelfDamage && it.third <= placeRange
+    }
     /* End of exploding */
 
     /* General */
     private fun SafeClientEvent.getHand(): EnumHand? {
         val serverSideItem = if (spoofHotbar) player.inventory.getStackInSlot(PlayerPacketManager.serverSideHotbar).item else null
+
         return when (Items.END_CRYSTAL) {
             player.heldItemOffhand.item -> EnumHand.OFF_HAND
             player.heldItemMainhand.item -> EnumHand.MAIN_HAND
@@ -495,8 +507,8 @@ object CrystalAura : Module() {
                 for ((_, pair) in placedBBMap) {
                     val pos = pair.first.center.subtract(0.0, 1.0, 0.0)
                     if (pos.distanceTo(eyePos) > placeRange) continue
-                    val damage = CrystalUtils.calcDamage(pos, it)
-                    val selfDamage = CrystalUtils.calcDamage(pos, player)
+                    val damage = calcCrystalDamage(pos, it)
+                    val selfDamage = calcCrystalDamage(pos, player)
                     if (!checkDamagePlace(damage, selfDamage)) continue
                     count++
                 }

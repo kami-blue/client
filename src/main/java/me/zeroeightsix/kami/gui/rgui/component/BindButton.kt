@@ -9,14 +9,9 @@ import org.lwjgl.input.Keyboard
 
 class BindButton(
     private val setting: BindSetting
-) : Slider(setting.name, 0.0, setting.description) {
+) : Slider(setting.name, 0.0, setting.description, setting.visibility) {
 
     override val renderProgress: Double = 0.0
-
-    override fun onTick() {
-        super.onTick()
-        visible = setting.isVisible
-    }
 
     override fun onRelease(mousePos: Vec2f, buttonId: Int) {
         super.onRelease(mousePos, buttonId)

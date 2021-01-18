@@ -5,8 +5,9 @@ import me.zeroeightsix.kami.util.graphics.AnimationUtils
 open class BooleanSlider(
     name: String,
     valueIn: Double,
-    descriptionIn: String
-) : Slider(name, valueIn, descriptionIn) {
+    description: String,
+    visibility: (() -> Boolean)? = null
+) : Slider(name, valueIn, description, visibility) {
     override val renderProgress: Double
         get() = AnimationUtils.exponent(AnimationUtils.toDeltaTimeDouble(prevValue.lastUpdateTime), 200.0, prevValue.value, value)
 }

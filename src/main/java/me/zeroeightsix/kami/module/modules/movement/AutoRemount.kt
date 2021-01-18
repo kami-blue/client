@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.movement
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -12,12 +12,11 @@ import net.minecraft.entity.passive.*
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "AutoRemount",
-        description = "Automatically remounts your horse",
-        category = Module.Category.MOVEMENT
-)
-object AutoRemount : Module() {
+internal object AutoRemount : Module(
+    name = "AutoRemount",
+    description = "Automatically remounts your horse",
+    category = Category.MOVEMENT
+) {
     private val boat = setting("Boats", true)
     private val horse = setting("Horse", true)
     private val skeletonHorse = setting("SkeletonHorse", true)
@@ -39,9 +38,9 @@ object AutoRemount : Module() {
             }
             if (remountTimer.tick(remountDelay.value.toLong())) {
                 world.loadedEntityList.stream()
-                        .filter { entity: Entity -> isValidEntity(entity) }
-                        .min(compareBy { player.getDistance(it) })
-                        .ifPresent { playerController.interactWithEntity(player, it, EnumHand.MAIN_HAND) }
+                    .filter { entity: Entity -> isValidEntity(entity) }
+                    .min(compareBy { player.getDistance(it) })
+                    .ifPresent { playerController.interactWithEntity(player, it, EnumHand.MAIN_HAND) }
             }
         }
     }
@@ -49,12 +48,12 @@ object AutoRemount : Module() {
     private fun SafeClientEvent.isValidEntity(entity: Entity): Boolean {
         if (entity.getDistance(player) > range.value) return false
         return entity is EntityBoat && boat.value
-                || entity is EntityAnimal && !entity.isChild // FBI moment
-                && (entity is EntityHorse && horse.value
-                || entity is EntitySkeletonHorse && skeletonHorse.value
-                || entity is EntityDonkey && donkey.value
-                || entity is EntityMule && mule.value
-                || entity is EntityPig && entity.saddled && pig.value
-                || entity is EntityLlama && llama.value)
+            || entity is EntityAnimal && !entity.isChild // FBI moment
+            && (entity is EntityHorse && horse.value
+            || entity is EntitySkeletonHorse && skeletonHorse.value
+            || entity is EntityDonkey && donkey.value
+            || entity is EntityMule && mule.value
+            || entity is EntityPig && entity.saddled && pig.value
+            || entity is EntityLlama && llama.value)
     }
 }

@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.event.events.*
 import me.zeroeightsix.kami.manager.managers.WaypointManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager.Waypoint
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.color.ColorHolder
@@ -25,12 +25,11 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-@Module.Info(
+internal object WaypointRender : Module(
     name = "WaypointRender",
     description = "Render saved waypoints",
-    category = Module.Category.RENDER
-)
-object WaypointRender : Module() {
+    category = Category.RENDER
+) {
 
     private val page = setting("Page", Page.INFO_BOX)
 
@@ -50,8 +49,8 @@ object WaypointRender : Module() {
     private val outline = setting("Outline", true, { page.value == Page.ESP })
     private val tracer = setting("Tracer", true, { page.value == Page.ESP })
     private val r = setting("Red", 31, 0..255, 1, { page.value == Page.ESP })
-    private val g = setting("Green",200, 0..255, 1, { page.value == Page.ESP })
-    private val b = setting("Blue",63, 0..255, 1, { page.value == Page.ESP })
+    private val g = setting("Green", 200, 0..255, 1, { page.value == Page.ESP })
+    private val b = setting("Blue", 63, 0..255, 1, { page.value == Page.ESP })
     private val aFilled = setting("FilledAlpha", 63, 0..255, 1, { page.value == Page.ESP && filled.value })
     private val aOutline = setting("OutlineAlpha", 160, 0..255, 1, { page.value == Page.ESP && outline.value })
     private val aTracer = setting("TracerAlpha", 200, 0..255, 1, { page.value == Page.ESP && tracer.value })
@@ -137,15 +136,15 @@ object WaypointRender : Module() {
         glPopMatrix()
     }
 
-    override fun onEnable() {
-        timer.reset(-10000L) // Update the map immediately and thread safely
-    }
-
-    override fun onDisable() {
-        currentServer = null
-    }
-
     init {
+        onEnable {
+            timer.reset(-10000L) // Update the map immediately and thread safely
+        }
+
+        onDisable {
+            currentServer = null
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (WaypointManager.genDimension() != prevDimension || timer.tick(10L, false)) {
                 updateList()

@@ -1,42 +1,54 @@
 package me.zeroeightsix.kami.module.modules.combat
 
-import com.mojang.realmsclient.gui.ChatFormatting
 import me.zeroeightsix.kami.manager.managers.FriendManager
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
+import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
+import me.zeroeightsix.kami.util.EntityUtils.isFakeOrSelf
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendServerMessage
+import me.zeroeightsix.kami.util.text.format
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.SoundEvents
+import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.*
 
-@Module.Info(
-        name = "VisualRange",
-        description = "Shows players who enter and leave range in chat",
-        category = Module.Category.COMBAT,
-        alwaysListening = true
-)
-object VisualRange : Module() {
-    private val playSound = setting("PlaySound", false)
-    private val leaving = setting("CountLeaving", false)
-    private val friends = setting("Friends", true)
-    private val uwuAura = setting("UwUAura", false)
-    private val logToFile = setting("LogToFile", false)
+internal object VisualRange : Module(
+    name = "VisualRange",
+    description = "Shows players who enter and leave range in chat",
+    category = Category.COMBAT,
+    alwaysListening = true
+) {
+    private const val NAME_FORMAT = "\$NAME"
+
+    private val playSound by setting("PlaySound", false)
+    private val leaving by setting("CountLeaving", false)
+    private val friends by setting("Friends", true)
+    private val uwuAura by setting("UwUAura", false)
+    private val logToFile by setting("LogToFile", false)
+    private val enterMessage by setting("EnterMessage", "$NAME_FORMAT spotted!")
+    private val leaveMessage by setting("LeaveMessage", "$NAME_FORMAT left!", { leaving })
 
     private val playerSet = LinkedHashSet<EntityPlayer>()
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     init {
         safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase != TickEvent.Phase.END || isDisabled && player.ticksExisted % 5 != 0) return@safeListener
+            if (it.phase != TickEvent.Phase.END || !timer.tick(1L)) return@safeListener
 
             val loadedPlayerSet = LinkedHashSet(world.playerEntities)
-            for (player in loadedPlayerSet) {
-                if (player == mc.renderViewEntity || player == player || !friends.value && FriendManager.isFriend(player.name)) continue
-                if (playerSet.add(player) && isEnabled) {
-                    onEnter(player)
+            for (entityPlayer in loadedPlayerSet) {
+                if (entityPlayer.isFakeOrSelf) continue // Self / Freecam / FakePlayer check
+                if (!friends && FriendManager.isFriend(entityPlayer.name)) continue // Friend check
+
+                if (playerSet.add(entityPlayer) && isEnabled) {
+                    onEnter(entityPlayer)
                 }
             }
 
@@ -52,23 +64,30 @@ object VisualRange : Module() {
     }
 
     private fun onEnter(player: EntityPlayer) {
-        sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}joined!")
-        if (logToFile.value) WaypointManager.add("${player.name} spotted!")
-        if (uwuAura.value) sendServerMessage("/w ${player.name} hi uwu")
+        val message = enterMessage.replaceName(player)
+
+        sendNotification(message)
+        if (logToFile) WaypointManager.add(player.flooredPosition, message)
+        if (uwuAura) sendServerMessage("/w ${player.name} hi uwu")
     }
 
     private fun onLeave(player: EntityPlayer) {
-        if (leaving.value) {
-            sendNotification("${getColor(player)}${player.name} ${ChatFormatting.RESET}left!")
-            if (logToFile.value) WaypointManager.add("${player.name} left!")
-            if (uwuAura.value) sendServerMessage("/w ${player.name} bye uwu")
-        }
+        if (!leaving) return
+        val message = leaveMessage.replaceName(player)
+
+        sendNotification(message)
+        if (logToFile) WaypointManager.add(player.flooredPosition, message)
+        if (uwuAura) sendServerMessage("/w ${player.name} bye uwu")
     }
 
-    private fun getColor(player: EntityPlayer) = if (FriendManager.isFriend(player.name)) ChatFormatting.GREEN.toString() else ChatFormatting.RED.toString()
+    private fun String.replaceName(player: EntityPlayer) = replace(NAME_FORMAT, getColor(player) format player.name)
+
+    private fun getColor(player: EntityPlayer) =
+        if (FriendManager.isFriend(player.name)) TextFormatting.GREEN
+        else TextFormatting.RED
 
     private fun sendNotification(message: String) {
-        if (playSound.value) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
+        if (playSound) mc.soundHandler.playSound(PositionedSoundRecord.getRecord(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f))
         MessageSendHelper.sendChatMessage(message)
     }
 }

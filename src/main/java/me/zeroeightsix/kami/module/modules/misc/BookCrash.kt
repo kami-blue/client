@@ -1,7 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
@@ -19,12 +19,11 @@ import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@Module.Info(
+internal object BookCrash : Module(
     name = "BookCrash",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Crashes servers by sending large packets"
-)
-object BookCrash : Module() {
+) {
     private val mode = setting("Mode", Mode.RAION)
     private val fillMode = setting("FillMode", FillMode.RANDOM)
     private val uses = setting("Uses", 2, 1..10, 1)

@@ -2,6 +2,7 @@ package me.zeroeightsix.kami.mixin.client.render;
 
 import me.zeroeightsix.kami.module.modules.render.NoRender;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.tileentity.TileEntitySign;
@@ -21,9 +22,9 @@ public class MixinTileEntitySignRenderer {
     @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/tileentity/TileEntitySign;signText:[Lnet/minecraft/util/text/ITextComponent;", opcode = Opcodes.GETFIELD))
     public ITextComponent[] getRenderViewEntity(TileEntitySign sign) {
         if (NoRender.INSTANCE.isEnabled() && NoRender.INSTANCE.getSignText().getValue()) {
-            if (mc.currentScreen instanceof GuiEditSign) {
-                if (getTileSign((GuiEditSign) mc.currentScreen).equals(sign))
-                    return sign.signText;
+            GuiScreen screen = mc.currentScreen;
+            if (screen instanceof GuiEditSign && getTileSign((GuiEditSign) screen).equals(sign)) {
+                return sign.signText;
             }
             return new ITextComponent[]{};
         }

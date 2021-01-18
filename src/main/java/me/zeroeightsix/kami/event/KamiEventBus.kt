@@ -26,6 +26,11 @@ object KamiEventBus : AbstractAsyncEventBus() {
 
     override fun post(event: Any) {
         runBlocking {
+            subscribedListeners[event.javaClass]?.forEach {
+                @Suppress("UNCHECKED_CAST") // IDE meme
+                (it as Listener<Any>).function.invoke(event)
+            }
+
             coroutineScope {
                 subscribedListenersAsync[event.javaClass]?.forEach {
                     launch(asyncEventDispatcher) {
@@ -33,11 +38,6 @@ object KamiEventBus : AbstractAsyncEventBus() {
                         (it as AsyncListener<Any>).function.invoke(event)
                     }
                 }
-            }
-
-            subscribedListeners[event.javaClass]?.forEach {
-                @Suppress("UNCHECKED_CAST") // IDE meme
-                (it as Listener<Any>).function.invoke(event)
             }
         }
     }

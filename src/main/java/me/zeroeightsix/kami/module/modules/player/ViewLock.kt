@@ -1,21 +1,21 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.math.Vec2f
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
+import kotlin.collections.ArrayDeque
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-@Module.Info(
-        name = "ViewLock",
-        category = Module.Category.PLAYER,
-        description = "Locks your camera view"
-)
-object ViewLock : Module() {
+internal object ViewLock : Module(
+    name = "ViewLock",
+    category = Category.PLAYER,
+    description = "Locks your camera view"
+) {
 
     private val yaw = setting("Yaw", true)
     private val pitch = setting("Pitch", true)
@@ -30,18 +30,18 @@ object ViewLock : Module() {
 
     private var yawSnap = 0
     private var pitchSnap = 0
-    private val deltaXQueue = LinkedList<Pair<Float, Long>>()
-    private val deltaYQueue = LinkedList<Pair<Float, Long>>()
+    private val deltaXQueue = ArrayDeque<Pair<Float, Long>>()
+    private val deltaYQueue = ArrayDeque<Pair<Float, Long>>()
     private var pitchSliceAngle = 1.0f
     private var yawSliceAngle = 1.0f
 
-    override fun onEnable() {
-        yawSliceAngle = 360.0f / yawSlice.value
-        pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
-        if (autoYaw.value || autoPitch.value) snapToNext()
-    }
-
     init {
+        onEnable {
+            yawSliceAngle = 360.0f / yawSlice.value
+            pitchSliceAngle = 180.0f / (pitchSlice.value - 1)
+            if (autoYaw.value || autoPitch.value) snapToNext()
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase != TickEvent.Phase.END) return@safeListener
             if (autoYaw.value || autoPitch.value) {
@@ -62,12 +62,12 @@ object ViewLock : Module() {
         changeDirection(yawChange, pitchChange)
 
         return Vec2f(
-                if (yaw.value && disableMouseYaw.value) 0.0f else deltaX,
-                if (pitch.value && disableMousePitch.value) 0.0f else deltaY
+            if (yaw.value && disableMouseYaw.value) 0.0f else deltaX,
+            if (pitch.value && disableMousePitch.value) 0.0f else deltaY
         )
     }
 
-    private fun handleDelta(delta: Float, list: LinkedList<Pair<Float, Long>>, slice: Float): Int {
+    private fun handleDelta(delta: Float, list: ArrayDeque<Pair<Float, Long>>, slice: Float): Int {
         val currentTime = System.currentTimeMillis()
         list.add(Pair(delta * 0.15f, currentTime))
 
@@ -76,8 +76,8 @@ object ViewLock : Module() {
             list.clear()
             sign(sum).toInt()
         } else {
-            while (list.peek().second < currentTime - 500) {
-                list.remove()
+            while (list.first().second < currentTime - 500) {
+                list.removeFirstOrNull()
             }
             0
         }
@@ -121,7 +121,7 @@ object ViewLock : Module() {
             if (isEnabled && autoPitch.value) snapToNext()
         }
 
-        with( {_: Boolean ,it: Boolean -> if (isEnabled && it) snapToNext()}) {
+        with({ _: Boolean, it: Boolean -> if (isEnabled && it) snapToNext() }) {
             autoPitch.valueListeners.add(this)
             autoYaw.valueListeners.add(this)
         }

@@ -1,4 +1,4 @@
-package me.zeroeightsix.kami.util
+package me.zeroeightsix.kami.util.items
 
 import net.minecraft.block.Block
 import net.minecraft.item.Item

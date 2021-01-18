@@ -12,10 +12,11 @@ import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.manager.Manager
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.graphics.TextureUtils
 import me.zeroeightsix.kami.util.threads.mainScope
 import me.zeroeightsix.kami.util.threads.onMainThreadW
-import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11.GL_RGBA
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -125,7 +126,7 @@ object KamiMojiManager : Manager {
             val image = ImageIO.read(file)
 
             onMainThreadW(5000L) {
-                val dynamicTexture = DynamicTexture(image)
+                val dynamicTexture = TextureUtils.genTextureWithMipmaps(image, 3, GL_RGBA)
                 val resourceLocation = Wrapper.minecraft.textureManager.getDynamicTextureLocation(name, dynamicTexture)
                 emojiMap[name] = resourceLocation
             }

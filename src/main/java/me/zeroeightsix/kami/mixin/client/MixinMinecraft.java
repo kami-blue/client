@@ -1,13 +1,10 @@
 package me.zeroeightsix.kami.mixin.client;
 
-import me.zeroeightsix.kami.KamiMod;
 import me.zeroeightsix.kami.event.KamiEventBus;
 import me.zeroeightsix.kami.event.events.GuiEvent;
 import me.zeroeightsix.kami.event.events.RenderEvent;
-import me.zeroeightsix.kami.event.events.ShutdownEvent;
 import me.zeroeightsix.kami.gui.mc.KamiGuiUpdateNotification;
 import me.zeroeightsix.kami.module.modules.combat.CrystalAura;
-import me.zeroeightsix.kami.util.ConfigUtils;
 import me.zeroeightsix.kami.util.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -72,12 +69,12 @@ public class MixinMinecraft {
 
     @Inject(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayCrashReport(Lnet/minecraft/crash/CrashReport;)V", shift = At.Shift.BEFORE))
     public void displayCrashReport(CallbackInfo info) {
-        save();
+        Wrapper.saveAndShutdown();
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     public void shutdown(CallbackInfo info) {
-        save();
+        Wrapper.saveAndShutdown();
     }
 
     @Inject(method = "init", at = @At("TAIL"))
@@ -85,15 +82,6 @@ public class MixinMinecraft {
         if (KamiGuiUpdateNotification.Companion.getLatest() != null && !KamiGuiUpdateNotification.Companion.isLatest()) {
             Wrapper.getMinecraft().displayGuiScreen(new KamiGuiUpdateNotification());
         }
-    }
-
-    private void save() {
-        if (!KamiMod.isReady()) return;
-
-        ShutdownEvent.INSTANCE.post();
-        System.out.println("Shutting down: saving KAMI configuration");
-        ConfigUtils.INSTANCE.saveAll();
-        System.out.println("Configuration saved.");
     }
 
 }

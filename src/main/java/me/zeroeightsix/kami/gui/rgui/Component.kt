@@ -25,16 +25,17 @@ open class Component(
     protected val visibleSetting = setting("Visible", true, { false }, { _, it -> it || !closeable })
     var visible by visibleSetting
 
+    protected val dockingHSetting = setting("DockingH", HAlign.LEFT)
+    protected val dockingVSetting = setting("DockingV", VAlign.TOP)
+
+    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledWidth, minWidth)) })
+    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
+
     protected var relativePosX by setting("PosX", posXIn, -69420.911f..69420.911f, 0.1f, { false },
         { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeX(relativeToAbsX(it).coerceIn(2.0f, max(scaledWidth - width - 2.0f, 2.0f))) else it })
     protected var relativePosY by setting("PosY", posYIn, -69420.911f..69420.911f, 0.1f, { false },
         { _, it -> if (this is WindowComponent && KamiMod.isReady()) absToRelativeY(relativeToAbsY(it).coerceIn(2.0f, max(scaledHeight - height - 2.0f, 2.0f))) else it })
 
-    var width by setting("Width", widthIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minWidth, max(scaledWidth, minWidth)) })
-    var height by setting("Height", heightIn, 0.0f..69420.911f, 0.1f, { false }, { _, it -> it.coerceIn(minHeight, max(scaledHeight, minHeight)) })
-
-    protected val dockingHSetting = setting("DockingH", HAlign.LEFT)
-    protected val dockingVSetting = setting("DockingV", VAlign.TOP)
     var dockingH by dockingHSetting
     var dockingV by dockingVSetting
 

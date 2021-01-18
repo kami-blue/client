@@ -1,18 +1,17 @@
 package me.zeroeightsix.kami.module.modules.movement
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
-        name = "AutoJump",
-        category = Module.Category.MOVEMENT,
-        description = "Automatically jumps if possible"
-)
-object AutoJump : Module() {
+internal object AutoJump : Module(
+    name = "AutoJump",
+    category = Category.MOVEMENT,
+    description = "Automatically jumps if possible"
+) {
     private val delay = setting("TickDelay", 10, 0..40, 1)
 
     private val timer = TickTimer(TimeUnit.TICKS)

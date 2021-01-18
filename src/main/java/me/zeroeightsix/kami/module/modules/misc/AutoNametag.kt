@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.SafeClientEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
@@ -15,12 +15,11 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Module.Info(
+internal object AutoNametag : Module(
     name = "AutoNametag",
     description = "Automatically nametags entities",
-    category = Module.Category.MISC
-)
-object AutoNametag : Module() {
+    category = Category.MISC
+) {
     private val modeSetting = setting("Mode", Mode.ANY)
     private val range = setting("Range", 3.5f, 2.0f..8.0f, 0.5f)
     private val debug = setting("Debug", false)

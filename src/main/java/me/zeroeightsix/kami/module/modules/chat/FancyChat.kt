@@ -1,20 +1,19 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.MessageManager.newMessageModifier
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageDetection
 import org.kamiblue.commons.utils.MathUtils
 import kotlin.math.min
 
-@Module.Info(
+internal object FancyChat : Module(
     name = "FancyChat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     description = "Makes messages you send fancy",
     showOnArray = false,
     modulePriority = 100
-)
-object FancyChat : Module() {
+) {
     private val uwu = setting("uwu", true)
     private val leet = setting("1337", false)
     private val mock = setting("mOcK", false)
@@ -25,22 +24,24 @@ object FancyChat : Module() {
     private val spammer = setting("Spammer", false)
 
     private val modifier = newMessageModifier(
-            filter = {
-                (commands.value || MessageDetection.Command.ANY detectNot it.packet.message)
-                        && (spammer.value || it.source !is Spammer)
-            },
-            modifier = {
-                val message = getText(it.packet.message)
-                message.substring(0, min(256, message.length))
-            }
+        filter = {
+            (commands.value || MessageDetection.Command.ANY detectNot it.packet.message)
+                && (spammer.value || it.source !is Spammer)
+        },
+        modifier = {
+            val message = getText(it.packet.message)
+            message.substring(0, min(256, message.length))
+        }
     )
 
-    override fun onEnable() {
-        modifier.enable()
-    }
+    init {
+        onEnable {
+            modifier.enable()
+        }
 
-    override fun onDisable() {
-        modifier.disable()
+        onDisable {
+            modifier.disable()
+        }
     }
 
     private fun getText(s: String): String {

@@ -1,6 +1,7 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.event.events.PacketEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.item.ItemWrittenBook
@@ -14,13 +15,12 @@ import org.kamiblue.event.listener.listener
  * Permission (and ForgeHax is MIT licensed):
  * https://discordapp.com/channels/573954110454366214/634010802403409931/693919755647844352
  */
-@Module.Info(
+internal object AntiBookKick : Module(
     name = "AntiBookKick",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Prevents being kicked by clicking on books",
     showOnArray = false
-)
-object AntiBookKick : Module() {
+) {
     init {
         listener<PacketEvent.PostSend> {
             if (it.packet !is CPacketClickWindow) return@listener

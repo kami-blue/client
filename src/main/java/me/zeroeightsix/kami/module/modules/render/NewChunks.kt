@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.render
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
@@ -26,13 +26,13 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashSet
 
-@Module.Info(
-        name = "NewChunks",
-        description = "Highlights newly generated chunks",
-        category = Module.Category.RENDER
-)
-object NewChunks : Module() {
+internal object NewChunks : Module(
+    name = "NewChunks",
+    description = "Highlights newly generated chunks",
+    category = Category.RENDER
+) {
     private val relative = setting("Relative", true)
     private val autoClear = setting("AutoClear", true)
     private val saveNewChunks = setting("SaveNewChunks", false)
@@ -47,26 +47,26 @@ object NewChunks : Module() {
     private val green = setting("Green", 255, 0..255, 1, { customColor.value && isWorldMode })
     private val blue = setting("Blue", 255, 0..255, 1, { customColor.value && isWorldMode })
     private val range = setting("RenderRange", 256, 64..1024, 64)
-    val radarScale = setting("RadarScale", 2.0,1.0..10.0, 0.1, { isRadarMode })
+    val radarScale = setting("RadarScale", 2.0, 1.0..10.0, 0.1, { isRadarMode })
     private val removeMode = setting("RemoveMode", RemoveMode.MAX_NUM)
     private val maxNum = setting("MaxNum", 10000, 1000..100000, 1000, { removeMode.value == RemoveMode.MAX_NUM })
 
     private var lastSetting = LastSetting()
     private var logWriter: PrintWriter? = null
     private val timer = TickTimer(TimeUnit.MINUTES)
-    val chunks = HashSet<Chunk>()
-
-    override fun onDisable() {
-        logWriterClose()
-        chunks.clear()
-        MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
-    }
-
-    override fun onEnable() {
-        timer.reset()
-    }
+    private val chunks = LinkedHashSet<Chunk>()
 
     init {
+        onEnable {
+            timer.reset()
+        }
+
+        onDisable {
+            logWriterClose()
+            chunks.clear()
+            MessageSendHelper.sendChatMessage("$chatName Saved and cleared chunks!")
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (it.phase == TickEvent.Phase.END && autoClear.value && timer.tick(10L)) {
                 chunks.clear()
@@ -199,7 +199,7 @@ object NewChunks : Module() {
             }
             file = File(file, "newChunkLogs")
             val date = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(Date())
-            file = File(file, mc.getSession().username + "_" + date + ".csv") // maybe dont safe the name actually. But I also dont want to make another option...
+            file = File(file, mc.session.username + "_" + date + ".csv") // maybe dont safe the name actually. But I also dont want to make another option...
             val rV = file.toPath()
             try {
                 if (!Files.exists(rV)) { // ovsly always...
@@ -308,10 +308,10 @@ object NewChunks : Module() {
         fun testChange(): Boolean {
             // these somehow include the test whether its null
             return saveOption.value != lastSaveOption
-                    || saveInRegionFolder.value != lastInRegion
-                    || alsoSaveNormalCoords.value != lastSaveNormal
-                    || dimension != mc.player.dimension
-                    || mc.currentServerData?.serverIP != ip
+                || saveInRegionFolder.value != lastInRegion
+                || alsoSaveNormalCoords.value != lastSaveNormal
+                || dimension != mc.player.dimension
+                || mc.currentServerData?.serverIP != ip
         }
 
         private fun update() {

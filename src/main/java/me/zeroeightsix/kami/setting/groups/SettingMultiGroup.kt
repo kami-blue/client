@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 
 open class SettingMultiGroup(
-        name: String
+    name: String
 ) : SettingGroup(name) {
 
     protected val subGroup = LinkedHashMap<String, SettingMultiGroup>()
@@ -69,17 +69,14 @@ open class SettingMultiGroup(
     override fun read(jsonObject: JsonObject?) {
         super.read(jsonObject)
 
-        if (subGroup.isNotEmpty()) (jsonObject?.get("groups") as? JsonArray)?.also { jsonArray ->
-            val map = HashMap<String, JsonObject>()
-            for (element in jsonArray) {
-                (element as? JsonObject)?.let {
-                    val name = (it.get("name") as? JsonPrimitive)?.asString?: return@let
-                    map[name] = it
+        if (subGroup.isNotEmpty()) {
+            (jsonObject?.get("groups") as? JsonArray)?.also { jsonArray ->
+                for (element in jsonArray) {
+                    (element as? JsonObject)?.let {
+                        val name = (it.get("name") as? JsonPrimitive)?.asString ?: return@let
+                        getGroup(name)?.read(it)
+                    }
                 }
-            }
-
-            for (group in subGroup.values) {
-                group.read(map[group.name])
             }
         }
     }

@@ -17,7 +17,7 @@ object TroubleshootCommand : ClientCommand(
     init {
         execute("Print troubleshooting information") {
             MessageSendHelper.sendErrorMessage("&l&cSend a screenshot of all information below this line!")
-            MessageSendHelper.sendChatMessage("Enabled Modules:\n" + ModuleManager.getModules().filter { it.isEnabled }.joinToString { it.name })
+            MessageSendHelper.sendChatMessage("Enabled Modules:\n" + ModuleManager.modules.filter { it.isEnabled }.joinToString { it.name })
             MessageSendHelper.sendChatMessage("Forge ${ForgeVersion.getMajorVersion()}.${ForgeVersion.getMinorVersion()}.${ForgeVersion.getRevisionVersion()}.${ForgeVersion.getBuildVersion()}")
             MessageSendHelper.sendChatMessage("${KamiMod.NAME} ${KamiMod.KAMI_KATAKANA} ${KamiMod.VERSION}")
             MessageSendHelper.sendChatMessage("CPU: ${OpenGlHelper.getCpu()} GPU: ${GlStateManager.glGetString(GL11.GL_VENDOR)}")

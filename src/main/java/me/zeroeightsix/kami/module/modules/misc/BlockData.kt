@@ -1,5 +1,6 @@
 package me.zeroeightsix.kami.module.modules.misc
 
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.text.MessageSendHelper
@@ -10,12 +11,11 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.kamiblue.event.listener.listener
 import org.lwjgl.input.Mouse
 
-@Module.Info(
+internal object BlockData : Module(
     name = "BlockData",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Right click blocks to display their data"
-)
-object BlockData : Module() {
+) {
     private val timer = TickTimer()
     private var lastPos = BlockPos.ORIGIN
 

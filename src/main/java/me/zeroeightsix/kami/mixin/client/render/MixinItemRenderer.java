@@ -2,12 +2,12 @@ package me.zeroeightsix.kami.mixin.client.render;
 
 import me.zeroeightsix.kami.module.modules.player.Freecam;
 import me.zeroeightsix.kami.module.modules.render.ItemModel;
+import me.zeroeightsix.kami.util.math.Vec3f;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,28 +25,24 @@ public class MixinItemRenderer {
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", shift = At.Shift.AFTER))
     private void transformSideFirstPerson$pushMatrix(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
         if (ItemModel.INSTANCE.isEnabled()) {
-            if (!ItemModel.INSTANCE.getModifyHand() && stack.isEmpty()) return;
-
-            EnumHandSide enumhandside = hand == EnumHand.MAIN_HAND ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
-            float sideMultiplier = enumhandside == EnumHandSide.RIGHT ? 1.0f : -1.0f;
-
-            GlStateManager.translate(ItemModel.INSTANCE.getPosX() * sideMultiplier, ItemModel.INSTANCE.getPosY(), ItemModel.INSTANCE.getPosZ());
+            Vec3f vec = ItemModel.getTranslation(stack, hand, player);
+            if (vec != null) {
+                GlStateManager.translate(vec.getX(), vec.getY(), vec.getZ());
+            }
         }
     }
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;renderItemSide(Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;Z)V"))
     private void transformSideFirstPerson$renderItemSide(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
         if (ItemModel.INSTANCE.isEnabled()) {
-            if (!ItemModel.INSTANCE.getModifyHand() && stack.isEmpty()) return;
-
-            EnumHandSide enumhandside = hand == EnumHand.MAIN_HAND ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
-            float sideMultiplier = enumhandside == EnumHandSide.RIGHT ? 1.0f : -1.0f;
-            float scale = ItemModel.INSTANCE.getScale();
-
-            GlStateManager.rotate(ItemModel.INSTANCE.getRotateX(), 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotate(ItemModel.INSTANCE.getRotateY() * sideMultiplier, 0.0f, 1.0f, 0.0f);
-            GlStateManager.rotate(ItemModel.INSTANCE.getRotateZ() * sideMultiplier, 0.0f, 0.0f, 1.0f);
-            GlStateManager.scale(scale, scale, scale);
+            Vec3f vec = ItemModel.getRotation(stack, hand, player);
+            if (vec != null) {
+                float scale = ItemModel.INSTANCE.getScale();
+                GlStateManager.rotate(vec.getX(), 1.0f, 0.0f, 0.0f);
+                GlStateManager.rotate(vec.getY(), 0.0f, 1.0f, 0.0f);
+                GlStateManager.rotate(vec.getZ(), 0.0f, 0.0f, 1.0f);
+                GlStateManager.scale(scale, scale, scale);
+            }
         }
     }
 }

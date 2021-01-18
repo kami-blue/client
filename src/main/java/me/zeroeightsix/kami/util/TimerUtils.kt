@@ -2,7 +2,7 @@ package me.zeroeightsix.kami.util
 
 open class Timer {
     var time = currentTime; protected set
-    
+
     protected val currentTime get() = System.currentTimeMillis()
 
     fun reset(offset: Long = 0L) {

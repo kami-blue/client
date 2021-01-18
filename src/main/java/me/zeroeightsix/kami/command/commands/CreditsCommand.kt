@@ -19,21 +19,19 @@ object CreditsCommand : ClientCommand(
         executeAsync {
             val contributors = getContributors() ?: run {
                 MessageSendHelper.sendErrorMessage("Failed to retrieve contributors from Github API.\n" +
-                    "Checkout the page manually: &9${KamiMod.GITHUB_LINK}client/graphs/contributors")
+                    "Checkout the page manually: &9${KamiMod.GITHUB_LINK}/client/graphs/contributors")
                 return@executeAsync
             }
-
-            MessageSendHelper.sendChatMessage("Contributors to kami-blue/client: ${formatValue(contributors.size)}")
 
             val formatted = StringBuilder().apply {
                 contributors.forEach {
                     var name = it.name
                     alternateNames[it.id]?.let { knownName -> name += " ($knownName)" }
-                    append("$name - &7${it.contributions}&f contributions")
+                    appendLine("$name - &7${it.contributions}&f contributions")
                 }
             }.toString()
 
-            MessageSendHelper.sendRawChatMessage(formatted)
+            MessageSendHelper.sendChatMessage("Contributors to kami-blue/client: ${formatValue(contributors.size)}\n$formatted")
         }
     }
 
@@ -70,7 +68,6 @@ object CreditsCommand : ClientCommand(
         19880089 to "Sasha",
         58238984 to "It Is The End",
         41800112 to "Pretending to Code | 0x2E",
-        68972754 to "Historian",
-        27856297 to "DependaBot"
+        68972754 to "Historian"
     )
 }

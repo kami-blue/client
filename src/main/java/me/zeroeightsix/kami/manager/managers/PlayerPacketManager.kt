@@ -9,7 +9,7 @@ import me.zeroeightsix.kami.mixin.*
 import me.zeroeightsix.kami.mixin.client.accessor.*
 import me.zeroeightsix.kami.mixin.client.accessor.network.*
 import me.zeroeightsix.kami.mixin.extension.*
-import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.module.AbstractModule
 import me.zeroeightsix.kami.util.TickTimer
 import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.Wrapper
@@ -26,7 +26,7 @@ import java.util.*
 object PlayerPacketManager : Manager {
 
     /** TreeMap for all packets to be sent, sorted by their callers' priority */
-    private val packetList = TreeMap<Module, PlayerPacket>(compareByDescending { it.modulePriority })
+    private val packetList = TreeMap<AbstractModule, PlayerPacket>(compareByDescending { it.modulePriority })
 
     var serverSidePosition: Vec3d = Vec3d.ZERO; private set
     var prevServerSidePosition: Vec3d = Vec3d.ZERO; private set
@@ -110,7 +110,7 @@ object PlayerPacketManager : Manager {
      *
      * @param packet Packet to be added
      */
-    fun addPacket(caller: Module, packet: PlayerPacket) {
+    fun addPacket(caller: AbstractModule, packet: PlayerPacket) {
         if (packet.isEmpty()) return
         packetList[caller] = packet
     }
@@ -132,7 +132,8 @@ object PlayerPacketManager : Manager {
     fun resetHotbar() {
         if (!spoofingHotbar) return
         spoofingHotbar = false
-        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem ?: 0))
+        Wrapper.minecraft.connection?.sendPacket(CPacketHeldItemChange(Wrapper.minecraft.playerController?.currentPlayerItem
+            ?: 0))
     }
 
     /**

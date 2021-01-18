@@ -44,11 +44,9 @@ public abstract class MixinRenderGlobal {
 
     // Can't use @ModifyVariable here because it crashes outside of a dev env with Optifine
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderGlobal;getRenderChunkOffset(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/chunk/RenderChunk;Lnet/minecraft/util/EnumFacing;)Lnet/minecraft/client/renderer/chunk/RenderChunk;"))
-    public RenderChunk test(RenderGlobal renderGlobal, BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing) {
+    public RenderChunk renderChunkOffset(RenderGlobal renderGlobal, BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing) {
         if (Freecam.INSTANCE.isEnabled()) {
-            playerPos = new BlockPos(MathHelper.floor(mc.player.posX / 16.0D) * 16,
-                MathHelper.floor(mc.player.posY / 16.0D) * 16,
-                MathHelper.floor(mc.player.posZ / 16.0D) * 16);
+            playerPos = Freecam.getRenderChunkOffset();
         }
 
         // Can't use a @Shadow of getRenderChunkOffset because it crashes outside of a dev env with Optifine

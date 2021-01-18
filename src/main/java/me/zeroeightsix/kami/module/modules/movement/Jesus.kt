@@ -3,8 +3,8 @@ package me.zeroeightsix.kami.module.modules.movement
 import me.zeroeightsix.kami.event.events.AddCollisionBoxToListEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.y
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.BaritoneUtils
 import me.zeroeightsix.kami.util.EntityUtils
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -19,22 +19,21 @@ import org.kamiblue.commons.extension.ceilToInt
 import org.kamiblue.commons.extension.floorToInt
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+internal object Jesus : Module(
     name = "Jesus",
     description = "Allows you to walk on water",
-    category = Module.Category.MOVEMENT
-)
-object Jesus : Module() {
+    category = Category.MOVEMENT
+) {
 
     private val dolphin = setting("Dolphin", false)
 
     private val WATER_WALK_AA = AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.99, 1.0)
 
-    override fun onToggle() {
-        BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
-    }
-
     init {
+        onToggle {
+            BaritoneUtils.settings?.assumeWalkOnWater?.value = isEnabled
+        }
+
         safeListener<TickEvent.ClientTickEvent> {
             if (isInWater(player) && !player.isSneaking) {
                 if (dolphin.value) {

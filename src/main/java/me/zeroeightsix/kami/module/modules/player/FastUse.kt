@@ -2,8 +2,8 @@ package me.zeroeightsix.kami.module.modules.player
 
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.rightClickDelayTimer
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.init.Items
 import net.minecraft.item.*
@@ -18,12 +18,11 @@ import org.kamiblue.event.listener.listener
 /**
  * Bowspam code from https://github.com/seppukudevelopment/seppuku/blob/5586365/src/main/java/me/rigamortis/seppuku/impl/module/combat/FastBowModule.java
  */
-@Module.Info(
-        name = "FastUse",
-        category = Module.Category.PLAYER,
-        description = "Use items faster"
-)
-object FastUse : Module() {
+internal object FastUse : Module(
+    name = "FastUse",
+    category = Category.PLAYER,
+    description = "Use items faster"
+) {
     private val delay = setting("Delay", 0, 0..10, 1)
     private val blocks = setting("Blocks", false)
     private val allItems = setting("AllItems", false)
@@ -80,10 +79,10 @@ object FastUse : Module() {
 
     private fun passItemCheck(item: Item): Boolean {
         return item !is ItemAir
-                && (allItems.value && item !is ItemBlock
-                || blocks.value && item is ItemBlock
-                || expBottles.value && item is ItemExpBottle
-                || endCrystals.value && item is ItemEndCrystal
-                || fireworks.value && item is ItemFirework)
+            && (allItems.value && item !is ItemBlock
+            || blocks.value && item is ItemBlock
+            || expBottles.value && item is ItemExpBottle
+            || endCrystals.value && item is ItemEndCrystal
+            || fireworks.value && item is ItemFirework)
     }
 }

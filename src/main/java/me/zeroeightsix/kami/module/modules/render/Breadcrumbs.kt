@@ -1,9 +1,10 @@
 package me.zeroeightsix.kami.module.modules.render
 
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.RenderWorldEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.EntityUtils.getInterpolatedPos
 import me.zeroeightsix.kami.util.graphics.KamiTessellator
 import me.zeroeightsix.kami.util.math.VectorUtils.distanceTo
@@ -17,17 +18,18 @@ import org.kamiblue.event.listener.listener
 import org.lwjgl.opengl.GL11.GL_LINE_STRIP
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.ArrayDeque
+import kotlin.collections.HashMap
 import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.min
 
-@Module.Info(
-        name = "Breadcrumbs",
-        description = "Draws a tail behind as you move",
-        category = Module.Category.RENDER,
-        alwaysListening = true
-)
-object Breadcrumbs : Module() {
+internal object Breadcrumbs : Module(
+    name = "Breadcrumbs",
+    description = "Draws a tail behind as you move",
+    category = Category.RENDER,
+    alwaysListening = true
+) {
     private val clear = setting("Clear", false)
     private val whileDisabled = setting("WhileDisabled", false)
     private val smoothFactor = setting("SmoothFactor", 5.0f, 0.0f..10.0f, 0.25f)
@@ -40,44 +42,39 @@ object Breadcrumbs : Module() {
     private val a = setting("Alpha", 200, 0..255, 1)
     private val thickness = setting("LineThickness", 2.0f, 0.25f..8.0f, 0.25f)
 
-    private val mainList = ConcurrentHashMap<String, HashMap<Int, LinkedList<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
+    private val mainList = ConcurrentHashMap<String, HashMap<Int, ArrayDeque<Vec3d>>>() /* <Server IP, <Dimension, PositionList>> */
     private var prevDimension = -2
     private var startTime = -1L
     private var alphaMultiplier = 0f
     private var tickCount = 0
 
-    override fun onToggle() {
-        if (!whileDisabled.value) {
-            mainList.clear()
-        }
-    }
-
     init {
+        onToggle {
+            if (!whileDisabled.value) {
+                mainList.clear()
+            }
+        }
+
         listener<ConnectionEvent.Disconnect> {
             startTime = 0L
             alphaMultiplier = 0f
         }
 
-        listener<RenderWorldEvent> {
-            if (mc.player == null || (mc.integratedServer == null && mc.currentServerData == null)
-                    || (isDisabled && !whileDisabled.value)) {
-                return@listener
+        safeListener<RenderWorldEvent> {
+            if ((mc.integratedServer == null && mc.currentServerData == null) || (isDisabled && !whileDisabled.value)) {
+                return@safeListener
             }
-            if (mc.player.dimension != prevDimension) {
+
+            if (player.dimension != prevDimension) {
                 startTime = 0L
                 alphaMultiplier = 0f
-                prevDimension = mc.player.dimension
+                prevDimension = player.dimension
             }
-            if (!shouldRecord(true)) return@listener
+            if (!shouldRecord(true)) return@safeListener
 
             /* Adding server and dimension to the map if they are not exist */
             val serverIP = getServerIP()
-            val dimension = mc.player.dimension
-            if (!mainList.containsKey(serverIP)) { /* Add server to the map if not exist */
-                mainList[serverIP] = hashMapOf(Pair(dimension, LinkedList()))
-            } else if (!mainList[serverIP]!!.containsKey(dimension)) { /* Add dimension to the map if not exist */
-                mainList[serverIP]!![dimension] = LinkedList()
-            }
+            val dimension = player.dimension
 
             /* Adding position points to list */
             val renderPosList = addPos(serverIP, dimension, KamiTessellator.pTicks())
@@ -98,13 +95,16 @@ object Breadcrumbs : Module() {
                 tickCount++
             } else {
                 val serverIP = getServerIP()
-                val dimension = player.dimension
-                val posList = ((mainList[serverIP] ?: return@safeListener)[dimension] ?: return@safeListener)
+                val posList = mainList.getOrPut(serverIP, ::HashMap).getOrPut(player.dimension, ::ArrayDeque)
+
                 val cutoffPos = posList.lastOrNull { pos -> player.distanceTo(pos) > maxDistance.value }
-                if (cutoffPos != null) while (posList.first() != cutoffPos) {
-                    posList.remove()
+                if (cutoffPos != null) {
+                    while (posList.first() != cutoffPos) {
+                        posList.removeFirstOrNull()
+                    }
                 }
-                mainList[serverIP]!![dimension] = posList
+
+                mainList.getOrPut(serverIP, ::HashMap)[player.dimension] = posList
                 tickCount = 0
             }
         }
@@ -125,12 +125,13 @@ object Breadcrumbs : Module() {
         }
     }
 
-    private fun addPos(serverIP: String, dimension: Int, pTicks: Float): LinkedList<Vec3d> {
+    private fun SafeClientEvent.addPos(serverIP: String, dimension: Int, pTicks: Float): LinkedList<Vec3d> {
         var minDist = sin(-0.05f * smoothFactor.value * PI.toFloat()) * 2f + 2.01f
         if (isDisabled) minDist *= 2f
-        var currentPos = getInterpolatedPos(mc.player, pTicks)
-        if (mc.player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
-        val posList = mainList[serverIP]!![dimension]!!
+        var currentPos = getInterpolatedPos(player, pTicks)
+        if (player.isElytraFlying) currentPos = currentPos.subtract(0.0, 0.5, 0.0)
+
+        val posList = mainList.getOrPut(serverIP, ::HashMap).getOrPut(dimension, ::ArrayDeque)
 
         /* Adds position only when the list is empty or the distance between current position and the last position is further than the min distance */
         if (posList.isEmpty() || currentPos.distanceTo(posList.last()) > minDist) {

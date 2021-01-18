@@ -6,7 +6,9 @@ import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.util.WebUtils
 import me.zeroeightsix.kami.util.color.ColorConverter
 import me.zeroeightsix.kami.util.threads.mainScope
-import net.minecraft.client.gui.*
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.text.TextFormatting
 import org.kamiblue.commons.utils.ConnectionUtils
 import java.io.IOException

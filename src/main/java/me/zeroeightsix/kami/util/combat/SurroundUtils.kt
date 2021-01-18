@@ -1,7 +1,10 @@
 package me.zeroeightsix.kami.util.combat
 
+import me.zeroeightsix.kami.event.ClientEvent
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.util.EntityUtils.flooredPosition
 import me.zeroeightsix.kami.util.Wrapper
+import me.zeroeightsix.kami.util.threads.toSafe
 import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
@@ -17,7 +20,6 @@ import kotlin.math.round
 object SurroundUtils {
     private val mc = Wrapper.minecraft
 
-    @JvmStatic
     val surroundOffset = arrayOf(
         BlockPos(0, -1, 0), // down
         BlockPos(0, 0, -1), // north
@@ -26,7 +28,6 @@ object SurroundUtils {
         BlockPos(-1, 0, 0)  // west
     )
 
-    @JvmStatic
     val surroundOffsetNoFloor = arrayOf(
         BlockPos(0, 0, -1), // north
         BlockPos(1, 0, 0),  // east
@@ -34,19 +35,19 @@ object SurroundUtils {
         BlockPos(-1, 0, 0)  // west
     )
 
-    @JvmStatic
     fun checkHole(entity: Entity): HoleType {
         return checkHole(entity.flooredPosition)
     }
 
-    @JvmStatic
-    fun checkHole(pos: BlockPos): HoleType {
+    fun checkHole(pos: BlockPos) = ClientEvent().toSafe()?.checkHole(pos) ?: HoleType.NONE
+
+    fun SafeClientEvent.checkHole(pos: BlockPos): HoleType {
         // Must be a 1 * 3 * 1 empty space
-        if (!mc.world.isAirBlock(pos) || !mc.world.isAirBlock(pos.up()) || !mc.world.isAirBlock(pos.up().up())) return HoleType.NONE
+        if (!world.isAirBlock(pos) || !world.isAirBlock(pos.up()) || !world.isAirBlock(pos.up().up())) return HoleType.NONE
 
         var type = HoleType.BEDROCK
         for (offset in surroundOffset) {
-            val block = mc.world.getBlockState(pos.add(offset)).block
+            val block = world.getBlockState(pos.add(offset)).block
             if (!checkBlock(block)) {
                 type = HoleType.NONE
                 break
@@ -56,12 +57,10 @@ object SurroundUtils {
         return type
     }
 
-    @JvmStatic
     fun checkBlock(block: Block): Boolean {
         return block == Blocks.BEDROCK || block == Blocks.OBSIDIAN || block == Blocks.ENDER_CHEST || block == Blocks.ANVIL
     }
 
-    @JvmStatic
     fun centerPlayer(tp: Boolean): Boolean {
         val centerDiff = getCenterDiff()
         val centered = isCentered()

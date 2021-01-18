@@ -2,30 +2,33 @@ package me.zeroeightsix.kami.module.modules.combat
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.module.modules.movement.Strafe
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.*
 import me.zeroeightsix.kami.util.MovementUtils.speed
 import me.zeroeightsix.kami.util.combat.SurroundUtils
+import me.zeroeightsix.kami.util.items.firstBlock
+import me.zeroeightsix.kami.util.items.hotbarSlots
 import me.zeroeightsix.kami.util.math.VectorUtils.toBlockPos
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.isActiveOrFalse
 import me.zeroeightsix.kami.util.threads.safeListener
+import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
-        name = "Surround",
-        category = Module.Category.COMBAT,
-        description = "Surrounds you with obsidian to take less damage",
-        modulePriority = 200
-)
-object Surround : Module() {
+internal object Surround : Module(
+    name = "Surround",
+    category = Category.COMBAT,
+    description = "Surrounds you with obsidian to take less damage",
+    modulePriority = 200
+) {
     private val autoCenter = setting("AutoCenter", AutoCenterMode.MOTION)
     private val placeSpeed = setting("PlacesPerTick", 4f, 0.25f..5f, 0.25f)
     private val autoDisable = setting("AutoDisable", AutoDisableMode.OUT_OF_HOLE)
@@ -46,21 +49,22 @@ object Surround : Module() {
     private var toggleTimer = StopTimer(TimeUnit.TICKS)
     private var job: Job? = null
 
-    override fun onEnable() {
-        toggleTimer.reset()
-    }
-
-    override fun onDisable() {
-        PlayerPacketManager.resetHotbar()
-        toggleTimer.reset()
-        holePos = null
-    }
-
     override fun isActive(): Boolean {
         return isEnabled && job.isActiveOrFalse
     }
 
     init {
+        onEnable {
+            toggleTimer.reset()
+        }
+
+        onDisable {
+            PlayerPacketManager.resetHotbar()
+            toggleTimer.reset()
+            holePos = null
+        }
+
+
         safeListener<TickEvent.ClientTickEvent> {
             if (getObby() == -1) return@safeListener
             if (isDisabled) {
@@ -123,21 +127,22 @@ object Surround : Module() {
         }
     }
 
-    private fun spoofHotbar() {
-        val slot = getObby()
-        if (slot != -1) PlayerPacketManager.spoofHotbar(getObby())
+    private fun SafeClientEvent.spoofHotbar() {
+        getObby()?.let { PlayerPacketManager.spoofHotbar(it) }
     }
 
-    private fun getObby(): Int {
-        val slots = InventoryUtils.getSlotsHotbar(49)
+    private fun SafeClientEvent.getObby(): Int? {
+        val slots = player.hotbarSlots.firstBlock(Blocks.OBSIDIAN)
+
         if (slots == null) { // Obsidian check
             if (isEnabled) {
                 MessageSendHelper.sendChatMessage("$chatName No obsidian in hotbar, disabling!")
                 disable()
             }
-            return -1
+            return null
         }
-        return slots[0]
+
+        return slots.hotbarSlot
     }
 
     private fun isPlaceable(): Boolean {
@@ -158,7 +163,7 @@ object Surround : Module() {
         }
     }
 
-    private fun runSurround() = defaultScope.launch {
+    private fun SafeClientEvent.runSurround() = defaultScope.launch {
         spoofHotbar()
         WorldUtils.buildStructure(placeSpeed.value) {
             if (isEnabled && CombatManager.isOnTopPriority(this@Surround)) {

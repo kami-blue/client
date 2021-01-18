@@ -1,8 +1,8 @@
 package me.zeroeightsix.kami.module.modules.chat
 
 import me.zeroeightsix.kami.manager.managers.FriendManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.color.EnumTextColor
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -12,13 +12,12 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import org.kamiblue.event.listener.listener
 
-@Module.Info(
+internal object FriendHighlight : Module(
     name = "FriendHighlight",
     description = "Highlights your friends names in chat",
-    category = Module.Category.CHAT,
+    category = Category.CHAT,
     showOnArray = false
-)
-object FriendHighlight : Module() {
+) {
     private val bold = setting("Bold", true)
     private val color = setting("Color", EnumTextColor.GRAY)
     private val sound = setting("Sound", true)
@@ -26,11 +25,11 @@ object FriendHighlight : Module() {
     private val regex1 = "<(.*?)>".toRegex()
     private val regex2 = "[<>]".toRegex()
 
-    override fun onEnable() {
-        noFriendsCheck()
-    }
-
     init {
+        onEnable {
+            noFriendsCheck()
+        }
+
         listener<ClientChatReceivedEvent>(0) {
             if (noFriendsCheck() || !FriendManager.enabled) return@listener
 

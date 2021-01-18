@@ -3,11 +3,12 @@ package me.zeroeightsix.kami.module.modules.combat
 import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.manager.managers.CombatManager
 import me.zeroeightsix.kami.manager.managers.PlayerPacketManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.TpsCalculator
 import me.zeroeightsix.kami.util.combat.CombatUtils
-import me.zeroeightsix.kami.util.isWeapon
+import me.zeroeightsix.kami.util.combat.CombatUtils.equipBestWeapon
+import me.zeroeightsix.kami.util.items.isWeapon
 import me.zeroeightsix.kami.util.math.RotationUtils
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.entity.Entity
@@ -16,14 +17,13 @@ import net.minecraft.util.EnumHand
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 @CombatManager.CombatModule
-@Module.Info(
+internal object KillAura : Module(
     name = "KillAura",
-    alias = ["KA", "Aura", "TriggerBot"],
-    category = Module.Category.COMBAT,
+    alias = arrayOf("KA", "Aura", "TriggerBot"),
+    category = Category.COMBAT,
     description = "Hits entities around you",
     modulePriority = 50
-)
-object KillAura : Module() {
+) {
     private val delayMode = setting("Mode", WaitMode.DELAY)
     private val lockView = setting("LockView", false)
     private val spoofRotation = setting("SpoofRotation", true, { !lockView.value })
@@ -62,7 +62,7 @@ object KillAura : Module() {
             if (player.getDistance(target) > range.value) return@safeListener
 
             if (autoWeapon.value) {
-                CombatUtils.equipBestWeapon(prefer.value)
+                equipBestWeapon(prefer.value)
             }
 
             if (weaponOnly.value && !player.heldItemMainhand.item.isWeapon) {

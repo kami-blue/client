@@ -1,20 +1,19 @@
 package me.zeroeightsix.kami.module.modules.misc
 
 import me.zeroeightsix.kami.manager.managers.WaypointManager
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.text.MessageSendHelper
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.utils.MathUtils
 
-@Module.Info(
+internal object TeleportLogger : Module(
     name = "TeleportLogger",
-    category = Module.Category.MISC,
+    category = Category.MISC,
     description = "Logs when a player teleports somewhere"
-)
-object TeleportLogger : Module() {
+) {
     private val saveToFile = setting("SaveToFile", true)
     private val remove = setting("RemoveInRange", true)
     private val printAdd = setting("PrintAdd", true)

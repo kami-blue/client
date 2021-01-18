@@ -4,28 +4,31 @@ import me.zeroeightsix.kami.event.Phase
 import me.zeroeightsix.kami.event.events.ChunkEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.event.events.RenderEntityEvent
+import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
-import me.zeroeightsix.kami.setting.ModuleConfig.setting
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.block.BlockSnow
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.item.*
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.IAnimals
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.*
 import net.minecraft.tileentity.*
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.registries.GameData
 import org.kamiblue.event.listener.listener
+import org.lwjgl.opengl.GL11
 
-@Module.Info(
+internal object NoRender : Module(
     name = "NoRender",
-    category = Module.Category.RENDER,
+    category = Category.RENDER,
     description = "Ignore entity spawn packets"
-)
-object NoRender : Module() {
+) {
 
     private val packets = setting("CancelPackets", true)
     private val page = setting("Page", Page.OTHER)
@@ -62,6 +65,8 @@ object NoRender : Module() {
         OTHER, ENTITIES
     }
 
+    private val kamiMap = ResourceLocation("kamiblue/kamimap.png")
+
     private val settingMap = mapOf(
         player to EntityOtherPlayerMP::class.java,
         xp to EntityXPOrb::class.java,
@@ -81,6 +86,10 @@ object NoRender : Module() {
     var entityList = HashSet<Class<*>>(); private set
 
     init {
+        onEnable {
+            updateList()
+        }
+
         listener<PacketEvent.Receive> {
             if (lightning.value && it.packet is SPacketSpawnGlobalEntity ||
                 explosion.value && it.packet is SPacketExplosion ||
@@ -145,8 +154,18 @@ object NoRender : Module() {
         }
     }
 
-    override fun onEnable() {
-        updateList()
+    fun renderFakeMap() {
+        val tessellator = Tessellator.getInstance()
+        val bufBuilder = tessellator.buffer
+        mc.textureManager.bindTexture(kamiMap)
+
+        bufBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        bufBuilder.pos(0.0, 128.0, -0.009999999776482582).tex(0.0, 1.0).endVertex()
+        bufBuilder.pos(128.0, 128.0, -0.009999999776482582).tex(1.0, 1.0).endVertex()
+        bufBuilder.pos(128.0, 0.0, -0.009999999776482582).tex(1.0, 0.0).endVertex()
+        bufBuilder.pos(0.0, 0.0, -0.009999999776482582).tex(0.0, 0.0).endVertex()
+
+        tessellator.draw()
     }
 
     private fun updateList() {

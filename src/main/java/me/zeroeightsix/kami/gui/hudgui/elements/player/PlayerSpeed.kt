@@ -4,8 +4,6 @@ import me.zeroeightsix.kami.event.SafeClientEvent
 import me.zeroeightsix.kami.gui.hudgui.LabelHud
 import me.zeroeightsix.kami.setting.GuiConfig.setting
 import me.zeroeightsix.kami.util.InfoCalculator
-import me.zeroeightsix.kami.util.threads.safeListener
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.commons.interfaces.DisplayEnum
 import org.kamiblue.commons.utils.MathUtils
 import java.util.*
@@ -28,13 +26,9 @@ object PlayerSpeed : LabelHud(
 
     private val speedList = ArrayDeque<Double>()
 
-    init {
-        safeListener<TickEvent.ClientTickEvent> {
-            if (it.phase == TickEvent.Phase.END && visible) updateSpeedList()
-        }
-    }
-
     override fun SafeClientEvent.updateText() {
+        updateSpeedList()
+
         var averageSpeed = if (speedList.isEmpty()) 0.0 else speedList.sum() / speedList.size
 
         averageSpeed *= speedUnit.multiplier
@@ -50,7 +44,7 @@ object PlayerSpeed : LabelHud(
         if (speed > 0.0 || mc.player.ticksExisted % 4 == 0) {
             speedList.add(speed) // Only adding it every 4 ticks if speed is 0
         } else {
-            speedList.poll()
+            speedList.pollFirst()
         }
 
         while (speedList.size > averageSpeedTime * 20.0f) speedList.pollFirst()
