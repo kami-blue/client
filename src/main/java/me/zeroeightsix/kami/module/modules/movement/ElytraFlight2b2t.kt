@@ -42,6 +42,7 @@ internal object ElytraFlight2b2t : Module(
     private val idleRadius by setting("IdleRadius", 0.05f, 0.01f..0.25f, 0.01f)
     private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.25f, 0.001f)
     private val packetDelay by setting("PacketDelay", 150, 50..500, 1)
+    private val rubberbandTimeout by setting("RubberbandTimeout", 2000, 100..5000, 100)
     private val showDebug by setting("ShowDebug", false)
 
     private const val TAKEOFF_HEIGHT = 0.50
@@ -56,6 +57,7 @@ internal object ElytraFlight2b2t : Module(
     private var accelerateStart = 0L
 
     /* Emergency teleport packet info */
+    private val rubberbandTimer = TickTimer()
     private var teleportPosition = Vec3d.ZERO
     private var teleportRotation = Vec2f.ZERO
 
@@ -96,6 +98,19 @@ internal object ElytraFlight2b2t : Module(
 
                 player.motionY = 0.0
                 player.capabilities.isFlying = true
+
+                if (!rubberbandTimer.tick(rubberbandTimeout.toLong(), false)) {
+                    player.setVelocity(0.0, 0.0, 0.0)
+                    player.limbSwing = 0.0f
+                    player.limbSwingAmount = 0.0f
+                    player.prevLimbSwingAmount = 0.0f
+
+                    accelerateStart = System.currentTimeMillis()
+                    rotation = Vec2f(teleportRotation.x, teleportRotation.y)
+
+                    it.cancel()
+                    return@safeListener
+                }
 
                 if (player.movementInput.sneak) {
                     player.setVelocity(0.0, -descendSpeed, 0.0)
@@ -182,6 +197,7 @@ internal object ElytraFlight2b2t : Module(
                 }
                 /* Set client side to wherever the server wants us to be */
                 is SPacketPlayerPosLook -> {
+                    rubberbandTimer.reset()
                     teleportRotation = Vec2f(it.packet.yaw, it.packet.pitch)
                     teleportPosition = Vec3d(it.packet.x, it.packet.y, it.packet.z)
                 }
