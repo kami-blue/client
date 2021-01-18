@@ -39,6 +39,7 @@ internal object AntiAFK : Module(
     private val walk = setting("Walk", true)
     private val radius by setting("Radius", 64, 8..128, 8)
     private val inputTimeout by setting("InputTimeout(m)", 0, 0..15, 1)
+    private val allowBreak by setting("AllowBreak", false)
 
     private var startPos: BlockPos? = null
     private var squareStep = 0
@@ -46,6 +47,7 @@ internal object AntiAFK : Module(
     private val inputTimer = TickTimer(TimeUnit.MINUTES)
     private val actionTimer = TickTimer(TimeUnit.TICKS)
     private var nextActionDelay = 0
+    private var wasAllowBreakAllowed = false
 
     override fun getHudInfo(): String {
         return if (inputTimeout == 0) ""
@@ -54,12 +56,15 @@ internal object AntiAFK : Module(
 
     init {
         onEnable {
+            wasAllowBreakAllowed = BaritoneUtils.settings?.allowBreak?.value?:true
+            if (!allowBreak) BaritoneUtils.settings?.allowBreak?.value = false
             inputTimer.reset()
             baritoneDisconnectOnArrival()
         }
 
         onDisable {
             startPos = null
+            BaritoneUtils.settings?.allowBreak?.value = wasAllowBreakAllowed
             BaritoneUtils.settings?.disconnectOnArrival?.value = baritoneDisconnectOnArrival
             BaritoneUtils.cancelEverything()
         }
