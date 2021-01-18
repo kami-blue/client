@@ -39,11 +39,11 @@ internal object AutoWalk : Module(
     var direction = Direction.NORTH; private set
 
     override fun isActive(): Boolean {
-        return isEnabled && (mode.value != AutoWalkMode.BARITONE || BaritoneUtils.isActive)
+        return isEnabled && (mode.value != AutoWalkMode.BARITONE || BaritoneUtils.isActive || BaritoneUtils.isPathing)
     }
 
     override fun getHudInfo(): String {
-        return if (BaritoneUtils.isActive) {
+        return if (mode.value == AutoWalkMode.BARITONE && (BaritoneUtils.isActive || BaritoneUtils.isPathing)) {
             direction.displayName
         } else {
             mode.value.name

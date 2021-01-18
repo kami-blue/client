@@ -32,7 +32,7 @@ internal object ChatTimestamp : Module(
         get() = "${separator.left}${color format TimeUtils.getTime(timeFormat, timeUnit)}${separator.right} "
 
     val time: String
-        get() = "${separator.left}${TimeUtils.getTime(timeFormat, timeUnit)}${separator.right}"
+        get() = "${separator.left}${TimeUtils.getTime(timeFormat, timeUnit)}${separator.right} "
 
     @Suppress("unused")
     private enum class Separator(override val displayName: String, val left: String, val right: String) : DisplayEnum {
