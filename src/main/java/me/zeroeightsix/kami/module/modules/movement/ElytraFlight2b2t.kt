@@ -210,6 +210,7 @@ internal object ElytraFlight2b2t : Module(
 
             /* This only sets the position and rotation client side since it is not salted with onGround */
             player.setPositionAndRotation(teleportPosition.x, teleportPosition.y, teleportPosition.z, teleportRotation.x, teleportRotation.y)
+            rotation = Vec2f(teleportRotation.x, teleportRotation.y)
 
             /* Force send the packet */
             sendForcedPacket()
