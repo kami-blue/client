@@ -41,9 +41,9 @@ internal object ElytraFlight2b2t : Module(
     private val descendSpeed by setting("DescendSpeed", 0.2, 0.01..1.0, 0.01)
     private val idleSpeed by setting("IdleSpeed", 3.8f, 0.1f..5.0f, 0.1f)
     private val idleRadius by setting("IdleRadius", 0.08f, 0.01f..0.25f, 0.01f)
-    private val minIdleVelocity by setting("MinIdleVelocity", 0.013f, 0.0f..0.1f, 0.001f)
     private val packetDelay by setting("PacketDelay", 122, 50..200, 1)
     private val rubberbandTimeout by setting("RubberbandTimeout", 300, 0..1000, 1)
+    private val idleTimeout by setting("IdleTimeout", 500, 100..5000, 100)
     private val showDebug by setting("ShowDebug", false)
 
     private enum class ConstantFactor {
@@ -58,6 +58,7 @@ internal object ElytraFlight2b2t : Module(
     private var rotation = Vec2f.ZERO
 
     /* Startup variables */
+    private val idleTimer = TickTimer()
     private var state = MovementState.NOT_STARTED
     private var accelerateStart = 0L
     private var currentSpeed = 0.0
@@ -144,7 +145,7 @@ internal object ElytraFlight2b2t : Module(
 
             if (player.isElytraFlying) {
                 if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
-                state = MovementState.IDLE
+                setToIdle()
             }
         }
     }
@@ -153,7 +154,7 @@ internal object ElytraFlight2b2t : Module(
         if (isInputting) {
             state = MovementState.MOVING
             resetAcceleration()
-        } else {
+        } else if (idleTimer.tick(idleTimeout.toLong(), false)) {
             val length = idleSpeed * 1000.0f
             val deltaTime = System.currentTimeMillis() % length.toLong()
             val yaw = deltaTime / length * 2.0 * Math.PI
@@ -171,8 +172,9 @@ internal object ElytraFlight2b2t : Module(
             player.motionZ = cos(yawRad) * acceleratedSpeed
         } else {
             resetAcceleration()
-            if (player.speed < minIdleVelocity) {
-                state = MovementState.IDLE
+
+            if (player.speed <= 0.0001) {
+                setToIdle()
             }
         }
     }
@@ -190,6 +192,11 @@ internal object ElytraFlight2b2t : Module(
             val multiplier = ((System.currentTimeMillis() - accelerateStart) / length).coerceAtMost(1.0)
             speed * multiplier
         }
+    }
+
+    private fun setToIdle() {
+        idleTimer.reset()
+        state = MovementState.IDLE
     }
 
     init {
