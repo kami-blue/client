@@ -42,7 +42,7 @@ internal object ElytraFlight2b2t : Module(
     private val idleSpeed by setting("IdleSpeed", 3.8f, 0.1f..5.0f, 0.1f)
     private val idleRadius by setting("IdleRadius", 0.08f, 0.01f..0.25f, 0.01f)
     private val packetDelay by setting("PacketDelay", 122, 50..200, 1)
-    private val rubberbandTimeout by setting("RubberbandTimeout", 300, 0..1000, 1)
+    private val rubberbandTimeout by setting("RubberbandTimeout", 500, 0..5000, 100)
     private val idleTimeout by setting("IdleTimeout", 500, 100..5000, 100)
     private val showDebug by setting("ShowDebug", false)
 
