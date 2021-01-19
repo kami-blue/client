@@ -92,7 +92,7 @@ internal object ElytraFlight2b2t : Module(
 
             if (state != MovementState.NOT_STARTED) {
                 /* If we are not wearing an elytra then reset */
-                if (player.inventory.armorInventory[2].item != Items.ELYTRA || player.onGround) {
+                if (player.inventory.armorInventory[2].item != Items.ELYTRA || player.onGround || !player.isElytraFlying) {
                     resetAll()
                     return@safeListener
                 }
@@ -141,12 +141,16 @@ internal object ElytraFlight2b2t : Module(
             && player.inventory.armorInventory[2].item == Items.ELYTRA
             && player.posY - getGroundPos().y >= TAKEOFF_HEIGHT) {
 
-            connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
-
             if (player.isElytraFlying) {
                 if (showDebug) sendChatMessage("$chatName Takeoff at height: " + player.posY)
                 setToIdle()
+                mc.timer.tickLength = 50.0f
+            } else {
+                connection.sendPacket(CPacketEntityAction(player, CPacketEntityAction.Action.START_FALL_FLYING))
+                mc.timer.tickLength = 400.0f
             }
+        } else {
+            mc.timer.tickLength = 50.0f
         }
     }
 
@@ -298,6 +302,7 @@ internal object ElytraFlight2b2t : Module(
     }
 
     private fun resetAll() {
+        mc.timer.tickLength = 50.0f
         packetSet.clear()
         rotation = Vec2f.ZERO
 
