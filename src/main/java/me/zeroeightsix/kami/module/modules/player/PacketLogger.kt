@@ -13,7 +13,9 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.*
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.ConcurrentModificationException
 
@@ -30,8 +32,8 @@ internal object PacketLogger : Module(
     private val ignoreUnknown by setting("IgnoreUnknownPackets", false, description = "Ignore packets that aren't explicitly handled.")
     private val ignoreChat by setting("IgnoreChat", true, description = "Ignore chat packets.")
 
-    private val sdf = SimpleDateFormat("HH-mm-ss_SSS")
-    private val sdflog = SimpleDateFormat("HH:mm:ss.SSS")
+    private val fileTimeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss_SSS")
+    private val logTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
     private var filename = ""
     private val lines = ArrayList<String>()
 
@@ -52,7 +54,7 @@ internal object PacketLogger : Module(
                 start = System.currentTimeMillis()
             }
 
-            filename = "KAMIBluePackets_${sdf.format(Date())}.csv"
+            filename = "packet_logger_${fileTimeFormatter.format(LocalTime.now())}.csv"
             lines.add("From,Packet Name,Time Since Start (ms),Time Since Last (ms),Data\n")
             sendChatMessage("$chatName started.")
         }
@@ -263,7 +265,7 @@ internal object PacketLogger : Module(
 
         safeListener<TickEvent.ClientTickEvent> {
             if (showClientTicks) {
-                if (it.phase == TickEvent.Phase.START) lines.add("Tick Pulse - Realtime: ${sdflog.format(Date())} - Runtime: ${System.currentTimeMillis() - start}ms\n")
+                if (it.phase == TickEvent.Phase.START) lines.add("Tick Pulse - Realtime: ${logTimeFormatter.format(LocalTime.now())} - Runtime: ${System.currentTimeMillis() - start}ms\n")
                 /* Don't let lines get too big, write periodically to the file */
                 if (player.ticksExisted % 200 == 0 || lines.size >= 1000) write()
             }
