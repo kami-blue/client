@@ -23,7 +23,7 @@ object TextRadar : LabelHud(
     private val combatPotion by setting("CombatPotion", true)
     private val distance by setting("Distance", true)
     private val friend by setting("Friend", true)
-    private val range by setting("Range", 32.0f, 16.0f..64.0f, 0.5f)
+    private val range by setting("Range", 64, 16..256, 2)
 
     private val healthColorGradient = ColorGradient(
         0.0f to ColorHolder(180, 20, 20),
@@ -40,14 +40,14 @@ object TextRadar : LabelHud(
     )
 
     override fun SafeClientEvent.updateText() {
-        world.playerEntities.stream()
+        world.playerEntities.asSequence()
             .filter { it != null && !it.isDead && it.health > 0.0f }
             .filter { it != player && it != mc.renderViewEntity }
             .filter { !AntiBot.isBot(it) }
             .filter { friend || !FriendManager.isFriend(it.name) }
             .map { it to player.getDistance(it) }
             .filter { it.second <= range }
-            .sorted(compareBy { it.second })
+            .sortedBy { it.second }
             .forEach {
                 addHealth(it.first)
                 addName(it.first)

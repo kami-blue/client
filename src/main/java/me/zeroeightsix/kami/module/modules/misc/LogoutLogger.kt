@@ -39,7 +39,7 @@ internal object LogoutLogger : Module(
             for (loadedPlayer in world.playerEntities) {
                 if (loadedPlayer !is EntityOtherPlayerMP) continue
 
-                val info = connection.getPlayerInfo(loadedPlayer.gameProfile.id)
+                val info = connection.getPlayerInfo(loadedPlayer.gameProfile.id) ?: continue
                 loggedPlayers[info.gameProfile] = loadedPlayer.flooredPosition
             }
 
