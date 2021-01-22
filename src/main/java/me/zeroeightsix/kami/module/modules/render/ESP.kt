@@ -26,6 +26,7 @@ import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.kamiblue.event.listener.listener
+import org.lwjgl.opengl.GL11.*
 
 internal object ESP : Module(
     name = "ESP",
@@ -101,24 +102,37 @@ internal object ESP : Module(
             }
         }
 
-        listener<RenderWorldEvent> {
+        listener<RenderWorldEvent>(69420) {
             if (mode.value != ESPMode.SHADER) return@listener
 
-            frameBuffer?.bindFramebuffer(false)
+            GlStateManager.matrixMode(GL_PROJECTION)
+            glPushMatrix()
+            GlStateManager.matrixMode(GL_MODELVIEW)
+            glPushMatrix()
+
             shaderHelper.shader?.render(KamiTessellator.pTicks())
+
+            // Re-enable blend because shader rendering will disable it at the end
+            GlStateManager.enableBlend()
+            GlStateManager.disableDepth()
 
             // Draw it on the main frame buffer
             mc.framebuffer.bindFramebuffer(false)
-            GlStateManager.disableDepth()
-            // Re-enable blend because shader rendering will disable it at the end
-            GlStateManager.enableBlend()
             frameBuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
-            GlStateManager.disableBlend()
-            GlStateManager.enableDepth()
 
             // Clean up the frame buffer
             frameBuffer?.framebufferClear()
-            mc.framebuffer.bindFramebuffer(true)
+            mc.framebuffer.bindFramebuffer(false)
+
+            GlStateManager.enableBlend()
+            GlStateManager.enableDepth()
+            GlStateManager.disableTexture2D()
+            GlStateManager.depthMask(false)
+
+            GlStateManager.matrixMode(GL_PROJECTION)
+            glPopMatrix()
+            GlStateManager.matrixMode(GL_MODELVIEW)
+            glPopMatrix()
         }
     }
 
