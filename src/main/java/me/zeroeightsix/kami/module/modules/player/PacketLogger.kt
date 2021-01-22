@@ -1,5 +1,7 @@
 package me.zeroeightsix.kami.module.modules.player
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.zeroeightsix.kami.KamiMod
 import me.zeroeightsix.kami.event.events.ConnectionEvent
 import me.zeroeightsix.kami.event.events.PacketEvent
@@ -7,6 +9,7 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
@@ -306,12 +309,14 @@ internal object PacketLogger : Module(
             cache
         }
 
-        try {
-            FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
-                for (line in lines) it.write(line)
+        defaultScope.launch(Dispatchers.IO) {
+            try {
+                FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
+                    for (line in lines) it.write(line)
+                }
+            } catch (e: Exception) {
+                KamiMod.LOG.warn("$chatName Failed saving packet log!", e)
             }
-        } catch (e: Exception) {
-            KamiMod.LOG.warn("$chatName Failed saving packet log!", e)
         }
     }
 
