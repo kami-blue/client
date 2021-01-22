@@ -7,6 +7,7 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
+import me.zeroeightsix.kami.util.threads.safeAsyncListener
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
@@ -22,13 +23,14 @@ internal object PacketLogger : Module(
     description = "Logs sent packets to a file",
     category = Category.PLAYER
 ) {
-    private val showClientTicks by setting("ShowClientTicks", true, description = "Show timestamps of client ticks.")
-    private val logInChat by setting("LogInChat", false, description = "Print packets in the chat.")
-    private val packetType by setting("PacketType", Type.BOTH, description = "Log packets from the server, from the client, or both.")
-    private val ignoreKeepAlive by setting("IgnoreKeepAlive", true, description = "Ignore both incoming and outgoing KeepAlive packets.")
-    private val ignoreChunkLoading by setting("IgnoreChunkLoading", true, description = "Ignore chunk loading and unloading packets.")
-    private val ignoreUnknown by setting("IgnoreUnknownPackets", false, description = "Ignore packets that aren't explicitly handled.")
-    private val ignoreChat by setting("IgnoreChat", true, description = "Ignore chat packets.")
+    private val showClientTicks by setting("Show Client Ticks", true, description = "Show timestamps of client ticks.")
+    private val logInChat by setting("Log In Chat", false, description = "Print packets in the chat.")
+    private val packetType by setting("Packet Type", Type.BOTH, description = "Log packets from the server, from the client, or both.")
+    private val ignoreKeepAlive by setting("Ignore Keep Alive", true, description = "Ignore both incoming and outgoing KeepAlive packets.")
+    private val ignoreChunkLoading by setting("Ignore Chunk Loading", true, description = "Ignore chunk loading and unloading packets.")
+    private val ignoreUnknown by setting("Ignore Unknown Packets", false, description = "Ignore packets that aren't explicitly handled.")
+    private val ignoreChat by setting("Ignore Chat", true, description = "Ignore chat packets.")
+    private val ignoreCancelled by setting("Ignore Cancelled", true, description = "Ignore cancelled packets.")
 
     private val fileTimeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss_SSS")
     private val logTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
@@ -74,7 +76,9 @@ internal object PacketLogger : Module(
             disable()
         }
 
-        safeListener<PacketEvent.Receive> {
+        safeListener<PacketEvent.Receive>(Int.MIN_VALUE) {
+            if (ignoreCancelled && it.cancelled) return@safeListener
+
             if (packetType == Type.SERVER || packetType == Type.BOTH) {
                 when (it.packet) {
                     is SPacketEntityTeleport -> {
@@ -193,8 +197,9 @@ internal object PacketLogger : Module(
             }
         }
 
-        /* Listen to PostSend and not Send since packets can get cancelled before we actually send them */
-        safeListener<PacketEvent.PostSend> {
+        safeListener<PacketEvent.Send>(Int.MIN_VALUE) {
+            if (ignoreCancelled && it.cancelled) return@safeListener
+
             if (packetType == Type.CLIENT || packetType == Type.BOTH) {
                 when (it.packet) {
                     is CPacketAnimation -> {
