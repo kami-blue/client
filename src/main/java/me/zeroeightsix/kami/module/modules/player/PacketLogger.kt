@@ -7,17 +7,15 @@ import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
-import me.zeroeightsix.kami.util.threads.onMainThread
 import me.zeroeightsix.kami.util.threads.safeListener
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.*
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.ConcurrentModificationException
+import kotlin.collections.ArrayList
 
 internal object PacketLogger : Module(
     name = "PacketLogger",
@@ -34,11 +32,12 @@ internal object PacketLogger : Module(
 
     private val fileTimeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss_SSS")
     private val logTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
-    private var filename = ""
-    private val lines = ArrayList<String>()
 
     private var start = 0L
     private var last = 0L
+
+    private var filename = ""
+    private var lines = ArrayList<String>()
 
     enum class Type {
         CLIENT, SERVER, BOTH
@@ -46,20 +45,33 @@ internal object PacketLogger : Module(
 
     init {
         onEnable {
-            if (mc.player == null) {
-                disable()
-                return@onEnable
-            }
-            onMainThread {
-                start = System.currentTimeMillis()
-            }
+            start = System.currentTimeMillis()
+            filename = "${fileTimeFormatter.format(LocalTime.now())}.csv"
 
-            filename = "packet_logger_${fileTimeFormatter.format(LocalTime.now())}.csv"
-            lines.add("From,Packet Name,Time Since Start (ms),Time Since Last (ms),Data\n")
+            synchronized(this) {
+                lines.add("From,Packet Name,Time Since Start (ms),Time Since Last (ms),Data\n")
+            }
         }
 
         onDisable {
-            if (mc.player != null) write()
+            write()
+        }
+
+        safeListener<TickEvent.ClientTickEvent> {
+            if (it.phase != TickEvent.Phase.START) return@safeListener
+
+            if (showClientTicks) {
+                synchronized(this) {
+                    lines.add("Tick Pulse - Realtime: ${logTimeFormatter.format(LocalTime.now())} - Runtime: ${System.currentTimeMillis() - start}ms\n")
+                }
+            }
+
+            /* Don't let lines get too big, write periodically to the file */
+            if (player.ticksExisted % 200 == 0 || lines.size >= 1000) write()
+        }
+
+        safeListener<ConnectionEvent.Disconnect> {
+            disable()
         }
 
         safeListener<PacketEvent.Receive> {
@@ -68,18 +80,18 @@ internal object PacketLogger : Module(
                     is SPacketEntityTeleport -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "entityId: ${it.packet.entityId}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "entityId: ${it.packet.entityId}")
                     }
                     is SPacketEntityMetadata -> {
                         var data = "dataEntries: "
                         for (entry in it.packet.dataManagerEntries) {
                             data += "> isDirty: ${entry.isDirty} " +
-                                    "key: ${entry.key} " +
-                                    "value: ${entry.value} "
+                                "key: ${entry.key} " +
+                                "value: ${entry.value} "
                         }
                         add(Type.SERVER, it.packet.javaClass.simpleName, data)
                     }
@@ -87,7 +99,7 @@ internal object PacketLogger : Module(
                         if (!ignoreChunkLoading) {
                             add(Type.SERVER, it.packet.javaClass.simpleName,
                                 "x: ${it.packet.x} " +
-                                "z: ${it.packet.z}")
+                                    "z: ${it.packet.z}")
                         }
                     }
                     is SPacketDestroyEntities -> {
@@ -104,18 +116,18 @@ internal object PacketLogger : Module(
                         }
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "teleportId: ${it.packet.teleportId}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "teleportId: ${it.packet.teleportId}")
 
                     }
                     is SPacketBlockChange -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "x: ${it.packet.blockPosition.x} " +
-                            "y: ${it.packet.blockPosition.y} " +
-                            "z: ${it.packet.blockPosition.z}")
+                                "y: ${it.packet.blockPosition.y} " +
+                                "z: ${it.packet.blockPosition.z}")
                     }
                     is SPacketMultiBlockChange -> {
                         var changedBlocks = "changedBlocks: "
@@ -127,42 +139,42 @@ internal object PacketLogger : Module(
                     is SPacketTimeUpdate -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "totalWorldTime: ${it.packet.totalWorldTime} " +
-                            "worldTime: ${it.packet.worldTime}")
+                                "worldTime: ${it.packet.worldTime}")
                     }
                     is SPacketChat -> {
                         if (!ignoreChat) {
                             add(Type.SERVER, it.packet.javaClass.simpleName,
                                 "unformattedText: ${it.packet.chatComponent.unformattedText} " +
-                                "type: ${it.packet.type} " +
-                                "isSystem: ${it.packet.isSystem}")
+                                    "type: ${it.packet.type} " +
+                                    "isSystem: ${it.packet.isSystem}")
                         }
                     }
                     is SPacketTeams -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "action: ${it.packet.action} " +
-                            "displayName: ${it.packet.displayName} " +
-                            "color: ${it.packet.color}")
+                                "displayName: ${it.packet.displayName} " +
+                                "color: ${it.packet.color}")
                     }
                     is SPacketChunkData -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "chunkX: ${it.packet.chunkX} " +
-                            "chunkZ: ${it.packet.chunkZ} " +
-                            "extractedSize: ${it.packet.extractedSize}")
+                                "chunkZ: ${it.packet.chunkZ} " +
+                                "extractedSize: ${it.packet.extractedSize}")
                     }
                     is SPacketEntityProperties -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
-                        "entityId: ${it.packet.entityId}")
+                            "entityId: ${it.packet.entityId}")
                     }
                     is SPacketUpdateTileEntity -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "posX: ${it.packet.pos.x} " +
-                            "posY: ${it.packet.pos.y} " +
-                            "posZ: ${it.packet.pos.z}")
+                                "posY: ${it.packet.pos.y} " +
+                                "posZ: ${it.packet.pos.z}")
                     }
                     is SPacketSpawnObject -> {
                         add(Type.SERVER, it.packet.javaClass.simpleName,
                             "entityID: ${it.packet.entityID} " +
-                            "data: ${it.packet.data}")
+                                "data: ${it.packet.data}")
                     }
                     is SPacketKeepAlive -> {
                         if (!ignoreKeepAlive) {
@@ -176,13 +188,14 @@ internal object PacketLogger : Module(
                         }
                     }
                 }
+
                 if (logInChat) sendChatMessage(lines.joinToString())
             }
         }
 
         /* Listen to PostSend and not Send since packets can get cancelled before we actually send them */
         safeListener<PacketEvent.PostSend> {
-            if (packetType == Type.CLIENT || packetType == Type.BOTH ) {
+            if (packetType == Type.CLIENT || packetType == Type.BOTH) {
                 when (it.packet) {
                     is CPacketAnimation -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
@@ -190,46 +203,46 @@ internal object PacketLogger : Module(
                     }
                     is CPacketPlayer.Rotation -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
-                            "pitch: ${it.packet.pitch} "+
-                            "yaw: ${it.packet.yaw} " +
-                            "onGround: ${it.packet.isOnGround}")
+                            "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.Position -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "onGround: ${it.packet.isOnGround}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayer.PositionRotation -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
                             "x: ${it.packet.x} " +
-                            "y: ${it.packet.y} " +
-                            "z: ${it.packet.z} " +
-                            "pitch: ${it.packet.pitch} " +
-                            "yaw: ${it.packet.yaw} " +
-                            "onGround: ${it.packet.isOnGround}")
+                                "y: ${it.packet.y} " +
+                                "z: ${it.packet.z} " +
+                                "pitch: ${it.packet.pitch} " +
+                                "yaw: ${it.packet.yaw} " +
+                                "onGround: ${it.packet.isOnGround}")
                     }
                     is CPacketPlayerDigging -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
                             "positionX: ${it.packet.position.x} " +
-                            "positionY: ${it.packet.position.y} " +
-                            "positionZ: ${it.packet.position.z} " +
-                            "facing: ${it.packet.facing} " +
-                            "action: ${it.packet.action} ")
+                                "positionY: ${it.packet.position.y} " +
+                                "positionZ: ${it.packet.position.z} " +
+                                "facing: ${it.packet.facing} " +
+                                "action: ${it.packet.action} ")
                     }
                     is CPacketEntityAction -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
                             "action: ${it.packet.action} " +
-                            "auxData: ${it.packet.auxData}")
+                                "auxData: ${it.packet.auxData}")
                     }
                     is CPacketUseEntity -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
                             "action: ${it.packet.action} " +
-                            "hand: ${it.packet.hand} " +
-                            "hitVecX: ${it.packet.hitVec.x} " +
-                            "hitVecY: ${it.packet.hitVec.y} " +
-                            "hitVecZ: ${it.packet.hitVec.z}")
+                                "hand: ${it.packet.hand} " +
+                                "hitVecX: ${it.packet.hitVec.x} " +
+                                "hitVecY: ${it.packet.hitVec.y} " +
+                                "hitVecZ: ${it.packet.hitVec.z}")
                     }
                     is CPacketPlayerTryUseItem -> {
                         add(Type.CLIENT, it.packet.javaClass.simpleName,
@@ -257,40 +270,30 @@ internal object PacketLogger : Module(
                         }
                     }
                 }
-                if (logInChat) sendChatMessage(lines.joinToString())
-            }
-        }
 
-        safeListener<TickEvent.ClientTickEvent> {
-            if (showClientTicks) {
-                if (it.phase == TickEvent.Phase.START) lines.add("Tick Pulse - Realtime: ${logTimeFormatter.format(LocalTime.now())} - Runtime: ${System.currentTimeMillis() - start}ms\n")
-                /* Don't let lines get too big, write periodically to the file */
-                if (player.ticksExisted % 200 == 0 || lines.size >= 1000) write()
+                if (logInChat) {
+                    synchronized(this) {
+                        sendChatMessage(lines.joinToString())
+                    }
+                }
             }
-        }
-
-        safeListener<ConnectionEvent.Disconnect> {
-            disable()
         }
     }
 
     private fun write() {
+        val lines = synchronized(this) {
+            val cache = lines
+            lines = ArrayList()
+            cache
+        }
+
         try {
-            FileWriter(filename, true).also {
+            FileWriter("${KamiMod.DIRECTORY}packetLogs/${filename}", true).buffered().use {
                 for (line in lines) it.write(line)
-                it.close()
             }
         } catch (e: Exception) {
-            when (e) {
-                is IOException,
-                is ConcurrentModificationException -> {
-                    KamiMod.LOG.error("$chatName Error saving!")
-                    e.printStackTrace()
-                }
-                else -> throw e
-            }
+            KamiMod.LOG.warn("$chatName Failed saving packet log!", e)
         }
-        lines.clear()
     }
 
     /**
@@ -298,8 +301,10 @@ internal object PacketLogger : Module(
      * from (client or server), packet name, time since start, time since last packet, packet data
      */
     private fun add(from: Type, packetName: String, data: String) {
-        lines.add("${from.name},$packetName,${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},$data")
-        lines.add("\n")
-        last = System.currentTimeMillis()
+        synchronized(this) {
+            lines.add("${from.name},$packetName,${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},$data")
+            lines.add("\n")
+            last = System.currentTimeMillis()
+        }
     }
 }
