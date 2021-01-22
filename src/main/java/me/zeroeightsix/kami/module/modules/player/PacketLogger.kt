@@ -99,7 +99,7 @@ internal object PacketLogger : Module(
                                 "z: ${it.packet.z} " +
                                 "pitch: ${it.packet.pitch} " +
                                 "yaw: ${it.packet.yaw} " +
-                                "entityId: ${it.packet.entityId}")
+                                "entityID: ${it.packet.entityId}")
                     }
                     is SPacketEntityMetadata -> {
                         val dataEntry = StringBuilder().run {
@@ -193,7 +193,7 @@ internal object PacketLogger : Module(
                     }
                     is SPacketEntityProperties -> {
                         add(PacketSide.SERVER, it.packet,
-                            "entityId: ${it.packet.entityId}")
+                            "entityID: ${it.packet.entityId}")
                     }
                     is SPacketUpdateTileEntity -> {
                         add(PacketSide.SERVER, it.packet,
