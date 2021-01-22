@@ -8,6 +8,8 @@ import me.zeroeightsix.kami.event.events.PacketEvent
 import me.zeroeightsix.kami.mixin.extension.*
 import me.zeroeightsix.kami.module.Category
 import me.zeroeightsix.kami.module.Module
+import me.zeroeightsix.kami.util.TickTimer
+import me.zeroeightsix.kami.util.TimeUnit
 import me.zeroeightsix.kami.util.text.MessageSendHelper.sendChatMessage
 import me.zeroeightsix.kami.util.threads.defaultScope
 import me.zeroeightsix.kami.util.threads.safeListener
@@ -41,6 +43,7 @@ internal object PacketLogger : Module(
 
     private var start = 0L
     private var last = 0L
+    private val timer = TickTimer(TimeUnit.SECONDS)
 
     private var filename = ""
     private var lines = ArrayList<String>()
@@ -75,7 +78,9 @@ internal object PacketLogger : Module(
             }
 
             /* Don't let lines get too big, write periodically to the file */
-            if (player.ticksExisted % 200 == 0 || lines.size >= 1000) write()
+            if (lines.size >= 100 || timer.tick(15L)) {
+                write()
+            }
         }
 
         safeListener<ConnectionEvent.Disconnect> {
@@ -330,8 +335,7 @@ internal object PacketLogger : Module(
      */
     private fun add(side: PacketSide, packet: Packet<*>, data: String) {
         synchronized(this) {
-            lines.add("${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},$data")
-            lines.add("\n")
+            lines.add("${side.displayName},${packet.javaClass.simpleName},${System.currentTimeMillis() - start},${System.currentTimeMillis() - last},${data}\n")
             last = System.currentTimeMillis()
         }
     }
